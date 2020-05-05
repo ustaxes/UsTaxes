@@ -1,5 +1,5 @@
 import React from 'react'
-import { Box, Paper } from "@material-ui/core"
+import { Box } from "@material-ui/core"
 import  W2EmployerInfo from './w2EmployerInfo'
 
 export default function W2() {
