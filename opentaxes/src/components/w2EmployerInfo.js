@@ -4,8 +4,7 @@ import { TextField, Button, Box, Checkbox, FormControlLabel, MenuItem, Select } 
 import InputMask from 'react-input-mask'
 import locationPostalCodes from './locationPostalCodes'
 
-export function LabeledInput({ label, register, required, pattern, patternDescription, name, errors }) {
-    console.log(errors[name])
+export function LabeledInput({ label, register, required, mask, pattern, patternDescription, name, errors }) {
     let helperText = ""
     if (errors[name]?.type === "required"){
         helperText = "Input is required"
@@ -21,19 +20,34 @@ export function LabeledInput({ label, register, required, pattern, patternDescri
             </Box>
             {/* default regex pattern is to accept any input. Otherwise, use input pattern */}
             <Box display="flex" justifyContent="flex-start">
+                {/* if there is a mask prop, create masked textfield rather than standard */}
+                {mask ? 
+                <InputMask
+                    mask={mask}
+                    alwaysShowMask={true}
+                >
+                    {() => <TextField
+                        error={errors[name]}
+                        helperText={helperText}
+                        inputRef={register({ required: required, pattern: pattern || /.*?/ })}
+                        name={name}
+                        variant="filled"
+                    />}
+                </InputMask> :
                 <TextField
                     error={errors[name]}
                     helperText={helperText}
-                    fullWidth 
-                    inputRef={register({ required: required, pattern: pattern || /.*?/ })} 
-                    name={name} 
-                    variant="filled" 
+                    fullWidth
+                    inputRef={register({ required: required, pattern: pattern || /.*?/ })}
+                    name={name}
+                    variant="filled"
                 />
+                }
+                
             </Box>
         </div>
     )
 }
-
 export default function W2EmployerInfo() {
     const { register, handleSubmit, errors, setValue } = useForm()
     const [foreignAddress, setforeignAddress] = useState(false)
@@ -47,6 +61,7 @@ export default function W2EmployerInfo() {
         register({ name: "selectedLocality" }); // set form data for locality selector
     }, [register])
 
+    console.log(errors)
     return (
         <Box display="flex" justifyContent="center">
             < form onSubmit={handleSubmit(onSubmit)} >
@@ -54,7 +69,7 @@ export default function W2EmployerInfo() {
                     <h2>Employer Information</h2>
                 </Box>
 
-                <Box display="flex" justifyContent="flex-start">
+                {/* <Box display="flex" justifyContent="flex-start">
                     <p><strong>Box A - </strong>Employee's Social Security Number</p>
                 </Box>
 
@@ -66,10 +81,20 @@ export default function W2EmployerInfo() {
                         {() => <TextField
                             name="SSID"
                             variant="filled"
-                            inputRef={register}
+                            inputRef={register({ pattern: /[0-9]{3}-[0-9]{2}-[0-9]{4}/ })}
                         />}
                     </InputMask>
-                </Box>
+                </Box> */}
+                <LabeledInput
+                    label="Employee's Social Security Number"
+                    register={register}
+                    required={true}
+                    mask={"999-99-9999"}
+                    pattern={/[0-9]{3}-[0-9]{2}-[0-9]{4}/}
+                    patternDescription={"Input should be filled with 9 numbers"}
+                    name={"employerName"}
+                    errors={errors}
+                />
 
                 <Box display="flex" justifyContent="flex-start">
                     <p><strong>Box B - </strong>Employer Identification Number (EIN)</p>
@@ -92,15 +117,13 @@ export default function W2EmployerInfo() {
                     <p><strong>Box C - </strong>Employer's Name, Address, and Zip Code</p>
                 </Box>
 
-                {/* <Box display="flex" justifyContent="flex-start">
-                    <p>Employer's Name</p>
-                </Box>
-
-                <Box display="flex" justifyContent="flex-start">
-                    <TextField fullWidth inputRef={register} name="employerName" variant="filled" />
-                </Box> */}
-
-                <LabeledInput label="Employer's Name" register={register} required={true} name={"employerName"} errors={errors}/>
+                <LabeledInput
+                    label="Employer's Name" 
+                    register={register} 
+                    required={true} 
+                    name={"employerName"} 
+                    errors={errors}
+                />
 
                 <Box display="flex" justifyContent="flex-start" paddingTop={1}>
                     <FormControlLabel
@@ -114,33 +137,23 @@ export default function W2EmployerInfo() {
                     />
                     <p>Do you have a foreign address?</p>
                 </Box>
-
-                {/* <Box display="flex" justifyContent="flex-start">
-                    <p>Employer's Address</p>
-                </Box>
-
-                <Box display="flex" justifyContent="flex-start">
-                    <TextField fullWidth inputRef={register({ pattern: /^[A-Za-z1-9]+$/i })} name="employerAddress" variant="filled" />
-                </Box> */}
                 
-                <LabeledInput 
+                <LabeledInput
                     label="Employer's Address" register={register} 
                     required={true} 
-                    pattern={/^[A-Za-z1-9]+$/i} 
+                    pattern={/^[A-Za-z0-9]+$/i} 
                     patternDescription={"Input should only include letters and numbers"} 
                     name={"employerAddress"} 
                     errors={errors} 
                 />
 
-                {/* <Box display="flex" justifyContent="flex-start">
-                    <p>Employer's City</p>
-                </Box>
-
-                <Box display="flex" justifyContent="flex-start">
-                    <TextField fullWidth inputRef={register} name="employerCity" variant="filled" />
-                </Box> */}
-
-                <LabeledInput label="Employer's City" register={register} required={true} name={"employerCity"} errors={errors} />
+                <LabeledInput 
+                    label="Employer's City" 
+                    register={register} 
+                    required={true} 
+                    name={"employerCity"} 
+                    errors={errors} 
+                />
 
                 <Box display="flex" justifyContent="flex-start">
                     <p>Employer's State</p>
