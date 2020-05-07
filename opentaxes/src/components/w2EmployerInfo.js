@@ -3,8 +3,9 @@ import { useForm } from 'react-hook-form'
 import { TextField, Button, Box, Checkbox, FormControlLabel, MenuItem, Select } from "@material-ui/core"
 import InputMask from 'react-input-mask'
 import locationPostalCodes from './locationPostalCodes'
+import countries from './countries'
 
-export function LabeledInput({ label, register, required, mask, pattern, patternDescription, name, errors }) {
+export function LabeledInput({ strongLabel, label, register, required, mask, pattern, patternDescription, name, errors }) {
     let helperText = ""
     if (errors[name]?.type === "required"){
         helperText = "Input is required"
@@ -16,7 +17,7 @@ export function LabeledInput({ label, register, required, mask, pattern, pattern
     return (
         <div>
             <Box display="flex" justifyContent="flex-start">
-                <p>{label}</p>
+                <p><strong>{strongLabel}</strong>{label}</p>
             </Box>
             {/* default regex pattern is to accept any input. Otherwise, use input pattern */}
             <Box display="flex" justifyContent="flex-start">
@@ -61,7 +62,7 @@ export default function W2EmployerInfo() {
         register({ name: "selectedLocality" }); // set form data for locality selector
     }, [register])
 
-    console.log(errors)
+    // console.log(errors)
     return (
         <Box display="flex" justifyContent="center">
             < form onSubmit={handleSubmit(onSubmit)} >
@@ -69,49 +70,29 @@ export default function W2EmployerInfo() {
                     <h2>Employer Information</h2>
                 </Box>
 
-                {/* <Box display="flex" justifyContent="flex-start">
-                    <p><strong>Box A - </strong>Employee's Social Security Number</p>
-                </Box>
-
-                <Box display="flex" justifyContent="flex-start">
-                    <InputMask
-                        mask="999-99-9999"
-                        alwaysShowMask={true}
-                    >
-                        {() => <TextField
-                            name="SSID"
-                            variant="filled"
-                            inputRef={register({ pattern: /[0-9]{3}-[0-9]{2}-[0-9]{4}/ })}
-                        />}
-                    </InputMask>
-                </Box> */}
                 <LabeledInput
+                    strongLabel="Box A - "
                     label="Employee's Social Security Number"
                     register={register}
                     required={true}
                     mask={"999-99-9999"}
                     pattern={/[0-9]{3}-[0-9]{2}-[0-9]{4}/}
                     patternDescription={"Input should be filled with 9 numbers"}
-                    name={"employerName"}
+                    name="SSID"
                     errors={errors}
                 />
 
-                <Box display="flex" justifyContent="flex-start">
-                    <p><strong>Box B - </strong>Employer Identification Number (EIN)</p>
-                </Box>
-
-                <Box display="flex" justifyContent="flex-start">
-                    <InputMask
-                        mask="99-9999999"
-                        alwaysShowMask={true}
-                    >
-                        {() => <TextField
-                            name="EIN"
-                            variant="filled"
-                            inputRef={register}
-                        />}
-                    </InputMask>
-                </Box>
+                <LabeledInput
+                    strongLabel="Box B - "
+                    label="Employer Identification Number"
+                    register={register}
+                    required={true}
+                    mask={"99-9999999"}
+                    pattern={/[0-9]{2}-[0-9]{7}/}
+                    patternDescription={"Input should be filled with 7 numbers"}
+                    name="EIN"
+                    errors={errors}
+                />
 
                 <Box display="flex" justifyContent="flex-start">
                     <p><strong>Box C - </strong>Employer's Name, Address, and Zip Code</p>
@@ -127,12 +108,12 @@ export default function W2EmployerInfo() {
 
                 <Box display="flex" justifyContent="flex-start" paddingTop={1}>
                     <FormControlLabel
-                        control={<Checkbox checked={!foreignAddress} onChange={setForeignAddressFalse} name="gilad" color="primary" />}
+                        control={<Checkbox checked={!foreignAddress} onChange={setForeignAddressFalse} color="primary" />}
                         label="No"
                         ml={0}
                     />
                     <FormControlLabel
-                        control={<Checkbox checked={foreignAddress} onChange={setForeignAddressTrue} name="gilad" color="primary" />}
+                        control={<Checkbox checked={foreignAddress} onChange={setForeignAddressTrue} color="primary" />}
                         label="Yes"
                     />
                     <p>Do you have a foreign address?</p>
@@ -154,42 +135,77 @@ export default function W2EmployerInfo() {
                     name={"employerCity"} 
                     errors={errors} 
                 />
+                {foreignAddress===false ?
+                    <div>
+                        <Box display="flex" justifyContent="flex-start">
+                            <p>Employer's State</p>
+                        </Box>
 
-                <Box display="flex" justifyContent="flex-start">
-                    <p>Employer's State</p>
-                </Box>
+                        <Box display="flex" justifyContent="flex-start">
+                            <Select
+                                fullWidth
+                                labelId="demo-simple-select-label"
+                                onChange={changeSelectedState}
+                                name="employerState"
+                                variant="filled"
+                            >
+                                {locationPostalCodes.map(locality =>
+                                    <MenuItem value={locality[1]} key={locality[1]}>{locality[0]} - {locality[1]}</MenuItem>
+                                )}
 
-                <Box display="flex" justifyContent="flex-start">
-                    <Select
-                        fullWidth
-                        labelId="demo-simple-select-label"
-                        onChange={changeSelectedState}
-                        name="employerState" 
-                        variant="filled"
-                    >
-                        {locationPostalCodes.map(locality => 
-                            <MenuItem value={locality[1]} key={locality[1]}>{locality[0]} - {locality[1]}</MenuItem>
-                        )}
-                        
-                    </Select>
-                </Box>
+                            </Select>
+                        </Box>
 
-                <Box display="flex" justifyContent="flex-start">
-                    <p>Employer's Zip Code</p>
-                </Box>
-                {/* ({ pattern: /^[1-9]+$/i }) */}
-                <Box display="flex" justifyContent="flex-start">
-                    <InputMask
-                        mask="99999-9999"
-                        alwaysShowMask={true}
-                    >
-                        {() => <TextField
-                            name="zip"
-                            variant="filled"
-                            inputRef={register}
-                        />}
-                    </InputMask>
-                </Box>
+                        <LabeledInput
+                            label="Employer's Zip Code"
+                            register={register}
+                            required={true}
+                            mask={"99999-9999"}
+                            pattern={/[0-9]{5}-[0-9]{4}/}
+                            patternDescription={"Input should be filled with 9 numbers"}
+                            name="employerZip"
+                            errors={errors}
+                        /> 
+                    </div>
+                    : 
+                    <div>
+                        <LabeledInput
+                            label="Employer's Province or State"
+                            register={register}
+                            required={true}
+                            pattern={/^[A-Za-z]+$/i}
+                            patternDescription={"Input should only include letters"}
+                            name={"employerProvidence"}
+                            errors={errors}
+                        />
+                        <Box display="flex" justifyContent="flex-start">
+                            <p>Employer's Country</p>
+                        </Box>
+
+                        <Box display="flex" justifyContent="flex-start">
+                            <Select
+                                fullWidth
+                                labelId="demo-simple-select-label"
+                                onChange={changeSelectedState}
+                                name="employerState"
+                                variant="filled"
+                            >
+                                {countries.map(country =>
+                                    <MenuItem value={country} key={country}>{country}</MenuItem>
+                                )}
+
+                            </Select>
+                        </Box>
+                        <LabeledInput
+                            label="Employer's Postal Code"
+                            register={register}
+                            required={true}
+                            name={"employerPostalCode"}
+                            errors={errors}
+                        />
+                    </div>
+                }
+                
 
                 <Box display="flex" justifyContent="flex-start" paddingTop={2} paddingBottom={2}>
                     <Button type="submit" variant="contained" color="primary">
