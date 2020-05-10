@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { TextField, Button, Box, Checkbox, FormControlLabel, MenuItem, Select } from "@material-ui/core"
+import { TextField, Button, Box, Checkbox, FormControlLabel, Select } from "@material-ui/core"
 import InputMask from 'react-input-mask'
 import locationPostalCodes from './locationPostalCodes'
 import countries from './countries'
@@ -30,7 +30,7 @@ export function LabeledInput({ strongLabel, label, register, required, mask, pat
                     {() => <TextField
                         error={errors[name]}
                         helperText={helperText}
-                        inputRef={register({ required: required, pattern: pattern || /.*?/ })}
+                        inputRef={register({ submitFocusError: true, required: required, pattern: pattern || /.*?/ })}
                         name={name}
                         variant="filled"
                     />}
@@ -39,7 +39,7 @@ export function LabeledInput({ strongLabel, label, register, required, mask, pat
                     error={errors[name]}
                     helperText={helperText}
                     fullWidth
-                    inputRef={register({ required: required, pattern: pattern || /.*?/ })}
+                    inputRef={register({ submitFocusError: true, required: required, pattern: pattern || /.*?/ })}
                     name={name}
                     variant="filled"
                 />
@@ -50,21 +50,18 @@ export function LabeledInput({ strongLabel, label, register, required, mask, pat
     )
 }
 export default function W2EmployerInfo() {
-    const { register, handleSubmit, errors, setValue, formState } = useForm()
+    const { register, handleSubmit, errors } = useForm({
+        defaultValues: {
+            selectedState: "bill",
+
+        }
+    })
     const [foreignAddress, setforeignAddress] = useState(false)
     const onSubmit = data => { console.log("formData: ", data) }
 
-    const { dirtyFields } = formState
-
-    const changeSelectedState = (e) => setValue("selectedLocality", e.target.value)
     const setForeignAddressFalse = () => setforeignAddress(false)
     const setForeignAddressTrue = () => setforeignAddress(true)
-
-    useEffect(() => {
-        register({ name: "selectedLocality" }); // set form data for locality selector
-    }, [register])
-
-    console.log(dirtyFields)
+    
     return (
         <Box display="flex" justifyContent="center">
             < form onSubmit={handleSubmit(onSubmit)} >
@@ -146,15 +143,13 @@ export default function W2EmployerInfo() {
                         <Box display="flex" justifyContent="flex-start">
                             <Select
                                 fullWidth
-                                labelId="demo-simple-select-label"
-                                onChange={changeSelectedState}
+                                inputRef={register({ required: true, name: "selectedState", pattern: /Oregon/ })}
                                 name="employerState"
                                 variant="filled"
                             >
                                 {locationPostalCodes.map(locality =>
-                                    <MenuItem value={locality[1]} key={locality[1]}>{locality[0]} - {locality[1]}</MenuItem>
+                                    <option value={locality[1]} key={locality[1]}>{locality[0]} - {locality[1]}</option>
                                 )}
-
                             </Select>
                         </Box>
 
@@ -187,15 +182,13 @@ export default function W2EmployerInfo() {
                         <Box display="flex" justifyContent="flex-start">
                             <Select
                                 fullWidth
-                                labelId="demo-simple-select-label"
-                                onChange={changeSelectedState}
+                                inputRef={register({ required: true, name: "selectedCountry" })}
                                 name="employerState"
                                 variant="filled"
                             >
                                 {countries.map(country =>
-                                    <MenuItem value={country} key={country}>{country}</MenuItem>
+                                    <option value={country} key={country}>{country}</option>
                                 )}
-
                             </Select>
                         </Box>
                         <LabeledInput
