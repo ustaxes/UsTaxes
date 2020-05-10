@@ -50,9 +50,11 @@ export function LabeledInput({ strongLabel, label, register, required, mask, pat
     )
 }
 export default function W2EmployerInfo() {
-    const { register, handleSubmit, errors, setValue } = useForm()
+    const { register, handleSubmit, errors, setValue, formState } = useForm()
     const [foreignAddress, setforeignAddress] = useState(false)
     const onSubmit = data => { console.log("formData: ", data) }
+
+    const { dirtyFields } = formState
 
     const changeSelectedState = (e) => setValue("selectedLocality", e.target.value)
     const setForeignAddressFalse = () => setforeignAddress(false)
@@ -62,7 +64,7 @@ export default function W2EmployerInfo() {
         register({ name: "selectedLocality" }); // set form data for locality selector
     }, [register])
 
-    // console.log(errors)
+    console.log(dirtyFields)
     return (
         <Box display="flex" justifyContent="center">
             < form onSubmit={handleSubmit(onSubmit)} >
@@ -207,7 +209,7 @@ export default function W2EmployerInfo() {
                 }
                 
 
-                <Box display="flex" justifyContent="flex-start" paddingTop={2} paddingBottom={2}>
+                <Box display="flex" justifyContent="flex-start" paddingTop={2} paddingBottom={1}>
                     <Button type="submit" variant="contained" color="primary">
                         Save and Continue
                     </Button>
