@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { useForm, Controller } from 'react-hook-form'
 import { TextField, Button, Box, Checkbox, FormControlLabel, Select } from "@material-ui/core"
 import InputMask from 'react-input-mask'
 import locationPostalCodes from './locationPostalCodes'
@@ -50,18 +50,14 @@ export function LabeledInput({ strongLabel, label, register, required, mask, pat
     )
 }
 export default function W2EmployerInfo() {
-    const { register, handleSubmit, errors } = useForm({
-        defaultValues: {
-            selectedState: "bill",
-
-        }
-    })
+    const { register, handleSubmit, errors, control } = useForm()
     const [foreignAddress, setforeignAddress] = useState(false)
     const onSubmit = data => { console.log("formData: ", data) }
 
     const setForeignAddressFalse = () => setforeignAddress(false)
     const setForeignAddressTrue = () => setforeignAddress(true)
     
+    console.log(errors)
     return (
         <Box display="flex" justifyContent="center">
             < form onSubmit={handleSubmit(onSubmit)} >
@@ -141,16 +137,22 @@ export default function W2EmployerInfo() {
                         </Box>
 
                         <Box display="flex" justifyContent="flex-start">
-                            <Select
+                            <Controller
+                                as={
+                                    <Select>
+                                        {locationPostalCodes.map(locality =>
+                                            <option value={locality[1]} key={locality[1]}>{locality[0]} - {locality[1]}</option>
+                                        )}
+                                    </Select>
+                                }
+                                error={errors["employerState"]}
+                                defaultValue=""
                                 fullWidth
-                                inputRef={register({ required: true, name: "selectedState", pattern: /Oregon/ })}
                                 name="employerState"
+                                rules={{ required: true }}
+                                control={control}
                                 variant="filled"
-                            >
-                                {locationPostalCodes.map(locality =>
-                                    <option value={locality[1]} key={locality[1]}>{locality[0]} - {locality[1]}</option>
-                                )}
-                            </Select>
+                            />
                         </Box>
 
                         <LabeledInput
@@ -182,7 +184,7 @@ export default function W2EmployerInfo() {
                         <Box display="flex" justifyContent="flex-start">
                             <Select
                                 fullWidth
-                                inputRef={register({ required: true, name: "selectedCountry" })}
+                                inputRef={register({ required: true, name: "employerCountry" })}
                                 name="employerState"
                                 variant="filled"
                             >
