@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useForm, Controller } from 'react-hook-form'
-import { TextField, Button, Box, Checkbox, FormControlLabel, Select } from "@material-ui/core"
+import { TextField, Button, Box, Checkbox, FormControlLabel, Grow } from "@material-ui/core"
 import InputMask from 'react-input-mask'
 import locationPostalCodes from './locationPostalCodes'
 import countries from './countries'
@@ -70,7 +70,11 @@ export function LabeledDropdown({label, dropDownData, valueMapping, keyMapping, 
                             defaultValue=""
                         >
                             {dropDownData.map(dropDownItem =>
-                                <option value={valueMapping ? valueMapping(dropDownItem) : dropDownItem} key={keyMapping ? keyMapping(dropDownItem) : dropDownItem}>{textMapping ? textMapping(dropDownItem) : dropDownItem}</option>
+                                <option 
+                                    value={valueMapping ? valueMapping(dropDownItem) : dropDownItem} 
+                                    key={keyMapping ? keyMapping(dropDownItem) : dropDownItem}>
+                                        {textMapping ? textMapping(dropDownItem) : dropDownItem}
+                                </option>
                             )}
                         </TextField>
                     }
@@ -166,59 +170,61 @@ export default function W2EmployerInfo() {
                     name="employerCity" 
                     errors={errors} 
                 />
-                {foreignAddress===false ?
-                    <div>
-                        <LabeledDropdown
-                            label="Employer's State"
-                            dropDownData={locationPostalCodes}
-                            valueMapping={locality => locality[1]} 
-                            keyMapping={locality => locality[1]}
-                            textMapping={locality => locality[0] + ' - ' + locality[1]}
-                            control={control} 
-                            required={true} 
-                            name="employerState"
-                            errors={errors}
-                        />
+                <Grow in={!foreignAddress} style={{ display: !foreignAddress ? 'block' : 'none'  }}>
+                        <div>
+                            <LabeledDropdown
+                                label="Employer's State"
+                                dropDownData={locationPostalCodes}
+                                valueMapping={locality => locality[1]} 
+                                keyMapping={locality => locality[1]}
+                                textMapping={locality => locality[0] + ' - ' + locality[1]}
+                                control={control} 
+                                required={true} 
+                                name="employerState"
+                                errors={errors}
+                            />
 
-                        <LabeledInput
-                            label="Employer's Zip Code"
-                            register={register}
-                            required={true}
-                            mask={"99999-9999"}
-                            pattern={/[0-9]{5}-[0-9]{4}/}
-                            patternDescription={"Input should be filled with 9 numbers"}
-                            name="employerZip"
-                            errors={errors}
-                        /> 
-                    </div>
-                    : 
-                    <div>
-                        <LabeledInput
-                            label="Employer's Province or State"
-                            register={register}
-                            required={true}
-                            pattern={/^[A-Za-z]+$/i}
-                            patternDescription={"Input should only include letters"}
-                            name={"employerProvidence"}
-                            errors={errors}
-                        />
-                        <LabeledDropdown
-                            label="Employer's Country"
-                            dropDownData={countries}
-                            control={control}
-                            required={true}
-                            name="employerCountry"
-                            errors={errors}
-                        />
-                        <LabeledInput
-                            label="Employer's Postal Code"
-                            register={register}
-                            required={true}
-                            name={"employerPostalCode"}
-                            errors={errors}
-                        />
-                    </div>
-                }
+                            <LabeledInput
+                                label="Employer's Zip Code"
+                                register={register}
+                                required={true}
+                                mask={"99999-9999"}
+                                pattern={/[0-9]{5}-[0-9]{4}/}
+                                patternDescription={"Input should be filled with 9 numbers"}
+                                name="employerZip"
+                                errors={errors}
+                            /> 
+                        </div>
+                    </Grow>
+                    
+                <Grow in={foreignAddress} style={{ display: foreignAddress ? 'block' : 'none'}}>
+                        <div>
+                            <LabeledInput
+                                label="Employer's Province or State"
+                                register={register}
+                                required={true}
+                                pattern={/^[A-Za-z]+$/i}
+                                patternDescription={"Input should only include letters"}
+                                name={"employerProvidence"}
+                                errors={errors}
+                            />
+                            <LabeledDropdown
+                                label="Employer's Country"
+                                dropDownData={countries}
+                                control={control}
+                                required={true}
+                                name="employerCountry"
+                                errors={errors}
+                            />
+                            <LabeledInput
+                                label="Employer's Postal Code"
+                                register={register}
+                                required={true}
+                                name={"employerPostalCode"}
+                                errors={errors}
+                            />
+                        </div>
+                    </Grow>
 
                 <Box display="flex" justifyContent="flex-start" paddingTop={2} paddingBottom={1}>
                     <Button type="submit" variant="contained" color="primary">
