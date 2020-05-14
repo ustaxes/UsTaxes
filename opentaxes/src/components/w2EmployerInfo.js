@@ -202,22 +202,14 @@ export default function W2EmployerInfo() {
                             name={"employerProvidence"}
                             errors={errors}
                         />
-                        <Box display="flex" justifyContent="flex-start">
-                            <p>Employer's Country</p>
-                        </Box>
-
-                        <Box display="flex" justifyContent="flex-start">
-                            <Select
-                                fullWidth
-                                inputRef={register({ required: true, name: "employerCountry" })}
-                                name="employerState"
-                                variant="filled"
-                            >
-                                {countries.map(country =>
-                                    <option value={country} key={country}>{country}</option>
-                                )}
-                            </Select>
-                        </Box>
+                        <LabeledDropdown
+                            label="Employer's Country"
+                            dropDownData={countries}
+                            control={control}
+                            required={true}
+                            name="employerCountry"
+                            errors={errors}
+                        />
                         <LabeledInput
                             label="Employer's Postal Code"
                             register={register}
@@ -227,7 +219,6 @@ export default function W2EmployerInfo() {
                         />
                     </div>
                 }
-                
 
                 <Box display="flex" justifyContent="flex-start" paddingTop={2} paddingBottom={1}>
                     <Button type="submit" variant="contained" color="primary">
