@@ -28,7 +28,7 @@ export function LabeledInput({ strongLabel, label, register, required, mask, pat
                     alwaysShowMask={true}
                 >
                     {() => <TextField
-                        error={errors[name]}
+                        error={errors[name] ? true : false}
                         helperText={helperText}
                         inputRef={register({ submitFocusError: true, required: required, pattern: pattern || /.*?/ })}
                         name={name}
@@ -36,7 +36,7 @@ export function LabeledInput({ strongLabel, label, register, required, mask, pat
                     />}
                 </InputMask> :
                 <TextField
-                    error={errors[name]}
+                    error={errors[name] ? true : false}
                     helperText={helperText}
                     fullWidth
                     inputRef={register({ submitFocusError: true, required: required, pattern: pattern || /.*?/ })}
@@ -49,6 +49,43 @@ export function LabeledInput({ strongLabel, label, register, required, mask, pat
         </div>
     )
 }
+
+export function LabeledDropdown({label, dropDownData, valueMapping, keyMapping, textMapping, control, required, name, errors}) {
+    let helperText = ""
+    if (errors[name]?.type === "required") {
+        helperText = "Input is required"
+    } 
+    return (
+        <div>
+            <Box display="flex" justifyContent="flex-start">
+                <p>{label}</p>
+            </Box>
+
+            <Box display="flex" justifyContent="flex-start">
+                <Controller
+                    as={
+                        <TextField 
+                            select
+                            helperText={helperText}
+                            defaultValue=""
+                        >
+                            {dropDownData.map(dropDownItem =>
+                                <option value={valueMapping ? valueMapping(dropDownItem) : dropDownItem} key={keyMapping ? keyMapping(dropDownItem) : dropDownItem}>{textMapping ? textMapping(dropDownItem) : dropDownItem}</option>
+                            )}
+                        </TextField>
+                    }
+                    error={errors[name] ? true : false}
+                    fullWidth
+                    name={name}
+                    rules={{ required: required }}
+                    control={control}
+                    variant="filled"
+                />
+            </Box>
+        </div>
+    )
+}
+
 export default function W2EmployerInfo() {
     const { register, handleSubmit, errors, control } = useForm()
     const [foreignAddress, setforeignAddress] = useState(false)
@@ -57,7 +94,6 @@ export default function W2EmployerInfo() {
     const setForeignAddressFalse = () => setforeignAddress(false)
     const setForeignAddressTrue = () => setforeignAddress(true)
     
-    console.log(errors)
     return (
         <Box display="flex" justifyContent="center">
             < form onSubmit={handleSubmit(onSubmit)} >
@@ -119,7 +155,7 @@ export default function W2EmployerInfo() {
                     required={true} 
                     pattern={/^[A-Za-z0-9]+$/i} 
                     patternDescription={"Input should only include letters and numbers"} 
-                    name={"employerAddress"} 
+                    name="employerAddress"
                     errors={errors} 
                 />
 
@@ -127,33 +163,22 @@ export default function W2EmployerInfo() {
                     label="Employer's City" 
                     register={register} 
                     required={true} 
-                    name={"employerCity"} 
+                    name="employerCity" 
                     errors={errors} 
                 />
                 {foreignAddress===false ?
                     <div>
-                        <Box display="flex" justifyContent="flex-start">
-                            <p>Employer's State</p>
-                        </Box>
-
-                        <Box display="flex" justifyContent="flex-start">
-                            <Controller
-                                as={
-                                    <Select>
-                                        {locationPostalCodes.map(locality =>
-                                            <option value={locality[1]} key={locality[1]}>{locality[0]} - {locality[1]}</option>
-                                        )}
-                                    </Select>
-                                }
-                                error={errors["employerState"]}
-                                defaultValue=""
-                                fullWidth
-                                name="employerState"
-                                rules={{ required: true }}
-                                control={control}
-                                variant="filled"
-                            />
-                        </Box>
+                        <LabeledDropdown
+                            label="Employer's State"
+                            dropDownData={locationPostalCodes}
+                            valueMapping={locality => locality[1]} 
+                            keyMapping={locality => locality[1]}
+                            textMapping={locality => locality[0] + ' - ' + locality[1]}
+                            control={control} 
+                            required={true} 
+                            name="employerState"
+                            errors={errors}
+                        />
 
                         <LabeledInput
                             label="Employer's Zip Code"
