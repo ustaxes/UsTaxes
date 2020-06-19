@@ -1,6 +1,7 @@
 import React from 'react'
 import { Box, createMuiTheme, ThemeProvider } from "@material-ui/core"
 import  W2EmployerInfo from './w2EmployerInfo'
+import W2EmployeeInfo from './w2EmployeeInfo';
 
 const theme = createMuiTheme({
     palette: {
@@ -29,6 +30,7 @@ export default function W2() {
                 </Box>
             </Box>
             <W2EmployerInfo/>
+            <W2EmployeeInfo/>
         </ThemeProvider>
   )
 }
