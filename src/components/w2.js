@@ -1,5 +1,11 @@
 import React from 'react'
 import { Box, createMuiTheme, ThemeProvider } from "@material-ui/core"
+import {
+    Switch,
+    Route,
+    NavLink,
+    useParams
+} from "react-router-dom";
 import  W2EmployerInfo from './w2EmployerInfo'
 import W2EmployeeInfo from './w2EmployeeInfo';
 
@@ -29,8 +35,22 @@ export default function W2() {
                     <h1>Wages (Form W-2)</h1>
                 </Box>
             </Box>
-            <W2EmployerInfo/>
-            <W2EmployeeInfo/>
+            <div class='row'>
+                <div class='column'>
+                    <NavLink exact activeClassName="current" to="/w2employerinfo">W2 Employer Information</NavLink>
+                </div>
+                <div class='column'>
+                    <NavLink exact activeClassName="current" to="/w2employeeinfo">W2 Employee Information</NavLink>
+                </div>
+            </div>
+            <Switch>
+                <Route path="/w2employerinfo" exact>
+                    <W2EmployerInfo />
+                </Route>
+                <Route path="/w2employeeinfo" exact>
+                    <W2EmployeeInfo/>
+                </Route>
+            </Switch>
         </ThemeProvider>
   )
 }
