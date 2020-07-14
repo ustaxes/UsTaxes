@@ -1,29 +1,11 @@
 import React, { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { Button, Box, Checkbox, FormControlLabel, Grow } from "@material-ui/core"
-import { makeStyles } from '@material-ui/core/styles'
-
+import { Link } from "react-router-dom";
 import locationPostalCodes from './locationPostalCodes'
 import countries from './countries'
 
 import { LabeledInput, LabeledDropdown } from './labeledInput'
-
-const drawerWidth = 240;
-
-const useStyles = makeStyles((theme) => ({
-    appBar: {
-        [theme.breakpoints.up('sm')]: {
-            width: `calc(100% - ${drawerWidth}px)`,
-            marginLeft: drawerWidth,
-        },
-    },
-    menuButton: {
-        marginRight: theme.spacing(2),
-        [theme.breakpoints.up('sm')]: {
-            display: 'none',
-        },
-    }
-}));
 
 export default function W2EmployeeInfo() {
     const { register, handleSubmit, errors, control } = useForm()
@@ -33,7 +15,6 @@ export default function W2EmployeeInfo() {
     const setForeignAddressFalse = () => setforeignAddress(false)
     const setForeignAddressTrue = () => setforeignAddress(true)
 
-    const classes = useStyles();
     return (
         <Box display="flex" justifyContent="center">
             < form onSubmit={handleSubmit(onSubmit)} >
@@ -151,6 +132,12 @@ export default function W2EmployeeInfo() {
                 </Grow>
 
                 <Box display="flex" justifyContent="flex-start" paddingTop={2} paddingBottom={1}>
+                    <Box display="flex" justifyContent="flex-start" paddingRight={2}>
+                        <Button component={Link} to={"w2employerinfo"} variant="contained" color="secondary" >
+                            Back
+                        </Button>
+                    </Box>
+
                     <Button type="submit" variant="contained" color="primary">
                         Save and Continue
                     </Button>

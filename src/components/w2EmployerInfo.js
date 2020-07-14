@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { Button, Box, Checkbox, FormControlLabel, Grow } from "@material-ui/core"
+import { Link } from "react-router-dom";
 import locationPostalCodes from './locationPostalCodes'
 import countries from './countries'
 import { LabeledInput, LabeledDropdown} from './labeledInput'
@@ -142,6 +143,12 @@ export default function W2EmployerInfo() {
                     </Grow>
 
                 <Box display="flex" justifyContent="flex-start" paddingTop={2} paddingBottom={1}>
+                    <Box display="flex" justifyContent="flex-start" paddingRight={2}>
+                        <Button component={Link} to={""} variant="contained" color="secondary" >
+                            Back
+                        </Button>
+                    </Box>
+
                     <Button type="submit" variant="contained" color="primary">
                         Save and Continue
                     </Button>
