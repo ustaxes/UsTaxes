@@ -1,9 +1,29 @@
 import React, { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { Button, Box, Checkbox, FormControlLabel, Grow } from "@material-ui/core"
+import { makeStyles } from '@material-ui/core/styles'
+
 import locationPostalCodes from './locationPostalCodes'
 import countries from './countries'
+
 import { LabeledInput, LabeledDropdown } from './labeledInput'
+
+const drawerWidth = 240;
+
+const useStyles = makeStyles((theme) => ({
+    appBar: {
+        [theme.breakpoints.up('sm')]: {
+            width: `calc(100% - ${drawerWidth}px)`,
+            marginLeft: drawerWidth,
+        },
+    },
+    menuButton: {
+        marginRight: theme.spacing(2),
+        [theme.breakpoints.up('sm')]: {
+            display: 'none',
+        },
+    }
+}));
 
 export default function W2EmployeeInfo() {
     const { register, handleSubmit, errors, control } = useForm()
@@ -13,6 +33,7 @@ export default function W2EmployeeInfo() {
     const setForeignAddressFalse = () => setforeignAddress(false)
     const setForeignAddressTrue = () => setforeignAddress(true)
 
+    const classes = useStyles();
     return (
         <Box display="flex" justifyContent="center">
             < form onSubmit={handleSubmit(onSubmit)} >
