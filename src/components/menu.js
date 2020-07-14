@@ -75,24 +75,24 @@ function ResponsiveDrawer(props) {
             <List>
                     <ListItem 
                         button 
-                        key='Employee Information'
+                        key='Employer Information'
                         component={NavLink}
                         exact activeClassName="current"
                         to="/w2employerinfo"
                         selected={location.pathname === "/w2employerinfo"}
                     >
-                        <ListItemText primary='Employee Information' />
+                        <ListItemText primary='Employer Information' />
                     </ListItem>
                 
                     <ListItem 
                         button 
-                        key='Employer Information'
+                        key='Employee Information'
                         component={NavLink} 
                         exact activeClassName="current"
                         to="/w2employeeinfo"
                         selected={location.pathname === "/w2employeeinfo"}
                     >
-                        <ListItemText primary='Employer Information' />
+                        <ListItemText primary='Employee Information' />
                     </ListItem>
                 
             </List>
