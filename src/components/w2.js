@@ -2,12 +2,11 @@ import React from 'react'
 import { Box, createMuiTheme, ThemeProvider } from "@material-ui/core"
 import {
     Switch,
-    Route,
-    NavLink,
-    useParams
+    Route
 } from "react-router-dom";
-import  W2EmployerInfo from './w2EmployerInfo'
-import W2EmployeeInfo from './w2EmployeeInfo';
+import W2EmployerInfo from './w2EmployerInfo'
+import W2EmployeeInfo from './w2EmployeeInfo'
+import ResponsiveDrawer from './menu'
 
 const theme = createMuiTheme({
     palette: {
@@ -24,25 +23,18 @@ const theme = createMuiTheme({
             contrastText: '#000000',
         },
     },
-});
+})
 
 export default function W2() {
 
     return (
         <ThemeProvider theme={theme}>
+            <ResponsiveDrawer/>
             <Box display="flex" justifyContent="center">
                 <Box display="flex" justifyContent="flex-start">
                     <h1>Wages (Form W-2)</h1>
                 </Box>
             </Box>
-            <div class='row'>
-                <div class='column'>
-                    <NavLink exact activeClassName="current" to="/w2employerinfo">W2 Employer Information</NavLink>
-                </div>
-                <div class='column'>
-                    <NavLink exact activeClassName="current" to="/w2employeeinfo">W2 Employee Information</NavLink>
-                </div>
-            </div>
             <Switch>
                 <Route path="/w2employerinfo" exact>
                     <W2EmployerInfo />
