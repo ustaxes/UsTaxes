@@ -5,6 +5,10 @@ import InputMask from 'react-input-mask'
 
 export function LabeledInput({ strongLabel, label, register, required, mask, pattern, patternDescription, name, errors }) {
     let helperText = ""
+    // fix error where pattern wouldn't match if input wasn't filled out even if required was set to false
+    if (required === false){
+        pattern = null
+    }
     if (errors[name]?.type === "required") {
         helperText = "Input is required"
     }
