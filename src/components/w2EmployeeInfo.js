@@ -1,42 +1,30 @@
 import React, { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { Button, Box, Checkbox, FormControlLabel, Grow } from "@material-ui/core"
-import { makeStyles } from '@material-ui/core/styles'
-
+import { 
+    Link,
+    useHistory
+} from "react-router-dom";
 import locationPostalCodes from './locationPostalCodes'
 import countries from './countries'
 
 import { LabeledInput, LabeledDropdown } from './labeledInput'
 
-const drawerWidth = 240;
-
-const useStyles = makeStyles((theme) => ({
-    appBar: {
-        [theme.breakpoints.up('sm')]: {
-            width: `calc(100% - ${drawerWidth}px)`,
-            marginLeft: drawerWidth,
-        },
-    },
-    menuButton: {
-        marginRight: theme.spacing(2),
-        [theme.breakpoints.up('sm')]: {
-            display: 'none',
-        },
-    }
-}));
-
 export default function W2EmployeeInfo() {
     const { register, handleSubmit, errors, control } = useForm()
     const [foreignAddress, setforeignAddress] = useState(false)
-    const onSubmit = data => { console.log("formData: ", data) }
+    const history = useHistory()
 
+    const onSubmit = data => {
+        console.log("formData: ", data)
+        history.push("/")
+    }
     const setForeignAddressFalse = () => setforeignAddress(false)
     const setForeignAddressTrue = () => setforeignAddress(true)
 
-    const classes = useStyles();
     return (
         <Box display="flex" justifyContent="center">
-            < form onSubmit={handleSubmit(onSubmit)} >
+            <form onSubmit={handleSubmit(onSubmit)}>
                 <Box display="flex" justifyContent="flex-start">
                     <h2>Employee Information</h2>
                 </Box>
@@ -103,7 +91,7 @@ export default function W2EmployeeInfo() {
                             keyMapping={locality => locality[1]}
                             textMapping={locality => locality[0] + ' - ' + locality[1]}
                             control={control}
-                            required={true}
+                            required={!foreignAddress}
                             name="employeeState"
                             errors={errors}
                         />
@@ -111,7 +99,7 @@ export default function W2EmployeeInfo() {
                         <LabeledInput
                             label="Employee's Zip Code"
                             register={register}
-                            required={true}
+                            required={!foreignAddress}
                             mask={"99999-9999"}
                             pattern={/[0-9]{5}-[0-9]{4}/}
                             patternDescription={"Input should be filled with 9 numbers"}
@@ -126,7 +114,7 @@ export default function W2EmployeeInfo() {
                         <LabeledInput
                             label="Employee's Province or State"
                             register={register}
-                            required={true}
+                            required={foreignAddress}
                             pattern={/^[A-Za-z]+$/i}
                             patternDescription={"Input should only include letters"}
                             name={"employeeProvidence"}
@@ -136,14 +124,14 @@ export default function W2EmployeeInfo() {
                             label="Employee's Country"
                             dropDownData={countries}
                             control={control}
-                            required={true}
+                            required={foreignAddress}
                             name="employeeCountry"
                             errors={errors}
                         />
                         <LabeledInput
                             label="Employee's Postal Code"
                             register={register}
-                            required={true}
+                            required={foreignAddress}
                             name={"employeePostalCode"}
                             errors={errors}
                         />
@@ -151,11 +139,17 @@ export default function W2EmployeeInfo() {
                 </Grow>
 
                 <Box display="flex" justifyContent="flex-start" paddingTop={2} paddingBottom={1}>
+                    <Box display="flex" justifyContent="flex-start" paddingRight={2}>
+                        <Button component={Link} to={"w2employerinfo"} variant="contained" color="secondary" >
+                            Back
+                        </Button>
+                    </Box>
+
                     <Button type="submit" variant="contained" color="primary">
                         Save and Continue
                     </Button>
                 </Box>
-            </form >
+            </form>
         </Box>
     )
 }
