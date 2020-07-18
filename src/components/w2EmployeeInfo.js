@@ -1,22 +1,24 @@
 import React, { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { Button, Box, Checkbox, FormControlLabel, Grow } from "@material-ui/core"
-import { 
-    Link,
-    useHistory
-} from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
+import { useDispatch } from 'react-redux';
+
 import locationPostalCodes from './locationPostalCodes'
 import countries from './countries'
 
 import { LabeledInput, LabeledDropdown } from './labeledInput'
+import { saveFormData } from '../redux/actions';
 
 export default function W2EmployeeInfo() {
     const { register, handleSubmit, errors, control } = useForm()
     const [foreignAddress, setforeignAddress] = useState(false)
     const history = useHistory()
+    const dispatch = useDispatch()
 
-    const onSubmit = data => {
-        console.log("formData: ", data)
+    const onSubmit = formData => {
+        console.log("formData: ", formData)
+        dispatch(saveFormData(formData))
         history.push("/")
     }
     const setForeignAddressFalse = () => setforeignAddress(false)
