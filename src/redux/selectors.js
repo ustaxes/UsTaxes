@@ -1,5 +1,5 @@
-export function getProducts(state) {
-    return state.products
+export function getFormData(state) {
+    return state.information
 }
 
 export function getProduct(state, id) {

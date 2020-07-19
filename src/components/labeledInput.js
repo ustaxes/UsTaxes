@@ -3,7 +3,7 @@ import { TextField, Box } from "@material-ui/core"
 import { Controller } from 'react-hook-form'
 import InputMask from 'react-input-mask'
 
-export function LabeledInput({ strongLabel, label, register, required, mask, pattern, patternDescription, name, errors }) {
+export function LabeledInput({ strongLabel, label, register, required, mask, pattern, patternDescription, name, errors, defaultValue }) {
     let helperText = ""
     // fix error where pattern wouldn't match if input wasn't filled out even if required was set to false
     if (required === false){
@@ -28,6 +28,7 @@ export function LabeledInput({ strongLabel, label, register, required, mask, pat
                     <InputMask
                         mask={mask}
                         alwaysShowMask={true}
+                        defaultValue={defaultValue}
                     >
                         {() => <TextField
                             error={errors[name] ? true : false}
@@ -43,6 +44,7 @@ export function LabeledInput({ strongLabel, label, register, required, mask, pat
                         fullWidth
                         inputRef={register({ submitFocusError: true, required: required, pattern: pattern || /.*?/ })}
                         name={name}
+                        defaultValue={defaultValue}
                         variant="filled"
                     />
                 }
@@ -52,7 +54,7 @@ export function LabeledInput({ strongLabel, label, register, required, mask, pat
     )
 }
 
-export function LabeledDropdown({ label, dropDownData, valueMapping, keyMapping, textMapping, control, required, name, errors }) {
+export function LabeledDropdown({ label, dropDownData, valueMapping, keyMapping, textMapping, control, required, name, errors, defaultValue }) {
     let helperText = ""
     if (errors[name]?.type === "required") {
         helperText = "Input is required"
@@ -83,6 +85,7 @@ export function LabeledDropdown({ label, dropDownData, valueMapping, keyMapping,
                     error={errors[name] ? true : false}
                     fullWidth
                     name={name}
+                    defaultValue={defaultValue}
                     rules={{ required: required }}
                     control={control}
                     variant="filled"

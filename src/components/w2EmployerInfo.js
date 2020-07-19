@@ -16,6 +16,8 @@ export default function W2EmployerInfo() {
     const history = useHistory()
     const dispatch = useDispatch()
 
+
+    // component functions
     const onSubmit = formData => { 
         console.log("formData: ", formData)
         dispatch(saveFormData(formData))
