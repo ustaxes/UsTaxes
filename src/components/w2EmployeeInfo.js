@@ -1,14 +1,14 @@
 import React, { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { Button, Box, Checkbox, FormControlLabel, Grow } from "@material-ui/core"
-import { Link, useHistory } from "react-router-dom";
-import { useDispatch, useSelector } from 'react-redux';
+import { Link, useHistory } from "react-router-dom"
+import { useDispatch, useSelector } from 'react-redux'
 
 import locationPostalCodes from './locationPostalCodes'
 import countries from './countries'
 
 import { LabeledInput, LabeledDropdown } from './labeledInput'
-import { saveFormData } from '../redux/actions';
+import { saveFormData } from '../redux/actions'
 import { getFormData } from '../redux/selectors'
 
 export default function W2EmployeeInfo() {
@@ -19,7 +19,6 @@ export default function W2EmployeeInfo() {
     const dispatch = useDispatch()
 
     const prevFormData = useSelector(getFormData)
-    console.log(prevFormData)
 
     // component functions
     const onSubmit = formData => {
