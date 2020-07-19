@@ -2,20 +2,26 @@ import React, { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { Button, Box, Checkbox, FormControlLabel, Grow } from "@material-ui/core"
 import { Link, useHistory } from "react-router-dom";
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import locationPostalCodes from './locationPostalCodes'
 import countries from './countries'
 
 import { LabeledInput, LabeledDropdown } from './labeledInput'
 import { saveFormData } from '../redux/actions';
+import { getFormData } from '../redux/selectors'
 
 export default function W2EmployeeInfo() {
     const { register, handleSubmit, errors, control } = useForm()
     const [foreignAddress, setforeignAddress] = useState(false)
     const history = useHistory()
+    // const variable dispatch to allow use inside function
     const dispatch = useDispatch()
 
+    const prevFormData = useSelector(getFormData)
+    console.log(prevFormData)
+
+    // component functions
     const onSubmit = formData => {
         console.log("formData: ", formData)
         dispatch(saveFormData(formData))
@@ -39,6 +45,7 @@ export default function W2EmployeeInfo() {
                     pattern={/^[A-Za-z ]+$/i}
                     patternDescription={"Input should only include letters and spaces"}
                     name={"employeeFirstName"}
+                    defaultValue={prevFormData["employeeFirstName"]}
                     errors={errors}
                 />
                 <LabeledInput
@@ -48,6 +55,7 @@ export default function W2EmployeeInfo() {
                     pattern={/^[A-Za-z ]+$/i}
                     patternDescription={"Input should only include letters and spaces"}
                     name={"employeeLastName"}
+                    defaultValue={prevFormData["employeeLastName"]}
                     errors={errors}
                 />
                 
@@ -74,6 +82,7 @@ export default function W2EmployeeInfo() {
                     pattern={/^[A-Za-z0-9]+$/i}
                     patternDescription={"Input should only include letters and numbers"}
                     name="employeeAddress"
+                    defaultValue={prevFormData["employeeAddress"]}
                     errors={errors}
                 />
 
@@ -82,6 +91,7 @@ export default function W2EmployeeInfo() {
                     register={register}
                     required={true}
                     name="employeeCity"
+                    defaultValue={prevFormData["employeeCity"]}
                     errors={errors}
                 />
                 <Grow in={!foreignAddress} style={{ display: !foreignAddress ? 'block' : 'none' }}>
@@ -95,6 +105,7 @@ export default function W2EmployeeInfo() {
                             control={control}
                             required={!foreignAddress}
                             name="employeeState"
+                            defaultValue={prevFormData["employeeState"]}
                             errors={errors}
                         />
 
@@ -106,6 +117,7 @@ export default function W2EmployeeInfo() {
                             pattern={/[0-9]{5}-[0-9]{4}/}
                             patternDescription={"Input should be filled with 9 numbers"}
                             name="employeeZip"
+                            defaultValue={prevFormData["employeeZip"]}
                             errors={errors}
                         />
                     </div>
@@ -120,6 +132,7 @@ export default function W2EmployeeInfo() {
                             pattern={/^[A-Za-z]+$/i}
                             patternDescription={"Input should only include letters"}
                             name={"employeeProvidence"}
+                            defaultValue={prevFormData["employeeProvidence"]}
                             errors={errors}
                         />
                         <LabeledDropdown
@@ -128,6 +141,7 @@ export default function W2EmployeeInfo() {
                             control={control}
                             required={foreignAddress}
                             name="employeeCountry"
+                            defaultValue={prevFormData["employeeCountry"]}
                             errors={errors}
                         />
                         <LabeledInput
@@ -135,6 +149,7 @@ export default function W2EmployeeInfo() {
                             register={register}
                             required={foreignAddress}
                             name={"employeePostalCode"}
+                            defaultValue={prevFormData["employeePostalCode"]}
                             errors={errors}
                         />
                     </div>
