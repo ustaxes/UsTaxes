@@ -5,7 +5,7 @@ import {
     EMPTY_CART,
 
     SAVE_FORM_DATA
-} from './actions';
+} from './actions'
 
 function formReducer(state = {}, action) {
     switch (action.type) {
@@ -13,7 +13,7 @@ function formReducer(state = {}, action) {
             return { ...state, ...action.formData }
 
         default:
-            return state;
+            return state
     }
 }
 
@@ -51,5 +51,5 @@ function cartReducer(state = {}, action) {
 const rootReducer = combineReducers({
     information: formReducer,
     cart: cartReducer
-});
+})
 export default rootReducer;
