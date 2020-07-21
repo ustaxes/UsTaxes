@@ -17,12 +17,12 @@ export default function W2EmployerInfo() {
     const history = useHistory()
     const dispatch = useDispatch()
 
-    const prevFormData = useSelector(getFormData)
+    const prevFormData = useSelector(state => getFormData(state, "W2EmployerInfo"))
 
     // component functions
     const onSubmit = formData => { 
         console.log("formData: ", formData)
-        dispatch(saveFormData(formData))
+        dispatch(saveFormData(formData, "W2EmployerInfo"))
         history.push("w2employeeinfo")
     }
 

@@ -10,7 +10,9 @@ import {
 function formReducer(state = {}, action) {
     switch (action.type) {
         case SAVE_FORM_DATA:
-            return { ...state, ...action.formData }
+            let test = {}
+            test[action.key] = action.formData
+            return { ...state, ...test }
 
         default:
             return state

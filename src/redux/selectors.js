@@ -1,5 +1,8 @@
-export function getFormData(state) {
-    return state.information
+export function getFormData(state, id) {
+    return (state["information"][id] ? 
+            state["information"][id] : 
+            {}
+        )
 }
 
 export function getProduct(state, id) {

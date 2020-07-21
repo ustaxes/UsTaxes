@@ -18,12 +18,12 @@ export default function W2EmployeeInfo() {
     // const variable dispatch to allow use inside function
     const dispatch = useDispatch()
 
-    const prevFormData = useSelector(getFormData)
+    const prevFormData = useSelector(state => getFormData(state, "W2EmployeeInfo"))
 
     // component functions
     const onSubmit = formData => {
         console.log("formData: ", formData)
-        dispatch(saveFormData(formData))
+        dispatch(saveFormData(formData, "W2EmployeeInfo"))
         history.push("/")
     }
     const setForeignAddressFalse = () => setforeignAddress(false)
