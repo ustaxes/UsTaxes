@@ -17,8 +17,3 @@ export const store = createStore(
     applyMiddleware(logger)
 )
 export const persistor = persistStore(store)
-
-// export default () => {
-
-//     return { store, persistor }
-// }
