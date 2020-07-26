@@ -42,8 +42,5 @@ form {
   background-color: ghostwhite;
   padding: 1em;
   margin-bottom: 1em;
-}
-
-.current {
-    background-color: blue;
+  min-width: 30%;
 }
