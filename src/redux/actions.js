@@ -12,26 +12,3 @@ export function saveFormData(formData, key) {
         key
     }
 }
-
-export function addCartItem(id, name, price, amount) {
-    return {
-        type: ADD_CART_ITEM,
-        id,
-        name,
-        price,
-        amount
-    }
-}
-
-export function removeCartItem(id) {
-    return {
-        type: REMOVE_CART_ITEM,
-        id
-    }
-}
-
-export function emptyCart() {
-    return {
-        type: EMPTY_CART
-    }
-}

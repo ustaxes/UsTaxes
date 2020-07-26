@@ -1,5 +1,5 @@
 import React from 'react'
-import { TextField, Box } from "@material-ui/core"
+import { TextField, Box, Checkbox, FormControlLabel } from "@material-ui/core"
 import { Controller } from 'react-hook-form'
 import InputMask from 'react-input-mask'
 
@@ -92,5 +92,32 @@ export function LabeledDropdown({ label, dropDownData, valueMapping, keyMapping,
                 />
             </Box>
         </div>
+    )
+}
+
+export function LabeledCheckBox ({foreignAddress, setforeignAddress, control, description}) {
+    const setForeignAddressFalse = () => setforeignAddress(false)
+    const setForeignAddressTrue = () => setforeignAddress(true)
+    return (
+        <Controller
+            name="foreignAddress"
+            as={
+                <Box display="flex" justifyContent="flex-start" paddingTop={1}>
+                    <FormControlLabel
+                        control={<Checkbox checked={!foreignAddress} onChange={setForeignAddressFalse} color="primary" />}
+                        label="No"
+                        ml={0}
+                        value={false}
+                    />
+                    <FormControlLabel
+                        control={<Checkbox checked={foreignAddress} onChange={setForeignAddressTrue} color="primary" />}
+                        label="Yes"
+                        value={true}
+                    />
+                    <p>{description}</p>
+                </Box>
+            }
+            control={control}
+        />
     )
 }
