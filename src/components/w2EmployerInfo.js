@@ -25,7 +25,6 @@ export default function W2EmployerInfo() {
         dispatch(saveFormData(formData, "W2EmployerInfo"))
         history.push("w2employeeinfo")
     }
-
     
     return (
         <Box display="flex" justifyContent="center">
