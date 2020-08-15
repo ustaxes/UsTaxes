@@ -42,5 +42,6 @@ form {
   background-color: ghostwhite;
   padding: 1em;
   margin-bottom: 1em;
-  min-width: 30%;
+  min-width: 20%;
+  max-width: 20em;
 }
