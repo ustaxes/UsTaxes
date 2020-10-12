@@ -1,5 +1,28 @@
 // credit for the recurseAcroFieldKids and getRootAcroFields functions goes to Andrew Dillon
 // https://github.com/Hopding/pdf-lib/issues/349
+
+import fs from 'fs'
+import fetch from 'node-fetch'
+import {
+    drawImage,
+    drawLinesOfText,
+    drawRectangle,
+    drawText,
+    PDFArray,
+    PDFContentStream,
+    PDFDictionary,
+    PDFDocument,
+    PDFDocumentFactory,
+    PDFDocumentWriter,
+    PDFIndirectReference,
+    PDFName,
+    PDFNumber,
+    PDFRawStream,
+    PDFString,
+    PDFBool,
+    PDFDict
+} from 'pdf-lib'
+
 const recurseAcroFieldKids = (field) => {
     const kids = field.get(PDFName.of('Kids'))
     if (!kids) return [field];
@@ -37,7 +60,11 @@ const getRootAcroFields = (pdfDoc) => {
     return acroFields;
 };
 
-const main = async function () {
+export default async function main() {
     // returns PDFDocument
-    const pdfDoc = await PDFDocument.load(fs.readFileSync('./f1040.pdf'))
+    await fetch('https://www.irs.gov/pub/irs-pdf/f1040.pdf').then(res => res.arrayBuffer())
+    // await PDFDocument.load(await fetch('https://www.irs.gov/pub/irs-pdf/f1040.pdf'))
+    // fs.readFileSync('./f1040.pdf')
+    // const pdfDoc = await PDFDocument.load(fs.readFileSync('./f1040.pdf'))
 }
+main()
