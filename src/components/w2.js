@@ -7,6 +7,7 @@ import {
 import W2EmployerInfo from './w2EmployerInfo'
 import W2EmployeeInfo from './w2EmployeeInfo'
 import ResponsiveDrawer from './menu'
+import main from '../pdfFiller/fill1040Fields'
 
 const theme = createMuiTheme({
     palette: {
@@ -26,7 +27,6 @@ const theme = createMuiTheme({
 })
 
 export default function W2() {
-
     return (
         <ThemeProvider theme={theme}>
             <ResponsiveDrawer/>
