@@ -60,11 +60,30 @@ const getRootAcroFields = (pdfDoc) => {
     return acroFields;
 };
 
-export default async function main() {
+const fillAcroTextField = (
+    // pdfDoc,
+    acroField,
+    // fontObject,
+    text,
+    // fontSize = 15,
+) => {
+    acroField.set(PDFName.of('V'), PDFString.of(text));
+    acroField.set(PDFName.of('Ff'), PDFNumber.of(
+        1 << 0 // Read Only
+        |
+        1 << 12 // Multiline
+    ));
+};
+
+export default async function fillPDF() {
     // returns PDFDocument
-    await fetch('https://www.irs.gov/pub/irs-pdf/f1040.pdf').then(res => res.arrayBuffer())
-    // await PDFDocument.load(await fetch('https://www.irs.gov/pub/irs-pdf/f1040.pdf'))
-    // fs.readFileSync('./f1040.pdf')
-    // const pdfDoc = await PDFDocument.load(fs.readFileSync('./f1040.pdf'))
+    const pdfDoc = await PDFDocument.load(await fetch('https://thegrims.github.io/UsTaxes/tax_forms/f1040.pdf').then(res => res.arrayBuffer()))
+    const rootAcroFields = getRootAcroFields(pdfDoc)
+    const flatFields = rootAcroFields.reduce((accumulator, acrofield) => (accumulator.concat(recurseAcroFieldKids(acrofield))),[])
+    console.log('flatFields ', flatFields)
+    flatFields.forEach((acrofield, i) => fillAcroTextField(acrofield, "field" + i))
+    
+    const pdfBytes = await pdfDoc.save();
+    return pdfBytes
 }
-main()
+fillPDF()
