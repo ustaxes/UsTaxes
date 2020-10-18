@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Box, createMuiTheme, ThemeProvider } from "@material-ui/core"
 import {
     Switch,
@@ -7,7 +7,7 @@ import {
 import W2EmployerInfo from './w2EmployerInfo'
 import W2EmployeeInfo from './w2EmployeeInfo'
 import ResponsiveDrawer from './menu'
-import main from '../pdfFiller/fill1040Fields'
+import fillPDF from '../pdfFiller/fill1040Fields'
 
 const theme = createMuiTheme({
     palette: {
@@ -27,6 +27,16 @@ const theme = createMuiTheme({
 })
 
 export default function W2() {
+    useEffect(() => {
+        const createPDF = async() => {
+            const PDF = await fillPDF()
+            const blob = new Blob([PDF], { type: 'application/pdf' });
+            const blobURL = URL.createObjectURL(blob);
+            window.open(blobURL)
+        }
+        createPDF()
+    });
+    
     return (
         <ThemeProvider theme={theme}>
             <ResponsiveDrawer/>
