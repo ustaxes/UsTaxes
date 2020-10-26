@@ -94,7 +94,17 @@ function ResponsiveDrawer(props) {
                     >
                         <ListItemText primary='Employee Information' />
                     </ListItem>
-                
+
+                    <ListItem
+                        button
+                        key='Submit'
+                        component={NavLink}
+                        exact activeClassName="current"
+                        to="/createPDF"
+                        selected={location.pathname === "/createPDF"}
+                    >
+                        <ListItemText primary='Submit' />
+                    </ListItem>
             </List>
         </div>
     );

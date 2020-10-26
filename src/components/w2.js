@@ -8,6 +8,7 @@ import W2EmployerInfo from './w2EmployerInfo'
 import W2EmployeeInfo from './w2EmployeeInfo'
 import ResponsiveDrawer from './menu'
 import fillPDF from '../pdfFiller/fill1040Fields'
+import CreatePDF from './createPDF';
 
 const theme = createMuiTheme({
     palette: {
@@ -27,15 +28,15 @@ const theme = createMuiTheme({
 })
 
 export default function W2() {
-    useEffect(() => {
-        const createPDF = async() => {
-            const PDF = await fillPDF()
-            const blob = new Blob([PDF], { type: 'application/pdf' });
-            const blobURL = URL.createObjectURL(blob);
-            window.open(blobURL)
-        }
-        createPDF()
-    });
+    // useEffect(() => {
+    //     const createPDF = async() => {
+    //         const PDF = await fillPDF()
+    //         const blob = new Blob([PDF], { type: 'application/pdf' });
+    //         const blobURL = URL.createObjectURL(blob);
+    //         window.open(blobURL)
+    //     }
+    //     createPDF()
+    // });
     
     return (
         <ThemeProvider theme={theme}>
@@ -51,6 +52,9 @@ export default function W2() {
                 </Route>
                 <Route path="/w2employeeinfo" exact>
                     <W2EmployeeInfo/>
+                </Route>
+                <Route path="/createPDF" exact>
+                    <CreatePDF/>
                 </Route>
             </Switch>
         </ThemeProvider>
