@@ -75,8 +75,8 @@ const fillAcroTextField = (
     ));
 };
 
-export default async function fillPDF() {
-    // returns PDFDocument
+// returns PDFDocument in the form of a Uint8Array
+export async function fillPDF() {
     const pdfDoc = await PDFDocument.load(await fetch('https://thegrims.github.io/UsTaxes/tax_forms/f1040.pdf').then(res => res.arrayBuffer()))
     const rootAcroFields = getRootAcroFields(pdfDoc)
     const flatFields = rootAcroFields.reduce((accumulator, acrofield) => (accumulator.concat(recurseAcroFieldKids(acrofield))),[])
@@ -86,4 +86,11 @@ export default async function fillPDF() {
     const pdfBytes = await pdfDoc.save();
     return pdfBytes
 }
-fillPDF()
+
+// opens new with filled information in the window of the component it is called from
+export async function createPDFPopup () {
+    const PDF = await fillPDF()
+    const blob = new Blob([PDF], { type: 'application/pdf' });
+    const blobURL = URL.createObjectURL(blob);
+    window.open(blobURL)
+}

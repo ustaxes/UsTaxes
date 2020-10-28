@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import { Box, createMuiTheme, ThemeProvider } from "@material-ui/core"
 import {
     Switch,
@@ -28,16 +28,6 @@ const theme = createMuiTheme({
 })
 
 export default function W2() {
-    // useEffect(() => {
-    //     const createPDF = async() => {
-    //         const PDF = await fillPDF()
-    //         const blob = new Blob([PDF], { type: 'application/pdf' });
-    //         const blobURL = URL.createObjectURL(blob);
-    //         window.open(blobURL)
-    //     }
-    //     createPDF()
-    // });
-    
     return (
         <ThemeProvider theme={theme}>
             <ResponsiveDrawer/>
