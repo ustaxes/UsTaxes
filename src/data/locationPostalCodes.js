@@ -1,4 +1,4 @@
-var locationPostalCodes = [
+const locationPostalCodes = [
     ['Alabama', 'AL'],
     ['Alaska', 'AK'],
     ['Arizona', 'AZ'],
