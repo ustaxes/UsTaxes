@@ -1,4 +1,4 @@
-flatFieldMappings = {
+const flatFieldMappings = {
     First               :   6,
     Last                :   7,
     SSID                :   8,
@@ -7,3 +7,4 @@ flatFieldMappings = {
     ForeignProvidence   :   16,
     ForeignPostalCode   :   17
 }
+export default flatFieldMappings;
