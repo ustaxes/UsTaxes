@@ -4,8 +4,8 @@ import { Button, Box, Grow } from "@material-ui/core"
 import { Link, useHistory } from "react-router-dom"
 import { useDispatch, useSelector } from 'react-redux'
 
-import locationPostalCodes from './locationPostalCodes'
-import countries from './countries'
+import locationPostalCodes from '../data/locationPostalCodes'
+import countries from '../data/countries'
 
 import { LabeledInput, LabeledDropdown, LabeledCheckBox } from './labeledInput'
 import { saveFormData } from '../redux/actions'
@@ -24,7 +24,7 @@ export default function W2EmployeeInfo() {
     const onSubmit = formData => {
         console.log("formData: ", formData)
         dispatch(saveFormData(formData, "W2EmployeeInfo"))
-        history.push("/")
+        history.push("/createPDF")
     }
 
     return (

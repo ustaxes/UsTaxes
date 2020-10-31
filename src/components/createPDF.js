@@ -6,10 +6,12 @@ export default function CreatePDF() {
     return (
         <Box display="flex" justifyContent="center">
             <Box display="flex" justifyContent="flex-start">
-                <h2>Employee Information</h2>
-                <Button variant="contained" color="primary" onClick={createPDFPopup}>
-                    Create PDF
-                </Button>
+                <form>
+                    <h2>Print Your Copy to File</h2>
+                    <Button onClick={createPDFPopup} variant="contained" color="primary">
+                        Create PDF
+                    </Button>
+                </form>
             </Box>
         </Box>
     )
