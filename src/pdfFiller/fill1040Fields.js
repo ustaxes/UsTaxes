@@ -1,7 +1,6 @@
 // credit for the recurseAcroFieldKids and getRootAcroFields functions goes to Andrew Dillon
 // https://github.com/Hopding/pdf-lib/issues/349
 
-import fs from 'fs'
 import fetch from 'node-fetch'
 import {
     drawImage,
@@ -22,6 +21,8 @@ import {
     PDFBool,
     PDFDict
 } from 'pdf-lib'
+import { getFormData } from '../redux/selectors'
+import { store } from '../redux/store';
 
 const recurseAcroFieldKids = (field) => {
     const kids = field.get(PDFName.of('Kids'))
@@ -76,13 +77,21 @@ const fillAcroTextField = (
 };
 
 // returns PDFDocument in the form of a Uint8Array
+// I'm using my repo's github pages hosting as a CDN because it's free and allows cross origin requests
 export async function fillPDF() {
+    const information = getFormData(store.getState(), 'W2EmployeeInfo')
+    console.log(information)
+
     const pdfDoc = await PDFDocument.load(await fetch('https://thegrims.github.io/UsTaxes/tax_forms/f1040.pdf').then(res => res.arrayBuffer()))
     const rootAcroFields = getRootAcroFields(pdfDoc)
     const flatFields = rootAcroFields.reduce((accumulator, acrofield) => (accumulator.concat(recurseAcroFieldKids(acrofield))),[])
-    console.log('flatFields ', flatFields)
+
     flatFields.forEach((acrofield, i) => fillAcroTextField(acrofield, "field" + i))
-    
+    fillAcroTextField(flatFields[6], information.employeeFirstName)
+    fillAcroTextField(flatFields[7], information.employeeLastName)
+
+    console.log('flatFields ', flatFields)
+
     const pdfBytes = await pdfDoc.save();
     return pdfBytes
 }

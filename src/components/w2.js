@@ -7,7 +7,6 @@ import {
 import W2EmployerInfo from './w2EmployerInfo'
 import W2EmployeeInfo from './w2EmployeeInfo'
 import ResponsiveDrawer from './menu'
-import fillPDF from '../pdfFiller/fill1040Fields'
 import CreatePDF from './createPDF';
 
 const theme = createMuiTheme({
