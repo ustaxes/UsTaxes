@@ -1,6 +1,6 @@
 const flatFieldMappings = {
-    First               :   6,
-    Last                :   7,
+    employeeFirstName   :   6,
+    employeeLastName    :   7,
     SSID                :   8,
     EmployeeAddress     :   12,
     ForeignCountry      :   15,
