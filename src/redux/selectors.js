@@ -4,3 +4,9 @@ export function getFormData(state, id) {
             {}
         )
 }
+
+export function getAllDataFlat(state) {
+    return (
+        Object.assign({}, ...Object.values(state['information']))
+    )
+}

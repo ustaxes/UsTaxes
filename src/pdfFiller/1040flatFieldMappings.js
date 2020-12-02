@@ -2,9 +2,10 @@ const flatFieldMappings = {
     employeeFirstName   :   6,
     employeeLastName    :   7,
     SSID                :   8,
-    EmployeeAddress     :   12,
-    ForeignCountry      :   15,
-    ForeignProvidence   :   16,
-    ForeignPostalCode   :   17
+    employeeAddress     :   12,
+    employeeCity        :   14,
+    employeeCountry     :   15,
+    employeeProvidence  :   16,
+    employeePostalCode  :   17
 }
 export default flatFieldMappings;
