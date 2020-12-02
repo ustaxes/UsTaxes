@@ -7,7 +7,7 @@ export default function CreatePDF() {
         <Box display="flex" justifyContent="center">
             <Box display="flex" justifyContent="flex-start">
                 <form>
-                    <h2>Print Your Copy to File</h2>
+                    <h2>Print Copy to File</h2>
                     <Button onClick={createPDFPopup} variant="contained" color="primary">
                         Create PDF
                     </Button>
