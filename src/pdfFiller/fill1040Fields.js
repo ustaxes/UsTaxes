@@ -21,7 +21,8 @@ import {
     PDFBool,
     PDFDict
 } from 'pdf-lib'
-import { getFormData } from '../redux/selectors'
+import flatFieldMappings from './1040flatFieldMappings'
+import { getAllDataFlat } from '../redux/selectors'
 import { store } from '../redux/store';
 
 const recurseAcroFieldKids = (field) => {
@@ -79,16 +80,29 @@ const fillAcroTextField = (
 // returns PDFDocument in the form of a Uint8Array
 // I'm using my repo's github pages hosting as a CDN because it's free and allows cross origin requests
 export async function fillPDF() {
-    const information = getFormData(store.getState(), 'W2EmployeeInfo')
-    console.log(information)
+    const information = getAllDataFlat(store.getState())
+    // console.log(information)
+    console.log(getAllDataFlat(store.getState()))
 
     const pdfDoc = await PDFDocument.load(await fetch('https://thegrims.github.io/UsTaxes/tax_forms/f1040.pdf').then(res => res.arrayBuffer()))
     const rootAcroFields = getRootAcroFields(pdfDoc)
     const flatFields = rootAcroFields.reduce((accumulator, acrofield) => (accumulator.concat(recurseAcroFieldKids(acrofield))),[])
 
     flatFields.forEach((acrofield, i) => fillAcroTextField(acrofield, "field" + i))
-    fillAcroTextField(flatFields[6], information.employeeFirstName)
-    fillAcroTextField(flatFields[7], information.employeeLastName)
+
+    // console.log(flatFieldMappings['employeeFirstName'])
+    Object.keys(flatFieldMappings).forEach(
+        key => information[key] && 
+        fillAcroTextField(
+            flatFields[
+                flatFieldMappings[key]
+            ], 
+            information[key]
+        )
+    )
+    
+    // fillAcroTextField(flatFields[6], information.employeeFirstName)
+    // fillAcroTextField(flatFields[7], information.employeeLastName)
 
     console.log('flatFields ', flatFields)
 
