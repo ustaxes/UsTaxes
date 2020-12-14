@@ -69,7 +69,10 @@ const fillAcroTextField = (
     text,
     // fontSize = 15,
 ) => {
+    console.log('acrofield', acroField)
+    //  "/HelveticaLTStd-Bold 8.00 Tf 0.000 0.000 0.502 rg"
     acroField.set(PDFName.of('V'), PDFString.of(text));
+    acroField.set(PDFName.of('DA'), PDFString.of("/HelveticaLTStd-Bold 10.00 Tf"))
     acroField.set(PDFName.of('Ff'), PDFNumber.of(
         1 << 0 // Read Only
         |
@@ -90,6 +93,7 @@ export async function fillPDF() {
 
     flatFields.forEach((acrofield, i) => fillAcroTextField(acrofield, "field" + i))
 
+    // for each field in redux that has a mapping in 1040flatFieldMappings, fill that field in PDF
     Object.keys(flatFieldMappings).forEach(
         key => information[key] && 
         fillAcroTextField(
