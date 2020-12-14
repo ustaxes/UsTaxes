@@ -82,7 +82,6 @@ export default function W2EmployerInfo() {
                 <LabeledInput
                     label="Employer's Address" register={register} 
                     required={true} 
-                    pattern={/^[A-Za-z0-9]+$/i} 
                     patternDescription={"Input should only include letters and numbers"} 
                     name="employerAddress"
                     defaultValue={prevFormData["employerAddress"]}
