@@ -67,56 +67,74 @@ function ResponsiveDrawer(props) {
     const drawer = (
         <div>
             <h2>
-                <strong>
-                    Wages
-                </strong>
+                Wages
             </h2>
+
             <Divider />
             <List>
-                    <ListItem 
-                        button 
-                        key='Employer Information'
-                        component={NavLink}
-                        exact activeClassName="current"
-                        to="/w2employerinfo"
-                        selected={location.pathname === "/w2employerinfo"}
-                    >
-                        <ListItemText primary='Employer Information' />
-                    </ListItem>
-                
-                    <ListItem 
-                        button 
-                        key='Employee Information'
-                        component={NavLink} 
-                        exact activeClassName="current"
-                        to="/w2employeeinfo"
-                        selected={location.pathname === "/w2employeeinfo"}
-                    >
-                        <ListItemText primary='Employee Information' />
-                    </ListItem>
+                <ListItem 
+                    button 
+                    key='Employer Information'
+                    component={NavLink}
+                    exact activeClassName="current"
+                    to="/w2employerinfo"
+                    selected={location.pathname === "/w2employerinfo"}
+                >
+                    <ListItemText primary='Employer Information' />
+                </ListItem>
+            
+                <ListItem 
+                    button 
+                    key='Employee Information'
+                    component={NavLink} 
+                    exact activeClassName="current"
+                    to="/w2employeeinfo"
+                    selected={location.pathname === "/w2employeeinfo"}
+                >
+                    <ListItemText primary='Employee Information' />
+                </ListItem>
 
-                    
-                    <ListItem 
-                        button 
-                        key='Income'
-                        component={NavLink} 
-                        exact activeClassName="current"
-                        to="/w2income"
-                        selected={location.pathname === "/w2income"}
-                    >
-                        <ListItemText primary='Income' />
-                    </ListItem>
-                    <Divider />
-                    <ListItem
-                        button
-                        key='Submit'
-                        component={NavLink}
-                        exact activeClassName="current"
-                        to="/createPDF"
-                        selected={location.pathname === "/createPDF"}
-                    >
-                        <ListItemText primary='Review and Print' />
-                    </ListItem>
+                <ListItem 
+                    button 
+                    key='Income'
+                    component={NavLink} 
+                    exact activeClassName="current"
+                    to="/w2income"
+                    selected={location.pathname === "/w2income"}
+                >
+                    <ListItemText primary='Income' />
+                </ListItem>
+            </List>
+
+            <Divider />
+            <h2>
+                Personal
+            </h2>
+            <Divider />
+            
+            <List>
+                <ListItem
+                    button
+                    key='Submit'
+                    component={NavLink}
+                    exact activeClassName="current"
+                    to="/familyinfo"
+                    selected={location.pathname === "/familyinfo"}
+                >
+                    <ListItemText primary='Family Information' />
+                </ListItem>
+
+                <Divider />
+                <ListItem
+                    button
+                    key='Submit'
+                    component={NavLink}
+                    exact activeClassName="current"
+                    to="/createPDF"
+                    selected={location.pathname === "/createPDF"}
+                >
+                    <ListItemText primary='Review and Print' />
+                </ListItem>
             </List>
         </div>
     );

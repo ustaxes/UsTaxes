@@ -4,8 +4,12 @@ const flatFieldMappings = {
     SSID                :   8,
     employeeAddress     :   12,
     employeeCity        :   14,
-    employeeCountry     :   15,
-    employeeProvidence  :   16,
-    employeePostalCode  :   17
+    employeeState       :   15,
+    employeeZip         :   16,
+    employeeCountry     :   17,
+    employeeProvidence  :   18,
+    employeePostalCode  :   19,
+    income              :   52,
+    federalIncomeTax    :   88,
 }
 export default flatFieldMappings;

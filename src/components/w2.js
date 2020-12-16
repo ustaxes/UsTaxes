@@ -7,6 +7,7 @@ import {
 import W2EmployerInfo from './w2EmployerInfo'
 import W2EmployeeInfo from './w2EmployeeInfo'
 import W2Income from './w2Income'
+import FamilyInfo from './familyInfo'
 import CreatePDF from './createPDF';
 import ResponsiveDrawer from './menu'
 
@@ -46,6 +47,9 @@ export default function W2() {
                 </Route>
                 <Route path="/w2income" exact>
                     <W2Income/>
+                </Route>
+                <Route path="/familyinfo" exact>
+                    <FamilyInfo/>
                 </Route>
                 <Route path="/createPDF" exact>
                     <CreatePDF/>

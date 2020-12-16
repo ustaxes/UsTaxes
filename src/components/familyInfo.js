@@ -8,19 +8,20 @@ import { LabeledInput, LabeledDropdown, LabeledCheckBox } from './labeledInput'
 import { saveFormData } from '../redux/actions'
 import { getFormData } from '../redux/selectors'
 
-export default function W2Income() {
+export default function FamilyInfo() {
     const { register, handleSubmit, errors, control } = useForm()
     const history = useHistory()
     // const variable dispatch to allow use inside function
     const dispatch = useDispatch()
 
-    const prevFormData = useSelector(state => getFormData(state, "W2Income"))
+    const prevFormData = useSelector(state => getFormData(state, "familyInfo"))
+    const [foreignAddress, setforeignAddress] = useState(prevFormData.foreignAddress === "true")
 
     // component functions
     const onSubmit = formData => {
         console.log("formData: ", formData)
-        dispatch(saveFormData(formData, "W2Income"))
-        history.push("/familyinfo")
+        dispatch(saveFormData(formData, "familyInfo"))
+        history.push("/createPDF")
     }
 
     return (
@@ -28,32 +29,24 @@ export default function W2Income() {
             <form onSubmit={handleSubmit(onSubmit)}>
 
                 <Box display="flex" justifyContent="flex-start">
-                        <h2>Employee Income</h2>
+                        <h2>Family Information</h2>
                 </Box>
 
-                <LabeledInput
-                    strongLabel="Box 1 - "
-                    label="Wages, tips, other compensation"
-                    register={register}
-                    required={true}
-                    mask={"$999999"}
-                    pattern={/[0-9]*/}
-                    patternDescription={"Input should be filled with numbers only"}
-                    name="income"
-                    defaultValue={prevFormData["income"]}
-                    errors={errors}
+                <LabeledCheckBox
+                    foreignAddress={foreignAddress}
+                    setforeignAddress={setforeignAddress}
+                    control={control}
+                    description={"Do you have a foreign address?"}
                 />
-
+                
                 <LabeledInput
-                    strongLabel="Box 2 - "
-                    label="Federal income tax withheld"
+                    label="Employee's First Name and Initial"
                     register={register}
                     required={true}
-                    mask={"$999999"}
-                    pattern={/[0-9]*/}
-                    patternDescription={"Input should be filled with numbers only"}
-                    name="federalIncomeTax"
-                    defaultValue={prevFormData["federalIncomeTax"]}
+                    pattern={/^[A-Za-z ]+$/i}
+                    patternDescription={"Input should only include letters and spaces"}
+                    name={"employeeFirstName"}
+                    defaultValue={prevFormData["employeeFirstName"]}
                     errors={errors}
                 />
                 {/* 
@@ -171,7 +164,7 @@ export default function W2Income() {
 
                 <Box display="flex" justifyContent="flex-start" paddingTop={2} paddingBottom={1}>
                     <Box display="flex" justifyContent="flex-start" paddingRight={2}>
-                        <Button component={Link} to={"w2employeeinfo"} variant="contained" color="secondary" >
+                        <Button component={Link} to={"w2income"} variant="contained" color="secondary" >
                             Back
                         </Button>
                     </Box>
