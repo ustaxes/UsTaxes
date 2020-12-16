@@ -95,6 +95,18 @@ function ResponsiveDrawer(props) {
                         <ListItemText primary='Employee Information' />
                     </ListItem>
 
+                    
+                    <ListItem 
+                        button 
+                        key='Income'
+                        component={NavLink} 
+                        exact activeClassName="current"
+                        to="/w2income"
+                        selected={location.pathname === "/w2income"}
+                    >
+                        <ListItemText primary='Income' />
+                    </ListItem>
+                    <Divider />
                     <ListItem
                         button
                         key='Submit'
@@ -103,7 +115,7 @@ function ResponsiveDrawer(props) {
                         to="/createPDF"
                         selected={location.pathname === "/createPDF"}
                     >
-                        <ListItemText primary='Submit' />
+                        <ListItemText primary='Review and Print' />
                     </ListItem>
             </List>
         </div>

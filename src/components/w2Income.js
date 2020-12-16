@@ -11,26 +11,26 @@ import { LabeledInput, LabeledDropdown, LabeledCheckBox } from './labeledInput'
 import { saveFormData } from '../redux/actions'
 import { getFormData } from '../redux/selectors'
 
-export default function W2EmployeeInfo() {
+export default function W2Income() {
     const { register, handleSubmit, errors, control } = useForm()
     const history = useHistory()
     // const variable dispatch to allow use inside function
     const dispatch = useDispatch()
 
-    const prevFormData = useSelector(state => getFormData(state, "W2EmployeeInfo"))
+    const prevFormData = useSelector(state => getFormData(state, "W2Income"))
     const [foreignAddress, setforeignAddress] = useState(prevFormData.foreignAddress === "true")
 
     // component functions
     const onSubmit = formData => {
         console.log("formData: ", formData)
-        dispatch(saveFormData(formData, "W2EmployeeInfo"))
-        history.push("/w2income")
+        dispatch(saveFormData(formData, "W2Income"))
+        history.push("/createPDF")
     }
 
     return (
         <Box display="flex" justifyContent="center">
             <form onSubmit={handleSubmit(onSubmit)}>
-                <Box display="flex" justifyContent="flex-start">
+                {/* <Box display="flex" justifyContent="flex-start">
                     <h2>Employee Information</h2>
                 </Box>
 
@@ -156,7 +156,7 @@ export default function W2EmployeeInfo() {
                             errors={errors}
                         />
                     </div>
-                </Grow>
+                </Grow> */}
 
                 <Box display="flex" justifyContent="flex-start" paddingTop={2} paddingBottom={1}>
                     <Box display="flex" justifyContent="flex-start" paddingRight={2}>
