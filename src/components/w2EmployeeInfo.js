@@ -35,6 +35,19 @@ export default function W2EmployeeInfo() {
                 </Box>
 
                 <LabeledInput
+                    strongLabel="Box A - "
+                    label="Employee's Social Security Number"
+                    register={register}
+                    required={true}
+                    mask={"999-99-9999"}
+                    pattern={/[0-9]{3}-[0-9]{2}-[0-9]{4}/}
+                    patternDescription={"Input should be filled with 9 numbers"}
+                    name="SSID"
+                    defaultValue={prevFormData["SSID"]}
+                    errors={errors}
+                />
+
+                <LabeledInput
                     strongLabel="Box E - "
                     label="Employee's First Name and Initial"
                     register={register}
