@@ -34,19 +34,6 @@ export default function W2EmployerInfo() {
                 </Box>
 
                 <LabeledInput
-                    strongLabel="Box A - "
-                    label="Employee's Social Security Number"
-                    register={register}
-                    required={true}
-                    mask={"999-99-9999"}
-                    pattern={/[0-9]{3}-[0-9]{2}-[0-9]{4}/}
-                    patternDescription={"Input should be filled with 9 numbers"}
-                    name="SSID"
-                    defaultValue={prevFormData["SSID"]}
-                    errors={errors}
-                />
-
-                <LabeledInput
                     strongLabel="Box B - "
                     label="Employer Identification Number"
                     register={register}
@@ -82,7 +69,6 @@ export default function W2EmployerInfo() {
                 <LabeledInput
                     label="Employer's Address" register={register} 
                     required={true} 
-                    pattern={/^[A-Za-z0-9]+$/i} 
                     patternDescription={"Input should only include letters and numbers"} 
                     name="employerAddress"
                     defaultValue={prevFormData["employerAddress"]}

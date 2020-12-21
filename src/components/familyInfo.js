@@ -4,48 +4,52 @@ import { Button, Box, Grow } from "@material-ui/core"
 import { Link, useHistory } from "react-router-dom"
 import { useDispatch, useSelector } from 'react-redux'
 
-import locationPostalCodes from '../data/locationPostalCodes'
-import countries from '../data/countries'
-
 import { LabeledInput, LabeledDropdown, LabeledCheckBox } from './labeledInput'
 import { saveFormData } from '../redux/actions'
 import { getFormData } from '../redux/selectors'
 
-export default function W2EmployeeInfo() {
+export default function FamilyInfo() {
     const { register, handleSubmit, errors, control } = useForm()
     const history = useHistory()
     // const variable dispatch to allow use inside function
     const dispatch = useDispatch()
 
-    const prevFormData = useSelector(state => getFormData(state, "W2EmployeeInfo"))
+    const prevFormData = useSelector(state => getFormData(state, "familyInfo"))
     const [foreignAddress, setforeignAddress] = useState(prevFormData.foreignAddress === "true")
 
     // component functions
     const onSubmit = formData => {
         console.log("formData: ", formData)
-        dispatch(saveFormData(formData, "W2EmployeeInfo"))
-        history.push("/w2income")
+        dispatch(saveFormData(formData, "familyInfo"))
+        history.push("/createPDF")
     }
 
     return (
         <Box display="flex" justifyContent="center">
             <form onSubmit={handleSubmit(onSubmit)}>
+
                 <Box display="flex" justifyContent="flex-start">
-                    <h2>Employee Information</h2>
+                        <h2>Family Information</h2>
                 </Box>
 
+                <LabeledCheckBox
+                    foreignAddress={foreignAddress}
+                    setforeignAddress={setforeignAddress}
+                    control={control}
+                    description={"Do you have a foreign address?"}
+                />
+                
                 <LabeledInput
-                    strongLabel="Box A - "
-                    label="Employee's Social Security Number"
+                    label="Employee's First Name and Initial"
                     register={register}
                     required={true}
-                    mask={"999-99-9999"}
-                    pattern={/[0-9]{3}-[0-9]{2}-[0-9]{4}/}
-                    patternDescription={"Input should be filled with 9 numbers"}
-                    name="SSID"
-                    defaultValue={prevFormData["SSID"]}
+                    pattern={/^[A-Za-z ]+$/i}
+                    patternDescription={"Input should only include letters and spaces"}
+                    name={"employeeFirstName"}
+                    defaultValue={prevFormData["employeeFirstName"]}
                     errors={errors}
                 />
+                {/* 
 
                 <LabeledInput
                     strongLabel="Box E - "
@@ -156,11 +160,11 @@ export default function W2EmployeeInfo() {
                             errors={errors}
                         />
                     </div>
-                </Grow>
+                </Grow> */}
 
                 <Box display="flex" justifyContent="flex-start" paddingTop={2} paddingBottom={1}>
                     <Box display="flex" justifyContent="flex-start" paddingRight={2}>
-                        <Button component={Link} to={"w2employerinfo"} variant="contained" color="secondary" >
+                        <Button component={Link} to={"w2income"} variant="contained" color="secondary" >
                             Back
                         </Button>
                     </Box>
