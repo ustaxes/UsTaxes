@@ -83,11 +83,18 @@ export default function W2EmployeeInfo() {
                 <LabeledInput
                     label="Employee's Address" register={register}
                     required={true}
-                    patternDescription={"Input should only include letters and numbers"}
                     name="employeeAddress"
                     defaultValue={prevFormData["employeeAddress"]}
                     errors={errors}
                 />
+
+                {/* <LabeledInput
+                    label="Apt Number" register={register}
+                    required={false}
+                    name="employeeAptNumber"
+                    defaultValue={prevFormData["employeeAptNumber"]}
+                    errors={errors}
+                /> */}
 
                 <LabeledInput
                     label="Employee's City"
