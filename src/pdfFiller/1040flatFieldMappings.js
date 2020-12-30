@@ -11,5 +11,9 @@ const flatFieldMappings = {
     employeePostalCode  :   19,
     income              :   52,
     federalIncomeTax    :   88,
+    routingNumber       :   103,
+    accountNumber       :   106,
+    contactPhoneNumber  :   119,
+    contactEmail        :   120
 }
 export default flatFieldMappings;

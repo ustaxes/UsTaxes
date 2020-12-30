@@ -96,13 +96,13 @@ function ResponsiveDrawer(props) {
 
                 <ListItem 
                     button 
-                    key='Income'
+                    key='Job Information'
                     component={NavLink} 
                     exact activeClassName="current"
-                    to="/w2income"
-                    selected={location.pathname === "/w2income"}
+                    to="/w2jobinfo"
+                    selected={location.pathname === "/w2jobinfo"}
                 >
-                    <ListItemText primary='Income' />
+                    <ListItemText primary='Job Information' />
                 </ListItem>
             </List>
 

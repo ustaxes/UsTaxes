@@ -24,7 +24,7 @@ export default function W2EmployeeInfo() {
     const onSubmit = formData => {
         console.log("formData: ", formData)
         dispatch(saveFormData(formData, "W2EmployeeInfo"))
-        history.push("/w2income")
+        history.push("/w2jobinfo")
     }
 
     return (

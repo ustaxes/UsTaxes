@@ -49,7 +49,7 @@ export async function fillPDF() {
     console.log(getAllDataFlat(store.getState()))
 
     const pdfDoc = await PDFDocument.load(await fetch('https://thegrims.github.io/UsTaxes/tax_forms/f1040.pdf').then(res => res.arrayBuffer()))
-    const timesRoman = await pdfDoc.embedFont(StandardFonts.TimesRoman)
+    // const timesRoman = await pdfDoc.embedFont(StandardFonts.TimesRoman)
     
     const formFields = pdfDoc.getForm().getFields()
     // fill fields with fieldNumber

@@ -6,7 +6,7 @@ import {
 } from "react-router-dom";
 import W2EmployerInfo from './w2EmployerInfo'
 import W2EmployeeInfo from './w2EmployeeInfo'
-import W2Income from './w2Income'
+import W2JobInfo from './w2JobInfo'
 import FamilyInfo from './familyInfo'
 import CreatePDF from './createPDF';
 import ResponsiveDrawer from './menu'
@@ -45,8 +45,8 @@ export default function W2() {
                 <Route path="/w2employeeinfo" exact>
                     <W2EmployeeInfo/>
                 </Route>
-                <Route path="/w2income" exact>
-                    <W2Income/>
+                <Route path="/w2jobinfo" exact>
+                    <W2JobInfo/>
                 </Route>
                 <Route path="/familyinfo" exact>
                     <FamilyInfo/>

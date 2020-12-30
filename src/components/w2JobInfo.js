@@ -8,18 +8,18 @@ import { LabeledInput, LabeledDropdown, LabeledCheckBox } from './labeledInput'
 import { saveFormData } from '../redux/actions'
 import { getFormData } from '../redux/selectors'
 
-export default function W2Income() {
+export default function W2JobInfo() {
     const { register, handleSubmit, errors, control } = useForm()
     const history = useHistory()
     // const variable dispatch to allow use inside function
     const dispatch = useDispatch()
 
-    const prevFormData = useSelector(state => getFormData(state, "W2Income"))
+    const prevFormData = useSelector(state => getFormData(state, "W2JobInfo"))
 
     // component functions
     const onSubmit = formData => {
         console.log("formData: ", formData)
-        dispatch(saveFormData(formData, "W2Income"))
+        dispatch(saveFormData(formData, "W2JobInfo"))
         history.push("/familyinfo")
     }
 
@@ -28,8 +28,17 @@ export default function W2Income() {
             <form onSubmit={handleSubmit(onSubmit)}>
 
                 <Box display="flex" justifyContent="flex-start">
-                        <h2>Employee Income</h2>
+                        <h2>Job Information</h2>
                 </Box>
+                
+                <LabeledInput
+                    label="Occupation"
+                    register={register}
+                    required={true}
+                    name={"occupation"}
+                    defaultValue={prevFormData["occupation"]}
+                    errors={errors}
+                />
 
                 <LabeledInput
                     strongLabel="Box 1 - "
