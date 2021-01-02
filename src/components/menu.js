@@ -115,8 +115,11 @@ function ResponsiveDrawer(props) {
                 >
                     <ListItemText primary='Family Information' />
                 </ListItem>
+            </List>
 
-                <Divider />
+            <Divider />
+
+            <List>
                 <ListItem
                     button
                     key='Submit'
