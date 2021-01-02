@@ -1,15 +1,15 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { useForm } from 'react-hook-form'
-import { Button, Box, Grow } from "@material-ui/core"
+import { Button, Box } from "@material-ui/core"
 import { Link, useHistory } from "react-router-dom"
 import { useDispatch, useSelector } from 'react-redux'
 
-import { LabeledInput, LabeledDropdown, LabeledCheckBox } from './labeledInput'
+import { LabeledInput } from './labeledInput'
 import { saveFormData } from '../redux/actions'
 import { getFormData } from '../redux/selectors'
 
 export default function W2JobInfo() {
-    const { register, handleSubmit, errors, control } = useForm()
+    const { register, handleSubmit, errors } = useForm()
     const history = useHistory()
     // const variable dispatch to allow use inside function
     const dispatch = useDispatch()

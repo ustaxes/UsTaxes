@@ -1,27 +1,10 @@
 import fetch from 'node-fetch'
 import {
-    drawImage,
-    drawLinesOfText,
-    drawRectangle,
-    drawText,
-    PDFArray,
-    PDFContentStream,
-    PDFDictionary,
     PDFDocument,
-    PDFDocumentFactory,
-    PDFDocumentWriter,
-    PDFIndirectReference,
     PDFName,
-    PDFNumber,
-    PDFRawStream,
     PDFString,
-    PDFBool,
-    PDFDict,
-    PDFField,
     PDFCheckBox,
-    PDFAcroForm,
     PDFTextField,
-    StandardFonts
 } from 'pdf-lib'
 import flatFieldMappings from './1040flatFieldMappings'
 import { getAllDataFlat } from '../redux/selectors'

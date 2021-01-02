@@ -4,7 +4,7 @@ import { Button, Box } from "@material-ui/core"
 import { Link, useHistory } from "react-router-dom"
 import { useDispatch, useSelector } from 'react-redux'
 
-import { LabeledInput, LabeledDropdown, LabeledCheckBox } from './labeledInput'
+import { LabeledInput, LabeledCheckBox } from './labeledInput'
 import { saveFormData } from '../redux/actions'
 import { getFormData } from '../redux/selectors'
 
