@@ -9,6 +9,7 @@ import {
 import flatFieldMappings from './1040flatFieldMappings'
 import { getAllDataFlat } from '../redux/selectors'
 import { store } from '../redux/store';
+import { savePdf } from './pdfHandler';
 
 function fillPDField(
     PDField,
@@ -57,9 +58,8 @@ export async function fillPDF() {
 }
 
 // opens new with filled information in the window of the component it is called from
-export async function createPDFPopup () {
-    const PDF = await fillPDF()
-    const blob = new Blob([PDF], { type: 'application/pdf' });
-    const blobURL = URL.createObjectURL(blob);
-    window.open(blobURL)
+export async function createPDFPopup() {
+    const pdfBytes = await fillPDF();
+
+    savePdf(pdfBytes);
 }
