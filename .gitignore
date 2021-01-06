@@ -24,6 +24,5 @@ yarn-error.log*
 
 # Local Netlify folder
 .netlify
-/opentaxes/build/
-/opentaxes/node_modules/
+
 /.eslintcache
