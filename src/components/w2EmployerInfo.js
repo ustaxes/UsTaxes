@@ -38,9 +38,9 @@ export default function W2EmployerInfo () {
                     label="Employer Identification Number"
                     register={register}
                     required={true}
-                    mask={'99-9999999'}
+                    mask="99-9999999"
                     pattern={/[0-9]{2}-[0-9]{7}/}
-                    patternDescription={'Input should be filled with 7 numbers'}
+                    patternDescription="Input should be filled with 7 numbers"
                     name="EIN"
                     defaultValue={prevFormData.EIN}
                     errors={errors}
@@ -54,7 +54,7 @@ export default function W2EmployerInfo () {
                     label="Employer's Name"
                     register={register}
                     required={true}
-                    name={'employerName'}
+                    name="employerName"
                     defaultValue={prevFormData.employerName}
                     errors={errors}
                 />
@@ -63,13 +63,13 @@ export default function W2EmployerInfo () {
                     foreignAddress={foreignAddress}
                     setforeignAddress={setforeignAddress}
                     control={control}
-                    description={'Does your employer have a foreign address?'}
+                    description="Does your employer have a foreign address?"
                 />
 
                 <LabeledInput
                     label="Employer's Address" register={register}
                     required={true}
-                    patternDescription={'Input should only include letters and numbers'}
+                    patternDescription="Input should only include letters and numbers"
                     name="employerAddress"
                     defaultValue={prevFormData.employerAddress}
                     errors={errors}
@@ -102,9 +102,9 @@ export default function W2EmployerInfo () {
                             label="Employer's Zip Code"
                             register={register}
                             required={!foreignAddress}
-                            mask={'99999-9999'}
+                            mask="99999-9999"
                             pattern={/[0-9]{5}-[0-9]{4}/}
-                            patternDescription={'Input should be filled with 9 numbers'}
+                            patternDescription="Input should be filled with 9 numbers"
                             name="employerZip"
                             defaultValue={prevFormData.employerZip}
                             errors={errors}
@@ -119,8 +119,8 @@ export default function W2EmployerInfo () {
                             register={register}
                             required={foreignAddress}
                             pattern={/^[A-Za-z]+$/i}
-                            patternDescription={'Input should only include letters'}
-                            name={'employerProvidence'}
+                            patternDescription="Input should only include letters"
+                            name="employerProvince"
                             defaultValue={prevFormData.employerProvidence}
                             errors={errors}
                         />
@@ -137,7 +137,7 @@ export default function W2EmployerInfo () {
                             label="Employer's Postal Code"
                             register={register}
                             required={foreignAddress}
-                            name={'employerPostalCode'}
+                            name="employerPostalCode"
                             defaultValue={prevFormData.employerPostalCode}
                             errors={errors}
                         />
@@ -146,7 +146,7 @@ export default function W2EmployerInfo () {
 
                 <Box display="flex" justifyContent="flex-start" paddingTop={2} paddingBottom={1}>
                     <Box display="flex" justifyContent="flex-start" paddingRight={2}>
-                        <Button component={Link} to={''} variant="contained" color="secondary" >
+                        <Button component={Link} variant="contained" color="secondary" >
                             Back
                         </Button>
                     </Box>

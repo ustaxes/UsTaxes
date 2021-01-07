@@ -27,7 +27,7 @@ export function LabeledInput ({ strongLabel, label, register, required, mask, pa
                   ? <InputMask
                         mask={mask}
                         alwaysShowMask={true}
-                        maskChar={''}
+                        maskChar=""
                         defaultValue={defaultValue}
                     >
                         {() => <TextField

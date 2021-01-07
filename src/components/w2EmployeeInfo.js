@@ -39,9 +39,9 @@ export default function W2EmployeeInfo () {
                     label="Employee's Social Security Number"
                     register={register}
                     required={true}
-                    mask={'999-99-9999'}
+                    mask="999-99-9999"
                     pattern={/[0-9]{3}-[0-9]{2}-[0-9]{4}/}
-                    patternDescription={'Input should be filled with 9 numbers'}
+                    patternDescription="Input should be filled with 9 numbers"
                     name="SSID"
                     defaultValue={prevFormData.SSID}
                     errors={errors}
@@ -53,8 +53,8 @@ export default function W2EmployeeInfo () {
                     register={register}
                     required={true}
                     pattern={/^[A-Za-z ]+$/i}
-                    patternDescription={'Input should only include letters and spaces'}
-                    name={'employeeFirstName'}
+                    patternDescription="Input should only include letters and spaces"
+                    name="employeeFirstName"
                     defaultValue={prevFormData.employeeFirstName}
                     errors={errors}
                 />
@@ -63,8 +63,8 @@ export default function W2EmployeeInfo () {
                     register={register}
                     required={true}
                     pattern={/^[A-Za-z ]+$/i}
-                    patternDescription={'Input should only include letters and spaces'}
-                    name={'employeeLastName'}
+                    patternDescription="Input should only include letters and spaces"
+                    name="employeeLastName"
                     defaultValue={prevFormData.employeeLastName}
                     errors={errors}
                 />
@@ -77,7 +77,7 @@ export default function W2EmployeeInfo () {
                     foreignAddress={foreignAddress}
                     setforeignAddress={setforeignAddress}
                     control={control}
-                    description={'Do you have a foreign address?'}
+                    description="Do you have a foreign address?"
                 />
 
                 <LabeledInput
@@ -123,9 +123,9 @@ export default function W2EmployeeInfo () {
                             label="Employee's Zip Code"
                             register={register}
                             required={!foreignAddress}
-                            mask={'99999-9999'}
+                            mask="99999-9999"
                             pattern={/[0-9]{5}-[0-9]{4}/}
-                            patternDescription={'Input should be filled with 9 numbers'}
+                            patternDescription="Input should be filled with 9 numbers"
                             name="employeeZip"
                             defaultValue={prevFormData.employeeZip}
                             errors={errors}
@@ -140,13 +140,13 @@ export default function W2EmployeeInfo () {
                             register={register}
                             required={foreignAddress}
                             pattern={/^[A-Za-z]+$/i}
-                            patternDescription={'Input should only include letters'}
-                            name={'employeeProvidence'}
+                            patternDescription="Input should only include letters"
+                            name="employeeProvidence"
                             defaultValue={prevFormData.employeeProvidence}
                             errors={errors}
                         />
                         <LabeledDropdown
-                            label="Employee's Country"
+                            label="Employee&apos;s Country"
                             dropDownData={countries}
                             control={control}
                             required={foreignAddress}
@@ -158,7 +158,7 @@ export default function W2EmployeeInfo () {
                             label="Employee's Postal Code"
                             register={register}
                             required={foreignAddress}
-                            name={'employeePostalCode'}
+                            name="employeePostalCode"
                             defaultValue={prevFormData.employeePostalCode}
                             errors={errors}
                         />
@@ -167,7 +167,7 @@ export default function W2EmployeeInfo () {
 
                 <Box display="flex" justifyContent="flex-start" paddingTop={2} paddingBottom={1}>
                     <Box display="flex" justifyContent="flex-start" paddingRight={2}>
-                        <Button component={Link} to={'w2employerinfo'} variant="contained" color="secondary" >
+                        <Button component={Link} to="w2employerinfo" variant="contained" color="secondary" >
                             Back
                         </Button>
                     </Box>

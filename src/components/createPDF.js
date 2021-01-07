@@ -13,7 +13,7 @@ export default function CreatePDF () {
 
                 <Box display="flex" justifyContent="flex-start" paddingTop={2} paddingBottom={1}>
                     <Box display="flex" justifyContent="flex-start" paddingRight={2}>
-                        <Button component={Link} to={'familyinfo'} variant="contained" color="secondary" >
+                        <Button component={Link} to="familyinfo" variant="contained" color="secondary" >
                             Back
                         </Button>
                     </Box>

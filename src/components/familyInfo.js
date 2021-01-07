@@ -36,16 +36,16 @@ export default function FamilyInfo () {
                     foreignAddress={foreignAddress}
                     setforeignAddress={setforeignAddress}
                     control={control}
-                    description={'Do you have a foreign address?'}
+                    description="Do you have a foreign address?"
                 />
 
                 <LabeledInput
                     label="Bank Routing number"
                     register={register}
                     required={true}
-                    mask={'999999999'}
+                    mask="999999999"
                     pattern={/[0-9]{9}/}
-                    patternDescription={'Input should be filled with 10 numbers'}
+                    patternDescription="Input should be filled with 10 numbers"
                     name="routingNumber"
                     defaultValue={prevFormData.routingNumber}
                     errors={errors}
@@ -55,9 +55,9 @@ export default function FamilyInfo () {
                     label="Bank Account number"
                     register={register}
                     required={true}
-                    mask={'999999999999'}
+                    mask="999999999999"
                     pattern={/[0-9]{10}|[0-9]{11}|[0-9]{12}/}
-                    patternDescription={'Input should be filled with 10-12 numbers'}
+                    patternDescription="Input should be filled with 10-12 numbers"
                     name="accountNumber"
                     defaultValue={prevFormData.accountNumber}
                     errors={errors}
@@ -67,9 +67,9 @@ export default function FamilyInfo () {
                     label="Contact phone number"
                     register={register}
                     required={true}
-                    mask={'999-999-9999'}
+                    mask="999-999-9999"
                     pattern={/[0-9]{3}-[0-9]{3}-[0-9]{4}/}
-                    patternDescription={'Input should be filled with 10 numbers'}
+                    patternDescription="Input should be filled with 10 numbers"
                     name="contactPhoneNumber"
                     defaultValue={prevFormData.contactPhoneNumber}
                     errors={errors}
@@ -79,14 +79,14 @@ export default function FamilyInfo () {
                     label="Contact email address"
                     register={register}
                     required={true}
-                    name={'contactEmail'}
+                    name="contactEmail"
                     defaultValue={prevFormData.contactEmail}
                     errors={errors}
                 />
 
                 <Box display="flex" justifyContent="flex-start" paddingTop={2} paddingBottom={1}>
                     <Box display="flex" justifyContent="flex-start" paddingRight={2}>
-                        <Button component={Link} to={'w2jobinfo'} variant="contained" color="secondary" >
+                        <Button component={Link} to="w2jobinfo" variant="contained" color="secondary" >
                             Back
                         </Button>
                     </Box>
