@@ -1,5 +1,5 @@
 import React from 'react'
-import { Box, createMuiTheme, ThemeProvider } from '@material-ui/core'
+import { Box, unstable_createMuiStrictModeTheme as createMuiTheme, ThemeProvider } from '@material-ui/core'
 import {
   Switch,
   Route
