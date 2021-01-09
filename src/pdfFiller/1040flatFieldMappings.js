@@ -7,7 +7,7 @@ const flatFieldMappings = {
   employeeState: 15,
   employeeZip: 16,
   employeeCountry: 17,
-  employeeProvidence: 18,
+  employeeProvince: 18,
   employeePostalCode: 19,
   income: 52,
   federalIncomeTax: 88,

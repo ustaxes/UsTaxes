@@ -121,7 +121,7 @@ export default function W2EmployerInfo () {
                             pattern={/^[A-Za-z]+$/i}
                             patternDescription="Input should only include letters"
                             name="employerProvince"
-                            defaultValue={prevFormData.employerProvidence}
+                            defaultValue={prevFormData.employerProvince}
                             errors={errors}
                         />
                         <LabeledDropdown
