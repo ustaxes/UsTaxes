@@ -9,7 +9,7 @@
     "@testing-library/react": "^11.2.3",
     "@testing-library/user-event": "^7.2.1",
     "node-fetch": "^2.6.1",
-    "pdf-lib": "^1.14.0",
+    "pdf-lib": "^1.14.1",
     "react": "^16.14.0",
     "react-dom": "^16.14.0",
     "react-hook-form": "^5.7.2",
