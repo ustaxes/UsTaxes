@@ -7,7 +7,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import countries from '../data/countries'
 
 import { LabeledInput, LabeledDropdown, LabeledCheckBox, USStateDropDown } from './labeledInput'
-import { saveFormData } from '../redux/actions'
+import { saveEmployerData } from '../redux/actions'
 import { getFormData } from '../redux/selectors'
 
 export default function W2EmployerInfo () {
@@ -21,7 +21,7 @@ export default function W2EmployerInfo () {
   // component functions
   const onSubmit = formData => {
     console.log('formData: ', formData)
-    dispatch(saveFormData(formData, 'W2EmployerInfo'))
+    dispatch(saveEmployerData(formData))
     history.push('w2employeeinfo')
   }
 

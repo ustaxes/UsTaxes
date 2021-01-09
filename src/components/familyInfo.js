@@ -5,7 +5,7 @@ import { Link, useHistory } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 
 import { LabeledInput, LabeledCheckBox } from './labeledInput'
-import { saveFormData } from '../redux/actions'
+import { saveFamilyInfo } from '../redux/actions'
 import { getFormData } from '../redux/selectors'
 
 export default function FamilyInfo () {
@@ -20,7 +20,7 @@ export default function FamilyInfo () {
   // component functions
   const onSubmit = formData => {
     console.log('formData: ', formData)
-    dispatch(saveFormData(formData, 'familyInfo'))
+    dispatch(saveFamilyInfo(formData))
     history.push('/createPDF')
   }
 

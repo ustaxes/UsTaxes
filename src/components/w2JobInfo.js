@@ -5,7 +5,7 @@ import { Link, useHistory } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 
 import { LabeledInput } from './labeledInput'
-import { saveFormData } from '../redux/actions'
+import { saveEmployerData } from '../redux/actions'
 import { getFormData } from '../redux/selectors'
 
 export default function W2JobInfo () {
@@ -19,7 +19,7 @@ export default function W2JobInfo () {
   // component functions
   const onSubmit = formData => {
     console.log('formData: ', formData)
-    dispatch(saveFormData(formData, 'W2JobInfo'))
+    dispatch(saveEmployerData(formData, 'W2JobInfo'))
     history.push('/familyinfo')
   }
 
