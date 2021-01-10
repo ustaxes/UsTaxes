@@ -4,10 +4,9 @@ import { Button, Box, Grow } from '@material-ui/core'
 import { Link, useHistory } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 
-import locationPostalCodes from '../data/locationPostalCodes'
 import countries from '../data/countries'
 
-import { LabeledInput, LabeledDropdown, LabeledCheckBox } from './labeledInput'
+import { LabeledInput, LabeledDropdown, LabeledCheckBox, USStateDropDown } from './labeledInput'
 import { saveFormData } from '../redux/actions'
 import { getFormData } from '../redux/selectors'
 
@@ -106,12 +105,8 @@ export default function W2EmployeeInfo () {
                 />
                 <Grow in={!foreignAddress} style={{ display: !foreignAddress ? 'block' : 'none' }}>
                     <div>
-                        <LabeledDropdown
+                        <USStateDropDown
                             label="Employee's State"
-                            dropDownData={locationPostalCodes}
-                            valueMapping={locality => locality[1]}
-                            keyMapping={locality => locality[1]}
-                            textMapping={locality => locality[0] + ' - ' + locality[1]}
                             control={control}
                             required={!foreignAddress}
                             name="employeeState"
