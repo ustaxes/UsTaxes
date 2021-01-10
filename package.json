@@ -22,7 +22,7 @@
     "redux": "^4.0.5",
     "redux-logger": "^3.0.6",
     "redux-persist": "^6.0.0",
-    "tauri": "^0.13.0"
+    "tauri": "^0.14.0"
   },
   "scripts": {
     "start": "react-scripts start",
