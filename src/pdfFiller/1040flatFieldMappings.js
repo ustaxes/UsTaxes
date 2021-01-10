@@ -13,6 +13,7 @@ const flatFieldMappings = {
   federalIncomeTax: 88,
   routingNumber: 103,
   accountNumber: 106,
+  occupation: 117,
   contactPhoneNumber: 119,
   contactEmail: 120
 }

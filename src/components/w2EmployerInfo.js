@@ -40,7 +40,7 @@ export default function W2EmployerInfo () {
                     required={true}
                     mask="99-9999999"
                     pattern={/[0-9]{2}-[0-9]{7}/}
-                    patternDescription="Input should be filled with 7 numbers"
+                    patternDescription="Input should be filled with 9 numbers"
                     name="EIN"
                     defaultValue={prevFormData.EIN}
                     errors={errors}
