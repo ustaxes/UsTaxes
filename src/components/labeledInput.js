@@ -2,6 +2,7 @@ import React from 'react'
 import { TextField, Box, Checkbox, FormControlLabel } from '@material-ui/core'
 import { Controller } from 'react-hook-form'
 import InputMask from 'react-input-mask'
+import locationPostalCodes from '../data/locationPostalCodes'
 
 export function LabeledInput ({ strongLabel, label, register, required, mask, pattern, patternDescription, name, errors, defaultValue }) {
   let helperText = ''
@@ -72,6 +73,9 @@ export function LabeledDropdown ({ label, dropDownData, valueMapping, keyMapping
                             select
                             helperText={helperText}
                             defaultValue=""
+                            SelectProps={{
+                              native: true
+                            }}
                         >
                             {dropDownData.map(dropDownItem =>
                                 <option
@@ -92,6 +96,23 @@ export function LabeledDropdown ({ label, dropDownData, valueMapping, keyMapping
                 />
             </Box>
         </div>
+  )
+}
+
+export function USStateDropDown ({ label = 'State', control, required = false, name = 'employeeState', errors, defaultValue = '' }) {
+  return (
+    <LabeledDropdown
+      label="Employee's State"
+      dropDownData={locationPostalCodes}
+      valueMapping={locality => locality[1]}
+      keyMapping={locality => locality[1]}
+      textMapping={locality => locality[1] + ' - ' + locality[0]}
+      control={control}
+      required={required}
+      name={name}
+      defaultValue={defaultValue}
+      errors={errors}
+    />
   )
 }
 
