@@ -39,7 +39,7 @@ export async function fillPDF () {
   // fill fields with fieldNumber
   formFields.forEach((PDField, index) => { if (PDField instanceof PDFTextField) { PDField.setText(index.toString()) } })
   // check all boxes
-  formFields.forEach((PDField, index) => { if (PDField instanceof PDFCheckBox) { PDField.check() } })
+  // formFields.forEach((PDField, index) => { if (PDField instanceof PDFCheckBox) { PDField.check() } })
   console.log(formFields)
 
   Object.keys(flatFieldMappings).forEach(
