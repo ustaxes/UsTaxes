@@ -65,7 +65,6 @@ export function LabeledDropdown ({ label, dropDownData, valueMapping, keyMapping
       <Box display="flex" justifyContent="flex-start">
         <p>{label}</p>
       </Box>
-
       <Box display="flex" justifyContent="flex-start">
         <Controller
           as={
@@ -77,6 +76,7 @@ export function LabeledDropdown ({ label, dropDownData, valueMapping, keyMapping
                 native: true
               }}
             >
+              <option value={undefined} />
               {dropDownData.map(dropDownItem =>
                 <option
                   value={valueMapping ? valueMapping(dropDownItem) : dropDownItem}
