@@ -77,6 +77,7 @@ export function LabeledDropdown ({ label, dropDownData, valueMapping, keyMapping
                               native: true
                             }}
                         >
+                            <option value={undefined} />
                             {dropDownData.map(dropDownItem =>
                                 <option
                                     value={valueMapping ? valueMapping(dropDownItem) : dropDownItem}
