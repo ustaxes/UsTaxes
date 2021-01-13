@@ -38,7 +38,8 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "desktop-release": "tauri build",
-    "desktop": "tauri dev"
+    "desktop": "tauri dev",
+    "lint": "eslint ./src --ext .ts --ext .js --ext .tsx --ext .jsx"
   },
   "eslintConfig": {
     "extends": "react-app"

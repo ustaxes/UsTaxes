@@ -1,11 +1,11 @@
 /**
- * Provides type override for persistStore so that 
+ * Provides type override for persistStore so that
  * custom state and action types can be easily used.
- * This is taken from a PR that has not been merged, 
+ * This is taken from a PR that has not been merged,
  * since the redux-persist project appears to be no
  * longer maintained since Sept 2019
- * 
- * https://github.com/rt2zz/redux-persist/pull/1085 
+ *
+ * https://github.com/rt2zz/redux-persist/pull/1085
  */
 
 declare module 'redux-persist/es/persistStore' {

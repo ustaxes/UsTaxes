@@ -57,116 +57,116 @@ function ResponsiveDrawer (props) {
   }
 
   const drawer = (
-        <div>
-            <h2>
+    <div>
+      <h2>
                 Wages
-            </h2>
+      </h2>
 
-            <Divider />
-            <List>
-                <ListItem
-                    button
-                    key='Employer Information'
-                    component={NavLink}
-                    exact activeClassName="current"
-                    to="/w2employerinfo"
-                    selected={location.pathname === '/w2employerinfo'}
-                >
-                    <ListItemText primary='Employer Information' />
-                </ListItem>
+      <Divider />
+      <List>
+        <ListItem
+          button
+          key='Employer Information'
+          component={NavLink}
+          exact activeClassName="current"
+          to="/w2employerinfo"
+          selected={location.pathname === '/w2employerinfo'}
+        >
+          <ListItemText primary='Employer Information' />
+        </ListItem>
 
-                <ListItem
-                    button
-                    key='Employee Information'
-                    component={NavLink}
-                    exact activeClassName="current"
-                    to="/w2employeeinfo"
-                    selected={location.pathname === '/w2employeeinfo'}
-                >
-                    <ListItemText primary='Employee Information' />
-                </ListItem>
+        <ListItem
+          button
+          key='Employee Information'
+          component={NavLink}
+          exact activeClassName="current"
+          to="/w2employeeinfo"
+          selected={location.pathname === '/w2employeeinfo'}
+        >
+          <ListItemText primary='Employee Information' />
+        </ListItem>
 
-                <ListItem
-                    button
-                    key='Job Information'
-                    component={NavLink}
-                    exact activeClassName="current"
-                    to="/w2jobinfo"
-                    selected={location.pathname === '/w2jobinfo'}
-                >
-                    <ListItemText primary='Job Information' />
-                </ListItem>
-            </List>
+        <ListItem
+          button
+          key='Job Information'
+          component={NavLink}
+          exact activeClassName="current"
+          to="/w2jobinfo"
+          selected={location.pathname === '/w2jobinfo'}
+        >
+          <ListItemText primary='Job Information' />
+        </ListItem>
+      </List>
 
-            <Divider />
-            <h2>
+      <Divider />
+      <h2>
                 Personal
-            </h2>
-            <Divider />
+      </h2>
+      <Divider />
 
-            <List>
-                <ListItem
-                    button
-                    key='Submit'
-                    component={NavLink}
-                    exact activeClassName="current"
-                    to="/familyinfo"
-                    selected={location.pathname === '/familyinfo'}
-                >
-                    <ListItemText primary='Family Information' />
-                </ListItem>
-            </List>
+      <List>
+        <ListItem
+          button
+          key='Submit'
+          component={NavLink}
+          exact activeClassName="current"
+          to="/familyinfo"
+          selected={location.pathname === '/familyinfo'}
+        >
+          <ListItemText primary='Family Information' />
+        </ListItem>
+      </List>
 
-            <Divider />
+      <Divider />
 
-            <List>
-                <ListItem
-                    button
-                    key='Submit'
-                    component={NavLink}
-                    exact activeClassName="current"
-                    to="/createPDF"
-                    selected={location.pathname === '/createPDF'}
-                >
-                    <ListItemText primary='Review and Print' />
-                </ListItem>
-            </List>
-        </div>
+      <List>
+        <ListItem
+          button
+          key='Submit'
+          component={NavLink}
+          exact activeClassName="current"
+          to="/createPDF"
+          selected={location.pathname === '/createPDF'}
+        >
+          <ListItemText primary='Review and Print' />
+        </ListItem>
+      </List>
+    </div>
   )
 
   return (
-        <div className={classes.root}>
-            <nav className={classes.drawer} aria-label="mailbox folders">
-                {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
-                <Hidden smUp implementation="css">
-                    <Drawer
-                        variant="temporary"
-                        anchor={theme.direction === 'rtl' ? 'right' : 'left'}
-                        open={mobileOpen}
-                        onClose={handleDrawerToggle}
-                        classes={{
-                          paper: classes.drawerPaper
-                        }}
-                        ModalProps={{
-                          keepMounted: true // Better open performance on mobile.
-                        }}
-                    >
-                        {drawer}
-                    </Drawer>
-                </Hidden>
-                <Hidden xsDown implementation="css">
-                    <Drawer
-                        classes={{
-                          paper: classes.drawerPaper
-                        }}
-                        variant="permanent"
-                        open
-                    >
-                        {drawer}
-                    </Drawer>
-                </Hidden>
-            </nav>
-        </div>
+    <div className={classes.root}>
+      <nav className={classes.drawer} aria-label="mailbox folders">
+        {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
+        <Hidden smUp implementation="css">
+          <Drawer
+            variant="temporary"
+            anchor={theme.direction === 'rtl' ? 'right' : 'left'}
+            open={mobileOpen}
+            onClose={handleDrawerToggle}
+            classes={{
+              paper: classes.drawerPaper
+            }}
+            ModalProps={{
+              keepMounted: true // Better open performance on mobile.
+            }}
+          >
+            {drawer}
+          </Drawer>
+        </Hidden>
+        <Hidden xsDown implementation="css">
+          <Drawer
+            classes={{
+              paper: classes.drawerPaper
+            }}
+            variant="permanent"
+            open
+          >
+            {drawer}
+          </Drawer>
+        </Hidden>
+      </nav>
+    </div>
   )
 }
 

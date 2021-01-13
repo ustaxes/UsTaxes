@@ -24,7 +24,6 @@ module.exports = {
     // proptypes validation as warnings for now
     // in js defining extra prop types is a little
     // cumbersome. Remember to remove if we switch to TS
-    'react/prop-types': 1,
-    indent: ['warn', 2]
+    'react/prop-types': 1
   }
 }

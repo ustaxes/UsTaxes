@@ -17,41 +17,41 @@ export function LabeledInput ({ strongLabel, label, register, required, mask, pa
     helperText = patternDescription
   }
   return (
-        <div>
-            <Box display="flex" justifyContent="flex-start">
-                <p><strong>{strongLabel}</strong>{label}</p>
-            </Box>
-            {/* default regex pattern is to accept any input. Otherwise, use input pattern */}
-            <Box display="flex" justifyContent="flex-start">
-                {/* if there is a mask prop, create masked textfield rather than standard */}
-                {mask
-                  ? <InputMask
-                        mask={mask}
-                        alwaysShowMask={true}
-                        maskChar=""
-                        defaultValue={defaultValue}
-                    >
-                        {() => <TextField
-                            error={!!errors[name]}
-                            helperText={helperText}
-                            inputRef={register({ submitFocusError: true, required: required, pattern: pattern || /.*?/ })}
-                            name={name}
-                            variant="filled"
-                        />}
-                    </InputMask>
-                  : <TextField
-                        error={!!errors[name]}
-                        helperText={helperText}
-                        fullWidth
-                        inputRef={register({ submitFocusError: true, required: required, pattern: pattern || /.*?/ })}
-                        name={name}
-                        defaultValue={defaultValue}
-                        variant="filled"
-                    />
-                }
+    <div>
+      <Box display="flex" justifyContent="flex-start">
+        <p><strong>{strongLabel}</strong>{label}</p>
+      </Box>
+      {/* default regex pattern is to accept any input. Otherwise, use input pattern */}
+      <Box display="flex" justifyContent="flex-start">
+        {/* if there is a mask prop, create masked textfield rather than standard */}
+        {mask
+          ? <InputMask
+            mask={mask}
+            alwaysShowMask={true}
+            maskChar=""
+            defaultValue={defaultValue}
+          >
+            {() => <TextField
+              error={!!errors[name]}
+              helperText={helperText}
+              inputRef={register({ submitFocusError: true, required: required, pattern: pattern || /.*?/ })}
+              name={name}
+              variant="filled"
+            />}
+          </InputMask>
+          : <TextField
+            error={!!errors[name]}
+            helperText={helperText}
+            fullWidth
+            inputRef={register({ submitFocusError: true, required: required, pattern: pattern || /.*?/ })}
+            name={name}
+            defaultValue={defaultValue}
+            variant="filled"
+          />
+        }
 
-            </Box>
-        </div>
+      </Box>
+    </div>
   )
 }
 
@@ -61,41 +61,41 @@ export function LabeledDropdown ({ label, dropDownData, valueMapping, keyMapping
     helperText = 'Input is required'
   }
   return (
-        <div>
-            <Box display="flex" justifyContent="flex-start">
-                <p>{label}</p>
-            </Box>
+    <div>
+      <Box display="flex" justifyContent="flex-start">
+        <p>{label}</p>
+      </Box>
 
-            <Box display="flex" justifyContent="flex-start">
-                <Controller
-                    as={
-                        <TextField
-                            select
-                            helperText={helperText}
-                            defaultValue=""
-                            SelectProps={{
-                              native: true
-                            }}
-                        >
-                            {dropDownData.map(dropDownItem =>
-                                <option
-                                    value={valueMapping ? valueMapping(dropDownItem) : dropDownItem}
-                                    key={keyMapping ? keyMapping(dropDownItem) : dropDownItem}>
-                                    {textMapping ? textMapping(dropDownItem) : dropDownItem}
-                                </option>
-                            )}
-                        </TextField>
-                    }
-                    error={!!errors[name]}
-                    fullWidth
-                    name={name}
-                    defaultValue={defaultValue}
-                    rules={{ required: required }}
-                    control={control}
-                    variant="filled"
-                />
-            </Box>
-        </div>
+      <Box display="flex" justifyContent="flex-start">
+        <Controller
+          as={
+            <TextField
+              select
+              helperText={helperText}
+              defaultValue=""
+              SelectProps={{
+                native: true
+              }}
+            >
+              {dropDownData.map(dropDownItem =>
+                <option
+                  value={valueMapping ? valueMapping(dropDownItem) : dropDownItem}
+                  key={keyMapping ? keyMapping(dropDownItem) : dropDownItem}>
+                  {textMapping ? textMapping(dropDownItem) : dropDownItem}
+                </option>
+              )}
+            </TextField>
+          }
+          error={!!errors[name]}
+          fullWidth
+          name={name}
+          defaultValue={defaultValue}
+          rules={{ required: required }}
+          control={control}
+          variant="filled"
+        />
+      </Box>
+    </div>
   )
 }
 
@@ -120,25 +120,25 @@ export function LabeledCheckBox ({ foreignAddress, setforeignAddress, control, d
   const setForeignAddressFalse = () => setforeignAddress(false)
   const setForeignAddressTrue = () => setforeignAddress(true)
   return (
-        <Controller
-            name="foreignAddress"
-            as={
-                <Box display="flex" justifyContent="flex-start" paddingTop={1}>
-                    <FormControlLabel
-                        control={<Checkbox checked={!foreignAddress} onChange={setForeignAddressFalse} color="primary" />}
-                        label="No"
-                        ml={0}
-                        value={false}
-                    />
-                    <FormControlLabel
-                        control={<Checkbox checked={foreignAddress} onChange={setForeignAddressTrue} color="primary" />}
-                        label="Yes"
-                        value={true}
-                    />
-                    <p>{description}</p>
-                </Box>
-            }
-            control={control}
-        />
+    <Controller
+      name="foreignAddress"
+      as={
+        <Box display="flex" justifyContent="flex-start" paddingTop={1}>
+          <FormControlLabel
+            control={<Checkbox checked={!foreignAddress} onChange={setForeignAddressFalse} color="primary" />}
+            label="No"
+            ml={0}
+            value={false}
+          />
+          <FormControlLabel
+            control={<Checkbox checked={foreignAddress} onChange={setForeignAddressTrue} color="primary" />}
+            label="Yes"
+            value={true}
+          />
+          <p>{description}</p>
+        </Box>
+      }
+      control={control}
+    />
   )
 }
