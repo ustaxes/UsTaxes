@@ -5,12 +5,12 @@ import {
   SAVE_EMPLOYEE_DATA,
   SAVE_EMPLOYER_DATA,
   SAVE_FAMILY_INFO,
+  SAVE_W2_INFO,
   Actions
 } from './actions'
-import { initialInformation } from './store'
 
-function formReducer (state: Information, action: Actions): Information {
-  const newState: Information = state === undefined ? initialInformation() : state
+function formReducer (state: Information | undefined, action: Actions): Information {
+  const newState: Information = state ?? {}
 
   switch (action.type) {
     case SAVE_EMPLOYEE_DATA: {
@@ -21,6 +21,9 @@ function formReducer (state: Information, action: Actions): Information {
     }
     case SAVE_FAMILY_INFO: {
       return { ...newState, familyInfo: action.formData }
+    }
+    case SAVE_W2_INFO: {
+      return { ...newState, w2Info: action.formData }
     }
     default: {
       return newState

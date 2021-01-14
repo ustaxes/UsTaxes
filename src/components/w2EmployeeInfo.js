@@ -8,7 +8,6 @@ import countries from '../data/countries'
 
 import { LabeledInput, LabeledDropdown, LabeledCheckBox, USStateDropDown } from './labeledInput'
 import { saveEmployeeData } from '../redux/actions'
-import { getFormData } from '../redux/selectors'
 
 export default function W2EmployeeInfo () {
   const { register, handleSubmit, errors, control } = useForm()
@@ -16,7 +15,7 @@ export default function W2EmployeeInfo () {
   // const variable dispatch to allow use inside function
   const dispatch = useDispatch()
 
-  const prevFormData = useSelector(state => getFormData(state, 'W2EmployeeInfo'))
+  const prevFormData = useSelector(state => state.w2EmployeeInfo ?? {})
   const [foreignAddress, setforeignAddress] = useState(prevFormData.foreignAddress === 'true')
 
   // component functions

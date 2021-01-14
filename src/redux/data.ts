@@ -1,4 +1,4 @@
-export interface W2Information {
+export interface W2EmployeeInfo {
   SSID: string
   employeeFirstName: string
   employeeLastName: string
@@ -29,10 +29,17 @@ export interface FamilyInfo {
   contactEmail: string
 }
 
+export interface W2Info {
+  occupation: string
+  compensation: number
+  fedWithholding: number
+}
+
 export interface Information {
-  w2EmployeeInfo: W2Information
-  w2EmployerInfo: W2EmployerInfo
-  familyInfo: FamilyInfo
+  w2EmployeeInfo?: W2EmployeeInfo
+  w2EmployerInfo?: W2EmployerInfo
+  w2Info?: W2Info
+  familyInfo?: FamilyInfo
 }
 
 export interface TaxesState {

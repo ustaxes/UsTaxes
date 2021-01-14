@@ -1,27 +1,23 @@
-import { W2EmployerInfo, W2Information, FamilyInfo } from './data'
+import { W2EmployerInfo, W2EmployeeInfo, W2Info, FamilyInfo } from './data'
 
 export const SAVE_EMPLOYER_DATA = 'SAVE_EMPLOYER_DATA'
 export const SAVE_EMPLOYEE_DATA = 'SAVE_EMPLOYEE_DATA'
 export const SAVE_FAMILY_INFO = 'SAVE_FAMILY_INFO'
+export const SAVE_W2_INFO = 'SAVE_W2_INFO'
 
-interface SaveEmployeeData {
-  type: typeof SAVE_EMPLOYEE_DATA
-  formData: W2Information
+interface Save<T, R> {
+  type: T
+  formData: R
 }
 
-interface SaveEmployerData {
-  type: typeof SAVE_EMPLOYER_DATA
-  formData: W2EmployerInfo
-}
+type SaveEmployeeData = Save<typeof SAVE_EMPLOYEE_DATA, W2EmployeeInfo>
+type SaveEmployerData = Save<typeof SAVE_EMPLOYER_DATA, W2EmployerInfo>
+type SaveFamilyInfo = Save<typeof SAVE_FAMILY_INFO, FamilyInfo>
+type SaveW2Info = Save<typeof SAVE_W2_INFO, W2Info>
 
-interface SaveFamilyInfo {
-  type: typeof SAVE_FAMILY_INFO
-  formData: FamilyInfo
-}
+export type Actions = SaveEmployeeData | SaveEmployerData | SaveFamilyInfo | SaveW2Info
 
-export type Actions = SaveEmployeeData | SaveEmployerData | SaveFamilyInfo
-
-export function saveEmployeeData (formData: W2Information): Actions {
+export function saveEmployeeData (formData: W2EmployeeInfo): Actions {
   // remove hyphens in SSIDs, Zips etc.. added for readability, removed for PDF filling
   formData.SSID.replace('/-/g', '')
 
@@ -37,6 +33,13 @@ export function saveEmployerData (formData: W2EmployerInfo): Actions {
 
   return {
     type: SAVE_EMPLOYER_DATA,
+    formData
+  }
+}
+
+export function saveW2Data (formData: W2Info): Actions {
+  return {
+    type: SAVE_W2_INFO,
     formData
   }
 }

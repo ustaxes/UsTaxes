@@ -6,7 +6,6 @@ import { useDispatch, useSelector } from 'react-redux'
 
 import { LabeledInput, LabeledCheckBox } from './labeledInput'
 import { saveFamilyInfo } from '../redux/actions'
-import { getFormData } from '../redux/selectors'
 
 export default function FamilyInfo () {
   const { register, handleSubmit, errors, control } = useForm()
@@ -14,7 +13,7 @@ export default function FamilyInfo () {
   // const variable dispatch to allow use inside function
   const dispatch = useDispatch()
 
-  const prevFormData = useSelector(state => getFormData(state, 'familyInfo'))
+  const prevFormData = useSelector(state => state.familyInfo ?? {})
   const [foreignAddress, setforeignAddress] = useState(prevFormData.foreignAddress === 'true')
 
   // component functions

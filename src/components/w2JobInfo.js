@@ -5,8 +5,7 @@ import { Link, useHistory } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 
 import { LabeledInput } from './labeledInput'
-import { saveEmployerData } from '../redux/actions'
-import { getFormData } from '../redux/selectors'
+import { saveW2Data } from '../redux/actions'
 
 export default function W2JobInfo () {
   const { register, handleSubmit, errors } = useForm()
@@ -14,12 +13,12 @@ export default function W2JobInfo () {
   // const variable dispatch to allow use inside function
   const dispatch = useDispatch()
 
-  const prevFormData = useSelector(state => getFormData(state, 'W2JobInfo'))
+  const prevFormData = useSelector(state => state.w2Info || {})
 
   // component functions
   const onSubmit = formData => {
     console.log('formData: ', formData)
-    dispatch(saveEmployerData(formData, 'W2JobInfo'))
+    dispatch(saveW2Data(formData))
     history.push('/familyinfo')
   }
 
@@ -69,12 +68,12 @@ export default function W2JobInfo () {
         <Box display="flex" justifyContent="flex-start" paddingTop={2} paddingBottom={1}>
           <Box display="flex" justifyContent="flex-start" paddingRight={2}>
             <Button component={Link} to="w2employeeinfo" variant="contained" color="secondary" >
-                            Back
+              Back
             </Button>
           </Box>
 
           <Button type="submit" variant="contained" color="primary">
-                        Save and Continue
+              Save and Continue
           </Button>
         </Box>
       </form>
