@@ -45,6 +45,8 @@ export function saveW2Data (formData: W2Info): Actions {
 }
 
 export function saveFamilyInfo (formData: FamilyInfo): Actions {
+  formData.contactPhoneNumber.replace('/-/g', '')
+
   return {
     type: SAVE_FAMILY_INFO,
     formData
