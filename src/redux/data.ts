@@ -31,8 +31,8 @@ export interface FamilyInfo {
 
 export interface W2Info {
   occupation: string
-  compensation: number
-  fedWithholding: number
+  income: string
+  fedWithholding: string
 }
 
 export interface Information {

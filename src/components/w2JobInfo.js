@@ -60,8 +60,8 @@ export default function W2JobInfo () {
           mask="$999999"
           pattern={/[0-9]*/}
           patternDescription="Input should be filled with numbers only"
-          name="federalIncomeTax"
-          defaultValue={prevFormData.federalIncomeTax}
+          name="fedWithholding"
+          defaultValue={prevFormData.fedWithholding}
           errors={errors}
         />
 

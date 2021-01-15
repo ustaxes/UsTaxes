@@ -23,7 +23,8 @@ export function saveEmployeeData (formData: W2EmployeeInfo): Actions {
     type: SAVE_EMPLOYEE_DATA,
     formData: {
       ...formData,
-      SSID: formData.SSID.replace(/-/g, '')
+      SSID: formData.SSID.replace(/-/g, ''),
+      employeeZip: formData.employeeZip.replace(/-/g, '')
     }
   }
 }
@@ -34,7 +35,8 @@ export function saveEmployerData (formData: W2EmployerInfo): Actions {
     type: SAVE_EMPLOYER_DATA,
     formData: {
       ...formData,
-      EIN: formData.EIN.replace(/-/g, '')
+      EIN: formData.EIN.replace(/-/g, ''),
+      employerZip: formData.employerZip.replace(/-/g, '')
     }
   }
 }
@@ -42,7 +44,11 @@ export function saveEmployerData (formData: W2EmployerInfo): Actions {
 export function saveW2Data (formData: W2Info): Actions {
   return {
     type: SAVE_W2_INFO,
-    formData
+    formData: {
+      ...formData,
+      income: formData.income.replace(/\$/g, ''),
+      fedWithholding: formData.fedWithholding.replace(/\$/g, '')
+    }
   }
 }
 
