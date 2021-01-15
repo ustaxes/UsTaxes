@@ -30,30 +30,30 @@ const theme = createMuiTheme({
 
 export default function W2 () {
   return (
-        <ThemeProvider theme={theme}>
-            <ResponsiveDrawer/>
-            <Box display="flex" justifyContent="center">
-                <Box display="flex" justifyContent="flex-start">
-                    <h1>Wages (Form W-2)</h1>
-                </Box>
-            </Box>
-            <Switch>
-                <Route path="/w2employerinfo" exact>
-                    <W2EmployerInfo />
-                </Route>
-                <Route path="/w2employeeinfo" exact>
-                    <W2EmployeeInfo/>
-                </Route>
-                <Route path="/w2jobinfo" exact>
-                    <W2JobInfo/>
-                </Route>
-                <Route path="/familyinfo" exact>
-                    <FamilyInfo/>
-                </Route>
-                <Route path="/createPDF" exact>
-                    <CreatePDF/>
-                </Route>
-            </Switch>
-        </ThemeProvider>
+    <ThemeProvider theme={theme}>
+      <ResponsiveDrawer/>
+      <Box display="flex" justifyContent="center">
+        <Box display="flex" justifyContent="flex-start">
+          <h1>Wages (Form W-2)</h1>
+        </Box>
+      </Box>
+      <Switch>
+        <Route path="/w2employerinfo" exact>
+          <W2EmployerInfo />
+        </Route>
+        <Route path="/w2employeeinfo" exact>
+          <W2EmployeeInfo/>
+        </Route>
+        <Route path="/w2jobinfo" exact>
+          <W2JobInfo/>
+        </Route>
+        <Route path="/familyinfo" exact>
+          <FamilyInfo/>
+        </Route>
+        <Route path="/createPDF" exact>
+          <CreatePDF/>
+        </Route>
+      </Switch>
+    </ThemeProvider>
   )
 }
