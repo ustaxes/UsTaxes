@@ -13,7 +13,7 @@ export default function W2JobInfo () {
   // const variable dispatch to allow use inside function
   const dispatch = useDispatch()
 
-  const prevFormData = useSelector(state => state.w2Info ?? {})
+  const prevFormData = useSelector(state => state.information.w2Info ?? {})
 
   // component functions
   const onSubmit = formData => {

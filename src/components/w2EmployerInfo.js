@@ -14,7 +14,7 @@ export default function W2EmployerInfo () {
   const history = useHistory()
   const dispatch = useDispatch()
 
-  const prevFormData = useSelector(state => state.w2EmployerInfo ?? {})
+  const prevFormData = useSelector(state => state.information.w2EmployerInfo ?? {})
   const [foreignAddress, setforeignAddress] = useState(prevFormData.foreignAddress === 'true')
 
   // component functions

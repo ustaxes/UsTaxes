@@ -13,7 +13,9 @@ export default function FamilyInfo () {
   // const variable dispatch to allow use inside function
   const dispatch = useDispatch()
 
-  const prevFormData = useSelector(state => state.familyInfo ?? {})
+  const prevFormData = useSelector(state => {
+    return state.information.familyInfo ?? {}
+  })
   const [foreignAddress, setforeignAddress] = useState(prevFormData.foreignAddress === 'true')
 
   // component functions
