@@ -19,21 +19,23 @@ export type Actions = SaveEmployeeData | SaveEmployerData | SaveFamilyInfo | Sav
 
 export function saveEmployeeData (formData: W2EmployeeInfo): Actions {
   // remove hyphens in SSIDs, Zips etc.. added for readability, removed for PDF filling
-  formData.SSID.replace('/-/g', '')
-
   return {
     type: SAVE_EMPLOYEE_DATA,
-    formData
+    formData: {
+      ...formData,
+      SSID: formData.SSID.replace(/-/g, '')
+    }
   }
 }
 
 export function saveEmployerData (formData: W2EmployerInfo): Actions {
   // remove hyphens in SSIDs, Zips etc.. added for readability, removed for PDF filling
-  formData.EIN.replace('/-/g', '')
-
   return {
     type: SAVE_EMPLOYER_DATA,
-    formData
+    formData: {
+      ...formData,
+      EIN: formData.EIN.replace(/-/g, '')
+    }
   }
 }
 
@@ -45,7 +47,7 @@ export function saveW2Data (formData: W2Info): Actions {
 }
 
 export function saveFamilyInfo (formData: FamilyInfo): Actions {
-  formData.contactPhoneNumber.replace('/-/g', '')
+  formData.contactPhoneNumber.replace(/-/g, '')
 
   return {
     type: SAVE_FAMILY_INFO,
