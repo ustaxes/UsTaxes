@@ -6,8 +6,8 @@ export interface W2EmployeeInfo {
   employeeCity: string
   employeeState: string
   employeeZip: string
-  employeeProvince: string | undefined
-  employeePostalCode: string | undefined
+  employeeProvince?: string
+  employeePostalCode?: string
 }
 
 export interface W2EmployerInfo {
@@ -17,9 +17,9 @@ export interface W2EmployerInfo {
   employerCity: string
   employerState: string
   employerZip: string
-  employerProvince: string | undefined
-  employerCountry: string | undefined
-  employerPostalCode: string | undefined
+  employerProvince?: string
+  employerCountry?: string
+  employerPostalCode?: string
 }
 
 export interface FamilyInfo {
