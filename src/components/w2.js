@@ -28,10 +28,33 @@ const theme = createMuiTheme({
   }
 })
 
+const drawerSections = [
+  {
+    title: 'Wages',
+    items: [
+      ['Employer Information', '/w2employerinfo'],
+      ['Employee Information', '/w2employeeinfo'],
+      ['Job Information', '/w2jobinfo']
+    ]
+  },
+  {
+    title: 'Personal',
+    items: [
+      ['Family Information', '/familyinfo']
+    ]
+  },
+  {
+    title: 'Results',
+    items: [
+      ['Review and Print', '/createpdf']
+    ]
+  }
+]
+
 export default function W2 () {
   return (
     <ThemeProvider theme={theme}>
-      <ResponsiveDrawer/>
+      <ResponsiveDrawer sections={drawerSections} />
       <Box display="flex" justifyContent="center">
         <Box display="flex" justifyContent="flex-start">
           <h1>Wages (Form W-2)</h1>
@@ -39,18 +62,18 @@ export default function W2 () {
       </Box>
       <Switch>
         <Route path="/w2employerinfo" exact>
-          <W2EmployerInfo />
+          <W2EmployerInfo nextUrl="/w2employeeinfo" />
         </Route>
         <Route path="/w2employeeinfo" exact>
-          <W2EmployeeInfo/>
+          <W2EmployeeInfo nextUrl="/w2jobinfo" />
         </Route>
         <Route path="/w2jobinfo" exact>
-          <W2JobInfo/>
+          <W2JobInfo nextUrl="/familyinfo" />
         </Route>
         <Route path="/familyinfo" exact>
-          <FamilyInfo/>
+          <FamilyInfo nextUrl="/createpdf" />
         </Route>
-        <Route path="/createPDF" exact>
+        <Route path="/createpdf" exact>
           <CreatePDF/>
         </Route>
       </Switch>

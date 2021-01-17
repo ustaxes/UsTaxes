@@ -7,7 +7,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { LabeledInput, LabeledCheckBox } from './labeledInput'
 import { saveFamilyInfo } from '../redux/actions'
 
-export default function FamilyInfo () {
+export default function FamilyInfo ({ nextUrl }) {
   const { register, handleSubmit, errors, control } = useForm()
   const history = useHistory()
   // const variable dispatch to allow use inside function
@@ -22,7 +22,7 @@ export default function FamilyInfo () {
   const onSubmit = formData => {
     console.log('formData: ', formData)
     dispatch(saveFamilyInfo(formData))
-    history.push('/createPDF')
+    history.push(nextUrl)
   }
 
   return (
