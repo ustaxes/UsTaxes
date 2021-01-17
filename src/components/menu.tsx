@@ -70,21 +70,21 @@ function ResponsiveDrawer (props: DrawerItemsProps): ReactElement {
   const drawer = (
     <div>
       {
-        sections.map(({ title, items }, i) => (
-          <div key={i}>
+        sections.map(({ title, items }, sectionIdx) => (
+          <div key={sectionIdx}>
             <h2>{title}</h2>
             <List>
-              {items.map((x, j) =>
+              {items.map((item, itemIdx) =>
                 <ListItem
                   button
-                  key={j}
+                  key={itemIdx}
                   component={NavLink}
                   exact
                   activeClassName="current"
-                  to={x[1]}
-                  selected={location.pathname === x[1]}
+                  to={item[1]}
+                  selected={location.pathname === item[1]}
                 >
-                  <ListItemText primary={x[0]} />
+                  <ListItemText primary={item[0]} />
                 </ListItem>
               )}
             </List>
