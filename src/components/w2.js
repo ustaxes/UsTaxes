@@ -40,7 +40,12 @@ const drawerSections = [
   {
     title: 'Personal',
     items: [
-      ['Family Information', '/familyinfo'],
+      ['Family Information', '/familyinfo']
+    ]
+  },
+  {
+    title: 'Results',
+    items: [
       ['Review and Print', '/createpdf']
     ]
   }
