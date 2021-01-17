@@ -9,7 +9,7 @@ import countries from '../data/countries'
 import { LabeledInput, LabeledDropdown, LabeledCheckBox, USStateDropDown } from './labeledInput'
 import { saveEmployeeData } from '../redux/actions'
 
-export default function W2EmployeeInfo () {
+export default function W2EmployeeInfo ({ nextUrl }) {
   const { register, handleSubmit, errors, control } = useForm()
   const history = useHistory()
   // const variable dispatch to allow use inside function
@@ -22,7 +22,7 @@ export default function W2EmployeeInfo () {
   const onSubmit = formData => {
     console.log('formData: ', formData)
     dispatch(saveEmployeeData(formData))
-    history.push('/w2jobinfo')
+    history.push(nextUrl)
   }
 
   return (

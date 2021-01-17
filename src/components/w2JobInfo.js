@@ -7,7 +7,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { LabeledInput } from './labeledInput'
 import { saveW2Data } from '../redux/actions'
 
-export default function W2JobInfo () {
+export default function W2JobInfo ({ nextUrl }) {
   const { register, handleSubmit, errors } = useForm()
   const history = useHistory()
   // const variable dispatch to allow use inside function
@@ -19,7 +19,7 @@ export default function W2JobInfo () {
   const onSubmit = formData => {
     console.log('formData: ', formData)
     dispatch(saveW2Data(formData))
-    history.push('/familyinfo')
+    history.push(nextUrl)
   }
 
   return (

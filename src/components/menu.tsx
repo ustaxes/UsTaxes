@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { ReactElement } from 'react'
 import Divider from '@material-ui/core/Divider'
 import Drawer from '@material-ui/core/Drawer'
 import Hidden from '@material-ui/core/Hidden'
@@ -46,91 +46,52 @@ const useStyles = makeStyles((theme) => ({
   }
 }))
 
-function ResponsiveDrawer (props) {
+interface Section {
+  title: string
+  items: Array<[string, string]>
+}
+
+export interface DrawerItemsProps {
+  sections: Section[]
+}
+
+function ResponsiveDrawer (props: DrawerItemsProps): ReactElement {
   const location = useLocation()
   const classes = useStyles()
   const theme = useTheme()
   const [mobileOpen, setMobileOpen] = React.useState(false)
 
-  const handleDrawerToggle = () => {
+  const handleDrawerToggle = (): void => {
     setMobileOpen(!mobileOpen)
   }
 
+  const { sections } = props
+
   const drawer = (
     <div>
-      <h2>
-                Wages
-      </h2>
-
-      <Divider />
-      <List>
-        <ListItem
-          button
-          key='Employer Information'
-          component={NavLink}
-          exact activeClassName="current"
-          to="/w2employerinfo"
-          selected={location.pathname === '/w2employerinfo'}
-        >
-          <ListItemText primary='Employer Information' />
-        </ListItem>
-
-        <ListItem
-          button
-          key='Employee Information'
-          component={NavLink}
-          exact activeClassName="current"
-          to="/w2employeeinfo"
-          selected={location.pathname === '/w2employeeinfo'}
-        >
-          <ListItemText primary='Employee Information' />
-        </ListItem>
-
-        <ListItem
-          button
-          key='Job Information'
-          component={NavLink}
-          exact activeClassName="current"
-          to="/w2jobinfo"
-          selected={location.pathname === '/w2jobinfo'}
-        >
-          <ListItemText primary='Job Information' />
-        </ListItem>
-      </List>
-
-      <Divider />
-      <h2>
-                Personal
-      </h2>
-      <Divider />
-
-      <List>
-        <ListItem
-          button
-          key='Submit'
-          component={NavLink}
-          exact activeClassName="current"
-          to="/familyinfo"
-          selected={location.pathname === '/familyinfo'}
-        >
-          <ListItemText primary='Family Information' />
-        </ListItem>
-      </List>
-
-      <Divider />
-
-      <List>
-        <ListItem
-          button
-          key='Submit'
-          component={NavLink}
-          exact activeClassName="current"
-          to="/createPDF"
-          selected={location.pathname === '/createPDF'}
-        >
-          <ListItemText primary='Review and Print' />
-        </ListItem>
-      </List>
+      {
+        sections.map(({ title, items }, i) => (
+          <div key={i}>
+            <h2>{title}</h2>
+            <List>
+              {items.map((x, j) =>
+                <ListItem
+                  button
+                  key={j}
+                  component={NavLink}
+                  exact
+                  activeClassName="current"
+                  to={x[1]}
+                  selected={location.pathname === x[1]}
+                >
+                  <ListItemText primary={x[0]} />
+                </ListItem>
+              )}
+            </List>
+            <Divider />
+          </div>
+        ))
+      }
     </div>
   )
 
