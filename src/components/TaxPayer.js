@@ -29,7 +29,7 @@ export default function TaxPayerInfo ({ nextUrl }) {
       <form onSubmit={handleSubmit(onSubmit)}>
 
         <Box display="flex" justifyContent="flex-start">
-          <h2>Family Information</h2>
+          <h2>Taxpayer Information</h2>
         </Box>
 
         <LabeledInput

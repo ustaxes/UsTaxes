@@ -29,7 +29,7 @@ export default function RefundInfo ({ nextUrl }) {
       <form onSubmit={handleSubmit(onSubmit)}>
 
         <Box display="flex" justifyContent="flex-start">
-          <h2>Refund and Contact Information</h2>
+          <h2>Refund Instructions</h2>
         </Box>
 
         <LabeledInput

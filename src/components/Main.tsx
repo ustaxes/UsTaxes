@@ -42,8 +42,8 @@ const drawerSections: Section[] = [
   {
     title: 'Personal',
     items: [
-      ['Family Information', Urls.taxpayer],
-      ['Refund and Contact', Urls.refund]
+      ['Taxpayer Information', Urls.taxpayer],
+      ['Refund Instructions', Urls.refund]
     ]
   },
   {
