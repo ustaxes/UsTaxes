@@ -1,9 +1,10 @@
-import { W2EmployerInfo, W2EmployeeInfo, W2Info, FamilyInfo } from './data'
+import { W2EmployerInfo, W2EmployeeInfo, W2Info, Refund, TaxPayer } from './data'
 
 export const SAVE_EMPLOYER_DATA = 'SAVE_EMPLOYER_DATA'
 export const SAVE_EMPLOYEE_DATA = 'SAVE_EMPLOYEE_DATA'
-export const SAVE_FAMILY_INFO = 'SAVE_FAMILY_INFO'
+export const SAVE_REFUND_INFO = 'SAVE_REFUND_INFO'
 export const SAVE_W2_INFO = 'SAVE_W2_INFO'
+export const SAVE_TAXPAYER_INFO = 'SAVE_TAXPAYER_INFO'
 
 interface Save<T, R> {
   type: T
@@ -12,10 +13,11 @@ interface Save<T, R> {
 
 type SaveEmployeeData = Save<typeof SAVE_EMPLOYEE_DATA, W2EmployeeInfo>
 type SaveEmployerData = Save<typeof SAVE_EMPLOYER_DATA, W2EmployerInfo>
-type SaveFamilyInfo = Save<typeof SAVE_FAMILY_INFO, FamilyInfo>
+type SaveRefundInfo = Save<typeof SAVE_REFUND_INFO, Refund>
 type SaveW2Info = Save<typeof SAVE_W2_INFO, W2Info>
+type SaveTaxpayerInfo = Save<typeof SAVE_TAXPAYER_INFO, TaxPayer>
 
-export type Actions = SaveEmployeeData | SaveEmployerData | SaveFamilyInfo | SaveW2Info
+export type Actions = SaveEmployeeData | SaveEmployerData | SaveRefundInfo | SaveW2Info | SaveTaxpayerInfo
 
 export function saveEmployeeData (formData: W2EmployeeInfo): Actions {
   // remove hyphens in SSIDs, Zips etc.. added for readability, removed for PDF filling
@@ -52,9 +54,16 @@ export function saveW2Data (formData: W2Info): Actions {
   }
 }
 
-export function saveFamilyInfo (formData: FamilyInfo): Actions {
+export function saveRefundInfo (formData: Refund): Actions {
   return {
-    type: SAVE_FAMILY_INFO,
+    type: SAVE_REFUND_INFO,
+    formData
+  }
+}
+
+export function saveTaxpayerInfo (formData: TaxPayer): Actions {
+  return {
+    type: SAVE_TAXPAYER_INFO,
     formData: {
       ...formData,
       contactPhoneNumber: formData.contactPhoneNumber.replace(/-/g, '')

@@ -46,7 +46,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }))
 
-interface Section {
+export interface Section {
   title: string
   items: Array<[string, string]>
 }

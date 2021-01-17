@@ -1,9 +1,9 @@
 import React, { useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { Button, Box, Grow } from '@material-ui/core'
-import { Link, useHistory } from 'react-router-dom'
+import { Box, Grow } from '@material-ui/core'
+import { useHistory } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
-
+import { FinishPage } from './paging'
 import countries from '../data/countries'
 
 import { LabeledInput, LabeledDropdown, LabeledCheckBox, USStateDropDown } from './labeledInput'
@@ -30,7 +30,7 @@ export default function W2EmployerInfo ({ nextUrl }) {
         <Box display="flex" justifyContent="flex-start">
           <h2>Employer Information</h2>
         </Box>
-
+        <strong>Input data from W-2</strong>
         <LabeledInput
           strongLabel="Box B - "
           label="Employer Identification Number"
@@ -138,17 +138,7 @@ export default function W2EmployerInfo ({ nextUrl }) {
           </div>
         </Grow>
 
-        <Box display="flex" justifyContent="flex-start" paddingTop={2} paddingBottom={1}>
-          <Box display="flex" justifyContent="flex-start" paddingRight={2}>
-            <Button component={Link} to="/" variant="contained" color="secondary" >
-                            Back
-            </Button>
-          </Box>
-
-          <Button type="submit" variant="contained" color="primary">
-                        Save and Continue
-          </Button>
-        </Box>
+        <FinishPage />
       </form >
     </Box>
   )

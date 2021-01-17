@@ -1,9 +1,9 @@
 import React from 'react'
 import { useForm } from 'react-hook-form'
-import { Button, Box } from '@material-ui/core'
-import { Link, useHistory } from 'react-router-dom'
+import { Box } from '@material-ui/core'
+import { useHistory } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
-
+import { FinishPage } from './paging'
 import { LabeledInput } from './labeledInput'
 import { saveW2Data } from '../redux/actions'
 
@@ -29,6 +29,8 @@ export default function W2JobInfo ({ nextUrl }) {
         <Box display="flex" justifyContent="flex-start">
           <h2>Job Information</h2>
         </Box>
+
+        <strong>Input data from W-2</strong>
 
         <LabeledInput
           label="Occupation"
@@ -65,17 +67,7 @@ export default function W2JobInfo ({ nextUrl }) {
           errors={errors}
         />
 
-        <Box display="flex" justifyContent="flex-start" paddingTop={2} paddingBottom={1}>
-          <Box display="flex" justifyContent="flex-start" paddingRight={2}>
-            <Button component={Link} to="w2employeeinfo" variant="contained" color="secondary" >
-              Back
-            </Button>
-          </Box>
-
-          <Button type="submit" variant="contained" color="primary">
-              Save and Continue
-          </Button>
-        </Box>
+        <FinishPage />
       </form>
     </Box>
   )
