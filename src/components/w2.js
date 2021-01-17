@@ -28,7 +28,7 @@ const theme = createMuiTheme({
   }
 })
 
-const drawerParts = [
+const drawerSections = [
   {
     title: 'Wages',
     items: [
@@ -49,7 +49,7 @@ const drawerParts = [
 export default function W2 () {
   return (
     <ThemeProvider theme={theme}>
-      <ResponsiveDrawer sections={drawerParts} />
+      <ResponsiveDrawer sections={drawerSections} />
       <Box display="flex" justifyContent="center">
         <Box display="flex" justifyContent="flex-start">
           <h1>Wages (Form W-2)</h1>
