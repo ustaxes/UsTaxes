@@ -21,7 +21,7 @@ export default function TaxPayerInfo ({ nextUrl }) {
   const onSubmit = formData => {
     console.log('formData: ', formData)
     dispatch(saveTaxpayerInfo(formData))
-    history.push('/w2employerinfo')
+    history.push(nextUrl)
   }
 
   return (
