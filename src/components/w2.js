@@ -41,7 +41,7 @@ const drawerParts = [
     title: 'Personal',
     items: [
       ['Family Information', '/familyinfo'],
-      ['Review and Print', '/createPDF']
+      ['Review and Print', '/createpdf']
     ]
   }
 ]
@@ -63,12 +63,12 @@ export default function W2 () {
           <W2EmployeeInfo nextUrl="/w2jobinfo" />
         </Route>
         <Route path="/w2jobinfo" exact>
-          <W2JobInfo nextUrl="/familyInfo" />
+          <W2JobInfo nextUrl="/familyinfo" />
         </Route>
         <Route path="/familyinfo" exact>
-          <FamilyInfo nextUrl="/createPDF" />
+          <FamilyInfo nextUrl="/createpdf" />
         </Route>
-        <Route path="/createPDF" exact>
+        <Route path="/createpdf" exact>
           <CreatePDF/>
         </Route>
       </Switch>
