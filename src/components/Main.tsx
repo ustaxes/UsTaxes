@@ -59,7 +59,6 @@ const allUrls: string[] = (
 )
 
 export default function Main (): ReactElement {
-  // We don't need previous, because PagerButtons uses Link.
   const [previous, forward, prevUrl] = usePager(allUrls)
 
   const firstStepButtons: ReactElement = <PagerButtons onBack={previous} submitText="Save and Continue" />
