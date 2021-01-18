@@ -10,6 +10,7 @@ import flatFieldMappings from './1040flatFieldMappings'
 import { getAllDataFlat } from '../redux/selectors'
 import { store } from '../redux/store'
 import { savePdf } from './pdfHandler'
+import calculateValues from './calculateValues'
 
 function fillPDField (
   PDField,
@@ -29,8 +30,6 @@ function fillPDField (
 // I'm using my repo's github pages hosting as a CDN because it's free and allows cross origin requests
 export async function fillPDF () {
   const information = getAllDataFlat(store.getState())
-
-  console.log(getAllDataFlat(store.getState()))
 
   const pdfDoc = await PDFDocument.load(await fetch('https://thegrims.github.io/UsTaxes/tax_forms/f1040.pdf').then(res => res.arrayBuffer()))
   // const timesRoman = await pdfDoc.embedFont(StandardFonts.TimesRoman)
@@ -59,6 +58,7 @@ export async function fillPDF () {
 
 // opens new with filled information in the window of the component it is called from
 export async function createPDFPopup () {
+  calculateValues()
   const pdfBytes = await fillPDF()
 
   savePdf(pdfBytes)
