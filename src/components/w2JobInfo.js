@@ -1,15 +1,13 @@
 import React from 'react'
 import { useForm } from 'react-hook-form'
-import { Button, Box } from '@material-ui/core'
-import { Link, useHistory } from 'react-router-dom'
+import { Box } from '@material-ui/core'
 import { useDispatch, useSelector } from 'react-redux'
 
 import { LabeledInput } from './labeledInput'
 import { saveW2Data } from '../redux/actions'
 
-export default function W2JobInfo ({ nextUrl }) {
+export default function W2JobInfo ({ children, onAdvance }) {
   const { register, handleSubmit, errors } = useForm()
-  const history = useHistory()
   // const variable dispatch to allow use inside function
   const dispatch = useDispatch()
 
@@ -19,7 +17,7 @@ export default function W2JobInfo ({ nextUrl }) {
   const onSubmit = formData => {
     console.log('formData: ', formData)
     dispatch(saveW2Data(formData))
-    history.push(nextUrl)
+    onAdvance()
   }
 
   return (
@@ -65,17 +63,7 @@ export default function W2JobInfo ({ nextUrl }) {
           errors={errors}
         />
 
-        <Box display="flex" justifyContent="flex-start" paddingTop={2} paddingBottom={1}>
-          <Box display="flex" justifyContent="flex-start" paddingRight={2}>
-            <Button component={Link} to="w2employeeinfo" variant="contained" color="secondary" >
-              Back
-            </Button>
-          </Box>
-
-          <Button type="submit" variant="contained" color="primary">
-              Save and Continue
-          </Button>
-        </Box>
+        { children }
       </form>
     </Box>
   )

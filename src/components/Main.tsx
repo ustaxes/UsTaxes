@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { ReactElement } from 'react'
 import { Box, unstable_createMuiStrictModeTheme as createMuiTheme, ThemeProvider } from '@material-ui/core'
 import {
   Switch,
@@ -9,7 +9,8 @@ import W2EmployeeInfo from './w2EmployeeInfo'
 import W2JobInfo from './w2JobInfo'
 import FamilyInfo from './familyInfo'
 import CreatePDF from './createPDF'
-import ResponsiveDrawer from './menu'
+import ResponsiveDrawer, { Section } from './menu'
+import { PagerButtons, usePager } from './pager'
 
 const theme = createMuiTheme({
   palette: {
@@ -28,7 +29,7 @@ const theme = createMuiTheme({
   }
 })
 
-const drawerSections = [
+const drawerSections: Section[] = [
   {
     title: 'Wages',
     items: [
@@ -51,7 +52,20 @@ const drawerSections = [
   }
 ]
 
-export default function W2 () {
+const allUrls: string[] = (
+  drawerSections
+    .flatMap((section: Section) => section.items)
+    .map((item) => item[1])
+)
+
+export default function Main (): ReactElement {
+  // We don't need previous, because PagerButtons uses Link.
+  const [previous, forward, prevUrl] = usePager(allUrls)
+
+  const firstStepButtons: ReactElement = <PagerButtons onBack={previous} submitText="Save and Continue" />
+  const stepDoneButtons: ReactElement = <PagerButtons onBack={previous} backUrl={prevUrl} submitText="Save and Continue" />
+  const allDoneButtons: ReactElement = <PagerButtons onBack={previous} backUrl={prevUrl} submitText="Create PDF" />
+
   return (
     <ThemeProvider theme={theme}>
       <ResponsiveDrawer sections={drawerSections} />
@@ -62,19 +76,19 @@ export default function W2 () {
       </Box>
       <Switch>
         <Route path="/w2employerinfo" exact>
-          <W2EmployerInfo nextUrl="/w2employeeinfo" />
+          <W2EmployerInfo onAdvance={forward}>{firstStepButtons}</W2EmployerInfo>
         </Route>
         <Route path="/w2employeeinfo" exact>
-          <W2EmployeeInfo nextUrl="/w2jobinfo" />
+          <W2EmployeeInfo onAdvance={forward}>{stepDoneButtons}</W2EmployeeInfo>
         </Route>
         <Route path="/w2jobinfo" exact>
-          <W2JobInfo nextUrl="/familyinfo" />
+          <W2JobInfo onAdvance={forward}>{stepDoneButtons}</W2JobInfo>
         </Route>
         <Route path="/familyinfo" exact>
-          <FamilyInfo nextUrl="/createpdf" />
+          <FamilyInfo onAdvance={forward}>{stepDoneButtons}</FamilyInfo>
         </Route>
         <Route path="/createpdf" exact>
-          <CreatePDF/>
+          <CreatePDF>{allDoneButtons}</CreatePDF>
         </Route>
       </Switch>
     </ThemeProvider>
