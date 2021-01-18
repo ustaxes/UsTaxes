@@ -4,6 +4,13 @@ import rootReducer from './reducer'
 
 import { persistStore, persistReducer } from 'redux-persist'
 import storage from 'redux-persist/lib/storage' // defaults to localStorage for web
+import { TaxesState } from './data'
+
+export function initialTaxesState (): TaxesState {
+  return {
+    information: {}
+  }
+}
 
 const persistConfig = {
   key: 'root',
@@ -16,4 +23,5 @@ export const store = createStore(
   persistedReducer,
   applyMiddleware(logger)
 )
+
 export const persistor = persistStore(store)

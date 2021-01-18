@@ -12,10 +12,10 @@ const flatFieldMappings = {
   income: 52,
   capitalGainNotRequired: 63,
   deduction: 71,
-  federalIncomeTax: 88,
+  fedWithholding: 88,
   routingNumber: 103,
   accountNumber: 106,
-  occupation: 117,
+  occupation: 115,
   contactPhoneNumber: 119,
   contactEmail: 120
 }
