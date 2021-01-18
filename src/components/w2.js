@@ -28,32 +28,55 @@ const theme = createMuiTheme({
   }
 })
 
+const drawerSections = [
+  {
+    title: 'Wages',
+    items: [
+      ['Employer Information', '/w2employerinfo'],
+      ['Employee Information', '/w2employeeinfo'],
+      ['Job Information', '/w2jobinfo']
+    ]
+  },
+  {
+    title: 'Personal',
+    items: [
+      ['Family Information', '/familyinfo']
+    ]
+  },
+  {
+    title: 'Results',
+    items: [
+      ['Review and Print', '/createpdf']
+    ]
+  }
+]
+
 export default function W2 () {
   return (
-        <ThemeProvider theme={theme}>
-            <ResponsiveDrawer/>
-            <Box display="flex" justifyContent="center">
-                <Box display="flex" justifyContent="flex-start">
-                    <h1>Wages (Form W-2)</h1>
-                </Box>
-            </Box>
-            <Switch>
-                <Route path="/w2employerinfo" exact>
-                    <W2EmployerInfo />
-                </Route>
-                <Route path="/w2employeeinfo" exact>
-                    <W2EmployeeInfo/>
-                </Route>
-                <Route path="/w2jobinfo" exact>
-                    <W2JobInfo/>
-                </Route>
-                <Route path="/familyinfo" exact>
-                    <FamilyInfo/>
-                </Route>
-                <Route path="/createPDF" exact>
-                    <CreatePDF/>
-                </Route>
-            </Switch>
-        </ThemeProvider>
+    <ThemeProvider theme={theme}>
+      <ResponsiveDrawer sections={drawerSections} />
+      <Box display="flex" justifyContent="center">
+        <Box display="flex" justifyContent="flex-start">
+          <h1>Wages (Form W-2)</h1>
+        </Box>
+      </Box>
+      <Switch>
+        <Route path="/w2employerinfo" exact>
+          <W2EmployerInfo nextUrl="/w2employeeinfo" />
+        </Route>
+        <Route path="/w2employeeinfo" exact>
+          <W2EmployeeInfo nextUrl="/w2jobinfo" />
+        </Route>
+        <Route path="/w2jobinfo" exact>
+          <W2JobInfo nextUrl="/familyinfo" />
+        </Route>
+        <Route path="/familyinfo" exact>
+          <FamilyInfo nextUrl="/createpdf" />
+        </Route>
+        <Route path="/createpdf" exact>
+          <CreatePDF/>
+        </Route>
+      </Switch>
+    </ThemeProvider>
   )
 }
