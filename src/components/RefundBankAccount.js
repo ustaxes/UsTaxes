@@ -26,7 +26,7 @@ export default function RefundBankAccount ({ navButtons, onAdvance }) {
       <form onSubmit={handleSubmit(onSubmit)}>
 
         <Box display="flex" justifyContent="flex-start">
-          <h2>Refund Instructions</h2>
+          <h2>Refund Information</h2>
         </Box>
 
         <LabeledInput
