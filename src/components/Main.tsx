@@ -59,11 +59,11 @@ const allUrls: string[] = (
 )
 
 export default function Main (): ReactElement {
-  const [previous, forward, prevUrl] = usePager(allUrls)
+  const [, forward, prevUrl] = usePager(allUrls)
 
-  const firstStepButtons: ReactElement = <PagerButtons onBack={previous} submitText="Save and Continue" />
-  const stepDoneButtons: ReactElement = <PagerButtons onBack={previous} backUrl={prevUrl} submitText="Save and Continue" />
-  const allDoneButtons: ReactElement = <PagerButtons onBack={previous} backUrl={prevUrl} submitText="Create PDF" />
+  const firstStepButtons: ReactElement = <PagerButtons previousUrl={prevUrl} submitText="Save and Continue" />
+  const stepDoneButtons: ReactElement = <PagerButtons previousUrl={prevUrl} submitText="Save and Continue" />
+  const allDoneButtons: ReactElement = <PagerButtons previousUrl={prevUrl} submitText="Create PDF" />
 
   return (
     <ThemeProvider theme={theme}>

@@ -56,17 +56,16 @@ export const usePager = (pageUrls: string[]): [() => void, () => void, string | 
 }
 
 interface PagerButtonsProps {
-  backUrl?: string
+  previousUrl?: string
   submitText: string
-  onBack: () => void
 }
 
-export const PagerButtons = ({ submitText, backUrl, onBack }: PagerButtonsProps): ReactElement => {
+export const PagerButtons = ({ submitText, previousUrl }: PagerButtonsProps): ReactElement => {
   let backButton: ReactElement | undefined
-  if (backUrl !== undefined) {
+  if (previousUrl !== undefined) {
     backButton = (
       <Box display="flex" justifyContent="flex-start" paddingRight={2}>
-        <Button onClick={onBack} component={Link} to={backUrl} variant="contained" color="secondary" >
+        <Button component={Link} to={previousUrl} variant="contained" color="secondary" >
           Previous
         </Button>
       </Box>
