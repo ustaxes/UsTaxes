@@ -8,7 +8,7 @@ import countries from '../data/countries'
 import { LabeledInput, LabeledDropdown, LabeledCheckBox, USStateDropDown } from './labeledInput'
 import { saveEmployerData } from '../redux/actions'
 
-export default function W2EmployerInfo ({ onAdvance, children }) {
+export default function W2EmployerInfo ({ navButtons, onAdvance }) {
   const { register, handleSubmit, errors, control } = useForm()
   const dispatch = useDispatch()
 
@@ -136,7 +136,7 @@ export default function W2EmployerInfo ({ onAdvance, children }) {
           </div>
         </Grow>
 
-        {children}
+        {navButtons}
       </form >
     </Box>
   )

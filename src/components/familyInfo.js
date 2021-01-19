@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { LabeledInput, LabeledCheckBox } from './labeledInput'
 import { saveFamilyInfo } from '../redux/actions'
 
-export default function FamilyInfo ({ children, onAdvance }) {
+export default function FamilyInfo ({ navButtons, onAdvance }) {
   const { register, handleSubmit, errors, control } = useForm()
   // const variable dispatch to allow use inside function
   const dispatch = useDispatch()
@@ -82,7 +82,7 @@ export default function FamilyInfo ({ children, onAdvance }) {
           defaultValue={prevFormData.contactEmail}
           errors={errors}
         />
-        {children}
+        {navButtons}
       </form>
     </Box>
   )

@@ -75,19 +75,19 @@ export default function Main (): ReactElement {
       </Box>
       <Switch>
         <Route path="/w2employerinfo" exact>
-          <W2EmployerInfo onAdvance={forward}>{firstStepButtons}</W2EmployerInfo>
+          <W2EmployerInfo onAdvance={forward} navButtons={firstStepButtons} />
         </Route>
         <Route path="/w2employeeinfo" exact>
-          <W2EmployeeInfo onAdvance={forward}>{stepDoneButtons}</W2EmployeeInfo>
+          <W2EmployeeInfo onAdvance={forward} navButtons={stepDoneButtons} />
         </Route>
         <Route path="/w2jobinfo" exact>
-          <W2JobInfo onAdvance={forward}>{stepDoneButtons}</W2JobInfo>
+          <W2JobInfo onAdvance={forward} navButtons={stepDoneButtons} />
         </Route>
         <Route path="/familyinfo" exact>
-          <FamilyInfo onAdvance={forward}>{stepDoneButtons}</FamilyInfo>
+          <FamilyInfo onAdvance={forward} navButtons={stepDoneButtons} />
         </Route>
         <Route path="/createpdf" exact>
-          <CreatePDF>{allDoneButtons}</CreatePDF>
+          <CreatePDF navButtons={allDoneButtons} />
         </Route>
       </Switch>
     </ThemeProvider>

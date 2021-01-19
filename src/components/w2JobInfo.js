@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { LabeledInput } from './labeledInput'
 import { saveW2Data } from '../redux/actions'
 
-export default function W2JobInfo ({ children, onAdvance }) {
+export default function W2JobInfo ({ navButtons, onAdvance }) {
   const { register, handleSubmit, errors } = useForm()
   // const variable dispatch to allow use inside function
   const dispatch = useDispatch()
@@ -63,7 +63,7 @@ export default function W2JobInfo ({ children, onAdvance }) {
           errors={errors}
         />
 
-        { children }
+        { navButtons }
       </form>
     </Box>
   )
