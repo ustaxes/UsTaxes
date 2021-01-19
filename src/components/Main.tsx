@@ -4,8 +4,6 @@ import {
   Switch,
   Route
 } from 'react-router-dom'
-import W2EmployerInfo from './W2EmployerInfo'
-import W2EmployeeInfo from './W2EmployeeInfo'
 import W2JobInfo from './W2JobInfo'
 import CreatePDF from './createPDF'
 import ResponsiveDrawer, { Section } from './ResponsiveDrawer'
@@ -50,8 +48,6 @@ const drawerSections: Section[] = [
   {
     title: 'Wages',
     items: [
-      ['Employer Information', Urls.employer],
-      ['Employee Information', Urls.employee],
       ['Job Information', Urls.job]
     ]
   },
@@ -85,12 +81,6 @@ export default function Main (): ReactElement {
         </Route>
         <Route path={Urls.refund} exact>
           <RefundBankAccount onAdvance={forward} navButtons={stepDoneButtons} />
-        </Route>
-        <Route path="/w2employerinfo" exact>
-          <W2EmployerInfo onAdvance={forward} navButtons={stepDoneButtons} />
-        </Route>
-        <Route path="/w2employeeinfo" exact>
-          <W2EmployeeInfo onAdvance={forward} navButtons={stepDoneButtons} />
         </Route>
         <Route path="/w2jobinfo" exact>
           <W2JobInfo onAdvance={forward} navButtons={stepDoneButtons} />

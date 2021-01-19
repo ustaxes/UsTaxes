@@ -1,5 +1,7 @@
-import { Control, RegisterOptions } from 'react-hook-form'
+import { Errors, BaseFormProps } from '../types'
+import { Control } from 'react-hook-form'
 import { PatternConfig } from '../Patterns'
+export * from '../types'
 
 export interface BaseDropdownProps {
   label: string
@@ -17,31 +19,12 @@ export interface LabeledDropdownProps<A,> extends BaseDropdownProps {
   textMapping: (a: A) => string
 }
 
-export interface Errors {
-  [key: string]: {type: string}
-}
-
-export const isError = (errors: Errors, name: string): boolean => getError(errors, name) !== undefined
-
-export const getError = (errors: Errors, name: string): string | undefined => {
-  let result
-  if (Object.prototype.hasOwnProperty.call(errors, name)) {
-    const r = errors[name]
-    result = r.type
-  }
-  return result
-}
-
-type Register = (rules?: RegisterOptions) => any
-
-export interface LabeledInputProps {
+export interface LabeledInputProps extends BaseFormProps {
   strongLabel?: string
   patternConfig?: PatternConfig
   label: string
-  register: Register
   required: boolean
   name: string
-  errors: Errors
   defaultValue?: string
 }
 

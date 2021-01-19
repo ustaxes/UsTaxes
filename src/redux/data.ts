@@ -1,28 +1,26 @@
-export interface W2EmployeeInfo {
-  SSID: string
-  employeeFirstName: string
-  employeeLastName: string
-  employeeAddress: string
-  employeeCity: string
-  employeeState: string
-  employeeZip: string
-  foreignAddress: boolean
-  employeeProvince?: string
-  employeePostalCode?: string
-  employeeCountry: string
+export interface Person {
+  firstName: string
+  lastName: string
+  ssid: string
 }
 
-export interface W2EmployerInfo {
+export interface Address {
+  address: string
+  city: string
+  state: string
+  zip: string
+  province?: string
+  postalCode?: string
+}
+
+export interface PrimaryPerson extends Person {
+  address: Address
+}
+
+export interface Employer {
   EIN: string
   employerName: string
-  employerAddress: string
-  employerCity: string
-  employerState: string
-  employerZip: string
-  foreignAddress: boolean
-  employerProvince?: string
-  employerCountry?: string
-  employerPostalCode?: string
+  address?: Address
 }
 
 export interface Refund {
@@ -30,23 +28,35 @@ export interface Refund {
   accountNumber: string
 }
 
-export interface W2Info {
+export interface IncomeW2 {
   occupation: string
   income: string
   fedWithholding: string
+  employer: Employer
+  person: Person
+}
+
+export enum FilingStatus {
+  S,
+  MFJ,
+  MFS,
+  HOH,
+  W
 }
 
 export interface TaxPayer {
-  contactPhoneNumber: string
-  contactEmail: string
+  contactPhoneNumber?: string
+  contactEmail?: string
+  filingStatus?: FilingStatus
+  primaryPerson?: PrimaryPerson
+  spouse?: Person
+  dependents?: Person[]
 }
 
 export interface Information {
-  w2EmployeeInfo?: W2EmployeeInfo
-  w2EmployerInfo?: W2EmployerInfo
-  w2Info?: W2Info
+  w2s: IncomeW2[]
   refund?: Refund
-  taxpayer?: TaxPayer
+  taxPayer?: TaxPayer
 }
 
 export interface TaxesState {

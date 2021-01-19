@@ -6,17 +6,17 @@ import { LabeledInput } from './input'
 import { Patterns } from './Patterns'
 import { saveW2Data } from '../redux/actions'
 import { PagedFormProps } from './pager'
-import { TaxesState, W2Info } from '../redux/data'
+import { TaxesState, IncomeW2 } from '../redux/data'
 
 export default function W2JobInfo ({ navButtons, onAdvance }: PagedFormProps): ReactElement {
   const { register, handleSubmit, errors } = useForm()
   // const variable dispatch to allow use inside function
   const dispatch = useDispatch()
 
-  const prevFormData: W2Info | undefined = useSelector((state: TaxesState) => state.information.w2Info)
+  const prevFormData: IncomeW2 | undefined = useSelector((state: TaxesState) => state.information.w2s[0])
 
   // component functions
-  const onSubmit = (formData: W2Info): void => {
+  const onSubmit = (formData: IncomeW2): void => {
     console.log('formData: ', formData)
     dispatch(saveW2Data(formData))
     onAdvance()
