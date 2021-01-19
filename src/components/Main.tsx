@@ -1,5 +1,5 @@
 import React, { ReactElement } from 'react'
-import { unstable_createMuiStrictModeTheme as createMuiTheme, ThemeProvider } from '@material-ui/core'
+import { Box, unstable_createMuiStrictModeTheme as createMuiTheme, ThemeProvider } from '@material-ui/core'
 import {
   Switch,
   Route
@@ -7,10 +7,11 @@ import {
 import W2EmployerInfo from './W2EmployerInfo'
 import W2EmployeeInfo from './W2EmployeeInfo'
 import W2JobInfo from './W2JobInfo'
-import RefundInfo from './RefundInfo'
-import CreatePDF from './CreatePDF'
+import CreatePDF from './createPDF'
 import ResponsiveDrawer, { Section } from './ResponsiveDrawer'
+import { PagerButtons, usePager } from './pager'
 import TaxPayerInfo from './TaxPayer'
+import RefundInfo from './RefundInfo'
 
 const theme = createMuiTheme({
   palette: {
@@ -62,30 +63,47 @@ const drawerSections: Section[] = [
   }
 ]
 
-const Main = (): ReactElement => (
-  <ThemeProvider theme={theme}>
-    <ResponsiveDrawer sections={drawerSections} />
-    <Switch>
-      <Route path={Urls.taxpayer} exact>
-        <TaxPayerInfo nextUrl={Urls.refund} />
-      </Route>
-      <Route path={Urls.refund} exact>
-        <RefundInfo nextUrl={Urls.employer} />
-      </Route>
-      <Route path={Urls.employer} exact>
-        <W2EmployerInfo nextUrl={Urls.employee} />
-      </Route>
-      <Route path={Urls.employee} exact>
-        <W2EmployeeInfo nextUrl={Urls.job} />
-      </Route>
-      <Route path={Urls.job} exact>
-        <W2JobInfo nextUrl={Urls.createPdf} />
-      </Route>
-      <Route path={Urls.createPdf} exact>
-        <CreatePDF/>
-      </Route>
-    </Switch>
-  </ThemeProvider>
+const allUrls: string[] = (
+  drawerSections
+    .flatMap((section: Section) => section.items)
+    .map((item) => item[1])
 )
 
-export default Main
+export default function Main (): ReactElement {
+  const [, forward, prevUrl] = usePager(allUrls)
+
+  const firstStepButtons: ReactElement = <PagerButtons previousUrl={prevUrl} submitText="Save and Continue" />
+  const stepDoneButtons: ReactElement = <PagerButtons previousUrl={prevUrl} submitText="Save and Continue" />
+  const allDoneButtons: ReactElement = <PagerButtons previousUrl={prevUrl} submitText="Create PDF" />
+
+  return (
+    <ThemeProvider theme={theme}>
+      <ResponsiveDrawer sections={drawerSections} />
+      <Box display="flex" justifyContent="center">
+        <Box display="flex" justifyContent="flex-start">
+          <h1>Wages (Form W-2)</h1>
+        </Box>
+      </Box>
+      <Switch>
+        <Route path={Urls.taxpayer} exact>
+          <TaxPayerInfo onAdvance={forward} navButtons={firstStepButtons} />
+        </Route>
+        <Route path={Urls.refund} exact>
+          <RefundInfo onAdvance={forward} navButtons={stepDoneButtons} />
+        </Route>
+        <Route path="/w2employerinfo" exact>
+          <W2EmployerInfo onAdvance={forward} navButtons={stepDoneButtons} />
+        </Route>
+        <Route path="/w2employeeinfo" exact>
+          <W2EmployeeInfo onAdvance={forward} navButtons={stepDoneButtons} />
+        </Route>
+        <Route path="/w2jobinfo" exact>
+          <W2JobInfo onAdvance={forward} navButtons={stepDoneButtons} />
+        </Route>
+        <Route path="/createpdf" exact>
+          <CreatePDF navButtons={allDoneButtons} />
+        </Route>
+      </Switch>
+    </ThemeProvider>
+  )
+}

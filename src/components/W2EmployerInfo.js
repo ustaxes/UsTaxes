@@ -1,17 +1,14 @@
 import React, { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { Box, Grow } from '@material-ui/core'
-import { useHistory } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
-import { FinishPage } from './paging'
 import countries from '../data/countries'
 
 import { LabeledInput, LabeledDropdown, LabeledCheckBox, USStateDropDown } from './labeledInput'
 import { saveEmployerData } from '../redux/actions'
 
-export default function W2EmployerInfo ({ nextUrl }) {
+export default function W2EmployerInfo ({ navButtons, onAdvance }) {
   const { register, handleSubmit, errors, control } = useForm()
-  const history = useHistory()
   const dispatch = useDispatch()
 
   const prevFormData = useSelector(state => state.information.w2EmployerInfo ?? {})
@@ -21,7 +18,7 @@ export default function W2EmployerInfo ({ nextUrl }) {
   const onSubmit = formData => {
     console.log('formData: ', formData)
     dispatch(saveEmployerData(formData))
-    history.push(nextUrl)
+    onAdvance()
   }
 
   return (
@@ -137,8 +134,7 @@ export default function W2EmployerInfo ({ nextUrl }) {
             />
           </div>
         </Grow>
-
-        <FinishPage />
+        {navButtons}
       </form >
     </Box>
   )

@@ -1,18 +1,15 @@
 import React, { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { Box, Grow } from '@material-ui/core'
-import { useHistory } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 
 import countries from '../data/countries'
 
 import { LabeledInput, LabeledDropdown, LabeledCheckBox, USStateDropDown } from './labeledInput'
 import { saveEmployeeData } from '../redux/actions'
-import { FinishPage } from './paging'
 
-export default function W2EmployeeInfo ({ nextUrl }) {
+export default function W2EmployeeInfo ({ navButtons, onAdvance }) {
   const { register, handleSubmit, errors, control } = useForm()
-  const history = useHistory()
   // const variable dispatch to allow use inside function
   const dispatch = useDispatch()
 
@@ -23,7 +20,7 @@ export default function W2EmployeeInfo ({ nextUrl }) {
   const onSubmit = formData => {
     console.log('formData: ', formData)
     dispatch(saveEmployeeData(formData))
-    history.push(nextUrl)
+    onAdvance()
   }
 
   return (
@@ -161,8 +158,7 @@ export default function W2EmployeeInfo ({ nextUrl }) {
             />
           </div>
         </Grow>
-
-        <FinishPage />
+        {navButtons}
       </form>
     </Box>
   )

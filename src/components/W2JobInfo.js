@@ -1,15 +1,12 @@
 import React from 'react'
 import { useForm } from 'react-hook-form'
 import { Box } from '@material-ui/core'
-import { useHistory } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
-import { FinishPage } from './paging'
 import { LabeledInput } from './labeledInput'
 import { saveW2Data } from '../redux/actions'
 
-export default function W2JobInfo ({ nextUrl }) {
+export default function W2JobInfo ({ navButtons, onAdvance }) {
   const { register, handleSubmit, errors } = useForm()
-  const history = useHistory()
   // const variable dispatch to allow use inside function
   const dispatch = useDispatch()
 
@@ -19,7 +16,7 @@ export default function W2JobInfo ({ nextUrl }) {
   const onSubmit = formData => {
     console.log('formData: ', formData)
     dispatch(saveW2Data(formData))
-    history.push(nextUrl)
+    onAdvance()
   }
 
   return (
@@ -67,7 +64,7 @@ export default function W2JobInfo ({ nextUrl }) {
           errors={errors}
         />
 
-        <FinishPage />
+        { navButtons }
       </form>
     </Box>
   )

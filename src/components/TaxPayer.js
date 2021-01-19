@@ -1,15 +1,12 @@
 import React from 'react'
 import { useForm } from 'react-hook-form'
 import { Box } from '@material-ui/core'
-import { useHistory } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
-import { FinishPage } from './paging'
 import { LabeledInput } from './labeledInput'
 import { saveTaxpayerInfo } from '../redux/actions'
 
-export default function TaxPayerInfo ({ nextUrl }) {
+export default function TaxPayerInfo ({ navButtons, onAdvance }) {
   const { register, handleSubmit, errors } = useForm()
-  const history = useHistory()
   // const variable dispatch to allow use inside function
   const dispatch = useDispatch()
 
@@ -21,7 +18,7 @@ export default function TaxPayerInfo ({ nextUrl }) {
   const onSubmit = formData => {
     console.log('formData: ', formData)
     dispatch(saveTaxpayerInfo(formData))
-    history.push(nextUrl)
+    onAdvance()
   }
 
   return (
@@ -53,7 +50,7 @@ export default function TaxPayerInfo ({ nextUrl }) {
           errors={errors}
         />
 
-        <FinishPage />
+        {navButtons}
       </form>
     </Box>
   )

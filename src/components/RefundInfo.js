@@ -1,15 +1,12 @@
 import React from 'react'
 import { useForm } from 'react-hook-form'
 import { Box } from '@material-ui/core'
-import { useHistory } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
-import { FinishPage } from './paging'
 import { LabeledInput } from './labeledInput'
 import { saveRefundInfo } from '../redux/actions'
 
-export default function RefundInfo ({ nextUrl }) {
+export default function RefundInfo ({ navButtons, onAdvance }) {
   const { register, handleSubmit, errors } = useForm()
-  const history = useHistory()
   // const variable dispatch to allow use inside function
   const dispatch = useDispatch()
 
@@ -21,7 +18,7 @@ export default function RefundInfo ({ nextUrl }) {
   const onSubmit = formData => {
     console.log('formData: ', formData)
     dispatch(saveRefundInfo(formData))
-    history.push(nextUrl)
+    onAdvance()
   }
 
   return (
@@ -55,8 +52,7 @@ export default function RefundInfo ({ nextUrl }) {
           defaultValue={prevFormData.accountNumber}
           errors={errors}
         />
-
-        <FinishPage />
+        {navButtons}
       </form>
     </Box>
   )
