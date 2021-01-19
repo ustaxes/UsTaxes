@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { Button, Box, Grow } from '@material-ui/core'
-import { Link, useHistory } from 'react-router-dom'
+import { Box, Grow } from '@material-ui/core'
 import { useDispatch, useSelector } from 'react-redux'
 
 import countries from '../data/countries'
@@ -9,9 +8,8 @@ import countries from '../data/countries'
 import { LabeledInput, LabeledDropdown, LabeledCheckBox, USStateDropDown } from './labeledInput'
 import { saveEmployerData } from '../redux/actions'
 
-export default function W2EmployerInfo ({ nextUrl }) {
+export default function W2EmployerInfo ({ navButtons, onAdvance }) {
   const { register, handleSubmit, errors, control } = useForm()
-  const history = useHistory()
   const dispatch = useDispatch()
 
   const prevFormData = useSelector(state => state.information.w2EmployerInfo ?? {})
@@ -21,7 +19,7 @@ export default function W2EmployerInfo ({ nextUrl }) {
   const onSubmit = formData => {
     console.log('formData: ', formData)
     dispatch(saveEmployerData(formData))
-    history.push(nextUrl)
+    onAdvance()
   }
 
   return (
@@ -138,17 +136,7 @@ export default function W2EmployerInfo ({ nextUrl }) {
           </div>
         </Grow>
 
-        <Box display="flex" justifyContent="flex-start" paddingTop={2} paddingBottom={1}>
-          <Box display="flex" justifyContent="flex-start" paddingRight={2}>
-            <Button component={Link} to="/" variant="contained" color="secondary" >
-                            Back
-            </Button>
-          </Box>
-
-          <Button type="submit" variant="contained" color="primary">
-                        Save and Continue
-          </Button>
-        </Box>
+        {navButtons}
       </form >
     </Box>
   )

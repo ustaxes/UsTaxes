@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { ReactElement } from 'react'
 import { Box, unstable_createMuiStrictModeTheme as createMuiTheme, ThemeProvider } from '@material-ui/core'
 import {
   Switch,
@@ -9,7 +9,8 @@ import W2EmployeeInfo from './w2EmployeeInfo'
 import W2JobInfo from './w2JobInfo'
 import FamilyInfo from './familyInfo'
 import CreatePDF from './createPDF'
-import ResponsiveDrawer from './menu'
+import ResponsiveDrawer, { Section } from './menu'
+import { PagerButtons, usePager } from './pager'
 
 const theme = createMuiTheme({
   palette: {
@@ -28,7 +29,7 @@ const theme = createMuiTheme({
   }
 })
 
-const drawerSections = [
+const drawerSections: Section[] = [
   {
     title: 'Wages',
     items: [
@@ -51,7 +52,19 @@ const drawerSections = [
   }
 ]
 
-export default function W2 () {
+const allUrls: string[] = (
+  drawerSections
+    .flatMap((section: Section) => section.items)
+    .map((item) => item[1])
+)
+
+export default function Main (): ReactElement {
+  const [, forward, prevUrl] = usePager(allUrls)
+
+  const firstStepButtons: ReactElement = <PagerButtons previousUrl={prevUrl} submitText="Save and Continue" />
+  const stepDoneButtons: ReactElement = <PagerButtons previousUrl={prevUrl} submitText="Save and Continue" />
+  const allDoneButtons: ReactElement = <PagerButtons previousUrl={prevUrl} submitText="Create PDF" />
+
   return (
     <ThemeProvider theme={theme}>
       <ResponsiveDrawer sections={drawerSections} />
@@ -62,19 +75,19 @@ export default function W2 () {
       </Box>
       <Switch>
         <Route path="/w2employerinfo" exact>
-          <W2EmployerInfo nextUrl="/w2employeeinfo" />
+          <W2EmployerInfo onAdvance={forward} navButtons={firstStepButtons} />
         </Route>
         <Route path="/w2employeeinfo" exact>
-          <W2EmployeeInfo nextUrl="/w2jobinfo" />
+          <W2EmployeeInfo onAdvance={forward} navButtons={stepDoneButtons} />
         </Route>
         <Route path="/w2jobinfo" exact>
-          <W2JobInfo nextUrl="/familyinfo" />
+          <W2JobInfo onAdvance={forward} navButtons={stepDoneButtons} />
         </Route>
         <Route path="/familyinfo" exact>
-          <FamilyInfo nextUrl="/createpdf" />
+          <FamilyInfo onAdvance={forward} navButtons={stepDoneButtons} />
         </Route>
         <Route path="/createpdf" exact>
-          <CreatePDF/>
+          <CreatePDF navButtons={allDoneButtons} />
         </Route>
       </Switch>
     </ThemeProvider>
