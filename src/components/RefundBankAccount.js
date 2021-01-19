@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { LabeledInput } from './labeledInput'
 import { saveRefundInfo } from '../redux/actions'
 
-export default function RefundInfo ({ navButtons, onAdvance }) {
+export default function RefundBankAccount ({ navButtons, onAdvance }) {
   const { register, handleSubmit, errors } = useForm()
   // const variable dispatch to allow use inside function
   const dispatch = useDispatch()
