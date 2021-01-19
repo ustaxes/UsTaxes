@@ -26,9 +26,9 @@ export default function W2JobInfo ({ navButtons, onAdvance }) {
         <Box display="flex" justifyContent="flex-start">
           <h2>Job Information</h2>
         </Box>
-
-        <strong>Input data from W-2</strong>
-
+        <Box display="flex" justifyContent="flex-start">
+          <strong>Input data from W-2</strong>
+        </Box>
         <LabeledInput
           label="Occupation"
           register={register}
