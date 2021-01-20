@@ -4,8 +4,9 @@ import { Information } from './data'
 import {
   SAVE_EMPLOYEE_DATA,
   SAVE_EMPLOYER_DATA,
-  SAVE_FAMILY_INFO,
+  SAVE_REFUND_INFO,
   SAVE_W2_INFO,
+  SAVE_TAXPAYER_INFO,
   Actions
 } from './actions'
 
@@ -19,8 +20,11 @@ function formReducer (state: Information | undefined, action: Actions): Informat
     case SAVE_EMPLOYER_DATA: {
       return { ...newState, w2EmployerInfo: action.formData }
     }
-    case SAVE_FAMILY_INFO: {
-      return { ...newState, familyInfo: action.formData }
+    case SAVE_REFUND_INFO: {
+      return { ...newState, refund: action.formData }
+    }
+    case SAVE_TAXPAYER_INFO: {
+      return { ...newState, taxpayer: action.formData }
     }
     case SAVE_W2_INFO: {
       return { ...newState, w2Info: action.formData }

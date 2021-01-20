@@ -2,7 +2,6 @@ import React, { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { Box, Grow } from '@material-ui/core'
 import { useDispatch, useSelector } from 'react-redux'
-
 import countries from '../data/countries'
 
 import { LabeledInput, LabeledDropdown, LabeledCheckBox, USStateDropDown } from './labeledInput'
@@ -28,7 +27,9 @@ export default function W2EmployerInfo ({ navButtons, onAdvance }) {
         <Box display="flex" justifyContent="flex-start">
           <h2>Employer Information</h2>
         </Box>
-
+        <Box display="flex" justifyContent="flex-start">
+          <strong>Input data from W-2</strong>
+        </Box>
         <LabeledInput
           strongLabel="Box B - "
           label="Employer Identification Number"
@@ -135,7 +136,6 @@ export default function W2EmployerInfo ({ navButtons, onAdvance }) {
             />
           </div>
         </Grow>
-
         {navButtons}
       </form >
     </Box>

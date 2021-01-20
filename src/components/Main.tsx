@@ -1,16 +1,17 @@
 import React, { ReactElement } from 'react'
-import { Box, unstable_createMuiStrictModeTheme as createMuiTheme, ThemeProvider } from '@material-ui/core'
+import { unstable_createMuiStrictModeTheme as createMuiTheme, ThemeProvider } from '@material-ui/core'
 import {
   Switch,
   Route
 } from 'react-router-dom'
-import W2EmployerInfo from './w2EmployerInfo'
-import W2EmployeeInfo from './w2EmployeeInfo'
-import W2JobInfo from './w2JobInfo'
-import FamilyInfo from './familyInfo'
+import W2EmployerInfo from './W2EmployerInfo'
+import W2EmployeeInfo from './W2EmployeeInfo'
+import W2JobInfo from './W2JobInfo'
 import CreatePDF from './createPDF'
-import ResponsiveDrawer, { Section } from './menu'
+import ResponsiveDrawer, { Section } from './ResponsiveDrawer'
 import { PagerButtons, usePager } from './pager'
+import TaxPayerInfo from './TaxPayer'
+import RefundBankAccount from './RefundBankAccount'
 
 const theme = createMuiTheme({
   palette: {
@@ -29,25 +30,35 @@ const theme = createMuiTheme({
   }
 })
 
+const Urls = {
+  taxpayer: '/taxpayerinfo',
+  refund: '/refundinfo',
+  employer: '/w2employerinfo',
+  employee: '/w2employeeinfo',
+  job: '/w2jobinfo',
+  createPdf: '/createpdf'
+}
+
 const drawerSections: Section[] = [
-  {
-    title: 'Wages',
-    items: [
-      ['Employer Information', '/w2employerinfo'],
-      ['Employee Information', '/w2employeeinfo'],
-      ['Job Information', '/w2jobinfo']
-    ]
-  },
   {
     title: 'Personal',
     items: [
-      ['Family Information', '/familyinfo']
+      ['Taxpayer Information', Urls.taxpayer],
+      ['Refund Information', Urls.refund]
+    ]
+  },
+  {
+    title: 'Wages',
+    items: [
+      ['Employer Information', Urls.employer],
+      ['Employee Information', Urls.employee],
+      ['Job Information', Urls.job]
     ]
   },
   {
     title: 'Results',
     items: [
-      ['Review and Print', '/createpdf']
+      ['Review and Print', Urls.createPdf]
     ]
   }
 ]
@@ -68,23 +79,21 @@ export default function Main (): ReactElement {
   return (
     <ThemeProvider theme={theme}>
       <ResponsiveDrawer sections={drawerSections} />
-      <Box display="flex" justifyContent="center">
-        <Box display="flex" justifyContent="flex-start">
-          <h1>Wages (Form W-2)</h1>
-        </Box>
-      </Box>
       <Switch>
+        <Route path={Urls.taxpayer} exact>
+          <TaxPayerInfo onAdvance={forward} navButtons={firstStepButtons} />
+        </Route>
+        <Route path={Urls.refund} exact>
+          <RefundBankAccount onAdvance={forward} navButtons={stepDoneButtons} />
+        </Route>
         <Route path="/w2employerinfo" exact>
-          <W2EmployerInfo onAdvance={forward} navButtons={firstStepButtons} />
+          <W2EmployerInfo onAdvance={forward} navButtons={stepDoneButtons} />
         </Route>
         <Route path="/w2employeeinfo" exact>
           <W2EmployeeInfo onAdvance={forward} navButtons={stepDoneButtons} />
         </Route>
         <Route path="/w2jobinfo" exact>
           <W2JobInfo onAdvance={forward} navButtons={stepDoneButtons} />
-        </Route>
-        <Route path="/familyinfo" exact>
-          <FamilyInfo onAdvance={forward} navButtons={stepDoneButtons} />
         </Route>
         <Route path="/createpdf" exact>
           <CreatePDF navButtons={allDoneButtons} />

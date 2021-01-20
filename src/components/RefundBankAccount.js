@@ -1,25 +1,23 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { useForm } from 'react-hook-form'
 import { Box } from '@material-ui/core'
 import { useDispatch, useSelector } from 'react-redux'
+import { LabeledInput } from './labeledInput'
+import { saveRefundInfo } from '../redux/actions'
 
-import { LabeledInput, LabeledCheckBox } from './labeledInput'
-import { saveFamilyInfo } from '../redux/actions'
-
-export default function FamilyInfo ({ navButtons, onAdvance }) {
-  const { register, handleSubmit, errors, control } = useForm()
+export default function RefundBankAccount ({ navButtons, onAdvance }) {
+  const { register, handleSubmit, errors } = useForm()
   // const variable dispatch to allow use inside function
   const dispatch = useDispatch()
 
   const prevFormData = useSelector(state => {
-    return state.information.familyInfo ?? {}
+    return state.information.refund ?? {}
   })
-  const [foreignAddress, setforeignAddress] = useState(prevFormData.foreignAddress === 'true')
 
   // component functions
   const onSubmit = formData => {
     console.log('formData: ', formData)
-    dispatch(saveFamilyInfo(formData))
+    dispatch(saveRefundInfo(formData))
     onAdvance()
   }
 
@@ -28,15 +26,8 @@ export default function FamilyInfo ({ navButtons, onAdvance }) {
       <form onSubmit={handleSubmit(onSubmit)}>
 
         <Box display="flex" justifyContent="flex-start">
-          <h2>Family Information</h2>
+          <h2>Refund Information</h2>
         </Box>
-
-        <LabeledCheckBox
-          foreignAddress={foreignAddress}
-          setforeignAddress={setforeignAddress}
-          control={control}
-          description="Do you have a foreign address?"
-        />
 
         <LabeledInput
           label="Bank Routing number"
@@ -59,27 +50,6 @@ export default function FamilyInfo ({ navButtons, onAdvance }) {
           patternDescription="Input should be filled with 10-12 numbers"
           name="accountNumber"
           defaultValue={prevFormData.accountNumber}
-          errors={errors}
-        />
-
-        <LabeledInput
-          label="Contact phone number"
-          register={register}
-          required={true}
-          mask="999-999-9999"
-          pattern={/[0-9]{3}-[0-9]{3}-[0-9]{4}/}
-          patternDescription="Input should be filled with 10 numbers"
-          name="contactPhoneNumber"
-          defaultValue={prevFormData.contactPhoneNumber}
-          errors={errors}
-        />
-
-        <LabeledInput
-          label="Contact email address"
-          register={register}
-          required={true}
-          name="contactEmail"
-          defaultValue={prevFormData.contactEmail}
           errors={errors}
         />
         {navButtons}

@@ -29,7 +29,9 @@ export default function W2EmployeeInfo ({ navButtons, onAdvance }) {
         <Box display="flex" justifyContent="flex-start">
           <h2>Employee Information</h2>
         </Box>
-
+        <Box display="flex" justifyContent="flex-start">
+          <strong>Input data from W-2</strong>
+        </Box>
         <LabeledInput
           strongLabel="Box A - "
           label="Employee's Social Security Number"

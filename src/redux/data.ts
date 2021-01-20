@@ -22,11 +22,9 @@ export interface W2EmployerInfo {
   employerPostalCode?: string
 }
 
-export interface FamilyInfo {
+export interface Refund {
   routingNumber: string
   accountNumber: string
-  contactPhoneNumber: string
-  contactEmail: string
 }
 
 export interface W2Info {
@@ -35,11 +33,17 @@ export interface W2Info {
   fedWithholding: string
 }
 
+export interface TaxPayer {
+  contactPhoneNumber: string
+  contactEmail: string
+}
+
 export interface Information {
   w2EmployeeInfo?: W2EmployeeInfo
   w2EmployerInfo?: W2EmployerInfo
   w2Info?: W2Info
-  familyInfo?: FamilyInfo
+  refund?: Refund
+  taxpayer?: TaxPayer
 }
 
 export interface TaxesState {

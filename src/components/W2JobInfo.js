@@ -2,7 +2,6 @@ import React from 'react'
 import { useForm } from 'react-hook-form'
 import { Box } from '@material-ui/core'
 import { useDispatch, useSelector } from 'react-redux'
-
 import { LabeledInput } from './labeledInput'
 import { saveW2Data } from '../redux/actions'
 
@@ -27,7 +26,9 @@ export default function W2JobInfo ({ navButtons, onAdvance }) {
         <Box display="flex" justifyContent="flex-start">
           <h2>Job Information</h2>
         </Box>
-
+        <Box display="flex" justifyContent="flex-start">
+          <strong>Input data from W-2</strong>
+        </Box>
         <LabeledInput
           label="Occupation"
           register={register}
