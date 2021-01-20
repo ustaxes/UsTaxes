@@ -1,21 +1,24 @@
-import React from 'react'
+import React, { ReactElement } from 'react'
 import { useForm } from 'react-hook-form'
 import { Box } from '@material-ui/core'
 import { useDispatch, useSelector } from 'react-redux'
-import { LabeledInput } from './labeledInput'
+import { LabeledInput, Patterns } from './labeledInput'
 import { saveRefundInfo } from '../redux/actions'
 
-export default function RefundBankAccount ({ navButtons, onAdvance }) {
+import { Refund, TaxesState } from '../redux/data'
+import { PagedFormProps } from './pager'
+
+export default function RefundBankAccount ({ navButtons, onAdvance }: PagedFormProps): ReactElement {
   const { register, handleSubmit, errors } = useForm()
   // const variable dispatch to allow use inside function
   const dispatch = useDispatch()
 
-  const prevFormData = useSelector(state => {
-    return state.information.refund ?? {}
+  const prevFormData: Refund | undefined = useSelector((state: TaxesState) => {
+    return state.information.refund
   })
 
   // component functions
-  const onSubmit = formData => {
+  const onSubmit = (formData: Refund): void => {
     console.log('formData: ', formData)
     dispatch(saveRefundInfo(formData))
     onAdvance()
@@ -33,11 +36,9 @@ export default function RefundBankAccount ({ navButtons, onAdvance }) {
           label="Bank Routing number"
           register={register}
           required={true}
-          mask="999999999"
-          pattern={/[0-9]{9}/}
-          patternDescription="Input should be filled with 10 numbers"
+          patternConfig={Patterns.bankRouting}
           name="routingNumber"
-          defaultValue={prevFormData.routingNumber}
+          defaultValue={prevFormData?.routingNumber ?? ''}
           errors={errors}
         />
 
@@ -45,11 +46,9 @@ export default function RefundBankAccount ({ navButtons, onAdvance }) {
           label="Bank Account number"
           register={register}
           required={true}
-          mask="999999999999"
-          pattern={/[0-9]{10}|[0-9]{11}|[0-9]{12}/}
-          patternDescription="Input should be filled with 10-12 numbers"
+          patternConfig={Patterns.bankAccount}
           name="accountNumber"
-          defaultValue={prevFormData.accountNumber}
+          defaultValue={prevFormData?.accountNumber ?? ''}
           errors={errors}
         />
         {navButtons}

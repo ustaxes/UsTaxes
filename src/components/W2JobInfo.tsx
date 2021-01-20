@@ -1,19 +1,21 @@
-import React from 'react'
+import React, { ReactElement } from 'react'
 import { useForm } from 'react-hook-form'
 import { Box } from '@material-ui/core'
 import { useDispatch, useSelector } from 'react-redux'
-import { LabeledInput } from './labeledInput'
+import { LabeledInput, Patterns } from './labeledInput'
 import { saveW2Data } from '../redux/actions'
+import { PagedFormProps } from './pager'
+import { TaxesState, W2Info } from '../redux/data'
 
-export default function W2JobInfo ({ navButtons, onAdvance }) {
+export default function W2JobInfo ({ navButtons, onAdvance }: PagedFormProps): ReactElement {
   const { register, handleSubmit, errors } = useForm()
   // const variable dispatch to allow use inside function
   const dispatch = useDispatch()
 
-  const prevFormData = useSelector(state => state.information.w2Info ?? {})
+  const prevFormData: W2Info | undefined = useSelector((state: TaxesState) => state.information.w2Info)
 
   // component functions
-  const onSubmit = formData => {
+  const onSubmit = (formData: W2Info): void => {
     console.log('formData: ', formData)
     dispatch(saveW2Data(formData))
     onAdvance()
@@ -34,7 +36,7 @@ export default function W2JobInfo ({ navButtons, onAdvance }) {
           register={register}
           required={true}
           name="occupation"
-          defaultValue={prevFormData.occupation}
+          defaultValue={prevFormData?.occupation ?? ''}
           errors={errors}
         />
 
@@ -43,11 +45,9 @@ export default function W2JobInfo ({ navButtons, onAdvance }) {
           label="Wages, tips, other compensation"
           register={register}
           required={true}
-          mask="$999999"
-          pattern={/[0-9]*/}
-          patternDescription="Input should be filled with numbers only"
+          patternConfig={Patterns.currency}
           name="income"
-          defaultValue={prevFormData.income}
+          defaultValue={prevFormData?.income ?? ''}
           errors={errors}
         />
 
@@ -56,14 +56,11 @@ export default function W2JobInfo ({ navButtons, onAdvance }) {
           label="Federal income tax withheld"
           register={register}
           required={true}
-          mask="$999999"
-          pattern={/[0-9]*/}
-          patternDescription="Input should be filled with numbers only"
           name="fedWithholding"
-          defaultValue={prevFormData.fedWithholding}
+          patternConfig={Patterns.currency}
+          defaultValue={prevFormData?.fedWithholding ?? ''}
           errors={errors}
         />
-
         { navButtons }
       </form>
     </Box>

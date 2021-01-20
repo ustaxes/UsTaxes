@@ -81,3 +81,11 @@ export const PagerButtons = ({ submitText, previousUrl }: PagerButtonsProps): Re
     </Box>
   )
 }
+
+export interface DonePagedFormProps {
+  navButtons: ReactElement
+}
+
+export interface PagedFormProps extends DonePagedFormProps {
+  onAdvance: () => void
+}

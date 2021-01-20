@@ -1,23 +1,28 @@
-import React, { useState } from 'react'
+import React, { ReactElement, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { Box, Grow } from '@material-ui/core'
 import { useDispatch, useSelector } from 'react-redux'
 
 import countries from '../data/countries'
 
-import { LabeledInput, LabeledDropdown, LabeledCheckBox, USStateDropDown } from './labeledInput'
+import { LabeledInput, LabeledDropdown, LabeledCheckBox, USStateDropDown, Patterns } from './labeledInput'
 import { saveEmployeeData } from '../redux/actions'
+import { PagedFormProps } from './pager'
+import { TaxesState, W2EmployeeInfo as W2Employee } from '../redux/data'
 
-export default function W2EmployeeInfo ({ navButtons, onAdvance }) {
+export default function W2EmployeeInfo ({ navButtons, onAdvance }: PagedFormProps): ReactElement {
   const { register, handleSubmit, errors, control } = useForm()
   // const variable dispatch to allow use inside function
   const dispatch = useDispatch()
 
-  const prevFormData = useSelector(state => state.information.w2EmployeeInfo ?? {})
-  const [foreignAddress, setforeignAddress] = useState(prevFormData.foreignAddress === 'true')
+  const prevFormData: (W2Employee | undefined) = useSelector((state: TaxesState) =>
+    state.information.w2EmployeeInfo
+  )
+
+  const [foreignAddress, setforeignAddress] = useState(prevFormData?.foreignAddress ?? false)
 
   // component functions
-  const onSubmit = formData => {
+  const onSubmit = (formData: W2Employee): void => {
     console.log('formData: ', formData)
     dispatch(saveEmployeeData(formData))
     onAdvance()
@@ -37,11 +42,9 @@ export default function W2EmployeeInfo ({ navButtons, onAdvance }) {
           label="Employee's Social Security Number"
           register={register}
           required={true}
-          mask="999-99-9999"
-          pattern={/[0-9]{3}-[0-9]{2}-[0-9]{4}/}
-          patternDescription="Input should be filled with 9 numbers"
+          patternConfig={Patterns.ssn}
           name="SSID"
-          defaultValue={prevFormData.SSID}
+          defaultValue={prevFormData?.SSID ?? ''}
           errors={errors}
         />
 
@@ -50,20 +53,18 @@ export default function W2EmployeeInfo ({ navButtons, onAdvance }) {
           label="Employee's First Name and Initial"
           register={register}
           required={true}
-          pattern={/^[A-Za-z ]+$/i}
-          patternDescription="Input should only include letters and spaces"
+          patternConfig={Patterns.name}
           name="employeeFirstName"
-          defaultValue={prevFormData.employeeFirstName}
+          defaultValue={prevFormData?.employeeFirstName ?? ''}
           errors={errors}
         />
         <LabeledInput
           label="Employee's Last Name and Suffix"
           register={register}
           required={true}
-          pattern={/^[A-Za-z ]+$/i}
-          patternDescription="Input should only include letters and spaces"
+          patternConfig={Patterns.name}
           name="employeeLastName"
-          defaultValue={prevFormData.employeeLastName}
+          defaultValue={prevFormData?.employeeLastName ?? ''}
           errors={errors}
         />
 
@@ -82,7 +83,7 @@ export default function W2EmployeeInfo ({ navButtons, onAdvance }) {
           label="Employee's Address" register={register}
           required={true}
           name="employeeAddress"
-          defaultValue={prevFormData.employeeAddress}
+          defaultValue={prevFormData?.employeeAddress ?? ''}
           errors={errors}
         />
 
@@ -99,7 +100,7 @@ export default function W2EmployeeInfo ({ navButtons, onAdvance }) {
           register={register}
           required={true}
           name="employeeCity"
-          defaultValue={prevFormData.employeeCity}
+          defaultValue={prevFormData?.employeeCity ?? ''}
           errors={errors}
         />
         <Grow in={!foreignAddress} style={{ display: !foreignAddress ? 'block' : 'none' }}>
@@ -109,7 +110,7 @@ export default function W2EmployeeInfo ({ navButtons, onAdvance }) {
               control={control}
               required={!foreignAddress}
               name="employeeState"
-              defaultValue={prevFormData.employeeState}
+              defaultValue={prevFormData?.employeeState ?? ''}
               errors={errors}
             />
 
@@ -117,11 +118,9 @@ export default function W2EmployeeInfo ({ navButtons, onAdvance }) {
               label="Employee's Zip Code"
               register={register}
               required={!foreignAddress}
-              mask="99999-9999"
-              pattern={/[0-9]{5}-[0-9]{4}/}
-              patternDescription="Input should be filled with 9 numbers"
+              patternConfig={Patterns.zip}
               name="employeeZip"
-              defaultValue={prevFormData.employeeZip}
+              defaultValue={prevFormData?.employeeZip ?? ''}
               errors={errors}
             />
           </div>
@@ -133,10 +132,9 @@ export default function W2EmployeeInfo ({ navButtons, onAdvance }) {
               label="Employee's Province or State"
               register={register}
               required={foreignAddress}
-              pattern={/^[A-Za-z]+$/i}
-              patternDescription="Input should only include letters"
+              patternConfig={Patterns.name}
               name="employeeProvince"
-              defaultValue={prevFormData.employeeProvince}
+              defaultValue={prevFormData?.employeeProvince ?? ''}
               errors={errors}
             />
             <LabeledDropdown
@@ -145,7 +143,7 @@ export default function W2EmployeeInfo ({ navButtons, onAdvance }) {
               control={control}
               required={foreignAddress}
               name="employeeCountry"
-              defaultValue={prevFormData.employeeCountry}
+              defaultValue={prevFormData?.employeeCountry ?? ''}
               errors={errors}
             />
             <LabeledInput
@@ -153,7 +151,7 @@ export default function W2EmployeeInfo ({ navButtons, onAdvance }) {
               register={register}
               required={foreignAddress}
               name="employeePostalCode"
-              defaultValue={prevFormData.employeePostalCode}
+              defaultValue={prevFormData?.employeePostalCode ?? ''}
               errors={errors}
             />
           </div>
