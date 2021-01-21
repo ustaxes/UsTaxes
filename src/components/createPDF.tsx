@@ -6,6 +6,10 @@ import { DonePagedFormProps } from './pager'
 export default function CreatePDF ({ navButtons }: DonePagedFormProps): ReactElement {
   const onSubmit = (e: FormEvent<any>): void => {
     e.preventDefault()
+    // This function must not return anything, because that's what
+    // form's parameter expects. But createPDFPopup is an async
+    // function. So here we are explicitly ignoring the results of
+    // that future.
     createPDFPopup().then(() => {}, () => {})
   }
 
