@@ -5,7 +5,8 @@ import { useDispatch, useSelector } from 'react-redux'
 
 import countries from '../data/countries'
 
-import { LabeledInput, LabeledDropdown, LabeledCheckBox, USStateDropDown, Patterns } from './labeledInput'
+import { LabeledInput, LabeledDropdown, LabeledCheckBox, USStateDropDown } from './labeledInput'
+import { Patterns } from './Patterns'
 import { saveEmployeeData } from '../redux/actions'
 import { PagedFormProps } from './pager'
 import { TaxesState, W2EmployeeInfo as W2Employee } from '../redux/data'
