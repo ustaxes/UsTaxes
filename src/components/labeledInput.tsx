@@ -57,6 +57,7 @@ export function LabeledInput (props: LabeledInputProps): ReactElement {
     <TextField
       error={isError(errors, name)}
       helperText={helperText}
+      fullWidth={patternConfig.mask === undefined}
       defaultValue={defaultValue}
       inputRef={register({ required: required, pattern: patternConfig.regexp })}
       name={name}
