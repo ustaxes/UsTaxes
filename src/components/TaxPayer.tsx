@@ -37,7 +37,7 @@ export default function TaxPayerInfo ({ navButtons, onAdvance }: PagedFormProps)
           required={true}
           patternConfig={Patterns.usPhoneNumber}
           name="contactPhoneNumber"
-          defaultValue={prevFormData?.contactPhoneNumber ?? ''}
+          defaultValue={prevFormData?.contactPhoneNumber}
           errors={errors}
         />
 
@@ -46,7 +46,7 @@ export default function TaxPayerInfo ({ navButtons, onAdvance }: PagedFormProps)
           register={register}
           required={true}
           name="contactEmail"
-          defaultValue={prevFormData?.contactEmail ?? ''}
+          defaultValue={prevFormData?.contactEmail}
           errors={errors}
         />
 

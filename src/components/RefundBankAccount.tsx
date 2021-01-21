@@ -38,7 +38,7 @@ export default function RefundBankAccount ({ navButtons, onAdvance }: PagedFormP
           required={true}
           patternConfig={Patterns.bankRouting}
           name="routingNumber"
-          defaultValue={prevFormData?.routingNumber ?? ''}
+          defaultValue={prevFormData?.routingNumber}
           errors={errors}
         />
 
@@ -48,7 +48,7 @@ export default function RefundBankAccount ({ navButtons, onAdvance }: PagedFormP
           required={true}
           patternConfig={Patterns.bankAccount}
           name="accountNumber"
-          defaultValue={prevFormData?.accountNumber ?? ''}
+          defaultValue={prevFormData?.accountNumber}
           errors={errors}
         />
         {navButtons}

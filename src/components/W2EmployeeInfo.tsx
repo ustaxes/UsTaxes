@@ -44,7 +44,7 @@ export default function W2EmployeeInfo ({ navButtons, onAdvance }: PagedFormProp
           required={true}
           patternConfig={Patterns.ssn}
           name="SSID"
-          defaultValue={prevFormData?.SSID ?? ''}
+          defaultValue={prevFormData?.SSID}
           errors={errors}
         />
 
@@ -55,7 +55,7 @@ export default function W2EmployeeInfo ({ navButtons, onAdvance }: PagedFormProp
           required={true}
           patternConfig={Patterns.name}
           name="employeeFirstName"
-          defaultValue={prevFormData?.employeeFirstName ?? ''}
+          defaultValue={prevFormData?.employeeFirstName}
           errors={errors}
         />
         <LabeledInput
@@ -64,7 +64,7 @@ export default function W2EmployeeInfo ({ navButtons, onAdvance }: PagedFormProp
           required={true}
           patternConfig={Patterns.name}
           name="employeeLastName"
-          defaultValue={prevFormData?.employeeLastName ?? ''}
+          defaultValue={prevFormData?.employeeLastName}
           errors={errors}
         />
 
@@ -83,7 +83,7 @@ export default function W2EmployeeInfo ({ navButtons, onAdvance }: PagedFormProp
           label="Employee's Address" register={register}
           required={true}
           name="employeeAddress"
-          defaultValue={prevFormData?.employeeAddress ?? ''}
+          defaultValue={prevFormData?.employeeAddress}
           errors={errors}
         />
 
@@ -100,7 +100,7 @@ export default function W2EmployeeInfo ({ navButtons, onAdvance }: PagedFormProp
           register={register}
           required={true}
           name="employeeCity"
-          defaultValue={prevFormData?.employeeCity ?? ''}
+          defaultValue={prevFormData?.employeeCity}
           errors={errors}
         />
         <Grow in={!foreignAddress} style={{ display: !foreignAddress ? 'block' : 'none' }}>
@@ -110,7 +110,7 @@ export default function W2EmployeeInfo ({ navButtons, onAdvance }: PagedFormProp
               control={control}
               required={!foreignAddress}
               name="employeeState"
-              defaultValue={prevFormData?.employeeState ?? ''}
+              defaultValue={prevFormData?.employeeState}
               errors={errors}
             />
 
@@ -120,7 +120,7 @@ export default function W2EmployeeInfo ({ navButtons, onAdvance }: PagedFormProp
               required={!foreignAddress}
               patternConfig={Patterns.zip}
               name="employeeZip"
-              defaultValue={prevFormData?.employeeZip ?? ''}
+              defaultValue={prevFormData?.employeeZip}
               errors={errors}
             />
           </div>
@@ -134,7 +134,7 @@ export default function W2EmployeeInfo ({ navButtons, onAdvance }: PagedFormProp
               required={foreignAddress}
               patternConfig={Patterns.name}
               name="employeeProvince"
-              defaultValue={prevFormData?.employeeProvince ?? ''}
+              defaultValue={prevFormData?.employeeProvince}
               errors={errors}
             />
             <LabeledDropdown
@@ -143,7 +143,7 @@ export default function W2EmployeeInfo ({ navButtons, onAdvance }: PagedFormProp
               control={control}
               required={foreignAddress}
               name="employeeCountry"
-              defaultValue={prevFormData?.employeeCountry ?? ''}
+              defaultValue={prevFormData?.employeeCountry}
               errors={errors}
             />
             <LabeledInput
@@ -151,7 +151,7 @@ export default function W2EmployeeInfo ({ navButtons, onAdvance }: PagedFormProp
               register={register}
               required={foreignAddress}
               name="employeePostalCode"
-              defaultValue={prevFormData?.employeePostalCode ?? ''}
+              defaultValue={prevFormData?.employeePostalCode}
               errors={errors}
             />
           </div>

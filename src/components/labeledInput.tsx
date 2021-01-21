@@ -24,7 +24,7 @@ interface LabeledInputProps {
   required: boolean
   name: string
   errors: Errors
-  defaultValue: string
+  defaultValue?: string
 }
 
 const getError = (errors: Errors, name: string): string | undefined => {
@@ -40,7 +40,7 @@ const isError = (errors: Errors, name: string): boolean => getError(errors, name
 
 export function LabeledInput (props: LabeledInputProps): ReactElement {
   const { strongLabel, label, register, required, patternConfig = {}, name, errors, defaultValue } = props
-  let helperText = ''
+  let helperText: string | undefined
   // fix error where pattern wouldn't match if input wasn't filled out even if required was set to false
   if (!required) {
     patternConfig.regexp = /.?/
@@ -49,7 +49,7 @@ export function LabeledInput (props: LabeledInputProps): ReactElement {
     helperText = 'Input is required'
   } else if (errors[name]?.type === 'pattern') {
     // Must have a regex pattern description so users can see what's going wrong *
-    helperText = patternConfig.description ?? ''
+    helperText = patternConfig.description
   }
 
   /* default regex pattern is to accept any input. Otherwise, use input pattern */
@@ -98,7 +98,7 @@ interface BaseDropdownProps {
   required: boolean
   name: string
   errors: Errors
-  defaultValue: string
+  defaultValue?: string
   control?: Control<any>
 }
 

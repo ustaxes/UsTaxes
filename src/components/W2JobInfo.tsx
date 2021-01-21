@@ -36,7 +36,7 @@ export default function W2JobInfo ({ navButtons, onAdvance }: PagedFormProps): R
           register={register}
           required={true}
           name="occupation"
-          defaultValue={prevFormData?.occupation ?? ''}
+          defaultValue={prevFormData?.occupation}
           errors={errors}
         />
 
@@ -47,7 +47,7 @@ export default function W2JobInfo ({ navButtons, onAdvance }: PagedFormProps): R
           required={true}
           patternConfig={Patterns.currency}
           name="income"
-          defaultValue={prevFormData?.income ?? ''}
+          defaultValue={prevFormData?.income}
           errors={errors}
         />
 
@@ -58,7 +58,7 @@ export default function W2JobInfo ({ navButtons, onAdvance }: PagedFormProps): R
           required={true}
           name="fedWithholding"
           patternConfig={Patterns.currency}
-          defaultValue={prevFormData?.fedWithholding ?? ''}
+          defaultValue={prevFormData?.fedWithholding}
           errors={errors}
         />
         { navButtons }
