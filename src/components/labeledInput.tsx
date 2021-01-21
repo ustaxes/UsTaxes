@@ -86,8 +86,6 @@ export function LabeledInput (props: LabeledInputProps): ReactElement {
   )
 }
 
-const id = <A,>(a: A): A => a
-
 interface BaseDropdownProps {
   label: string
   required: boolean
@@ -150,6 +148,13 @@ export function GenericLabeledDropdown<A,> (props: LabeledDropdownProps<A>): Rea
   )
 }
 
+const id = <A,>(a: A): A => a
+
+/**
+ * A specialized version of a dropdown that just handles an array of strings
+ *
+ * @param props
+ */
 export function LabeledDropdown (props: BaseDropdownProps & {dropDownData: string[]}): ReactElement {
   return GenericLabeledDropdown(
     {
