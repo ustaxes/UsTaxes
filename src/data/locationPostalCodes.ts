@@ -1,4 +1,4 @@
-const locationPostalCodes = [
+const locationPostalCodes: Array<[string, string]> = [
   ['Alabama', 'AL'],
   ['Alaska', 'AK'],
   ['Arizona', 'AZ'],

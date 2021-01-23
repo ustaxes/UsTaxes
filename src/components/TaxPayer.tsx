@@ -1,21 +1,24 @@
-import React from 'react'
+import React, { ReactElement } from 'react'
 import { useForm } from 'react-hook-form'
 import { Box } from '@material-ui/core'
 import { useDispatch, useSelector } from 'react-redux'
-import { LabeledInput } from './labeledInput'
+import { LabeledInput } from './input'
+import { Patterns } from './Patterns'
 import { saveTaxpayerInfo } from '../redux/actions'
+import { PagedFormProps } from './pager'
+import { TaxesState, TaxPayer } from '../redux/data'
 
-export default function TaxPayerInfo ({ navButtons, onAdvance }) {
+export default function TaxPayerInfo ({ navButtons, onAdvance }: PagedFormProps): ReactElement {
   const { register, handleSubmit, errors } = useForm()
   // const variable dispatch to allow use inside function
   const dispatch = useDispatch()
 
-  const prevFormData = useSelector(state => {
-    return state.information.taxpayer ?? {}
+  const prevFormData: TaxPayer | undefined = useSelector((state: TaxesState) => {
+    return state.information.taxpayer
   })
 
   // component functions
-  const onSubmit = formData => {
+  const onSubmit = (formData: TaxPayer): void => {
     console.log('formData: ', formData)
     dispatch(saveTaxpayerInfo(formData))
     onAdvance()
@@ -33,11 +36,9 @@ export default function TaxPayerInfo ({ navButtons, onAdvance }) {
           label="Contact phone number"
           register={register}
           required={true}
-          mask="999-999-9999"
-          pattern={/[0-9]{3}-[0-9]{3}-[0-9]{4}/}
-          patternDescription="Input should be filled with 10 numbers"
+          patternConfig={Patterns.usPhoneNumber}
           name="contactPhoneNumber"
-          defaultValue={prevFormData.contactPhoneNumber}
+          defaultValue={prevFormData?.contactPhoneNumber}
           errors={errors}
         />
 
@@ -46,7 +47,7 @@ export default function TaxPayerInfo ({ navButtons, onAdvance }) {
           register={register}
           required={true}
           name="contactEmail"
-          defaultValue={prevFormData.contactEmail}
+          defaultValue={prevFormData?.contactEmail}
           errors={errors}
         />
 

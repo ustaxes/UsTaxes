@@ -1,21 +1,24 @@
-import React, { useState } from 'react'
+import React, { ReactElement, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { Box, Grow } from '@material-ui/core'
 import { useDispatch, useSelector } from 'react-redux'
 import countries from '../data/countries'
 
-import { LabeledInput, LabeledDropdown, LabeledCheckBox, USStateDropDown } from './labeledInput'
+import { LabeledInput, LabeledDropdown, LabeledCheckBox, USStateDropDown } from './input'
+import { Patterns } from './Patterns'
 import { saveEmployerData } from '../redux/actions'
+import { PagedFormProps } from './pager'
+import { TaxesState, W2EmployerInfo as W2Employer } from '../redux/data'
 
-export default function W2EmployerInfo ({ navButtons, onAdvance }) {
+export default function W2EmployerInfo ({ navButtons, onAdvance }: PagedFormProps): ReactElement {
   const { register, handleSubmit, errors, control } = useForm()
   const dispatch = useDispatch()
 
-  const prevFormData = useSelector(state => state.information.w2EmployerInfo ?? {})
-  const [foreignAddress, setforeignAddress] = useState(prevFormData.foreignAddress === 'true')
+  const prevFormData: W2Employer | undefined = useSelector((state: TaxesState) => state.information.w2EmployerInfo)
+  const [foreignAddress, setforeignAddress] = useState(prevFormData?.foreignAddress ?? false)
 
   // component functions
-  const onSubmit = formData => {
+  const onSubmit = (formData: W2Employer): void => {
     console.log('formData: ', formData)
     dispatch(saveEmployerData(formData))
     onAdvance()
@@ -35,11 +38,9 @@ export default function W2EmployerInfo ({ navButtons, onAdvance }) {
           label="Employer Identification Number"
           register={register}
           required={true}
-          mask="99-9999999"
-          pattern={/[0-9]{2}-[0-9]{7}/}
-          patternDescription="Input should be filled with 9 numbers"
+          patternConfig={Patterns.ein}
           name="EIN"
-          defaultValue={prevFormData.EIN}
+          defaultValue={prevFormData?.EIN}
           errors={errors}
         />
 
@@ -52,7 +53,7 @@ export default function W2EmployerInfo ({ navButtons, onAdvance }) {
           register={register}
           required={true}
           name="employerName"
-          defaultValue={prevFormData.employerName}
+          defaultValue={prevFormData?.employerName}
           errors={errors}
         />
 
@@ -64,11 +65,11 @@ export default function W2EmployerInfo ({ navButtons, onAdvance }) {
         />
 
         <LabeledInput
-          label="Employer's Address" register={register}
+          label="Employer's Address"
+          register={register}
           required={true}
-          patternDescription="Input should only include letters and numbers"
           name="employerAddress"
-          defaultValue={prevFormData.employerAddress}
+          defaultValue={prevFormData?.employerAddress}
           errors={errors}
         />
 
@@ -77,7 +78,7 @@ export default function W2EmployerInfo ({ navButtons, onAdvance }) {
           register={register}
           required={true}
           name="employerCity"
-          defaultValue={prevFormData.employerCity}
+          defaultValue={prevFormData?.employerCity}
           errors={errors}
         />
         <Grow in={!foreignAddress} style={{ display: !foreignAddress ? 'block' : 'none' }}>
@@ -87,7 +88,7 @@ export default function W2EmployerInfo ({ navButtons, onAdvance }) {
               control={control}
               required={!foreignAddress}
               name="employerState"
-              defaultValue={prevFormData.employerState}
+              defaultValue={prevFormData?.employerState}
               errors={errors}
             />
 
@@ -95,11 +96,9 @@ export default function W2EmployerInfo ({ navButtons, onAdvance }) {
               label="Employer's Zip Code"
               register={register}
               required={!foreignAddress}
-              mask="99999-9999"
-              pattern={/[0-9]{5}-[0-9]{4}/}
-              patternDescription="Input should be filled with 9 numbers"
+              patternConfig={Patterns.zip}
               name="employerZip"
-              defaultValue={prevFormData.employerZip}
+              defaultValue={prevFormData?.employerZip}
               errors={errors}
             />
           </div>
@@ -111,10 +110,9 @@ export default function W2EmployerInfo ({ navButtons, onAdvance }) {
               label="Employer's Province or State"
               register={register}
               required={foreignAddress}
-              pattern={/^[A-Za-z]+$/i}
-              patternDescription="Input should only include letters"
+              patternConfig={Patterns.name}
               name="employerProvince"
-              defaultValue={prevFormData.employerProvince}
+              defaultValue={prevFormData?.employerProvince}
               errors={errors}
             />
             <LabeledDropdown
@@ -123,7 +121,7 @@ export default function W2EmployerInfo ({ navButtons, onAdvance }) {
               control={control}
               required={foreignAddress}
               name="employerCountry"
-              defaultValue={prevFormData.employerCountry}
+              defaultValue={prevFormData?.employerCountry}
               errors={errors}
             />
             <LabeledInput
@@ -131,7 +129,7 @@ export default function W2EmployerInfo ({ navButtons, onAdvance }) {
               register={register}
               required={foreignAddress}
               name="employerPostalCode"
-              defaultValue={prevFormData.employerPostalCode}
+              defaultValue={prevFormData?.employerPostalCode}
               errors={errors}
             />
           </div>

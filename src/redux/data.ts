@@ -6,8 +6,10 @@ export interface W2EmployeeInfo {
   employeeCity: string
   employeeState: string
   employeeZip: string
+  foreignAddress: boolean
   employeeProvince?: string
   employeePostalCode?: string
+  employeeCountry: string
 }
 
 export interface W2EmployerInfo {
@@ -17,6 +19,7 @@ export interface W2EmployerInfo {
   employerCity: string
   employerState: string
   employerZip: string
+  foreignAddress: boolean
   employerProvince?: string
   employerCountry?: string
   employerPostalCode?: string
