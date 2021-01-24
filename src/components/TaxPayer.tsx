@@ -70,14 +70,16 @@ function AddOtherPerson ({ onDone, onCancel }: AddPersonProps): ReactElement {
   return (
     <div>
       <PersonFields register={register} errors={errors as Errors} />
-      <Box paddingRight={2}>
-        <Button type="button" onClick={onSubmit} variant="contained" color="secondary">
-          Add
+      <Box display="flex" justifyContent="flex-start" paddingTop={2} paddingBottom={1}>
+        <Box paddingRight={2}>
+          <Button type="button" onClick={onSubmit} variant="contained" color="secondary">
+            Add
+          </Button>
+        </Box>
+        <Button type="button" onClick={cancel} variant="contained" color="secondary">
+          Close
         </Button>
       </Box>
-      <Button type="button" onClick={cancel} variant="contained" color="secondary">
-        Close
-      </Button>
     </div>
   )
 }
@@ -156,31 +158,24 @@ const SpouseInfo = (): ReactElement => {
 
   if (editSpouse) {
     return (
-      <Box>
-        <AddOtherPerson
-          onDone={(newSpouse: Person) => {
-            updateEditSpouse(false)
-            dispatch(addSpouse(newSpouse))
-          }}
-          onCancel={() => updateEditSpouse(false)}
-        />
-      </Box>
+      <AddOtherPerson
+        onDone={(newSpouse: Person) => {
+          updateEditSpouse(false)
+          dispatch(addSpouse(newSpouse))
+        }}
+        onCancel={() => updateEditSpouse(false)}
+      />
     )
   } else if (spouse !== undefined) {
     return (
-      <Box>
-        <PersonListItem
-          person={spouse}
-          remove={() => dispatch(removeSpouse)}
-        />
-      </Box>
+      <PersonListItem
+        person={spouse}
+        remove={() => dispatch(removeSpouse)}
+      />
     )
   } else {
     return (
-      <Box>
-        <Box>
-          No spouse.
-        </Box>
+      <Box display="flex" flexDirection="flex-start">
         <Button type="button" onClick={() => updateEditSpouse(true)} variant="contained" color="secondary">
           Add
         </Button>
@@ -244,10 +239,15 @@ export default function TaxPayerInfo ({ navButtons, onAdvance }: PagedFormProps)
             <h4>Spouse Taxpayer Information</h4>
           </Box>
           <SpouseInfo />
-
-          <h4>Dependent Information</h4>
-          <ListDependents />
-          <AddDependentForm />
+          <Box display="flex" justifyContent="flex-start">
+            <h4>Dependent Information</h4>
+          </Box>
+          <Box display="flex" justifyContent="flex-start">
+            <ListDependents />
+          </Box>
+          <Box display="flex" justifyContent="flex-start">
+            <AddDependentForm />
+          </Box>
         </div>
         <div>
           <h4>Family Contact Information</h4>
