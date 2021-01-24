@@ -37,11 +37,37 @@ export interface IncomeW2 {
 }
 
 export enum FilingStatus {
-  S,
-  MFJ,
-  MFS,
-  HOH,
-  W
+  S = 'S',
+  MFJ = 'MFJ',
+  MFS = 'MFS',
+  HOH = 'HOH',
+  W = 'W'
+}
+
+export const FilingStatusTexts = ({
+  [FilingStatus.S]: 'Single',
+  [FilingStatus.MFJ]: 'Married Filing Jointly',
+  [FilingStatus.MFS]: 'Married Filing Separately',
+  [FilingStatus.HOH]: 'Head of Household',
+  [FilingStatus.W]: 'Widow(er)'
+})
+
+export const filingStatuses = (p: TaxPayer | undefined): FilingStatus[] => {
+  let withDependents: FilingStatus[] = []
+  let withSpouse: FilingStatus[] = []
+
+  if ((p?.dependents ?? []).length > 0) {
+    withDependents = [FilingStatus.HOH]
+  }
+  if (p?.spouse !== undefined) {
+    withSpouse = [FilingStatus.MFJ, FilingStatus.MFS]
+  }
+  return [
+    FilingStatus.S,
+    ...withSpouse,
+    ...withDependents,
+    FilingStatus.W
+  ]
 }
 
 export interface TaxPayer {

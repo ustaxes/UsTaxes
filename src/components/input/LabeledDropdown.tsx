@@ -8,7 +8,7 @@ export function GenericLabeledDropdown<A,> (props: LabeledDropdownProps<A>): Rea
   const { label, dropDownData, valueMapping, keyMapping, textMapping, control, required, name, errors, defaultValue } = props
   let helperText = ''
 
-  if (getError(errors, name) === 'required') {
+  if (errors !== undefined && getError(errors, name) === 'required') {
     helperText = 'Input is required'
   }
   return (
@@ -37,7 +37,7 @@ export function GenericLabeledDropdown<A,> (props: LabeledDropdownProps<A>): Rea
               )}
             </TextField>
           }
-          error={isError(errors, name)}
+          error={errors !== undefined && isError(errors, name)}
           fullWidth
           name={name}
           defaultValue={defaultValue}

@@ -7,7 +7,7 @@ export interface BaseDropdownProps {
   label: string
   required: boolean
   name: string
-  errors: Errors
+  errors?: Errors
   defaultValue?: string
   control?: Control<any>
 }
