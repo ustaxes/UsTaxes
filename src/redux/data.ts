@@ -61,6 +61,8 @@ export const filingStatuses = (p: TaxPayer | undefined): FilingStatus[] => {
   }
   if (p?.spouse !== undefined) {
     withSpouse = [FilingStatus.MFJ, FilingStatus.MFS]
+    // HoH not available if married
+    withDependents = []
   }
   return [
     FilingStatus.S,
