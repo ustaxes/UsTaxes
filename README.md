@@ -1,6 +1,6 @@
 [![Netlify Status][Netlify-badge]][Netlify-url]
 # https://ustaxes.org/
-Tax filing web application
+Open source tax filing application
 
 
 # Running
