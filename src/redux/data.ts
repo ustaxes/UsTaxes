@@ -12,11 +12,17 @@ export interface Person {
   role: PersonRole
 }
 
+export interface Dependent extends Person {
+  relationship: string
+}
+
 export interface Address {
   address: string
+  aptNo?: string
   city: string
   state: string
   zip: string
+  foreignCountry?: string
   province?: string
   postalCode?: string
 }
@@ -38,8 +44,8 @@ export interface Refund {
 
 export interface IncomeW2 {
   occupation: string
-  income: string
-  fedWithholding: string
+  income: number
+  fedWithholding: number
   employer: Employer
   personRole: PersonRole.PRIMARY | PersonRole.SPOUSE
 }
@@ -86,7 +92,7 @@ export interface TaxPayer {
   filingStatus?: FilingStatus
   primaryPerson?: PrimaryPerson
   spouse?: Person
-  dependents?: Person[]
+  dependents?: Dependent[]
 }
 
 export interface Information {

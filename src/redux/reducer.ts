@@ -11,7 +11,15 @@ function formReducer (state: Information | undefined, action: Actions): Informat
 
   switch (action.type) {
     case ActionName.SAVE_TAXPAYER_INFO: {
-      return { ...newState, taxPayer: action.formData }
+      return {
+        ...newState,
+        taxPayer: {
+          ...action.formData,
+          // These fields are not updated this way
+          spouse: newState.taxPayer?.spouse,
+          dependents: newState.taxPayer?.dependents
+        }
+      }
     }
     case ActionName.ADD_DEPENDENT: {
       return {

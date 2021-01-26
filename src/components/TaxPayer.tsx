@@ -1,4 +1,4 @@
-import React, { FormEvent, ReactElement, useState } from 'react'
+import React, { ReactElement, ReactNode, useState } from 'react'
 import { Control, useForm } from 'react-hook-form'
 import { Avatar, Box, Button, IconButton, List, ListItem, ListItemAvatar, ListItemSecondaryAction } from '@material-ui/core'
 import { useDispatch, useSelector } from 'react-redux'
@@ -6,7 +6,7 @@ import { GenericLabeledDropdown, LabeledInput } from './input'
 import { Patterns } from './Patterns'
 import { Actions, addDependent, addSpouse, removeDependent, removeSpouse, saveTaxpayerInfo } from '../redux/actions'
 import { PagedFormProps } from './pager'
-import { TaxesState, TaxPayer, Person, filingStatuses, FilingStatusTexts, FilingStatus } from '../redux/data'
+import { TaxesState, TaxPayer, Person, filingStatuses, FilingStatusTexts, FilingStatus, Dependent } from '../redux/data'
 import { BaseFormProps, Errors } from './types'
 import DeleteIcon from '@material-ui/icons/Delete'
 import ListItemText from '@material-ui/core/ListItemText'
@@ -15,9 +15,10 @@ import { id } from './input/types'
 interface PersonFieldsProps extends BaseFormProps {
   defaults?: Person
   namePrefix?: string
+  children?: ReactNode
 }
 
-const PersonFields = ({ register, errors, defaults, namePrefix = '' }: PersonFieldsProps): ReactElement => (
+const PersonFields = ({ register, errors, defaults, namePrefix = '', children }: PersonFieldsProps): ReactElement => (
   <div>
     <LabeledInput
       label="First Name and Initial"
@@ -46,43 +47,31 @@ const PersonFields = ({ register, errors, defaults, namePrefix = '' }: PersonFie
       errors={errors}
       defaultValue={defaults?.ssid}
     />
+    {children}
   </div>
 )
 
-interface AddPersonProps {
-  onDone: (p: Person) => void
+interface FormContainerProps {
+  onDone: () => void
   onCancel: () => void
+  children: ReactNode
 }
 
-function AddOtherPerson ({ onDone, onCancel }: AddPersonProps): ReactElement {
-  const { register, errors, getValues, reset } = useForm<Person>()
-
-  const onSubmit = (e: FormEvent<any>): void => {
-    onDone(getValues())
-    reset()
-  }
-
-  const cancel = (): void => {
-    reset()
-    onCancel()
-  }
-
-  return (
-    <div>
-      <PersonFields register={register} errors={errors as Errors} />
-      <Box display="flex" justifyContent="flex-start" paddingTop={2} paddingBottom={1}>
-        <Box paddingRight={2}>
-          <Button type="button" onClick={onSubmit} variant="contained" color="secondary">
-            Add
-          </Button>
-        </Box>
-        <Button type="button" onClick={cancel} variant="contained" color="secondary">
-          Close
+const FormContainer = ({ onDone, onCancel, children }: FormContainerProps): ReactElement => (
+  <div>
+    {children}
+    <Box display="flex" justifyContent="flex-start" paddingTop={2} paddingBottom={1}>
+      <Box paddingRight={2}>
+        <Button type="button" onClick={onDone} variant="contained" color="secondary">
+          Add
         </Button>
       </Box>
-    </div>
-  )
-}
+      <Button type="button" onClick={onCancel} variant="contained" color="secondary">
+        Close
+      </Button>
+    </Box>
+  </div>
+)
 
 interface PersonListItemProps {
   person: Person
@@ -128,16 +117,36 @@ function ListDependents (): ReactElement {
 }
 
 const AddDependentForm = (): ReactElement => {
+  const { register, errors, getValues, reset } = useForm<Dependent>()
+
   const [addingDependent, newDependent] = useState(false)
 
   const dispatch = useDispatch()
 
+  const onSubmit = (): void => {
+    dispatch(addDependent(getValues()))
+    reset()
+  }
+
   if (addingDependent) {
     return (
-      <AddOtherPerson
-        onDone={(newDep: Person) => dispatch(addDependent(newDep))}
+      <FormContainer
+        onDone={onSubmit}
         onCancel={() => newDependent(false)}
-      />
+      >
+        <PersonFields
+          register={register}
+          errors={errors as Errors}
+        />
+        <LabeledInput
+          label="Relationship to taxpayer"
+          register={register}
+          name="relationship"
+          patternConfig={Patterns.name}
+          required={true}
+          errors={errors as Errors}
+        />
+      </FormContainer>
     )
   } else {
     return (
@@ -149,6 +158,7 @@ const AddDependentForm = (): ReactElement => {
 }
 
 const SpouseInfo = (): ReactElement => {
+  const { register, errors, getValues } = useForm<Person>()
   const [editSpouse, updateEditSpouse] = useState(false)
   const dispatch = useDispatch()
 
@@ -158,13 +168,18 @@ const SpouseInfo = (): ReactElement => {
 
   if (editSpouse) {
     return (
-      <AddOtherPerson
-        onDone={(newSpouse: Person) => {
+      <FormContainer
+        onDone={() => {
           updateEditSpouse(false)
-          dispatch(addSpouse(newSpouse))
+          dispatch(addSpouse(getValues()))
         }}
         onCancel={() => updateEditSpouse(false)}
-      />
+      >
+        <PersonFields
+          register={register}
+          errors={errors as Errors}
+        />
+      </FormContainer>
     )
   } else if (spouse !== undefined) {
     return (

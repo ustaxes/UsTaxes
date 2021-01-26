@@ -1,8 +1,6 @@
-import { Employer, Person, IncomeW2, Refund, TaxPayer } from './data'
+import { Person, IncomeW2, Refund, TaxPayer, Dependent } from './data'
 
 export enum ActionName {
-  SAVE_EMPLOYER_DATA = 'SAVE_EMPLOYER_DATA',
-  SAVE_EMPLOYEE_DATA = 'SAVE_EMPLOYEE_DATA',
   SAVE_REFUND_INFO = 'SAVE_REFUND_INFO',
   SAVE_TAXPAYER_INFO = 'SAVE_TAXPAYER_INFO',
   ADD_DEPENDENT = 'TAXPAYER/ADD_DEPENDENT',
@@ -19,11 +17,9 @@ interface Save<T, R> {
   formData: R
 }
 
-type SaveEmployeeData = Save<typeof ActionName.SAVE_EMPLOYEE_DATA, Person>
-type SaveEmployerData = Save<typeof ActionName.SAVE_EMPLOYER_DATA, Employer>
 type SaveRefundInfo = Save<typeof ActionName.SAVE_REFUND_INFO, Refund>
 type SaveTaxpayerInfo = Save<typeof ActionName.SAVE_TAXPAYER_INFO, TaxPayer>
-type AddDependent = Save<typeof ActionName.ADD_DEPENDENT, Person>
+type AddDependent = Save<typeof ActionName.ADD_DEPENDENT, Dependent>
 type RemoveDependent = Save<typeof ActionName.REMOVE_DEPENDENT, number>
 type AddSpouse = Save<typeof ActionName.ADD_SPOUSE, Person>
 type RemoveSpouse = Save<typeof ActionName.REMOVE_SPOUSE, {}>
@@ -31,9 +27,7 @@ type AddW2 = Save<typeof ActionName.ADD_W2, IncomeW2>
 type RemoveW2 = Save<typeof ActionName.REMOVE_W2, number>
 
 export type Actions =
-  SaveEmployeeData
-  | SaveEmployerData
-  | SaveRefundInfo
+  SaveRefundInfo
   | SaveTaxpayerInfo
   | AddDependent
   | RemoveDependent
@@ -65,36 +59,35 @@ function makeAction2<A extends Object, T extends ActionName> (t: T, clean: (d: A
   })
 }
 
-export const saveEmployeeData: ActionCreator<Person> = makeAction2(
-  ActionName.SAVE_EMPLOYEE_DATA,
-  (p) => ({ ssid: p.ssid.replace(/-/g, '') })
-)
-
-export const saveEmployerData: ActionCreator<Employer> = makeAction2(
-  ActionName.SAVE_EMPLOYER_DATA,
-  (e) => ({ EIN: e.EIN.replace(/-/g, '') })
-)
-
 export const saveRefundInfo: ActionCreator<Refund> =
   makeAction(ActionName.SAVE_REFUND_INFO)
+
+const cleanPerson = <P extends Person>(p: P): P => ({
+  ...p,
+  ssid: p?.ssid.replace(/-/g, '')
+})
 
 export const saveTaxpayerInfo: ActionCreator<TaxPayer> = makeAction2(
   ActionName.SAVE_TAXPAYER_INFO,
   t => ({
-    contactPhoneNumber: t.contactPhoneNumber?.replace(/-/g, '')
+    contactPhoneNumber: t.contactPhoneNumber?.replace(/-/g, ''),
+    primaryPerson: t.primaryPerson !== undefined ? cleanPerson(t.primaryPerson) : undefined,
+    spouse: t.spouse !== undefined ? cleanPerson(t.spouse) : undefined
   })
 )
 
-export const addDependent: ActionCreator<Person> = makeAction(
-  ActionName.ADD_DEPENDENT
+export const addDependent: ActionCreator<Dependent> = makeAction2(
+  ActionName.ADD_DEPENDENT,
+  (t: Dependent) => cleanPerson(t)
 )
 
 export const removeDependent: ActionCreator<number> = makeAction(
   ActionName.REMOVE_DEPENDENT
 )
 
-export const addSpouse: ActionCreator<Person> = makeAction(
-  ActionName.ADD_SPOUSE
+export const addSpouse: ActionCreator<Person> = makeAction2(
+  ActionName.ADD_SPOUSE,
+  cleanPerson
 )
 
 export const removeSpouse: Actions = signalAction(
@@ -104,8 +97,8 @@ export const removeSpouse: Actions = signalAction(
 export const addW2: ActionCreator<IncomeW2> = makeAction2(
   ActionName.ADD_W2,
   (t) => ({
-    income: t.income.replace(/\$/g, ''),
-    fedWitholding: t.fedWithholding.replace(/\$/g, '')
+    income: t.income,
+    fedWitholding: t.fedWithholding
   })
 )
 
