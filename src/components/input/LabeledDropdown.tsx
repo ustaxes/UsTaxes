@@ -28,11 +28,11 @@ export function GenericLabeledDropdown<A,> (props: LabeledDropdownProps<A>): Rea
               }}
             >
               <option value={undefined} />
-              {dropDownData.map((dropDownItem: A) =>
+              {dropDownData.map((dropDownItem: A, i: number) =>
                 <option
-                  value={valueMapping(dropDownItem)}
-                  key={keyMapping(dropDownItem)}>
-                  {textMapping(dropDownItem)}
+                  value={valueMapping(dropDownItem, i)}
+                  key={keyMapping(dropDownItem, i)}>
+                  {textMapping(dropDownItem, i)}
                 </option>
               )}
             </TextField>

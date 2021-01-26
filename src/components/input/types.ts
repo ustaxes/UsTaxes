@@ -14,9 +14,9 @@ export interface BaseDropdownProps {
 
 export interface LabeledDropdownProps<A,> extends BaseDropdownProps {
   dropDownData: A[]
-  valueMapping: (a: A) => string
-  keyMapping: (a: A) => string
-  textMapping: (a: A) => string
+  valueMapping: (a: A, n: number) => string
+  keyMapping: (a: A, n: number) => string | number
+  textMapping: (a: A, n: number) => string
 }
 
 export interface LabeledInputProps extends BaseFormProps {
