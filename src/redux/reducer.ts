@@ -43,7 +43,7 @@ function formReducer (state: Information | undefined, action: Actions): Informat
         refund: action.formData
       }
     }
-    case ActionName.SAVE_W2_INFO: {
+    case ActionName.ADD_W2: {
       return {
         ...newState,
         w2s: [
@@ -52,6 +52,15 @@ function formReducer (state: Information | undefined, action: Actions): Informat
         ]
       }
     }
+    case ActionName.REMOVE_W2: {
+      const newW2s = [...newState.w2s]
+      newW2s.splice(action.formData, 1)
+      return {
+        ...newState,
+        w2s: newW2s
+      }
+    }
+
     case ActionName.ADD_SPOUSE: {
       return {
         ...newState,

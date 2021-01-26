@@ -46,9 +46,9 @@ const drawerSections: Section[] = [
     ]
   },
   {
-    title: 'Wages',
+    title: 'Income',
     items: [
-      ['Job Information', Urls.job]
+      ['Wages (W2)', Urls.job]
     ]
   },
   {

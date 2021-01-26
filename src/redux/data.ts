@@ -1,7 +1,15 @@
+export enum PersonRole {
+  PRIMARY = 'PRIMARY',
+  SPOUSE = 'SPOUSE',
+  DEPENDENT = 'DEPENDENT',
+  EMPLOYER = 'EMPLOYER'
+}
+
 export interface Person {
   firstName: string
   lastName: string
   ssid: string
+  role: PersonRole
 }
 
 export interface Address {
@@ -33,7 +41,7 @@ export interface IncomeW2 {
   income: string
   fedWithholding: string
   employer: Employer
-  person: Person
+  personRole: PersonRole.PRIMARY | PersonRole.SPOUSE
 }
 
 export enum FilingStatus {
@@ -61,7 +69,7 @@ export const filingStatuses = (p: TaxPayer | undefined): FilingStatus[] => {
   }
   if (p?.spouse !== undefined) {
     withSpouse = [FilingStatus.MFJ, FilingStatus.MFS]
-    // HoH not available if married
+    // HoH not available if marrie
     withDependents = []
   }
   return [
