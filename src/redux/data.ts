@@ -68,19 +68,20 @@ export const FilingStatusTexts = ({
 
 export const filingStatuses = (p: TaxPayer | undefined): FilingStatus[] => {
   let withDependents: FilingStatus[] = []
-  let withSpouse: FilingStatus[] = []
+  let spouseStatuses: FilingStatus[] = []
 
   if ((p?.dependents ?? []).length > 0) {
     withDependents = [FilingStatus.HOH]
   }
   if (p?.spouse !== undefined) {
-    withSpouse = [FilingStatus.MFJ, FilingStatus.MFS]
-    // HoH not available if marrie
+    spouseStatuses = [FilingStatus.MFJ, FilingStatus.MFS]
+    // HoH not available if married
     withDependents = []
+  } else {
+    spouseStatuses = [FilingStatus.S]
   }
   return [
-    FilingStatus.S,
-    ...withSpouse,
+    ...spouseStatuses,
     ...withDependents,
     FilingStatus.W
   ]
