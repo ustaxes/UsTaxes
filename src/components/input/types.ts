@@ -34,5 +34,3 @@ export interface LabeledCheckBoxProps {
   control: Control<any>
   description: string
 }
-
-export const id = <A,>(a: A): A => a

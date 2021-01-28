@@ -21,3 +21,5 @@ export const getError = (errors: Errors, name: string): string | undefined => {
   }
   return result
 }
+
+export const id = <A,>(a: A): A => a

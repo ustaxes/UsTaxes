@@ -42,7 +42,7 @@ body {
 }
 
 /* Custom CSS */
-form > div {
+form {
   border-radius: 5px;
   box-shadow: rgba(0, 0, 0, 0.2) 0px 20px 30px;
   background-color: white;
@@ -52,5 +52,4 @@ form > div {
   margin-top: 2em;
   margin-bottom: 1em;
   min-width: 20%;
-  max-width: 20em;
 }
