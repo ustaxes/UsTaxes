@@ -4,27 +4,23 @@ import { Controller } from 'react-hook-form'
 import { LabeledCheckBoxProps } from './types'
 
 export function LabeledCheckBox (props: LabeledCheckBoxProps): ReactElement {
-  const { foreignAddress, setforeignAddress, control, description } = props
-
-  const setForeignAddressFalse = (): void => setforeignAddress(false)
-  const setForeignAddressTrue = (): void => setforeignAddress(true)
+  const { label, name, value, setValue, control } = props
 
   return (
     <Controller
-      name="foreignAddress"
+      name={name}
       as={
-        <Box display="flex" justifyContent="flex-start" paddingTop={1}>
-          <FormControlLabel
-            control={<Checkbox checked={!foreignAddress} onChange={setForeignAddressFalse} color="primary" />}
-            label="No"
-            value={false}
-          />
-          <FormControlLabel
-            control={<Checkbox checked={foreignAddress} onChange={setForeignAddressTrue} color="primary" />}
-            label="Yes"
-            value={true}
-          />
-          <p>{description}</p>
+        <Box alignContent="left">
+          <Box alignContent="left" display="block" paddingTop={2}>
+            {label}
+          </Box>
+          <Box alignContent="left" display="block" paddingTop={2}>
+            <FormControlLabel
+              control={<Checkbox name={name} checked={value} onChange={() => setValue(!value)} color="primary" />}
+              label={value ? 'Yes' : 'No'}
+              value={value}
+            />
+          </Box>
         </Box>
       }
       control={control}

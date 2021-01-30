@@ -25,7 +25,7 @@ export const Patterns: {[name: string]: PatternConfig} = {
     description: 'Input should be filled with 9 numbers'
   },
   currency: {
-    regexp: /[0-9]*/,
+    regexp: /^[0-9]+$/,
     description: 'Input should be filled with numbers only'
   },
   bankAccount: {

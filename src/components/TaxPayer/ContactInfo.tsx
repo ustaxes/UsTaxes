@@ -9,7 +9,7 @@ import { PagedFormProps } from '../pager'
 import { TaxesState, TaxPayer } from '../../redux/data'
 
 export default function ContactInfo ({ navButtons, onAdvance }: PagedFormProps): ReactElement {
-  const { register, handleSubmit, errors } = useForm()
+  const { register, handleSubmit, errors } = useForm<Partial<TaxPayer>>()
   // const variable dispatch to allow use inside function
   const dispatch = useDispatch()
 
@@ -36,7 +36,7 @@ export default function ContactInfo ({ navButtons, onAdvance }: PagedFormProps):
           patternConfig={Patterns.usPhoneNumber}
           name="contactPhoneNumber"
           defaultValue={taxPayer?.contactPhoneNumber}
-          errors={errors}
+          error={errors.contactPhoneNumber}
         />
 
         <LabeledInput
@@ -45,7 +45,7 @@ export default function ContactInfo ({ navButtons, onAdvance }: PagedFormProps):
           required={true}
           name="contactEmail"
           defaultValue={taxPayer?.contactEmail}
-          errors={errors}
+          error={errors.contactEmail}
         />
 
         {navButtons}

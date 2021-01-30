@@ -9,40 +9,41 @@ import { BaseFormProps } from '../types'
 import DeleteIcon from '@material-ui/icons/Delete'
 import ListItemText from '@material-ui/core/ListItemText'
 import PersonIcon from '@material-ui/icons/Person'
+import { DeepMap, FieldError } from 'react-hook-form'
 
-interface PersonFieldsProps extends BaseFormProps {
-  defaults?: Person
-  namePrefix?: string
+interface PersonFieldsProps<T extends Person> extends BaseFormProps {
+  defaults?: T
   children?: ReactNode
+  errors: DeepMap<Partial<Person>, FieldError>
 }
 
-export const PersonFields = ({ register, errors, defaults, namePrefix = '', children }: PersonFieldsProps): ReactElement => (
+export const PersonFields = <T extends Person>({ register, errors, defaults, children }: PersonFieldsProps<T>): ReactElement => (
   <div>
     <LabeledInput
       label="First Name and Initial"
       register={register}
-      name={`${namePrefix}firstName`}
+      name="firstName"
       patternConfig={Patterns.name}
       required={true}
-      errors={errors}
+      error={errors.firstName}
       defaultValue={defaults?.firstName}
     />
     <LabeledInput
       label="Last Name"
       register={register}
-      name={`${namePrefix}lastName`}
+      name="lastName"
       patternConfig={Patterns.name}
       required={true}
-      errors={errors}
+      error={errors.lastName}
       defaultValue={defaults?.lastName}
     />
     <LabeledInput
       label="SSN / TIN"
       register={register}
-      name={`${namePrefix}ssid`}
+      name="ssid"
       patternConfig={Patterns.ssn}
       required={true}
-      errors={errors}
+      error={errors.ssid}
       defaultValue={defaults?.ssid}
     />
     {children}

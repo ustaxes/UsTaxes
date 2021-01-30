@@ -4,7 +4,6 @@ import { useForm } from 'react-hook-form'
 import { Box, Button, List } from '@material-ui/core'
 import { useDispatch, useSelector } from 'react-redux'
 import { LabeledInput } from '../input'
-import { Errors } from '../types'
 import { Patterns } from '../Patterns'
 import { TaxesState, Dependent, Person } from '../../redux/data'
 import { addDependent, addSpouse, removeSpouse } from '../../redux/actions'
@@ -32,7 +31,7 @@ export const AddDependentForm = (): ReactElement => {
       >
         <PersonFields
           register={register}
-          errors={errors as Errors}
+          errors={errors}
         />
         <LabeledInput
           label="Relationship to taxpayer"
@@ -40,7 +39,7 @@ export const AddDependentForm = (): ReactElement => {
           name="relationship"
           patternConfig={Patterns.name}
           required={true}
-          errors={errors as Errors}
+          error={errors.relationship}
         />
       </FormContainer>
     )
@@ -77,7 +76,7 @@ export const SpouseInfo = (): ReactElement => {
       >
         <PersonFields
           register={register}
-          errors={errors as Errors}
+          errors={errors}
         />
       </FormContainer>
     )

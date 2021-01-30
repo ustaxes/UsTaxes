@@ -7,10 +7,9 @@ import { GenericLabeledDropdown } from '../input'
 import { saveTaxpayerInfo } from '../../redux/actions'
 import { PagedFormProps } from '../pager'
 import { TaxesState, TaxPayer, FilingStatus, FilingStatusTexts, filingStatuses } from '../../redux/data'
-import { id } from '../types'
 
 export default function FilingStatusSelect ({ navButtons, onAdvance }: PagedFormProps): ReactElement {
-  const { handleSubmit, errors, control } = useForm()
+  const { handleSubmit, errors, control } = useForm<TaxPayer>()
   // const variable dispatch to allow use inside function
   const dispatch = useDispatch()
 
@@ -35,9 +34,9 @@ export default function FilingStatusSelect ({ navButtons, onAdvance }: PagedForm
         <GenericLabeledDropdown<FilingStatus>
           label="Filing Status"
           dropDownData={filingStatuses(taxPayer)}
-          valueMapping={id}
-          keyMapping={id}
-          errors={errors}
+          valueMapping={(x, i) => x}
+          keyMapping={(x, i) => i}
+          error={errors.filingStatus}
           textMapping={status => FilingStatusTexts[status]}
           required={true}
           control={control}

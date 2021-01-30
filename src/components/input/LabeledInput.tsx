@@ -1,30 +1,32 @@
 import React, { ReactElement } from 'react'
 import { TextField, Box } from '@material-ui/core'
 import InputMask from 'react-input-mask'
-import { LabeledInputProps, isError } from './types'
+import { LabeledInputProps } from './types'
 
 export function LabeledInput (props: LabeledInputProps): ReactElement {
-  const { strongLabel, label, register, required, patternConfig = {}, name, errors, defaultValue } = props
-  let helperText: string | undefined
+  const { strongLabel, label, register, error, required = false, patternConfig = {}, name, defaultValue } = props
+  //  let helperText: string | undefined
   // fix error where pattern wouldn't match if input wasn't filled out even if required was set to false
   if (!required) {
     patternConfig.regexp = /.?/
-  }
-  if (errors[name]?.type === 'required') {
-    helperText = 'Input is required'
-  } else if (errors[name]?.type === 'pattern') {
-    // Must have a regex pattern description so users can see what's going wrong *
-    helperText = patternConfig.description
   }
 
   /* default regex pattern is to accept any input. Otherwise, use input pattern */
   const textField = (
     <TextField
-      error={isError(errors, name)}
-      helperText={helperText}
       fullWidth={patternConfig.mask === undefined}
       defaultValue={defaultValue}
-      inputRef={register({ required: required, pattern: patternConfig.regexp })}
+      helperText={error?.message}
+      inputRef={
+        register({
+          required: required ? 'Input is required' : undefined,
+          pattern: {
+            value: patternConfig.regexp ?? (required ? /.+/ : /.*/),
+            message: patternConfig.description ?? (required ? 'Input is required' : '')
+          }
+        })
+      }
+      error={error !== undefined}
       name={name}
       variant="filled"
     />

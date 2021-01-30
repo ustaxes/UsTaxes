@@ -10,7 +10,7 @@ import { Refund, TaxesState } from '../redux/data'
 import { PagedFormProps } from './pager'
 
 export default function RefundBankAccount ({ navButtons, onAdvance }: PagedFormProps): ReactElement {
-  const { register, handleSubmit, errors } = useForm()
+  const { register, handleSubmit, errors } = useForm<Refund>()
   // const variable dispatch to allow use inside function
   const dispatch = useDispatch()
 
@@ -40,7 +40,7 @@ export default function RefundBankAccount ({ navButtons, onAdvance }: PagedFormP
             patternConfig={Patterns.bankRouting}
             name="routingNumber"
             defaultValue={prevFormData?.routingNumber}
-            errors={errors}
+            error={errors.routingNumber}
           />
 
           <LabeledInput
@@ -50,7 +50,7 @@ export default function RefundBankAccount ({ navButtons, onAdvance }: PagedFormP
             patternConfig={Patterns.bankAccount}
             name="accountNumber"
             defaultValue={prevFormData?.accountNumber}
-            errors={errors}
+            error={errors.accountNumber}
           />
           {navButtons}
         </div>
