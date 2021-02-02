@@ -14,7 +14,7 @@ const depField = (s: Information, pdfFieldIdx: number): string | boolean | undef
     const dep = deps[depIdx]
     // Based on the PDF column, select the correct field
     const depFieldIdx = (pdfFieldIdx - 32) % 5
-    return [dep.lastName, dep.ssid, dep.relationship, false, false][depFieldIdx]
+    return [`${dep.firstName} ${dep.lastName}`, dep.ssid, dep.relationship, false, false][depFieldIdx]
   }
 
   return undefined
