@@ -52,13 +52,27 @@ function ListW2s (): ReactElement {
   )
 }
 
+interface IncomeW2UserInput {
+  occupation: string
+  income: string
+  fedWithholding: string
+  personRole: PersonRole.PRIMARY | PersonRole.SPOUSE
+}
+
 export default function W2JobInfo ({ navButtons, onAdvance }: PagedFormProps): ReactElement {
-  const { register, errors, handleSubmit, control, reset } = useForm<IncomeW2>()
+  const { register, errors, handleSubmit, control, reset } = useForm<IncomeW2UserInput>()
   const dispatch = useDispatch()
 
-  const onAddW2 = handleSubmit((formData: IncomeW2): void => {
+  const onAddW2 = handleSubmit((formData: IncomeW2UserInput): void => {
     console.log('formData: ', formData)
-    dispatch(addW2(formData))
+    dispatch(addW2({
+      ...formData,
+      // Note we are not error checking here because
+      // we are already in the input validated happy path
+      // of handleSubmit.
+      income: parseInt(formData.income),
+      fedWithholding: parseInt(formData.fedWithholding)
+    }))
     reset()
   })
 
