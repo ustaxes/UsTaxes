@@ -70,6 +70,14 @@ export default function TaxPayerInfo ({ navButtons, onAdvance }: PagedFormProps)
           required={isForeignCountry}
           defaultValue={taxPayer?.primaryPerson?.address.postalCode}
         />
+        <LabeledInput
+          name="address.foreignCountry"
+          label="Country"
+          register={register}
+          error={errors.address?.foreignCountry}
+          required={isForeignCountry}
+          defaultValue={taxPayer?.primaryPerson?.address.foreignCountry}
+        />
       </div>
     )
   }
