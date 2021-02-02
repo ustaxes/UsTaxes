@@ -86,7 +86,8 @@ const fieldMappings: FieldMapping = {
   88: (s) => fedWithholding(s).toString(),
   // 89: 1099s not supported
   // 90: other forms not supported
-  // 91: Self-computing, not supported
+  // 91: Self-computing, not supported, just uses w-2 total
+  91: (s) => fedWithholding(s).toString(),
   // 92: estimated tax payments, not supported
   // 93-97: credits not supported
   // 98-100: self-computing, not supported,
