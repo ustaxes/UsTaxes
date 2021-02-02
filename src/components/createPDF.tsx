@@ -12,11 +12,13 @@ export default function CreatePDF ({ navButtons }: DonePagedFormProps): ReactEle
   return (
     <Box display="flex" justifyContent="center">
       <form onSubmit={onSubmit}>
-        <Box display="flex" justifyContent="flex-start">
-          <h2>Print Copy to File</h2>
-        </Box>
+        <div>
+          <Box display="flex" justifyContent="flex-start">
+            <h2>Print Copy to File</h2>
+          </Box>
 
-        {navButtons}
+          {navButtons}
+        </div>
       </form>
     </Box>
   )

@@ -8,7 +8,9 @@ import { TaxesState } from './data'
 
 export function initialTaxesState (): TaxesState {
   return {
-    information: {}
+    information: {
+      w2s: []
+    }
   }
 }
 

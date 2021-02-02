@@ -1,31 +1,36 @@
-import { Box, Checkbox, FormControlLabel } from '@material-ui/core'
+import { Checkbox, FormControl, FormControlLabel, FormGroup, makeStyles } from '@material-ui/core'
 import React, { ReactElement } from 'react'
 import { Controller } from 'react-hook-form'
 import { LabeledCheckBoxProps } from './types'
 
-export function LabeledCheckBox (props: LabeledCheckBoxProps): ReactElement {
-  const { foreignAddress, setforeignAddress, control, description } = props
+const useStyles = makeStyles((theme) => ({
+  root: {
+    display: 'flex',
+    justifyContent: 'flex-start',
+    margin: theme.spacing(3, 3, 0, 0)
+  }
+}))
 
-  const setForeignAddressFalse = (): void => setforeignAddress(false)
-  const setForeignAddressTrue = (): void => setforeignAddress(true)
+export function LabeledCheckBox (props: LabeledCheckBoxProps): ReactElement {
+  const { label, name, value, setValue, control } = props
+
+  const classes = useStyles()
 
   return (
     <Controller
-      name="foreignAddress"
+      name={name}
       as={
-        <Box display="flex" justifyContent="flex-start" paddingTop={1}>
-          <FormControlLabel
-            control={<Checkbox checked={!foreignAddress} onChange={setForeignAddressFalse} color="primary" />}
-            label="No"
-            value={false}
-          />
-          <FormControlLabel
-            control={<Checkbox checked={foreignAddress} onChange={setForeignAddressTrue} color="primary" />}
-            label="Yes"
-            value={true}
-          />
-          <p>{description}</p>
-        </Box>
+        <div className={classes.root}>
+          <FormControl component="fieldset">
+            <FormGroup>
+              <FormControlLabel
+                control={<Checkbox name={name} checked={value} onChange={() => setValue(!value)} color="primary" />}
+                label={label}
+                value={value}
+              />
+            </FormGroup>
+          </FormControl>
+        </div>
       }
       control={control}
     />

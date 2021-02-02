@@ -2,16 +2,18 @@ import React, { ReactElement } from 'react'
 import { unstable_createMuiStrictModeTheme as createMuiTheme, ThemeProvider } from '@material-ui/core'
 import {
   Switch,
-  Route
+  Route,
+  Redirect
 } from 'react-router-dom'
-import W2EmployerInfo from './W2EmployerInfo'
-import W2EmployeeInfo from './W2EmployeeInfo'
 import W2JobInfo from './W2JobInfo'
 import CreatePDF from './createPDF'
 import ResponsiveDrawer, { Section } from './ResponsiveDrawer'
 import { PagerButtons, usePager } from './pager'
 import TaxPayerInfo from './TaxPayer'
 import RefundBankAccount from './RefundBankAccount'
+import SpouseAndDependent from './TaxPayer/SpouseAndDependent'
+import ContactInfo from './TaxPayer/ContactInfo'
+import FilingStatusSelect from './TaxPayer/FilingStatus'
 
 const theme = createMuiTheme({
   palette: {
@@ -31,10 +33,14 @@ const theme = createMuiTheme({
 })
 
 const Urls = {
-  taxpayer: '/taxpayerinfo',
+  taxPayer: {
+    root: '/taxpayer',
+    info: '/info',
+    spouseAndDependent: '/spouseAndDependent',
+    filingStatus: '/filingStatus',
+    contactInfo: '/contact'
+  },
   refund: '/refundinfo',
-  employer: '/w2employerinfo',
-  employee: '/w2employeeinfo',
   job: '/w2jobinfo',
   createPdf: '/createpdf'
 }
@@ -43,21 +49,22 @@ const drawerSections: Section[] = [
   {
     title: 'Personal',
     items: [
-      ['Taxpayer Information', Urls.taxpayer],
-      ['Refund Information', Urls.refund]
+      ['Taxpayer Information', Urls.taxPayer.info],
+      ['Spouse and Dependents', Urls.taxPayer.spouseAndDependent],
+      ['Filing Status', Urls.taxPayer.filingStatus],
+      ['Contact Information', Urls.taxPayer.contactInfo]
     ]
   },
   {
-    title: 'Wages',
+    title: 'Income',
     items: [
-      ['Employer Information', Urls.employer],
-      ['Employee Information', Urls.employee],
-      ['Job Information', Urls.job]
+      ['Wages (W2)', Urls.job]
     ]
   },
   {
     title: 'Results',
     items: [
+      ['Refund Information', Urls.refund],
       ['Review and Print', Urls.createPdf]
     ]
   }
@@ -80,17 +87,21 @@ export default function Main (): ReactElement {
     <ThemeProvider theme={theme}>
       <ResponsiveDrawer sections={drawerSections} />
       <Switch>
-        <Route path={Urls.taxpayer} exact>
+        <Redirect path="/" to={Urls.taxPayer.info} exact />
+        <Route path={Urls.taxPayer.info}>
           <TaxPayerInfo onAdvance={forward} navButtons={firstStepButtons} />
+        </Route>
+        <Route path={Urls.taxPayer.spouseAndDependent}>
+          <SpouseAndDependent onAdvance={forward} navButtons={firstStepButtons} />
+        </Route>
+        <Route path={Urls.taxPayer.contactInfo}>
+          <ContactInfo onAdvance={forward} navButtons={firstStepButtons}/>
+        </Route>
+        <Route path={Urls.taxPayer.filingStatus}>
+          <FilingStatusSelect onAdvance={forward} navButtons={firstStepButtons}/>
         </Route>
         <Route path={Urls.refund} exact>
           <RefundBankAccount onAdvance={forward} navButtons={stepDoneButtons} />
-        </Route>
-        <Route path="/w2employerinfo" exact>
-          <W2EmployerInfo onAdvance={forward} navButtons={stepDoneButtons} />
-        </Route>
-        <Route path="/w2employeeinfo" exact>
-          <W2EmployeeInfo onAdvance={forward} navButtons={stepDoneButtons} />
         </Route>
         <Route path="/w2jobinfo" exact>
           <W2JobInfo onAdvance={forward} navButtons={stepDoneButtons} />

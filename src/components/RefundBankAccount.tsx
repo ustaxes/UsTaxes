@@ -10,7 +10,7 @@ import { Refund, TaxesState } from '../redux/data'
 import { PagedFormProps } from './pager'
 
 export default function RefundBankAccount ({ navButtons, onAdvance }: PagedFormProps): ReactElement {
-  const { register, handleSubmit, errors } = useForm()
+  const { register, handleSubmit, errors } = useForm<Refund>()
   // const variable dispatch to allow use inside function
   const dispatch = useDispatch()
 
@@ -28,31 +28,32 @@ export default function RefundBankAccount ({ navButtons, onAdvance }: PagedFormP
   return (
     <Box display="flex" justifyContent="center">
       <form onSubmit={handleSubmit(onSubmit)}>
+        <div>
+          <Box display="flex" justifyContent="flex-start">
+            <h2>Refund Information</h2>
+          </Box>
 
-        <Box display="flex" justifyContent="flex-start">
-          <h2>Refund Information</h2>
-        </Box>
+          <LabeledInput
+            label="Bank Routing number"
+            register={register}
+            required={true}
+            patternConfig={Patterns.bankRouting}
+            name="routingNumber"
+            defaultValue={prevFormData?.routingNumber}
+            error={errors.routingNumber}
+          />
 
-        <LabeledInput
-          label="Bank Routing number"
-          register={register}
-          required={true}
-          patternConfig={Patterns.bankRouting}
-          name="routingNumber"
-          defaultValue={prevFormData?.routingNumber}
-          errors={errors}
-        />
-
-        <LabeledInput
-          label="Bank Account number"
-          register={register}
-          required={true}
-          patternConfig={Patterns.bankAccount}
-          name="accountNumber"
-          defaultValue={prevFormData?.accountNumber}
-          errors={errors}
-        />
-        {navButtons}
+          <LabeledInput
+            label="Bank Account number"
+            register={register}
+            required={true}
+            patternConfig={Patterns.bankAccount}
+            name="accountNumber"
+            defaultValue={prevFormData?.accountNumber}
+            error={errors.accountNumber}
+          />
+          {navButtons}
+        </div>
       </form>
     </Box>
   )

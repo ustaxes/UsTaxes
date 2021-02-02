@@ -1,55 +1,37 @@
-import { Control, RegisterOptions } from 'react-hook-form'
+import { BaseFormProps } from '../types'
+import { Control, FieldError } from 'react-hook-form'
 import { PatternConfig } from '../Patterns'
+export * from '../types'
 
 export interface BaseDropdownProps {
   label: string
-  required: boolean
+  required?: boolean
   name: string
-  errors: Errors
+  error?: FieldError
   defaultValue?: string
   control?: Control<any>
 }
 
-export interface LabeledDropdownProps<A,> extends BaseDropdownProps {
+export interface LabeledDropdownProps<A> extends BaseDropdownProps {
   dropDownData: A[]
-  valueMapping: (a: A) => string
-  keyMapping: (a: A) => string
-  textMapping: (a: A) => string
+  valueMapping: (a: A, n: number) => string
+  keyMapping: (a: A, n: number) => string | number
+  textMapping: (a: A, n: number) => string
 }
 
-export interface Errors {
-  [key: string]: {type: string}
-}
-
-export const isError = (errors: Errors, name: string): boolean => getError(errors, name) !== undefined
-
-export const getError = (errors: Errors, name: string): string | undefined => {
-  let result
-  if (Object.prototype.hasOwnProperty.call(errors, name)) {
-    const r = errors[name]
-    result = r.type
-  }
-  return result
-}
-
-type Register = (rules?: RegisterOptions) => any
-
-export interface LabeledInputProps {
+export interface LabeledInputProps extends BaseFormProps {
   strongLabel?: string
   patternConfig?: PatternConfig
   label: string
-  register: Register
-  required: boolean
+  required?: boolean
   name: string
-  errors: Errors
   defaultValue?: string
 }
 
 export interface LabeledCheckBoxProps {
-  foreignAddress: boolean
-  setforeignAddress: (v: boolean) => void
+  name: string
+  value: boolean
+  setValue: (v: boolean) => void
   control: Control<any>
-  description: string
+  label: string
 }
-
-export const id = <A,>(a: A): A => a

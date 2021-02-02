@@ -1,28 +1,40 @@
-export interface W2EmployeeInfo {
-  SSID: string
-  employeeFirstName: string
-  employeeLastName: string
-  employeeAddress: string
-  employeeCity: string
-  employeeState: string
-  employeeZip: string
-  foreignAddress: boolean
-  employeeProvince?: string
-  employeePostalCode?: string
-  employeeCountry: string
+export enum PersonRole {
+  PRIMARY = 'PRIMARY',
+  SPOUSE = 'SPOUSE',
+  DEPENDENT = 'DEPENDENT',
+  EMPLOYER = 'EMPLOYER'
 }
 
-export interface W2EmployerInfo {
+export interface Person {
+  firstName: string
+  lastName: string
+  ssid: string
+  role: PersonRole
+}
+
+export interface Dependent extends Person {
+  relationship: string
+}
+
+export interface Address {
+  address: string
+  aptNo?: string
+  city: string
+  state: string
+  zip: string
+  foreignCountry?: string
+  province?: string
+  postalCode?: string
+}
+
+export interface PrimaryPerson extends Person {
+  address: Address
+}
+
+export interface Employer {
   EIN: string
   employerName: string
-  employerAddress: string
-  employerCity: string
-  employerState: string
-  employerZip: string
-  foreignAddress: boolean
-  employerProvince?: string
-  employerCountry?: string
-  employerPostalCode?: string
+  address?: Address
 }
 
 export interface Refund {
@@ -30,23 +42,67 @@ export interface Refund {
   accountNumber: string
 }
 
-export interface W2Info {
+export interface IncomeW2 {
   occupation: string
-  income: string
-  fedWithholding: string
+  income: number
+  fedWithholding: number
+  employer?: Employer
+  personRole: PersonRole.PRIMARY | PersonRole.SPOUSE
 }
 
-export interface TaxPayer {
-  contactPhoneNumber: string
-  contactEmail: string
+export enum FilingStatus {
+  S = 'S',
+  MFJ = 'MFJ',
+  MFS = 'MFS',
+  HOH = 'HOH',
+  W = 'W'
+}
+
+export const FilingStatusTexts = ({
+  [FilingStatus.S]: 'Single',
+  [FilingStatus.MFJ]: 'Married Filing Jointly',
+  [FilingStatus.MFS]: 'Married Filing Separately',
+  [FilingStatus.HOH]: 'Head of Household',
+  [FilingStatus.W]: 'Widow(er)'
+})
+
+export const filingStatuses = (p: TaxPayer | undefined): FilingStatus[] => {
+  let withDependents: FilingStatus[] = []
+  let spouseStatuses: FilingStatus[] = []
+
+  if ((p?.dependents ?? []).length > 0) {
+    withDependents = [FilingStatus.HOH]
+  }
+  if (p?.spouse !== undefined) {
+    spouseStatuses = [FilingStatus.MFJ, FilingStatus.MFS]
+    // HoH not available if married
+    withDependents = []
+  } else {
+    spouseStatuses = [FilingStatus.S]
+  }
+  return [
+    ...spouseStatuses,
+    ...withDependents,
+    FilingStatus.W
+  ]
+}
+
+export interface ContactInfo {
+  contactPhoneNumber?: string
+  contactEmail?: string
+}
+
+export interface TaxPayer extends ContactInfo {
+  filingStatus?: FilingStatus
+  primaryPerson?: PrimaryPerson
+  spouse?: Person
+  dependents?: Dependent[]
 }
 
 export interface Information {
-  w2EmployeeInfo?: W2EmployeeInfo
-  w2EmployerInfo?: W2EmployerInfo
-  w2Info?: W2Info
+  w2s: IncomeW2[]
   refund?: Refund
-  taxpayer?: TaxPayer
+  taxPayer?: TaxPayer
 }
 
 export interface TaxesState {
