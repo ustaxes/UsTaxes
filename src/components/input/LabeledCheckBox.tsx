@@ -1,4 +1,4 @@
-import { Checkbox, FormControl, FormLabel, FormControlLabel, FormGroup, makeStyles } from '@material-ui/core'
+import { Checkbox, FormControl, FormControlLabel, FormGroup, makeStyles } from '@material-ui/core'
 import React, { ReactElement } from 'react'
 import { Controller } from 'react-hook-form'
 import { LabeledCheckBoxProps } from './types'
@@ -22,11 +22,10 @@ export function LabeledCheckBox (props: LabeledCheckBoxProps): ReactElement {
       as={
         <div className={classes.root}>
           <FormControl component="fieldset">
-            <FormLabel component="legend">{label}</FormLabel>
             <FormGroup>
               <FormControlLabel
                 control={<Checkbox name={name} checked={value} onChange={() => setValue(!value)} color="primary" />}
-                label={value ? 'Yes' : 'No'}
+                label={label}
                 value={value}
               />
             </FormGroup>

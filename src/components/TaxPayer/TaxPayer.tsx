@@ -121,7 +121,7 @@ export default function TaxPayerInfo ({ navButtons, onAdvance }: PagedFormProps)
           defaultValue={taxPayer?.primaryPerson?.address.city}
         />
         <LabeledCheckBox
-          label="Check if you have a foreign address:"
+          label="Check if you have a foreign address"
           control={control}
           value={isForeignCountry}
           setValue={updateForeignCountry}
