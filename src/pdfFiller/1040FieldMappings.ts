@@ -4,32 +4,27 @@ interface FieldMapping {
   [field: number]: (info: Information) => string | boolean | undefined
 }
 
-const depFields = (s: Information, depIdx: number): [string, string, string, boolean, boolean] | undefined => {
+const depField = (s: Information, pdfFieldIdx: number): string | boolean | undefined => {
   const deps: Dependent[] = s.taxPayer?.dependents ?? []
 
-  if (deps.length > depIdx) {
-    const dep: Dependent = deps[depIdx]
-    return [
-      dep.lastName, dep.ssid, dep.relationship, false, false
-    ]
+  // Based on the PDF row we are on, select correct dependent
+  const depIdx = Math.floor((pdfFieldIdx - 32) / 5)
+
+  if (depIdx < deps.length) {
+    const dep = deps[depIdx]
+    // Based on the PDF column, select the correct field
+    const depFieldIdx = (pdfFieldIdx - 32) % 5
+    return [dep.lastName, dep.ssid, dep.relationship, false, false][depFieldIdx]
   }
 
   return undefined
 }
 
-const depField = (s: Information, fieldIdx: number): string | boolean | undefined => {
-  const fs = depFields(s, Math.floor((fieldIdx - 32) / 5))
-  if (fs !== undefined) {
-    return fs[(fieldIdx - 32) % 5]
-  }
-  return undefined
-}
-
-const depFieldMappings = (): FieldMapping => {
-  return Object.fromEntries(
-    Array.from(Array(20)).map((n: number) => [n + 32, (s: Information) => depField(s, n + 32)])
-  )
-}
+// 1040 allows 4 dependents listed without a supplemental schedule,
+// so create field mappings for 4x5 grid of fields
+const depFieldMappings: FieldMapping = Object.fromEntries(
+  Array.from(Array(20)).map((u, n: number) => [n + 32, (s: Information) => depField(s, n + 32)])
+)
 
 const wages = (s: Information): number => {
   if ((s.w2s ?? []).length < 1) {
@@ -76,6 +71,7 @@ const fieldMappings: FieldMapping = {
   24: (s) => false,
   31: (s) => (s.taxPayer?.dependents?.length ?? 0) > 4,
   ...depFieldMappings,
+  // Note fields 35, 36 and related not yet supported
   52: (s) => wages(s).toString(),
   // 52-62 interest + dividends not yet supported (sch b)
   // 64: capital gains not yet supported (sch d)
