@@ -28,11 +28,11 @@ export default function FilingStatusSelect ({ navButtons, onAdvance }: PagedForm
       <form onSubmit={handleSubmit(onSubmit)}>
 
         <Box display="flex" justifyContent="flex-start">
-          <h4>Filing Status</h4>
+          <h2>Filing Status</h2>
         </Box>
 
         <GenericLabeledDropdown<FilingStatus>
-          label="Filing Status"
+          label=""
           dropDownData={filingStatuses(taxPayer)}
           valueMapping={(x, i) => x}
           keyMapping={(x, i) => i}
