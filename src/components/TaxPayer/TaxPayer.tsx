@@ -99,7 +99,7 @@ export default function TaxPayerInfo ({ navButtons, onAdvance }: PagedFormProps)
           label="Unit No"
           register={register}
           name="address.aptNo"
-          required={true}
+          required={false}
           error={errors.address?.aptNo}
           defaultValue={taxPayer?.primaryPerson?.address.aptNo}
         />
