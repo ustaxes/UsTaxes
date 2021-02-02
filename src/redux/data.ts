@@ -87,9 +87,12 @@ export const filingStatuses = (p: TaxPayer | undefined): FilingStatus[] => {
   ]
 }
 
-export interface TaxPayer {
+export interface ContactInfo {
   contactPhoneNumber?: string
   contactEmail?: string
+}
+
+export interface TaxPayer extends ContactInfo {
   filingStatus?: FilingStatus
   primaryPerson?: PrimaryPerson
   spouse?: Person

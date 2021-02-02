@@ -10,14 +10,30 @@ function formReducer (state: Information | undefined, action: Actions): Informat
   const newState: Information = state ?? { w2s: [] }
 
   switch (action.type) {
-    case ActionName.SAVE_TAXPAYER_INFO: {
+    case ActionName.SAVE_PRIMARY_PERSON_INFO: {
       return {
         ...newState,
         taxPayer: {
-          ...action.formData,
-          // These fields are not updated this way
-          spouse: newState.taxPayer?.spouse,
-          dependents: newState.taxPayer?.dependents
+          ...newState.taxPayer,
+          primaryPerson: action.formData
+        }
+      }
+    }
+    case ActionName.SAVE_CONTACT_INFO: {
+      return {
+        ...newState,
+        taxPayer: {
+          ...newState.taxPayer,
+          ...action.formData
+        }
+      }
+    }
+    case ActionName.SAVE_FILING_STATUS_INFO: {
+      return {
+        ...newState,
+        taxPayer: {
+          ...newState.taxPayer,
+          filingStatus: action.formData
         }
       }
     }

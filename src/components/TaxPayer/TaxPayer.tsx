@@ -2,7 +2,7 @@ import React, { ReactElement, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { Box } from '@material-ui/core'
 import { useDispatch, useSelector } from 'react-redux'
-import { saveTaxpayerInfo } from '../../redux/actions'
+import { savePrimaryPersonInfo } from '../../redux/actions'
 import { PagedFormProps } from '../pager'
 import { PrimaryPerson, TaxesState, TaxPayer } from '../../redux/data'
 import { PersonFields } from './PersonFields'
@@ -24,7 +24,7 @@ export default function TaxPayerInfo ({ navButtons, onAdvance }: PagedFormProps)
 
   const onSubmit = (primaryPerson: PrimaryPerson): void => {
     console.log('formData: ', primaryPerson)
-    dispatch(saveTaxpayerInfo({ primaryPerson }))
+    dispatch(savePrimaryPersonInfo(primaryPerson))
     onAdvance()
   }
 

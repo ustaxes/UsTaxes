@@ -1,15 +1,16 @@
-import { Person, IncomeW2, Refund, TaxPayer, Dependent } from './data'
+import { Person, IncomeW2, Refund, Dependent, FilingStatus, PrimaryPerson, ContactInfo } from './data'
 
 export enum ActionName {
   SAVE_REFUND_INFO = 'SAVE_REFUND_INFO',
-  SAVE_TAXPAYER_INFO = 'SAVE_TAXPAYER_INFO',
+  SAVE_PRIMARY_PERSON_INFO = 'SAVE_TAXPAYER_INFO',
+  SAVE_CONTACT_INFO = 'SAVE_CONTACT_INFO',
+  SAVE_FILING_STATUS_INFO = 'SAFE_FILING_STATUS_INFO',
   ADD_DEPENDENT = 'TAXPAYER/ADD_DEPENDENT',
   REMOVE_DEPENDENT = 'TAXPAYER/REMOVE_DEPENDENT',
   ADD_SPOUSE = 'TAXPAYER/ADD_SPOUSE',
   REMOVE_SPOUSE = 'TAXPAYER/REMOVE_SPOUSE',
   ADD_W2 = 'ADD_W2',
   REMOVE_W2 = 'REMOVE_W2',
-
 }
 
 interface Save<T, R> {
@@ -18,7 +19,9 @@ interface Save<T, R> {
 }
 
 type SaveRefundInfo = Save<typeof ActionName.SAVE_REFUND_INFO, Refund>
-type SaveTaxpayerInfo = Save<typeof ActionName.SAVE_TAXPAYER_INFO, TaxPayer>
+type SavePrimaryPersonInfo = Save<typeof ActionName.SAVE_PRIMARY_PERSON_INFO, PrimaryPerson>
+type SaveFilingStatusInfo = Save<typeof ActionName.SAVE_FILING_STATUS_INFO, FilingStatus>
+type SaveContactInfo = Save<typeof ActionName.SAVE_CONTACT_INFO, ContactInfo>
 type AddDependent = Save<typeof ActionName.ADD_DEPENDENT, Dependent>
 type RemoveDependent = Save<typeof ActionName.REMOVE_DEPENDENT, number>
 type AddSpouse = Save<typeof ActionName.ADD_SPOUSE, Person>
@@ -28,7 +31,9 @@ type RemoveW2 = Save<typeof ActionName.REMOVE_W2, number>
 
 export type Actions =
   SaveRefundInfo
-  | SaveTaxpayerInfo
+  | SavePrimaryPersonInfo
+  | SaveFilingStatusInfo
+  | SaveContactInfo
   | AddDependent
   | RemoveDependent
   | AddSpouse
@@ -67,12 +72,20 @@ const cleanPerson = <P extends Person>(p: P): P => ({
   ssid: p?.ssid.replace(/-/g, '')
 })
 
-export const saveTaxpayerInfo: ActionCreator<TaxPayer> = makeAction2(
-  ActionName.SAVE_TAXPAYER_INFO,
+export const savePrimaryPersonInfo: ActionCreator<PrimaryPerson> = makeAction2(
+  ActionName.SAVE_PRIMARY_PERSON_INFO,
+  cleanPerson
+)
+
+export const saveFilingStatusInfo: ActionCreator<FilingStatus> = makeAction(
+  ActionName.SAVE_FILING_STATUS_INFO
+)
+
+export const saveContactInfo: ActionCreator<ContactInfo> = makeAction2(
+  ActionName.SAVE_CONTACT_INFO,
   t => ({
-    contactPhoneNumber: t.contactPhoneNumber?.replace(/-/g, ''),
-    primaryPerson: t.primaryPerson !== undefined ? cleanPerson(t.primaryPerson) : undefined,
-    spouse: t.spouse !== undefined ? cleanPerson(t.spouse) : undefined
+    ...t,
+    contactPhoneNumber: t.contactPhoneNumber?.replace(/-/g, '')
   })
 )
 
