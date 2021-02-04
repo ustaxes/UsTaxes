@@ -1,6 +1,6 @@
 import React, { FormEvent, ReactElement } from 'react'
 import { Box } from '@material-ui/core'
-import { createPDFPopup } from '../pdfFiller/fill1040Fields'
+import { createPDFPopup } from '../pdfFiller/fillPdf'
 import { DonePagedFormProps } from './pager'
 
 export default function CreatePDF ({ navButtons }: DonePagedFormProps): ReactElement {
