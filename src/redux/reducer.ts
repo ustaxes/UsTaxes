@@ -7,7 +7,7 @@ import {
 } from './actions'
 
 function formReducer (state: Information | undefined, action: Actions): Information {
-  const newState: Information = state ?? { w2s: [] }
+  const newState: Information = state ?? { w2s: [], taxPayer: { dependents: [] } }
 
   switch (action.type) {
     case ActionName.SAVE_PRIMARY_PERSON_INFO: {

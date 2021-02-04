@@ -4,15 +4,6 @@ import rootReducer from './reducer'
 
 import { persistStore, persistReducer } from 'redux-persist'
 import storage from 'redux-persist/lib/storage' // defaults to localStorage for web
-import { TaxesState } from './data'
-
-export function initialTaxesState (): TaxesState {
-  return {
-    information: {
-      w2s: []
-    }
-  }
-}
 
 const persistConfig = {
   key: 'root',

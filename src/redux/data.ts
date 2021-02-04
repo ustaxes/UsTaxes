@@ -37,9 +37,15 @@ export interface Employer {
   address?: Address
 }
 
+export enum AccountType {
+  checking = 'checking',
+  savings = 'savings'
+}
+
 export interface Refund {
   routingNumber: string
   accountNumber: string
+  accountType: AccountType
 }
 
 export interface IncomeW2 {
@@ -96,13 +102,13 @@ export interface TaxPayer extends ContactInfo {
   filingStatus?: FilingStatus
   primaryPerson?: PrimaryPerson
   spouse?: Person
-  dependents?: Dependent[]
+  dependents: Dependent[]
 }
 
 export interface Information {
   w2s: IncomeW2[]
   refund?: Refund
-  taxPayer?: TaxPayer
+  taxPayer: TaxPayer
 }
 
 export interface TaxesState {
