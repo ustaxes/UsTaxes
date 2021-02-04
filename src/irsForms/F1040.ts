@@ -13,6 +13,7 @@ import ScheduleA from './ScheduleA'
 import ScheduleD from './ScheduleD'
 import ScheduleEIC from './ScheduleEIC'
 import Form from './Form'
+import federalBrackets from '../data/federal'
 
 const displayNumber = (n: number): number | undefined => {
   if (n <= 0) {
@@ -232,9 +233,36 @@ export default class F1040 implements Form {
   )
 
   // Todo, must actually compute tax
-  computeTax = (): number | undefined => displayNumber(
-    0
-  )
+  computeTax = (): number | undefined => {
+    const table = federalBrackets.tax_withholding_percentage_method_tables.annual
+    const filingStatusLookup = {
+      [FilingStatus.S]: table.single,
+      [FilingStatus.MFS]: table.married_separately,
+      [FilingStatus.MFJ]: table.married,
+      [FilingStatus.HOH]: table.head_of_household
+    }
+
+    if (this.filingStatus !== FilingStatus.W && this.filingStatus !== undefined) {
+      const table = filingStatusLookup[this.filingStatus].income_tax_brackets
+
+      const taxableIncome = this.l15() ?? 0
+      const ordinaryIncome = taxableIncome
+
+      let oi = table.length - 1
+
+      while (table[oi].bracket > ordinaryIncome) {
+        oi--
+      }
+      const ordinaryBracket = table[oi]
+      const baseTax = ordinaryBracket.amount
+      const bracketTaxableOrdinaryIncome = ordinaryIncome - ordinaryBracket.bracket
+      // TODO - otherwise ignoring long-term vs short term capital gains
+      const ordinaryTax = baseTax + bracketTaxableOrdinaryIncome * table[oi].marginal_rate / 100
+
+      return Math.floor(ordinaryTax)
+    }
+    return undefined
+  }
 
   l16 = (): number | undefined => displayNumber(
     sumFields([
