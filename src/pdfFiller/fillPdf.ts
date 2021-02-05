@@ -15,12 +15,11 @@ import Form from '../irsForms/Form'
   * Make sense by type (checkbox => boolean, textField => string / number)
   */
 export function fillPDF (pdf: PDFDocument, form: Form): void {
-  const fields = form.fields()
+  const fieldValues = form.fields()
   const formFields = pdf.getForm().getFields()
-  // fill fields with fieldNumber
-  // check all boxes
+
   formFields.forEach((pdfField, index) => {
-    const value: string | boolean | number = fields[index]
+    const value: string | boolean | number = fieldValues[index]
     if (pdfField instanceof PDFCheckBox) {
       if (value === true) {
         pdfField.check()
