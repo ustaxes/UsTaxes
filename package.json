@@ -75,10 +75,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-push": "lint-staged"
+      "pre-push": "eslint ./src --ext .ts --ext .js --ext .tsx --ext .jsx"
     }
-  },
-  "lint-staged": {
-    "*.{ts,js,tsx,jsx}": "eslint --cache --fix"
   }
 }
