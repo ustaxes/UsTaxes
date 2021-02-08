@@ -22,10 +22,10 @@ const displayNumber = (n: number): number | undefined => {
   return n
 }
 
-const computeField = (f: number | undefined): number => f === undefined ? 0 : f
+const computeField = (f: number | undefined): number => f === undefined ? 0 : Number(f)
 
 const sumFields = (fs: Array<number | undefined>): number =>
-  fs.map((f) => computeField(f)).reduce((l, r) => Number(l) + Number(r))
+  fs.map((f) => computeField(f)).reduce((l, r) => l + r)
 
 export default class F1040 implements Form {
   // intentionally mirroring many fields from the state,
@@ -297,7 +297,7 @@ export default class F1040 implements Form {
 
   l25a = (): number | undefined => {
     if (this.w2s.length > 0) {
-      this.w2s.map((w2) => w2.fedWithholding).reduce((l, r) => l + r)
+      return this.w2s.map((w2) => computeField(w2.fedWithholding)).reduce((l, r) => l + r)
     }
     return undefined
   }
