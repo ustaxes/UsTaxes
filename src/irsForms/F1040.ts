@@ -25,7 +25,7 @@ const displayNumber = (n: number): number | undefined => {
 const computeField = (f: number | undefined): number => f === undefined ? 0 : f
 
 const sumFields = (fs: Array<number | undefined>): number =>
-  fs.map((f) => computeField(f)).reduce((l, r) => l + r)
+  fs.map((f) => computeField(f)).reduce((l, r) => Number(l) + Number(r))
 
 export default class F1040 implements Form {
   // intentionally mirroring many fields from the state,
