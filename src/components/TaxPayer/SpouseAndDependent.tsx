@@ -11,16 +11,24 @@ import { ListDependents, PersonFields, PersonListItem } from './PersonFields'
 import FormContainer from './FormContainer'
 import { PagedFormProps } from '../pager'
 
-interface UserDependentForm {
+interface UserPersonForm {
   firstName: string
   lastName: string
   ssid: string
+}
+
+interface UserDependentForm extends UserPersonForm {
   relationship: string
 }
 
 const toDependent = (formData: UserDependentForm): Dependent => ({
   ...formData,
   role: PersonRole.DEPENDENT
+})
+
+const toSpouse = (formData: UserPersonForm): Person => ({
+  ...formData,
+  role: PersonRole.SPOUSE
 })
 
 export const AddDependentForm = (): ReactElement => {
@@ -67,7 +75,7 @@ export const AddDependentForm = (): ReactElement => {
 }
 
 export const SpouseInfo = (): ReactElement => {
-  const { register, errors, handleSubmit, getValues } = useForm<Person>()
+  const { register, errors, handleSubmit, getValues } = useForm<UserPersonForm>()
   const [editSpouse, updateEditSpouse] = useState(false)
   const dispatch = useDispatch()
 
@@ -77,7 +85,7 @@ export const SpouseInfo = (): ReactElement => {
 
   const onSubmit = (): void => {
     updateEditSpouse(false)
-    dispatch(addSpouse(getValues()))
+    dispatch(addSpouse(toSpouse(getValues())))
   }
 
   if (editSpouse) {
