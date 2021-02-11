@@ -20,8 +20,8 @@ export interface Address {
   address: string
   aptNo?: string
   city: string
-  state: string
-  zip: string
+  state?: string
+  zip?: string
   foreignCountry?: string
   province?: string
   postalCode?: string
