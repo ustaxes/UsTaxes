@@ -35,6 +35,7 @@
     "typescript": "^4.1.4"
   },
   "scripts": {
+    "postinstall": "node ./setup.js",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
