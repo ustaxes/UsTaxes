@@ -1,4 +1,8 @@
 import { Person, IncomeW2, Refund, Dependent, FilingStatus, PrimaryPerson, ContactInfo } from './data'
+import { ValidateFunction } from 'ajv'
+import validations, { checkType } from './validate'
+
+const ajv = validations()
 
 export enum ActionName {
   SAVE_REFUND_INFO = 'SAVE_REFUND_INFO',
@@ -50,22 +54,25 @@ function signalAction<T extends ActionName> (t: T): Save<T, {}> {
   }
 }
 
-function makeAction<A extends Object, T extends ActionName> (t: T): ((formData: A) => Save<T, A>) {
+function makeAction<A extends Object, T extends ActionName> (t: T, validate: ValidateFunction<A>): ((formData: A) => Save<T, A>) {
   return (formData: A): Save<typeof t, A> => ({
     type: t,
-    formData: formData
+    formData: checkType<A>(formData, validate)
   })
 }
 
-function makeAction2<A extends Object, T extends ActionName> (t: T, clean: (d: A) => Partial<A>): ((formData: A) => Save<T, A>) {
+function makeAction2<A extends Object, T extends ActionName> (t: T, validate: ValidateFunction<A>, clean: (d: A) => Partial<A>): ((formData: A) => Save<T, A>) {
   return (formData: A): Save<T, A> => ({
     type: t,
-    formData: { ...formData, ...clean(formData) }
+    formData: checkType({ ...formData, ...clean(formData) }, validate)
   })
 }
 
 export const saveRefundInfo: ActionCreator<Refund> =
-  makeAction(ActionName.SAVE_REFUND_INFO)
+  makeAction(
+    ActionName.SAVE_REFUND_INFO,
+    ajv.getSchema('#/definitions/Refund') as ValidateFunction<Refund>
+  )
 
 const cleanPerson = <P extends Person>(p: P): P => ({
   ...p,
@@ -74,15 +81,18 @@ const cleanPerson = <P extends Person>(p: P): P => ({
 
 export const savePrimaryPersonInfo: ActionCreator<PrimaryPerson> = makeAction2(
   ActionName.SAVE_PRIMARY_PERSON_INFO,
+  ajv.getSchema('#/definitions/PrimaryPerson') as ValidateFunction<PrimaryPerson>,
   cleanPerson
 )
 
 export const saveFilingStatusInfo: ActionCreator<FilingStatus> = makeAction(
-  ActionName.SAVE_FILING_STATUS_INFO
+  ActionName.SAVE_FILING_STATUS_INFO,
+  ajv.getSchema('#/definitions/FilingStatus') as ValidateFunction<FilingStatus>
 )
 
 export const saveContactInfo: ActionCreator<ContactInfo> = makeAction2(
   ActionName.SAVE_CONTACT_INFO,
+  ajv.getSchema('#/definitions/ContactInfo') as ValidateFunction<ContactInfo>,
   t => ({
     ...t,
     contactPhoneNumber: t.contactPhoneNumber?.replace(/-/g, '')
@@ -91,15 +101,23 @@ export const saveContactInfo: ActionCreator<ContactInfo> = makeAction2(
 
 export const addDependent: ActionCreator<Dependent> = makeAction2(
   ActionName.ADD_DEPENDENT,
+  ajv.getSchema('#/definitions/Dependent') as ValidateFunction<Dependent>,
   (t: Dependent) => cleanPerson(t)
 )
 
+const indexSchema = {
+  type: 'number',
+  minimum: 0
+}
+
 export const removeDependent: ActionCreator<number> = makeAction(
-  ActionName.REMOVE_DEPENDENT
+  ActionName.REMOVE_DEPENDENT,
+  ajv.compile(indexSchema)
 )
 
 export const addSpouse: ActionCreator<Person> = makeAction2(
   ActionName.ADD_SPOUSE,
+  ajv.getSchema('#/definitions/Person') as ValidateFunction<Person>,
   cleanPerson
 )
 
@@ -109,12 +127,14 @@ export const removeSpouse: Actions = signalAction(
 
 export const addW2: ActionCreator<IncomeW2> = makeAction2(
   ActionName.ADD_W2,
+  ajv.getSchema('#/definitions/IncomeW2') as ValidateFunction<IncomeW2>,
   (t) => ({
     income: t.income,
-    fedWitholding: t.fedWithholding
+    fedWithholding: t.fedWithholding
   })
 )
 
 export const removeW2: ActionCreator<number> = makeAction(
-  ActionName.REMOVE_W2
+  ActionName.REMOVE_W2,
+  ajv.compile(indexSchema)
 )
