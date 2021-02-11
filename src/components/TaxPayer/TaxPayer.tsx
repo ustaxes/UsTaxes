@@ -39,7 +39,6 @@ export default function TaxPayerInfo ({ navButtons, onAdvance }: PagedFormProps)
   )
 
   const onSubmit = (primaryPerson: PrimaryPerson): void => {
-    console.log('formData: ', primaryPerson)
     dispatch(savePrimaryPersonInfo(asPrimaryPerson(primaryPerson)))
     onAdvance()
   }

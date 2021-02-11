@@ -20,7 +20,6 @@ export default function RefundBankAccount ({ navButtons, onAdvance }: PagedFormP
 
   // component functions
   const onSubmit = (formData: Refund): void => {
-    console.log('formData: ', formData)
     dispatch(saveRefundInfo(formData))
     onAdvance()
   }

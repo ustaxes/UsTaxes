@@ -18,7 +18,6 @@ export default function ContactInfo ({ navButtons, onAdvance }: PagedFormProps):
   })
 
   const onSubmit = (formData: Contact): void => {
-    console.log('formData: ', formData)
     dispatch(saveContactInfo(formData))
     onAdvance()
   }
