@@ -19,6 +19,18 @@ export const checkType = <A>(data: A, validate: ValidateFunction<A>): A => {
   return data
 }
 
-const ajv = (): Ajv => new Ajv().addSchema(schema)
+const ajv = new Ajv().addSchema(schema)
+
+// Doing this seems to be necessary so that recursive self
+// links (ref fields) are created properly. Without it we get
+// undefined is not a function errors as refs are not present
+ajv.getSchema('#/definitions/Person')
+ajv.getSchema('#/definitions/PrimaryPerson')
+ajv.getSchema('#/definitions/Employer')
+ajv.getSchema('#/definitions/PersonRole')
+ajv.getSchema('#/definitions/Refund')
+ajv.getSchema('#/definitions/IncomeW2')
+ajv.getSchema('#/definitions/Address')
+ajv.getSchema('#/definitions/AccountType')
 
 export default ajv

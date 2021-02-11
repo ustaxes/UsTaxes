@@ -1,8 +1,6 @@
 import { Person, IncomeW2, Refund, Dependent, FilingStatus, PrimaryPerson, ContactInfo } from './data'
 import { ValidateFunction } from 'ajv'
-import validations, { checkType } from './validate'
-
-const ajv = validations()
+import ajv, { checkType } from './validate'
 
 export enum ActionName {
   SAVE_REFUND_INFO = 'SAVE_REFUND_INFO',
