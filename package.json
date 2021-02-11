@@ -41,6 +41,7 @@
     "eject": "react-scripts eject",
     "desktop-release": "tauri build",
     "desktop": "tauri dev",
+    "schema-generate": "node ./setup.js",
     "lint": "eslint ./src --ext .ts --ext .js --ext .tsx --ext .jsx",
     "lint:fix": "eslint ./src --fix --ext .ts --ext .js --ext .tsx --ext .jsx"
   },
@@ -77,7 +78,8 @@
   },
   "husky": {
     "hooks": {
-      "pre-push": "eslint ./src --ext .ts --ext .js --ext .tsx --ext .jsx"
+      "pre-push": "eslint ./src --ext .ts --ext .js --ext .tsx --ext .jsx",
+      "post-merge": "node ./setup.js"
     }
   }
 }
