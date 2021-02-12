@@ -5,7 +5,7 @@ import './App.css'
 const App = (): ReactElement => (
   <div className="App">
     <Main/>
-  </div>
+  </div> 
 )
 
 export default App
