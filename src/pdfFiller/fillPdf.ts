@@ -29,6 +29,7 @@ export function fillPDF (pdf: PDFDocument, form: Form): void {
     } else if (pdfField instanceof PDFTextField) {
       pdfField.setText(value.toString())
     }
+    pdfField.enableReadOnly()
   })
 }
 

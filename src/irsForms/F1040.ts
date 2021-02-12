@@ -297,7 +297,7 @@ export default class F1040 implements Form {
 
   l25a = (): number | undefined => {
     if (this.w2s.length > 0) {
-      this.w2s.map((w2) => w2.fedWithholding).reduce((l, r) => l + r)
+      return this.w2s.map((w2) => computeField(w2.fedWithholding)).reduce((l, r) => l + r)
     }
     return undefined
   }
@@ -417,11 +417,11 @@ export default class F1040 implements Form {
     this.claimDependentPrimary,
     this.claimDependentSpouse,
     false, // TODO: spouse itemizes separately,
-    this.dependents.length > 4,
     this.bornBeforeDate(),
     this.blind(),
     this.spouseBeforeDate(),
     this.spouseBlind(),
+    this.dependents.length > 4,
     ...this._depFieldMappings(),
     this.l1(),
     this.l2a(),
