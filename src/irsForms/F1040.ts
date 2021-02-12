@@ -22,7 +22,7 @@ const displayNumber = (n: number): number | undefined => {
   return n
 }
 
-const computeField = (f: number | undefined): number => f === undefined ? 0 : Number(f)
+const computeField = (f: number | undefined): number => f === undefined ? 0 : f
 
 const sumFields = (fs: Array<number | undefined>): number =>
   fs.map((f) => computeField(f)).reduce((l, r) => l + r)
