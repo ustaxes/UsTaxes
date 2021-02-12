@@ -5,21 +5,41 @@ import { Box, Button, List } from '@material-ui/core'
 import { useDispatch, useSelector } from 'react-redux'
 import { LabeledInput } from '../input'
 import { Patterns } from '../Patterns'
-import { TaxesState, Dependent, Person } from '../../redux/data'
+import { TaxesState, Dependent, Person, PersonRole } from '../../redux/data'
 import { addDependent, addSpouse, removeSpouse } from '../../redux/actions'
 import { ListDependents, PersonFields, PersonListItem } from './PersonFields'
 import FormContainer from './FormContainer'
 import { PagedFormProps } from '../pager'
 
+interface UserPersonForm {
+  firstName: string
+  lastName: string
+  ssid: string
+}
+
+interface UserDependentForm extends UserPersonForm {
+  relationship: string
+}
+
+const toDependent = (formData: UserDependentForm): Dependent => ({
+  ...formData,
+  role: PersonRole.DEPENDENT
+})
+
+const toSpouse = (formData: UserPersonForm): Person => ({
+  ...formData,
+  role: PersonRole.SPOUSE
+})
+
 export const AddDependentForm = (): ReactElement => {
-  const { register, errors, handleSubmit, getValues, reset } = useForm<Dependent>()
+  const { register, errors, handleSubmit, getValues, reset } = useForm<UserDependentForm>()
 
   const [addingDependent, newDependent] = useState(false)
 
   const dispatch = useDispatch()
 
   const onSubmit = (): void => {
-    dispatch(addDependent(getValues()))
+    dispatch(addDependent(toDependent(getValues())))
     reset()
   }
 
@@ -55,7 +75,7 @@ export const AddDependentForm = (): ReactElement => {
 }
 
 export const SpouseInfo = (): ReactElement => {
-  const { register, errors, handleSubmit, getValues } = useForm<Person>()
+  const { register, errors, handleSubmit, getValues } = useForm<UserPersonForm>()
   const [editSpouse, updateEditSpouse] = useState(false)
   const dispatch = useDispatch()
 
@@ -65,7 +85,7 @@ export const SpouseInfo = (): ReactElement => {
 
   const onSubmit = (): void => {
     updateEditSpouse(false)
-    dispatch(addSpouse(getValues()))
+    dispatch(addSpouse(toSpouse(getValues())))
   }
 
   if (editSpouse) {

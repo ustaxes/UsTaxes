@@ -1,4 +1,6 @@
 import { Person, IncomeW2, Refund, Dependent, FilingStatus, PrimaryPerson, ContactInfo } from './data'
+import { ValidateFunction } from 'ajv'
+import ajv, { checkType } from './validate'
 
 export enum ActionName {
   SAVE_REFUND_INFO = 'SAVE_REFUND_INFO',
@@ -50,56 +52,87 @@ function signalAction<T extends ActionName> (t: T): Save<T, {}> {
   }
 }
 
-function makeAction<A extends Object, T extends ActionName> (t: T): ((formData: A) => Save<T, A>) {
+/**
+  *  Create an action constructor given an action name and a validator
+  *  for the action's payload. The validator checks the payload against
+  *  the schema at runtime so we can see errors if data of the wrong types
+  *  about to be inserted into the
+  */
+function makeActionCreator<A extends Object, T extends ActionName> (
+  t: T,
+  validate: ValidateFunction<A>
+): ((formData: A) => Save<T, A>) {
   return (formData: A): Save<typeof t, A> => ({
     type: t,
-    formData: formData
+    formData: checkType<A>(formData, validate)
   })
 }
 
-function makeAction2<A extends Object, T extends ActionName> (t: T, clean: (d: A) => Partial<A>): ((formData: A) => Save<T, A>) {
+/**
+  * This variant includes a preprocessor function that can be used to
+  * apply formatting changes to provided data, for example.
+  */
+function makePreprocessActionCreator<A extends Object, T extends ActionName> (
+  t: T,
+  validate: ValidateFunction<A>,
+  clean: (d: A) => Partial<A>
+): ((formData: A) => Save<T, A>) {
   return (formData: A): Save<T, A> => ({
     type: t,
-    formData: { ...formData, ...clean(formData) }
+    formData: checkType({ ...formData, ...clean(formData) }, validate)
   })
 }
 
 export const saveRefundInfo: ActionCreator<Refund> =
-  makeAction(ActionName.SAVE_REFUND_INFO)
+  makeActionCreator(
+    ActionName.SAVE_REFUND_INFO,
+    ajv.getSchema('#/definitions/Refund') as ValidateFunction<Refund>
+  )
 
 const cleanPerson = <P extends Person>(p: P): P => ({
   ...p,
   ssid: p?.ssid.replace(/-/g, '')
 })
 
-export const savePrimaryPersonInfo: ActionCreator<PrimaryPerson> = makeAction2(
+export const savePrimaryPersonInfo: ActionCreator<PrimaryPerson> = makePreprocessActionCreator(
   ActionName.SAVE_PRIMARY_PERSON_INFO,
+  ajv.getSchema('#/definitions/PrimaryPerson') as ValidateFunction<PrimaryPerson>,
   cleanPerson
 )
 
-export const saveFilingStatusInfo: ActionCreator<FilingStatus> = makeAction(
-  ActionName.SAVE_FILING_STATUS_INFO
+export const saveFilingStatusInfo: ActionCreator<FilingStatus> = makeActionCreator(
+  ActionName.SAVE_FILING_STATUS_INFO,
+  ajv.getSchema('#/definitions/FilingStatus') as ValidateFunction<FilingStatus>
 )
 
-export const saveContactInfo: ActionCreator<ContactInfo> = makeAction2(
+export const saveContactInfo: ActionCreator<ContactInfo> = makePreprocessActionCreator(
   ActionName.SAVE_CONTACT_INFO,
+  ajv.getSchema('#/definitions/ContactInfo') as ValidateFunction<ContactInfo>,
   t => ({
     ...t,
     contactPhoneNumber: t.contactPhoneNumber?.replace(/-/g, '')
   })
 )
 
-export const addDependent: ActionCreator<Dependent> = makeAction2(
+export const addDependent: ActionCreator<Dependent> = makePreprocessActionCreator(
   ActionName.ADD_DEPENDENT,
+  ajv.getSchema('#/definitions/Dependent') as ValidateFunction<Dependent>,
   (t: Dependent) => cleanPerson(t)
 )
 
-export const removeDependent: ActionCreator<number> = makeAction(
-  ActionName.REMOVE_DEPENDENT
+const indexSchema = {
+  type: 'number',
+  minimum: 0
+}
+
+export const removeDependent: ActionCreator<number> = makeActionCreator(
+  ActionName.REMOVE_DEPENDENT,
+  ajv.compile(indexSchema)
 )
 
-export const addSpouse: ActionCreator<Person> = makeAction2(
+export const addSpouse: ActionCreator<Person> = makePreprocessActionCreator(
   ActionName.ADD_SPOUSE,
+  ajv.getSchema('#/definitions/Person') as ValidateFunction<Person>,
   cleanPerson
 )
 
@@ -107,14 +140,16 @@ export const removeSpouse: Actions = signalAction(
   ActionName.REMOVE_SPOUSE
 )
 
-export const addW2: ActionCreator<IncomeW2> = makeAction2(
+export const addW2: ActionCreator<IncomeW2> = makePreprocessActionCreator(
   ActionName.ADD_W2,
+  ajv.getSchema('#/definitions/IncomeW2') as ValidateFunction<IncomeW2>,
   (t) => ({
     income: t.income,
-    fedWitholding: t.fedWithholding
+    fedWithholding: t.fedWithholding
   })
 )
 
-export const removeW2: ActionCreator<number> = makeAction(
-  ActionName.REMOVE_W2
+export const removeW2: ActionCreator<number> = makeActionCreator(
+  ActionName.REMOVE_W2,
+  ajv.compile(indexSchema)
 )

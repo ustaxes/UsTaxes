@@ -15,6 +15,7 @@
     "@types/react-pdf": "^5.0.1",
     "@types/react-redux": "^7.1.16",
     "@types/redux-logger": "^3.0.6",
+    "ajv": "^7.0.4",
     "node-fetch": "^2.6.1",
     "pdf-lib": "^1.16.0",
     "react": "^17.0.1",
@@ -30,15 +31,17 @@
     "redux-logger": "^3.0.6",
     "redux-persist": "^6.0.0",
     "tauri": "^0.14.1",
+    "ts-json-schema-generator": "^0.84.0",
     "typescript": "^4.1.4"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
+    "start": "node ./setup.js && react-scripts start",
+    "build": "node ./setup.js && react-scripts build",
+    "test": "node ./setup.js && react-scripts test",
     "eject": "react-scripts eject",
-    "desktop-release": "tauri build",
-    "desktop": "tauri dev",
+    "desktop-release": "node ./setup.js && tauri build",
+    "desktop": "node ./setup.js && tauri dev",
+    "schema-generate": "node ./setup.js",
     "lint": "eslint ./src --ext .ts --ext .js --ext .tsx --ext .jsx",
     "lint:fix": "eslint ./src --fix --ext .ts --ext .js --ext .tsx --ext .jsx"
   },
@@ -75,7 +78,8 @@
   },
   "husky": {
     "hooks": {
-      "pre-push": "eslint ./src --ext .ts --ext .js --ext .tsx --ext .jsx"
+      "pre-push": "eslint ./src --ext .ts --ext .js --ext .tsx --ext .jsx",
+      "post-merge": "node ./setup.js"
     }
   }
 }

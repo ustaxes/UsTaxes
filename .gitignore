@@ -29,3 +29,5 @@ yarn-error.log*
 
 # vscode settings
 /.vscode
+/.husky/
+/src/redux/validation.json

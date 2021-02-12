@@ -4,10 +4,26 @@ import { Box } from '@material-ui/core'
 import { useDispatch, useSelector } from 'react-redux'
 import { savePrimaryPersonInfo } from '../../redux/actions'
 import { PagedFormProps } from '../pager'
-import { PrimaryPerson, TaxesState, TaxPayer } from '../../redux/data'
+import { Address, PersonRole, PrimaryPerson, TaxesState, TaxPayer } from '../../redux/data'
 import { PersonFields } from './PersonFields'
 import { LabeledCheckBox, LabeledInput, USStateDropDown } from '../input'
 import { Patterns } from '../Patterns'
+
+interface TaxPayerUserForm {
+  firstName: string
+  lastName: string
+  ssid: string
+  role: PersonRole
+  address: Address
+}
+
+const asPrimaryPerson = (formData: TaxPayerUserForm): PrimaryPerson => ({
+  address: formData.address,
+  firstName: formData.firstName,
+  lastName: formData.lastName,
+  ssid: formData.ssid.replace(/-/g, ''),
+  role: PersonRole.PRIMARY
+})
 
 export default function TaxPayerInfo ({ navButtons, onAdvance }: PagedFormProps): ReactElement {
   const { register, handleSubmit, control, errors } = useForm<PrimaryPerson>()
@@ -23,8 +39,7 @@ export default function TaxPayerInfo ({ navButtons, onAdvance }: PagedFormProps)
   )
 
   const onSubmit = (primaryPerson: PrimaryPerson): void => {
-    console.log('formData: ', primaryPerson)
-    dispatch(savePrimaryPersonInfo(primaryPerson))
+    dispatch(savePrimaryPersonInfo(asPrimaryPerson(primaryPerson)))
     onAdvance()
   }
 

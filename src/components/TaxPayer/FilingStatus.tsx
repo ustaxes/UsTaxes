@@ -18,7 +18,6 @@ export default function FilingStatusSelect ({ navButtons, onAdvance }: PagedForm
   })
 
   const onSubmit = (formData: {filingStatus: FilingStatus}): void => {
-    console.log('formData: ', formData)
     dispatch(saveFilingStatusInfo(formData.filingStatus))
     onAdvance()
   }

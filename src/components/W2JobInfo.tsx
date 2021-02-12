@@ -59,20 +59,21 @@ interface IncomeW2UserInput {
   personRole: PersonRole.PRIMARY | PersonRole.SPOUSE
 }
 
+const toIncomeW2 = (formData: IncomeW2UserInput): IncomeW2 => ({
+  ...formData,
+  // Note we are not error checking here because
+  // we are already in the input validated happy path
+  // of handleSubmit.
+  income: parseInt(formData.income),
+  fedWithholding: parseInt(formData.fedWithholding)
+})
+
 export default function W2JobInfo ({ navButtons, onAdvance }: PagedFormProps): ReactElement {
   const { register, errors, handleSubmit, control, reset } = useForm<IncomeW2UserInput>()
   const dispatch = useDispatch()
 
   const onAddW2 = handleSubmit((formData: IncomeW2UserInput): void => {
-    console.log('formData: ', formData)
-    dispatch(addW2({
-      ...formData,
-      // Note we are not error checking here because
-      // we are already in the input validated happy path
-      // of handleSubmit.
-      income: parseInt(formData.income),
-      fedWithholding: parseInt(formData.fedWithholding)
-    }))
+    dispatch(addW2(toIncomeW2(formData)))
     reset()
   })
 
