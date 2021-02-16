@@ -4,7 +4,7 @@ Open source tax filing application
 
 # Contributing
 Thank you for taking the time to contribute, let's make tax filing free for everyone!🎉 
-- If you wish to make a code contribution please check out current issues and comment `@thegrims` on the issue that you want to work so that multiple contributors don't end up working on the same issue. 
+- If you wish to make a code contribution please check out current issues and comment `@thegrims` on the issue that you want to work on so that multiple contributors don't end up working on the same issue. 
 
 - If you have an idea for an improvement or a bugfix, feel free to file an issue to be reviewed. 
 
