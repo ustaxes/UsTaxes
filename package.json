@@ -35,12 +35,12 @@
     "typescript": "^4.1.4"
   },
   "scripts": {
-    "start": "node ./setup.js && react-scripts start",
+    "start": "node ./notice.js && node ./setup.js && react-scripts start",
     "build": "node ./setup.js && react-scripts build",
     "test": "node ./setup.js && react-scripts test",
     "eject": "react-scripts eject",
     "desktop-release": "node ./setup.js && tauri build",
-    "desktop": "node ./setup.js && tauri dev",
+    "desktop": "node ./notice.js && node ./setup.js && tauri dev",
     "schema-generate": "node ./setup.js",
     "lint": "eslint ./src --ext .ts --ext .js --ext .tsx --ext .jsx",
     "lint:fix": "eslint ./src --fix --ext .ts --ext .js --ext .tsx --ext .jsx"
