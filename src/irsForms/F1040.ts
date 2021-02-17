@@ -232,7 +232,6 @@ export default class F1040 implements Form {
     computeField(this.l11()) - computeField(this.l14())
   )
 
-  // Todo, must actually compute tax
   computeTax = (): number | undefined => {
     const table = federalBrackets.tax_withholding_percentage_method_tables.annual
     const filingStatusLookup = {
@@ -395,7 +394,8 @@ export default class F1040 implements Form {
     this.filingStatus === FilingStatus.MFS,
     this.filingStatus === FilingStatus.HOH,
     this.filingStatus === FilingStatus.W,
-    '', // TODO: W, MFS, HoH qualifying person
+    // TODO: implement non dependent child for HOH and QW
+    (this.spousesFirstNameAndInitial !== undefined && this.spousesLastName !== undefined && this.filingStatus === 'MFS') ? this.spousesFirstNameAndInitial + ' ' + this.spousesLastName : '',
     this.firstNameAndInitial,
     this.lastName,
     this.yourSocialSecurityNumber,
