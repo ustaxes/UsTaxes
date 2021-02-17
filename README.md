@@ -2,7 +2,7 @@
 # https://ustaxes.org/
 
 # What is UsTaxes?
-UsTaxes is an open source tax filing application that can be used to file the Federal 1040 form. It is different from paid tax preperation software in that it protects user privacy and is provided for free. It is available in both web and [web](https://ustaxes.org/) and [desktop](https://github.com/thegrims/UsTaxes#desktop-application) formats
+UsTaxes is an open source tax filing application that can be used to file the Federal 1040 form. It is different from paid tax preparation software in that it protects user privacy and is provided for free. It is available in both web and [web](https://ustaxes.org/) and [desktop](https://github.com/thegrims/UsTaxes#desktop-application) formats
 
 # Supported Filing Categories
 The Federal 1040 and W2 (Wages) tax forms are currently supported. Users who only have wage income and live in the below states should be able to file taxes using this site, since they do not have state level income tax.
