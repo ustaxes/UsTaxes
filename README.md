@@ -1,7 +1,5 @@
 [![Netlify Status][Netlify-badge]][Netlify-url] 
-<a href="https://discord.gg/dAaz472mPz">
-        <img src="https://img.shields.io/discord/812156892343828500?logo=Discord">
-</a>
+[![discord-badge]][discord-url]
 # https://ustaxes.org/
 
 # What is UsTaxes?
@@ -44,3 +42,5 @@ To release, run `npm run desktop-release` or `yarn desktop-release`. This will p
 [Netlify-badge]: https://api.netlify.com/api/v1/badges/41efe456-a85d-4fed-9fcf-55fe4d5aa7fa/deploy-status
 [Netlify-url]: https://app.netlify.com/sites/peaceful-joliot-d51349/deploys
 [Cargo-docs]: https://doc.rust-lang.org/cargo/getting-started/installation.html
+[discord-badge]: https://img.shields.io/discord/812156892343828500?logo=Discord
+[discord-url]: https://discord.gg/dAaz472mPz
