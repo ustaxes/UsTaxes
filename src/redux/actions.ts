@@ -162,6 +162,6 @@ export const add1099: ActionCreator<Income1099> = makeActionCreator(
 )
 
 export const remove1099: ActionCreator<number> = makeActionCreator(
-  ActionName.REMOVE_W2,
+  ActionName.REMOVE_1099,
   ajv.compile(indexSchema)
 )
