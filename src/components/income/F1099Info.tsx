@@ -114,7 +114,6 @@ export default function F1099Info ({ navButtons, onAdvance }: PagedFormProps): R
         />
 
         <LabeledInput
-          strongLabel="Payer"
           label="Enter name of bank, broker firm, or other payer"
           register={register}
           required={true}
@@ -124,8 +123,7 @@ export default function F1099Info ({ navButtons, onAdvance }: PagedFormProps): R
         />
 
         <LabeledInput
-          strongLabel="Box 1 - Interest Income"
-          label=""
+          label="Box 1 - Interest Income"
           register={register}
           required={true}
           patternConfig={Patterns.currency}
