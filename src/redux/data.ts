@@ -57,15 +57,11 @@ export interface IncomeW2 {
 }
 
 export enum Income1099Type {
-  DIV = 'DIV',
-  INT = 'INT',
-  MISC = 'MISC'
+  INT = 'INT'
 }
 
 export const form1099Types: Income1099Type[] = [
-  Income1099Type.DIV,
-  Income1099Type.INT,
-  Income1099Type.MISC
+  Income1099Type.INT
 ]
 
 export interface Income1099 {
