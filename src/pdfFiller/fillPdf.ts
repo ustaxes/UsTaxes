@@ -46,9 +46,9 @@ async function downloadPDF (url: string): Promise<PDFDocument> {
   return await PDFDocument.load(buffer)
 }
 
-async function getSchedules (f1040: F1040): Promise<PDFDocument[]> {
+async function getSchedules (f1040: F1040): Promise<Array<[Form, PDFDocument]>> {
   const state = store.getState().information
-  const attachments: PDFDocument[] = []
+  let attachments: Array<[Form, PDFDocument]> = []
 
   if (state.f1099s.find((v) => v.formType === Income1099Type.INT) !== undefined) {
     const schB = new ScheduleB(state)
@@ -56,14 +56,11 @@ async function getSchedules (f1040: F1040): Promise<PDFDocument[]> {
     const schBPdf = await downloadPDF(downloadUrls.f1040sb)
 
     f1040.addScheduleB(schB)
-    fillPDF(schBPdf, schB)
-    attachments.push(schBPdf)
+    attachments = [...attachments, [schB, schBPdf]]
   }
 
   const f1040pdf: PDFDocument = await downloadPDF(downloadUrls.f1040)
-  fillPDF(f1040pdf, f1040)
-
-  return [f1040pdf, ...attachments]
+  return [[f1040, f1040pdf], ...attachments]
 }
 
 // opens new with filled information in the window of the component it is called from
@@ -77,21 +74,29 @@ export async function create1040 (): Promise<Uint8Array> {
       f1040.addRefund(state.refund)
     }
 
-    const files: PDFDocument[] = await getSchedules(f1040)
+    const files: Array<[Form, PDFDocument]> = await getSchedules(f1040)
 
-    if (files.length > 1) {
-      const single = await PDFDocument.create()
+    const pdfFiles: Array<Promise<PDFDocument>> = files.map(async ([formData, f]) => {
+      fillPDF(f, formData)
+      const pageBytes = await f.save()
+      return await PDFDocument.load(pageBytes)
+    })
 
-      const pdfBytes = await Promise.all(
-        files.map(async (f) => {
-          const newPages = await single.copyPages(f, f.getPageIndices())
-          newPages.forEach((p) => single.addPage(p))
-        })
-      ).then(async () => await single.save())
-      return pdfBytes
-    }
+    const [head, ...rest] = pdfFiles
 
-    return await files[0].save()
+    const res: PDFDocument = await rest.reduce(
+      async (l, r) => {
+        return await Promise
+          .all([l, r])
+          .then(async ([l, r]) => await l.copyPages(r, r.getPageIndices()).then((pgs) => {
+            pgs.forEach((p) => l.addPage(p))
+            return l
+          }))
+      },
+      head
+    )
+
+    return await res.save()
   }
 
   console.error('Attempt to create pdf with no data, will be empty')

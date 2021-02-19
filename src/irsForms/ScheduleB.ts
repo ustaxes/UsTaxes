@@ -83,7 +83,6 @@ export default class ScheduleB implements Form {
       ...this.l8()
     ]
 
-    result.map((v, i) => console.log(`${i}: ${v?.toString() ?? 'undefined'}`))
     return result
   }
 }
