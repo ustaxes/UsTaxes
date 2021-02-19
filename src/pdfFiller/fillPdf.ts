@@ -74,8 +74,10 @@ export async function create1040 (): Promise<Uint8Array> {
       f1040.addRefund(state.refund)
     }
 
+    // Get blank pdfs applicable to the model state
     const files: Array<[Form, PDFDocument]> = await getSchedules(f1040)
 
+    // Insert the values from each field into the PDF
     const pdfFiles: Array<Promise<PDFDocument>> = files.map(async ([formData, f]) => {
       fillPDF(f, formData)
       const pageBytes = await f.save()
@@ -84,6 +86,7 @@ export async function create1040 (): Promise<Uint8Array> {
 
     const [head, ...rest] = pdfFiles
 
+    // Make sure we combine the documents from left to right and preserve order
     const res: PDFDocument = await rest.reduce(
       async (l, r) => {
         return await Promise
