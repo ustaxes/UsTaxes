@@ -1,4 +1,7 @@
-[![Netlify Status][Netlify-badge]][Netlify-url]
+[![Netlify Status][Netlify-badge]][Netlify-url] 
+<a href="https://discord.gg/dAaz472mPz">
+        <img src="https://img.shields.io/discord/812156892343828500?logo=Discord">
+</a>
 # https://ustaxes.org/
 
 # What is UsTaxes?
