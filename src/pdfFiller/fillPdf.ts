@@ -60,10 +60,10 @@ async function getSchedules (f1040: F1040): Promise<PDFDocument[]> {
     attachments.push(schBPdf)
   }
 
-  const pdf: PDFDocument = await downloadPDF(downloadUrls.f1040)
-  fillPDF(pdf, f1040)
+  const f1040pdf: PDFDocument = await downloadPDF(downloadUrls.f1040)
+  fillPDF(f1040pdf, f1040)
 
-  return [pdf, ...attachments]
+  return [f1040pdf, ...attachments]
 }
 
 // opens new with filled information in the window of the component it is called from
@@ -79,15 +79,19 @@ export async function create1040 (): Promise<Uint8Array> {
 
     const files: PDFDocument[] = await getSchedules(f1040)
 
-    const single = await PDFDocument.create()
+    if (files.length > 1) {
+      const single = await PDFDocument.create()
 
-    const pdfBytes = await Promise.all(
-      files.map(async (f) => {
-        const newPages = await single.copyPages(f, f.getPageIndices())
-        newPages.forEach((p) => single.addPage(p))
-      })
-    ).then(async () => await single.save())
-    return pdfBytes
+      const pdfBytes = await Promise.all(
+        files.map(async (f) => {
+          const newPages = await single.copyPages(f, f.getPageIndices())
+          newPages.forEach((p) => single.addPage(p))
+        })
+      ).then(async () => await single.save())
+      return pdfBytes
+    }
+
+    return await files[0].save()
   }
 
   console.error('Attempt to create pdf with no data, will be empty')
