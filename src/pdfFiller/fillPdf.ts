@@ -8,6 +8,13 @@ import { store } from '../redux/store'
 import { savePdf } from './pdfHandler'
 import F1040 from '../irsForms/F1040'
 import Form from '../irsForms/Form'
+import ScheduleB from '../irsForms/ScheduleB'
+import { Income1099Type } from '../redux/data'
+
+const downloadUrls = {
+  f1040: '/forms/f1040.pdf',
+  f1040sb: '/forms/f1040sb.pdf'
+}
 
 /**
   * Attempt to fill fields in a PDF from a Form,
@@ -19,40 +26,72 @@ export function fillPDF (pdf: PDFDocument, form: Form): void {
   const formFields = pdf.getForm().getFields()
 
   formFields.forEach((pdfField, index) => {
-    const value: string | boolean | number = fieldValues[index]
+    const value: string | boolean | number | undefined = fieldValues[index]
     if (pdfField instanceof PDFCheckBox) {
       if (value === true) {
         pdfField.check()
       } else if (value !== false) {
-        throw new Error(`Expected boolean value in fields, index:${index}, found ${value}`)
+        throw new Error(`Expected boolean value in fields, index:${index}, found ${value ?? 'undefined'}`)
       }
     } else if (pdfField instanceof PDFTextField) {
-      pdfField.setText(value.toString())
+      pdfField.setText(value?.toString())
     }
     pdfField.enableReadOnly()
   })
 }
 
+async function downloadPDF (url: string): Promise<PDFDocument> {
+  const download = await fetch(url)
+  const buffer = await download.arrayBuffer()
+  return await PDFDocument.load(buffer)
+}
+
+async function getSchedules (f1040: F1040): Promise<PDFDocument[]> {
+  const state = store.getState().information
+  const attachments: PDFDocument[] = []
+
+  if (state.f1099s.find((v) => v.formType === Income1099Type.INT) !== undefined) {
+    const schB = new ScheduleB(state)
+
+    const schBPdf = await downloadPDF(downloadUrls.f1040sb)
+
+    f1040.addScheduleB(schB)
+    fillPDF(schBPdf, schB)
+    attachments.push(schBPdf)
+  }
+
+  const pdf: PDFDocument = await downloadPDF(downloadUrls.f1040)
+  fillPDF(pdf, f1040)
+
+  return [pdf, ...attachments]
+}
+
 // opens new with filled information in the window of the component it is called from
 export async function create1040 (): Promise<Uint8Array> {
-  const download = await fetch('https://thegrims.github.io/UsTaxes/tax_forms/f1040.pdf')
-  const buffer = await download.arrayBuffer()
-  const pdf: PDFDocument = await PDFDocument.load(buffer)
-
   const state = store.getState().information
+
   if (state.taxPayer !== undefined) {
     const f1040 = new F1040(state.taxPayer)
+    state.w2s.forEach((w2) => f1040.addW2(w2))
     if (state.refund !== undefined) {
       f1040.addRefund(state.refund)
     }
-    state.w2s.forEach((w2) => f1040.addW2(w2))
-    fillPDF(pdf, f1040)
-  } else {
-    console.error('Attempt to create pdf with no data, will be empty')
+
+    const files: PDFDocument[] = await getSchedules(f1040)
+
+    const single = await PDFDocument.create()
+
+    const pdfBytes = await Promise.all(
+      files.map(async (f) => {
+        const newPages = await single.copyPages(f, f.getPageIndices())
+        newPages.forEach((p) => single.addPage(p))
+      })
+    ).then(async () => await single.save())
+    return pdfBytes
   }
 
-  const pdfBytes = await pdf.save()
-  return pdfBytes
+  console.error('Attempt to create pdf with no data, will be empty')
+  return new Uint8Array()
 }
 
 // opens new with filled information in the window of the component it is called from

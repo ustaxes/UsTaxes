@@ -5,5 +5,5 @@
   *
   */
 export default interface Form {
-  fields: () => Array<string | number | boolean>
+  fields: () => Array<string | number | boolean | undefined>
 }

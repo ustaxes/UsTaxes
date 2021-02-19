@@ -14,18 +14,8 @@ import ScheduleD from './ScheduleD'
 import ScheduleEIC from './ScheduleEIC'
 import Form from './Form'
 import federalBrackets from '../data/federal'
-
-const displayNumber = (n: number): number | undefined => {
-  if (n <= 0) {
-    return undefined
-  }
-  return n
-}
-
-const computeField = (f: number | undefined): number => f === undefined ? 0 : f
-
-const sumFields = (fs: Array<number | undefined>): number =>
-  fs.map((f) => computeField(f)).reduce((l, r) => l + r)
+import { displayNumber, computeField, sumFields } from './util'
+import ScheduleB from './ScheduleB'
 
 export default class F1040 implements Form {
   // intentionally mirroring many fields from the state,
@@ -59,6 +49,7 @@ export default class F1040 implements Form {
   schedule2?: Schedule2
   schedule3?: Schedule3
   scheduleA?: ScheduleA
+  scheduleB?: ScheduleB
   scheduleD?: ScheduleD
   scheduleEIC?: ScheduleEIC
   schedule8812?: Schedule8812
@@ -111,6 +102,10 @@ export default class F1040 implements Form {
 
   addScheduleA (s: ScheduleA): void {
     this.scheduleA = s
+  }
+
+  addScheduleB (s: ScheduleB): void {
+    this.scheduleB = s
   }
 
   addScheduleD (s: ScheduleD): void {
@@ -178,10 +173,10 @@ export default class F1040 implements Form {
   }
 
   l1 = (): number | undefined => displayNumber(this.wages())
-  l2a = (): number | undefined => undefined
-  l2b = (): number | undefined => undefined
+  l2a = (): number | undefined => this.scheduleB?.l3()
+  l2b = (): number | undefined => this.scheduleB?.l4()
   l3a = (): number | undefined => undefined
-  l3b = (): number | undefined => undefined
+  l3b = (): number | undefined => this.scheduleB?.l6()
   l4a = (): number | undefined => undefined
   l4b = (): number | undefined => undefined
   l5a = (): number | undefined => undefined
@@ -388,7 +383,7 @@ export default class F1040 implements Form {
   _depFieldMappings = (): Array<string | boolean> =>
     Array.from(Array(20)).map((u, n: number) => this._depField(n))
 
-  fields = (): Array<string | number | boolean> => ([
+  fields = (): Array<string | number | boolean | undefined> => ([
     this.filingStatus === FilingStatus.S,
     this.filingStatus === FilingStatus.MFJ,
     this.filingStatus === FilingStatus.MFS,
