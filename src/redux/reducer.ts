@@ -6,8 +6,10 @@ import {
   Actions
 } from './actions'
 
+const blankState: Information = { f1099s: [], w2s: [], taxPayer: { dependents: [] } }
+
 function formReducer (state: Information | undefined, action: Actions): Information {
-  const newState: Information = state ?? { w2s: [], taxPayer: { dependents: [] } }
+  const newState: Information = state ?? blankState
 
   switch (action.type) {
     case ActionName.SAVE_PRIMARY_PERSON_INFO: {
@@ -82,6 +84,23 @@ function formReducer (state: Information | undefined, action: Actions): Informat
       return {
         ...newState,
         w2s: newW2s
+      }
+    }
+    case ActionName.ADD_1099: {
+      return {
+        ...newState,
+        f1099s: [
+          ...newState.f1099s,
+          action.formData
+        ]
+      }
+    }
+    case ActionName.REMOVE_1099: {
+      const new1099s = [...newState.f1099s]
+      new1099s.splice(action.formData, 1)
+      return {
+        ...newState,
+        f1099s: new1099s
       }
     }
 

@@ -56,6 +56,21 @@ export interface IncomeW2 {
   personRole: PersonRole.PRIMARY | PersonRole.SPOUSE
 }
 
+export enum Income1099Type {
+  INT = 'INT'
+}
+
+export const form1099Types: Income1099Type[] = [
+  Income1099Type.INT
+]
+
+export interface Income1099 {
+  payer: string
+  income: number
+  formType: Income1099Type
+  personRole: PersonRole.PRIMARY | PersonRole.SPOUSE
+}
+
 export enum FilingStatus {
   S = 'S',
   MFJ = 'MFJ',
@@ -106,6 +121,7 @@ export interface TaxPayer extends ContactInfo {
 }
 
 export interface Information {
+  f1099s: Income1099[]
   w2s: IncomeW2[]
   refund?: Refund
   taxPayer: TaxPayer

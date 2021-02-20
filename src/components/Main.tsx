@@ -5,7 +5,7 @@ import {
   Route,
   Redirect
 } from 'react-router-dom'
-import W2JobInfo from './W2JobInfo'
+import W2JobInfo from './income/W2JobInfo'
 import CreatePDF from './createPDF'
 import ResponsiveDrawer, { Section } from './ResponsiveDrawer'
 import { PagerButtons, usePager } from './pager'
@@ -14,6 +14,7 @@ import RefundBankAccount from './RefundBankAccount'
 import SpouseAndDependent from './TaxPayer/SpouseAndDependent'
 import ContactInfo from './TaxPayer/ContactInfo'
 import FilingStatusSelect from './TaxPayer/FilingStatus'
+import F1099Info from './income/F1099Info'
 
 const theme = createMuiTheme({
   palette: {
@@ -41,7 +42,10 @@ const Urls = {
     contactInfo: '/contact'
   },
   refund: '/refundinfo',
-  job: '/w2jobinfo',
+  income: {
+    w2s: '/income/w2jobinfo',
+    f1099s: '/income/f1099s'
+  },
   createPdf: '/createpdf'
 }
 
@@ -58,7 +62,8 @@ const drawerSections: Section[] = [
   {
     title: 'Income',
     items: [
-      ['Wages (W2)', Urls.job]
+      ['Wages (W2)', Urls.income.w2s],
+      ['Income (1099)', Urls.income.f1099s]
     ]
   },
   {
@@ -103,8 +108,11 @@ export default function Main (): ReactElement {
         <Route path={Urls.refund} exact>
           <RefundBankAccount onAdvance={forward} navButtons={stepDoneButtons} />
         </Route>
-        <Route path="/w2jobinfo" exact>
+        <Route path={Urls.income.w2s} exact>
           <W2JobInfo onAdvance={forward} navButtons={stepDoneButtons} />
+        </Route>
+        <Route path={Urls.income.f1099s} exact>
+          <F1099Info onAdvance={forward} navButtons={stepDoneButtons} />
         </Route>
         <Route path="/createpdf" exact>
           <CreatePDF navButtons={allDoneButtons} />

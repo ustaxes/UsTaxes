@@ -32,5 +32,7 @@ ajv.getSchema('#/definitions/Refund')
 ajv.getSchema('#/definitions/IncomeW2')
 ajv.getSchema('#/definitions/Address')
 ajv.getSchema('#/definitions/AccountType')
+ajv.getSchema('#/definitions/Income1099')
+ajv.getSchema('#/definitions/Income1099Type')
 
 export default ajv
