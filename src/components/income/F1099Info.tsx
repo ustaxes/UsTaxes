@@ -21,8 +21,8 @@ const F1099Item = ({ form, remove }: F1099ListItemProps): ReactElement => (
       </Avatar>
     </ListItemAvatar>
     <ListItemText
-      primary="todo"
-      secondary={`Income: $${form.income}`}
+      primary={form.payer}
+      secondary={`Income (${form.formType}): $${form.income}`}
     />
     <ListItemSecondaryAction>
       <IconButton onClick={remove} edge="end" aria-label="delete">
