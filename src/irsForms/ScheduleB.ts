@@ -28,7 +28,7 @@ export default class ScheduleB implements Form {
   l1 = (): Array<string | undefined> => {
     const payerValues = this.l1Fields()
     // ensure we return an array of length interestPayersLimit * 2.
-    return this.l1Fields()
+    return payerValues
       .flatMap(({ payer, amount }) => ([payer, amount?.toString()]))
       .concat(anArrayOf((this.interestPayersLimit - payerValues.length) * 2, undefined))
   }
