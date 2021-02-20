@@ -1,7 +1,7 @@
 import { Income1099, Income1099Type, Information } from '../redux/data'
 import TaxPayer from '../redux/TaxPayer'
 import Form from './Form'
-import { computeField, displayNumber, sumFields } from './util'
+import { computeField, displayNumber, sumFields, anArrayOf } from './util'
 
 interface PayerAmount {
   payer?: string
@@ -10,6 +10,8 @@ interface PayerAmount {
 
 export default class ScheduleB implements Form {
   state: Information
+  readonly interestPayersLimit = 14
+  readonly dividendPayersLimit = 16
 
   constructor (info: Information) {
     this.state = info
@@ -18,19 +20,17 @@ export default class ScheduleB implements Form {
   f1099ints = (): Income1099[] =>
     this.state.f1099s.filter((f) => f.formType === Income1099Type.INT)
 
-  l1 (): string[] {
-    const ints = this.f1099ints()
+  l1Fields = (): PayerAmount[] => this.f1099ints().map((v) => ({
+    payer: v.payer,
+    amount: v.income
+  }))
 
-    return (
-      Array
-        .from(Array(14))
-        .flatMap((v, i) => {
-          if (i < ints.length) {
-            return [ints[i].payer, ints[i].income.toString()]
-          }
-          return ['', '']
-        })
-    )
+  l1 = (): Array<string | undefined> => {
+    const payerValues = this.l1Fields()
+    // ensure we return an array of length interestPayersLimit * 2.
+    return this.l1Fields()
+      .flatMap(({ payer, amount }) => ([payer, amount?.toString()]))
+      .concat(anArrayOf((this.interestPayersLimit - payerValues.length) * 2, undefined))
   }
 
   l2 = (): number | undefined => {
@@ -46,7 +46,7 @@ export default class ScheduleB implements Form {
   )
 
   // TODO - 1099 DIV results
-  l5Fields = (): PayerAmount[] => Array.from(Array(16)).map(() => ({}))
+  l5Fields = (): PayerAmount[] => anArrayOf(this.dividendPayersLimit, {})
 
   l5 = (): Array<string | undefined | number> => (
     this.l5Fields().flatMap(({ payer, amount }) => ([payer, amount]))
