@@ -1,4 +1,4 @@
-import { Income1099, Income1099Type, Information } from '../redux/data'
+import { Income1099Type, Information, Income1099Int } from '../redux/data'
 import TaxPayer from '../redux/TaxPayer'
 import Form from './Form'
 import { computeField, displayNumber, sumFields, anArrayOf } from './util'
@@ -17,12 +17,14 @@ export default class ScheduleB implements Form {
     this.state = info
   }
 
-  f1099ints = (): Income1099[] =>
-    this.state.f1099s.filter((f) => f.formType === Income1099Type.INT)
+  f1099ints = (): Income1099Int[] =>
+    this.state.f1099s
+      .filter((f) => f.type === Income1099Type.INT)
+      .map((f) => f as Income1099Int)
 
   l1Fields = (): PayerAmount[] => this.f1099ints().map((v) => ({
     payer: v.payer,
-    amount: v.income
+    amount: v.form.income
   }))
 
   l1 = (): Array<string | undefined> => {
@@ -33,11 +35,7 @@ export default class ScheduleB implements Form {
       .concat(anArrayOf((this.interestPayersLimit - payerValues.length) * 2, undefined))
   }
 
-  l2 = (): number | undefined => {
-    const ints = this.f1099ints()
-
-    return sumFields(ints.map((f) => f.income))
-  }
+  l2 = (): number | undefined => sumFields(this.f1099ints().map((f) => f.form.income))
 
   l3 = (): number | undefined => undefined
 

@@ -57,17 +57,30 @@ export interface IncomeW2 {
 }
 
 export enum Income1099Type {
+  B = 'B',
   INT = 'INT'
 }
 
 export const form1099Types: Income1099Type[] = [
+  Income1099Type.B,
   Income1099Type.INT
 ]
 
-export interface Income1099 {
-  payer: string
+export interface BData {
+  shortTermProceeds: number
+  shortTermCostBasis: number
+  longTermProceeds: number
+  longTermCostBasis: number
+}
+
+export interface IntData {
   income: number
-  formType: Income1099Type
+}
+
+export interface Income1099<T, D> {
+  payer: string
+  type: T
+  form: D
   personRole: PersonRole.PRIMARY | PersonRole.SPOUSE
 }
 
@@ -120,8 +133,15 @@ export interface TaxPayer extends ContactInfo {
   dependents: Dependent[]
 }
 
+export type Income1099Int = Income1099<Income1099Type.INT, IntData>
+export type Income1099B = Income1099<Income1099Type.B, BData>
+
+export type Supported1099 =
+  Income1099Int
+  | Income1099B
+
 export interface Information {
-  f1099s: Income1099[]
+  f1099s: Supported1099[]
   w2s: IncomeW2[]
   refund?: Refund
   taxPayer: TaxPayer

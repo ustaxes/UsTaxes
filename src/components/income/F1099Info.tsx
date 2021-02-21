@@ -4,13 +4,26 @@ import { Avatar, Box, Button, IconButton, List, ListItem, ListItemAvatar, ListIt
 import { useDispatch, useSelector } from 'react-redux'
 import { Actions, add1099, remove1099 } from '../../redux/actions'
 import { PagedFormProps } from '../pager'
-import { Income1099, TaxesState, Person, PersonRole, Income1099Type, form1099Types } from '../../redux/data'
+import { TaxesState, Person, PersonRole, Supported1099, Income1099Type, form1099Types } from '../../redux/data'
 import DeleteIcon from '@material-ui/icons/Delete'
 import { GenericLabeledDropdown, LabeledInput } from '../input'
 import { Patterns } from '../Patterns'
 
+const showIncome = (a: Supported1099): string => {
+  switch (a.type) {
+    case Income1099Type.INT: {
+      return a.form.income.toString()
+    }
+    case Income1099Type.B: {
+      const ltg = a.form.longTermProceeds - a.form.longTermCostBasis
+      const stg = a.form.shortTermProceeds - a.form.shortTermCostBasis
+      return `L(${ltg}), S(${stg})`
+    }
+  }
+}
+
 interface F1099ListItemProps {
-  form: Income1099
+  form: Supported1099
   remove: () => void
 }
 
@@ -22,7 +35,7 @@ const F1099Item = ({ form, remove }: F1099ListItemProps): ReactElement => (
     </ListItemAvatar>
     <ListItemText
       primary={form.payer}
-      secondary={`Income (${form.formType}): $${form.income}`}
+      secondary={showIncome(form)}
     />
     <ListItemSecondaryAction>
       <IconButton onClick={remove} edge="end" aria-label="delete">
@@ -53,28 +66,57 @@ function List1099s (): ReactElement {
 }
 
 interface F1099UserInput {
-  payer: string
-  income: string
   formType: Income1099Type
+  payer: string
+  // Int fields
+  interest: string
+  // B Fields
+  shortTermProceeds: string
+  shortTermCostBasis: string
+  longTermProceeds: string
+  longTermCostBasis: string
   personRole: PersonRole.PRIMARY | PersonRole.SPOUSE
 }
 
-const toF1099 = (formData: F1099UserInput): Income1099 => ({
-  ...formData,
-  // Note we are not error checking here because
-  // we are already in the input validated happy path
-  // of handleSubmit.
-  income: parseInt(formData.income)
-})
+const toF1099 = (input: F1099UserInput): Supported1099 => {
+  switch (input.formType) {
+    case Income1099Type.INT: {
+      return {
+        payer: input.payer,
+        personRole: input.personRole,
+        type: input.formType,
+        form: {
+          income: parseInt(input.interest)
+        }
+      }
+    }
+    case Income1099Type.B: {
+      return {
+        payer: input.payer,
+        personRole: input.personRole,
+        type: input.formType,
+        form: {
+          shortTermCostBasis: parseInt(input.shortTermCostBasis),
+          shortTermProceeds: parseInt(input.shortTermProceeds),
+          longTermCostBasis: parseInt(input.longTermCostBasis),
+          longTermProceeds: parseInt(input.longTermProceeds)
+        }
+      }
+    }
+  }
+}
 
 export default function F1099Info ({ navButtons, onAdvance }: PagedFormProps): ReactElement {
-  const { register, errors, handleSubmit, control, reset } = useForm<F1099UserInput>()
+  const { register, errors, handleSubmit, control, reset, watch, setValue } = useForm<F1099UserInput>()
   const dispatch = useDispatch()
 
   const onAdd1099 = handleSubmit((formData: F1099UserInput): void => {
     dispatch(add1099(toF1099(formData)))
+    setValue('formType', undefined)
     reset()
   })
+
+  const selectedType: Income1099Type = watch('formType')
 
   const people: Person[] = (
     useSelector((state: TaxesState) => ([
@@ -92,6 +134,61 @@ export default function F1099Info ({ navButtons, onAdvance }: PagedFormProps): R
     updateAdding(false)
   }
 
+  const intFields = (
+    <LabeledInput
+      label="Box 1 - Interest Income"
+      register={register}
+      required={true}
+      patternConfig={Patterns.currency}
+      name="interest"
+      error={errors.interest}
+    />
+  )
+
+  const bFields = (
+    <div>
+      <strong>Long Term Covered Transactions</strong>
+      <LabeledInput
+        label="Proceeds"
+        register={register}
+        required={true}
+        patternConfig={Patterns.currency}
+        name="longTermProceeds"
+        error={errors.longTermProceeds}
+      />
+      <LabeledInput
+        label="Cost basis"
+        register={register}
+        required={true}
+        patternConfig={Patterns.currency}
+        name="longTermCostBasis"
+        error={errors.longTermCostBasis}
+      />
+      <strong>Short Term Covered Transactions</strong>
+      <LabeledInput
+        label="Proceeds"
+        register={register}
+        required={true}
+        patternConfig={Patterns.currency}
+        name="shortTermProceeds"
+        error={errors.shortTermProceeds}
+      />
+      <LabeledInput
+        label="Cost basis"
+        register={register}
+        required={true}
+        patternConfig={Patterns.currency}
+        name="shortTermCostBasis"
+        error={errors.shortTermCostBasis}
+      />
+    </div>
+  )
+
+  const specificFields = {
+    [Income1099Type.INT]: intFields,
+    [Income1099Type.B]: bFields
+  }
+
   let form: ReactElement | undefined
   if (adding) {
     form = (
@@ -106,12 +203,14 @@ export default function F1099Info ({ navButtons, onAdvance }: PagedFormProps): R
           error={errors.formType}
           label="Form Type"
           required={true}
-          valueMapping={(name: string, i: number) => form1099Types[i]}
+          valueMapping={(_, i: number) => form1099Types[i]}
           name="formType"
-          keyMapping={(name: string, i: number) => i}
-          textMapping={(name: string, i: number) => name}
+          keyMapping={(_, i: number) => i}
+          textMapping={(name: string) => name}
           defaultValue={undefined}
         />
+
+        {specificFields[selectedType]}
 
         <LabeledInput
           label="Enter name of bank, broker firm, or other payer"
@@ -120,15 +219,6 @@ export default function F1099Info ({ navButtons, onAdvance }: PagedFormProps): R
           patternConfig={Patterns.name}
           name="payer"
           error={errors.payer}
-        />
-
-        <LabeledInput
-          label="Box 1 - Interest Income"
-          register={register}
-          required={true}
-          patternConfig={Patterns.currency}
-          name="income"
-          error={errors.income}
         />
 
         <GenericLabeledDropdown
