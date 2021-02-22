@@ -6,7 +6,7 @@ import {
   Actions
 } from './actions'
 
-const blankState: Information = { f1099s: [], w2s: [], taxPayer: { dependents: [] } }
+export const blankState: Information = { f1099s: [], w2s: [], taxPayer: { dependents: [] } }
 
 function formReducer (state: Information | undefined, action: Actions): Information {
   const newState: Information = state ?? blankState
