@@ -172,10 +172,16 @@ export default class F1040 implements Form {
     return F1040.standardDeductions[this.filingStatus]
   }
 
+  totalQualifiedDividends = (): number | undefined => displayNumber(
+    (this.scheduleB?.f1099divs() ?? [])
+      .map((f) => f.form.qualifiedDividends)
+      .reduce((l, r) => l + r)
+  )
+
   l1 = (): number | undefined => displayNumber(this.wages())
   l2a = (): number | undefined => this.scheduleB?.l3()
   l2b = (): number | undefined => this.scheduleB?.l4()
-  l3a = (): number | undefined => undefined
+  l3a = (): number | undefined => this.totalQualifiedDividends()
   l3b = (): number | undefined => this.scheduleB?.l6()
   l4a = (): number | undefined => undefined
   l4b = (): number | undefined => undefined

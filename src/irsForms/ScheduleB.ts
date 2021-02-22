@@ -1,4 +1,4 @@
-import { Income1099Type, Information, Income1099Int } from '../redux/data'
+import { Income1099Type, Information, Income1099Int, Income1099Div } from '../redux/data'
 import TaxPayer from '../redux/TaxPayer'
 import Form from './Form'
 import { computeField, displayNumber, sumFields, anArrayOf } from './util'
@@ -22,6 +22,11 @@ export default class ScheduleB implements Form {
       .filter((f) => f.type === Income1099Type.INT)
       .map((f) => f as Income1099Int)
 
+  f1099divs = (): Income1099Div[] =>
+    this.state.f1099s
+      .filter((f) => f.type === Income1099Type.DIV)
+      .map((f) => f as Income1099Div)
+
   l1Fields = (): PayerAmount[] => this.f1099ints().map((v) => ({
     payer: v.payer,
     amount: v.form.income
@@ -29,10 +34,11 @@ export default class ScheduleB implements Form {
 
   l1 = (): Array<string | undefined> => {
     const payerValues = this.l1Fields()
+    const rightPad = 2 * (this.interestPayersLimit - payerValues.length)
     // ensure we return an array of length interestPayersLimit * 2.
     return payerValues
       .flatMap(({ payer, amount }) => ([payer, amount?.toString()]))
-      .concat(anArrayOf((this.interestPayersLimit - payerValues.length) * 2, undefined))
+      .concat(anArrayOf(rightPad, undefined))
   }
 
   l2 = (): number | undefined => sumFields(this.f1099ints().map((f) => f.form.income))
@@ -44,11 +50,20 @@ export default class ScheduleB implements Form {
   )
 
   // TODO - 1099 DIV results
-  l5Fields = (): PayerAmount[] => anArrayOf(this.dividendPayersLimit, {})
+  l5Fields = (): PayerAmount[] => this.f1099divs().map((v) => ({
+    payer: v.payer,
+    amount: v.form.dividends
+  }))
 
-  l5 = (): Array<string | undefined | number> => (
-    this.l5Fields().flatMap(({ payer, amount }) => ([payer, amount]))
-  )
+  l5 = (): Array<string | undefined | number> => {
+    const payerValues = this.l5Fields()
+    const rightPad = 2 * (this.dividendPayersLimit - payerValues.length)
+    return (
+      payerValues
+        .flatMap(({ payer, amount }) => ([payer, amount]))
+        .concat(anArrayOf(rightPad, undefined))
+    )
+  }
 
   l6 = (): number | undefined => displayNumber(
     sumFields(this.l5Fields().map(({ amount }) => amount))

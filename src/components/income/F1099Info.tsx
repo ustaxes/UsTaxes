@@ -19,6 +19,9 @@ const showIncome = (a: Supported1099): string => {
       const stg = a.form.shortTermProceeds - a.form.shortTermCostBasis
       return `L(${ltg}), S(${stg})`
     }
+    case Income1099Type.DIV: {
+      return a.form.dividends.toString()
+    }
   }
 }
 
@@ -76,6 +79,9 @@ interface F1099UserInput {
   shortTermCostBasis: string
   longTermProceeds: string
   longTermCostBasis: string
+  // Div fields
+  dividends: string
+  qualifiedDividends: string
   personRole: PersonRole.PRIMARY | PersonRole.SPOUSE
 }
 
@@ -101,6 +107,17 @@ const toF1099 = (input: F1099UserInput): Supported1099 => {
           shortTermProceeds: parseInt(input.shortTermProceeds),
           longTermCostBasis: parseInt(input.longTermCostBasis),
           longTermProceeds: parseInt(input.longTermProceeds)
+        }
+      }
+    }
+    case Income1099Type.DIV: {
+      return {
+        payer: input.payer,
+        personRole: input.personRole,
+        type: input.formType,
+        form: {
+          dividends: parseInt(input.dividends),
+          qualifiedDividends: parseInt(input.qualifiedDividends)
         }
       }
     }
@@ -185,9 +202,31 @@ export default function F1099Info ({ navButtons, onAdvance }: PagedFormProps): R
     </div>
   )
 
+  const divFields = (
+    <div>
+      <LabeledInput
+        label="Total Dividends"
+        register={register}
+        required={true}
+        patternConfig={Patterns.currency}
+        name="dividends"
+        error={errors.dividends}
+      />
+      <LabeledInput
+        label="Qualified Dividends"
+        register={register}
+        required={true}
+        patternConfig={Patterns.currency}
+        name="qualifiedDividends"
+        error={errors.qualifiedDividends}
+      />
+    </div>
+  )
+
   const specificFields = {
     [Income1099Type.INT]: intFields,
-    [Income1099Type.B]: bFields
+    [Income1099Type.B]: bFields,
+    [Income1099Type.DIV]: divFields
   }
 
   let form: ReactElement | undefined

@@ -58,12 +58,14 @@ export interface IncomeW2 {
 
 export enum Income1099Type {
   B = 'B',
-  INT = 'INT'
+  INT = 'INT',
+  DIV = 'DIV'
 }
 
 export const form1099Types: Income1099Type[] = [
   Income1099Type.B,
-  Income1099Type.INT
+  Income1099Type.INT,
+  Income1099Type.DIV
 ]
 
 export interface BData {
@@ -75,6 +77,11 @@ export interface BData {
 
 export interface IntData {
   income: number
+}
+
+export interface DivData {
+  dividends: number
+  qualifiedDividends: number
 }
 
 export interface Income1099<T, D> {
@@ -135,10 +142,12 @@ export interface TaxPayer extends ContactInfo {
 
 export type Income1099Int = Income1099<Income1099Type.INT, IntData>
 export type Income1099B = Income1099<Income1099Type.B, BData>
+export type Income1099Div = Income1099<Income1099Type.DIV, DivData>
 
 export type Supported1099 =
   Income1099Int
   | Income1099B
+  | Income1099Div
 
 export interface Information {
   f1099s: Supported1099[]
