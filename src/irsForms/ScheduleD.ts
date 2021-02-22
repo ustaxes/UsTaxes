@@ -1,4 +1,4 @@
-import { Income1099B, Income1099Type, Information, BData, FilingStatus } from '../redux/data'
+import { Income1099B, Income1099Type, Information, BData, FilingStatus, DivData } from '../redux/data'
 import Form from './Form'
 import TaxPayer from '../redux/TaxPayer'
 import { computeField, displayNumber, sumFields } from './util'
@@ -85,7 +85,7 @@ export default class ScheduleD implements Form {
   // This field is greyed out, but fillable
   l8ag = (): number | undefined => undefined
   l8ah = (): number | undefined => displayNumber(sumFields(
-    [this.l8ad(), -computeField(this.l1ae())]
+    [this.l8ad(), -computeField(this.l8ae())]
   ))
 
   l8bd = (): number | undefined => undefined
@@ -163,13 +163,20 @@ export default class ScheduleD implements Form {
   }
 
   // TODO : Qualified dividends
+  // neither box should be checked if this question was not required to be answered by l20.
   l22 = (): boolean | undefined => {
     if (this.l20() !== undefined) {
       return undefined
     }
 
-    return undefined
+    return undefined !== (
+      this.state.f1099s
+        .filter((f) => f.type === Income1099Type.DIV)
+        .find((f) => ((f.form as DivData).qualifiedDividends ?? 0) > 0)
+    )
   }
+
+  computeTaxOnQDWorksheet = (): boolean => (this.l20() ?? false) || (this.l22() ?? false)
 
   fields = (): Array<string | number | boolean | undefined> => {
     const tp = new TaxPayer(this.state.taxPayer)
