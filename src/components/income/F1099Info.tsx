@@ -246,7 +246,7 @@ export default function F1099Info ({ navButtons, onAdvance }: PagedFormProps): R
           valueMapping={(_, i: number) => form1099Types[i]}
           name="formType"
           keyMapping={(_, i: number) => i}
-          textMapping={(name: string) => name}
+          textMapping={(name: string) => `1099-${name}`}
           defaultValue={undefined}
         />
 
