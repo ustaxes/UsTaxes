@@ -31,6 +31,7 @@ const F1099Item = ({ form, remove }: F1099ListItemProps): ReactElement => (
   <ListItem>
     <ListItemAvatar>
       <Avatar>
+        {form.type}
       </Avatar>
     </ListItemAvatar>
     <ListItemText
