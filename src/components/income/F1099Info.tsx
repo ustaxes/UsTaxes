@@ -243,7 +243,7 @@ export default function F1099Info ({ navButtons, onAdvance }: PagedFormProps): R
           error={errors.formType}
           label="Form Type"
           required={true}
-          valueMapping={(_, i: number) => form1099Types[i]}
+          valueMapping={(v: Income1099Type) => v}
           name="formType"
           keyMapping={(_, i: number) => i}
           textMapping={(name: string) => `1099-${name}`}
