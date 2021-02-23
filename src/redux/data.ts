@@ -68,18 +68,18 @@ export const form1099Types: Income1099Type[] = [
   Income1099Type.DIV
 ]
 
-export interface BData {
+export interface F1099BData {
   shortTermProceeds: number
   shortTermCostBasis: number
   longTermProceeds: number
   longTermCostBasis: number
 }
 
-export interface IntData {
+export interface F1099IntData {
   income: number
 }
 
-export interface DivData {
+export interface F1099DivData {
   dividends: number
   qualifiedDividends: number
 }
@@ -140,9 +140,9 @@ export interface TaxPayer extends ContactInfo {
   dependents: Dependent[]
 }
 
-export type Income1099Int = Income1099<Income1099Type.INT, IntData>
-export type Income1099B = Income1099<Income1099Type.B, BData>
-export type Income1099Div = Income1099<Income1099Type.DIV, DivData>
+export type Income1099Int = Income1099<Income1099Type.INT, F1099IntData>
+export type Income1099B = Income1099<Income1099Type.B, F1099BData>
+export type Income1099Div = Income1099<Income1099Type.DIV, F1099DivData>
 
 export type Supported1099 =
   Income1099Int

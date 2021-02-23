@@ -1,4 +1,11 @@
-import { Income1099B, Income1099Type, Information, BData, FilingStatus, DivData } from '../redux/data'
+import {
+  Income1099B,
+  Income1099Type,
+  Information,
+  F1099DivData,
+  F1099BData,
+  FilingStatus
+} from '../redux/data'
 import Form from './Form'
 import TaxPayer from '../redux/TaxPayer'
 import { computeField, displayNumber, sumFields } from './util'
@@ -7,7 +14,7 @@ import SDUnrecaptured1250 from './worksheets/SDUnrecaptured1250'
 
 export default class ScheduleD implements Form {
   state: Information
-  aggregated: BData
+  aggregated: F1099BData
   rateGainWorksheet: SDRateGainWorksheet
   unrecaptured1250: SDUnrecaptured1250
 
@@ -17,7 +24,7 @@ export default class ScheduleD implements Form {
   constructor (info: Information) {
     this.state = info
 
-    const bs: BData[] =
+    const bs: F1099BData[] =
       this.state.f1099s
         .filter((v) => v.type === Income1099Type.B)
         .map((v) => (v as Income1099B).form)
@@ -172,7 +179,7 @@ export default class ScheduleD implements Form {
     return undefined !== (
       this.state.f1099s
         .filter((f) => f.type === Income1099Type.DIV)
-        .find((f) => ((f.form as DivData).qualifiedDividends ?? 0) > 0)
+        .find((f) => ((f.form as F1099DivData).qualifiedDividends ?? 0) > 0)
     )
   }
 
