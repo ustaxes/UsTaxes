@@ -49,7 +49,6 @@ export default class ScheduleB implements Form {
     computeField(this.l2()) - computeField(this.l3())
   )
 
-  // TODO - 1099 DIV results
   l5Fields = (): PayerAmount[] => this.f1099divs().map((v) => ({
     payer: v.payer,
     amount: v.form.dividends
