@@ -4,7 +4,7 @@ import { Avatar, Box, Button, IconButton, List, ListItem, ListItemAvatar, ListIt
 import { useDispatch, useSelector } from 'react-redux'
 import { Actions, add1099, remove1099 } from '../../redux/actions'
 import { PagedFormProps } from '../pager'
-import { TaxesState, Person, PersonRole, Supported1099, Income1099Type, form1099Types } from '../../redux/data'
+import { TaxesState, Person, PersonRole, Supported1099, Income1099Type } from '../../redux/data'
 import DeleteIcon from '@material-ui/icons/Delete'
 import { GenericLabeledDropdown, LabeledInput } from '../input'
 import { Patterns } from '../Patterns'
@@ -247,7 +247,7 @@ export default function F1099Info ({ navButtons, onAdvance }: PagedFormProps): R
         </Box>
 
         <GenericLabeledDropdown
-          dropDownData={form1099Types}
+          dropDownData={Object.values(Income1099Type)}
           control={control}
           error={errors.formType}
           label="Form Type"

@@ -62,12 +62,6 @@ export enum Income1099Type {
   DIV = 'DIV'
 }
 
-export const form1099Types: Income1099Type[] = [
-  Income1099Type.B,
-  Income1099Type.INT,
-  Income1099Type.DIV
-]
-
 export interface F1099BData {
   shortTermProceeds: number
   shortTermCostBasis: number
