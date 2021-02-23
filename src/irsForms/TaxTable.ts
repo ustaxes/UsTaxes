@@ -1,21 +1,28 @@
 import federalBrackets from '../data/federal'
 import { FilingStatus } from '../redux/data'
-
-// Throws an error if bs is shorter than as, truncates if bs is larger.
-const zip = <A, B>(as: A[], bs: B[]): Array<[A, B]> => as.map((a, i) => [a, bs[i]])
-const zip3 = <A, B, C>(as: A[], bs: B[], cs: C[]): Array<[A, B, C]> => zip(as, zip(bs, cs)).map(([a, [b, c]]) => [a, b, c])
+import { zip3 } from '../util'
 
 const computeTax = (brackets: (status: FilingStatus) => number[], rates: number[]) =>
   (filingStatus: FilingStatus, income: number): number =>
-    zip3([0, ...brackets(filingStatus)], [...brackets(filingStatus), undefined], rates.map((r) => r / 100))
+    zip3(
+      [0, ...brackets(filingStatus)], // Low end of each bracket
+      [...brackets(filingStatus), undefined], // top end of each bracket
+      rates.map((r) => r / 100) // rate for each bracket
+    )
       .reduce((tax, [low, high, rate]) => {
         if (income < low) {
+          // this bracket is above income, no tax here
           return tax
         } else if (high === undefined) {
-          return tax + (income - low) * rate
+          // This is the top bracket
+          return tax + Math.max(0, income - low) * rate
         } else if (income > high) {
+          // Taxable income is above the top of this bracket
+          // so add the max tax for this bracket
           return tax + (high - low) * rate
         }
+        // Otherwise max income is inside this bracket,
+        // add the tax on the amount falling in this bracket
         return tax + (income - low) * rate
       },
       0

@@ -1,7 +1,8 @@
 import { Income1099Type, Information, Income1099Int, Income1099Div } from '../redux/data'
 import TaxPayer from '../redux/TaxPayer'
 import Form from './Form'
-import { computeField, displayNumber, sumFields, anArrayOf } from './util'
+import { computeField, displayNumber, sumFields } from './util'
+import { anArrayOf } from '../util'
 
 interface PayerAmount {
   payer?: string
