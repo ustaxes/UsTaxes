@@ -9,18 +9,23 @@ import DeleteIcon from '@material-ui/icons/Delete'
 import { GenericLabeledDropdown, LabeledInput } from '../input'
 import { Patterns } from '../Patterns'
 
-const showIncome = (a: Supported1099): string => {
+const showIncome = (a: Supported1099): ReactElement => {
   switch (a.type) {
     case Income1099Type.INT: {
-      return a.form.income.toString()
+      return <span>{a.form.income.toString()}</span>
     }
     case Income1099Type.B: {
       const ltg = a.form.longTermProceeds - a.form.longTermCostBasis
       const stg = a.form.shortTermProceeds - a.form.shortTermCostBasis
-      return `L(${ltg}), S(${stg})`
+      return (
+        <ListItemText>
+          Long term: ${ltg}<br />
+          Short term: ${stg}
+        </ListItemText>
+      )
     }
     case Income1099Type.DIV: {
-      return a.form.dividends.toString()
+      return <span>{a.form.dividends.toString()}</span>
     }
   }
 }
@@ -38,7 +43,7 @@ const F1099Item = ({ form, remove }: F1099ListItemProps): ReactElement => (
       </Avatar>
     </ListItemAvatar>
     <ListItemText
-      primary={form.payer}
+      primary={<strong>{form.payer}</strong>}
       secondary={showIncome(form)}
     />
     <ListItemSecondaryAction>
