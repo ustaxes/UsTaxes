@@ -1,5 +1,5 @@
 import F1040 from '../F1040'
-import { computeLTCGTax, computeOrdinaryTax } from '../TaxTable'
+import { computeLongTermCapGainsTax, computeOrdinaryTax } from '../TaxTable'
 
 export default class SDQualifiedAndCapGains {
   f1040: F1040
@@ -15,7 +15,7 @@ export default class SDQualifiedAndCapGains {
   qualDiv = (): number | undefined => this.f1040.l3a()
 
   // worksheet line 3
-  ltcg = (): number => Math.min(
+  longTermCapGains = (): number => Math.min(
     this.f1040.scheduleD?.l15() ?? 0,
     this.f1040.scheduleD?.l16() ?? 0
   )
@@ -23,7 +23,11 @@ export default class SDQualifiedAndCapGains {
   // worksheet line 5
   ordinary = (): number => Math.max(
     0,
-    (this.totalIncome() ?? 0) - (this.qualDiv() ?? 0) - (this.ltcg() ?? 0)
+    (
+      (this.totalIncome() ?? 0) -
+      (this.qualDiv() ?? 0) -
+      (this.longTermCapGains() ?? 0)
+    )
   )
 
   // worksheet line 24
@@ -38,8 +42,8 @@ export default class SDQualifiedAndCapGains {
       computeOrdinaryTax(fs, this.totalIncome() ?? 0),
       // line 23
       computeOrdinaryTax(fs, this.ordinary()) + // line 22
-      computeLTCGTax(fs, this.totalIncome() ?? 0) -
-      computeLTCGTax(fs, this.ordinary())
+      computeLongTermCapGainsTax(fs, this.totalIncome() ?? 0) -
+      computeLongTermCapGainsTax(fs, this.ordinary())
     )
   }
 }

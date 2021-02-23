@@ -28,7 +28,7 @@ interface Rates {
 
 interface FederalBrackets {
   ordinary: Rates & {status: FilingParams<Brackets & Deductions>}
-  ltcg: Rates & {status: FilingParams<Brackets>}
+  longTermCapGains: Rates & {status: FilingParams<Brackets>}
 }
 
 const federalBrackets: FederalBrackets = {
@@ -112,7 +112,7 @@ const federalBrackets: FederalBrackets = {
       }
     }
   },
-  ltcg: {
+  longTermCapGains: {
     rates: [0, 15, 20],
     status: {
       [FilingStatus.S]: {

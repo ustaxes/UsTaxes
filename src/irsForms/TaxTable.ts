@@ -26,7 +26,7 @@ export const computeOrdinaryTax = computeTax(
   federalBrackets.ordinary.rates
 )
 
-export const computeLTCGTax = computeTax(
-  status => federalBrackets.ltcg.status[status].brackets,
-  federalBrackets.ltcg.rates
+export const computeLongTermCapGainsTax = computeTax(
+  status => federalBrackets.longTermCapGains.status[status].brackets,
+  federalBrackets.longTermCapGains.rates
 )
