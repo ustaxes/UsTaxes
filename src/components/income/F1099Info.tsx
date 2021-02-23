@@ -165,7 +165,9 @@ export default function F1099Info ({ navButtons, onAdvance }: PagedFormProps): R
 
   const bFields = (
     <div>
-      <strong>Long Term Covered Transactions</strong>
+      <Box display="flex" justifyContent="flex-start">
+        <h4>Long Term Covered Transactions</h4>
+      </Box>
       <LabeledInput
         label="Proceeds"
         register={register}
@@ -182,7 +184,9 @@ export default function F1099Info ({ navButtons, onAdvance }: PagedFormProps): R
         name="longTermCostBasis"
         error={errors.longTermCostBasis}
       />
-      <strong>Short Term Covered Transactions</strong>
+      <Box display="flex" justifyContent="flex-start">
+        <h4>Short Term Covered Transactions</h4>
+      </Box>
       <LabeledInput
         label="Proceeds"
         register={register}
@@ -250,8 +254,6 @@ export default function F1099Info ({ navButtons, onAdvance }: PagedFormProps): R
           defaultValue={undefined}
         />
 
-        {specificFields[selectedType]}
-
         <LabeledInput
           label="Enter name of bank, broker firm, or other payer"
           register={register}
@@ -260,6 +262,8 @@ export default function F1099Info ({ navButtons, onAdvance }: PagedFormProps): R
           name="payer"
           error={errors.payer}
         />
+
+        {specificFields[selectedType]}
 
         <GenericLabeledDropdown
           dropDownData={people}
