@@ -162,7 +162,7 @@ export default function F1099Info (): ReactElement {
       label="Box 1 - Interest Income"
       register={register}
       required={true}
-      patternConfig={Patterns.currency}
+      patternConfig={Patterns.currency.get(control)}
       name="interest"
       error={errors.interest}
     />
@@ -177,7 +177,7 @@ export default function F1099Info (): ReactElement {
         label="Proceeds"
         register={register}
         required={true}
-        patternConfig={Patterns.currency}
+        patternConfig={Patterns.currency.get(control)}
         name="longTermProceeds"
         error={errors.longTermProceeds}
       />
@@ -185,7 +185,7 @@ export default function F1099Info (): ReactElement {
         label="Cost basis"
         register={register}
         required={true}
-        patternConfig={Patterns.currency}
+        patternConfig={Patterns.currency.get(control)}
         name="longTermCostBasis"
         error={errors.longTermCostBasis}
       />
@@ -196,7 +196,7 @@ export default function F1099Info (): ReactElement {
         label="Proceeds"
         register={register}
         required={true}
-        patternConfig={Patterns.currency}
+        patternConfig={Patterns.currency.get(control)}
         name="shortTermProceeds"
         error={errors.shortTermProceeds}
       />
@@ -204,7 +204,7 @@ export default function F1099Info (): ReactElement {
         label="Cost basis"
         register={register}
         required={true}
-        patternConfig={Patterns.currency}
+        patternConfig={Patterns.currency.get(control)}
         name="shortTermCostBasis"
         error={errors.shortTermCostBasis}
       />
@@ -217,7 +217,7 @@ export default function F1099Info (): ReactElement {
         label="Total Dividends"
         register={register}
         required={true}
-        patternConfig={Patterns.currency}
+        patternConfig={Patterns.currency.get(control)}
         name="dividends"
         error={errors.dividends}
       />
@@ -225,7 +225,7 @@ export default function F1099Info (): ReactElement {
         label="Qualified Dividends"
         register={register}
         required={true}
-        patternConfig={Patterns.currency}
+        patternConfig={Patterns.currency.get(control)}
         name="qualifiedDividends"
         error={errors.qualifiedDividends}
       />

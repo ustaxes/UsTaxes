@@ -60,7 +60,7 @@ export default function TaxPayerInfo (): ReactElement {
             register={register}
             error={errors.address?.zip}
             name="address.zip"
-            patternConfig={Patterns.zip}
+            patternConfig={Patterns.zip.get(control)}
             required={!isForeignCountry}
             defaultValue={taxPayer?.primaryPerson?.address.zip}
           />
@@ -111,6 +111,7 @@ export default function TaxPayerInfo (): ReactElement {
               register={register}
               errors={errors}
               defaults={taxPayer?.primaryPerson}
+              control={control}
             />
             <LabeledInput
               label="Address"
