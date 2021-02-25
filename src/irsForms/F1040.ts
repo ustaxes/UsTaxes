@@ -150,7 +150,7 @@ export default class F1040 implements Form {
 
   wages (): number {
     if (this.w2s.length > 0) {
-      return this.w2s.map((w2) => w2.income).reduce((l, r) => l + r)
+      return this.w2s.map((w2) => w2.income).reduce((l, r) => l + r, 0)
     }
     return 0
   }
@@ -176,7 +176,7 @@ export default class F1040 implements Form {
   totalQualifiedDividends = (): number | undefined => displayNumber(
     (this.scheduleB?.f1099divs() ?? [])
       .map((f) => f.form.qualifiedDividends)
-      .reduce((l, r) => l + r)
+      .reduce((l, r) => l + r, 0)
   )
 
   l1 = (): number | undefined => displayNumber(this.wages())
@@ -282,7 +282,7 @@ export default class F1040 implements Form {
 
   l25a = (): number | undefined => {
     if (this.w2s.length > 0) {
-      return this.w2s.map((w2) => computeField(w2.fedWithholding)).reduce((l, r) => l + r)
+      return this.w2s.map((w2) => computeField(w2.fedWithholding)).reduce((l, r) => l + r, 0)
     }
     return undefined
   }

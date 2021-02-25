@@ -9,4 +9,4 @@ export const displayNumber = (n: number): number | undefined => {
 export const computeField = (f: number | undefined): number => f === undefined ? 0 : f
 
 export const sumFields = (fs: Array<number | undefined>): number =>
-  fs.map((f) => computeField(f)).reduce((l, r) => l + r)
+  fs.map((f) => computeField(f)).reduce((l, r) => l + r, 0)

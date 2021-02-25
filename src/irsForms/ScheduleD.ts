@@ -30,10 +30,10 @@ export default class ScheduleD implements Form {
         .map((v) => (v as Income1099B).form)
 
     this.aggregated = {
-      shortTermProceeds: bs.map((v) => v.shortTermProceeds).reduce((l, r) => l + r),
-      shortTermCostBasis: bs.map((v) => v.shortTermCostBasis).reduce((l, r) => l + r),
-      longTermProceeds: bs.map((v) => v.longTermProceeds).reduce((l, r) => l + r),
-      longTermCostBasis: bs.map((v) => v.longTermCostBasis).reduce((l, r) => l + r)
+      shortTermProceeds: bs.map((v) => v.shortTermProceeds).reduce((l, r) => l + r, 0),
+      shortTermCostBasis: bs.map((v) => v.shortTermCostBasis).reduce((l, r) => l + r, 0),
+      longTermProceeds: bs.map((v) => v.longTermProceeds).reduce((l, r) => l + r, 0),
+      longTermCostBasis: bs.map((v) => v.longTermCostBasis).reduce((l, r) => l + r, 0)
     }
 
     this.rateGainWorksheet = new SDRateGainWorksheet()
