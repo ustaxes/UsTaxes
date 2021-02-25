@@ -13,9 +13,10 @@ import ScheduleA from './ScheduleA'
 import ScheduleD from './ScheduleD'
 import ScheduleEIC from './ScheduleEIC'
 import Form from './Form'
-import federalBrackets from '../data/federal'
 import { displayNumber, computeField, sumFields } from './util'
 import ScheduleB from './ScheduleB'
+import { computeOrdinaryTax } from './TaxTable'
+import SDQualifiedAndCapGains from './worksheets/SDQualifiedAndCapGains'
 
 export default class F1040 implements Form {
   // intentionally mirroring many fields from the state,
@@ -172,10 +173,16 @@ export default class F1040 implements Form {
     return F1040.standardDeductions[this.filingStatus]
   }
 
+  totalQualifiedDividends = (): number | undefined => displayNumber(
+    (this.scheduleB?.f1099divs() ?? [])
+      .map((f) => f.form.qualifiedDividends)
+      .reduce((l, r) => l + r)
+  )
+
   l1 = (): number | undefined => displayNumber(this.wages())
   l2a = (): number | undefined => this.scheduleB?.l3()
   l2b = (): number | undefined => this.scheduleB?.l4()
-  l3a = (): number | undefined => undefined
+  l3a = (): number | undefined => this.totalQualifiedDividends()
   l3b = (): number | undefined => this.scheduleB?.l6()
   l4a = (): number | undefined => undefined
   l4b = (): number | undefined => undefined
@@ -183,7 +190,7 @@ export default class F1040 implements Form {
   l5b = (): number | undefined => undefined
   l6a = (): number | undefined => undefined
   l6b = (): number | undefined => undefined
-  l7 = (): number | undefined => undefined
+  l7 = (): number | undefined => this.scheduleD?.l16()
   l8 = (): number | undefined => this.schedule1?.l9()
   l9 = (): number | undefined => displayNumber(
     sumFields([
@@ -228,42 +235,26 @@ export default class F1040 implements Form {
   )
 
   computeTax = (): number | undefined => {
-    const table = federalBrackets.tax_withholding_percentage_method_tables.annual
-    const filingStatusLookup = {
-      [FilingStatus.S]: table.single,
-      [FilingStatus.MFS]: table.married_separately,
-      [FilingStatus.MFJ]: table.married,
-      [FilingStatus.HOH]: table.head_of_household
+    if (this.scheduleD?.computeTaxOnQDWorksheet() ?? false) {
+      const wksht = new SDQualifiedAndCapGains(this)
+      return wksht.tax()
     }
 
-    if (this.filingStatus !== FilingStatus.W && this.filingStatus !== undefined) {
-      const table = filingStatusLookup[this.filingStatus].income_tax_brackets
-
-      const taxableIncome = this.l15() ?? 0
-      const ordinaryIncome = taxableIncome
-
-      let oi = table.length - 1
-
-      while (table[oi].bracket > ordinaryIncome) {
-        oi--
-      }
-      const ordinaryBracket = table[oi]
-      const baseTax = ordinaryBracket.amount
-      const bracketTaxableOrdinaryIncome = ordinaryIncome - ordinaryBracket.bracket
-      // TODO - otherwise ignoring long-term vs short term capital gains
-      const ordinaryTax = baseTax + bracketTaxableOrdinaryIncome * table[oi].marginal_rate / 100
-
-      return Math.floor(ordinaryTax)
+    if (this.filingStatus !== undefined) {
+      return computeOrdinaryTax(this.filingStatus, computeField(this.l15()))
     }
+
     return undefined
   }
 
   l16 = (): number | undefined => displayNumber(
-    sumFields([
-      this.f8814?.tax(),
-      this.f4972?.tax(),
-      this.computeTax()
-    ])
+    Math.round(
+      sumFields([
+        this.f8814?.tax(),
+        this.f4972?.tax(),
+        this.computeTax()
+      ])
+    )
   )
 
   l17 = (): number | undefined => this.schedule2?.l3()
@@ -429,7 +420,7 @@ export default class F1040 implements Form {
     this.l5b(),
     this.l6a(),
     this.l6b(),
-    this.scheduleD !== undefined,
+    this.scheduleD === undefined,
     this.l7(),
     this.l8(),
     this.l9(),

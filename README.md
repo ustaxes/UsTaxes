@@ -3,10 +3,21 @@
 # https://ustaxes.org/
 
 # What is UsTaxes?
-UsTaxes is an open source tax filing application that can be used to file the Federal 1040 form. It is different from paid tax preparation software in that it protects user privacy and is provided for free. It is available in both web and [web](https://ustaxes.org/) and [desktop](https://github.com/thegrims/UsTaxes#desktop-application) formats
+UsTaxes is an open source tax filing application that can be used to file the Federal 1040 form. It is different from paid tax preparation software in that it protects user privacy and is provided for free. It is available in both web and [web](https://ustaxes.org/) and [desktop](#desktop-application) formats
 
-# Supported Filing Categories
-The Federal 1040 and W2 (Wages) tax forms are currently supported. Users who only have wage income and live in the below states should be able to file taxes using this site, since they do not have state level income tax.
+# Supported Income data
+Most income information from the following forms are supported:
+* W2
+* 1099-INT
+* 1099-DIV
+* 1099-B
+
+So far this project can attach the following schedules to form 1040:
+* Schedule B
+* Schedule D
+
+# Supported states
+Users who only have wage income and live in the below states should be able to file taxes using this site, since they do not have state level income tax.
 - Alaska
 - Tennessee
 - Wyoming
@@ -20,13 +31,13 @@ The Federal 1040 and W2 (Wages) tax forms are currently supported. Users who onl
 ⚠️ With that being said, **please don't use this software to file your taxes for the 2020 / 2021 tax season.** This software is a work in progress.
 
 # User Data
-The site is client side only. Data is persisted to the site's localstorage so no personal information ever leaves the user's computer. For those who want extra security, the codebase can also be built as a [desktop application](https://github.com/thegrims/UsTaxes#desktop-application).
+The site is client side only. Data is persisted to the site's localstorage so no personal information ever leaves the user's computer. For those who want extra security, the codebase can also be built as a [desktop application](#desktop-application).
 
 # Contributing
 Thank you for taking the time to contribute, let's make tax filing free for everyone! 🎉 
 - If you wish to make a code contribution please check out current issues and comment `@thegrims` on the issue that you want to work on so that multiple contributors don't end up working on the same issue. 
 
-- If you have an idea for an improvement or a bugfix, feel free to file an issue to be reviewed. 
+- If you have an idea for an improvement or a bugfix, feel free to file an issue to be reviewed.
 
 # Running
 This application can be either run as a web application or a standalone desktop application. 

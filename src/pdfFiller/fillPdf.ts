@@ -10,10 +10,12 @@ import F1040 from '../irsForms/F1040'
 import Form from '../irsForms/Form'
 import ScheduleB from '../irsForms/ScheduleB'
 import { Income1099Type } from '../redux/data'
+import ScheduleD from '../irsForms/ScheduleD'
 
 const downloadUrls = {
   f1040: '/forms/f1040.pdf',
-  f1040sb: '/forms/f1040sb.pdf'
+  f1040sb: '/forms/f1040sb.pdf',
+  f1040sd: '/forms/f1040sd.pdf'
 }
 
 /**
@@ -30,7 +32,7 @@ export function fillPDF (pdf: PDFDocument, form: Form): void {
     if (pdfField instanceof PDFCheckBox) {
       if (value === true) {
         pdfField.check()
-      } else if (value !== false) {
+      } else if (value !== false && value !== undefined) {
         throw new Error(`Expected boolean value in fields, index:${index}, found ${value ?? 'undefined'}`)
       }
     } else if (pdfField instanceof PDFTextField) {
@@ -50,13 +52,20 @@ async function getSchedules (f1040: F1040): Promise<Array<[Form, PDFDocument]>> 
   const state = store.getState().information
   let attachments: Array<[Form, PDFDocument]> = []
 
-  if (state.f1099s.find((v) => v.formType === Income1099Type.INT) !== undefined) {
+  if (state.f1099s.find((v) => v.type === Income1099Type.INT) !== undefined) {
     const schB = new ScheduleB(state)
 
     const schBPdf = await downloadPDF(downloadUrls.f1040sb)
 
     f1040.addScheduleB(schB)
     attachments = [...attachments, [schB, schBPdf]]
+  }
+
+  if (state.f1099s.find((v) => v.type === Income1099Type.B) !== undefined) {
+    const schD = new ScheduleD(state)
+    const schDPdf = await downloadPDF(downloadUrls.f1040sd)
+    f1040.addScheduleD(schD)
+    attachments = [...attachments, [schD, schDPdf]]
   }
 
   const f1040pdf: PDFDocument = await downloadPDF(downloadUrls.f1040)
