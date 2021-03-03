@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "US Taxes",
+  "name": "An application to help file taxes in the United States.",
   "icons": [
     {
       "src": "favicon.ico",
