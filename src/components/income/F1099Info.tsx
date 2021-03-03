@@ -12,7 +12,7 @@ import { Patterns } from '../Patterns'
 const showIncome = (a: Supported1099): ReactElement => {
   switch (a.type) {
     case Income1099Type.INT: {
-      return <span>${a.form.income.toString()}</span>
+      return <Currency value={a.form.income} />
     }
     case Income1099Type.B: {
       const ltg = a.form.longTermProceeds - a.form.longTermCostBasis
@@ -25,7 +25,7 @@ const showIncome = (a: Supported1099): ReactElement => {
       )
     }
     case Income1099Type.DIV: {
-      return <span>${a.form.dividends.toString()}</span>
+      return <Currency value={a.form.dividends} />
     }
   }
 }
