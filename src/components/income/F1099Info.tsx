@@ -6,26 +6,26 @@ import { Actions, add1099, remove1099 } from '../../redux/actions'
 import { PagedFormProps } from '../pager'
 import { TaxesState, Person, PersonRole, Supported1099, Income1099Type } from '../../redux/data'
 import DeleteIcon from '@material-ui/icons/Delete'
-import { GenericLabeledDropdown, LabeledInput } from '../input'
+import { Currency, GenericLabeledDropdown, LabeledInput } from '../input'
 import { Patterns } from '../Patterns'
 
 const showIncome = (a: Supported1099): ReactElement => {
   switch (a.type) {
     case Income1099Type.INT: {
-      return <span>${a.form.income.toString()}</span>
+      return <Currency value={a.form.income} />
     }
     case Income1099Type.B: {
       const ltg = a.form.longTermProceeds - a.form.longTermCostBasis
       const stg = a.form.shortTermProceeds - a.form.shortTermCostBasis
       return (
         <ListItemText>
-          Long term: ${ltg}<br />
-          Short term: ${stg}
+          Long term: <Currency value={ltg} /><br />
+          Short term: <Currency value={stg} />
         </ListItemText>
       )
     }
     case Income1099Type.DIV: {
-      return <span>${a.form.dividends.toString()}</span>
+      return <Currency value={a.form.dividends} />
     }
   }
 }
