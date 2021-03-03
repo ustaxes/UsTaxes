@@ -6,7 +6,7 @@ import { Actions, add1099, remove1099 } from '../../redux/actions'
 import { PagedFormProps } from '../pager'
 import { TaxesState, Person, PersonRole, Supported1099, Income1099Type } from '../../redux/data'
 import DeleteIcon from '@material-ui/icons/Delete'
-import { GenericLabeledDropdown, LabeledInput } from '../input'
+import { Currency, GenericLabeledDropdown, LabeledInput } from '../input'
 import { Patterns } from '../Patterns'
 
 const showIncome = (a: Supported1099): ReactElement => {
@@ -19,8 +19,8 @@ const showIncome = (a: Supported1099): ReactElement => {
       const stg = a.form.shortTermProceeds - a.form.shortTermCostBasis
       return (
         <ListItemText>
-          Long term: ${ltg}<br />
-          Short term: ${stg}
+          Long term: <Currency value={ltg} /><br />
+          Short term: <Currency value={stg} />
         </ListItemText>
       )
     }

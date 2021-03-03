@@ -6,7 +6,7 @@ import { Actions, addW2, removeW2 } from '../../redux/actions'
 import { PagedFormProps } from '../pager'
 import { TaxesState, IncomeW2, Person, PersonRole } from '../../redux/data'
 import DeleteIcon from '@material-ui/icons/Delete'
-import { GenericLabeledDropdown, LabeledInput } from '../input'
+import { Currency, GenericLabeledDropdown, LabeledInput } from '../input'
 import { Patterns } from '../Patterns'
 
 interface W2ListItemProps {
@@ -22,7 +22,7 @@ const W2ListItem = ({ w2, remove }: W2ListItemProps): ReactElement => (
     </ListItemAvatar>
     <ListItemText
       primary={w2.occupation}
-      secondary={`Income: $${w2.income}`}
+      secondary={<div>Income: <Currency value={w2.income} /></div>}
     />
     <ListItemSecondaryAction>
       <IconButton onClick={remove} edge="end" aria-label="delete">

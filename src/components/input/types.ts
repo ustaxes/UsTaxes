@@ -12,6 +12,11 @@ export interface BaseDropdownProps {
   control?: Control<any>
 }
 
+export interface CurrencyProps {
+  prefix?: string
+  value: number
+}
+
 export interface LabeledDropdownProps<A> extends BaseDropdownProps {
   dropDownData: A[]
   valueMapping: (a: A, n: number) => string
