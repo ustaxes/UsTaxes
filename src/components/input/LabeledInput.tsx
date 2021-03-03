@@ -1,30 +1,7 @@
 import React, { ReactElement } from 'react'
 import { TextField, Box } from '@material-ui/core'
 import InputMask from 'react-input-mask'
-import { CurrencyProps, LabeledInputProps } from './types'
-import NumberFormat from 'react-number-format'
-
-export function Currency (props: CurrencyProps): ReactElement {
-  const { prefix = '', value } = props
-
-  let styleProp: {color?: string} = {}
-
-  if (value > 0) {
-    styleProp = { color: 'green' }
-  } else if (value < 0) {
-    styleProp = { color: 'red' }
-  }
-
-  return (
-    <NumberFormat
-      style={styleProp}
-      thousandSeparator={ true }
-      prefix={ `${prefix}  $` }
-      value={ value }
-      displayType="text"
-    />
-  )
-}
+import { LabeledInputProps } from './types'
 
 export function LabeledInput (props: LabeledInputProps): ReactElement {
   const { strongLabel, label, register, error, required = false, patternConfig = {}, name, defaultValue } = props
