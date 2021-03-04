@@ -28,24 +28,27 @@ Users who only have wage income and live in the below states should be able to f
 - Washington
 - Nevada
 
-⚠️ With that being said, **please don't use this software to file your taxes for the 2020 / 2021 tax season.** This software is a work in progress.
+# Note on using this project
+* This project is built by a growing community. If you notice an error in the outputted PDF, or any other error, please submit an issue.
 
 # User Data
 The site is client side only. Data is persisted to the site's localstorage so no personal information ever leaves the user's computer. For those who want extra security, the codebase can also be built as a [desktop application](#desktop-application).
 
 # Contributing
 Thank you for taking the time to contribute, let's make tax filing free for everyone! 🎉 
-- If you wish to make a code contribution please check out current issues and comment `@thegrims` on the issue that you want to work on so that multiple contributors don't end up working on the same issue. 
+- If you wish to make a code contribution please check out current issues and leave a comment so that multiple contributors don't end up working on the same issue.
 
 - If you have an idea for an improvement or a bugfix, feel free to file an issue to be reviewed.
 
 # Running
 This application can be either run as a web application or a standalone desktop application. 
 
-### Web application
+### Web application4
 To run, `npm start` or `yarn start`.
 
 ### Desktop application
+This application runs on Tauri, which is undergoing rapid upgrades and development at this time. Running this as a standalone desktop application is currently [blocked by an issue with Tauri](//github.com/tauri-apps/tauri/)
+
 To run, `npm run desktop` or `yarn run desktop`. This requires [rust and cargo][Cargo-docs] to be available on PATH. To avoid a browser window being spawned in addition to the desktop window, just set the BROWSER environment variable as in: `BROWSER=none npm run desktop` or `BROWSER=none yarn desktop`.
 
 To release, run `npm run desktop-release` or `yarn desktop-release`. This will produce executables for your current environment.
