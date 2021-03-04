@@ -43,7 +43,7 @@ Thank you for taking the time to contribute, let's make tax filing free for ever
 # Running
 This application can be either run as a web application or a standalone desktop application. 
 
-### Web application4
+### Web application
 To run, `npm start` or `yarn start`.
 
 ### Desktop application
