@@ -1,5 +1,5 @@
 import { Person, IncomeW2, Refund, Dependent, FilingStatus, PrimaryPerson, ContactInfo, Supported1099 } from './data'
-import { ValidateFunction } from 'ajv'
+import { ValidateFunction } from 'ajv7'
 import ajv, { checkType } from './validate'
 
 export enum ActionName {
