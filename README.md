@@ -1,53 +1,62 @@
-[![Netlify Status][Netlify-badge]][Netlify-url] 
-[![discord-badge]][discord-url]
-# https://ustaxes.org/
+# [ustaxes.org](//ustaxes.org) [![Netlify Status][Netlify-badge]][Netlify-url] [![discord-badge]][discord-url]
 
-# What is UsTaxes?
+## What is UsTaxes?
+
 UsTaxes is an open source tax filing application that can be used to file the Federal 1040 form. It is different from paid tax preparation software in that it protects user privacy and is provided for free. It is available in both [web](https://ustaxes.org/) and [desktop](#desktop-application) formats
 
-# Supported Income data
+## Supported Income data
+
 Most income information from the following forms are supported:
+
 * W2
 * 1099-INT
 * 1099-DIV
 * 1099-B
 
 So far this project can attach the following schedules to form 1040:
+
 * Schedule B
 * Schedule D
 
-# Supported states
-Users who only have wage income and live in the below states should be able to file taxes using this site, since they do not have state level income tax.
-- Alaska
-- Tennessee
-- Wyoming
-- Florida
-- New Hampshire
-- South Dakota
-- Texas
-- Washington
-- Nevada
+## Supported states
 
-# Note on using this project
+Users who only have wage income and live in the below states should be able to file taxes using this site, since they do not have state level income tax.
+
+* Alaska
+* Tennessee
+* Wyoming
+* Florida
+* New Hampshire
+* South Dakota
+* Texas
+* Washington
+* Nevada
+
+## Note on using this project
+
 * This project is built by a growing community. If you notice an error in the outputted PDF, or any other error, please submit an issue.
 
-# User Data
+## User Data
+
 The site is client side only. Data is persisted to the site's localstorage so no personal information ever leaves the user's computer. For those who want extra security, the codebase can also be built as a [desktop application](#desktop-application).
 
-# Contributing
-Thank you for taking the time to contribute, let's make tax filing free for everyone! 🎉 
-- If you wish to make a code contribution please check out current issues and leave a comment so that multiple contributors don't end up working on the same issue.
+## Contributing
 
-- If you have an idea for an improvement or a bugfix, feel free to file an issue to be reviewed.
+Thank you for taking the time to contribute, let's make tax filing free for everyone! 🎉
 
-# Running
-This application can be either run as a web application or a standalone desktop application. 
+* If you wish to make a code contribution please check out current issues and leave a comment so that multiple contributors don't end up working on the same issue.
+
+* If you have an idea for an improvement or a bugfix, feel free to file an issue to be reviewed.
+
+## Running
+
+This application can be either run as a web application or a standalone desktop application.
 
 ### Web application
+
 To run, `npm start` or `yarn start`.
 
 ### Desktop application
-This application runs on Tauri, which is undergoing rapid upgrades and development at this time. Running this as a standalone desktop application is currently [blocked by an issue with Tauri](//github.com/tauri-apps/tauri/)
 
 To run, `npm run desktop` or `yarn run desktop`. This requires [rust and cargo][Cargo-docs] to be available on PATH. To avoid a browser window being spawned in addition to the desktop window, just set the BROWSER environment variable as in: `BROWSER=none npm run desktop` or `BROWSER=none yarn desktop`.
 
