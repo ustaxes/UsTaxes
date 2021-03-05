@@ -13,11 +13,11 @@ Project Architecture
 
 There are two main concerns separated in this project. Data must be collected from users and that data must be rendered into a PDF file when the user exports their 1040 and attachments.
 
-In order to separate these concerns, the data collected from the webforms is stored in a single data object, with schema defined in `src/redux/data.ts`: 
-
-As of now, the crucial root schema is:
+In order to separate these concerns, the data collected from the webforms is stored in a single data object.
 
 ### Data model
+As of now, the root schema of data stored from form submissions is defined in `src/redux/data.ts` as:
+
 ```ts
 export interface Information {
   f1099s: Supported1099[]
