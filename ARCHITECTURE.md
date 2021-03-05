@@ -12,7 +12,7 @@ The desktop application is built with [Tauri][tauri-root]. While this project do
 
 There are four main concerns separated in this project.
 
-1. Data must be collected from users (react forms) 
+1. Data must be collected from users (react forms)
 2. Collected data must be stored in a data model (via redux dispatched actions only)
 3. Tax forms must access data model to calculate data required by each form
 4. That calculated data must be must be rendered into a PDF file when the user exports their 1040 and attachments.

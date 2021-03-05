@@ -1,284 +1,39 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- Created with Inkscape (http://www.inkscape.org/) -->
-
-<svg
-   xmlns:dc="http://purl.org/dc/elements/1.1/"
-   xmlns:cc="http://creativecommons.org/ns#"
-   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-   xmlns:svg="http://www.w3.org/2000/svg"
-   xmlns="http://www.w3.org/2000/svg"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="600"
-   height="600"
-   viewBox="0 0 158.75 158.75"
-   version="1.1"
-   id="svg8"
-   inkscape:version="0.92.5 (2060ec1f9f, 2020-04-08)"
-   sodipodi:docname="dataflow.svg">
-  <defs
-     id="defs2">
-    <marker
-       inkscape:stockid="Arrow1Lend"
-       orient="auto"
-       refY="0"
-       refX="0"
-       id="marker1351"
-       style="overflow:visible"
-       inkscape:isstock="true">
-      <path
-         id="path1349"
-         d="M 0,0 5,-5 -12.5,0 5,5 Z"
-         style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1.00000003pt;stroke-opacity:1"
-         transform="matrix(-0.8,0,0,-0.8,-10,0)"
-         inkscape:connector-curvature="0" />
-    </marker>
-    <marker
-       inkscape:isstock="true"
-       style="overflow:visible"
-       id="marker1317"
-       refX="0"
-       refY="0"
-       orient="auto"
-       inkscape:stockid="Arrow1Lend"
-       inkscape:collect="always">
-      <path
-         transform="matrix(-0.8,0,0,-0.8,-10,0)"
-         style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1.00000003pt;stroke-opacity:1"
-         d="M 0,0 5,-5 -12.5,0 5,5 Z"
-         id="path1315"
-         inkscape:connector-curvature="0" />
-    </marker>
-    <marker
-       inkscape:stockid="Arrow1Lend"
-       orient="auto"
-       refY="0"
-       refX="0"
-       id="Arrow1Lend"
-       style="overflow:visible"
-       inkscape:isstock="true"
-       inkscape:collect="always">
-      <path
-         id="path1012"
-         d="M 0,0 5,-5 -12.5,0 5,5 Z"
-         style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1.00000003pt;stroke-opacity:1"
-         transform="matrix(-0.8,0,0,-0.8,-10,0)"
-         inkscape:connector-curvature="0" />
-    </marker>
-  </defs>
-  <sodipodi:namedview
-     id="base"
-     pagecolor="#ffffff"
-     bordercolor="#666666"
-     borderopacity="1.0"
-     inkscape:pageopacity="0.0"
-     inkscape:pageshadow="2"
-     inkscape:zoom="0.98994949"
-     inkscape:cx="375.24102"
-     inkscape:cy="372.04577"
-     inkscape:document-units="mm"
-     inkscape:current-layer="layer1"
-     showgrid="false"
-     inkscape:window-width="1916"
-     inkscape:window-height="1036"
-     inkscape:window-x="0"
-     inkscape:window-y="42"
-     inkscape:window-maximized="0"
-     units="px" />
-  <metadata
-     id="metadata5">
-    <rdf:RDF>
-      <cc:Work
-         rdf:about="">
-        <dc:format>image/svg+xml</dc:format>
-        <dc:type
-           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
-      </cc:Work>
-    </rdf:RDF>
-  </metadata>
-  <g
-     inkscape:label="Layer 1"
-     inkscape:groupmode="layer"
-     id="layer1"
-     transform="translate(0,-138.24998)">
-    <ellipse
-       style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.98650342;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       id="path815"
-       cx="25.983866"
-       cy="163.32622"
-       rx="24.125099"
-       ry="11.732973" />
-    <rect
-       style="opacity:1;fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.98650342;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       id="rect817"
-       width="46.931892"
-       height="68.288536"
-       x="110.22398"
-       y="213.29022" />
-    <rect
-       style="opacity:1;fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.98650342;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       id="rect817-3"
-       width="46.931892"
-       height="68.288536"
-       x="2.6497507"
-       y="213.94937" />
-    <text
-       xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:6.26429653px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26101235"
-       x="4.2317266"
-       y="274.98718"
-       id="text838"><tspan
-         sodipodi:role="line"
-         id="tspan836"
-         x="4.2317266"
-         y="274.98718"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:6.26429653px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;stroke-width:0.26101235">React Forms</tspan></text>
-    <text
-       xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:6.26429653px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26101235"
-       x="114.61256"
-       y="275.64423"
-       id="text838-8"><tspan
-         sodipodi:role="line"
-         id="tspan836-9"
-         x="114.61256"
-         y="275.64423"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:6.26429653px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;stroke-width:0.26101235">PDFFiller</tspan></text>
-    <text
-       xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.87223101px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26101235"
-       x="26.022036"
-       y="162.00578"
-       id="text838-7"><tspan
-         sodipodi:role="line"
-         x="26.796408"
-         y="162.00578"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.87223101px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;writing-mode:lr-tb;text-anchor:middle;stroke-width:0.26101235"
-         id="tspan1402"> Data model  </tspan><tspan
-         sodipodi:role="line"
-         x="26.022036"
-         y="168.09607"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.87223101px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;writing-mode:lr-tb;text-anchor:middle;stroke-width:0.26101235"
-         id="tspan1406">(redux store)</tspan></text>
-    <path
-       style="fill:none;stroke:#000000;stroke-width:0.25550437;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#Arrow1Lend)"
-       d="M 15.207404,214.18134 C 8.501705,195.03866 6.139793,194.5844 15.734999,173.5766"
-       id="path884"
-       inkscape:connector-curvature="0"
-       sodipodi:nodetypes="cc" />
-    <text
-       xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.87223101px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26101235"
-       x="26.115698"
-       y="221.99109"
-       id="text888"><tspan
-         sodipodi:role="line"
-         id="tspan886"
-         x="26.115698"
-         y="221.99109"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.87223101px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;writing-mode:lr-tb;text-anchor:middle;stroke-width:0.26101235">Forms dispatch</tspan><tspan
-         sodipodi:role="line"
-         x="26.890068"
-         y="228.08138"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.87223101px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;writing-mode:lr-tb;text-anchor:middle;stroke-width:0.26101235"
-         id="tspan890">redux actions to </tspan><tspan
-         sodipodi:role="line"
-         x="26.890068"
-         y="234.17166"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.87223101px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;writing-mode:lr-tb;text-anchor:middle;stroke-width:0.26101235"
-         id="tspan892">update </tspan><tspan
-         sodipodi:role="line"
-         x="26.115698"
-         y="240.26195"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.87223101px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;writing-mode:lr-tb;text-anchor:middle;stroke-width:0.26101235"
-         id="tspan1414">redux store</tspan></text>
-    <ellipse
-       style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.98650342;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       id="path815-3"
-       cx="132.97266"
-       cy="163.36444"
-       rx="24.125099"
-       ry="11.732973" />
-    <text
-       xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.87223101px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26101235"
-       x="132.87285"
-       y="162.83498"
-       id="text838-7-0"><tspan
-         sodipodi:role="line"
-         id="tspan836-6-3"
-         x="133.64722"
-         y="162.83498"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.87223101px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;writing-mode:lr-tb;text-anchor:middle;stroke-width:0.26101235">PDF Form </tspan><tspan
-         sodipodi:role="line"
-         x="132.87285"
-         y="168.92526"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.87223101px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;writing-mode:lr-tb;text-anchor:middle;stroke-width:0.26101235"
-         id="tspan930">model</tspan></text>
-    <path
-       style="fill:none;stroke:#000000;stroke-width:0.25534284px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#marker1351)"
-       d="m 144.27645,173.08749 c 6.7057,19.14268 9.0676,19.59694 -0.5276,40.60475"
-       id="path884-0"
-       inkscape:connector-curvature="0"
-       sodipodi:nodetypes="cc" />
-    <text
-       xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.87223101px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26101235"
-       x="80.185211"
-       y="166.62178"
-       id="text888-0"><tspan
-         sodipodi:role="line"
-         x="80.959579"
-         y="166.62178"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.87223101px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;writing-mode:lr-tb;text-anchor:middle;stroke-width:0.26101235"
-         id="tspan965">Form model </tspan><tspan
-         sodipodi:role="line"
-         x="80.185211"
-         y="172.71207"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.87223101px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;writing-mode:lr-tb;text-anchor:middle;stroke-width:0.26101235"
-         id="tspan1392">looks up required</tspan><tspan
-         sodipodi:role="line"
-         x="80.185211"
-         y="178.80235"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.87223101px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;writing-mode:lr-tb;text-anchor:middle;stroke-width:0.26101235"
-         id="tspan1394">data from</tspan><tspan
-         sodipodi:role="line"
-         x="80.185211"
-         y="184.89264"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.87223101px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;writing-mode:lr-tb;text-anchor:middle;stroke-width:0.26101235"
-         id="tspan1396">redux store</tspan></text>
-    <path
-       style="fill:none;stroke:#000000;stroke-width:0.30399328px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#marker1317)"
-       d="m 50.264939,162.43036 c 27.145641,-6.70236 27.789818,-9.06308 57.580341,0.52733"
-       id="path884-0-6"
-       inkscape:connector-curvature="0"
-       sodipodi:nodetypes="cc" />
-    <text
-       xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.87223101px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26101235"
-       x="133.30472"
-       y="219.68163"
-       id="text888-0-9"><tspan
-         sodipodi:role="line"
-         x="133.30472"
-         y="219.68163"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.87223101px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;writing-mode:lr-tb;text-anchor:middle;stroke-width:0.26101235"
-         id="tspan892-4-2">PDFFiller requests</tspan><tspan
-         sodipodi:role="line"
-         x="134.07909"
-         y="225.77191"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.87223101px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;writing-mode:lr-tb;text-anchor:middle;stroke-width:0.26101235"
-         id="tspan961-2">fields array </tspan><tspan
-         sodipodi:role="line"
-         x="133.30472"
-         y="231.8622"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.87223101px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;writing-mode:lr-tb;text-anchor:middle;stroke-width:0.26101235"
-         id="tspan963-4">and pushes data</tspan><tspan
-         sodipodi:role="line"
-         x="133.30472"
-         y="237.95248"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.87223101px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;writing-mode:lr-tb;text-anchor:middle;stroke-width:0.26101235"
-         id="tspan965-7">into PDF</tspan></text>
-  </g>
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="svg8" width="600" height="600" version="1.1" viewBox="0 0 158.75 158.75" xmlns="http://www.w3.org/2000/svg" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+ <defs id="defs2">
+  <marker id="marker1351" overflow="visible" orient="auto">
+   <path id="path1349" transform="matrix(-.8 0 0 -.8 -10 0)" d="m0 0 5-5-17.5 5 17.5 5z" fill-rule="evenodd" stroke="#000" stroke-width="1pt"/>
+  </marker>
+  <marker id="marker1317" overflow="visible" orient="auto">
+   <path id="path1315" transform="matrix(-.8 0 0 -.8 -10 0)" d="m0 0 5-5-17.5 5 17.5 5z" fill-rule="evenodd" stroke="#000" stroke-width="1pt"/>
+  </marker>
+  <marker id="Arrow1Lend" overflow="visible" orient="auto">
+   <path id="path1012" transform="matrix(-.8 0 0 -.8 -10 0)" d="m0 0 5-5-17.5 5 17.5 5z" fill-rule="evenodd" stroke="#000" stroke-width="1pt"/>
+  </marker>
+ </defs>
+ <metadata id="metadata5">
+  <rdf:RDF>
+   <cc:Work rdf:about="">
+    <dc:format>image/svg+xml</dc:format>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:title/>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <g id="layer1" transform="translate(0 -138.25)">
+  <ellipse id="path815" cx="25.984" cy="163.33" rx="24.125" ry="11.733" fill="none" stroke="#000" stroke-width=".9865"/>
+  <rect id="rect817" x="110.22" y="213.29" width="46.932" height="68.289" fill="none" stroke="#000" stroke-width=".9865"/>
+  <rect id="rect817-3" x="2.6498" y="213.95" width="46.932" height="68.289" fill="none" stroke="#000" stroke-width=".9865"/>
+  <text id="text838" x="4.2317266" y="274.98718" fill="#000000" font-family="sans-serif" font-size="6.2643px" letter-spacing="0px" stroke-width=".26101" word-spacing="0px" style="font-feature-settings:normal;font-variant-caps:normal;font-variant-ligatures:normal;font-variant-numeric:normal;line-height:1.25" xml:space="preserve"><tspan id="tspan836" x="4.2317266" y="274.98718" font-family="sans-serif" font-size="6.2643px" stroke-width=".26101" style="font-feature-settings:normal;font-variant-caps:normal;font-variant-ligatures:normal;font-variant-numeric:normal">React Forms</tspan></text>
+  <text id="text838-8" x="114.61256" y="275.64423" fill="#000000" font-family="sans-serif" font-size="6.2643px" letter-spacing="0px" stroke-width=".26101" word-spacing="0px" style="font-feature-settings:normal;font-variant-caps:normal;font-variant-ligatures:normal;font-variant-numeric:normal;line-height:1.25" xml:space="preserve"><tspan id="tspan836-9" x="114.61256" y="275.64423" font-family="sans-serif" font-size="6.2643px" stroke-width=".26101" style="font-feature-settings:normal;font-variant-caps:normal;font-variant-ligatures:normal;font-variant-numeric:normal">PDFFiller</tspan></text>
+  <text id="text838-7" x="26.022036" y="162.00578" fill="#000000" font-family="sans-serif" font-size="4.8722px" letter-spacing="0px" stroke-width=".26101" text-align="center" text-anchor="middle" word-spacing="0px" style="font-feature-settings:normal;font-variant-caps:normal;font-variant-ligatures:normal;font-variant-numeric:normal;line-height:1.25" xml:space="preserve"><tspan id="tspan1402" x="26.796408" y="162.00578" text-align="center" style="font-feature-settings:normal;font-variant-caps:normal;font-variant-ligatures:normal;font-variant-numeric:normal"> Data model  </tspan><tspan id="tspan1406" x="26.022036" y="168.09607" text-align="center" style="font-feature-settings:normal;font-variant-caps:normal;font-variant-ligatures:normal;font-variant-numeric:normal">(redux store)</tspan></text>
+  <path id="path884" d="m15.207 214.18c-6.7057-19.143-9.0676-19.597 0.5276-40.605" fill="none" marker-end="url(#Arrow1Lend)" stroke="#000" stroke-width=".2555"/>
+  <text id="text888" x="26.115698" y="221.99109" fill="#000000" font-family="sans-serif" font-size="4.8722px" letter-spacing="0px" stroke-width=".26101" text-align="center" text-anchor="middle" word-spacing="0px" style="font-feature-settings:normal;font-variant-caps:normal;font-variant-ligatures:normal;font-variant-numeric:normal;line-height:1.25" xml:space="preserve"><tspan id="tspan886" x="26.115698" y="221.99109" text-align="center" style="font-feature-settings:normal;font-variant-caps:normal;font-variant-ligatures:normal;font-variant-numeric:normal">Forms dispatch</tspan><tspan id="tspan890" x="26.890068" y="228.08138" text-align="center" style="font-feature-settings:normal;font-variant-caps:normal;font-variant-ligatures:normal;font-variant-numeric:normal">redux actions to </tspan><tspan id="tspan892" x="26.890068" y="234.17166" text-align="center" style="font-feature-settings:normal;font-variant-caps:normal;font-variant-ligatures:normal;font-variant-numeric:normal">update </tspan><tspan id="tspan1414" x="26.115698" y="240.26195" text-align="center" style="font-feature-settings:normal;font-variant-caps:normal;font-variant-ligatures:normal;font-variant-numeric:normal">redux store</tspan></text>
+  <ellipse id="path815-3" cx="132.97" cy="163.36" rx="24.125" ry="11.733" fill="none" stroke="#000" stroke-width=".9865"/>
+  <text id="text838-7-0" x="132.87285" y="162.83498" fill="#000000" font-family="sans-serif" font-size="4.8722px" letter-spacing="0px" stroke-width=".26101" text-align="center" text-anchor="middle" word-spacing="0px" style="font-feature-settings:normal;font-variant-caps:normal;font-variant-ligatures:normal;font-variant-numeric:normal;line-height:1.25" xml:space="preserve"><tspan id="tspan836-6-3" x="133.64722" y="162.83498" text-align="center" style="font-feature-settings:normal;font-variant-caps:normal;font-variant-ligatures:normal;font-variant-numeric:normal">PDF Form </tspan><tspan id="tspan930" x="132.87285" y="168.92526" text-align="center" style="font-feature-settings:normal;font-variant-caps:normal;font-variant-ligatures:normal;font-variant-numeric:normal">model</tspan></text>
+  <path id="path884-0" d="m144.28 173.09c6.7057 19.143 9.0676 19.597-0.5276 40.605" fill="none" marker-end="url(#marker1351)" stroke="#000" stroke-width=".25534px"/>
+  <text id="text888-0" x="80.185211" y="166.62178" fill="#000000" font-family="sans-serif" font-size="4.8722px" letter-spacing="0px" stroke-width=".26101" text-align="center" text-anchor="middle" word-spacing="0px" style="font-feature-settings:normal;font-variant-caps:normal;font-variant-ligatures:normal;font-variant-numeric:normal;line-height:1.25" xml:space="preserve"><tspan id="tspan965" x="80.959579" y="166.62178" text-align="center" style="font-feature-settings:normal;font-variant-caps:normal;font-variant-ligatures:normal;font-variant-numeric:normal">Form model </tspan><tspan id="tspan1392" x="80.185211" y="172.71207" text-align="center" style="font-feature-settings:normal;font-variant-caps:normal;font-variant-ligatures:normal;font-variant-numeric:normal">looks up required</tspan><tspan id="tspan1394" x="80.185211" y="178.80235" text-align="center" style="font-feature-settings:normal;font-variant-caps:normal;font-variant-ligatures:normal;font-variant-numeric:normal">data from</tspan><tspan id="tspan1396" x="80.185211" y="184.89264" text-align="center" style="font-feature-settings:normal;font-variant-caps:normal;font-variant-ligatures:normal;font-variant-numeric:normal">redux store</tspan></text>
+  <path id="path884-0-6" d="m50.265 162.43c27.146-6.7024 27.79-9.0631 57.58 0.52733" fill="none" marker-end="url(#marker1317)" stroke="#000" stroke-width=".30399px"/>
+  <text id="text888-0-9" x="133.30472" y="219.68163" fill="#000000" font-family="sans-serif" font-size="4.8722px" letter-spacing="0px" stroke-width=".26101" text-align="center" text-anchor="middle" word-spacing="0px" style="font-feature-settings:normal;font-variant-caps:normal;font-variant-ligatures:normal;font-variant-numeric:normal;line-height:1.25" xml:space="preserve"><tspan id="tspan892-4-2" x="133.30472" y="219.68163" text-align="center" style="font-feature-settings:normal;font-variant-caps:normal;font-variant-ligatures:normal;font-variant-numeric:normal">PDFFiller requests</tspan><tspan id="tspan961-2" x="134.07909" y="225.77191" text-align="center" style="font-feature-settings:normal;font-variant-caps:normal;font-variant-ligatures:normal;font-variant-numeric:normal">fields array </tspan><tspan id="tspan963-4" x="133.30472" y="231.8622" text-align="center" style="font-feature-settings:normal;font-variant-caps:normal;font-variant-ligatures:normal;font-variant-numeric:normal">and pushes data</tspan><tspan id="tspan965-7" x="133.30472" y="237.95248" text-align="center" style="font-feature-settings:normal;font-variant-caps:normal;font-variant-ligatures:normal;font-variant-numeric:normal">into PDF</tspan></text>
+ </g>
 </svg>
