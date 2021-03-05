@@ -48,7 +48,7 @@ Thank you for taking the time to contribute, let's make tax filing free for ever
 
 * If you have an idea for an improvement or a bugfix, feel free to file an issue to be reviewed.
 
-Head to the [Architecture document](./ARCHITECTURE) for some notes on project design to help you get started.
+Head to the [Architecture document](ARCHITECTURE.md) for some notes on project design to help you get started.
 
 ## Running
 
