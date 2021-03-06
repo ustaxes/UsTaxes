@@ -6,7 +6,7 @@ This project uses typescript and is built with [NPM][npm-install]. Please make s
 
 ## Desktop application requirements
 
-The desktop application is built with [Tauri][tauri-root]. While this project does not have any significant rust code yet, this may be built out in the future. Running the application as a desktop app requires [Rust][rust-root] installed.
+The desktop application is built with [Tauri][tauri-root], see [this reference for setting up your environment for Tauri](https://tauri.studio/en/docs/getting-started/intro/#setting-up-your-environment). While this project does not have any significant rust code yet, this may be built out in the future. Running the application as a desktop app requires [Rust][rust-root] installed.
 
 ## Project design
 
