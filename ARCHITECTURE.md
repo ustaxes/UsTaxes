@@ -38,14 +38,14 @@ export interface Information {
 }
 ```
 
-* **f1099s**: An array of all 1099s that have been added. Note this includes 1099B which goes to Schedule D, 1099-Int which goes to schedule B, and 1099-DIV which provides data that goes to both Schedule B and Schedule D. This confusion is not needed at this level of the data model. Later when PDFs are created, the correct data can be accessed by the code managing those schedules.
+* **f1099s**: An array of all 1099s that have been added. Note this includes 1099B which goes to Schedule D, 1099-Int which goes to Schedule B, and 1099-DIV which provides data that goes to both Schedule B and Schedule D. This confusion is not needed at this level of the data model. Later when PDFs are created, the correct data can be accessed by the code managing those schedules.
 * **w2s**: All W2s that have been added for both primary taxpayer and spouse
 * **refund**: Direct deposit information
 * **taxPayer**: Basic information about user's name, ssn, dependents, spouse
 
 ### PDF Export
 
-Supported tax forms are included in the source control of this repository. [src/irsForms/](src/irsForms/) includes all Schedules that can be filled by this project. Each of these Schedule definitions implements this interface:
+Supported tax forms are included in the source control of this repository. [src/irsForms/](src/irsForms/) includes all schedules that can be filled by this project. Each of these schedule definitions implements this interface:
 
   ```ts
     export default interface Form {
