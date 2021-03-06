@@ -21,6 +21,8 @@ Data flows in only this one direction, from 1 to 4.
 
 ![Data flow](docs/dataflow.svg)
 
+Note the information in the datamodel is automatically synced to browser's LocalStorage so the data is available when the user closes and reopens the page.
+
 ### Data model
 
 The root schema of data stored from form submissions is defined in [src/redux/data.ts](src/redux/data.ts) as:
