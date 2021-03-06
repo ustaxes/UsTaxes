@@ -1,5 +1,7 @@
 # Project Architecture
 
+Thank you for your interest in this project. The below should summarize the general design framework used in this project, and hopefully guide you in understanding the code and getting ready to contribute to the project. If anything at all is unclear please join the discord linked on the readme and feel free to ask any questions you might have.
+
 ## Stack and developer requirements
 
 This project uses typescript and is built with [NPM][npm-install]. Please make sure you are using NPM version > 7.
