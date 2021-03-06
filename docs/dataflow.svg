@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg id="svg8" width="600" height="600" version="1.1" viewBox="0 0 158.75 158.75" xmlns="http://www.w3.org/2000/svg" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+<svg id="svg8" width="600" height="520" version="1.1" viewBox="0 0 158.75 137.58" xmlns="http://www.w3.org/2000/svg" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
  <defs id="defs2">
   <marker id="marker1351" overflow="visible" orient="auto">
    <path id="path1349" transform="matrix(-.8 0 0 -.8 -10 0)" d="m0 0 5-5-17.5 5 17.5 5z" fill-rule="evenodd" stroke="#000" stroke-width="1pt"/>
@@ -20,8 +20,8 @@
    </cc:Work>
   </rdf:RDF>
  </metadata>
- <rect id="rect920" x=".92169" y="10.546" width="157.38" height="145.14" fill="#fff"/>
- <g id="layer1" transform="translate(0 -138.25)">
+ <rect id="rect920" y="3.4196e-6" width="158.75" height="137.58" fill="#fff" stroke-width=".97785"/>
+ <g id="layer1" transform="translate(-.92169 -147.45)">
   <ellipse id="path815" cx="25.984" cy="163.33" rx="24.125" ry="11.733" fill="none" stroke="#000" stroke-width=".9865"/>
   <rect id="rect817" x="110.22" y="213.29" width="46.932" height="68.289" fill="none" stroke="#000" stroke-width=".9865"/>
   <rect id="rect817-3" x="2.6498" y="213.95" width="46.932" height="68.289" fill="none" stroke="#000" stroke-width=".9865"/>
