@@ -32,7 +32,7 @@ jobs:
     - name: install app dependencies and build it
     # If using the Vue CLI plugin, tauri:build will be run automatically by tauri-action
     # and you can remove `&& yarn build` from this command
-      run: yarn && yarn build
+      run: npm install && npm desktop-release
     - uses: tauri-apps/tauri-action@v0
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
