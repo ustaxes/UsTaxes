@@ -1,5 +1,5 @@
 name: "publish"
-on: push
+on: [push, pull_request]
 # push:
 #   branches:
 #     - release
@@ -18,10 +18,15 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: 14
+    - name: Get the version
+      id: get_version
+      run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}_`echo $GITHUB_SHA | cut -c -6`
+      shell: bash
     - name: install Rust stable
       uses: actions-rs/toolchain@v1
       with:
         toolchain: stable
+        profile: minimal
     - name: install tauri bundler
       run: cargo install tauri-bundler --force
     - name: install webkit2gtk (ubuntu only)
@@ -33,12 +38,12 @@ jobs:
     # If using the Vue CLI plugin, tauri:build will be run automatically by tauri-action
     # and you can remove `&& yarn build` from this command
       run: npm install --no-optional && npm run desktop-release
-    - uses: tauri-apps/tauri-action@v0
+    - uses: loloof64/tauri-action@marketplace_2
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tagName: app-v__VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version
-        releaseName: "App v__VERSION__"
+        tagName: app-v${{ steps.get_version.outputs.VERSION }}
+        releaseName: App v${{ steps.get_version.outputs.VERSION }}
         body: "See the assets to download this version and install."
         draft: true
         prerelease: false
