@@ -18,6 +18,10 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: 14
+    - name: Get the version
+      id: get_version
+      run: echo ::set-output name=VERSION::${CI_REF_NAME}_${CI_SHA_SHORT}
+      shell: bash
     - name: install Rust stable
       uses: actions-rs/toolchain@v1
       with:
@@ -39,8 +43,8 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tagName: app-v__VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version
-        releaseName: "App v__VERSION__"
+        tagName: app-v${steps.get_version.outputs.VERSION}
+        releaseName: "App v${steps.get_version.outputs.VERSION}"
         body: "See the assets to download this version and install."
         draft: true
         prerelease: false
