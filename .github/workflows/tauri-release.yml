@@ -22,6 +22,8 @@ jobs:
       uses: actions-rs/toolchain@v1
       with:
         toolchain: stable
+        profile: minimal
+    - uses: Swatinem/rust-cache@v1
     - name: install tauri bundler
       run: cargo install tauri-bundler --force
     - name: install webkit2gtk (ubuntu only)
