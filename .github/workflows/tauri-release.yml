@@ -68,6 +68,6 @@ jobs:
       with:
         releaseName: App v${{ steps.get_version.outputs.VERSION }}
         tagName: app-v${{ steps.get_version.outputs.VERSION }}
-        body: "See the assets to download this version and install."
-        draft: true
+        releaseBody: "See the assets to download this version and install."
+        releaseDraft: false
         prerelease: false
