@@ -27,19 +27,19 @@ jobs:
       id: cache_rust_bin
       uses: actions/cache@v1
       with:
-        path: ${{ format('{0}/bin/', matrix.CARGO_HOME) }}
+        path: ~/.cargo/bin/
         key: ${{ runner.OS }}-build-bin-${{ hashFiles('**/Cargo.toml') }}
     - name: cache rust registry/index
       id: cache_rust_reg_index
       uses: actions/cache@v1
       with:
-        path: ${{ format('{0}/registry/index/', matrix.CARGO_HOME) }}
+        path: ~/.cargo/registry/index
         key: ${{ runner.OS }}-build-reg-index-${{ hashFiles('**/Cargo.toml') }}-
     - name: cache rust registry/cache
       id: cache_rust_reg_cache
       uses: actions/cache@v1
       with:
-        path: ${{ format('{0}/registry/cache/', matrix.CARGO_HOME) }}
+        path: ~/.cargo/registry/cache/
         key: ${{ runner.OS }}-build-reg-cache-${{ hashFiles('**/Cargo.toml') }}-
     - name: install Rust stable
       uses: actions-rs/toolchain@v1
@@ -56,8 +56,8 @@ jobs:
     - name: cache node modules
       uses: actions/cache@v1
       with:
-        path: ${{ format('examples/{0}/node_modules', matrix.example) }}
-        key: ${{ runner.OS }}-build-${{ hashFiles(format('package-lock.json', matrix.example)) }}
+        path: ${{ format('node_modules') }}
+        key: ${{ runner.OS }}-build-${{ hashFiles(format('package-lock.json')) }}
         restore-keys: ${{ runner.OS }}-build-${{ env.cache-name }}-
     - name: install app dependencies and build it
       run: npm install --no-optional && npm run desktop-release
@@ -66,8 +66,8 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tagName: app-v${{ steps.get_version.outputs.VERSION }}
         releaseName: App v${{ steps.get_version.outputs.VERSION }}
+        tagName: app-v${{ steps.get_version.outputs.VERSION }}
         body: "See the assets to download this version and install."
         draft: true
         prerelease: false
