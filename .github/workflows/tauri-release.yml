@@ -28,19 +28,19 @@ jobs:
       uses: actions/cache@v1
       with:
         path: ~/.cargo/bin/
-        key: ${{ runner.OS }}-build-bin-${{ hashFiles('**/Cargo.toml') }}
+        key: ${{ runner.OS }}-xbuild-bin-${{ hashFiles('**/Cargo.toml') }}
     - name: cache rust registry/index
       id: cache_rust_reg_index
       uses: actions/cache@v1
       with:
         path: ~/.cargo/registry/index
-        key: ${{ runner.OS }}-build-reg-index-${{ hashFiles('**/Cargo.toml') }}-
+        key: ${{ runner.OS }}-xbuild-reg-index-${{ hashFiles('**/Cargo.toml') }}-
     - name: cache rust registry/cache
       id: cache_rust_reg_cache
       uses: actions/cache@v1
       with:
         path: ~/.cargo/registry/cache/
-        key: ${{ runner.OS }}-build-reg-cache-${{ hashFiles('**/Cargo.toml') }}-
+        key: ${{ runner.OS }}-xbuild-reg-cache-${{ hashFiles('**/Cargo.toml') }}-
     - name: install Rust stable
       uses: actions-rs/toolchain@v1
       with:
@@ -49,12 +49,14 @@ jobs:
     - name: install tauri bundler
       run: cargo install tauri-bundler --force
       shell: bash
+      if: steps.cache_rust_bin.outputs.cache-hit != 'true' || steps.cache_rust_reg_index.outputs.cache-hit != 'true' || steps.cache_rust_reg_cache.outputs.cache-hit != 'true'
     - name: install webkit2gtk (ubuntu only)
       if: matrix.platform == 'ubuntu-latest'
       run: |
         sudo apt-get update
         sudo apt-get install -y webkit2gtk-4.0
     - name: cache node modules
+      id: cache_node_modules
       uses: actions/cache@v1
       with:
         path: ${{ format('node_modules') }}
@@ -62,7 +64,7 @@ jobs:
         restore-keys: ${{ runner.OS }}-build-${{ env.cache-name }}-
     - name: install app dependencies and build it
       run: npm install --no-optional && npm run desktop-release
-      if: steps.cache_rust_bin.outputs.cache-hit != 'true' || steps.cache_rust_reg_index.outputs.cache-hit != 'true' || steps.cache_rust_reg_cache.outputs.cache-hit != 'true'
+      if: steps.cache_node_modules.outputs.cache-hit != 'true'
     - uses: loloof64/tauri-action@marketplace_2
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
