@@ -72,3 +72,26 @@ To release, run `npm run desktop-release` or `yarn desktop-release`. This will p
 [Cargo-docs]: https://doc.rust-lang.org/cargo/getting-started/installation.html
 [discord-badge]: https://img.shields.io/discord/812156892343828500?logo=Discord
 [discord-url]: https://discord.gg/dAaz472mPz
+
+## Reading List
+
+Here are some interesting books about programming if you're interested in contributing code:
+
+- Clean Code by Robert Martin
+- The Definitive ANTLR 4 Reference by Terence Parr
+
+Here are some interesting books about the taxes domain:
+
+- The Interesting History of Income Tax - William Federer
+- The Tax Man Cometh. Land and Property in Colonial Fauquier County, Virginia: Tax List from the Fauquier County Court Clerks Loose Papers 1759-1782
+- https://mises.org/library/income-tax-root-all-evil (Ignore the conclusion; focus on the perspective)
+
+## Related Links
+
+- https://www.loc.gov/rr/business/hottopic/irs_history.html - History of the US Income Tax
+- https://github.com/thegrims/UsTaxes
+- https://sites.google.com/view/incometaxspreadsheet/home
+- https://www.freetaxusa.com/
+- https://www.propublica.org/series/the-turbotax-trap - Reading about the industry
+- https://openfisca.org/en/
+- https://github.com/MLanguage/mlang
