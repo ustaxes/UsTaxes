@@ -48,6 +48,7 @@ jobs:
         profile: minimal
     - name: install tauri bundler
       run: cargo install tauri-bundler --force
+      shell: bash
     - name: install webkit2gtk (ubuntu only)
       if: matrix.platform == 'ubuntu-latest'
       run: |
