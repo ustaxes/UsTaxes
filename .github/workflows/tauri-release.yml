@@ -1,8 +1,9 @@
 name: "publish"
-on: [push, pull_request]
-# push:
-#   branches:
-#     - release
+on: 
+  push:
+    branches:
+      - master
+      - githubAction-fixappimage
 
 jobs:
   publish-tauri:
