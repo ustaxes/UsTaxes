@@ -3,8 +3,6 @@ on:
   push:
     branches:
       - master
-      - githubAction-fixappimage
-
 jobs:
   publish-tauri:
     strategy:
@@ -21,7 +19,7 @@ jobs:
         node-version: 14
     - name: Get the version
       id: get_version
-      run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}_`echo $GITHUB_SHA | cut -c -6`
+      run: echo ::set-output name=VERSION::__VERSION__
       shell: bash
     - name: install Rust stable
       uses: actions-rs/toolchain@v1
