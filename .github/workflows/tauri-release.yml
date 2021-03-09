@@ -3,13 +3,14 @@ on:
   push:
     branches:
       - master
+      - githubAction-fixappimage
+      
 jobs:
   publish-tauri:
     strategy:
       fail-fast: false
       matrix:
         platform: [macos-latest, ubuntu-latest, windows-latest]
-
     runs-on: ${{ matrix.platform }}
     steps:
     - uses: actions/checkout@v2
@@ -21,6 +22,25 @@ jobs:
       id: get_version
       run: echo ::set-output name=VERSION::__VERSION__
       shell: bash
+      ## https://github.com/tauri-apps/tauri/blob/76187298c1d52dc764c5192c6a770a65f44b82ab/.github/workflows/smoke-test-prod.yml
+    - name: cache rust bin
+      id: cache_rust_bin
+      uses: actions/cache@v1
+      with:
+        path: ${{ format('{0}/bin/', matrix.CARGO_HOME) }}
+        key: ${{ runner.OS }}-build-bin-${{ hashFiles('**/Cargo.toml') }}
+    - name: cache rust registry/index
+      id: cache_rust_reg_index
+      uses: actions/cache@v1
+      with:
+        path: ${{ format('{0}/registry/index/', matrix.CARGO_HOME) }}
+        key: ${{ runner.OS }}-build-reg-index-${{ hashFiles('**/Cargo.toml') }}-
+    - name: cache rust registry/cache
+      id: cache_rust_reg_cache
+      uses: actions/cache@v1
+      with:
+        path: ${{ format('{0}/registry/cache/', matrix.CARGO_HOME) }}
+        key: ${{ runner.OS }}-build-reg-cache-${{ hashFiles('**/Cargo.toml') }}-
     - name: install Rust stable
       uses: actions-rs/toolchain@v1
       with:
@@ -33,10 +53,15 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install -y webkit2gtk-4.0
+    - name: cache node modules
+      uses: actions/cache@v1
+      with:
+        path: ${{ format('examples/{0}/node_modules', matrix.example) }}
+        key: ${{ runner.OS }}-build-${{ hashFiles(format('package-lock.json', matrix.example)) }}
+        restore-keys: ${{ runner.OS }}-build-${{ env.cache-name }}-
     - name: install app dependencies and build it
-    # If using the Vue CLI plugin, tauri:build will be run automatically by tauri-action
-    # and you can remove `&& yarn build` from this command
       run: npm install --no-optional && npm run desktop-release
+      if: steps.cache_rust_bin.outputs.cache-hit != 'true' || steps.cache_rust_reg_index.outputs.cache-hit != 'true' || steps.cache_rust_reg_cache.outputs.cache-hit != 'true'
     - uses: loloof64/tauri-action@marketplace_2
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
