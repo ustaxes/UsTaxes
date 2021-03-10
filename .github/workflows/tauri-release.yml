@@ -1,0 +1,76 @@
+name: "publish"
+on: 
+  push:
+    branches:
+      - master
+jobs:
+  publish-tauri:
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [macos-latest, ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.platform }}
+    steps:
+    - uses: actions/checkout@v2
+    - name: setup node
+      uses: actions/setup-node@v1
+      with:
+        node-version: 14
+    - name: Get the version
+      id: get_version
+      run: echo ::set-output name=VERSION::__VERSION__
+      shell: bash
+      ## https://github.com/tauri-apps/tauri/blob/76187298c1d52dc764c5192c6a770a65f44b82ab/.github/workflows/smoke-test-prod.yml
+      ## Following that example, we cache directories for both cargo and node. 
+      ## The cache action will check caches before these directories are required, and update the caches if necessary 
+      ## at the end of the job (after cargo install and node install if those are necessary).
+    - name: cache rust bin
+      id: cache_rust_bin
+      uses: actions/cache@v1
+      with:
+        path: ~/.cargo/bin/
+        key: ${{ runner.OS }}-xbuild-bin-${{ hashFiles('**/Cargo.toml') }}
+    - name: cache rust registry/index
+      id: cache_rust_reg_index
+      uses: actions/cache@v1
+      with:
+        path: ~/.cargo/registry/index
+        key: ${{ runner.OS }}-xbuild-reg-index-${{ hashFiles('**/Cargo.toml') }}-
+    - name: cache rust registry/cache
+      id: cache_rust_reg_cache
+      uses: actions/cache@v1
+      with:
+        path: ~/.cargo/registry/cache/
+        key: ${{ runner.OS }}-xbuild-reg-cache-${{ hashFiles('**/Cargo.toml') }}-
+    - name: install Rust stable
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: stable
+        profile: minimal
+    - name: install tauri bundler
+      run: cargo install tauri-bundler --force
+      shell: bash
+      if: steps.cache_rust_bin.outputs.cache-hit != 'true' || steps.cache_rust_reg_index.outputs.cache-hit != 'true' || steps.cache_rust_reg_cache.outputs.cache-hit != 'true'
+    - name: install webkit2gtk (ubuntu only)
+      if: matrix.platform == 'ubuntu-latest'
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y webkit2gtk-4.0
+    - name: cache node modules
+      id: cache_node_modules
+      uses: actions/cache@v1
+      with:
+        path: ${{ format('node_modules') }}
+        key: ${{ runner.OS }}-xbuild-${{ hashFiles(format('package-lock.json')) }}
+    - name: install app dependencies and build it
+      run: npm install --no-optional && npm run desktop-release
+      if: steps.cache_node_modules.outputs.cache-hit != 'true'
+    - uses: loloof64/tauri-action@marketplace_2
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        releaseName: App v${{ steps.get_version.outputs.VERSION }}
+        tagName: app-v${{ steps.get_version.outputs.VERSION }}
+        releaseBody: "See the assets to download this version and install."
+        releaseDraft: false
+        prerelease: false
