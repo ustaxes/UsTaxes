@@ -3,8 +3,6 @@ on:
   push:
     branches:
       - master
-      - githubAction-fixappimage
-      
 jobs:
   publish-tauri:
     strategy:
