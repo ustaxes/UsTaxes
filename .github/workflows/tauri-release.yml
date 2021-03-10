@@ -60,8 +60,7 @@ jobs:
       uses: actions/cache@v1
       with:
         path: ${{ format('node_modules') }}
-        key: ${{ runner.OS }}-build-${{ hashFiles(format('package-lock.json')) }}
-        restore-keys: ${{ runner.OS }}-build-${{ env.cache-name }}-
+        key: ${{ runner.OS }}-xbuild-${{ hashFiles(format('package-lock.json')) }}
     - name: install app dependencies and build it
       run: npm install --no-optional && npm run desktop-release
       if: steps.cache_node_modules.outputs.cache-hit != 'true'
