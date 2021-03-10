@@ -1,4 +1,4 @@
-# [ustaxes.org](//ustaxes.org) [![Netlify Status][Netlify-badge]][Netlify-url] [![discord-badge]][discord-url]
+# [ustaxes.org](//ustaxes.org) [![Netlify Status][Netlify-badge]][Netlify-url] [![Github Latest Release][release-badge]][github-release] [![discord-badge]][discord-url] 
 
 ## What is UsTaxes?
 
@@ -72,3 +72,5 @@ To release, run `npm run desktop-release` or `yarn desktop-release`. This will p
 [Cargo-docs]: https://doc.rust-lang.org/cargo/getting-started/installation.html
 [discord-badge]: https://img.shields.io/discord/812156892343828500?logo=Discord
 [discord-url]: https://discord.gg/dAaz472mPz
+[github-release]: https://github.com/ustaxes/UsTaxes/releases/latest
+[release-badge]: https://badgen.net/github/release/ustaxes/ustaxes
