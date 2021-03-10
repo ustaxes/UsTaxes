@@ -21,6 +21,9 @@ jobs:
       run: echo ::set-output name=VERSION::__VERSION__
       shell: bash
       ## https://github.com/tauri-apps/tauri/blob/76187298c1d52dc764c5192c6a770a65f44b82ab/.github/workflows/smoke-test-prod.yml
+      ## Following that example, we cache directories for both cargo and node. 
+      ## The cache action will check caches before these directories are required, and update the caches if necessary 
+      ## at the end of the job (after cargo install and node install if those are necessary).
     - name: cache rust bin
       id: cache_rust_bin
       uses: actions/cache@v1
