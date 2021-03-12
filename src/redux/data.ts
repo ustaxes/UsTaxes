@@ -12,8 +12,15 @@ export interface Person {
   role: PersonRole
 }
 
+export interface QualifyingInformation {
+  dob: Date
+  numberOfMonths: number
+  isStudent: boolean
+}
+
 export interface Dependent extends Person {
   relationship: string
+  qualifyingInfo?: QualifyingInformation
 }
 
 export interface Address {

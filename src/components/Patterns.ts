@@ -1,13 +1,25 @@
+enum PatternType {
+  date = 'date'
+}
+
 export interface PatternConfig {
   mask?: string
   regexp?: RegExp
   description?: string
+  type?: PatternType
 }
 
 export const Patterns: {[name: string]: PatternConfig} = {
+  date: {
+    type: PatternType.date
+  },
   name: {
     regexp: /^[A-Za-z ]+$/i,
     description: 'Input should only include letters and spaces'
+  },
+  numeric: {
+    regexp: /[1-9][0-9]*/,
+    description: 'Input should be a number'
   },
   zip: {
     mask: '99999-9999',

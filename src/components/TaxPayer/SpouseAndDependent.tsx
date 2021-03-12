@@ -3,7 +3,7 @@ import React, { ReactElement, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { Box, Button, List } from '@material-ui/core'
 import { useDispatch, useSelector } from 'react-redux'
-import { LabeledInput } from '../input'
+import { LabeledCheckBox, LabeledInput } from '../input'
 import { Patterns } from '../Patterns'
 import { TaxesState, Dependent, Person, PersonRole } from '../../redux/data'
 import { addDependent, addSpouse, removeSpouse } from '../../redux/actions'
@@ -19,12 +19,24 @@ interface UserPersonForm {
 
 interface UserDependentForm extends UserPersonForm {
   relationship: string
+  dob: string
+  isStudent: boolean
+  numberOfMonths: number
 }
 
-const toDependent = (formData: UserDependentForm): Dependent => ({
-  ...formData,
-  role: PersonRole.DEPENDENT
-})
+const toDependent = (formData: UserDependentForm): Dependent => {
+  const { dob, numberOfMonths, isStudent, ...rest } = formData
+
+  return {
+    ...rest,
+    role: PersonRole.DEPENDENT,
+    qualifyingInfo: {
+      dob: new Date(dob),
+      numberOfMonths,
+      isStudent
+    }
+  }
+}
 
 const toSpouse = (formData: UserPersonForm): Person => ({
   ...formData,
@@ -32,11 +44,13 @@ const toSpouse = (formData: UserPersonForm): Person => ({
 })
 
 export const AddDependentForm = (): ReactElement => {
-  const { register, errors, handleSubmit, getValues, reset } = useForm<UserDependentForm>()
+  const { register, errors, handleSubmit, control, getValues, reset } = useForm<UserDependentForm>()
 
   const [addingDependent, newDependent] = useState(false)
 
   const dispatch = useDispatch()
+
+  const [isStudent, updateIsStudent] = useState(false)
 
   const onSubmit = (): void => {
     dispatch(addDependent(toDependent(getValues())))
@@ -60,6 +74,27 @@ export const AddDependentForm = (): ReactElement => {
           patternConfig={Patterns.name}
           required={true}
           error={errors.relationship}
+        />
+        <LabeledInput
+          register={register}
+          label="Date of Birth"
+          patternConfig={Patterns.date}
+          name="dob"
+          required={false}
+        />
+        <LabeledInput
+          register={register}
+          label="How many months did this person live with you this year?"
+          patternConfig={Patterns.numeric}
+          name="numberOfMonths"
+          required={false}
+        />
+        <LabeledCheckBox
+          label="Is this person a student"
+          name="isStudent"
+          control={control}
+          value={isStudent}
+          setValue={updateIsStudent}
         />
       </FormContainer>
     )

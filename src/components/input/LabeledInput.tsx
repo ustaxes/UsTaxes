@@ -17,6 +17,7 @@ export function LabeledInput (props: LabeledInputProps): ReactElement {
       fullWidth={patternConfig.mask === undefined}
       defaultValue={defaultValue}
       helperText={error?.message}
+      type={patternConfig.type}
       inputRef={
         register({
           required: required ? 'Input is required' : undefined,

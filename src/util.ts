@@ -1,4 +1,13 @@
 
+/**
+ * Given a typescript enum, use this to get an array of the keys
+ * to the enum
+ * @param a Enumerator name
+ * @returns tyepsafe array of keys
+ */
+export const enumKeys = <A extends Object>(a: A): Array<keyof typeof a> =>
+  Object.keys(a) as Array<keyof typeof a>
+
 export const anArrayOf = <A>(n: number, a: A): A[] => Array.from(Array(n)).map(() => a)
 
 /**
