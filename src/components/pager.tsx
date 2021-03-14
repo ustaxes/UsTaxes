@@ -8,7 +8,8 @@ import { Link, useHistory } from 'react-router-dom'
  * for pages a user would navigate through. This way the browser back
  * button can behave as expected based on the user's actual sequence of actions,
  * but a previous / next flow can be available as well for a sequence of screens.
- * @param pageUrls a list of urls, starting with '/' (history.location.pathname)
+ * @param pages a list of pages A
+ * @param url gets a url out of a page A, starting with '/' (history.location.pathname)
  * @returns [goToPreviousPage, goToNextPage, previousUrl, currentUrl]
  */
 export const usePager = <A, >(pages: A[], url: (a: A) => string): [() => void, (() => void) | undefined, A | undefined, A] => {
