@@ -9,7 +9,7 @@ import { TaxesState, Dependent, Person, PersonRole } from '../../redux/data'
 import { addDependent, addSpouse, removeSpouse } from '../../redux/actions'
 import { ListDependents, PersonFields, PersonListItem } from './PersonFields'
 import FormContainer from './FormContainer'
-import { PagedFormProps } from '../pager'
+import { PagerContext } from '../pager'
 
 interface UserPersonForm {
   firstName: string
@@ -120,8 +120,8 @@ export const SpouseInfo = (): ReactElement => {
   }
 }
 
-export default function SpouseAndDependent ({ navButtons, onAdvance }: PagedFormProps): ReactElement {
-  return (
+const SpouseAndDependent = (): ReactElement => (
+  <PagerContext.Consumer>{ ({ onAdvance, navButtons }) =>
     <Box display="flex" justifyContent="center">
       <form onSubmit={onAdvance}>
         <Box display="flex" justifyContent="flex-start">
@@ -136,5 +136,7 @@ export default function SpouseAndDependent ({ navButtons, onAdvance }: PagedForm
         {navButtons}
       </form>
     </Box>
-  )
-}
+  }</PagerContext.Consumer>
+)
+
+export default SpouseAndDependent

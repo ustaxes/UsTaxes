@@ -11,11 +11,11 @@ import { Link, useHistory } from 'react-router-dom'
  * @param pageUrls a list of urls, starting with '/' (history.location.pathname)
  * @returns [goToPreviousPage, goToNextPage, previousUrl, currentUrl]
  */
-export const usePager = (pageUrls: string[]): [() => void, () => void, string | undefined, string] => {
+export const usePager = <A, >(pages: A[], url: (a: A) => string): [() => void, (() => void) | undefined, A | undefined, A] => {
   const history = useHistory()
 
   const navPage = (path: string): number | undefined => {
-    const found = pageUrls.findIndex(p => p === path)
+    const found = pages.findIndex(p => url(p) === path)
     if (found < 0) {
       return undefined
     } else {
@@ -36,23 +36,27 @@ export const usePager = (pageUrls: string[]): [() => void, () => void, string | 
   const previous = (): void => {
     if (curPage > 0) {
       update(curPage - 1)
-      history.push(pageUrls[curPage - 1])
+      history.push(url(pages[curPage - 1]))
     }
   }
 
-  const forward = (): void => {
-    if (curPage < pageUrls.length) {
-      history.push(pageUrls[curPage + 1])
-      update(curPage + 1)
+  const forward: (() => void) | undefined = (() => {
+    if (curPage < pages.length - 1) {
+      return () => {
+        history.push(pages[curPage + 1])
+        update(curPage + 1)
+      }
     }
-  }
+    return undefined
+  })()
 
-  let prevUrl
-  if (curPage > 0) {
-    prevUrl = pageUrls[curPage - 1]
-  }
+  const prev = (() => {
+    if (curPage > 0) {
+      return pages[curPage - 1]
+    }
+  })()
 
-  return [previous, forward, prevUrl, pageUrls[curPage]]
+  return [previous, forward, prev, pages[curPage]]
 }
 
 interface PagerButtonsProps {
@@ -61,16 +65,17 @@ interface PagerButtonsProps {
 }
 
 export const PagerButtons = ({ submitText, previousUrl }: PagerButtonsProps): ReactElement => {
-  let backButton: ReactElement | undefined
-  if (previousUrl !== undefined) {
-    backButton = (
-      <Box display="flex" justifyContent="flex-start" paddingRight={2}>
-        <Button component={Link} to={previousUrl} variant="contained" color="secondary" >
-          Previous
-        </Button>
-      </Box>
-    )
-  }
+  const backButton = (() => {
+    if (previousUrl !== undefined) {
+      return (
+        <Box display="flex" justifyContent="flex-start" paddingRight={2}>
+          <Button component={Link} to={previousUrl} variant="contained" color="secondary" >
+            Previous
+          </Button>
+        </Box>
+      )
+    }
+  })()
 
   return (
     <Box display="flex" justifyContent="flex-start" paddingTop={2} paddingBottom={1}>
@@ -82,10 +87,12 @@ export const PagerButtons = ({ submitText, previousUrl }: PagerButtonsProps): Re
   )
 }
 
-export interface DonePagedFormProps {
+interface PagerProps {
+  onAdvance: (() => void)
   navButtons: ReactElement
 }
 
-export interface PagedFormProps extends DonePagedFormProps {
-  onAdvance: () => void
-}
+export const PagerContext = React.createContext<PagerProps>({
+  onAdvance: () => {},
+  navButtons: <></>
+})
