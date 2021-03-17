@@ -80,7 +80,7 @@ const drawerSections: Section[] = [
 export default function Main (): ReactElement {
   const allItems: SectionItem[] = drawerSections.flatMap((section: Section) => section.items)
 
-  const [, onAdvance, prev] = usePager(allItems, (item) => item.url)
+  const [prev, onAdvance] = usePager(allItems, (item) => item.url)
 
   const navButtons: ReactElement = (
     <PagerButtons

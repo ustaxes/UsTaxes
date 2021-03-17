@@ -10,9 +10,9 @@ import { Link, useHistory } from 'react-router-dom'
  * but a previous / next flow can be available as well for a sequence of screens.
  * @param pages a list of pages A
  * @param url gets a url out of a page A, starting with '/' (history.location.pathname)
- * @returns [goToPreviousPage, goToNextPage, previousUrl, currentUrl]
+ * @returns [previousPage, goToNextPage]
  */
-export const usePager = <A, >(pages: A[], url: (a: A) => string): [() => void, (() => void) | undefined, A | undefined, A] => {
+export const usePager = <A, >(pages: A[], url: (a: A) => string): [A | undefined, (() => void) | undefined] => {
   const history = useHistory()
 
   const navPage = (path: string): number | undefined => {
@@ -34,13 +34,6 @@ export const usePager = <A, >(pages: A[], url: (a: A) => string): [() => void, (
     }
   })
 
-  const previous = (): void => {
-    if (curPage > 0) {
-      update(curPage - 1)
-      history.push(url(pages[curPage - 1]))
-    }
-  }
-
   const forward: (() => void) | undefined = (() => {
     if (curPage < pages.length - 1) {
       return () => {
@@ -57,7 +50,7 @@ export const usePager = <A, >(pages: A[], url: (a: A) => string): [() => void, (
     }
   })()
 
-  return [previous, forward, prev, pages[curPage]]
+  return [prev, forward]
 }
 
 interface PagerButtonsProps {
