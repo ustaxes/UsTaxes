@@ -44,11 +44,11 @@ The site is client side only. Data is persisted to the site's localstorage so no
 
 Thank you for taking the time to contribute, let's make tax filing free for everyone! 🎉
 
-* If you wish to make a code contribution please check out current issues and leave a comment so that multiple contributors don't end up working on the same issue.
+To make sure working on this project is fun for everyone, please review:
 
-* If you have an idea for an improvement or a bugfix, feel free to file an issue to be reviewed.
-
-Head to the [Architecture document](ARCHITECTURE.md) for some notes on project design to help you get started.
+* [Code of conduct](.github/CODE_OF_CONDUCT.md)
+* [Contributing guide](.github/CONTRIBUTING.md)
+* [Project Architecture](.github/ARCHITECTURE.md)
 
 ## Running
 
