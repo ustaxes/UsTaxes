@@ -24,7 +24,7 @@ export default function ContactInfo (): ReactElement {
 
   return (
     <PagerContext.Consumer>
-      {({ navButtons, onAdvance }) =>
+      { ({ navButtons, onAdvance }) =>
         <Box display="flex" justifyContent="center">
           <form onSubmit={handleSubmit(onSubmit(onAdvance))}>
             <Box display="flex" justifyContent="flex-start">
@@ -39,7 +39,6 @@ export default function ContactInfo (): ReactElement {
               defaultValue={taxPayer?.contactPhoneNumber}
               error={errors.contactPhoneNumber}
             />
-
             <LabeledInput
               label="Contact email address"
               register={register}
@@ -48,7 +47,6 @@ export default function ContactInfo (): ReactElement {
               defaultValue={taxPayer?.contactEmail}
               error={errors.contactEmail}
             />
-
             {navButtons}
           </form>
         </Box>

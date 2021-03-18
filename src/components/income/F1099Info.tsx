@@ -303,18 +303,20 @@ export default function F1099Info (): ReactElement {
   }
 
   return (
-    <PagerContext.Consumer>{({ onAdvance, navButtons }) =>
-      <Box display="flex" justifyContent="center">
-        <form onSubmit={onAdvance}>
-          <Box display="flex" justifyContent="flex-start">
-            <h2>1099 Information</h2>
-          </Box>
+    <PagerContext.Consumer>
+      { ({ onAdvance, navButtons }) =>
+        <Box display="flex" justifyContent="center">
+          <form onSubmit={onAdvance}>
+            <Box display="flex" justifyContent="flex-start">
+              <h2>1099 Information</h2>
+            </Box>
 
-          <List1099s />
-          {form}
-          { navButtons }
-        </form>
-      </Box>
-    }</PagerContext.Consumer>
+            <List1099s />
+            {form}
+            { navButtons }
+          </form>
+        </Box>
+      }
+    </PagerContext.Consumer>
   )
 }

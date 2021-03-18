@@ -98,55 +98,57 @@ export default function TaxPayerInfo (): ReactElement {
   })()
 
   return (
-    <PagerContext.Consumer>{({ navButtons, onAdvance }) =>
-      <Box display="flex" justifyContent="center">
-        <form onSubmit={handleSubmit(onSubmit(onAdvance))}>
-          <Box display="flex" justifyContent="flex-start">
-            <h2>Taxpayer Information</h2>
-          </Box>
+    <PagerContext.Consumer>
+      { ({ navButtons, onAdvance }) =>
+        <Box display="flex" justifyContent="center">
+          <form onSubmit={handleSubmit(onSubmit(onAdvance))}>
+            <Box display="flex" justifyContent="flex-start">
+              <h2>Taxpayer Information</h2>
+            </Box>
 
-          <h4>Primary Taxpayer Information</h4>
-          <PersonFields
-            register={register}
-            errors={errors}
-            defaults={taxPayer?.primaryPerson}
-          />
-          <LabeledInput
-            label="Address"
-            name="address.address"
-            register={register}
-            required={true}
-            error={errors.address?.address}
-            defaultValue={taxPayer?.primaryPerson?.address.address}
-          />
-          <LabeledInput
-            label="Unit No"
-            register={register}
-            name="address.aptNo"
-            required={false}
-            error={errors.address?.aptNo}
-            defaultValue={taxPayer?.primaryPerson?.address.aptNo}
-          />
-          <LabeledInput
-            label="City"
-            register={register}
-            name="address.city"
-            patternConfig={Patterns.name}
-            required={true}
-            error={errors.address?.city}
-            defaultValue={taxPayer?.primaryPerson?.address.city}
-          />
-          <LabeledCheckBox
-            label="Check if you have a foreign address"
-            control={control}
-            value={isForeignCountry}
-            setValue={updateForeignCountry}
-            name="isForeignCountry"
-          />
-          {csz}
-          {navButtons}
-        </form>
-      </Box>
-    }</PagerContext.Consumer>
+            <h4>Primary Taxpayer Information</h4>
+            <PersonFields
+              register={register}
+              errors={errors}
+              defaults={taxPayer?.primaryPerson}
+            />
+            <LabeledInput
+              label="Address"
+              name="address.address"
+              register={register}
+              required={true}
+              error={errors.address?.address}
+              defaultValue={taxPayer?.primaryPerson?.address.address}
+            />
+            <LabeledInput
+              label="Unit No"
+              register={register}
+              name="address.aptNo"
+              required={false}
+              error={errors.address?.aptNo}
+              defaultValue={taxPayer?.primaryPerson?.address.aptNo}
+            />
+            <LabeledInput
+              label="City"
+              register={register}
+              name="address.city"
+              patternConfig={Patterns.name}
+              required={true}
+              error={errors.address?.city}
+              defaultValue={taxPayer?.primaryPerson?.address.city}
+            />
+            <LabeledCheckBox
+              label="Check if you have a foreign address"
+              control={control}
+              value={isForeignCountry}
+              setValue={updateForeignCountry}
+              name="isForeignCountry"
+            />
+            {csz}
+            {navButtons}
+          </form>
+        </Box>
+      }
+    </PagerContext.Consumer>
   )
 }

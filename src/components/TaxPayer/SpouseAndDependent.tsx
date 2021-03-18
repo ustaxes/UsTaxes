@@ -121,22 +121,24 @@ export const SpouseInfo = (): ReactElement => {
 }
 
 const SpouseAndDependent = (): ReactElement => (
-  <PagerContext.Consumer>{ ({ onAdvance, navButtons }) =>
-    <Box display="flex" justifyContent="center">
-      <form onSubmit={onAdvance}>
-        <Box display="flex" justifyContent="flex-start">
-          <h2>Spouse Information</h2>
-        </Box>
-        <SpouseInfo />
-        <Box display="flex" justifyContent="flex-start">
-          <h2>Dependent Information</h2>
-        </Box>
-        <ListDependents />
-        <AddDependentForm />
-        {navButtons}
-      </form>
-    </Box>
-  }</PagerContext.Consumer>
+  <PagerContext.Consumer>
+    { ({ onAdvance, navButtons }) =>
+      <Box display="flex" justifyContent="center">
+        <form onSubmit={onAdvance}>
+          <Box display="flex" justifyContent="flex-start">
+            <h2>Spouse Information</h2>
+          </Box>
+          <SpouseInfo />
+          <Box display="flex" justifyContent="flex-start">
+            <h2>Dependent Information</h2>
+          </Box>
+          <ListDependents />
+          <AddDependentForm />
+          {navButtons}
+        </form>
+      </Box>
+    }
+  </PagerContext.Consumer>
 )
 
 export default SpouseAndDependent

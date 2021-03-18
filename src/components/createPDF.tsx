@@ -10,18 +10,20 @@ export default function CreatePDF (): ReactElement {
   }
 
   return (
-    <PagerContext.Consumer>{({ navButtons }) =>
-      <Box display="flex" justifyContent="center">
-        <form onSubmit={onSubmit}>
-          <div>
-            <Box display="flex" justifyContent="flex-start">
-              <h2>Print Copy to File</h2>
-            </Box>
+    <PagerContext.Consumer>
+      { ({ navButtons }) =>
+        <Box display="flex" justifyContent="center">
+          <form onSubmit={onSubmit}>
+            <div>
+              <Box display="flex" justifyContent="flex-start">
+                <h2>Print Copy to File</h2>
+              </Box>
 
-            {navButtons}
-          </div>
-        </form>
-      </Box>
-    }</PagerContext.Consumer>
+              {navButtons}
+            </div>
+          </form>
+        </Box>
+      }
+    </PagerContext.Consumer>
   )
 }

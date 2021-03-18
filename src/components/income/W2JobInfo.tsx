@@ -162,18 +162,20 @@ export default function W2JobInfo (): ReactElement {
   }
 
   return (
-    <PagerContext.Consumer>{({ navButtons, onAdvance }) =>
-      <Box display="flex" justifyContent="center">
-        <form onSubmit={onAdvance}>
-          <Box display="flex" justifyContent="flex-start">
-            <h2>Job Information</h2>
-          </Box>
+    <PagerContext.Consumer>
+      { ({ navButtons, onAdvance }) =>
+        <Box display="flex" justifyContent="center">
+          <form onSubmit={onAdvance}>
+            <Box display="flex" justifyContent="flex-start">
+              <h2>Job Information</h2>
+            </Box>
 
-          <ListW2s />
-          {form}
-          { navButtons }
-        </form>
-      </Box>
-    }</PagerContext.Consumer>
+            <ListW2s />
+            {form}
+            { navButtons }
+          </form>
+        </Box>
+      }
+    </PagerContext.Consumer>
   )
 }

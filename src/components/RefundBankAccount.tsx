@@ -40,55 +40,57 @@ export default function RefundBankAccount (): ReactElement {
   }
 
   return (
-    <PagerContext.Consumer>{ ({ onAdvance, navButtons }) =>
-      <Box display="flex" justifyContent="center">
-        <form onSubmit={handleSubmit(onSubmit(onAdvance))}>
-          <div>
-            <Box display="flex" justifyContent="flex-start">
-              <h2>Refund Information</h2>
-            </Box>
+    <PagerContext.Consumer>
+      { ({ onAdvance, navButtons }) =>
+        <Box display="flex" justifyContent="center">
+          <form onSubmit={handleSubmit(onSubmit(onAdvance))}>
+            <div>
+              <Box display="flex" justifyContent="flex-start">
+                <h2>Refund Information</h2>
+              </Box>
 
-            <LabeledInput
-              label="Bank Routing number"
-              register={register}
-              required={true}
-              patternConfig={Patterns.bankRouting}
-              name="routingNumber"
-              defaultValue={prevFormData?.routingNumber}
-              error={errors.routingNumber}
-            />
+              <LabeledInput
+                label="Bank Routing number"
+                register={register}
+                required={true}
+                patternConfig={Patterns.bankRouting}
+                name="routingNumber"
+                defaultValue={prevFormData?.routingNumber}
+                error={errors.routingNumber}
+              />
 
-            <LabeledInput
-              label="Bank Account number"
-              register={register}
-              required={true}
-              patternConfig={Patterns.bankAccount}
-              name="accountNumber"
-              defaultValue={prevFormData?.accountNumber}
-              error={errors.accountNumber}
-            />
-            <Box display="flex" justifyContent="flex-start">
-              <h4>Type</h4>
-            </Box>
-            <LabeledCheckBox
-              control={control}
-              name="isChecking"
-              value={isChecking}
-              setValue={updateChecking}
-              label="Checking"
-            />
-            <LabeledCheckBox
-              name="isSavings"
-              control={control}
-              value={!isChecking}
-              setValue={(v) => updateChecking(!v)}
-              label="Savings"
-            />
+              <LabeledInput
+                label="Bank Account number"
+                register={register}
+                required={true}
+                patternConfig={Patterns.bankAccount}
+                name="accountNumber"
+                defaultValue={prevFormData?.accountNumber}
+                error={errors.accountNumber}
+              />
+              <Box display="flex" justifyContent="flex-start">
+                <h4>Type</h4>
+              </Box>
+              <LabeledCheckBox
+                control={control}
+                name="isChecking"
+                value={isChecking}
+                setValue={updateChecking}
+                label="Checking"
+              />
+              <LabeledCheckBox
+                name="isSavings"
+                control={control}
+                value={!isChecking}
+                setValue={(v) => updateChecking(!v)}
+                label="Savings"
+              />
 
-            {navButtons}
-          </div>
-        </form>
-      </Box>
-    }</PagerContext.Consumer>
+              {navButtons}
+            </div>
+          </form>
+        </Box>
+      }
+    </PagerContext.Consumer>
   )
 }
