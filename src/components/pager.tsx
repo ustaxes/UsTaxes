@@ -2,31 +2,13 @@ import { Box, Button } from '@material-ui/core'
 import React, { ReactElement, useState } from 'react'
 import { Link, useHistory } from 'react-router-dom'
 
-/**
- * Create hook for a forward and back flow
- * This just keeps track of an array index based on a list of URLS
- * for pages a user would navigate through. This way the browser back
- * button can behave as expected based on the user's actual sequence of actions,
- * but a previous / next flow can be available as well for a sequence of screens.
- * @param pages a list of pages A
- * @param url gets a url out of a page A, starting with '/' (history.location.pathname)
- * @returns [previousPage, goToNextPage]
- */
-export const usePager = <A, >(pages: A[], url: (a: A) => string): [A | undefined, (() => void) | undefined] => {
+const makePager = <A, >(pages: A[], url: (a: A) => string, lookup: Map<string, number>): [A | undefined, (() => void) | undefined] => {
   const history = useHistory()
 
-  const navPage = (path: string): number | undefined => {
-    const found = pages.findIndex(p => url(p) === path)
-    if (found < 0) {
-      return undefined
-    }
-    return found
-  }
-
-  const [curPage, update] = useState(navPage(history.location.pathname) ?? 0)
+  const [curPage, update] = useState(lookup.get(history.location.pathname) ?? 0)
 
   history.listen((e) => {
-    const newPage = navPage(e.pathname)
+    const newPage = lookup.get(e.pathname)
 
     if (newPage !== undefined) {
       update(newPage)
@@ -86,3 +68,17 @@ export const PagerContext = React.createContext<PagerProps>({
   onAdvance: () => {},
   navButtons: <></>
 })
+
+/**
+ * Create hook for a forward and back flow
+ * This just keeps track of an array index based on a list of URLS
+ * for pages a user would navigate through. This way the browser back
+ * button can behave as expected based on the user's actual sequence of actions,
+ * but a previous / next flow can be available as well for a sequence of screens.
+ * @param pages a list of pages A
+ * @param url gets a url out of a page A, starting with '/' (history.location.pathname)
+ * @returns [previousPage, goToNextPage]
+ */
+export const usePager = <A, >(pages: A[], url: (a: A) => string): [A | undefined, (() => void) | undefined] => {
+  return makePager(pages, url, new Map(pages.map((p, i) => [url(p), i])))
+}
