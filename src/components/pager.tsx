@@ -19,9 +19,8 @@ export const usePager = <A, >(pages: A[], url: (a: A) => string): [A | undefined
     const found = pages.findIndex(p => url(p) === path)
     if (found < 0) {
       return undefined
-    } else {
-      return found
     }
+    return found
   }
 
   const [curPage, update] = useState(navPage(history.location.pathname) ?? 0)
@@ -36,10 +35,7 @@ export const usePager = <A, >(pages: A[], url: (a: A) => string): [A | undefined
 
   const forward: (() => void) | undefined = (() => {
     if (curPage < pages.length - 1) {
-      return () => {
-        history.push(pages[curPage + 1])
-        update(curPage + 1)
-      }
+      return () => history.push(url(pages[curPage + 1]))
     }
     return undefined
   })()

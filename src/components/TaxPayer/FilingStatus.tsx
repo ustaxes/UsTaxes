@@ -26,7 +26,7 @@ export default function FilingStatusSelect (): ReactElement {
     <PagerContext.Consumer>
       {({ onAdvance, navButtons }) =>
         <Box display="flex" justifyContent="center">
-          <form onSubmit={handleSubmit(onSubmit)}>
+          <form onSubmit={handleSubmit(onSubmit(onAdvance))}>
 
             <Box display="flex" justifyContent="flex-start">
               <h2>Filing Status</h2>

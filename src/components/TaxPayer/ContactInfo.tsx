@@ -26,7 +26,7 @@ export default function ContactInfo (): ReactElement {
     <PagerContext.Consumer>
       {({ navButtons, onAdvance }) =>
         <Box display="flex" justifyContent="center">
-          <form onSubmit={handleSubmit(onSubmit)}>
+          <form onSubmit={handleSubmit(onSubmit(onAdvance))}>
             <Box display="flex" justifyContent="flex-start">
               <h2>Family Contact Information</h2>
             </Box>

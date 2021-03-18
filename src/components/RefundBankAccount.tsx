@@ -42,7 +42,7 @@ export default function RefundBankAccount (): ReactElement {
   return (
     <PagerContext.Consumer>{ ({ onAdvance, navButtons }) =>
       <Box display="flex" justifyContent="center">
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <form onSubmit={handleSubmit(onSubmit(onAdvance))}>
           <div>
             <Box display="flex" justifyContent="flex-start">
               <h2>Refund Information</h2>
