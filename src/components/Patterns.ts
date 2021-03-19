@@ -36,7 +36,7 @@ export const Patterns: {[name: string]: PatternConfig} = {
   bankRouting: {
     mask: '999999999',
     regexp: /[0-9]{9}/,
-    description: 'Input should be filled with 10 digits'
+    description: 'Input should be filled with 9 digits'
   },
   usPhoneNumber: {
     mask: '999-999-9999',
