@@ -32,6 +32,10 @@ export interface PrimaryPerson extends Person {
   isTaxpayerDependent: boolean
 }
 
+export interface Spouse extends Person {
+  isTaxpayerDependent: boolean
+}
+
 export interface Employer {
   EIN: string
   employerName: string
@@ -131,7 +135,7 @@ export interface ContactInfo {
 export interface TaxPayer extends ContactInfo {
   filingStatus?: FilingStatus
   primaryPerson?: PrimaryPerson
-  spouse?: Person
+  spouse?: Spouse
   dependents: Dependent[]
 }
 
