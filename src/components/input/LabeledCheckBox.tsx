@@ -7,7 +7,7 @@ const useStyles = makeStyles((theme) => ({
   root: {
     display: 'flex',
     justifyContent: 'flex-start',
-    margin: theme.spacing(0, 3, 0, 0)
+    margin: theme.spacing(1, 3, 0, 0)
   }
 }))
 

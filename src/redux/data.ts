@@ -29,6 +29,7 @@ export interface Address {
 
 export interface PrimaryPerson extends Person {
   address: Address
+  isTaxpayerDependent: boolean
 }
 
 export interface Employer {
