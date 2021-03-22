@@ -77,8 +77,8 @@ export default class F1040 implements Form {
     this.province = tp.primaryPerson?.address.province
     this.postalCode = tp.primaryPerson?.address.postalCode
     this.virtualCurrency = false
-    this.claimDependentPrimary = false
-    this.claimDependentSpouse = false
+    this.claimDependentPrimary = Boolean(tp.primaryPerson?.isTaxpayerDependent)
+    this.claimDependentSpouse = Boolean(tp.spouse?.isTaxpayerDependent)
     this.dependents = tp.dependents
     this.w2s = []
     this.contactPhoneNumber = tp.contactPhoneNumber
