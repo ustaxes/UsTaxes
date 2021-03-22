@@ -53,7 +53,7 @@ export default function RefundBankAccount (): ReactElement {
                 label="Bank Routing number"
                 register={register}
                 required={true}
-                patternConfig={Patterns.bankRouting.get(control)}
+                patternConfig={Patterns.bankRouting(control)}
                 name="routingNumber"
                 defaultValue={prevFormData?.routingNumber}
                 error={errors.routingNumber}
@@ -63,7 +63,7 @@ export default function RefundBankAccount (): ReactElement {
                 label="Bank Account number"
                 register={register}
                 required={true}
-                patternConfig={Patterns.bankAccount.get(control)}
+                patternConfig={Patterns.bankAccount(control)}
                 name="accountNumber"
                 defaultValue={prevFormData?.accountNumber}
                 error={errors.accountNumber}

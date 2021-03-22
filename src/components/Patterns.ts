@@ -24,10 +24,7 @@ export interface NumericPattern extends PatternConfig<typeof InputType.numeric> 
 
 // Numeric patterns require the control property, which is not available now.
 // This allows us to generate numeric patterns at render time.
-interface PreNumeric {
-  inputType: InputType.preNumeric
-  get: (control: Control) => NumericPattern
-}
+type PreNumeric = (control: Control) => NumericPattern
 
 export type TextPattern = PatternConfig<typeof InputType.text>
 export type Pattern = NumericPattern | TextPattern
@@ -41,9 +38,8 @@ const numeric = (
   thousandSeparator: boolean = false,
   prefix: string = '',
   decimalScale: number | undefined = 0
-): PreNumeric => ({
-  inputType: InputType.preNumeric,
-  get: (control: Control) => ({
+): PreNumeric =>
+  (control: Control) => ({
     inputType: InputType.numeric,
     regexp,
     description,
@@ -54,7 +50,6 @@ const numeric = (
     prefix,
     control
   })
-})
 
 const text = (regexp: RegExp, description: string): TextPattern => ({
   inputType: InputType.text,

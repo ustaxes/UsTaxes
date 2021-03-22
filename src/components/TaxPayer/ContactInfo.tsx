@@ -34,7 +34,7 @@ export default function ContactInfo (): ReactElement {
               label="Contact phone number"
               register={register}
               required={true}
-              patternConfig={Patterns.usPhoneNumber.get(control)}
+              patternConfig={Patterns.usPhoneNumber(control)}
               name="contactPhoneNumber"
               defaultValue={taxPayer?.contactPhoneNumber}
               error={errors.contactPhoneNumber}

@@ -42,7 +42,6 @@ export function LabeledInput (props: LabeledInputProps): ReactElement {
               value={value}
               variant="filled"
               defaultValue={defaultValue}
-//              {...textFieldProps}
             />
           }
           control={patternConfig.control}
