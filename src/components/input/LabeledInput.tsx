@@ -41,11 +41,11 @@ export function LabeledInput (props: LabeledInputProps): ReactElement {
               onValueChange={(v) => onChange(v.value)}
               value={value}
               variant="filled"
-              defaultValue={defaultValue}
             />
           }
           control={patternConfig.control}
           name={name}
+          defaultValue={defaultValue}
         />
       )
     }
