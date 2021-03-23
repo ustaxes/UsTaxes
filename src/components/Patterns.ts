@@ -8,14 +8,13 @@ export enum InputType {
 
 export interface PatternConfig<A> {
   inputType: A
-  mask?: string
-  regexp?: RegExp
   description?: string
   format?: string
 }
 
 export interface NumericPattern extends PatternConfig<typeof InputType.numeric> {
   thousandSeparator?: boolean
+  mask?: string
   prefix?: string
   allowEmptyFormatting?: boolean
   decimalScale?: number
@@ -26,12 +25,14 @@ export interface NumericPattern extends PatternConfig<typeof InputType.numeric> 
 // This allows us to generate numeric patterns at render time.
 type PreNumeric = (control: Control) => NumericPattern
 
-export type TextPattern = PatternConfig<typeof InputType.text>
+export interface TextPattern extends PatternConfig<typeof InputType.text> {
+  regexp?: RegExp
+}
+
 export type Pattern = NumericPattern | TextPattern
 
 // Convenience record syntax constructor for numeric patterns
 const numeric = (
-  regexp: RegExp,
   description: string,
   format: (string | undefined) = undefined,
   mask: string = '_',
@@ -41,7 +42,6 @@ const numeric = (
 ): PreNumeric =>
   (control: Control) => ({
     inputType: InputType.numeric,
-    regexp,
     description,
     decimalScale,
     format,
@@ -59,11 +59,11 @@ const text = (regexp: RegExp, description: string): TextPattern => ({
 
 export const Patterns = {
   name: text(/^[A-Za-z ]+$/i, 'Input should only include letters and spaces'),
-  zip: numeric(/[0-9]{5}-[0-9]{4}/, 'Input should be filled with 9 digits', '#####-####'),
-  ssn: numeric(/[0-9]{3}-[0-9]{2}-[0-9]{4}/, 'Input should be filled with 9 digits', '###-##-####'),
-  ein: numeric(/[0-9]{2}-[0-9]{7}/, 'Input should be filled with 9 digits', '##-#######'),
-  currency: numeric(/^[1-9][0-9]*(\.[0-9]{1-2})?$/, 'Input should be a numeric value', undefined, '_', true, '$', 2),
-  bankAccount: numeric(/[0-9]{4,17}/, 'Input should be filled with 4-17 digits', '#################', ''),
-  bankRouting: numeric(/[0-9]{9}/, 'Input should be filled with 9 digits', '#########', '_'),
-  usPhoneNumber: numeric(/[0-9]{3}-[0-9]{3}-[0-9]{4}/, 'Input should be filled with 10 digits', '(###)-###-####')
+  zip: numeric('Input should be filled with 9 digits', '#####-####'),
+  ssn: numeric('Input should be filled with 9 digits', '###-##-####'),
+  ein: numeric('Input should be filled with 9 digits', '##-#######'),
+  currency: numeric('Input should be a numeric value', undefined, '_', true, '$', 2),
+  bankAccount: numeric('Input should be filled with 4-17 digits', '#################', ''),
+  bankRouting: numeric('Input should be filled with 9 digits', '#########', '_'),
+  usPhoneNumber: numeric('Input should be filled with 10 digits', '(###)-###-####')
 }

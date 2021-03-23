@@ -8,20 +8,10 @@ import { Controller } from 'react-hook-form'
 export function LabeledInput (props: LabeledInputProps): ReactElement {
   const { strongLabel, label, register, error, required = false, patternConfig = Patterns.name, name, defaultValue } = props
 
-  const textFieldProps = {
+  const baseFieldProps = {
     fullWidth: patternConfig?.format === undefined,
-    defaultValue: defaultValue,
     helperText: error?.message,
-    inputRef: register({
-      required: required ? 'Input is required' : undefined,
-      pattern: {
-        value: patternConfig.regexp ?? (required ? /.+/ : /.*/),
-        message: patternConfig.description ?? (required ? 'Input is required' : '')
-      }
-    }
-    ),
     error: error !== undefined,
-    name,
     variant: 'filled' as ('filled' | 'standard')
   }
 
@@ -37,20 +27,35 @@ export function LabeledInput (props: LabeledInputProps): ReactElement {
               allowEmptyFormatting={true}
               format={patternConfig.format}
               customInput={TextField}
-              isNumericString={true}
+              isNumericString={false}
               onValueChange={(v) => onChange(v.value)}
               value={value}
-              variant="filled"
+              {...baseFieldProps}
             />
           }
-          control={patternConfig.control}
           name={name}
+          control={patternConfig.control}
+          required={required}
           defaultValue={defaultValue}
         />
       )
     }
 
-    return <TextField {...textFieldProps} />
+    return (
+      <TextField
+        name={name}
+        required={required}
+        defaultValue={defaultValue}
+        inputRef={register({
+          required: required ? 'Input is required' : undefined,
+          pattern: {
+            value: patternConfig.regexp ?? (required ? /.+/ : /.*/),
+            message: patternConfig.description ?? (required ? 'Input is required' : '')
+          }
+        })}
+        {...baseFieldProps}
+      />
+    )
   })()
 
   return (
