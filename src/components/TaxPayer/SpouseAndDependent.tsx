@@ -52,6 +52,7 @@ export const AddDependentForm = (): ReactElement => {
         <PersonFields
           register={register}
           errors={errors}
+          person={null}
         />
         <LabeledInput
           label="Relationship to taxpayer"
@@ -76,43 +77,65 @@ export const AddDependentForm = (): ReactElement => {
 
 export const SpouseInfo = (): ReactElement => {
   const { register, errors, handleSubmit, getValues } = useForm<UserPersonForm>()
-  const [editSpouse, updateEditSpouse] = useState(false)
+  const [editSpouse, setEditSpouse] = useState<boolean>(false)
+  const [createSpouse, setCreateSpouse] = useState<boolean>(false)
   const dispatch = useDispatch()
 
   const spouse: Person | undefined = useSelector((state: TaxesState) => {
     return state.information.taxPayer?.spouse
   })
 
+  const onDisable = (): void => {
+    setCreateSpouse(false)
+    setEditSpouse(false)
+  }
+
   const onSubmit = (): void => {
-    updateEditSpouse(false)
+    setCreateSpouse(false)
+    setEditSpouse(false)
     dispatch(addSpouse(toSpouse(getValues())))
   }
 
-  if (editSpouse) {
+  if (createSpouse) {
     return (
       <FormContainer
         onDone={handleSubmit(onSubmit)}
-        onCancel={() => updateEditSpouse(false)}
+        onCancel={() => setCreateSpouse(false)}
       >
         <PersonFields
           register={register}
           errors={errors}
+          person={editSpouse ? spouse : null}
         />
       </FormContainer>
     )
-  } else if (spouse !== undefined) {
+  } else if (!editSpouse && spouse !== undefined) {
     return (
       <List dense={true}>
         <PersonListItem
           person={spouse}
+          edit={() => setEditSpouse(() => true)}
           remove={() => dispatch(removeSpouse)}
         />
       </List>
     )
+  } else if (editSpouse && spouse !== undefined) {
+    return (
+      <FormContainer
+        onDone={handleSubmit(onSubmit)}
+        onCancel={onDisable}
+      >
+        <PersonFields
+          register={register}
+          errors={errors}
+          person={spouse}
+        />
+      </FormContainer>
+    )
   } else {
     return (
       <Box display="flex" flexDirection="flex-start">
-        <Button type="button" onClick={() => updateEditSpouse(true)} variant="contained" color="secondary">
+        <Button type="button" onClick={() => setCreateSpouse(true)} variant="contained" color="secondary">
           Add
         </Button>
       </Box>
