@@ -7,6 +7,7 @@ import { Actions, removeDependent } from '../../redux/actions'
 import { TaxesState, Person } from '../../redux/data'
 import { BaseFormProps } from '../types'
 import DeleteIcon from '@material-ui/icons/Delete'
+import EditIcon from '@material-ui/icons/Edit'
 import ListItemText from '@material-ui/core/ListItemText'
 import PersonIcon from '@material-ui/icons/Person'
 import { DeepMap, FieldError } from 'react-hook-form'
@@ -15,9 +16,10 @@ interface PersonFieldsProps<T extends Person> extends BaseFormProps {
   defaults?: T
   children?: ReactNode
   errors: DeepMap<Partial<Person>, FieldError>
+  person?: Person | null | undefined
 }
 
-export const PersonFields = <T extends Person>({ register, errors, defaults, children }: PersonFieldsProps<T>): ReactElement => (
+export const PersonFields = <T extends Person>({ register, errors, defaults, children, person }: PersonFieldsProps<T>): ReactElement => (
   <div>
     <LabeledInput
       label="First Name and Initial"
@@ -26,7 +28,7 @@ export const PersonFields = <T extends Person>({ register, errors, defaults, chi
       patternConfig={Patterns.name}
       required={true}
       error={errors.firstName}
-      defaultValue={defaults?.firstName}
+      defaultValue={(person !== null) ? person?.firstName : defaults?.firstName}
     />
     <LabeledInput
       label="Last Name"
@@ -35,7 +37,7 @@ export const PersonFields = <T extends Person>({ register, errors, defaults, chi
       patternConfig={Patterns.name}
       required={true}
       error={errors.lastName}
-      defaultValue={defaults?.lastName}
+      defaultValue={(person !== null) ? person?.lastName : defaults?.lastName}
     />
     <LabeledInput
       label="SSN / TIN"
@@ -44,7 +46,7 @@ export const PersonFields = <T extends Person>({ register, errors, defaults, chi
       patternConfig={Patterns.ssn}
       required={true}
       error={errors.ssid}
-      defaultValue={defaults?.ssid}
+      defaultValue={(person !== null) ? person?.ssid : defaults?.ssid}
     />
     {children}
   </div>
@@ -53,9 +55,10 @@ export const PersonFields = <T extends Person>({ register, errors, defaults, chi
 interface PersonListItemProps {
   person: Person
   remove: () => void
+  edit?: () => void
 }
 
-export const PersonListItem = ({ person, remove }: PersonListItemProps): ReactElement => (
+export const PersonListItem = ({ person, remove, edit }: PersonListItemProps): ReactElement => (
   <ListItem>
     <ListItemIcon>
       <PersonIcon />
@@ -64,6 +67,11 @@ export const PersonListItem = ({ person, remove }: PersonListItemProps): ReactEl
       primary={`${person.firstName} ${person.lastName}`}
       secondary={person.ssid}
     />
+    <ListItemIcon>
+      <IconButton onClick={edit} edge="end" aria-label="edit">
+        <EditIcon />
+      </IconButton>
+    </ListItemIcon>
     <ListItemSecondaryAction>
       <IconButton onClick={remove} edge="end" aria-label="delete">
         <DeleteIcon />
