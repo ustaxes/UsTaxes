@@ -80,11 +80,9 @@ describe('SpouseInfo', () => {
 
     userEvent.type(firstNameInput, 'Sally K')
     userEvent.type(lastNameInput, 'Ride')
-    userEvent.type(ssidInput, '111111111')
+    fireEvent.change(ssidInput, { target: { value: '123456789' } })
 
-    act(() => {
-      fireEvent.click(createButton)
-    })
+    fireEvent.click(createButton)
 
     await screen.findByText('Sally K Ride')
   })

@@ -23,6 +23,7 @@ export const PersonFields = <T extends Person>({ register, errors, defaults, chi
   <div>
     <LabeledInput
       label="First Name and Initial"
+      aria-label="First Name and Initial"
       register={register}
       name="firstName"
       patternConfig={Patterns.name}
@@ -32,6 +33,7 @@ export const PersonFields = <T extends Person>({ register, errors, defaults, chi
     />
     <LabeledInput
       label="Last Name"
+      aria-label="Last Name"
       register={register}
       name="lastName"
       patternConfig={Patterns.name}
@@ -41,6 +43,7 @@ export const PersonFields = <T extends Person>({ register, errors, defaults, chi
     />
     <LabeledInput
       label="SSN / TIN"
+      aria-label="Social Security Number or Tax Identification Number"
       register={register}
       name="ssid"
       patternConfig={Patterns.ssn}
