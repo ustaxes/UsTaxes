@@ -75,7 +75,7 @@ const drawerSections: Section[] = [
   }
 ]
 
-const allUrls: string[] = (
+export const allUrls: string[] = (
   drawerSections
     .flatMap((section: Section) => section.items)
     .map((item) => item[1])
