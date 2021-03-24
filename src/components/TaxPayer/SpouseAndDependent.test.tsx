@@ -1,23 +1,29 @@
-import React, { ReactElement } from 'react'
+import React from 'react'
 import { render, screen } from '@testing-library/react'
 import { Provider } from 'react-redux'
 
-import SpouseAndDependent from './SpouseAndDependent'
+import { SpouseInfo } from './SpouseAndDependent'
 import { store } from '../../redux/store'
-import { PagerButtons, usePager } from '../pager'
-import { allUrls } from '../Main'
 
-describe('SpouseAndDependent', () => {
-  it('renders with expected form labels and inputs', () => {
-    const [, forward, prevUrl] = usePager(allUrls)
-
-    const firstStepButtons: ReactElement = <PagerButtons previousUrl={prevUrl} submitText="Save and Continue" />
+describe('SpouseInfo', () => {
+  it('renders an `Add` button when no spouse has been added', () => {
     render(
     <Provider store={store}>
-      <SpouseAndDependent onAdvance={forward} navButtons={firstStepButtons} />
+      <SpouseInfo />
     </Provider>
     )
 
-    screen.getByText('Spouse Information')
+    screen.getByRole('button', {
+      name: /Add/
+    })
+
+    const firstNameLabel = screen.queryByLabelText('First Name and Initial')
+    expect(firstNameLabel).not.toBeInTheDocument()
+
+    const lastNameLabel = screen.queryByLabelText('Last Name')
+    expect(lastNameLabel).not.toBeInTheDocument()
+
+    const ssnLabel = screen.queryByLabelText('SSN / TIN')
+    expect(ssnLabel).not.toBeInTheDocument()
   })
 })
