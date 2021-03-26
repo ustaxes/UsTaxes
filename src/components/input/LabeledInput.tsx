@@ -30,13 +30,22 @@ export function LabeledInput (props: LabeledInputProps): ReactElement {
               isNumericString={false}
               onValueChange={(v) => onChange(v.value)}
               value={value}
-              {...baseFieldProps}
+              error={error !== undefined}
+              helperText={error?.message}
+              variant="filled"
             />
           }
           name={name}
           control={patternConfig.control}
           required={required}
           defaultValue={defaultValue}
+          rules={{
+            required: required ? 'Input is required' : undefined,
+            pattern: {
+              value: patternConfig.regexp ?? (required ? /.+/ : /.*/),
+              message: patternConfig.description ?? (required ? 'Input is required' : '')
+            }
+          }}
         />
       )
     }
