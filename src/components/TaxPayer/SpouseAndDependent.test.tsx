@@ -1,11 +1,14 @@
 import React from 'react'
-import { render, screen, fireEvent } from '@testing-library/react'
+import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { Provider } from 'react-redux'
 import userEvent from '@testing-library/user-event'
 
 import { SpouseInfo } from './SpouseAndDependent'
 import { store } from '../../redux/store'
-import { act } from 'react-dom/test-utils'
+
+afterEach(async () => {
+  await waitFor(() => localStorage.clear())
+})
 
 describe('SpouseInfo', () => {
   it('renders an `Add` button when no spouse has been added', () => {
@@ -85,5 +88,19 @@ describe('SpouseInfo', () => {
     fireEvent.click(createButton)
 
     await screen.findByText('Sally K Ride')
+    screen.getByText('123456789')
+
+    const editButton = screen.getByLabelText('edit')
+
+    fireEvent.click(editButton)
+
+    expect(editButton).not.toBeInTheDocument()
+
+    const filledInputs = await screen.findAllByRole('textbox')
+    const [filledFirstName, filledLastName, filledSsid] = filledInputs as HTMLInputElement[]
+
+    expect(filledFirstName.value).toBe('Sally K')
+    expect(filledLastName.value).toBe('Ride')
+    expect(filledSsid.value).toBe('123-45-6789')
   })
 })
