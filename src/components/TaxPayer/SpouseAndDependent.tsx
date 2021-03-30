@@ -61,12 +61,12 @@ export const AddDependentForm = (): ReactElement => {
         <PersonFields
           register={register}
           errors={errors}
+          control={control}
         />
         <LabeledInput
           label="Relationship to taxpayer"
           register={register}
           name="relationship"
-          patternConfig={Patterns.name}
           required={true}
           error={errors.relationship}
         />
@@ -98,7 +98,7 @@ export const AddDependentForm = (): ReactElement => {
 }
 
 export const SpouseInfo = (): ReactElement => {
-  const { register, errors, handleSubmit, getValues } = useForm<UserPersonForm>()
+  const { register, control, errors, handleSubmit, getValues } = useForm<UserPersonForm>()
   const [editSpouse, updateEditSpouse] = useState(false)
   const dispatch = useDispatch()
 
@@ -120,6 +120,7 @@ export const SpouseInfo = (): ReactElement => {
         <PersonFields
           register={register}
           errors={errors}
+          control={control}
         />
       </FormContainer>
     )
