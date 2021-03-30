@@ -131,4 +131,72 @@ describe('SpouseInfo', () => {
 
     expect(inputsAfterDelete).toHaveLength(0)
   })
+  it('does not save when required fields not completed', async () => {
+    render(
+    <Provider store={store}>
+      <SpouseInfo />
+    </Provider>
+    )
+
+    const addButton = screen.getByRole('button', {
+      name: /Add/
+    })
+
+    fireEvent.click(addButton)
+
+    const createButton = screen.getByRole('button', {
+      name: /Add/
+    })
+
+    screen.getByRole('button', {
+      name: /Close/
+    })
+
+    const inputs = screen.getAllByRole('textbox')
+    const [firstNameInput, lastNameInput, ssidInput] = inputs
+
+    fireEvent.click(createButton)
+
+    const nameErrors = await screen.findAllByText('Input is required')
+    expect(nameErrors).toHaveLength(2)
+    screen.getByText('Input should be filled with 9 numbers')
+
+    userEvent.type(firstNameInput, 'Sally K')
+    fireEvent.click(createButton)
+
+    await waitFor(() => {})
+    const nameErrorsAfterAddingFirstName = await screen.findAllByText('Input is required')
+    expect(nameErrorsAfterAddingFirstName).toHaveLength(1)
+    screen.getByText('Input should be filled with 9 numbers')
+
+    userEvent.type(lastNameInput, 'Ride')
+    fireEvent.click(createButton)
+
+    await screen.findByText('Input should be filled with 9 numbers')
+    const lastNameError = screen.queryByText('Input is required')
+
+    expect(lastNameError).not.toBeInTheDocument()
+
+    fireEvent.change(ssidInput, { target: { value: '123456789' } })
+    fireEvent.click(createButton)
+
+    await screen.findByText('Sally K Ride')
+    screen.getByText('123456789')
+
+    const ssidError = screen.queryByText('Input should be filled with 9 numbers')
+
+    expect(ssidError).not.toBeInTheDocument()
+
+    const deleteButton = screen.getByLabelText('delete')
+
+    fireEvent.click(deleteButton)
+
+    screen.getByRole('button', {
+      name: /Add/
+    })
+
+    const inputsAfterDelete = screen.queryAllByRole('textbox')
+
+    expect(inputsAfterDelete).toHaveLength(0)
+  })
 })
