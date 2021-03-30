@@ -4,7 +4,6 @@ import { useForm } from 'react-hook-form'
 import { Box, Button, List } from '@material-ui/core'
 import { useDispatch, useSelector } from 'react-redux'
 import { LabeledInput, LabeledCheckBox } from '../input'
-import { Patterns } from '../Patterns'
 import { TaxesState, Dependent, Person, PersonRole } from '../../redux/data'
 import { addDependent, addSpouse, removeSpouse } from '../../redux/actions'
 import { ListDependents, PersonFields, PersonListItem } from './PersonFields'
@@ -34,7 +33,7 @@ const toSpouse = (formData: UserPersonForm): Person => ({
 })
 
 export const AddDependentForm = (): ReactElement => {
-  const { register, errors, handleSubmit, getValues, reset, control } = useForm<UserDependentForm>({ defaultValues: { isQualifiedForChildTaxCredit: false, isQualifiedForOtherDependentTaxCredit: false } })
+  const { register, control, errors, handleSubmit, getValues, reset } = useForm<UserDependentForm>({ defaultValues: { isQualifiedForChildTaxCredit: false, isQualifiedForOtherDependentTaxCredit: false } })
 
   const [addingDependent, newDependent] = useState(false)
 
