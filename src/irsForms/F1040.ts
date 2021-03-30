@@ -1,8 +1,11 @@
 import { AccountType, Dependent, FilingStatus, IncomeW2, PersonRole, Refund, TaxPayer } from '../redux/data'
 import F4972 from './F4972'
+import F5695 from './F5695'
 import F8814 from './F8814'
 import Schedule8863 from './F8863'
 import F8888 from './F8888'
+import F8910 from './F8910'
+import F8936 from './F8936'
 import F8995 from './F8995'
 import F8995A from './F8995A'
 import Schedule1 from './Schedule1'
@@ -12,11 +15,13 @@ import Schedule8812 from './Schedule8812'
 import ScheduleA from './ScheduleA'
 import ScheduleD from './ScheduleD'
 import ScheduleEIC from './ScheduleEIC'
+import ScheduleR from './ScheduleR'
 import Form from './Form'
 import { displayNumber, computeField, sumFields } from './util'
 import ScheduleB from './ScheduleB'
 import { computeOrdinaryTax } from './TaxTable'
 import SDQualifiedAndCapGains from './worksheets/SDQualifiedAndCapGains'
+import ChildTaxCreditWorksheet from './worksheets/ChildTaxCreditWorksheet'
 
 export default class F1040 implements Form {
   // intentionally mirroring many fields from the state,
@@ -53,12 +58,18 @@ export default class F1040 implements Form {
   scheduleB?: ScheduleB
   scheduleD?: ScheduleD
   scheduleEIC?: ScheduleEIC
+  scheduleR?: ScheduleR
   schedule8812?: Schedule8812
   schedule8863?: Schedule8863
   f4972?: F4972
+  f5695?: F5695
   f8814?: F8814
   f8888?: F8888
+  f8910?: F8910
+  f8936?: F8936
   f8995?: F8995 | F8995A
+
+  ChildTaxCreditWorksheet?: ChildTaxCreditWorksheet
 
   constructor (tp: TaxPayer) {
     this.filingStatus = tp.filingStatus
@@ -83,6 +94,7 @@ export default class F1040 implements Form {
     this.w2s = []
     this.contactPhoneNumber = tp.contactPhoneNumber
     this.contactEmail = tp.contactEmail
+    this.ChildTaxCreditWorksheet = new ChildTaxCreditWorksheet(this)
   }
 
   addW2 (w2: IncomeW2): void {
@@ -265,7 +277,7 @@ export default class F1040 implements Form {
   )
 
   // TODO
-  l19 = (): number | undefined => undefined
+  l19 = (): number | undefined => computeField(this.ChildTaxCreditWorksheet?.l12())
   l20 = (): number | undefined => this.schedule3?.l7()
   l21 = (): number | undefined => displayNumber(
     sumFields([this.l19(), this.l20()])
