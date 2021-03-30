@@ -59,11 +59,11 @@ const text = (regexp: RegExp, description: string): TextPattern => ({
 
 export const Patterns = {
   name: text(/^[A-Za-z ]+$/i, 'Input should only include letters and spaces'),
-  zip: numeric(/[0-9]{9}/, 'Input should be filled with 9 digits', '#####-####'),
+  zip: numeric(/[0-9]{5}([0-9]{4})?/, 'Input should be filled with 5 or 9 digits', '#####-####'),
   ssn: numeric(/[0-9]{9}/, 'Input should be filled with 9 digits', '###-##-####'),
   ein: numeric(/[0-9]{9}/, 'Input should be filled with 9 digits', '##-#######'),
   currency: numeric(/[1-9][0-9]+(\.[0-9]{1,2})?/, 'Input should be a numeric value', undefined, '_', true, '$', 2),
   bankAccount: numeric(/[0-9]{4,17}/, 'Input should be filled with 4-17 digits', '#################', ''),
   bankRouting: numeric(/[0-9]{9}/, 'Input should be filled with 9 digits', '#########', '_'),
-  usPhoneNumber: numeric(/[0-9]{10}/, 'Input should be filled with 10 digits', '(###)-###-####')
+  usPhoneNumber: numeric(/[2-9][0-9]{9}/, 'Input should be 10 digits, not starting with 0 or 1', '(###)-###-####')
 }
