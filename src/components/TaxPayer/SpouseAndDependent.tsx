@@ -47,8 +47,8 @@ export const AddDependentForm = (): ReactElement => {
     dispatch(addDependent(toDependent(getValues())))
     newDependent(false)
     reset()
-    //I tried to do this with reset() but couldn't get it to work.
-    //But this works so the credit statuses don't carry over
+    // I tried to do this with reset() but couldn't get it to work.
+    // But this works so the credit statuses don't carry over
     updateQualifiedForChildTaxCredit(false)
     updateQualifiedForOtherDependentTaxCredit(false)
   }
