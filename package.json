@@ -6,7 +6,7 @@
     "@material-ui/core": "^4.11.3",
     "@material-ui/icons": "^4.11.2",
     "ajv": "^6.12.6",
-    "ajv7": "npm:ajv@^7.2.1",
+    "ajv-latest": "npm:ajv@^8.0.1",
     "node-fetch": "^2.6.1",
     "pdf-lib": "^1.16.0",
     "react": "^17.0.1",
