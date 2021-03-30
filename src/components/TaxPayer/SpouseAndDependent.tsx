@@ -3,7 +3,7 @@ import React, { ReactElement, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { Box, Button, List } from '@material-ui/core'
 import { useDispatch, useSelector } from 'react-redux'
-import { LabeledInput } from '../input'
+import { LabeledInput, LabeledCheckBox } from '../input'
 import { Patterns } from '../Patterns'
 import { TaxesState, Dependent, Person, PersonRole } from '../../redux/data'
 import { addDependent, addSpouse, removeSpouse } from '../../redux/actions'
@@ -19,6 +19,8 @@ interface UserPersonForm {
 
 interface UserDependentForm extends UserPersonForm {
   relationship: string
+  isQualifiedForChildTaxCredit: boolean
+  isQualifiedForOtherDependentTaxCredit: boolean
 }
 
 const toDependent = (formData: UserDependentForm): Dependent => ({
@@ -32,11 +34,14 @@ const toSpouse = (formData: UserPersonForm): Person => ({
 })
 
 export const AddDependentForm = (): ReactElement => {
-  const { register, errors, handleSubmit, getValues, reset } = useForm<UserDependentForm>()
+  const { register, errors, handleSubmit, getValues, reset, control } = useForm<UserDependentForm>()
 
   const [addingDependent, newDependent] = useState(false)
 
   const dispatch = useDispatch()
+
+  const [isQualifiedForChildTaxCredit, updateQualifiedForChildTaxCredit] = useState(false)
+  const [isQualifiedForOtherDependentTaxCredit, updateQualifiedForOtherDependentTaxCredit] = useState(false)
 
   const onSubmit = (): void => {
     dispatch(addDependent(toDependent(getValues())))
@@ -60,6 +65,20 @@ export const AddDependentForm = (): ReactElement => {
           patternConfig={Patterns.name}
           required={true}
           error={errors.relationship}
+        />
+        <LabeledCheckBox
+          control={control}
+          name="isQualifiedForChildTaxCredit"
+          value={isQualifiedForChildTaxCredit}
+          setValue={updateQualifiedForChildTaxCredit}
+          label="Qualfies for Child Tax Credit"
+        />
+        <LabeledCheckBox
+          name="isQualifiedForOtherDependentTaxCredit"
+          control={control}
+          value={isQualifiedForOtherDependentTaxCredit}
+          setValue={updateQualifiedForOtherDependentTaxCredit}
+          label="Qualfies for Credit for Other Dependents"
         />
       </FormContainer>
     )
