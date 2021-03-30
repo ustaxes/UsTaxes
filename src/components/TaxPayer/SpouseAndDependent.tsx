@@ -34,7 +34,7 @@ const toSpouse = (formData: UserPersonForm): Person => ({
 })
 
 export const AddDependentForm = (): ReactElement => {
-  const { register, errors, handleSubmit, getValues, reset, control } = useForm<UserDependentForm>()
+  const { register, errors, handleSubmit, getValues, reset, control } = useForm<UserDependentForm>({ defaultValues: { isQualifiedForChildTaxCredit: false, isQualifiedForOtherDependentTaxCredit: false } })
 
   const [addingDependent, newDependent] = useState(false)
 
@@ -45,7 +45,12 @@ export const AddDependentForm = (): ReactElement => {
 
   const onSubmit = (): void => {
     dispatch(addDependent(toDependent(getValues())))
+    newDependent(false)
     reset()
+    //I tried to do this with reset() but couldn't get it to work.
+    //But this works so the credit statuses don't carry over
+    updateQualifiedForChildTaxCredit(false)
+    updateQualifiedForOtherDependentTaxCredit(false)
   }
 
   if (addingDependent) {

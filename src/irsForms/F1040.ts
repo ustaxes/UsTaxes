@@ -362,7 +362,6 @@ export default class F1040 implements Form {
 
     if (depIdx < deps.length) {
       const dep = deps[depIdx]
-      console.log(dep.isQualifiedForChildTaxCredit)
       // Based on the PDF column, select the correct field
       fieldArr = [`${dep.firstName} ${dep.lastName}`, dep.ssid, dep.relationship, Boolean(dep.isQualifiedForChildTaxCredit), Boolean(dep.isQualifiedForOtherDependentTaxCredit)]
     }
