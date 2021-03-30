@@ -9,7 +9,7 @@ import { ContactInfo as Contact, TaxesState, TaxPayer } from '../../redux/data'
 import { PagerContext } from '../pager'
 
 export default function ContactInfo (): ReactElement {
-  const { register, handleSubmit, errors } = useForm<Contact>()
+  const { register, handleSubmit, errors, control } = useForm<Contact>()
   // const variable dispatch to allow use inside function
   const dispatch = useDispatch()
 
@@ -34,7 +34,7 @@ export default function ContactInfo (): ReactElement {
               label="Contact phone number"
               register={register}
               required={true}
-              patternConfig={Patterns.usPhoneNumber}
+              patternConfig={Patterns.usPhoneNumber(control)}
               name="contactPhoneNumber"
               defaultValue={taxPayer?.contactPhoneNumber}
               error={errors.contactPhoneNumber}
