@@ -8,6 +8,7 @@ import { store } from '../../redux/store'
 
 afterEach(async () => {
   await waitFor(() => localStorage.clear())
+  jest.resetAllMocks()
 })
 
 describe('SpouseInfo', () => {
@@ -56,8 +57,7 @@ describe('SpouseInfo', () => {
       name: /Close/
     })
   })
-
-  it('saves a spouse when all fields are entered', async () => {
+  it('saves and edits a spouse', async () => {
     render(
     <Provider store={store}>
       <SpouseInfo />
@@ -102,5 +102,33 @@ describe('SpouseInfo', () => {
     expect(filledFirstName.value).toBe('Sally K')
     expect(filledLastName.value).toBe('Ride')
     expect(filledSsid.value).toBe('123-45-6789')
+
+    filledFirstName.setSelectionRange(0, 7)
+    filledLastName.setSelectionRange(0, 4)
+
+    userEvent.type(filledFirstName, '{del}Bobby')
+    userEvent.type(filledLastName, '{del}DeNiro')
+    fireEvent.change(filledSsid, { target: { value: '987654321' } })
+
+    await waitFor(() => {})
+
+    fireEvent.click(screen.getByRole('button', {
+      name: /Add/
+    }))
+
+    await screen.findByText('Bobby DeNiro')
+    screen.getByText('987654321')
+
+    const deleteButton = screen.getByLabelText('delete')
+
+    fireEvent.click(deleteButton)
+
+    screen.getByRole('button', {
+      name: /Add/
+    })
+
+    const inputsAfterDelete = screen.queryAllByRole('textbox')
+
+    expect(inputsAfterDelete).toHaveLength(0)
   })
 })
