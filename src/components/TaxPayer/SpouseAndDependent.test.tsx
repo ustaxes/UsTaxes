@@ -18,11 +18,12 @@ describe('SpouseInfo', () => {
       <SpouseInfo />
     </Provider>
     )
-
+    // initial state has an add button
     screen.getByRole('button', {
       name: /Add/
     })
 
+    // initial state does not have any forms or labels
     const firstNameLabel = screen.queryByLabelText('First Name and Initial')
     expect(firstNameLabel).not.toBeInTheDocument()
 
@@ -45,6 +46,7 @@ describe('SpouseInfo', () => {
 
     fireEvent.click(addButton)
 
+    // forms and labels appear after clicking the add button
     screen.getByText('First Name and Initial')
     screen.getByText('Last Name')
     screen.getByText('SSN / TIN')
@@ -78,57 +80,70 @@ describe('SpouseInfo', () => {
       name: /Close/
     })
 
+    // get all three text inputs
     const inputs = screen.getAllByRole('textbox')
     const [firstNameInput, lastNameInput, ssidInput] = inputs
 
+    // add values for each input
     userEvent.type(firstNameInput, 'Sally K')
     userEvent.type(lastNameInput, 'Ride')
     fireEvent.change(ssidInput, { target: { value: '123456789' } })
 
+    // click the create button
     fireEvent.click(createButton)
 
+    // expect first and last name to be concatenated
     await screen.findByText('Sally K Ride')
+    // expect ssid to appear without hyphens
     screen.getByText('123456789')
 
     const editButton = screen.getByLabelText('edit')
 
+    // click the edit button
     fireEvent.click(editButton)
 
-    expect(editButton).not.toBeInTheDocument()
-
+    // get all the inputs again, which should be filled this time
     const filledInputs = await screen.findAllByRole('textbox')
     const [filledFirstName, filledLastName, filledSsid] = filledInputs as HTMLInputElement[]
 
+    // expect the edit button to no longer be in the document
+    expect(editButton).not.toBeInTheDocument()
+
+    // assert that the input values match what was entered
     expect(filledFirstName.value).toBe('Sally K')
     expect(filledLastName.value).toBe('Ride')
     expect(filledSsid.value).toBe('123-45-6789')
 
-    filledFirstName.setSelectionRange(0, 7)
-    filledLastName.setSelectionRange(0, 4)
-
-    userEvent.type(filledFirstName, '{del}Bobby')
-    userEvent.type(filledLastName, '{del}DeNiro')
+    // delete the old values and add new ones
+    userEvent.type(filledFirstName, '{selectall}{del}Fella')
+    userEvent.type(filledLastName, '{selectall}{del}McGee')
     fireEvent.change(filledSsid, { target: { value: '987654321' } })
 
+    // wait for redux-persist to do some async stuff
     await waitFor(() => {})
 
+    // click the add button to save the new values
     fireEvent.click(screen.getByRole('button', {
       name: /Add/
     }))
 
-    await screen.findByText('Bobby DeNiro')
+    // expect the new names to be concatenated and new ssid to appear without hyphens
+    await screen.findByText('Fella McGee')
     screen.getByText('987654321')
 
     const deleteButton = screen.getByLabelText('delete')
 
+    // click the delete button
     fireEvent.click(deleteButton)
 
+    // the add button is back
     screen.getByRole('button', {
       name: /Add/
     })
 
     const inputsAfterDelete = screen.queryAllByRole('textbox')
 
+    // expect input fields to not be in the document
     expect(inputsAfterDelete).toHaveLength(0)
   })
   it('does not save when required fields not completed', async () => {
@@ -152,43 +167,82 @@ describe('SpouseInfo', () => {
       name: /Close/
     })
 
+    // get all inputs
     const inputs = screen.getAllByRole('textbox')
     const [firstNameInput, lastNameInput, ssidInput] = inputs
 
+    // click the add button with empty inputs
     fireEvent.click(createButton)
 
+    // expect two `Input is required` errors and one ssid error
     const nameErrors = await screen.findAllByText('Input is required')
     expect(nameErrors).toHaveLength(2)
     screen.getByText('Input should be filled with 9 numbers')
 
-    userEvent.type(firstNameInput, 'Sally K')
+    // fill in the first name incorrectly
+    userEvent.type(firstNameInput, 'F$LF(#)& ##3')
     fireEvent.click(createButton)
 
+    // expect an input error, an error about restricted characters, and the ssid error
+    await waitFor(() => {})
+    const nameErrorsAfterBadFirstName = await screen.findAllByText('Input is required')
+    expect(nameErrorsAfterBadFirstName).toHaveLength(1)
+    screen.getByText('Input should only include letters and spaces')
+    screen.getByText('Input should be filled with 9 numbers')
+
+    // fill in the first name correctly
+    userEvent.type(firstNameInput, '{selectall}{del}Sally K')
+    fireEvent.click(createButton)
+
+    // expect one name error and the ssid error
     await waitFor(() => {})
     const nameErrorsAfterAddingFirstName = await screen.findAllByText('Input is required')
     expect(nameErrorsAfterAddingFirstName).toHaveLength(1)
     screen.getByText('Input should be filled with 9 numbers')
 
-    userEvent.type(lastNameInput, 'Ride')
+    // add a name with restricted characters
+    userEvent.type(lastNameInput, 'R5$%84')
     fireEvent.click(createButton)
 
+    // expect an error about restricted characters, and the ssid error
+    await waitFor(() => {})
+    const nameErrorsAfterBadLastName = await screen.queryAllByText('Input is required')
+    expect(nameErrorsAfterBadLastName).toHaveLength(0)
+    screen.getByText('Input should only include letters and spaces')
+    screen.getByText('Input should be filled with 9 numbers')
+
+    // correctly enter a last name
+    userEvent.type(lastNameInput, '{selectall}{del}Ride')
+    fireEvent.click(createButton)
+
+    // only the ssid error remains
     await screen.findByText('Input should be filled with 9 numbers')
     const lastNameError = screen.queryByText('Input is required')
-
     expect(lastNameError).not.toBeInTheDocument()
 
+    // incorrectly enter ssid
+    fireEvent.change(ssidInput, { target: { value: 'abc456789' } })
+    fireEvent.click(createButton)
+
+    // expect ssid error to remain
+    await waitFor(() => {})
+    await screen.findByText('Input should be filled with 9 numbers')
+
+    // clear ssid and add a valid value
+    fireEvent.change(ssidInput, { target: { value: '' } })
     fireEvent.change(ssidInput, { target: { value: '123456789' } })
     fireEvent.click(createButton)
 
+    // expect saved values to be formatted correctly
     await screen.findByText('Sally K Ride')
     screen.getByText('123456789')
 
+    // expect ssid error to be gone
     const ssidError = screen.queryByText('Input should be filled with 9 numbers')
-
     expect(ssidError).not.toBeInTheDocument()
 
+    // delete the entry
     const deleteButton = screen.getByLabelText('delete')
-
     fireEvent.click(deleteButton)
 
     screen.getByRole('button', {
