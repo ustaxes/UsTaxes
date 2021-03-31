@@ -7,8 +7,8 @@ import {
 } from 'react-router-dom'
 import W2JobInfo from './income/W2JobInfo'
 import CreatePDF from './createPDF'
-import ResponsiveDrawer, { Section } from './ResponsiveDrawer'
-import { PagerButtons, usePager } from './pager'
+import ResponsiveDrawer, { item, Section, SectionItem } from './ResponsiveDrawer'
+import { PagerButtons, PagerContext, usePager } from './pager'
 import TaxPayerInfo from './TaxPayer'
 import RefundBankAccount from './RefundBankAccount'
 import SpouseAndDependent from './TaxPayer/SpouseAndDependent'
@@ -46,77 +46,61 @@ const Urls = {
     w2s: '/income/w2jobinfo',
     f1099s: '/income/f1099s'
   },
-  createPdf: '/createpdf'
+  createPdf: '/createpdf',
+  default: ''
 }
+Urls.default = Urls.taxPayer.info
 
 const drawerSections: Section[] = [
   {
     title: 'Personal',
     items: [
-      ['Taxpayer Information', Urls.taxPayer.info],
-      ['Spouse and Dependents', Urls.taxPayer.spouseAndDependent],
-      ['Filing Status', Urls.taxPayer.filingStatus],
-      ['Contact Information', Urls.taxPayer.contactInfo]
+      item('Taxpayer Information', Urls.taxPayer.info, <TaxPayerInfo />),
+      item('Spouse and Dependents', Urls.taxPayer.spouseAndDependent, <SpouseAndDependent />),
+      item('Filing Status', Urls.taxPayer.filingStatus, <FilingStatusSelect />),
+      item('Contact Information', Urls.taxPayer.contactInfo, <ContactInfo />)
     ]
   },
   {
     title: 'Income',
     items: [
-      ['Wages (W2)', Urls.income.w2s],
-      ['Income (1099)', Urls.income.f1099s]
+      item('Wages (W2)', Urls.income.w2s, <W2JobInfo />),
+      item('Income (1099)', Urls.income.f1099s, <F1099Info />)
     ]
   },
   {
     title: 'Results',
     items: [
-      ['Refund Information', Urls.refund],
-      ['Review and Print', Urls.createPdf]
+      item('Refund Information', Urls.refund, <RefundBankAccount />),
+      item('Review and Print', Urls.createPdf, <CreatePDF />)
     ]
   }
 ]
 
-export const allUrls: string[] = (
-  drawerSections
-    .flatMap((section: Section) => section.items)
-    .map((item) => item[1])
-)
-
 export default function Main (): ReactElement {
-  const [, forward, prevUrl] = usePager(allUrls)
+  const allItems: SectionItem[] = drawerSections.flatMap((section: Section) => section.items)
 
-  const firstStepButtons: ReactElement = <PagerButtons previousUrl={prevUrl} submitText="Save and Continue" />
-  const stepDoneButtons: ReactElement = <PagerButtons previousUrl={prevUrl} submitText="Save and Continue" />
-  const allDoneButtons: ReactElement = <PagerButtons previousUrl={prevUrl} submitText="Create PDF" />
+  const [prev, onAdvance] = usePager(allItems, (item) => item.url)
+
+  const navButtons: ReactElement = (
+    <PagerButtons
+      previousUrl={prev?.url}
+      submitText={onAdvance !== undefined ? 'Save and Continue' : 'Create PDF'}
+    />
+  )
 
   return (
     <ThemeProvider theme={theme}>
       <ResponsiveDrawer sections={drawerSections} />
       <Switch>
-        <Redirect path="/" to={Urls.taxPayer.info} exact />
-        <Route path={Urls.taxPayer.info}>
-          <TaxPayerInfo onAdvance={forward} navButtons={firstStepButtons} />
-        </Route>
-        <Route path={Urls.taxPayer.spouseAndDependent}>
-          <SpouseAndDependent onAdvance={forward} navButtons={firstStepButtons} />
-        </Route>
-        <Route path={Urls.taxPayer.contactInfo}>
-          <ContactInfo onAdvance={forward} navButtons={firstStepButtons}/>
-        </Route>
-        <Route path={Urls.taxPayer.filingStatus}>
-          <FilingStatusSelect onAdvance={forward} navButtons={firstStepButtons}/>
-        </Route>
-        <Route path={Urls.refund} exact>
-          <RefundBankAccount onAdvance={forward} navButtons={stepDoneButtons} />
-        </Route>
-        <Route path={Urls.income.w2s} exact>
-          <W2JobInfo onAdvance={forward} navButtons={stepDoneButtons} />
-        </Route>
-        <Route path={Urls.income.f1099s} exact>
-          <F1099Info onAdvance={forward} navButtons={stepDoneButtons} />
-        </Route>
-        <Route path="/createpdf" exact>
-          <CreatePDF navButtons={allDoneButtons} />
-        </Route>
+        <Redirect path="/" to={Urls.default} exact />
+        <PagerContext.Provider value={{ onAdvance: (onAdvance ?? (() => {})), navButtons }}>
+        {
+          allItems.map((item, index) =>
+            <Route key={index} path={item.url}>{item.element}</Route>
+          )
+        }
+        </PagerContext.Provider>
       </Switch>
     </ThemeProvider>
   )

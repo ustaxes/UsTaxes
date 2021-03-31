@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form'
 import { Avatar, Box, Button, IconButton, List, ListItem, ListItemAvatar, ListItemSecondaryAction, ListItemText } from '@material-ui/core'
 import { useDispatch, useSelector } from 'react-redux'
 import { Actions, addW2, removeW2 } from '../../redux/actions'
-import { PagedFormProps } from '../pager'
+import { PagerContext } from '../pager'
 import { TaxesState, IncomeW2, Person, PersonRole } from '../../redux/data'
 import DeleteIcon from '@material-ui/icons/Delete'
 import { Currency, GenericLabeledDropdown, LabeledInput } from '../input'
@@ -68,7 +68,7 @@ const toIncomeW2 = (formData: IncomeW2UserInput): IncomeW2 => ({
   fedWithholding: parseInt(formData.fedWithholding)
 })
 
-export default function W2JobInfo ({ navButtons, onAdvance }: PagedFormProps): ReactElement {
+export default function W2JobInfo (): ReactElement {
   const { register, errors, handleSubmit, control, reset } = useForm<IncomeW2UserInput>()
   const dispatch = useDispatch()
 
@@ -114,7 +114,7 @@ export default function W2JobInfo ({ navButtons, onAdvance }: PagedFormProps): R
           label="Wages, tips, other compensation"
           register={register}
           required={true}
-          patternConfig={Patterns.currency}
+          patternConfig={Patterns.currency(control)}
           name="income"
           error={errors.income}
         />
@@ -125,7 +125,7 @@ export default function W2JobInfo ({ navButtons, onAdvance }: PagedFormProps): R
           register={register}
           required={true}
           name="fedWithholding"
-          patternConfig={Patterns.currency}
+          patternConfig={Patterns.currency(control)}
           error={errors.fedWithholding}
         />
 
@@ -162,16 +162,20 @@ export default function W2JobInfo ({ navButtons, onAdvance }: PagedFormProps): R
   }
 
   return (
-    <Box display="flex" justifyContent="center">
-      <form onSubmit={onAdvance}>
-        <Box display="flex" justifyContent="flex-start">
-          <h2>Job Information</h2>
-        </Box>
+    <PagerContext.Consumer>
+      { ({ navButtons, onAdvance }) =>
+        <Box display="flex" justifyContent="center">
+          <form onSubmit={onAdvance}>
+            <Box display="flex" justifyContent="flex-start">
+              <h2>Job Information</h2>
+            </Box>
 
-        <ListW2s />
-        {form}
-        { navButtons }
-      </form>
-    </Box>
+            <ListW2s />
+            {form}
+            { navButtons }
+          </form>
+        </Box>
+      }
+    </PagerContext.Consumer>
   )
 }

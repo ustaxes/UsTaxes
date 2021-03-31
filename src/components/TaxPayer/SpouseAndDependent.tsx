@@ -4,12 +4,11 @@ import { useForm } from 'react-hook-form'
 import { Box, Button, List } from '@material-ui/core'
 import { useDispatch, useSelector } from 'react-redux'
 import { LabeledInput } from '../input'
-import { Patterns } from '../Patterns'
 import { TaxesState, Dependent, Person, PersonRole } from '../../redux/data'
 import { addDependent, addSpouse, removeSpouse } from '../../redux/actions'
 import { ListDependents, PersonFields, PersonListItem } from './PersonFields'
 import FormContainer from './FormContainer'
-import { PagedFormProps } from '../pager'
+import { PagerContext } from '../pager'
 
 interface UserPersonForm {
   firstName: string
@@ -32,9 +31,11 @@ const toSpouse = (formData: UserPersonForm): Person => ({
 })
 
 export const AddDependentForm = (): ReactElement => {
-  const { register, errors, handleSubmit, getValues, reset } = useForm<UserDependentForm>()
+  const { register, control, errors, handleSubmit, getValues, reset } = useForm<UserDependentForm>()
 
   const [addingDependent, newDependent] = useState(false)
+
+  console.log(getValues())
 
   const dispatch = useDispatch()
 
@@ -53,12 +54,12 @@ export const AddDependentForm = (): ReactElement => {
           register={register}
           errors={errors}
           person={null}
+          control={control}
         />
         <LabeledInput
           label="Relationship to taxpayer"
           register={register}
           name="relationship"
-          patternConfig={Patterns.name}
           required={true}
           error={errors.relationship}
         />
@@ -76,7 +77,7 @@ export const AddDependentForm = (): ReactElement => {
 }
 
 export const SpouseInfo = (): ReactElement => {
-  const { register, errors, handleSubmit, getValues } = useForm<UserPersonForm>()
+  const { register, control, errors, handleSubmit, getValues } = useForm<UserPersonForm>()
   const [editSpouse, setEditSpouse] = useState<boolean>(false)
   const [createSpouse, setCreateSpouse] = useState<boolean>(false)
   const dispatch = useDispatch()
@@ -91,9 +92,9 @@ export const SpouseInfo = (): ReactElement => {
   }
 
   const onSubmit = (): void => {
+    dispatch(addSpouse(toSpouse(getValues())))
     setCreateSpouse(false)
     setEditSpouse(false)
-    dispatch(addSpouse(toSpouse(getValues())))
   }
 
   if (createSpouse) {
@@ -106,6 +107,7 @@ export const SpouseInfo = (): ReactElement => {
           register={register}
           errors={errors}
           person={editSpouse ? spouse : null}
+          control={control}
         />
       </FormContainer>
     )
@@ -129,6 +131,7 @@ export const SpouseInfo = (): ReactElement => {
           register={register}
           errors={errors}
           person={spouse}
+          control={control}
         />
       </FormContainer>
     )
@@ -143,21 +146,25 @@ export const SpouseInfo = (): ReactElement => {
   }
 }
 
-export default function SpouseAndDependent ({ navButtons, onAdvance }: PagedFormProps): ReactElement {
-  return (
-    <Box display="flex" justifyContent="center">
-      <form onSubmit={onAdvance}>
-        <Box display="flex" justifyContent="flex-start">
-          <h2>Spouse Information</h2>
-        </Box>
-        <SpouseInfo />
-        <Box display="flex" justifyContent="flex-start">
-          <h2>Dependent Information</h2>
-        </Box>
-        <ListDependents />
-        <AddDependentForm />
-        {navButtons}
-      </form>
-    </Box>
-  )
-}
+const SpouseAndDependent = (): ReactElement => (
+  <PagerContext.Consumer>
+    { ({ onAdvance, navButtons }) =>
+      <Box display="flex" justifyContent="center">
+        <form onSubmit={onAdvance}>
+          <Box display="flex" justifyContent="flex-start">
+            <h2>Spouse Information</h2>
+          </Box>
+          <SpouseInfo />
+          <Box display="flex" justifyContent="flex-start">
+            <h2>Dependent Information</h2>
+          </Box>
+          <ListDependents />
+          <AddDependentForm />
+          {navButtons}
+        </form>
+      </Box>
+    }
+  </PagerContext.Consumer>
+)
+
+export default SpouseAndDependent

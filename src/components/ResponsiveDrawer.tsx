@@ -46,9 +46,21 @@ const useStyles = makeStyles((theme) => ({
   }
 }))
 
+export interface SectionItem {
+  title: string
+  url: string
+  element: ReactElement
+}
+
+export const item = (title: string, url: string, element: ReactElement): SectionItem => ({
+  title,
+  url,
+  element
+})
+
 export interface Section {
   title: string
-  items: Array<[string, string]>
+  items: SectionItem[]
 }
 
 export interface DrawerItemsProps {
@@ -81,10 +93,10 @@ function ResponsiveDrawer (props: DrawerItemsProps): ReactElement {
                   component={NavLink}
                   exact
                   activeClassName="current"
-                  to={item[1]}
-                  selected={location.pathname === item[1]}
+                  to={item.url}
+                  selected={location.pathname === item.url}
                 >
-                  <ListItemText primary={item[0]} />
+                  <ListItemText primary={item.title} />
                 </ListItem>
               )}
             </List>

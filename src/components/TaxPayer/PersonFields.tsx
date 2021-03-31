@@ -10,16 +10,17 @@ import DeleteIcon from '@material-ui/icons/Delete'
 import EditIcon from '@material-ui/icons/Edit'
 import ListItemText from '@material-ui/core/ListItemText'
 import PersonIcon from '@material-ui/icons/Person'
-import { DeepMap, FieldError } from 'react-hook-form'
+import { Control, DeepMap, FieldError } from 'react-hook-form'
 
 interface PersonFieldsProps<T extends Person> extends BaseFormProps {
   defaults?: T
   children?: ReactNode
   errors: DeepMap<Partial<Person>, FieldError>
   person?: Person | null | undefined
+  control: Control
 }
 
-export const PersonFields = <T extends Person>({ register, errors, defaults, children, person }: PersonFieldsProps<T>): ReactElement => (
+export const PersonFields = <T extends Person>({ register, control, errors, defaults, children, person }: PersonFieldsProps<T>): ReactElement => (
   <div>
     <LabeledInput
       label="First Name and Initial"
@@ -29,7 +30,7 @@ export const PersonFields = <T extends Person>({ register, errors, defaults, chi
       patternConfig={Patterns.name}
       required={true}
       error={errors.firstName}
-      defaultValue={(person !== null) ? person?.firstName : defaults?.firstName}
+      defaultValue={person?.firstName ?? defaults?.firstName}
     />
     <LabeledInput
       label="Last Name"
@@ -39,17 +40,17 @@ export const PersonFields = <T extends Person>({ register, errors, defaults, chi
       patternConfig={Patterns.name}
       required={true}
       error={errors.lastName}
-      defaultValue={(person !== null) ? person?.lastName : defaults?.lastName}
+      defaultValue={person?.lastName ?? defaults?.lastName}
     />
     <LabeledInput
       label="SSN / TIN"
       aria-label="Social Security Number or Tax Identification Number"
       register={register}
       name="ssid"
-      patternConfig={Patterns.ssn}
+      patternConfig={Patterns.ssn(control)}
       required={true}
       error={errors.ssid}
-      defaultValue={(person !== null) ? person?.ssid : defaults?.ssid}
+      defaultValue={person?.ssid ?? defaults?.ssid}
     />
     {children}
   </div>

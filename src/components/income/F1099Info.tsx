@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form'
 import { Avatar, Box, Button, IconButton, List, ListItem, ListItemAvatar, ListItemSecondaryAction, ListItemText } from '@material-ui/core'
 import { useDispatch, useSelector } from 'react-redux'
 import { Actions, add1099, remove1099 } from '../../redux/actions'
-import { PagedFormProps } from '../pager'
+import { PagerContext } from '../pager'
 import { TaxesState, Person, PersonRole, Supported1099, Income1099Type } from '../../redux/data'
 import DeleteIcon from '@material-ui/icons/Delete'
 import { Currency, GenericLabeledDropdown, LabeledInput } from '../input'
@@ -129,7 +129,7 @@ const toF1099 = (input: F1099UserInput): Supported1099 => {
   }
 }
 
-export default function F1099Info ({ navButtons, onAdvance }: PagedFormProps): ReactElement {
+export default function F1099Info (): ReactElement {
   const { register, errors, handleSubmit, control, reset, watch, setValue } = useForm<F1099UserInput>()
   const dispatch = useDispatch()
 
@@ -162,7 +162,7 @@ export default function F1099Info ({ navButtons, onAdvance }: PagedFormProps): R
       label="Box 1 - Interest Income"
       register={register}
       required={true}
-      patternConfig={Patterns.currency}
+      patternConfig={Patterns.currency(control)}
       name="interest"
       error={errors.interest}
     />
@@ -177,7 +177,7 @@ export default function F1099Info ({ navButtons, onAdvance }: PagedFormProps): R
         label="Proceeds"
         register={register}
         required={true}
-        patternConfig={Patterns.currency}
+        patternConfig={Patterns.currency(control)}
         name="longTermProceeds"
         error={errors.longTermProceeds}
       />
@@ -185,7 +185,7 @@ export default function F1099Info ({ navButtons, onAdvance }: PagedFormProps): R
         label="Cost basis"
         register={register}
         required={true}
-        patternConfig={Patterns.currency}
+        patternConfig={Patterns.currency(control)}
         name="longTermCostBasis"
         error={errors.longTermCostBasis}
       />
@@ -196,7 +196,7 @@ export default function F1099Info ({ navButtons, onAdvance }: PagedFormProps): R
         label="Proceeds"
         register={register}
         required={true}
-        patternConfig={Patterns.currency}
+        patternConfig={Patterns.currency(control)}
         name="shortTermProceeds"
         error={errors.shortTermProceeds}
       />
@@ -204,7 +204,7 @@ export default function F1099Info ({ navButtons, onAdvance }: PagedFormProps): R
         label="Cost basis"
         register={register}
         required={true}
-        patternConfig={Patterns.currency}
+        patternConfig={Patterns.currency(control)}
         name="shortTermCostBasis"
         error={errors.shortTermCostBasis}
       />
@@ -217,7 +217,7 @@ export default function F1099Info ({ navButtons, onAdvance }: PagedFormProps): R
         label="Total Dividends"
         register={register}
         required={true}
-        patternConfig={Patterns.currency}
+        patternConfig={Patterns.currency(control)}
         name="dividends"
         error={errors.dividends}
       />
@@ -225,7 +225,7 @@ export default function F1099Info ({ navButtons, onAdvance }: PagedFormProps): R
         label="Qualified Dividends"
         register={register}
         required={true}
-        patternConfig={Patterns.currency}
+        patternConfig={Patterns.currency(control)}
         name="qualifiedDividends"
         error={errors.qualifiedDividends}
       />
@@ -303,16 +303,20 @@ export default function F1099Info ({ navButtons, onAdvance }: PagedFormProps): R
   }
 
   return (
-    <Box display="flex" justifyContent="center">
-      <form onSubmit={onAdvance}>
-        <Box display="flex" justifyContent="flex-start">
-          <h2>1099 Information</h2>
-        </Box>
+    <PagerContext.Consumer>
+      { ({ onAdvance, navButtons }) =>
+        <Box display="flex" justifyContent="center">
+          <form onSubmit={onAdvance}>
+            <Box display="flex" justifyContent="flex-start">
+              <h2>1099 Information</h2>
+            </Box>
 
-        <List1099s />
-        {form}
-        { navButtons }
-      </form>
-    </Box>
+            <List1099s />
+            {form}
+            { navButtons }
+          </form>
+        </Box>
+      }
+    </PagerContext.Consumer>
   )
 }
