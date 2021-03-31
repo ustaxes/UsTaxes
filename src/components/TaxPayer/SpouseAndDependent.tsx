@@ -35,8 +35,6 @@ export const AddDependentForm = (): ReactElement => {
 
   const [addingDependent, newDependent] = useState(false)
 
-  console.log(getValues())
-
   const dispatch = useDispatch()
 
   const onSubmit = (): void => {
