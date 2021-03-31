@@ -174,59 +174,53 @@ describe('SpouseInfo', () => {
     // click the add button with empty inputs
     fireEvent.click(createButton)
 
-    // expect two `Input is required` errors and one ssid error
+    // expect three `Input is required` errors
     const nameErrors = await screen.findAllByText('Input is required')
-    expect(nameErrors).toHaveLength(2)
-    screen.getByText('Input should be filled with 9 numbers')
+    expect(nameErrors).toHaveLength(3)
 
     // fill in the first name incorrectly
     userEvent.type(firstNameInput, 'F$LF(#)& ##3')
     fireEvent.click(createButton)
 
-    // expect an input error, an error about restricted characters, and the ssid error
+    // expect two input errors and an error about restricted characters
     await waitFor(() => {})
     const nameErrorsAfterBadFirstName = await screen.findAllByText('Input is required')
-    expect(nameErrorsAfterBadFirstName).toHaveLength(1)
+    expect(nameErrorsAfterBadFirstName).toHaveLength(2)
     screen.getByText('Input should only include letters and spaces')
-    screen.getByText('Input should be filled with 9 numbers')
 
     // fill in the first name correctly
     userEvent.type(firstNameInput, '{selectall}{del}Sally K')
     fireEvent.click(createButton)
 
-    // expect one name error and the ssid error
+    // expect two name errors
     await waitFor(() => {})
     const nameErrorsAfterAddingFirstName = await screen.findAllByText('Input is required')
-    expect(nameErrorsAfterAddingFirstName).toHaveLength(1)
-    screen.getByText('Input should be filled with 9 numbers')
+    expect(nameErrorsAfterAddingFirstName).toHaveLength(2)
 
     // add a name with restricted characters
     userEvent.type(lastNameInput, 'R5$%84')
     fireEvent.click(createButton)
 
-    // expect an error about restricted characters, and the ssid error
+    // expect an error about restricted characters, and one name error
     await waitFor(() => {})
-    const nameErrorsAfterBadLastName = await screen.queryAllByText('Input is required')
-    expect(nameErrorsAfterBadLastName).toHaveLength(0)
+    const nameErrorsAfterBadLastName = await screen.findAllByText('Input is required')
+    expect(nameErrorsAfterBadLastName).toHaveLength(1)
     screen.getByText('Input should only include letters and spaces')
-    screen.getByText('Input should be filled with 9 numbers')
 
     // correctly enter a last name
     userEvent.type(lastNameInput, '{selectall}{del}Ride')
     fireEvent.click(createButton)
 
     // only the ssid error remains
-    await screen.findByText('Input should be filled with 9 numbers')
-    const lastNameError = screen.queryByText('Input is required')
-    expect(lastNameError).not.toBeInTheDocument()
+    await screen.findByText('Input is required')
 
     // incorrectly enter ssid
-    fireEvent.change(ssidInput, { target: { value: 'abc456789' } })
+    fireEvent.change(ssidInput, { target: { value: '123sc' } })
     fireEvent.click(createButton)
 
     // expect ssid error to remain
     await waitFor(() => {})
-    await screen.findByText('Input should be filled with 9 numbers')
+    await screen.findByText('Input should be filled with 9 digits')
 
     // clear ssid and add a valid value
     fireEvent.change(ssidInput, { target: { value: '' } })
@@ -238,7 +232,7 @@ describe('SpouseInfo', () => {
     screen.getByText('123456789')
 
     // expect ssid error to be gone
-    const ssidError = screen.queryByText('Input should be filled with 9 numbers')
+    const ssidError = screen.queryByText('Input should be filled with 9 digits')
     expect(ssidError).not.toBeInTheDocument()
 
     // delete the entry
