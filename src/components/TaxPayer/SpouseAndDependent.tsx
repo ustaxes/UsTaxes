@@ -19,19 +19,19 @@ interface UserPersonForm {
 
 interface UserDependentForm extends UserPersonForm {
   relationship: string
-  dob: string
+  birthYear: number
   isStudent: boolean
   numberOfMonths: number
 }
 
 const toDependent = (formData: UserDependentForm): Dependent => {
-  const { dob, numberOfMonths, isStudent, ...rest } = formData
+  const { birthYear, numberOfMonths, isStudent, ...rest } = formData
 
   return {
     ...rest,
     role: PersonRole.DEPENDENT,
     qualifyingInfo: {
-      dob: new Date(dob),
+      birthYear,
       numberOfMonths,
       isStudent
     }
@@ -66,26 +66,26 @@ export const AddDependentForm = (): ReactElement => {
         <PersonFields
           register={register}
           errors={errors}
+          control={control}
         />
         <LabeledInput
           label="Relationship to taxpayer"
           register={register}
           name="relationship"
-          patternConfig={Patterns.name}
           required={true}
           error={errors.relationship}
         />
         <LabeledInput
           register={register}
-          label="Date of Birth"
-          patternConfig={Patterns.date}
-          name="dob"
+          label="Birth year"
+          patternConfig={Patterns.year(control)}
+          name="birthYear"
           required={false}
         />
         <LabeledInput
           register={register}
           label="How many months did this person live with you this year?"
-          patternConfig={Patterns.numeric}
+          patternConfig={Patterns.numMonths(control)}
           name="numberOfMonths"
           required={false}
         />
@@ -110,7 +110,7 @@ export const AddDependentForm = (): ReactElement => {
 }
 
 export const SpouseInfo = (): ReactElement => {
-  const { register, errors, handleSubmit, getValues } = useForm<UserPersonForm>()
+  const { register, control, errors, handleSubmit, getValues } = useForm<UserPersonForm>()
   const [editSpouse, updateEditSpouse] = useState(false)
   const dispatch = useDispatch()
 
@@ -132,6 +132,7 @@ export const SpouseInfo = (): ReactElement => {
         <PersonFields
           register={register}
           errors={errors}
+          control={control}
         />
       </FormContainer>
     )

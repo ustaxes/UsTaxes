@@ -1,18 +1,10 @@
 import React, { ReactElement } from 'react'
 import { Box } from '@material-ui/core'
-import { useForm } from 'react-hook-form'
 import { useSelector } from 'react-redux'
 import { Dependent, TaxesState, TaxPayer } from '../../redux/data'
-import { PagerContext } from '../pager'
 import ScheduleEIC from '../../irsForms/ScheduleEIC'
 
-interface QualifyingDependentUserForm {
-  info: string
-}
-
 const EICInfo = (): ReactElement => {
-  const { handleSubmit } = useForm<QualifyingDependentUserForm>()
-
   const taxPayer: TaxPayer | undefined = useSelector((state: TaxesState) =>
     state.information.taxPayer
   )
@@ -32,7 +24,7 @@ const EICInfo = (): ReactElement => {
           <div key={i}>
             <span>{dep.firstName}&nbsp;</span>
             <span>{dep.lastName}</span>:
-            <span>{dep.qualifyingInfo?.dob.toLocaleDateString()}</span>
+            <span>{dep.qualifyingInfo?.birthYear}</span>
           </div>
           )
       }

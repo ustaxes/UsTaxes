@@ -114,7 +114,7 @@ export default function W2JobInfo (): ReactElement {
           label="Wages, tips, other compensation"
           register={register}
           required={true}
-          patternConfig={Patterns.currency}
+          patternConfig={Patterns.currency(control)}
           name="income"
           error={errors.income}
         />
@@ -125,7 +125,7 @@ export default function W2JobInfo (): ReactElement {
           register={register}
           required={true}
           name="fedWithholding"
-          patternConfig={Patterns.currency}
+          patternConfig={Patterns.currency(control)}
           error={errors.fedWithholding}
         />
 

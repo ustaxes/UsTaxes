@@ -70,8 +70,8 @@ export default class ScheduleEIC implements Form {
 
   qualifyingDependents = (): Array<Dependent | undefined> => {
     const res: Array<Dependent | undefined> = this.tp.tp.dependents
-      .filter((d) => d.qualifyingInfo?.dob !== undefined)
-      .sort((d) => (d.qualifyingInfo?.dob as Date).getFullYear())
+      .filter((d) => d.qualifyingInfo?.birthYear !== undefined)
+      .sort((d) => (d.qualifyingInfo?.birthYear as number))
       .slice(0, 3)
 
     res.fill(undefined, res.length - 1, 3)
@@ -89,7 +89,7 @@ export default class ScheduleEIC implements Form {
 
   years = (): Array<number | undefined> =>
     this.qualifyingDependents()
-      .map((d) => d?.qualifyingInfo?.dob.getFullYear())
+      .map((d) => d?.qualifyingInfo?.birthYear)
 
   // EIC line 3
   birthYearFields = (): Array<string | undefined> =>

@@ -13,7 +13,7 @@ export interface Person {
 }
 
 export interface QualifyingInformation {
-  dob: Date
+  birthYear: number
   numberOfMonths: number
   isStudent: boolean
 }

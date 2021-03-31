@@ -1,5 +1,4 @@
-import Ajv, { DefinedError, ValidateFunction } from 'ajv7'
-import addFormats from 'ajv-formats'
+import Ajv, { DefinedError, ValidateFunction } from 'ajv-latest'
 import schema from './validation.json'
 
 // We will simply throw a runtime error if the data does not
@@ -21,8 +20,6 @@ export const checkType = <A>(data: A, validate: ValidateFunction<A>): A => {
 }
 
 const ajv = new Ajv().addSchema(schema)
-
-addFormats(ajv)
 
 // Doing this seems to be necessary so that recursive self
 // links (ref fields) are created properly. Without it we get
