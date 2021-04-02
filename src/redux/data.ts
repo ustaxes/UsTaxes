@@ -14,8 +14,9 @@ export interface Person {
 
 export interface Dependent extends Person {
   relationship: string
+  birthYear: number
   isQualifiedForChildTaxCredit: boolean
-  isQualifiedForOtherDependentTaxCredit: boolean
+  // Assumes dependent qualifies for either child credit or other dependent credit
 }
 
 export interface Address {

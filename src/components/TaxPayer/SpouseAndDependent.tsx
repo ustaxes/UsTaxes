@@ -3,12 +3,13 @@ import React, { ReactElement, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { Box, Button, List } from '@material-ui/core'
 import { useDispatch, useSelector } from 'react-redux'
-import { LabeledInput, LabeledCheckBox } from '../input'
+import { LabeledInput } from '../input'
 import { TaxesState, Dependent, Person, PersonRole } from '../../redux/data'
 import { addDependent, addSpouse, removeSpouse } from '../../redux/actions'
 import { ListDependents, PersonFields, PersonListItem } from './PersonFields'
 import FormContainer from './FormContainer'
 import { PagerContext } from '../pager'
+import { Patterns } from '../Patterns'
 
 interface UserPersonForm {
   firstName: string
@@ -18,12 +19,13 @@ interface UserPersonForm {
 
 interface UserDependentForm extends UserPersonForm {
   relationship: string
-  isQualifiedForChildTaxCredit: boolean
-  isQualifiedForOtherDependentTaxCredit: boolean
+  birthYear: string
 }
 
 const toDependent = (formData: UserDependentForm): Dependent => ({
   ...formData,
+  birthYear: parseInt(formData.birthYear),
+  isQualifiedForChildTaxCredit: 2020 - parseInt(formData.birthYear) <= 17 && true,
   role: PersonRole.DEPENDENT
 })
 
@@ -33,23 +35,16 @@ const toSpouse = (formData: UserPersonForm): Person => ({
 })
 
 export const AddDependentForm = (): ReactElement => {
-  const { register, control, errors, handleSubmit, getValues, reset } = useForm<UserDependentForm>({ defaultValues: { isQualifiedForChildTaxCredit: false, isQualifiedForOtherDependentTaxCredit: false } })
+  const { register, control, errors, handleSubmit, getValues, reset } = useForm<UserDependentForm>()
 
   const [addingDependent, newDependent] = useState(false)
 
   const dispatch = useDispatch()
 
-  const [isQualifiedForChildTaxCredit, updateQualifiedForChildTaxCredit] = useState(false)
-  const [isQualifiedForOtherDependentTaxCredit, updateQualifiedForOtherDependentTaxCredit] = useState(false)
-
   const onSubmit = (): void => {
     dispatch(addDependent(toDependent(getValues())))
     newDependent(false)
     reset()
-    // I tried to do this with reset() but couldn't get it to work.
-    // But this works so the credit statuses don't carry over
-    updateQualifiedForChildTaxCredit(false)
-    updateQualifiedForOtherDependentTaxCredit(false)
   }
 
   if (addingDependent) {
@@ -70,19 +65,13 @@ export const AddDependentForm = (): ReactElement => {
           required={true}
           error={errors.relationship}
         />
-        <LabeledCheckBox
-          control={control}
-          name="isQualifiedForChildTaxCredit"
-          value={isQualifiedForChildTaxCredit}
-          setValue={updateQualifiedForChildTaxCredit}
-          label="Qualfies for Child Tax Credit"
-        />
-        <LabeledCheckBox
-          name="isQualifiedForOtherDependentTaxCredit"
-          control={control}
-          value={isQualifiedForOtherDependentTaxCredit}
-          setValue={updateQualifiedForOtherDependentTaxCredit}
-          label="Qualfies for Credit for Other Dependents"
+        <LabeledInput
+          label="Birth Year"
+          register={register}
+          name="birthYear"
+          required={true}
+          patternConfig={Patterns.year(control)}
+          error={errors.birthYear}
         />
       </FormContainer>
     )

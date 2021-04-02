@@ -65,5 +65,6 @@ export const Patterns = {
   currency: numeric(/[1-9][0-9]+(\.[0-9]{1,2})?/, 'Input should be a numeric value', undefined, '_', true, '$', 2),
   bankAccount: numeric(/[0-9]{4,17}/, 'Input should be filled with 4-17 digits', '#################', ''),
   bankRouting: numeric(/[0-9]{9}/, 'Input should be filled with 9 digits', '#########', '_'),
-  usPhoneNumber: numeric(/[2-9][0-9]{9}/, 'Input should be 10 digits, not starting with 0 or 1', '(###)-###-####')
+  usPhoneNumber: numeric(/[2-9][0-9]{9}/, 'Input should be 10 digits, not starting with 0 or 1', '(###)-###-####'),
+  year: numeric(/[0-9]{4}/, 'Input should be a four-digit year', '####', '_')
 }

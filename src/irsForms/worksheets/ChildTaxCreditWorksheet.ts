@@ -15,7 +15,7 @@ export default class ChildTaxCreditWorksheet {
   l1 = (): number => this.numberQualifyingChildren() * 2000
 
   // worksheet line 2
-  numberQualifyingOtherDependents = (): number => this.f1040.dependents.reduce((total, dependent) => (dependent.isQualifiedForOtherDependentTaxCredit ? total + 1 : total), 0)
+  numberQualifyingOtherDependents = (): number => this.f1040.dependents.reduce((total, dependent) => (dependent.isQualifiedForChildTaxCredit ? total : total + 1), 0)
 
   l2 = (): number => this.numberQualifyingOtherDependents() * 500
 
