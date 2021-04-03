@@ -55,6 +55,8 @@ export interface IncomeW2 {
   occupation: string
   income: number
   fedWithholding: number
+  ssWithholding: number
+  medicareWithholding: number
   employer?: Employer
   personRole: PersonRole.PRIMARY | PersonRole.SPOUSE
 }
