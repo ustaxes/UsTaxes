@@ -302,7 +302,7 @@ export default class F1040 implements Form {
   // TODO: handle estimated tax payments
   l26 = (): number | undefined => undefined
 
-  l27 = (): number | undefined => this.scheduleEIC?.credit()
+  l27 = (): number | undefined => displayNumber(this.scheduleEIC?.credit(this) ?? 0)
 
   l28 = (): number | undefined => this.schedule8812?.credit()
 

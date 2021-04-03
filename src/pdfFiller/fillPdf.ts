@@ -11,11 +11,13 @@ import Form from '../irsForms/Form'
 import ScheduleB from '../irsForms/ScheduleB'
 import { Income1099Type } from '../redux/data'
 import ScheduleD from '../irsForms/ScheduleD'
+import ScheduleEIC from '../irsForms/ScheduleEIC'
 
 const downloadUrls = {
   f1040: '/forms/f1040.pdf',
   f1040sb: '/forms/f1040sb.pdf',
-  f1040sd: '/forms/f1040sd.pdf'
+  f1040sd: '/forms/f1040sd.pdf',
+  f1040sei: '/forms/f1040sei.pdf'
 }
 
 /**
@@ -66,6 +68,13 @@ async function getSchedules (f1040: F1040): Promise<Array<[Form, PDFDocument]>> 
     const schDPdf = await downloadPDF(downloadUrls.f1040sd)
     f1040.addScheduleD(schD)
     attachments = [...attachments, [schD, schDPdf]]
+  }
+
+  const eic = new ScheduleEIC(state.taxPayer)
+  if (eic.allowed(f1040)) {
+    const eicPdf = await downloadPDF(downloadUrls.f1040sei)
+    f1040.addScheduleEIC(eic)
+    attachments = [...attachments, [eic, eicPdf]]
   }
 
   const f1040pdf: PDFDocument = await downloadPDF(downloadUrls.f1040)

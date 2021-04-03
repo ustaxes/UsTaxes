@@ -19,9 +19,9 @@ interface UserPersonForm {
 
 interface UserDependentForm extends UserPersonForm {
   relationship: string
-  birthYear: number
+  birthYear: string
   isStudent: boolean
-  numberOfMonths: number
+  numberOfMonths: string
 }
 
 const toDependent = (formData: UserDependentForm): Dependent => {
@@ -31,8 +31,8 @@ const toDependent = (formData: UserDependentForm): Dependent => {
     ...rest,
     role: PersonRole.DEPENDENT,
     qualifyingInfo: {
-      birthYear,
-      numberOfMonths,
+      birthYear: parseInt(birthYear),
+      numberOfMonths: parseInt(numberOfMonths),
       isStudent
     }
   }

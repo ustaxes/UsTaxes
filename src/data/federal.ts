@@ -1,4 +1,5 @@
 import { FilingStatus } from '../redux/data'
+import { linear, Piecewise } from '../util'
 
 interface TaggedAmount {
   name: string
@@ -130,10 +131,26 @@ const federalBrackets: FederalBrackets = {
 const line11Caps = [15820, 41756, 47440, 50954]
 const line11MfjCaps = [21710, 47646, 53330, 56844]
 
+const unmarriedFormulas: Piecewise[] = [
+  // phase in             constant                phase out
+  [[0, linear(0.0765, 0)], [7030, linear(0, 538)], [8790, linear(-0.0765, (538 + 0.0765 * 8790))]],
+  [[0, linear(0.34, 0)], [10540, linear(0, 3584)], [19330, linear(-0.1598, (3584 + 0.1598 * 19330))]],
+  [[0, linear(0.40, 0)], [14800, linear(0, 5920)], [19330, linear(-0.2106, (5920 + 0.2106 * 19330))]],
+  [[0, linear(0.45, 0)], [14800, linear(0, 6660)], [19330, linear(-0.2106, (6660 + 0.2106 * 19330))]]
+]
+
+const marriedFormulas: Piecewise[] = [
+  [[0, linear(0.0765, 0)], [7030, linear(0, 538)], [14680, linear(-0.0765, (538 + 0.0765 * 14680))]],
+  [[0, linear(0.34, 0)], [10540, linear(0, 3584)], [25220, linear(-0.1598, (3584 + 0.1598 * 19330))]],
+  [[0, linear(0.40, 0)], [14800, linear(0, 5920)], [25220, linear(-0.2106, (5920 + 0.2106 * 19330))]],
+  [[0, linear(0.45, 0)], [14800, linear(0, 6660)], [25220, linear(-0.2106, (6660 + 0.2106 * 19330))]]
+]
+
 interface EICDef {
   caps: {[k in FilingStatus]: number[] | undefined}
   questions: Array<[string, boolean]>
   maxInvestmentIncome: number
+  formulas: { [k in FilingStatus]: Piecewise[] | undefined }
 }
 
 export const EIC: EICDef = {
@@ -161,7 +178,14 @@ export const EIC: EICDef = {
       false
     ]
   ],
-  maxInvestmentIncome: 3650
+  maxInvestmentIncome: 3650,
+  formulas: {
+    [FilingStatus.S]: unmarriedFormulas,
+    [FilingStatus.W]: unmarriedFormulas,
+    [FilingStatus.HOH]: unmarriedFormulas,
+    [FilingStatus.MFS]: undefined,
+    [FilingStatus.MFJ]: marriedFormulas
+  }
 }
 
 export default federalBrackets

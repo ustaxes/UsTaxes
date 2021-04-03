@@ -26,3 +26,14 @@ export const zip = <A, B>(as: A[], bs: B[]): Array<[A, B]> =>
  */
 export const zip3 = <A, B, C>(as: A[], bs: B[], cs: C[]): Array<[A, B, C]> =>
   zip(as, zip(bs, cs)).map(([a, [b, c]]) => [a, b, c])
+
+export const linear = (m: number, b: number) => (x: number): number => b + m * x
+
+// Lower bound, and function to apply above that bound.
+export type Piecewise = Array<[number, ((x: number) => number)]>
+
+export const evaluatePiecewise = (f: Piecewise, x: number): number => {
+  // select the piece of the function that we are in.
+  const selection: number = Math.max(f.findIndex(([lowerBound]) => lowerBound > x), f.length) - 1
+  return f[selection][1](x)
+}

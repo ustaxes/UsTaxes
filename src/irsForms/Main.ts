@@ -34,7 +34,6 @@ export function create1040 (state: Information): F1040 {
     f1040.addRefund(state.refund)
   }
 
-  // Get blank pdfs applicable to the model state
   getSchedules(state, f1040)
 
   return f1040
