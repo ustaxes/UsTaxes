@@ -58,6 +58,13 @@ This application can be either run as a web application or a standalone desktop 
 
 To run, `npm start` or `yarn start`.
 
+If preferred, a Docker alternative is available:
+```
+docker-compose build
+docker-compose up
+```
+Then, open a browser to `http://localhost:3000`.
+
 ### Desktop application
 
 For Windows users, please install [Microsoft Edge WebView2][WebView2] before running the desktop app
