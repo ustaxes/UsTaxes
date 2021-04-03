@@ -69,7 +69,7 @@ export default class F1040 implements Form {
   f8936?: F8936
   f8995?: F8995 | F8995A
 
-  ChildTaxCreditWorksheet?: ChildTaxCreditWorksheet
+  childTaxCreditWorksheet?: ChildTaxCreditWorksheet
 
   constructor (tp: TaxPayer) {
     this.filingStatus = tp.filingStatus
@@ -94,7 +94,8 @@ export default class F1040 implements Form {
     this.w2s = []
     this.contactPhoneNumber = tp.contactPhoneNumber
     this.contactEmail = tp.contactEmail
-    this.ChildTaxCreditWorksheet = new ChildTaxCreditWorksheet(this)
+    this.childTaxCreditWorksheet = new ChildTaxCreditWorksheet(this)
+    this.schedule8812 = new Schedule8812(tp, this)
   }
 
   addW2 (w2: IncomeW2): void {
@@ -277,7 +278,7 @@ export default class F1040 implements Form {
   )
 
   // TODO
-  l19 = (): number | undefined => computeField(this.ChildTaxCreditWorksheet?.l12())
+  l19 = (): number | undefined => computeField(this.childTaxCreditWorksheet?.l12())
   l20 = (): number | undefined => this.schedule3?.l7()
   l21 = (): number | undefined => displayNumber(
     sumFields([this.l19(), this.l20()])
@@ -316,7 +317,7 @@ export default class F1040 implements Form {
 
   l27 = (): number | undefined => this.scheduleEIC?.credit()
 
-  l28 = (): number | undefined => this.schedule8812?.credit()
+  l28 = (): number | undefined => this.schedule8812?.l15()
 
   l29 = (): number | undefined => this.schedule8863?.l8()
 

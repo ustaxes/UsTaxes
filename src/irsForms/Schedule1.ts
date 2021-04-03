@@ -8,5 +8,6 @@ export default class Schedule1 {
   }
 
   l9 = (): number | undefined => undefined
+  l14 = (): number | undefined => undefined
   l22 = (): number | undefined => undefined
 }
