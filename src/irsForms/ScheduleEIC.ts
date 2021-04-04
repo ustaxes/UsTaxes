@@ -267,7 +267,7 @@ export default class ScheduleEIC implements Form {
         !this.passForm8814() ||
         this.incomeOrLossFromPassiveActivity()
       ) || this.passPub596()
-    )
+    ) && this.credit(f1040) > 0
   }
 
   qualifyingDependents = (): Dependent[] => this.tp.tp.dependents
