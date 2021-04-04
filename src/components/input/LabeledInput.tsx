@@ -8,13 +8,6 @@ import { Controller } from 'react-hook-form'
 export function LabeledInput (props: LabeledInputProps): ReactElement {
   const { strongLabel, label, register, error, required = false, patternConfig, name, defaultValue } = props
 
-  const baseFieldProps = {
-    fullWidth: patternConfig?.format === undefined,
-    helperText: error?.message,
-    error: error !== undefined,
-    variant: 'filled' as ('filled' | 'standard')
-  }
-
   const input: ReactElement = (() => {
     if (patternConfig?.inputType === InputType.numeric) {
       return (
@@ -53,7 +46,6 @@ export function LabeledInput (props: LabeledInputProps): ReactElement {
     return (
       <TextField
         name={name}
-        required={required}
         defaultValue={defaultValue}
         inputRef={register({
           required: required ? 'Input is required' : undefined,
@@ -62,7 +54,10 @@ export function LabeledInput (props: LabeledInputProps): ReactElement {
             message: patternConfig?.description ?? (required ? 'Input is required' : '')
           }
         })}
-        {...baseFieldProps}
+        fullWidth={patternConfig?.format === undefined}
+        helperText={error?.message}
+        error={error !== undefined}
+        variant="filled"
       />
     )
   })()
