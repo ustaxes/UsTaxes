@@ -1,6 +1,6 @@
-FROM rust:1.51-buster
+FROM rust:1.51-slim-buster
 
-RUN apt-get update && apt-get -y upgrade
+RUN apt-get update && apt-get -y upgrade && apt-get install -y curl
 
 # Install nvm, node, npm, and yarn
 ARG NVM_DIR="/root/.nvm"
