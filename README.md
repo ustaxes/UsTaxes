@@ -56,7 +56,7 @@ This application can be either run as a web application or a standalone desktop 
 
 ### Web application
 
-To run, `npm start` or `yarn start`.
+To run, `npm run start` or `yarn start`.
 
 ### Desktop application
 
