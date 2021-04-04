@@ -65,6 +65,8 @@ docker-compose up
 ```
 Then, open a browser to `http://localhost:3000`.
 
+To stop and remove running containers, run `docker-compose down`.
+
 ### Desktop application
 
 For Windows users, please install [Microsoft Edge WebView2][WebView2] before running the desktop app
