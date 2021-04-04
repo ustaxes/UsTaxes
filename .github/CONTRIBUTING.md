@@ -21,7 +21,7 @@ Before contributing please make sure to take a moment to read through the [Code 
 
 ## Pull Request Guidelines
 
-- The only requirement is that your PR is well described and your intentions are clearly communicated. 
+- The only requirement is that your PR is well described and your intentions are clearly communicated.
 
 - If adding new feature, provide some clear reason to add this feature.
 
@@ -31,8 +31,8 @@ Before contributing please make sure to take a moment to read through the [Code 
 
 - These are just some formatting suggestions, we won't call you out for not following them:
 
-  - Start commits with a capital letter and imperitive mood, no period at the end.
-  - Each commit first line should be max 50 characters, followed by a blank line. 
+  - Start commits with a capital letter and imperative mood, no period at the end.
+  - Each commit first line should be max 50 characters, followed by a blank line.
   - Wrap following lines at 80 characters.
   - Include as much detail as you need in the following lines.
   - Github PR title style is the same as commit first line style.
@@ -47,9 +47,9 @@ First, [join our Discord server](https://discord.gg/dAaz472mPz) and let us know 
 
 To set up your machine for development, review the [Architecture doc](ARCHITECTURE.md), for required links to set up NPM > 7 and Rust.
 
-Next, fork and clone this repo. 
+Next, fork and clone this repo.
 
-Try 
+Try
 
 * `npm run desktop` to try out the desktop application. Setting the environment variable `BROWSER=none` will stop the web browser from also loading for you.
 * `npm run start` will serve the site locally on port 3000, so you can view it at `localhost:3000` in your browser.
@@ -66,19 +66,19 @@ In order to manage state between many different components and concerns in a pro
 
 * `src/redux/actions.ts`: All the actions that can be sent to update our state
 * `src/redux/data.ts`: No functionality, just type definitions for our global state variable.
-* `src/redux/reducer.ts`: All logic for updating our global state. 
+* `src/redux/reducer.ts`: All logic for updating our global state.
 
 
 ### Directories Overview
 
 - [`src/components`](../src/components) Contains React forms and **all UI**.
 - [`src/data`](../src/data) Contains static data such as a list of states and a list of tax brackets
-- [`src/irsForms`](../src/irsForms) 
+- [`src/irsForms`](../src/irsForms)
   - These are typescript model implementations of the actual IRS pdfs. Each form provides the data to be filled into the final PDF via an array where each index must match the expected index in the PDF. We use the convention that methods are named after the actual line referred to in the PDF. So `const l1 = (): number = ...` will be the function to call to get the numeric value needed on line 1 of that form.
   - Also, because the forms closely follow IRS published instructions and worksheets, the tax calculations are also coded in this directory.
 - [`pdfFiller`](../src/pdfFiller): All the logic to actually fill form data into a PDF.
 - [`redux`](../src/redux) All the types and logic to manage global state in the app.
-- [`customTypes`](../src/customTypes) Special purpose defintions needed to give the typescript compiler more type information about some features of our dependencies we use. Ideally these needs would be provided by our dependencies and this folder can be deleted in the future.
+- [`customTypes`](../src/customTypes) Special purpose definitions needed to give the typescript compiler more type information about some features of our dependencies we use. Ideally these needs would be provided by our dependencies and this folder can be deleted in the future.
 
 ## License
 
