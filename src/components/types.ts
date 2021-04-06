@@ -1,10 +1,8 @@
-import { DeepMap, FieldError, RegisterOptions } from 'react-hook-form'
-
-export type Register = (rules?: RegisterOptions) => any
+import { DeepMap, FieldError, UseFormRegister } from 'react-hook-form'
 
 export type Errors<T> = DeepMap<T, FieldError | undefined>
 
-export interface BaseFormProps {
-  register: Register
+export interface BaseFormProps<A> {
+  register: UseFormRegister<A>
   error?: FieldError
 }

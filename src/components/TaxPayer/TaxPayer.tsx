@@ -26,7 +26,14 @@ const asPrimaryPerson = (formData: TaxPayerUserForm): PrimaryPerson => ({
 })
 
 export default function TaxPayerInfo (): ReactElement {
-  const { register, handleSubmit, control, errors } = useForm<PrimaryPerson>()
+  const {
+    register,
+    handleSubmit,
+    control,
+    formState: {
+      errors
+    }
+  } = useForm<PrimaryPerson>()
   // const variable dispatch to allow use inside function
   const dispatch = useDispatch()
 

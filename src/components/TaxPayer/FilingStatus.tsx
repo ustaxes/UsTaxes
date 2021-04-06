@@ -9,7 +9,13 @@ import { TaxesState, TaxPayer, FilingStatus, FilingStatusTexts, filingStatuses }
 import { PagerContext } from '../pager'
 
 export default function FilingStatusSelect (): ReactElement {
-  const { handleSubmit, errors, control } = useForm<{filingStatus: FilingStatus}>()
+  const {
+    handleSubmit,
+    control,
+    formState: {
+      errors
+    }
+  } = useForm<{filingStatus: FilingStatus}>()
   // const variable dispatch to allow use inside function
   const dispatch = useDispatch()
 

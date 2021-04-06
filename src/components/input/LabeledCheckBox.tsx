@@ -19,7 +19,7 @@ export function LabeledCheckBox (props: LabeledCheckBoxProps): ReactElement {
   return (
     <Controller
       name={name}
-      as={
+      render={ () =>
         <div className={classes.root}>
           <FormControl component="fieldset">
             <FormGroup>

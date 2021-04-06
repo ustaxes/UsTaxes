@@ -23,7 +23,14 @@ const toRefund = (formData: UserRefundForm): Refund => ({
 })
 
 export default function RefundBankAccount (): ReactElement {
-  const { register, handleSubmit, errors, control } = useForm<UserRefundForm>()
+  const {
+    register,
+    handleSubmit,
+    control,
+    formState: {
+      errors
+    }
+  } = useForm<UserRefundForm>()
   // const variable dispatch to allow use inside function
   const dispatch = useDispatch()
 
@@ -49,7 +56,7 @@ export default function RefundBankAccount (): ReactElement {
                 <h2>Refund Information</h2>
               </Box>
 
-              <LabeledInput
+              <LabeledInput<UserRefundForm>
                 label="Bank Routing number"
                 register={register}
                 required={true}

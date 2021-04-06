@@ -75,7 +75,7 @@ function List1099s (): ReactElement {
 }
 
 interface F1099UserInput {
-  formType: Income1099Type
+  formType?: Income1099Type
   payer: string
   // Int fields
   interest: string
@@ -126,11 +126,25 @@ const toF1099 = (input: F1099UserInput): Supported1099 => {
         }
       }
     }
+    default: {
+      throw new Error('Attempted to parse 1099 input without selected form type.')
+    }
   }
 }
 
 export default function F1099Info (): ReactElement {
-  const { register, errors, handleSubmit, control, reset, watch, setValue } = useForm<F1099UserInput>()
+  const {
+    register,
+    handleSubmit,
+    control,
+    reset,
+    watch,
+    setValue,
+
+    formState: {
+      errors
+    }
+  } = useForm<F1099UserInput>()
   const dispatch = useDispatch()
 
   const onAdd1099 = handleSubmit((formData: F1099UserInput): void => {
@@ -139,7 +153,7 @@ export default function F1099Info (): ReactElement {
     reset()
   })
 
-  const selectedType: Income1099Type = watch('formType')
+  const selectedType: Income1099Type | undefined = watch('formType')
 
   const people: Person[] = (
     useSelector((state: TaxesState) => ([
@@ -268,7 +282,7 @@ export default function F1099Info (): ReactElement {
           error={errors.payer}
         />
 
-        {specificFields[selectedType]}
+        {(() => { if (selectedType !== undefined) return specificFields[selectedType] })()}
 
         <GenericLabeledDropdown
           dropDownData={people}

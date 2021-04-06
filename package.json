@@ -11,7 +11,7 @@
     "pdf-lib": "^1.16.0",
     "react": "^17.0.1",
     "react-dom": "^17.0.2",
-    "react-hook-form": "^6.15.5",
+    "react-hook-form": "^7.0.2",
     "react-number-format": "^4.5.3",
     "react-pdf": "^5.2.0",
     "react-redux": "^7.2.3",
@@ -21,7 +21,7 @@
     "redux-logger": "^3.0.6",
     "redux-persist": "^6.0.0",
     "tauri": "^0.14.1",
-    "ts-json-schema-generator": "^0.89.1",
+    "ts-json-schema-generator": "^0.89.2",
     "typescript": "^4.2.3"
   },
   "scripts": {
@@ -51,12 +51,13 @@
     ]
   },
   "devDependencies": {
+    "@hookform/devtools": "^3.0.1",
     "@testing-library/jest-dom": "^5.11.10",
     "@testing-library/react": "^11.2.6",
     "@testing-library/user-event": "^13.1.1",
     "@types/jest": "^26.0.22",
     "@types/node": "^14.14.37",
-    "@types/node-fetch": "^2.5.8",
+    "@types/node-fetch": "^2.5.9",
     "@types/react": "^17.0.3",
     "@types/react-dom": "^17.0.3",
     "@types/react-pdf": "^5.0.2",

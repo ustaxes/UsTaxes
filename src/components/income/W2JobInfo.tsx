@@ -69,7 +69,16 @@ const toIncomeW2 = (formData: IncomeW2UserInput): IncomeW2 => ({
 })
 
 export default function W2JobInfo (): ReactElement {
-  const { register, errors, handleSubmit, control, reset } = useForm<IncomeW2UserInput>()
+  const {
+    register,
+    handleSubmit,
+    control,
+    reset,
+
+    formState: {
+      errors
+    }
+  } = useForm<IncomeW2UserInput>()
   const dispatch = useDispatch()
 
   const onAddW2 = handleSubmit((formData: IncomeW2UserInput): void => {

@@ -6,15 +6,9 @@ import { useDispatch, useSelector } from 'react-redux'
 import { LabeledInput } from '../input'
 import { TaxesState, Dependent, Person, PersonRole } from '../../redux/data'
 import { addDependent, addSpouse, removeSpouse } from '../../redux/actions'
-import { ListDependents, PersonFields, PersonListItem } from './PersonFields'
+import { ListDependents, PersonFields, PersonListItem, UserPersonForm } from './PersonFields'
 import FormContainer from './FormContainer'
 import { PagerContext } from '../pager'
-
-interface UserPersonForm {
-  firstName: string
-  lastName: string
-  ssid: string
-}
 
 interface UserDependentForm extends UserPersonForm {
   relationship: string
@@ -31,7 +25,17 @@ const toSpouse = (formData: UserPersonForm): Person => ({
 })
 
 export const AddDependentForm = (): ReactElement => {
-  const { register, control, errors, handleSubmit, getValues, reset } = useForm<UserDependentForm>()
+  const {
+    register,
+    control,
+    handleSubmit,
+    getValues,
+    reset,
+
+    formState: {
+      errors
+    }
+  } = useForm<UserDependentForm>()
 
   const [addingDependent, newDependent] = useState(false)
 
@@ -74,7 +78,16 @@ export const AddDependentForm = (): ReactElement => {
 }
 
 export const SpouseInfo = (): ReactElement => {
-  const { register, control, errors, handleSubmit, getValues } = useForm<UserPersonForm>()
+  const {
+    register,
+    control,
+    handleSubmit,
+    getValues,
+
+    formState: {
+      errors
+    }
+  } = useForm<UserPersonForm>()
   const [editSpouse, updateEditSpouse] = useState(false)
   const dispatch = useDispatch()
 

@@ -14,12 +14,16 @@ export function GenericLabeledDropdown<A> (props: LabeledDropdownProps<A>): Reac
       </Box>
       <Box display="flex" justifyContent="flex-start">
         <Controller
-          as={
+          render={ ({ field: { value, onChange } }) =>
             <TextField
               select
+              value={value}
+              onChange={onChange}
               helperText={error !== undefined ? 'Make a selection' : undefined}
               error={error !== undefined}
               defaultValue=""
+              fullWidth
+              variant="filled"
               SelectProps={{
                 native: true
               }}
@@ -34,13 +38,10 @@ export function GenericLabeledDropdown<A> (props: LabeledDropdownProps<A>): Reac
               )}
             </TextField>
           }
-          error={error !== undefined}
-          fullWidth
           name={name}
           defaultValue={defaultValue}
           rules={{ required: required }}
           control={control}
-          variant="filled"
         />
       </Box>
     </div>

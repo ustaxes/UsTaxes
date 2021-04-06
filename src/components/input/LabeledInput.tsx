@@ -5,14 +5,14 @@ import NumberFormat from 'react-number-format'
 import { InputType } from '../Patterns'
 import { Controller } from 'react-hook-form'
 
-export function LabeledInput (props: LabeledInputProps): ReactElement {
+export function LabeledInput<A> (props: LabeledInputProps<A>): ReactElement {
   const { strongLabel, label, register, error, required = false, patternConfig, name, defaultValue } = props
 
   const input: ReactElement = (() => {
     if (patternConfig?.inputType === InputType.numeric) {
       return (
-        <Controller
-          render={({ onChange, value }) =>
+        <Controller<A>
+          render={({ field: { onChange, value } }) =>
             <NumberFormat
               mask={patternConfig.mask}
               thousandSeparator={patternConfig.thousandSeparator}
@@ -22,7 +22,10 @@ export function LabeledInput (props: LabeledInputProps): ReactElement {
               customInput={TextField}
               isNumericString={false}
               onValueChange={(v) => onChange(v.value)}
-              value={value}
+            // NumberFormat requires a plain value, but here we're still
+            // parameterized as PathValue<A, Path<A>> and it's unclear how to
+            // derive directly
+              value={value as number}
               error={error !== undefined}
               helperText={error?.message}
               variant="filled"
@@ -30,7 +33,6 @@ export function LabeledInput (props: LabeledInputProps): ReactElement {
           }
           name={name}
           control={patternConfig.control}
-          required={required}
           defaultValue={defaultValue}
           rules={{
             required: required ? 'Input is required' : undefined,
@@ -45,9 +47,8 @@ export function LabeledInput (props: LabeledInputProps): ReactElement {
 
     return (
       <TextField
-        name={name}
         defaultValue={defaultValue}
-        inputRef={register({
+        {...register(name, {
           required: required ? 'Input is required' : undefined,
           pattern: {
             value: patternConfig?.regexp ?? (required ? /.+/ : /.*/),
