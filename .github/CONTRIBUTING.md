@@ -45,9 +45,11 @@ Before contributing please make sure to take a moment to read through the [Code 
 
 First, [join our Discord server](https://discord.gg/dAaz472mPz) and let us know that you want to contribute. This way we can point you in the right direction and help ensure your contribution will be as helpful as possible.
 
-To set up your machine for development, review the [Architecture doc](ARCHITECTURE.md), for required links to set up NPM > 7 and Rust.
+1. To set up your machine for development, review the [Architecture doc](ARCHITECTURE.md), for required links to set up NPM 6 and Rust.
 
-Next, fork and clone this repo.
+1. Next, fork and clone this repo.
+
+1. Run `npm ci` to install the package versions referenced in `package-lock.json`. If your feature requires a new dependency, add it using `npm install <package-name>@<version>` to avoid affecting other dependencies in `package-lock.json`.
 
 Try
 
