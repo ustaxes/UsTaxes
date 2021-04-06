@@ -8,6 +8,7 @@ import { TaxesState, Person, PersonRole, Supported1099, Income1099Type } from '.
 import DeleteIcon from '@material-ui/icons/Delete'
 import { Currency, GenericLabeledDropdown, LabeledInput } from '../input'
 import { Patterns } from '../Patterns'
+import { DevTool } from '@hookform/devtools'
 
 const showIncome = (a: Supported1099): ReactElement => {
   switch (a.type) {
@@ -329,6 +330,7 @@ export default function F1099Info (): ReactElement {
             {form}
             { navButtons }
           </form>
+          <DevTool control={control} />
         </Box>
       }
     </PagerContext.Consumer>

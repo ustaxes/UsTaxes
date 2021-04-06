@@ -8,6 +8,7 @@ import { saveRefundInfo } from '../redux/actions'
 
 import { AccountType, Refund, TaxesState } from '../redux/data'
 import { PagerContext } from './pager'
+import { DevTool } from '@hookform/devtools'
 
 interface UserRefundForm {
   routingNumber: string
@@ -95,6 +96,7 @@ export default function RefundBankAccount (): ReactElement {
               {navButtons}
             </div>
           </form>
+          <DevTool control={control}/>
         </Box>
       }
     </PagerContext.Consumer>

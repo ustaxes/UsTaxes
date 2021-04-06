@@ -4,16 +4,13 @@ import { Box } from '@material-ui/core'
 import { useDispatch, useSelector } from 'react-redux'
 import { savePrimaryPersonInfo } from '../../redux/actions'
 import { Address, PersonRole, PrimaryPerson, TaxesState, TaxPayer } from '../../redux/data'
-import { PersonFields } from './PersonFields'
+import { PersonFields, UserPersonForm } from './PersonFields'
 import { LabeledCheckBox, LabeledInput, USStateDropDown } from '../input'
 import { Patterns } from '../Patterns'
 import { PagerContext } from '../pager'
+import { DevTool } from '@hookform/devtools'
 
-interface TaxPayerUserForm {
-  firstName: string
-  lastName: string
-  ssid: string
-  role: PersonRole
+interface TaxPayerUserForm extends UserPersonForm{
   address: Address
 }
 
@@ -33,7 +30,7 @@ export default function TaxPayerInfo (): ReactElement {
     formState: {
       errors
     }
-  } = useForm<PrimaryPerson>()
+  } = useForm<TaxPayerUserForm>()
   // const variable dispatch to allow use inside function
   const dispatch = useDispatch()
 
@@ -136,7 +133,7 @@ export default function TaxPayerInfo (): ReactElement {
               error={errors.address?.aptNo}
               defaultValue={taxPayer?.primaryPerson?.address.aptNo}
             />
-            <LabeledInput
+            <LabeledInput<TaxPayerUserForm>
               label="City"
               register={register}
               name="address.city"
@@ -155,6 +152,7 @@ export default function TaxPayerInfo (): ReactElement {
             {csz}
             {navButtons}
           </form>
+          <DevTool control={control} />
         </Box>
       }
     </PagerContext.Consumer>

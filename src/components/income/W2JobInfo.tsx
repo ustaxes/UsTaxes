@@ -8,6 +8,7 @@ import { TaxesState, IncomeW2, Person, PersonRole } from '../../redux/data'
 import DeleteIcon from '@material-ui/icons/Delete'
 import { Currency, GenericLabeledDropdown, LabeledInput } from '../input'
 import { Patterns } from '../Patterns'
+import { DevTool } from '@hookform/devtools'
 
 interface W2ListItemProps {
   w2: IncomeW2
@@ -183,6 +184,7 @@ export default function W2JobInfo (): ReactElement {
             {form}
             { navButtons }
           </form>
+          <DevTool control={control} />
         </Box>
       }
     </PagerContext.Consumer>
