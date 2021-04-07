@@ -53,9 +53,9 @@ const Summary = (): ReactElement => {
 
   return (
     <PagerContext.Consumer>
-      { ({ navButtons }) =>
+      { ({ navButtons, onAdvance }) =>
         <Box display="flex" justifyContent="center">
-          <form>
+          <form onSubmit={onAdvance}>
             <div>
               <Box display="flex" justifyContent="flex-start">
                 <h2>Summary</h2>
