@@ -90,7 +90,7 @@ export const AddDependentForm = (): ReactElement => {
           required={false}
         />
         <LabeledCheckBox
-          label="Is this person a student"
+          label="Is this person a full-time student"
           name="isStudent"
           control={control}
           value={isStudent}

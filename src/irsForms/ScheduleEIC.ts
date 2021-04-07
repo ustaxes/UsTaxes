@@ -48,7 +48,8 @@ export default class ScheduleEIC implements Form {
   f4797?: F4797
   f8814?: F8814
   pub596Worksheet1: Pub596Worksheet1
-  qualifyingCutoffYear: number = 1996
+  qualifyingStudentCutoffYear: number = 1996
+  qualifyingCutoffYear: number = 2001
   investmentIncomeLimit: number = 3650
 
   constructor (tp: TP) {
@@ -271,7 +272,12 @@ export default class ScheduleEIC implements Form {
   }
 
   qualifyingDependents = (): Dependent[] => this.tp.tp.dependents
-    .filter((d) => d.qualifyingInfo?.birthYear !== undefined)
+    .filter((d) =>
+      (d.qualifyingInfo?.birthYear !== undefined) && (
+        (d.qualifyingInfo?.birthYear !== undefined && d.qualifyingInfo?.birthYear >= this.qualifyingCutoffYear) ||
+        ((d.qualifyingInfo?.isStudent ?? false) && (d.qualifyingInfo?.birthYear >= this.qualifyingStudentCutoffYear))
+      )
+    )
     .sort((d) => (d.qualifyingInfo?.birthYear as number))
     .slice(0, 3)
 
