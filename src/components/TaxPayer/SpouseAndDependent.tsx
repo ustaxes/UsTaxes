@@ -4,7 +4,6 @@ import { useForm } from 'react-hook-form'
 import { Box, Button, List } from '@material-ui/core'
 import { useDispatch, useSelector } from 'react-redux'
 import { LabeledInput, LabeledCheckBox } from '../input'
-import { Patterns } from '../Patterns'
 import { TaxesState, Dependent, Spouse, PersonRole } from '../../redux/data'
 import { addDependent, addSpouse, removeSpouse } from '../../redux/actions'
 import { ListDependents, PersonFields, PersonListItem } from './PersonFields'
@@ -106,7 +105,7 @@ export const SpouseInfo = (): ReactElement => {
           register={register}
           errors={errors}
           control={control}
-        />
+        >
           <LabeledCheckBox
             label="Check if your spouse is a dependent"
             control={control}
