@@ -60,15 +60,6 @@ export default class ScheduleEIC implements Form {
     this.pub596Worksheet1 = new Pub596Worksheet1(tp)
   }
 
-  // At least key children, and max [NonMFJLimit, MFJLimit] income
-  step1ChildrenIncomes: Array<[number, number]> = [
-  // Nonmfj, mfjlimit
-    [15820, 21710], // 0 dependents
-    [41756, 47646], // 1
-    [47440, 53330], // 2
-    [50954, 56844] // 3
-  ]
-
   // instructions step 1.1
   passIncomeLimit = (f1040: F1040): boolean => {
     if (this.tp.tp.filingStatus !== undefined) {
