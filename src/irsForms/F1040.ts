@@ -37,8 +37,8 @@ export default class F1040 implements Form {
   province?: string
   postalCode?: string
   virtualCurrency: boolean
-  claimDependentPrimary: boolean
-  claimDependentSpouse: boolean
+  isTaxpayerDependent: boolean
+  isSpouseDependent: boolean
   dependents: Dependent[]
   refund?: Refund
   contactPhoneNumber?: string
@@ -77,8 +77,8 @@ export default class F1040 implements Form {
     this.province = tp.primaryPerson?.address.province
     this.postalCode = tp.primaryPerson?.address.postalCode
     this.virtualCurrency = false
-    this.claimDependentPrimary = Boolean(tp.primaryPerson?.isTaxpayerDependent)
-    this.claimDependentSpouse = Boolean(tp.spouse?.isTaxpayerDependent)
+    this.isTaxpayerDependent = Boolean(tp.primaryPerson?.isTaxpayerDependent)
+    this.isSpouseDependent = Boolean(tp.spouse?.isTaxpayerDependent)
     this.dependents = tp.dependents
     this.w2s = []
     this.contactPhoneNumber = tp.contactPhoneNumber
@@ -169,7 +169,7 @@ export default class F1040 implements Form {
   standardDeduction = (): number => {
     if (this.filingStatus === undefined) {
       return 12400
-    } else if (this.claimDependentPrimary || this.claimDependentSpouse) {
+    } else if (this.isTaxpayerDependent || this.isSpouseDependent) {
       return Math.min(
         (F1040.standardDeductions[this.filingStatus] ?? 12400),
         (this.wages() > 750) ? (this.wages() + 350) : 1100
@@ -405,8 +405,8 @@ export default class F1040 implements Form {
     false,
     this.virtualCurrency,
     !this.virtualCurrency,
-    this.claimDependentPrimary,
-    this.claimDependentSpouse,
+    this.isTaxpayerDependent,
+    this.isSpouseDependent,
     false, // TODO: spouse itemizes separately,
     this.bornBeforeDate(),
     this.blind(),
