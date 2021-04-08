@@ -169,6 +169,11 @@ export default class F1040 implements Form {
   standardDeduction = (): number => {
     if (this.filingStatus === undefined) {
       return 12400
+    } else if (this.claimDependentPrimary || this.claimDependentSpouse) {
+      return Math.min(
+        (F1040.standardDeductions[this.filingStatus] ?? 12400),
+        (this.wages() > 750) ? (this.wages() + 350) : 1100
+      )
     }
     return F1040.standardDeductions[this.filingStatus]
   }
