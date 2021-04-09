@@ -53,7 +53,7 @@ export const AddDependentForm = (): ReactElement => {
   const [isStudent, updateIsStudent] = useState(false)
 
   const onSubmit = (): void => {
-    dispatch(addDependent(toDependent(getValues())))
+    dispatch(addDependent(toDependent({ ...getValues(), isStudent })))
     reset()
   }
 
