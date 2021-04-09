@@ -70,7 +70,7 @@
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^4.2.1",
-    "eslint-plugin-react": "^7.23.1",
+    "eslint-plugin-react": "^7.23.2",
     "eslint-plugin-standard": "^5.0.0",
     "husky": "^6.0.0",
     "typescript-eslint": "0.0.1-alpha.0"
