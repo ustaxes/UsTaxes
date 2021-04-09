@@ -84,7 +84,7 @@ export const AddDependentForm = (): ReactElement => {
         />
         <LabeledInput
           register={register}
-          label="How many months did this person live with you this year?"
+          label="How many months did you live together this year?"
           patternConfig={Patterns.numMonths(control)}
           name="numberOfMonths"
           required={false}
