@@ -1,6 +1,8 @@
 import { FilingStatus } from '../redux/data'
 import { linear, Piecewise } from '../util'
 
+export const CURRENT_YEAR = 2020
+
 interface TaggedAmount {
   name: string
   amount: number
