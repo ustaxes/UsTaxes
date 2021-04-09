@@ -1,8 +1,8 @@
-import React, { ReactElement, useState } from 'react'
+import React, { ReactElement } from 'react'
 import { useForm } from 'react-hook-form'
 import { Box } from '@material-ui/core'
 import { useDispatch, useSelector } from 'react-redux'
-import { LabeledCheckBox, LabeledInput } from './input'
+import { LabeledInput, LabeledRadio } from './input'
 import { Patterns } from './Patterns'
 import { saveRefundInfo } from '../redux/actions'
 
@@ -12,15 +12,10 @@ import { PagerContext } from './pager'
 interface UserRefundForm {
   routingNumber: string
   accountNumber: string
-  isChecking: boolean
-  isSavings: boolean
+  accountType: AccountType
 }
 
-const toRefund = (formData: UserRefundForm): Refund => ({
-  routingNumber: formData.routingNumber,
-  accountNumber: formData.accountNumber,
-  accountType: formData.isChecking ? AccountType.checking : AccountType.savings
-})
+const toRefund = (formData: UserRefundForm): Refund => formData
 
 export default function RefundBankAccount (): ReactElement {
   const { register, handleSubmit, errors, control } = useForm<UserRefundForm>()
@@ -30,8 +25,6 @@ export default function RefundBankAccount (): ReactElement {
   const prevFormData: Refund | undefined = useSelector((state: TaxesState) => {
     return state.information.refund
   })
-
-  const [isChecking, updateChecking] = useState(prevFormData?.accountType === AccountType.checking)
 
   // component functions
   const onSubmit = (onAdvance: () => void) => (formData: UserRefundForm): void => {
@@ -68,22 +61,12 @@ export default function RefundBankAccount (): ReactElement {
                 defaultValue={prevFormData?.accountNumber}
                 error={errors.accountNumber}
               />
-              <Box display="flex" justifyContent="flex-start">
-                <h4>Type</h4>
-              </Box>
-              <LabeledCheckBox
+              <LabeledRadio
+                label="Account Type"
                 control={control}
-                name="isChecking"
-                value={isChecking}
-                setValue={updateChecking}
-                label="Checking"
-              />
-              <LabeledCheckBox
-                name="isSavings"
-                control={control}
-                value={!isChecking}
-                setValue={(v) => updateChecking(!v)}
-                label="Savings"
+                name="accountType"
+                defaultValue={prevFormData?.accountType as string}
+                values={[['Checking', 'checking'], ['Savings', 'savings']]}
               />
               {navButtons}
             </div>
