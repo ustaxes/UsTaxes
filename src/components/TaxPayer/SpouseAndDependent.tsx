@@ -80,14 +80,16 @@ export const AddDependentForm = (): ReactElement => {
           label="Birth year"
           patternConfig={Patterns.year(control)}
           name="birthYear"
-          required={false}
+          required={true}
+          error={errors.birthYear}
         />
         <LabeledInput
           register={register}
           label="How many months did you live together this year?"
           patternConfig={Patterns.numMonths(control)}
           name="numberOfMonths"
-          required={false}
+          required={true}
+          error={errors.numberOfMonths}
         />
         <LabeledCheckBox
           label="Is this person a full-time student"
