@@ -8,6 +8,9 @@ import { Controller } from 'react-hook-form'
 export function LabeledInput<A> (props: LabeledInputProps<A>): ReactElement {
   const { strongLabel, label, register, error, required = false, patternConfig, name, defaultValue } = props
 
+  const requiredRegex: RegExp = patternConfig?.regexp ?? (required ? /.+/ : /.*/)
+  const requiredMessage: string = patternConfig?.description ?? (required ? 'Input is required' : '')
+
   const input: ReactElement = (() => {
     if (patternConfig?.inputType === InputType.numeric) {
       return (
@@ -35,10 +38,10 @@ export function LabeledInput<A> (props: LabeledInputProps<A>): ReactElement {
           control={patternConfig.control}
           defaultValue={defaultValue}
           rules={{
-            required: required ? 'Input is required' : undefined,
+            required,
             pattern: {
-              value: patternConfig.regexp ?? (required ? /.+/ : /.*/),
-              message: patternConfig.description ?? (required ? 'Input is required' : '')
+              value: requiredRegex,
+              message: requiredMessage
             }
           }}
         />
@@ -48,17 +51,17 @@ export function LabeledInput<A> (props: LabeledInputProps<A>): ReactElement {
     return (
       <TextField
         defaultValue={defaultValue}
-        {...register(name, {
-          required: required ? 'Input is required' : undefined,
-          pattern: {
-            value: patternConfig?.regexp ?? (required ? /.+/ : /.*/),
-            message: patternConfig?.description ?? (required ? 'Input is required' : '')
-          }
-        })}
         fullWidth={patternConfig?.format === undefined}
         helperText={error?.message}
         error={error !== undefined}
         variant="filled"
+        {...register(name, {
+          required,
+          pattern: {
+            value: requiredRegex,
+            message: requiredMessage
+          }
+        })}
       />
     )
   })()
