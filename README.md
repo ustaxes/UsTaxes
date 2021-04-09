@@ -60,7 +60,16 @@ This application can be either run as a web application or a standalone desktop 
 
 ### Web application
 
-To run, `npm start` or `yarn start`.
+To run, `npm run start` or `yarn start`.
+
+If preferred, a Docker alternative is available:
+```
+docker-compose build
+docker-compose up
+```
+Then, open a browser to `http://localhost:3000`.
+
+To stop and remove running containers, run `docker-compose down`.
 
 ### Desktop application
 
