@@ -330,7 +330,7 @@ export default class ScheduleEIC implements Form {
   // Line 6
   numberMonths = (): Array<number | undefined> =>
     this.qualifyingDependents()
-      .map((d) => 12)
+      .map((d) => d.qualifyingInfo?.numberOfMonths)
 
   fields = (): Array<string | number | boolean | undefined> => ([
     this.tp.namesString(),
