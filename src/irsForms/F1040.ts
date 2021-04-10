@@ -1,4 +1,5 @@
 import { AccountType, Dependent, FilingStatus, IncomeW2, PersonRole, Refund, TaxPayer } from '../redux/data'
+import federalBrackets from '../data/federal'
 import F4972 from './F4972'
 import F8814 from './F8814'
 import Schedule8863 from './F8863'
@@ -158,24 +159,16 @@ export default class F1040 implements Form {
   w2ForRole = (r: PersonRole): IncomeW2 | undefined =>
     (this.w2s ?? []).find((w2) => w2.personRole === r)
 
-  static standardDeductions: {[key: string]: number} = {
-    [FilingStatus.S]: 12400,
-    [FilingStatus.MFS]: 12400,
-    [FilingStatus.HOH]: 18650,
-    [FilingStatus.MFJ]: 24800,
-    [FilingStatus.W]: 24800
-  }
-
   standardDeduction = (): number => {
     if (this.filingStatus === undefined) {
       return 12400
     } else if (this.isTaxpayerDependent || this.isSpouseDependent) {
       return Math.min(
-        (F1040.standardDeductions[this.filingStatus] ?? 12400),
+        (federalBrackets.ordinary.status[this.filingStatus].deductions[0].amount ?? 12400),
         (this.wages() > 750) ? (this.wages() + 350) : 1100
       )
     }
-    return F1040.standardDeductions[this.filingStatus]
+    return federalBrackets.ordinary.status[this.filingStatus].deductions[0].amount
   }
 
   totalQualifiedDividends = (): number | undefined => displayNumber(
