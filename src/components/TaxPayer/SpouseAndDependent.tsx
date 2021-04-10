@@ -33,20 +33,25 @@ const toSpouse = (formData: UserPersonForm): Person => ({
 export const AddDependentForm = (): ReactElement => {
   const { register, control, errors, handleSubmit, getValues, reset } = useForm<UserDependentForm>()
 
-  const [addingDependent, newDependent] = useState(false)
+  const [adding, updateAdding] = useState(false)
 
   const dispatch = useDispatch()
 
-  const onSubmit = (): void => {
-    dispatch(addDependent(toDependent(getValues())))
+  const clear = (): void => {
+    updateAdding(false)
     reset()
   }
 
-  if (addingDependent) {
+  const onSubmit = (): void => {
+    dispatch(addDependent(toDependent(getValues())))
+    clear()
+  }
+
+  if (adding) {
     return (
       <FormContainer
         onDone={handleSubmit(onSubmit)}
-        onCancel={() => newDependent(false)}
+        onCancel={clear}
       >
         <PersonFields
           register={register}
@@ -65,7 +70,7 @@ export const AddDependentForm = (): ReactElement => {
   } else {
     return (
       <Box display="flex" justifyContent="flex-start">
-        <Button type="button" onClick={() => newDependent(true)} variant="contained" color="secondary">
+        <Button type="button" onClick={() => updateAdding(true)} variant="contained" color="secondary">
           Add
         </Button>
       </Box>
