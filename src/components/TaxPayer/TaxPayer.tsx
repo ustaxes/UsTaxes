@@ -15,6 +15,7 @@ interface TaxPayerUserForm {
   ssid: string
   role: PersonRole
   address: Address
+  isTaxpayerDependent: boolean
 }
 
 const asPrimaryPerson = (formData: TaxPayerUserForm): PrimaryPerson => ({
@@ -22,6 +23,7 @@ const asPrimaryPerson = (formData: TaxPayerUserForm): PrimaryPerson => ({
   firstName: formData.firstName,
   lastName: formData.lastName,
   ssid: formData.ssid.replace(/-/g, ''),
+  isTaxpayerDependent: formData.isTaxpayerDependent,
   role: PersonRole.PRIMARY
 })
 
@@ -114,6 +116,12 @@ export default function TaxPayerInfo (): ReactElement {
               errors={errors}
               defaults={taxPayer?.primaryPerson}
               control={control}
+            />
+            <LabeledCheckbox
+              label="Check if you are a dependent"
+              control={control}
+              defaultValue={taxPayer?.primaryPerson?.isTaxpayerDependent}
+              name="isTaxpayerDependent"
             />
             <LabeledInput
               label="Address"

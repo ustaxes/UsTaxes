@@ -1,4 +1,5 @@
 import { AccountType, Dependent, FilingStatus, IncomeW2, PersonRole, Refund, TaxPayer } from '../redux/data'
+import federalBrackets from '../data/federal'
 import F4972 from './F4972'
 import F8814 from './F8814'
 import Schedule8863 from './F8863'
@@ -17,6 +18,10 @@ import { displayNumber, computeField, sumFields } from './util'
 import ScheduleB from './ScheduleB'
 import { computeOrdinaryTax } from './TaxTable'
 import SDQualifiedAndCapGains from './worksheets/SDQualifiedAndCapGains'
+
+export enum F1040Error {
+  filingStatusUndefined = 'Select a filing status'
+}
 
 export default class F1040 implements Form {
   // intentionally mirroring many fields from the state,
@@ -37,8 +42,8 @@ export default class F1040 implements Form {
   province?: string
   postalCode?: string
   virtualCurrency: boolean
-  claimDependentPrimary: boolean
-  claimDependentSpouse: boolean
+  isTaxpayerDependent: boolean
+  isSpouseDependent: boolean
   dependents: Dependent[]
   refund?: Refund
   contactPhoneNumber?: string
@@ -77,8 +82,8 @@ export default class F1040 implements Form {
     this.province = tp.primaryPerson?.address.province
     this.postalCode = tp.primaryPerson?.address.postalCode
     this.virtualCurrency = false
-    this.claimDependentPrimary = false
-    this.claimDependentSpouse = false
+    this.isTaxpayerDependent = Boolean(tp.primaryPerson?.isTaxpayerDependent)
+    this.isSpouseDependent = Boolean(tp.spouse?.isTaxpayerDependent)
     this.dependents = tp.dependents
     this.w2s = []
     this.contactPhoneNumber = tp.contactPhoneNumber
@@ -158,19 +163,16 @@ export default class F1040 implements Form {
   w2ForRole = (r: PersonRole): IncomeW2 | undefined =>
     (this.w2s ?? []).find((w2) => w2.personRole === r)
 
-  static standardDeductions: {[key: string]: number} = {
-    [FilingStatus.S]: 12400,
-    [FilingStatus.MFS]: 12400,
-    [FilingStatus.HOH]: 18650,
-    [FilingStatus.MFJ]: 24800,
-    [FilingStatus.W]: 24800
-  }
-
-  standardDeduction = (): number => {
+  standardDeduction = (): number | undefined => {
     if (this.filingStatus === undefined) {
-      return 12400
+      return undefined
+    } else if (this.isTaxpayerDependent || this.isSpouseDependent) {
+      return Math.min(
+        (federalBrackets.ordinary.status[this.filingStatus].deductions[0].amount),
+        (this.wages() > 750) ? (this.wages() + 350) : 1100
+      )
     }
-    return F1040.standardDeductions[this.filingStatus]
+    return federalBrackets.ordinary.status[this.filingStatus].deductions[0].amount
   }
 
   totalQualifiedDividends = (): number | undefined => displayNumber(
@@ -374,6 +376,15 @@ export default class F1040 implements Form {
   _depFieldMappings = (): Array<string | boolean> =>
     Array.from(Array(20)).map((u, n: number) => this._depField(n))
 
+  errors = (): F1040Error[] => {
+    const result: F1040Error[] = []
+    if (this.filingStatus === undefined) {
+      result.push(F1040Error.filingStatusUndefined)
+    }
+
+    return result
+  }
+
   fields = (): Array<string | number | boolean | undefined> => ([
     this.filingStatus === FilingStatus.S,
     this.filingStatus === FilingStatus.MFJ,
@@ -400,8 +411,8 @@ export default class F1040 implements Form {
     false,
     this.virtualCurrency,
     !this.virtualCurrency,
-    this.claimDependentPrimary,
-    this.claimDependentSpouse,
+    this.isTaxpayerDependent,
+    this.isSpouseDependent,
     false, // TODO: spouse itemizes separately,
     this.bornBeforeDate(),
     this.blind(),
