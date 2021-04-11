@@ -3,8 +3,8 @@ import React, { ReactElement, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { Box, Button, List } from '@material-ui/core'
 import { useDispatch, useSelector } from 'react-redux'
-import { LabeledInput } from '../input'
-import { TaxesState, Dependent, Person, PersonRole } from '../../redux/data'
+import { LabeledInput, LabeledCheckBox } from '../input'
+import { TaxesState, Dependent, Spouse, PersonRole } from '../../redux/data'
 import { addDependent, addSpouse, removeSpouse } from '../../redux/actions'
 import { ListDependents, PersonFields, PersonListItem } from './PersonFields'
 import FormContainer from './FormContainer'
@@ -20,12 +20,16 @@ interface UserDependentForm extends UserPersonForm {
   relationship: string
 }
 
+interface UserSpouseForm extends UserPersonForm {
+  isTaxpayerDependent: boolean
+}
+
 const toDependent = (formData: UserDependentForm): Dependent => ({
   ...formData,
   role: PersonRole.DEPENDENT
 })
 
-const toSpouse = (formData: UserPersonForm): Person => ({
+const toSpouse = (formData: UserSpouseForm): Spouse => ({
   ...formData,
   role: PersonRole.SPOUSE
 })
@@ -79,13 +83,17 @@ export const AddDependentForm = (): ReactElement => {
 }
 
 export const SpouseInfo = (): ReactElement => {
-  const { register, control, errors, handleSubmit, getValues } = useForm<UserPersonForm>()
+  const { register, errors, handleSubmit, control, getValues } = useForm<UserSpouseForm>()
   const [editSpouse, updateEditSpouse] = useState(false)
   const dispatch = useDispatch()
 
-  const spouse: Person | undefined = useSelector((state: TaxesState) => {
+  const spouse: Spouse | undefined = useSelector((state: TaxesState) => {
     return state.information.taxPayer?.spouse
   })
+
+  const [isTaxpayerDependent, updateTaxpayerDependent] = useState<boolean>(
+    spouse?.isTaxpayerDependent !== undefined
+  )
 
   const onSubmit = (): void => {
     updateEditSpouse(false)
@@ -102,7 +110,15 @@ export const SpouseInfo = (): ReactElement => {
           register={register}
           errors={errors}
           control={control}
-        />
+        >
+          <LabeledCheckBox
+            label="Check if your spouse is a dependent"
+            control={control}
+            value={isTaxpayerDependent}
+            setValue={updateTaxpayerDependent}
+            name="isTaxpayerDependent"
+          />
+        </PersonFields>
       </FormContainer>
     )
   } else if (spouse !== undefined) {
