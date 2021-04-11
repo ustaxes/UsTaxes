@@ -19,6 +19,10 @@ import ScheduleB from './ScheduleB'
 import { computeOrdinaryTax } from './TaxTable'
 import SDQualifiedAndCapGains from './worksheets/SDQualifiedAndCapGains'
 
+export enum F1040Error {
+  filingStatusUndefined = 'Select a filing status'
+}
+
 export default class F1040 implements Form {
   // intentionally mirroring many fields from the state,
   // trying to represent the fields that the 1040 requires
@@ -159,9 +163,9 @@ export default class F1040 implements Form {
   w2ForRole = (r: PersonRole): IncomeW2 | undefined =>
     (this.w2s ?? []).find((w2) => w2.personRole === r)
 
-  standardDeduction = (): number => {
+  standardDeduction = (): number | undefined => {
     if (this.filingStatus === undefined) {
-      throw new Error('filing status should not be undefined when calculating standard deduction')
+      return undefined
     } else if (this.isTaxpayerDependent || this.isSpouseDependent) {
       return Math.min(
         (federalBrackets.ordinary.status[this.filingStatus].deductions[0].amount),
@@ -371,6 +375,15 @@ export default class F1040 implements Form {
   // so create field mappings for 4x5 grid of fields
   _depFieldMappings = (): Array<string | boolean> =>
     Array.from(Array(20)).map((u, n: number) => this._depField(n))
+
+  errors = (): F1040Error[] => {
+    const result: F1040Error[] = []
+    if (this.filingStatus === undefined) {
+      result.push(F1040Error.filingStatusUndefined)
+    }
+
+    return result
+  }
 
   fields = (): Array<string | number | boolean | undefined> => ([
     this.filingStatus === FilingStatus.S,
