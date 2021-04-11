@@ -157,10 +157,8 @@ export default class ScheduleEIC implements Form {
   // 4.4 covered above
   // 4.5 covered above
   // 4.6 dependent of another
-  dependentOfAnother = (): boolean => {
-    unimplemented('4.6: Not checking dependent of another')
-    return false
-  }
+  dependentOfAnother = (): boolean =>
+    (this.tp.tp.primaryPerson?.isTaxpayerDependent ?? false) || (this.tp.tp.spouse?.isTaxpayerDependent ?? false)
 
   // 5.1 - Filing schedule SE for church
   filingSEChurchIncome = (): boolean => {
@@ -259,6 +257,11 @@ export default class ScheduleEIC implements Form {
         !this.passForm8814() ||
         this.incomeOrLossFromPassiveActivity()
       ) || this.passPub596()
+    ) && (
+      !(
+        // Step 4
+        this.tp.tp.filingStatus !== FilingStatus.MFJ && this.dependentOfAnother()
+      )
     ) && this.credit(f1040) > 0
   }
 
