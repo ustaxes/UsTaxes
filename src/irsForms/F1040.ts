@@ -161,10 +161,10 @@ export default class F1040 implements Form {
 
   standardDeduction = (): number => {
     if (this.filingStatus === undefined) {
-      return 12400
+      throw new Error('filing status should not be undefined when calculating standard deduction')
     } else if (this.isTaxpayerDependent || this.isSpouseDependent) {
       return Math.min(
-        (federalBrackets.ordinary.status[this.filingStatus].deductions[0].amount ?? 12400),
+        (federalBrackets.ordinary.status[this.filingStatus].deductions[0].amount),
         (this.wages() > 750) ? (this.wages() + 350) : 1100
       )
     }
