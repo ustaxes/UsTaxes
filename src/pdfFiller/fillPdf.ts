@@ -87,6 +87,11 @@ export async function create1040 (): Promise<Uint8Array> {
 
   if (state.taxPayer !== undefined) {
     const f1040 = new F1040(state.taxPayer)
+
+    if (f1040.errors().length > 0) {
+      return await Promise.reject(f1040.errors())
+    }
+
     state.w2s.forEach((w2) => f1040.addW2(w2))
     if (state.refund !== undefined) {
       f1040.addRefund(state.refund)

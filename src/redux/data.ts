@@ -36,6 +36,11 @@ export interface Address {
 
 export interface PrimaryPerson extends Person {
   address: Address
+  isTaxpayerDependent: boolean
+}
+
+export interface Spouse extends Person {
+  isTaxpayerDependent: boolean
 }
 
 export interface Employer {
@@ -137,7 +142,7 @@ export interface ContactInfo {
 export interface TaxPayer extends ContactInfo {
   filingStatus?: FilingStatus
   primaryPerson?: PrimaryPerson
-  spouse?: Person
+  spouse?: Spouse
   dependents: Dependent[]
 }
 
