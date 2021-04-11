@@ -3,7 +3,7 @@ import React, { ReactElement, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { Box, Button, List } from '@material-ui/core'
 import { useDispatch, useSelector } from 'react-redux'
-import { LabeledInput, LabeledCheckBox } from '../input'
+import { LabeledInput, LabeledCheckbox } from '../input'
 import { TaxesState, Dependent, Spouse, PersonRole } from '../../redux/data'
 import { addDependent, addSpouse, removeSpouse } from '../../redux/actions'
 import { ListDependents, PersonFields, PersonListItem } from './PersonFields'
@@ -91,10 +91,6 @@ export const SpouseInfo = (): ReactElement => {
     return state.information.taxPayer?.spouse
   })
 
-  const [isTaxpayerDependent, updateTaxpayerDependent] = useState<boolean>(
-    spouse?.isTaxpayerDependent !== undefined
-  )
-
   const onSubmit = (): void => {
     updateEditSpouse(false)
     dispatch(addSpouse(toSpouse(getValues())))
@@ -111,11 +107,10 @@ export const SpouseInfo = (): ReactElement => {
           errors={errors}
           control={control}
         >
-          <LabeledCheckBox
+          <LabeledCheckbox
             label="Check if your spouse is a dependent"
             control={control}
-            value={isTaxpayerDependent}
-            setValue={updateTaxpayerDependent}
+            defaultValue={spouse?.isTaxpayerDependent}
             name="isTaxpayerDependent"
           />
         </PersonFields>
