@@ -18,7 +18,7 @@ export interface UserPersonForm {
 }
 
 interface PersonFieldsProps<T extends UserPersonForm> extends BaseFormProps<T> {
-  defaults?: T
+  defaults?: UserPersonForm
   children?: ReactNode
   errors: DeepMap<Partial<Person>, FieldError>
   control: Control<T>

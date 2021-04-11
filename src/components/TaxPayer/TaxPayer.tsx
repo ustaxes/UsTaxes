@@ -1,17 +1,19 @@
-import React, { ReactElement, useState } from 'react'
-import { useForm } from 'react-hook-form'
+import React, { ReactElement } from 'react'
+import { useForm, useWatch } from 'react-hook-form'
 import { Box } from '@material-ui/core'
 import { useDispatch, useSelector } from 'react-redux'
 import { savePrimaryPersonInfo } from '../../redux/actions'
 import { Address, PersonRole, PrimaryPerson, TaxesState, TaxPayer } from '../../redux/data'
 import { PersonFields, UserPersonForm } from './PersonFields'
-import { LabeledCheckBox, LabeledInput, USStateDropDown } from '../input'
+import { LabeledCheckbox, LabeledInput, USStateDropDown } from '../input'
 import { Patterns } from '../Patterns'
 import { PagerContext } from '../pager'
 import { DevTool } from '@hookform/devtools'
 
 interface TaxPayerUserForm extends UserPersonForm{
   address: Address
+  isForeignCountry: boolean
+  isTaxpayerDependent: boolean
 }
 
 const asPrimaryPerson = (formData: TaxPayerUserForm): PrimaryPerson => ({
@@ -19,6 +21,7 @@ const asPrimaryPerson = (formData: TaxPayerUserForm): PrimaryPerson => ({
   firstName: formData.firstName,
   lastName: formData.lastName,
   ssid: formData.ssid.replace(/-/g, ''),
+  isTaxpayerDependent: formData.isTaxpayerDependent,
   role: PersonRole.PRIMARY
 })
 
@@ -38,17 +41,19 @@ export default function TaxPayerInfo (): ReactElement {
     return state.information.taxPayer
   })
 
-  const [isForeignCountry, updateForeignCountry] = useState<boolean>(
-    taxPayer?.primaryPerson?.address.foreignCountry !== undefined
-  )
+  const isForeignCountry = useWatch({
+    control,
+    name: 'isForeignCountry',
+    defaultValue: false
+  })
 
-  const onSubmit = (onAdvance: () => void) => (primaryPerson: PrimaryPerson): void => {
-    dispatch(savePrimaryPersonInfo(asPrimaryPerson(primaryPerson)))
+  const onSubmit = (onAdvance: () => void) => (formData: TaxPayerUserForm): void => {
+    dispatch(savePrimaryPersonInfo(asPrimaryPerson(formData)))
     onAdvance()
   }
 
   const csz: ReactElement = (() => {
-    if (!isForeignCountry) {
+    if (isForeignCountry) {
       return (
         <div>
           <USStateDropDown
@@ -111,11 +116,17 @@ export default function TaxPayerInfo (): ReactElement {
             </Box>
 
             <h4>Primary Taxpayer Information</h4>
-            <PersonFields
+            <PersonFields<TaxPayerUserForm>
               register={register}
               errors={errors}
               defaults={taxPayer?.primaryPerson}
               control={control}
+            />
+            <LabeledCheckbox
+              label="Check if you are a dependent"
+              control={control}
+              defaultValue={taxPayer?.primaryPerson?.isTaxpayerDependent}
+              name="isTaxpayerDependent"
             />
             <LabeledInput
               label="Address"
@@ -142,12 +153,11 @@ export default function TaxPayerInfo (): ReactElement {
               error={errors.address?.city}
               defaultValue={taxPayer?.primaryPerson?.address.city}
             />
-            <LabeledCheckBox
+            <LabeledCheckbox
               label="Check if you have a foreign address"
               control={control}
-              value={isForeignCountry}
-              setValue={updateForeignCountry}
               name="isForeignCountry"
+              defaultValue={taxPayer?.primaryPerson?.address?.foreignCountry !== undefined}
             />
             {csz}
             {navButtons}

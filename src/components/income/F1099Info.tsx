@@ -148,13 +148,19 @@ export default function F1099Info (): ReactElement {
   } = useForm<F1099UserInput>()
   const dispatch = useDispatch()
 
+  const [adding, updateAdding] = useState(false)
+  const selectedType: Income1099Type | undefined = watch('formType')
+
+  const clear = (): void => {
+    reset()
+    setValue('formType', undefined)
+    updateAdding(false)
+  }
+
   const onAdd1099 = handleSubmit((formData: F1099UserInput): void => {
     dispatch(add1099(toF1099(formData)))
-    setValue('formType', undefined)
-    reset()
+    clear()
   })
-
-  const selectedType: Income1099Type | undefined = watch('formType')
 
   const people: Person[] = (
     useSelector((state: TaxesState) => ([
@@ -164,13 +170,6 @@ export default function F1099Info (): ReactElement {
       .filter((p) => p !== undefined)
       .map((p) => p as Person)
   )
-
-  const [adding, updateAdding] = useState(false)
-
-  const cancel = (): void => {
-    reset()
-    updateAdding(false)
-  }
 
   const intFields = (
     <LabeledInput
@@ -303,7 +302,7 @@ export default function F1099Info (): ReactElement {
               Add
             </Button>
           </Box>
-          <Button type="button" onClick={cancel} variant="contained" color="secondary">
+          <Button type="button" onClick={clear} variant="contained" color="secondary">
             Close
           </Button>
         </Box>
