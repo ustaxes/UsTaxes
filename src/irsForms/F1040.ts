@@ -18,6 +18,10 @@ import ScheduleB from './ScheduleB'
 import { computeOrdinaryTax } from './TaxTable'
 import SDQualifiedAndCapGains from './worksheets/SDQualifiedAndCapGains'
 
+export enum F1040Error {
+  filingStatusUndefined = 'Select a filing status'
+}
+
 export default class F1040 implements Form {
   // intentionally mirroring many fields from the state,
   // trying to represent the fields that the 1040 requires
@@ -166,9 +170,9 @@ export default class F1040 implements Form {
     [FilingStatus.W]: 24800
   }
 
-  standardDeduction = (): number => {
+  standardDeduction = (): number | undefined => {
     if (this.filingStatus === undefined) {
-      return 12400
+      return undefined
     }
     return F1040.standardDeductions[this.filingStatus]
   }
@@ -373,6 +377,15 @@ export default class F1040 implements Form {
   // so create field mappings for 4x5 grid of fields
   _depFieldMappings = (): Array<string | boolean> =>
     Array.from(Array(20)).map((u, n: number) => this._depField(n))
+
+  errors = (): F1040Error[] => {
+    const result: F1040Error[] = []
+    if (this.filingStatus === undefined) {
+      result.push(F1040Error.filingStatusUndefined)
+    }
+
+    return result
+  }
 
   fields = (): Array<string | number | boolean | undefined> => ([
     this.filingStatus === FilingStatus.S,
