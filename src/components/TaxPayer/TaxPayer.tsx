@@ -53,7 +53,7 @@ export default function TaxPayerInfo (): ReactElement {
   }
 
   const csz: ReactElement = (() => {
-    if (isForeignCountry) {
+    if (!isForeignCountry) {
       return (
         <div>
           <USStateDropDown
