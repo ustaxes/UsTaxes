@@ -97,9 +97,7 @@ export default function W2JobInfo (): ReactElement {
   if (adding) {
     form = (
       <div>
-        <Box display="flex" justifyContent="flex-start">
-          <strong>Input data from W-2</strong>
-        </Box>
+        <strong>Input data from W-2</strong>
 
         <LabeledInput
           label="Occupation"
@@ -155,26 +153,20 @@ export default function W2JobInfo (): ReactElement {
     )
   } else {
     form = (
-      <Box display="flex" justifyContent="flex-start" paddingTop={2} paddingBottom={1}>
-        <Button type="button" variant="contained" color="secondary" onClick={() => updateAdding(true)}>Add W2</Button>
-      </Box>
+      <Button type="button" variant="contained" color="secondary" onClick={() => updateAdding(true)}>Add W2</Button>
     )
   }
 
   return (
     <PagerContext.Consumer>
       { ({ navButtons, onAdvance }) =>
-        <Box display="flex" justifyContent="center">
-          <form onSubmit={onAdvance}>
-            <Box display="flex" justifyContent="flex-start">
-              <h2>Job Information</h2>
-            </Box>
+        <form onSubmit={onAdvance}>
+          <h2>Job Information</h2>
 
-            <ListW2s />
-            {form}
-            { navButtons }
-          </form>
-        </Box>
+          <ListW2s />
+          {form}
+          { navButtons }
+        </form>
       }
     </PagerContext.Consumer>
   )

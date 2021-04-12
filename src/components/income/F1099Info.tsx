@@ -169,9 +169,7 @@ export default function F1099Info (): ReactElement {
 
   const bFields = (
     <div>
-      <Box display="flex" justifyContent="flex-start">
-        <h4>Long Term Covered Transactions</h4>
-      </Box>
+      <h4>Long Term Covered Transactions</h4>
       <LabeledInput
         label="Proceeds"
         register={register}
@@ -188,9 +186,7 @@ export default function F1099Info (): ReactElement {
         name="longTermCostBasis"
         error={errors.longTermCostBasis}
       />
-      <Box display="flex" justifyContent="flex-start">
-        <h4>Short Term Covered Transactions</h4>
-      </Box>
+      <h4>Short Term Covered Transactions</h4>
       <LabeledInput
         label="Proceeds"
         register={register}
@@ -241,9 +237,7 @@ export default function F1099Info (): ReactElement {
   if (adding) {
     form = (
       <div>
-        <Box display="flex" justifyContent="flex-start">
-          <strong>Input data from 1099</strong>
-        </Box>
+        <strong>Input data from 1099</strong>
 
         <GenericLabeledDropdown
           dropDownData={Object.values(Income1099Type)}
@@ -295,26 +289,22 @@ export default function F1099Info (): ReactElement {
     )
   } else {
     form = (
-      <Box display="flex" justifyContent="flex-start" paddingTop={2} paddingBottom={1}>
-        <Button type="button" variant="contained" color="secondary" onClick={() => updateAdding(true)}>Add 1099</Button>
-      </Box>
+      <Button type="button" variant="contained" color="secondary" onClick={() => updateAdding(true)}>Add 1099</Button>
     )
   }
 
   return (
     <PagerContext.Consumer>
       { ({ onAdvance, navButtons }) =>
-        <Box display="flex" justifyContent="center">
-          <form onSubmit={onAdvance}>
-            <Box display="flex" justifyContent="flex-start">
-              <h2>1099 Information</h2>
-            </Box>
+        <form onSubmit={onAdvance}>
+          <Box display="flex" justifyContent="flex-start">
+            <h2>1099 Information</h2>
+          </Box>
 
-            <List1099s />
-            {form}
-            { navButtons }
-          </form>
-        </Box>
+          <List1099s />
+          {form}
+          { navButtons }
+        </form>
       }
     </PagerContext.Consumer>
   )

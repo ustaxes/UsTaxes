@@ -3,7 +3,7 @@ body {
 }
 
 .App {
-  text-align: center;
+  text-align: left;
 }
 
 .App-logo {
@@ -49,7 +49,4 @@ form {
   padding: 1em;
   padding-left: 2em;
   padding-right: 2em;
-  margin-top: 2em;
-  margin-bottom: 1em;
-  min-width: 20%;
 }

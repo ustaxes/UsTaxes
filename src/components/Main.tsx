@@ -1,10 +1,11 @@
-import React, { ReactElement } from 'react'
-import { unstable_createMuiStrictModeTheme as createMuiTheme, ThemeProvider } from '@material-ui/core'
+import React, { ReactElement, useState } from 'react'
+import { unstable_createMuiStrictModeTheme as createMuiTheme, ThemeProvider, makeStyles, createStyles, Theme, AppBar, Toolbar, IconButton, Typography, Grid } from '@material-ui/core'
 import {
   Switch,
   Route,
   Redirect
 } from 'react-router-dom'
+import MenuIcon from '@material-ui/icons/Menu'
 import W2JobInfo from './income/W2JobInfo'
 import CreatePDF from './createPDF'
 import ResponsiveDrawer, { item, Section, SectionItem } from './ResponsiveDrawer'
@@ -33,6 +34,34 @@ const theme = createMuiTheme({
     }
   }
 })
+
+const drawerWidth = 240
+
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    root: {
+      display: 'flex'
+    },
+    appBar: {
+      [theme.breakpoints.up('sm')]: {
+        width: `calc(100% - ${drawerWidth}px)`,
+        marginLeft: drawerWidth
+      }
+    },
+    menuButton: {
+      marginRight: theme.spacing(2),
+      [theme.breakpoints.up('sm')]: {
+        display: 'none'
+      }
+    },
+    // necessary for content to be below app bar
+    toolbar: theme.mixins.toolbar,
+    content: {
+      flexGrow: 1,
+      padding: theme.spacing(3)
+    }
+  })
+)
 
 const Urls = {
   taxPayer: {
@@ -88,6 +117,9 @@ export default function Main (): ReactElement {
   const allItems: SectionItem[] = drawerSections.flatMap((section: Section) => section.items)
 
   const [prev, onAdvance] = usePager(allItems, (item) => item.url)
+  const [mobileOpen, setMobileOpen] = useState(false)
+
+  const classes = useStyles()
 
   const navButtons: ReactElement = (
     <PagerButtons
@@ -96,19 +128,48 @@ export default function Main (): ReactElement {
     />
   )
 
+  const appBar = (
+    <AppBar position="fixed" className={classes.appBar}>
+      <Toolbar>
+        <IconButton
+          color="inherit"
+          aria-label="open drawer"
+          edge="start"
+          onClick={() => setMobileOpen(!mobileOpen)}
+          className={classes.menuButton}
+        >
+          <MenuIcon />
+        </IconButton>
+        <Typography variant="h6" noWrap>
+          UsTaxes
+        </Typography>
+      </Toolbar>
+    </AppBar>
+  )
+
   return (
     <ThemeProvider theme={theme}>
-      <ResponsiveDrawer sections={drawerSections} />
-      <Switch>
-        <Redirect path="/" to={Urls.default} exact />
-        <PagerContext.Provider value={{ onAdvance: (onAdvance ?? (() => {})), navButtons }}>
-        {
-          allItems.map((item, index) =>
-            <Route key={index} path={item.url}>{item.element}</Route>
-          )
-        }
-        </PagerContext.Provider>
-      </Switch>
+      <div className={classes.root}>
+        {appBar}
+        <ResponsiveDrawer sections={drawerSections} isOpen={mobileOpen} onClose={() => setMobileOpen(false)} />
+        <main className={classes.content}>
+          <div className={classes.toolbar} />
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <Switch>
+                <Redirect path="/" to={Urls.default} exact />
+                <PagerContext.Provider value={{ onAdvance: (onAdvance ?? (() => {})), navButtons }}>
+                {
+                  allItems.map((item, index) =>
+                    <Route key={index} path={item.url}>{item.element}</Route>
+                  )
+                }
+                </PagerContext.Provider>
+              </Switch>
+            </Grid>
+          </Grid>
+        </main>
+      </div>
     </ThemeProvider>
   )
 }

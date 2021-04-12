@@ -1,7 +1,7 @@
 import React, { ReactElement, useState } from 'react'
 
 import { useForm } from 'react-hook-form'
-import { Box, Button, List } from '@material-ui/core'
+import { Button, List } from '@material-ui/core'
 import { useDispatch, useSelector } from 'react-redux'
 import { Patterns } from '../Patterns'
 import { LabeledInput, LabeledCheckbox } from '../input'
@@ -108,11 +108,9 @@ export const AddDependentForm = (): ReactElement => {
     )
   } else {
     return (
-      <Box display="flex" justifyContent="flex-start">
-        <Button type="button" onClick={() => updateAdding(true)} variant="contained" color="secondary">
-          Add
-        </Button>
-      </Box>
+      <Button type="button" onClick={() => updateAdding(true)} variant="contained" color="secondary">
+        Add
+      </Button>
     )
   }
 }
@@ -162,11 +160,9 @@ export const SpouseInfo = (): ReactElement => {
     )
   } else {
     return (
-      <Box display="flex" flexDirection="flex-start">
-        <Button type="button" onClick={() => updateEditSpouse(true)} variant="contained" color="secondary">
-          Add
-        </Button>
-      </Box>
+      <Button type="button" onClick={() => updateEditSpouse(true)} variant="contained" color="secondary">
+        Add
+      </Button>
     )
   }
 }
@@ -174,20 +170,14 @@ export const SpouseInfo = (): ReactElement => {
 const SpouseAndDependent = (): ReactElement => (
   <PagerContext.Consumer>
     { ({ onAdvance, navButtons }) =>
-      <Box display="flex" justifyContent="center">
-        <form onSubmit={onAdvance}>
-          <Box display="flex" justifyContent="flex-start">
-            <h2>Spouse Information</h2>
-          </Box>
-          <SpouseInfo />
-          <Box display="flex" justifyContent="flex-start">
-            <h2>Dependent Information</h2>
-          </Box>
-          <ListDependents />
-          <AddDependentForm />
-          {navButtons}
-        </form>
-      </Box>
+      <form onSubmit={onAdvance}>
+        <h2>Spouse Information</h2>
+        <SpouseInfo />
+        <h2>Dependent Information</h2>
+        <ListDependents />
+        <AddDependentForm />
+        {navButtons}
+      </form>
     }
   </PagerContext.Consumer>
 )

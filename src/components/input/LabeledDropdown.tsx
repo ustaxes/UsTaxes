@@ -1,4 +1,4 @@
-import { Box, TextField } from '@material-ui/core'
+import { TextField } from '@material-ui/core'
 import React, { ReactElement } from 'react'
 import { Controller } from 'react-hook-form'
 import locationPostalCodes from '../../data/locationPostalCodes'
@@ -9,40 +9,36 @@ export function GenericLabeledDropdown<A> (props: LabeledDropdownProps<A>): Reac
 
   return (
     <div>
-      <Box display="flex" justifyContent="flex-start">
-        <p>{label}</p>
-      </Box>
-      <Box display="flex" justifyContent="flex-start">
-        <Controller
-          as={
-            <TextField
-              select
-              helperText={error !== undefined ? 'Make a selection' : undefined}
-              error={error !== undefined}
-              defaultValue=""
-              SelectProps={{
-                native: true
-              }}
-            >
-              <option value={undefined} />
-              {dropDownData.map((dropDownItem: A, i: number) =>
-                <option
-                  value={valueMapping(dropDownItem, i)}
-                  key={keyMapping(dropDownItem, i)}>
-                  {textMapping(dropDownItem, i)}
-                </option>
-              )}
-            </TextField>
-          }
-          error={error !== undefined}
-          fullWidth
-          name={name}
-          defaultValue={defaultValue}
-          rules={{ required: required }}
-          control={control}
-          variant="filled"
-        />
-      </Box>
+      <p>{label}</p>
+      <Controller
+        as={
+          <TextField
+            select
+            helperText={error !== undefined ? 'Make a selection' : undefined}
+            error={error !== undefined}
+            defaultValue=""
+            SelectProps={{
+              native: true
+            }}
+          >
+            <option value={undefined} />
+            {dropDownData.map((dropDownItem: A, i: number) =>
+              <option
+                value={valueMapping(dropDownItem, i)}
+                key={keyMapping(dropDownItem, i)}>
+                {textMapping(dropDownItem, i)}
+              </option>
+            )}
+          </TextField>
+        }
+        error={error !== undefined}
+        fullWidth
+        name={name}
+        defaultValue={defaultValue}
+        rules={{ required: required }}
+        control={control}
+        variant="filled"
+      />
     </div>
   )
 }

@@ -1,5 +1,4 @@
 import React, { FormEvent, ReactElement, useState } from 'react'
-import { Box } from '@material-ui/core'
 import { createPDFPopup } from '../pdfFiller/fillPdf'
 import { PagerContext } from './pager'
 import Alert from '@material-ui/lab/Alert'
@@ -26,19 +25,15 @@ export default function CreatePDF (): ReactElement {
   return (
     <PagerContext.Consumer>
       { ({ navButtons }) =>
-        <Box display="flex" justifyContent="center">
-          <form onSubmit={onSubmit}>
-            <div>
-              <Box display="flex" justifyContent="flex-start">
-                <h2>Print Copy to File</h2>
-              </Box>
-              {navButtons}
-            </div>
-            <div className={classes.root}>
-              {errors.map((error, i) => <Alert key={i} severity="warning">{error}</Alert>)}
-            </div>
-          </form>
-        </Box>
+        <form onSubmit={onSubmit}>
+          <div>
+            <h2>Print Copy to File</h2>
+            {navButtons}
+          </div>
+          <div className={classes.root}>
+            {errors.map((error, i) => <Alert key={i} severity="warning">{error}</Alert>)}
+          </div>
+        </form>
       }
     </PagerContext.Consumer>
   )
