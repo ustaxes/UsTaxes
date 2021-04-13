@@ -72,9 +72,16 @@ export default function W2JobInfo (): ReactElement {
   const { register, errors, handleSubmit, control, reset } = useForm<IncomeW2UserInput>()
   const dispatch = useDispatch()
 
+  const [adding, updateAdding] = useState(false)
+
+  const clear = (): void => {
+    reset()
+    updateAdding(false)
+  }
+
   const onAddW2 = handleSubmit((formData: IncomeW2UserInput): void => {
     dispatch(addW2(toIncomeW2(formData)))
-    reset()
+    clear()
   })
 
   const people: Person[] = (
@@ -85,13 +92,6 @@ export default function W2JobInfo (): ReactElement {
       .filter((p) => p !== undefined)
       .map((p) => p as Person)
   )
-
-  const [adding, updateAdding] = useState(false)
-
-  const cancel = (): void => {
-    reset()
-    updateAdding(false)
-  }
 
   let form: ReactElement | undefined
   if (adding) {
@@ -147,7 +147,7 @@ export default function W2JobInfo (): ReactElement {
               Add
             </Button>
           </Box>
-          <Button type="button" onClick={cancel} variant="contained" color="secondary">
+          <Button type="button" onClick={clear} variant="contained" color="secondary">
             Close
           </Button>
         </Box>
