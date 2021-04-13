@@ -6,7 +6,7 @@ import { InputType } from '../Patterns'
 import { Controller } from 'react-hook-form'
 
 export function LabeledInput (props: LabeledInputProps): ReactElement {
-  const { strongLabel, label, register, error, required = false, patternConfig, name, defaultValue } = props
+  const { strongLabel, label, register, error, required = false, patternConfig, name, defaultValue = '' } = props
 
   const errorMessage: string | undefined = (() => {
     if (error?.message !== undefined && error?.message !== '') {
