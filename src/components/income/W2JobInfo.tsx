@@ -6,7 +6,7 @@ import { Actions, addW2, removeW2 } from '../../redux/actions'
 import { PagerContext } from '../pager'
 import { TaxesState, IncomeW2, Person, PersonRole } from '../../redux/data'
 import DeleteIcon from '@material-ui/icons/Delete'
-import { Currency, GenericLabeledDropdown, LabeledInput } from '../input'
+import { Currency, formatSSID, GenericLabeledDropdown, LabeledInput } from '../input'
 import { Patterns } from '../Patterns'
 
 interface W2ListItemProps {
@@ -138,7 +138,7 @@ export default function W2JobInfo (): ReactElement {
           valueMapping={(p, i) => [PersonRole.PRIMARY, PersonRole.SPOUSE][i]}
           name="personRole"
           keyMapping={(p, i) => i}
-          textMapping={(p) => `${p.firstName} ${p.lastName} (${p.ssid})`}
+          textMapping={(p) => `${p.firstName} ${p.lastName} (${formatSSID(p.ssid)})`}
           defaultValue={PersonRole.PRIMARY}
         />
         <Box display="flex" justifyContent="flex-start" paddingTop={2} paddingBottom={1}>
