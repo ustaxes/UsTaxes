@@ -59,11 +59,12 @@ export const PersonFields = <T extends Person>({ register, control, errors, defa
 interface PersonListItemProps {
   person: Person
   remove: () => void
-  edit?: () => void
+  onEdit?: () => void
+  editing?: boolean
 }
 
-export const PersonListItem = ({ person, remove, edit }: PersonListItemProps): ReactElement => (
-  <ListItem>
+export const PersonListItem = ({ person, remove, onEdit, editing = false }: PersonListItemProps): ReactElement => (
+  <ListItem className={editing ? 'active' : ''}>
     <ListItemIcon>
       <PersonIcon />
     </ListItemIcon>
@@ -71,11 +72,17 @@ export const PersonListItem = ({ person, remove, edit }: PersonListItemProps): R
       primary={`${person.firstName} ${person.lastName}`}
       secondary={person.ssid}
     />
-    <ListItemIcon>
-      <IconButton onClick={edit} edge="end" aria-label="edit">
-        <EditIcon />
-      </IconButton>
-    </ListItemIcon>
+    {(() => {
+      if (editing !== undefined) {
+        return (
+          <ListItemIcon>
+            <IconButton onClick={onEdit} edge="end" aria-label="edit">
+              <EditIcon />
+            </IconButton>
+          </ListItemIcon>
+        )
+      }
+    })()}
     <ListItemSecondaryAction>
       <IconButton onClick={remove} edge="end" aria-label="delete">
         <DeleteIcon />
@@ -84,7 +91,12 @@ export const PersonListItem = ({ person, remove, edit }: PersonListItemProps): R
   </ListItem>
 )
 
-export function ListDependents (): ReactElement {
+interface ListDependentsProps {
+  onEdit?: (index: number) => void
+  editing?: number
+}
+
+export function ListDependents ({ onEdit, editing }: ListDependentsProps): ReactElement {
   const dependents = useSelector((state: TaxesState) =>
     state.information.taxPayer?.dependents ?? []
   )
@@ -97,7 +109,7 @@ export function ListDependents (): ReactElement {
     <List dense={true}>
       {
         dependents.map((p, i) =>
-          <PersonListItem key={i} remove={() => drop(i)} person={p} />
+          <PersonListItem key={i} remove={() => drop(i)} person={p} editing={editing === i} onEdit={() => (onEdit ?? (() => { }))(i)} />
         )
       }
     </List>

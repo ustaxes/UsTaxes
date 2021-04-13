@@ -165,3 +165,8 @@ export interface Information {
 export interface TaxesState {
   information: Information
 }
+
+export interface EditDependentAction {
+  index: number
+  dependent: Dependent
+}

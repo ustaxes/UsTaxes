@@ -1,4 +1,4 @@
-import { Person, IncomeW2, Refund, Dependent, FilingStatus, PrimaryPerson, ContactInfo, Supported1099, Spouse } from './data'
+import { Person, IncomeW2, Refund, Dependent, FilingStatus, PrimaryPerson, ContactInfo, Supported1099, Spouse, EditDependentAction } from './data'
 import { ValidateFunction } from 'ajv-latest'
 import ajv, { checkType } from './validate'
 
@@ -8,6 +8,7 @@ export enum ActionName {
   SAVE_CONTACT_INFO = 'SAVE_CONTACT_INFO',
   SAVE_FILING_STATUS_INFO = 'SAFE_FILING_STATUS_INFO',
   ADD_DEPENDENT = 'TAXPAYER/ADD_DEPENDENT',
+  EDIT_DEPENDENT = 'TAXPAYER/EDIT_DEPENDENT',
   REMOVE_DEPENDENT = 'TAXPAYER/REMOVE_DEPENDENT',
   ADD_SPOUSE = 'TAXPAYER/ADD_SPOUSE',
   REMOVE_SPOUSE = 'TAXPAYER/REMOVE_SPOUSE',
@@ -27,6 +28,7 @@ type SavePrimaryPersonInfo = Save<typeof ActionName.SAVE_PRIMARY_PERSON_INFO, Pr
 type SaveFilingStatusInfo = Save<typeof ActionName.SAVE_FILING_STATUS_INFO, FilingStatus>
 type SaveContactInfo = Save<typeof ActionName.SAVE_CONTACT_INFO, ContactInfo>
 type AddDependent = Save<typeof ActionName.ADD_DEPENDENT, Dependent>
+type EditDependent = Save<typeof ActionName.EDIT_DEPENDENT, EditDependentAction>
 type RemoveDependent = Save<typeof ActionName.REMOVE_DEPENDENT, number>
 type AddSpouse = Save<typeof ActionName.ADD_SPOUSE, Spouse>
 type RemoveSpouse = Save<typeof ActionName.REMOVE_SPOUSE, {}>
@@ -41,6 +43,7 @@ export type Actions =
   | SaveFilingStatusInfo
   | SaveContactInfo
   | AddDependent
+  | EditDependent
   | RemoveDependent
   | AddSpouse
   | RemoveSpouse
@@ -124,6 +127,12 @@ export const addDependent: ActionCreator<Dependent> = makePreprocessActionCreato
   ActionName.ADD_DEPENDENT,
   ajv.getSchema('#/definitions/Dependent') as ValidateFunction<Dependent>,
   (t: Dependent) => cleanPerson(t)
+)
+
+export const editDependent: ActionCreator<EditDependentAction> = makePreprocessActionCreator(
+  ActionName.EDIT_DEPENDENT,
+  ajv.getSchema('#/definitions/EditDependentAction') as ValidateFunction<EditDependentAction>,
+  ({ index, dependent }: EditDependentAction) => ({ index, dependent: cleanPerson(dependent) })
 )
 
 const indexSchema = {

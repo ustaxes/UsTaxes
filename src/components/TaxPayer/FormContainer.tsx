@@ -13,7 +13,7 @@ const FormContainer = ({ onDone, onCancel, children }: FormContainerProps): Reac
     <Box display="flex" justifyContent="flex-start" paddingTop={2} paddingBottom={1}>
       <Box paddingRight={2}>
         <Button type="button" onClick={onDone} variant="contained" color="secondary">
-          Add
+          Save
         </Button>
       </Box>
       <Button type="button" onClick={onCancel} variant="contained" color="secondary">
