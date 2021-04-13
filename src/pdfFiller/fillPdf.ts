@@ -12,12 +12,14 @@ import ScheduleB from '../irsForms/ScheduleB'
 import { Income1099Type } from '../redux/data'
 import ScheduleD from '../irsForms/ScheduleD'
 import ScheduleEIC from '../irsForms/ScheduleEIC'
+import F1040V from '../irsForms/F1040v'
 
 const downloadUrls = {
   f1040: '/forms/f1040.pdf',
   f1040sb: '/forms/f1040sb.pdf',
   f1040sd: '/forms/f1040sd.pdf',
-  f1040sei: '/forms/f1040sei.pdf'
+  f1040sei: '/forms/f1040sei.pdf',
+  f1040v: '/forms/f1040v.pdf'
 }
 
 /**
@@ -53,6 +55,7 @@ async function downloadPDF (url: string): Promise<PDFDocument> {
 async function getSchedules (f1040: F1040): Promise<Array<[Form, PDFDocument]>> {
   const state = store.getState().information
   let attachments: Array<[Form, PDFDocument]> = []
+  const prepends: Array<[Form, PDFDocument]> = []
 
   if (state.f1099s.find((v) => v.type === Income1099Type.INT) !== undefined) {
     const schB = new ScheduleB(state)
@@ -77,8 +80,15 @@ async function getSchedules (f1040: F1040): Promise<Array<[Form, PDFDocument]>> 
     attachments = [...attachments, [eic, eicPdf]]
   }
 
+  // Attach payment voucher to front if there is a payment due
+  if ((f1040.l37() ?? 0) > 0) {
+    const f1040v = new F1040V(state, f1040)
+    const f1040vPdf = await downloadPDF(downloadUrls.f1040v)
+    prepends.push([f1040v, f1040vPdf])
+  }
+
   const f1040pdf: PDFDocument = await downloadPDF(downloadUrls.f1040)
-  return [[f1040, f1040pdf], ...attachments]
+  return [...prepends, [f1040, f1040pdf], ...attachments]
 }
 
 // opens new with filled information in the window of the component it is called from
