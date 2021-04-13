@@ -19,7 +19,6 @@ export function GenericLabeledDropdown<A> (props: LabeledDropdownProps<A>): Reac
               select
               helperText={error !== undefined ? 'Make a selection' : undefined}
               error={error !== undefined}
-              defaultValue=""
               SelectProps={{
                 native: true
               }}
