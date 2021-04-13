@@ -1,4 +1,4 @@
-# [ustaxes.org](//ustaxes.org) [![Netlify Status][Netlify-badge]][Netlify-url] [![Github Latest Release][release-badge]][github-release] [![discord-badge]][discord-url] 
+# [ustaxes.org](//ustaxes.org) [![Netlify Status][Netlify-badge]][Netlify-url] [![Github Latest Release][release-badge]][github-release] [![discord-badge]][discord-url]
 
 ## What is UsTaxes?
 
@@ -17,6 +17,10 @@ So far this project can attach the following schedules to form 1040:
 
 * Schedule B
 * Schedule D
+
+## Supported Credits
+
+* Earned income credit
 
 ## Supported states
 

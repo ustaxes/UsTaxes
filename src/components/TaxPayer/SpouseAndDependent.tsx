@@ -3,6 +3,7 @@ import React, { ReactElement, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { Box, Button, List } from '@material-ui/core'
 import { useDispatch, useSelector } from 'react-redux'
+import { Patterns } from '../Patterns'
 import { LabeledInput, LabeledCheckbox } from '../input'
 import { TaxesState, Dependent, Spouse, PersonRole } from '../../redux/data'
 import { addDependent, addSpouse, removeSpouse } from '../../redux/actions'
@@ -18,16 +19,28 @@ interface UserPersonForm {
 
 interface UserDependentForm extends UserPersonForm {
   relationship: string
+  birthYear: string
+  isStudent: boolean
+  numberOfMonths: string
+}
+
+const toDependent = (formData: UserDependentForm): Dependent => {
+  const { birthYear, numberOfMonths, isStudent, ...rest } = formData
+
+  return {
+    ...rest,
+    role: PersonRole.DEPENDENT,
+    qualifyingInfo: {
+      birthYear: parseInt(birthYear),
+      numberOfMonths: parseInt(numberOfMonths),
+      isStudent
+    }
+  }
 }
 
 interface UserSpouseForm extends UserPersonForm {
   isTaxpayerDependent: boolean
 }
-
-const toDependent = (formData: UserDependentForm): Dependent => ({
-  ...formData,
-  role: PersonRole.DEPENDENT
-})
 
 const toSpouse = (formData: UserSpouseForm): Spouse => ({
   ...formData,
@@ -35,7 +48,7 @@ const toSpouse = (formData: UserSpouseForm): Spouse => ({
 })
 
 export const AddDependentForm = (): ReactElement => {
-  const { register, control, errors, handleSubmit, getValues, reset } = useForm<UserDependentForm>()
+  const { register, errors, handleSubmit, control, getValues, reset } = useForm<UserDependentForm>()
 
   const [adding, updateAdding] = useState(false)
 
@@ -47,7 +60,7 @@ export const AddDependentForm = (): ReactElement => {
   }
 
   const onSubmit = (): void => {
-    dispatch(addDependent(toDependent(getValues())))
+    dispatch(addDependent(toDependent({ ...getValues() })))
     clear()
   }
 
@@ -68,6 +81,28 @@ export const AddDependentForm = (): ReactElement => {
           name="relationship"
           required={true}
           error={errors.relationship}
+        />
+        <LabeledInput
+          register={register}
+          label="Birth year"
+          patternConfig={Patterns.year(control)}
+          name="birthYear"
+          required={true}
+          error={errors.birthYear}
+        />
+        <LabeledInput
+          register={register}
+          label="How many months did you live together this year?"
+          patternConfig={Patterns.numMonths(control)}
+          name="numberOfMonths"
+          required={true}
+          error={errors.numberOfMonths}
+        />
+        <LabeledCheckbox
+          label="Is this person a full-time student"
+          name="isStudent"
+          control={control}
+          defaultValue={false}
         />
       </FormContainer>
     )

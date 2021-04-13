@@ -15,6 +15,7 @@ import SpouseAndDependent from './TaxPayer/SpouseAndDependent'
 import ContactInfo from './TaxPayer/ContactInfo'
 import FilingStatusSelect from './TaxPayer/FilingStatus'
 import F1099Info from './income/F1099Info'
+import Summary from './Summary'
 
 const theme = createMuiTheme({
   palette: {
@@ -46,7 +47,12 @@ const Urls = {
     w2s: '/income/w2jobinfo',
     f1099s: '/income/f1099s'
   },
+  credits: {
+    main: '/credits',
+    eic: '/credits/eic'
+  },
   createPdf: '/createpdf',
+  summary: '/summary',
   default: ''
 }
 Urls.default = Urls.taxPayer.info
@@ -72,6 +78,7 @@ const drawerSections: Section[] = [
     title: 'Results',
     items: [
       item('Refund Information', Urls.refund, <RefundBankAccount />),
+      item('Summary', Urls.summary, <Summary />),
       item('Review and Print', Urls.createPdf, <CreatePDF />)
     ]
   }
