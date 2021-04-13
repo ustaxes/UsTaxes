@@ -6,7 +6,7 @@ import { BaseDropdownProps, LabeledDropdownProps } from './types'
 
 export function GenericLabeledDropdown<A> (props: LabeledDropdownProps<A>): ReactElement {
   const { label, dropDownData, valueMapping, error, keyMapping, textMapping, control, required = false, name } = props
-  const { defaultValue = (dropDownData.length > 0 ? valueMapping(dropDownData[0], 0) : undefined) } = props
+  const { defaultValue = undefined } = props
 
   return (
     <div>
