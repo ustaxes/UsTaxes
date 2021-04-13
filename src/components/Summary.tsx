@@ -77,7 +77,7 @@ const Summary = (): ReactElement => {
                         >
                           {
                             f1040.scheduleEIC?.qualifyingDependents().map((d, i) =>
-                              <div key={i}>{`${d?.firstName ?? ''} ${d?.lastName ?? ''}`}</div>
+                              <span key={i}>{`${d?.firstName ?? ''} ${d?.lastName ?? ''}`}</span>
                             )
                           }
                         </Typography>
