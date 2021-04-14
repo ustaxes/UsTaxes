@@ -1,7 +1,7 @@
 import React, { ReactElement, ReactNode } from 'react'
 import { IconButton, List, ListItem, ListItemIcon, ListItemSecondaryAction } from '@material-ui/core'
 import { useDispatch, useSelector } from 'react-redux'
-import { LabeledInput } from '../input'
+import { formatSSID, LabeledInput } from '../input'
 import { Patterns } from '../Patterns'
 import { Actions, removeDependent } from '../../redux/actions'
 import { TaxesState, Person } from '../../redux/data'
@@ -63,7 +63,7 @@ export const PersonListItem = ({ person, remove }: PersonListItemProps): ReactEl
     </ListItemIcon>
     <ListItemText
       primary={`${person.firstName} ${person.lastName}`}
-      secondary={person.ssid}
+      secondary={formatSSID(person.ssid)}
     />
     <ListItemSecondaryAction>
       <IconButton onClick={remove} edge="end" aria-label="delete">
