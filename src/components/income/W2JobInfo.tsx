@@ -22,7 +22,7 @@ const W2ListItem = ({ w2, remove }: W2ListItemProps): ReactElement => (
     </ListItemAvatar>
     <ListItemText
       primary={w2.occupation}
-      secondary={<div>Income: <Currency value={w2.income} /></div>}
+      secondary={<span>Income: <Currency value={w2.income} /></span>}
     />
     <ListItemSecondaryAction>
       <IconButton onClick={remove} edge="end" aria-label="delete">

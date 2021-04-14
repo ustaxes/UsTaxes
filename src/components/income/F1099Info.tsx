@@ -18,10 +18,10 @@ const showIncome = (a: Supported1099): ReactElement => {
       const ltg = a.form.longTermProceeds - a.form.longTermCostBasis
       const stg = a.form.shortTermProceeds - a.form.shortTermCostBasis
       return (
-        <ListItemText>
-          Long term: <Currency value={ltg} /><br />
-          Short term: <Currency value={stg} />
-        </ListItemText>
+        <span>
+        Long term: <Currency value={ltg} /><br />
+        Short term: <Currency value={stg} />
+        </span>
       )
     }
     case Income1099Type.DIV: {
