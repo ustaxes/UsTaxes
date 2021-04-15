@@ -3,8 +3,9 @@ import React, { ReactElement, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { Box, Button, List } from '@material-ui/core'
 import { useDispatch, useSelector } from 'react-redux'
-import { LabeledInput } from '../input'
-import { TaxesState, Dependent, Person, PersonRole } from '../../redux/data'
+import { Patterns } from '../Patterns'
+import { LabeledInput, LabeledCheckbox } from '../input'
+import { TaxesState, Dependent, Spouse, PersonRole } from '../../redux/data'
 import { addDependent, addSpouse, removeSpouse } from '../../redux/actions'
 import { ListDependents, PersonFields, PersonListItem } from './PersonFields'
 import FormContainer from './FormContainer'
@@ -18,35 +19,56 @@ interface UserPersonForm {
 
 interface UserDependentForm extends UserPersonForm {
   relationship: string
+  birthYear: string
+  isStudent: boolean
+  numberOfMonths: string
 }
 
-const toDependent = (formData: UserDependentForm): Dependent => ({
-  ...formData,
-  role: PersonRole.DEPENDENT
-})
+const toDependent = (formData: UserDependentForm): Dependent => {
+  const { birthYear, numberOfMonths, isStudent, ...rest } = formData
 
-const toSpouse = (formData: UserPersonForm): Person => ({
+  return {
+    ...rest,
+    role: PersonRole.DEPENDENT,
+    qualifyingInfo: {
+      birthYear: parseInt(birthYear),
+      numberOfMonths: parseInt(numberOfMonths),
+      isStudent
+    }
+  }
+}
+
+interface UserSpouseForm extends UserPersonForm {
+  isTaxpayerDependent: boolean
+}
+
+const toSpouse = (formData: UserSpouseForm): Spouse => ({
   ...formData,
   role: PersonRole.SPOUSE
 })
 
 export const AddDependentForm = (): ReactElement => {
-  const { register, control, errors, handleSubmit, getValues, reset } = useForm<UserDependentForm>()
+  const { register, errors, handleSubmit, control, getValues, reset } = useForm<UserDependentForm>()
 
-  const [addingDependent, newDependent] = useState(false)
+  const [adding, updateAdding] = useState(false)
 
   const dispatch = useDispatch()
 
-  const onSubmit = (): void => {
-    dispatch(addDependent(toDependent(getValues())))
+  const clear = (): void => {
+    updateAdding(false)
     reset()
   }
 
-  if (addingDependent) {
+  const onSubmit = (): void => {
+    dispatch(addDependent(toDependent({ ...getValues() })))
+    clear()
+  }
+
+  if (adding) {
     return (
       <FormContainer
         onDone={handleSubmit(onSubmit)}
-        onCancel={() => newDependent(false)}
+        onCancel={clear}
       >
         <PersonFields
           register={register}
@@ -61,12 +83,34 @@ export const AddDependentForm = (): ReactElement => {
           required={true}
           error={errors.relationship}
         />
+        <LabeledInput
+          register={register}
+          label="Birth year"
+          patternConfig={Patterns.year(control)}
+          name="birthYear"
+          required={true}
+          error={errors.birthYear}
+        />
+        <LabeledInput
+          register={register}
+          label="How many months did you live together this year?"
+          patternConfig={Patterns.numMonths(control)}
+          name="numberOfMonths"
+          required={true}
+          error={errors.numberOfMonths}
+        />
+        <LabeledCheckbox
+          label="Is this person a full-time student"
+          name="isStudent"
+          control={control}
+          defaultValue={false}
+        />
       </FormContainer>
     )
   } else {
     return (
       <Box display="flex" justifyContent="flex-start">
-        <Button type="button" onClick={() => newDependent(true)} variant="contained" color="secondary">
+        <Button type="button" onClick={() => updateAdding(true)} variant="contained" color="secondary">
           Add
         </Button>
       </Box>
@@ -75,12 +119,12 @@ export const AddDependentForm = (): ReactElement => {
 }
 
 export const SpouseInfo = (): ReactElement => {
-  const { register, control, errors, handleSubmit, getValues } = useForm<UserPersonForm>()
+  const { register, control, errors, handleSubmit, getValues } = useForm<UserSpouseForm>()
   const [editSpouse, setEditSpouse] = useState<boolean>(false)
   const [createSpouse, setCreateSpouse] = useState<boolean>(false)
   const dispatch = useDispatch()
 
-  const spouse: Person | undefined = useSelector((state: TaxesState) => {
+  const spouse: Spouse | undefined = useSelector((state: TaxesState) => {
     return state.information.taxPayer?.spouse
   })
 
@@ -106,7 +150,14 @@ export const SpouseInfo = (): ReactElement => {
           errors={errors}
           person={editSpouse ? spouse : null}
           control={control}
-        />
+        >
+          <LabeledCheckbox
+            label="Check if your spouse is a dependent"
+            control={control}
+            defaultValue={spouse?.isTaxpayerDependent}
+            name="isTaxpayerDependent"
+          />
+        </PersonFields>
       </FormContainer>
     )
   } else if (!editSpouse && spouse !== undefined) {

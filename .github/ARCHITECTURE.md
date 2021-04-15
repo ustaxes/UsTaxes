@@ -4,7 +4,7 @@ Thank you for your interest in this project. The below should summarize the gene
 
 ## Stack and developer requirements
 
-This project uses typescript and is built with [NPM][npm-install]. Please make sure you are using NPM version > 7.
+This project uses typescript and is built with [NPM 6][npm-install].
 
 ## Desktop application requirements
 
