@@ -97,7 +97,7 @@ export function ListDependents (): ReactElement {
     <List dense={true}>
       {
         dependents.map((p, i) =>
-          <PersonListItem key={i} remove={() => drop(i)} person={p} />
+          <PersonListItem key={i} edit={() => console.log(p)} remove={() => drop(i)} person={p} />
         )
       }
     </List>
