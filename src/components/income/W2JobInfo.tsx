@@ -6,7 +6,7 @@ import { Actions, addW2, removeW2 } from '../../redux/actions'
 import { PagerContext } from '../pager'
 import { TaxesState, IncomeW2, Person, PersonRole } from '../../redux/data'
 import DeleteIcon from '@material-ui/icons/Delete'
-import { Currency, GenericLabeledDropdown, LabeledInput } from '../input'
+import { Currency, formatSSID, GenericLabeledDropdown, LabeledInput } from '../input'
 import { Patterns } from '../Patterns'
 
 interface W2ListItemProps {
@@ -22,7 +22,7 @@ const W2ListItem = ({ w2, remove }: W2ListItemProps): ReactElement => (
     </ListItemAvatar>
     <ListItemText
       primary={w2.occupation}
-      secondary={<div>Income: <Currency value={w2.income} /></div>}
+      secondary={<span>Income: <Currency value={w2.income} /></span>}
     />
     <ListItemSecondaryAction>
       <IconButton onClick={remove} edge="end" aria-label="delete">
@@ -72,9 +72,16 @@ export default function W2JobInfo (): ReactElement {
   const { register, errors, handleSubmit, control, reset } = useForm<IncomeW2UserInput>()
   const dispatch = useDispatch()
 
+  const [adding, updateAdding] = useState(false)
+
+  const clear = (): void => {
+    reset()
+    updateAdding(false)
+  }
+
   const onAddW2 = handleSubmit((formData: IncomeW2UserInput): void => {
     dispatch(addW2(toIncomeW2(formData)))
-    reset()
+    clear()
   })
 
   const people: Person[] = (
@@ -85,13 +92,6 @@ export default function W2JobInfo (): ReactElement {
       .filter((p) => p !== undefined)
       .map((p) => p as Person)
   )
-
-  const [adding, updateAdding] = useState(false)
-
-  const cancel = (): void => {
-    reset()
-    updateAdding(false)
-  }
 
   let form: ReactElement | undefined
   if (adding) {
@@ -138,7 +138,7 @@ export default function W2JobInfo (): ReactElement {
           valueMapping={(p, i) => [PersonRole.PRIMARY, PersonRole.SPOUSE][i]}
           name="personRole"
           keyMapping={(p, i) => i}
-          textMapping={(p) => `${p.firstName} ${p.lastName} (${p.ssid})`}
+          textMapping={(p) => `${p.firstName} ${p.lastName} (${formatSSID(p.ssid)})`}
           defaultValue={PersonRole.PRIMARY}
         />
         <Box display="flex" justifyContent="flex-start" paddingTop={2} paddingBottom={1}>
@@ -147,7 +147,7 @@ export default function W2JobInfo (): ReactElement {
               Add
             </Button>
           </Box>
-          <Button type="button" onClick={cancel} variant="contained" color="secondary">
+          <Button type="button" onClick={clear} variant="contained" color="secondary">
             Close
           </Button>
         </Box>

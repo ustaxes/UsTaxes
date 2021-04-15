@@ -1,4 +1,4 @@
-import { Person, IncomeW2, Refund, Dependent, FilingStatus, PrimaryPerson, ContactInfo, Supported1099 } from './data'
+import { Person, IncomeW2, Refund, Dependent, FilingStatus, PrimaryPerson, ContactInfo, Supported1099, Spouse } from './data'
 import { ValidateFunction } from 'ajv-latest'
 import ajv, { checkType } from './validate'
 
@@ -28,7 +28,7 @@ type SaveFilingStatusInfo = Save<typeof ActionName.SAVE_FILING_STATUS_INFO, Fili
 type SaveContactInfo = Save<typeof ActionName.SAVE_CONTACT_INFO, ContactInfo>
 type AddDependent = Save<typeof ActionName.ADD_DEPENDENT, Dependent>
 type RemoveDependent = Save<typeof ActionName.REMOVE_DEPENDENT, number>
-type AddSpouse = Save<typeof ActionName.ADD_SPOUSE, Person>
+type AddSpouse = Save<typeof ActionName.ADD_SPOUSE, Spouse>
 type RemoveSpouse = Save<typeof ActionName.REMOVE_SPOUSE, {}>
 type AddW2 = Save<typeof ActionName.ADD_W2, IncomeW2>
 type RemoveW2 = Save<typeof ActionName.REMOVE_W2, number>
@@ -136,9 +136,9 @@ export const removeDependent: ActionCreator<number> = makeActionCreator(
   ajv.compile(indexSchema)
 )
 
-export const addSpouse: ActionCreator<Person> = makePreprocessActionCreator(
+export const addSpouse: ActionCreator<Spouse> = makePreprocessActionCreator(
   ActionName.ADD_SPOUSE,
-  ajv.getSchema('#/definitions/Person') as ValidateFunction<Person>,
+  ajv.getSchema('#/definitions/Spouse') as ValidateFunction<Spouse>,
   cleanPerson
 )
 

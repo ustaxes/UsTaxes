@@ -6,7 +6,7 @@ import { Actions, add1099, remove1099 } from '../../redux/actions'
 import { PagerContext } from '../pager'
 import { TaxesState, Person, PersonRole, Supported1099, Income1099Type } from '../../redux/data'
 import DeleteIcon from '@material-ui/icons/Delete'
-import { Currency, GenericLabeledDropdown, LabeledInput } from '../input'
+import { Currency, formatSSID, GenericLabeledDropdown, LabeledInput } from '../input'
 import { Patterns } from '../Patterns'
 
 const showIncome = (a: Supported1099): ReactElement => {
@@ -18,10 +18,10 @@ const showIncome = (a: Supported1099): ReactElement => {
       const ltg = a.form.longTermProceeds - a.form.longTermCostBasis
       const stg = a.form.shortTermProceeds - a.form.shortTermCostBasis
       return (
-        <ListItemText>
-          Long term: <Currency value={ltg} /><br />
-          Short term: <Currency value={stg} />
-        </ListItemText>
+        <span>
+        Long term: <Currency value={ltg} /><br />
+        Short term: <Currency value={stg} />
+        </span>
       )
     }
     case Income1099Type.DIV: {
@@ -133,13 +133,19 @@ export default function F1099Info (): ReactElement {
   const { register, errors, handleSubmit, control, reset, watch, setValue } = useForm<F1099UserInput>()
   const dispatch = useDispatch()
 
+  const [adding, updateAdding] = useState(false)
+  const selectedType: Income1099Type = watch('formType')
+
+  const clear = (): void => {
+    reset()
+    setValue('formType', undefined)
+    updateAdding(false)
+  }
+
   const onAdd1099 = handleSubmit((formData: F1099UserInput): void => {
     dispatch(add1099(toF1099(formData)))
-    setValue('formType', undefined)
-    reset()
+    clear()
   })
-
-  const selectedType: Income1099Type = watch('formType')
 
   const people: Person[] = (
     useSelector((state: TaxesState) => ([
@@ -149,13 +155,6 @@ export default function F1099Info (): ReactElement {
       .filter((p) => p !== undefined)
       .map((p) => p as Person)
   )
-
-  const [adding, updateAdding] = useState(false)
-
-  const cancel = (): void => {
-    reset()
-    updateAdding(false)
-  }
 
   const intFields = (
     <LabeledInput
@@ -279,7 +278,7 @@ export default function F1099Info (): ReactElement {
           valueMapping={(p, i) => [PersonRole.PRIMARY, PersonRole.SPOUSE][i]}
           name="personRole"
           keyMapping={(p, i) => i}
-          textMapping={(p) => `${p.firstName} ${p.lastName} (${p.ssid})`}
+          textMapping={(p) => `${p.firstName} ${p.lastName} (${formatSSID(p.ssid)})`}
           defaultValue={PersonRole.PRIMARY}
         />
         <Box display="flex" justifyContent="flex-start" paddingTop={2} paddingBottom={1}>
@@ -288,7 +287,7 @@ export default function F1099Info (): ReactElement {
               Add
             </Button>
           </Box>
-          <Button type="button" onClick={cancel} variant="contained" color="secondary">
+          <Button type="button" onClick={clear} variant="contained" color="secondary">
             Close
           </Button>
         </Box>
