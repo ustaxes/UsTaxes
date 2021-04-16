@@ -45,17 +45,15 @@ const theme = createMuiTheme({
   }
 })
 
-const drawerWidth = 240
-
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
       display: 'flex'
     },
     appBar: {
+      width: '100%',
       [theme.breakpoints.up('sm')]: {
-        width: `calc(100% - ${drawerWidth}px)`,
-        marginLeft: drawerWidth
+        display: 'none'
       }
     },
     menuButton: {
@@ -65,7 +63,12 @@ const useStyles = makeStyles((theme: Theme) =>
       }
     },
     // necessary for content to be below app bar
-    toolbar: theme.mixins.toolbar,
+    toolbar: {
+      ...theme.mixins.toolbar,
+      [theme.breakpoints.up('sm')]: {
+        display: 'none'
+      }
+    },
     content: {
       flexGrow: 1,
       padding: theme.spacing(3)
