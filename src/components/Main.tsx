@@ -1,5 +1,15 @@
 import React, { ReactElement, useState } from 'react'
-import { unstable_createMuiStrictModeTheme as createMuiTheme, ThemeProvider, makeStyles, createStyles, Theme, AppBar, Toolbar, IconButton, Typography, Grid } from '@material-ui/core'
+import {
+  unstable_createMuiStrictModeTheme as createMuiTheme,
+  ThemeProvider,
+  makeStyles,
+  createStyles,
+  Theme,
+  AppBar,
+  Toolbar,
+  IconButton,
+  Grid
+} from '@material-ui/core'
 import {
   Switch,
   Route,
@@ -140,9 +150,6 @@ export default function Main (): ReactElement {
         >
           <MenuIcon />
         </IconButton>
-        <Typography variant="h6" noWrap>
-          UsTaxes
-        </Typography>
       </Toolbar>
     </AppBar>
   )
