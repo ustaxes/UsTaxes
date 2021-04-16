@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react'
+import React, { Fragment, ReactElement } from 'react'
 import Divider from '@material-ui/core/Divider'
 import Drawer from '@material-ui/core/Drawer'
 import Hidden from '@material-ui/core/Hidden'
@@ -21,8 +21,18 @@ const useStyles = makeStyles((theme) => ({
     }
   },
   drawerPaper: {
-    paddingLeft: theme.spacing(1),
     width: drawerWidth
+  },
+  list: {
+    marginLeft: theme.spacing(0),
+    paddingLeft: theme.spacing(0)
+  },
+  listItem: {
+    marginLeft: theme.spacing(0),
+    paddingLeft: theme.spacing(1)
+  },
+  sectionHeader: {
+    marginLeft: theme.spacing(1)
   }
 }))
 
@@ -57,14 +67,15 @@ function ResponsiveDrawer (props: DrawerItemsProps): ReactElement {
   const { sections, isOpen, onClose } = props
 
   const drawer = (
-    <div>
+    <Fragment>
       {
         sections.map(({ title, items }, sectionIdx) => (
           <div key={sectionIdx}>
-            <h2>{title}</h2>
-            <List>
+            <List className={classes.list}>
+              <h2 className={classes.sectionHeader}>{title}</h2>
               {items.map((item, itemIdx) =>
                 <ListItem
+                  className={classes.listItem}
                   button
                   key={itemIdx}
                   component={NavLink}
@@ -81,7 +92,7 @@ function ResponsiveDrawer (props: DrawerItemsProps): ReactElement {
           </div>
         ))
       }
-    </div>
+    </Fragment>
   )
 
   return (
