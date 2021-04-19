@@ -87,7 +87,6 @@ export const AddDependentForm = ({ defaultValues, onSubmit, setOpen, open = fals
         <PersonFields
           register={register}
           errors={errors}
-          person={null}
           control={control}
           defaults={defaultValues !== undefined ? toDependent(defaultValues) : undefined}
         />
