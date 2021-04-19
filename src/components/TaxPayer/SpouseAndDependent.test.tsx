@@ -268,14 +268,14 @@ describe('Dependents', () => {
     screen.getByText('Spouse Information')
     screen.getByText('Dependent Information')
 
-    // initial state has an add button
+    // initial state has add buttons
     const addButtons = screen.getAllByRole('button', {
       name: /Add/
     })
     // Both spouse and dependent add buttons should appear
     expect(addButtons).toHaveLength(2)
 
-    // initial state does not have any forms or labels
+    // initial state does not have forms or labels
     const firstNameLabel = screen.queryByLabelText('First Name and Initial')
     expect(firstNameLabel).not.toBeInTheDocument()
 
@@ -301,15 +301,12 @@ describe('Dependents', () => {
 
     fireEvent.click(addDependentButton)
 
-    const labels = ['First Name and Initial', 'Last Name', 'SSN / TIN', 'Relationship to Taxpayer', 'Birth Year', 'How many months did you live together this year?', 'Is this person a full-time student?']
+    const dependentFormLabels = ['First Name and Initial', 'Last Name', 'SSN / TIN', 'Relationship to Taxpayer', 'Birth Year', 'How many months did you live together this year?', 'Is this person a full-time student?']
+
     // Assert all form labels appear
-    for (const label of labels) {
+    for (const label of dependentFormLabels) {
       screen.getByText(label)
     }
-
-    const saveButton = screen.getByRole('button', {
-      name: /Save/
-    })
 
     const closeButton = screen.getByRole('button', {
       name: /Close/
@@ -317,7 +314,8 @@ describe('Dependents', () => {
 
     fireEvent.click(closeButton)
 
-    for (const label of labels) {
+    // assert all the labels are now gone
+    for (const label of dependentFormLabels) {
       expect(screen.queryByText(label)).not.toBeInTheDocument()
     }
   })
@@ -636,7 +634,11 @@ describe('Dependents', () => {
     await waitForElementToBeRemoved(() => screen.queryByText('Input must be less than or equal to 12'))
     expect(screen.queryAllByText('Input is required')).toHaveLength(0)
 
-    const deleteButton = await screen.findByLabelText('delete')
-    fireEvent.click(deleteButton)
+    await screen.findByText('Booker T Washington')
+    screen.getByText('123-45-6789')
+
+    const deleteBooker = screen.getByLabelText('delete')
+    fireEvent.click(deleteBooker)
+    await waitFor(() => expect(screen.queryByText('Booker T Washington')).not.toBeInTheDocument())
   })
 })
