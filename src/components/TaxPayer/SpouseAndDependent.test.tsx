@@ -11,6 +11,14 @@ afterEach(async () => {
   jest.resetAllMocks()
 })
 
+jest.mock('redux-persist', () => {
+  const real = jest.requireActual('redux-persist')
+  return {
+    ...real,
+    persistReducer: jest.fn().mockImplementation((config, reducers) => reducers)
+  }
+})
+
 describe('SpouseInfo', () => {
   it('renders an `Add` button when no spouse has been added', () => {
     render(
@@ -52,7 +60,7 @@ describe('SpouseInfo', () => {
     screen.getByText('SSN / TIN')
 
     screen.getByRole('button', {
-      name: /Add/
+      name: /Save/
     })
 
     screen.getByRole('button', {
@@ -72,8 +80,8 @@ describe('SpouseInfo', () => {
 
     fireEvent.click(addButton)
 
-    const createButton = screen.getByRole('button', {
-      name: /Add/
+    const saveButton = screen.getByRole('button', {
+      name: /Save/
     })
 
     screen.getByRole('button', {
@@ -89,13 +97,13 @@ describe('SpouseInfo', () => {
     userEvent.type(lastNameInput, 'Ride')
     fireEvent.change(ssidInput, { target: { value: '123456789' } })
 
-    // click the create button
-    fireEvent.click(createButton)
+    // click the save button
+    fireEvent.click(saveButton)
 
     // expect first and last name to be concatenated
     await screen.findByText('Sally K Ride')
-    // expect ssid to appear without hyphens
-    screen.getByText('123456789')
+    // expect ssid to appear with hyphens
+    screen.getByText('123-45-6789')
 
     const editButton = screen.getByLabelText('edit')
 
@@ -117,19 +125,19 @@ describe('SpouseInfo', () => {
     // delete the old values and add new ones
     userEvent.type(filledFirstName, '{selectall}{del}Fella')
     userEvent.type(filledLastName, '{selectall}{del}McGee')
-    fireEvent.change(filledSsid, { target: { value: '987654321' } })
+    fireEvent.change(filledSsid, { target: { value: '987-65-4321' } })
 
     // wait for redux-persist to do some async stuff
     await waitFor(() => {})
 
-    // click the add button to save the new values
+    // click the save button to save the new values
     fireEvent.click(screen.getByRole('button', {
-      name: /Add/
+      name: /Save/
     }))
 
-    // expect the new names to be concatenated and new ssid to appear without hyphens
+    // expect the new names to be concatenated and new ssid to appear with hyphens
     await screen.findByText('Fella McGee')
-    screen.getByText('987654321')
+    screen.getByText('987-65-4321')
 
     const deleteButton = screen.getByLabelText('delete')
 
@@ -159,8 +167,8 @@ describe('SpouseInfo', () => {
 
     fireEvent.click(addButton)
 
-    const createButton = screen.getByRole('button', {
-      name: /Add/
+    const saveButton = screen.getByRole('button', {
+      name: /Save/
     })
 
     screen.getByRole('button', {
@@ -171,8 +179,8 @@ describe('SpouseInfo', () => {
     const inputs = screen.getAllByRole('textbox')
     const [firstNameInput, lastNameInput, ssidInput] = inputs
 
-    // click the add button with empty inputs
-    fireEvent.click(createButton)
+    // click the save button with empty inputs
+    fireEvent.click(saveButton)
 
     // expect three `Input is required` errors
     const nameErrors = await screen.findAllByText('Input is required')
@@ -180,7 +188,7 @@ describe('SpouseInfo', () => {
 
     // fill in the first name incorrectly
     userEvent.type(firstNameInput, 'F$LF(#)& ##3')
-    fireEvent.click(createButton)
+    fireEvent.click(saveButton)
 
     // expect two input errors and an error about restricted characters
     await waitFor(() => {})
@@ -190,7 +198,7 @@ describe('SpouseInfo', () => {
 
     // fill in the first name correctly
     userEvent.type(firstNameInput, '{selectall}{del}Sally K')
-    fireEvent.click(createButton)
+    fireEvent.click(saveButton)
 
     // expect two name errors
     await waitFor(() => {})
@@ -199,7 +207,7 @@ describe('SpouseInfo', () => {
 
     // add a name with restricted characters
     userEvent.type(lastNameInput, 'R5$%84')
-    fireEvent.click(createButton)
+    fireEvent.click(saveButton)
 
     // expect an error about restricted characters, and one name error
     await waitFor(() => {})
@@ -209,14 +217,14 @@ describe('SpouseInfo', () => {
 
     // correctly enter a last name
     userEvent.type(lastNameInput, '{selectall}{del}Ride')
-    fireEvent.click(createButton)
+    fireEvent.click(saveButton)
 
     // only the ssid error remains
     await screen.findByText('Input is required')
 
     // incorrectly enter ssid
     fireEvent.change(ssidInput, { target: { value: '123sc' } })
-    fireEvent.click(createButton)
+    fireEvent.click(saveButton)
 
     // expect ssid error to remain
     await waitFor(() => {})
@@ -225,11 +233,11 @@ describe('SpouseInfo', () => {
     // clear ssid and add a valid value
     fireEvent.change(ssidInput, { target: { value: '' } })
     fireEvent.change(ssidInput, { target: { value: '123456789' } })
-    fireEvent.click(createButton)
+    fireEvent.click(saveButton)
 
     // expect saved values to be formatted correctly
     await screen.findByText('Sally K Ride')
-    screen.getByText('123456789')
+    screen.getByText('123-45-6789')
 
     // expect ssid error to be gone
     const ssidError = screen.queryByText('Input should be filled with 9 digits')
