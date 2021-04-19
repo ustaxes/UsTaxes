@@ -121,7 +121,7 @@ export const AddDependentForm = ({ defaultValues, onSubmit, setOpen, open = fals
           label="Is this person a full-time student?"
           name="isStudent"
           control={control}
-          defaultValue={defaultValues?.isStudent}
+          defaultValue={defaultValues?.isStudent ?? false}
         />
       </FormContainer>
     )
@@ -167,7 +167,7 @@ export const SpouseInfo = (): ReactElement => {
       <LabeledCheckbox
         label="Check if your spouse is a dependent"
         control={control}
-        defaultValue={spouse?.isTaxpayerDependent}
+        defaultValue={spouse?.isTaxpayerDependent ?? false}
         name="isTaxpayerDependent"
       />
     </PersonFields>
