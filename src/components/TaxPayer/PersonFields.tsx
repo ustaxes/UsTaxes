@@ -16,7 +16,7 @@ interface PersonFieldsProps<T extends Person> extends BaseFormProps {
   defaults?: T
   children?: ReactNode
   errors: DeepMap<Partial<Person>, FieldError>
-  person?: Person | null | undefined
+  person?: Person
   control: Control
 }
 
@@ -24,7 +24,6 @@ export const PersonFields = <T extends Person>({ register, control, errors, defa
   <div>
     <LabeledInput
       label="First Name and Initial"
-      aria-label="First Name and Initial"
       register={register}
       name="firstName"
       patternConfig={Patterns.name}
@@ -34,7 +33,6 @@ export const PersonFields = <T extends Person>({ register, control, errors, defa
     />
     <LabeledInput
       label="Last Name"
-      aria-label="Last Name"
       register={register}
       name="lastName"
       patternConfig={Patterns.name}
@@ -44,7 +42,6 @@ export const PersonFields = <T extends Person>({ register, control, errors, defa
     />
     <LabeledInput
       label="SSN / TIN"
-      aria-label="Social Security Number or Tax Identification Number"
       register={register}
       name="ssid"
       patternConfig={Patterns.ssn(control)}
