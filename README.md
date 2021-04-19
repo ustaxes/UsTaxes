@@ -1,4 +1,4 @@
-# [ustaxes.org](//ustaxes.org) [![Netlify Status][Netlify-badge]][Netlify-url] [![Github Latest Release][release-badge]][github-release] [![discord-badge]][discord-url] 
+# [ustaxes.org](//ustaxes.org) [![Netlify Status][Netlify-badge]][Netlify-url] [![Github Latest Release][release-badge]][github-release] [![discord-badge]][discord-url]
 
 ## What is UsTaxes?
 
@@ -17,6 +17,10 @@ So far this project can attach the following schedules to form 1040:
 
 * Schedule B
 * Schedule D
+
+## Supported Credits
+
+* Earned income credit
 
 ## Supported states
 
@@ -56,7 +60,16 @@ This application can be either run as a web application or a standalone desktop 
 
 ### Web application
 
-To run, `npm start` or `yarn start`.
+To run, `npm run start` or `yarn start`.
+
+If preferred, a Docker alternative is available:
+```
+docker-compose build
+docker-compose up
+```
+Then, open a browser to `http://localhost:3000`.
+
+To stop and remove running containers, run `docker-compose down`.
 
 ### Desktop application
 

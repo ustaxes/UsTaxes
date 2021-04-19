@@ -33,10 +33,15 @@ export interface LabeledInputProps extends BaseFormProps {
   defaultValue?: string
 }
 
-export interface LabeledCheckBoxProps {
+export interface LabeledFormProps<A> {
   name: string
-  value: boolean
-  setValue: (v: boolean) => void
   control: Control<any>
   label: string
+  defaultValue?: A
+}
+
+export type LabeledCheckboxProps = LabeledFormProps<boolean>
+
+export interface LabeledRadioProps extends LabeledFormProps<string> {
+  values: Array<[string, string]>
 }
