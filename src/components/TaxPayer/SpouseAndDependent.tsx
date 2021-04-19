@@ -92,7 +92,7 @@ export const AddDependentForm = ({ defaultValues, onSubmit, setOpen, open = fals
           defaults={defaultValues !== undefined ? toDependent(defaultValues) : undefined}
         />
         <LabeledInput
-          label="Relationship to taxpayer"
+          label="Relationship to Taxpayer"
           register={register}
           name="relationship"
           required={true}
@@ -101,7 +101,7 @@ export const AddDependentForm = ({ defaultValues, onSubmit, setOpen, open = fals
         />
         <LabeledInput
           register={register}
-          label="Birth year"
+          label="Birth Year"
           patternConfig={Patterns.year(control)}
           name="birthYear"
           required={true}
@@ -118,7 +118,7 @@ export const AddDependentForm = ({ defaultValues, onSubmit, setOpen, open = fals
           defaultValue={defaultValues?.numberOfMonths}
         />
         <LabeledCheckbox
-          label="Is this person a full-time student"
+          label="Is this person a full-time student?"
           name="isStudent"
           control={control}
           defaultValue={defaultValues?.isStudent}
