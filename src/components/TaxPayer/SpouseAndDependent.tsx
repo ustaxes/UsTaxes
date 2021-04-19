@@ -96,6 +96,7 @@ export const AddDependentForm = ({ defaultValues, onSubmit, setOpen, open = fals
           register={register}
           name="relationship"
           required={true}
+          patternConfig={Patterns.name}
           error={errors.relationship}
           defaultValue={defaultValues?.relationship}
         />
