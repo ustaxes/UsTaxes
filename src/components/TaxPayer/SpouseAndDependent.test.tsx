@@ -1,9 +1,9 @@
 import React from 'react'
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { render, screen, fireEvent, waitFor, waitForElementToBeRemoved } from '@testing-library/react'
 import { Provider } from 'react-redux'
 import userEvent from '@testing-library/user-event'
 
-import { SpouseInfo } from './SpouseAndDependent'
+import SpouseAndDependent, { SpouseInfo } from './SpouseAndDependent'
 import { store } from '../../redux/store'
 
 afterEach(async () => {
@@ -90,19 +90,19 @@ describe('SpouseInfo', () => {
 
     // get all three text inputs
     const inputs = screen.getAllByRole('textbox')
-    const [firstNameInput, lastNameInput, ssidInput] = inputs
+    const [firstNameInput, lastNameInput, ssnInput] = inputs
 
     // add values for each input
     userEvent.type(firstNameInput, 'Sally K')
     userEvent.type(lastNameInput, 'Ride')
-    fireEvent.change(ssidInput, { target: { value: '123456789' } })
+    fireEvent.change(ssnInput, { target: { value: '123456789' } })
 
     // click the save button
     fireEvent.click(saveButton)
 
     // expect first and last name to be concatenated
     await screen.findByText('Sally K Ride')
-    // expect ssid to appear with hyphens
+    // expect ssn to appear with hyphens
     screen.getByText('123-45-6789')
 
     const editButton = screen.getByLabelText('edit')
@@ -112,7 +112,7 @@ describe('SpouseInfo', () => {
 
     // get all the inputs again, which should be filled this time
     const filledInputs = await screen.findAllByRole('textbox')
-    const [filledFirstName, filledLastName, filledSsid] = filledInputs as HTMLInputElement[]
+    const [filledFirstName, filledLastName, filledSsn] = filledInputs as HTMLInputElement[]
 
     // expect the edit button to no longer be in the document
     expect(editButton).not.toBeInTheDocument()
@@ -120,12 +120,12 @@ describe('SpouseInfo', () => {
     // assert that the input values match what was entered
     expect(filledFirstName.value).toBe('Sally K')
     expect(filledLastName.value).toBe('Ride')
-    expect(filledSsid.value).toBe('123-45-6789')
+    expect(filledSsn.value).toBe('123-45-6789')
 
     // delete the old values and add new ones
     userEvent.type(filledFirstName, '{selectall}{del}Fella')
     userEvent.type(filledLastName, '{selectall}{del}McGee')
-    fireEvent.change(filledSsid, { target: { value: '987-65-4321' } })
+    fireEvent.change(filledSsn, { target: { value: '987-65-4321' } })
 
     // wait for redux-persist to do some async stuff
     await waitFor(() => {})
@@ -135,7 +135,7 @@ describe('SpouseInfo', () => {
       name: /Save/
     }))
 
-    // expect the new names to be concatenated and new ssid to appear with hyphens
+    // expect the new names to be concatenated and new ssn to appear with hyphens
     await screen.findByText('Fella McGee')
     screen.getByText('987-65-4321')
 
@@ -177,7 +177,7 @@ describe('SpouseInfo', () => {
 
     // get all inputs
     const inputs = screen.getAllByRole('textbox')
-    const [firstNameInput, lastNameInput, ssidInput] = inputs
+    const [firstNameInput, lastNameInput, ssnInput] = inputs
 
     // click the save button with empty inputs
     fireEvent.click(saveButton)
@@ -219,29 +219,29 @@ describe('SpouseInfo', () => {
     userEvent.type(lastNameInput, '{selectall}{del}Ride')
     fireEvent.click(saveButton)
 
-    // only the ssid error remains
+    // only the ssn error remains
     await screen.findByText('Input is required')
 
-    // incorrectly enter ssid
-    fireEvent.change(ssidInput, { target: { value: '123sc' } })
+    // incorrectly enter ssn
+    fireEvent.change(ssnInput, { target: { value: '123sc' } })
     fireEvent.click(saveButton)
 
-    // expect ssid error to remain
+    // expect ssn error to remain
     await waitFor(() => {})
     await screen.findByText('Input should be filled with 9 digits')
 
-    // clear ssid and add a valid value
-    fireEvent.change(ssidInput, { target: { value: '' } })
-    fireEvent.change(ssidInput, { target: { value: '123456789' } })
+    // clear ssn and add a valid value
+    fireEvent.change(ssnInput, { target: { value: '' } })
+    fireEvent.change(ssnInput, { target: { value: '123456789' } })
     fireEvent.click(saveButton)
 
     // expect saved values to be formatted correctly
     await screen.findByText('Sally K Ride')
     screen.getByText('123-45-6789')
 
-    // expect ssid error to be gone
-    const ssidError = screen.queryByText('Input should be filled with 9 digits')
-    expect(ssidError).not.toBeInTheDocument()
+    // expect ssn error to be gone
+    const ssnError = screen.queryByText('Input should be filled with 9 digits')
+    expect(ssnError).not.toBeInTheDocument()
 
     // delete the entry
     const deleteButton = screen.getByLabelText('delete')
@@ -254,5 +254,159 @@ describe('SpouseInfo', () => {
     const inputsAfterDelete = screen.queryAllByRole('textbox')
 
     expect(inputsAfterDelete).toHaveLength(0)
+  })
+})
+
+describe('Dependents', () => {
+  it('renders an empty dependent list initially', () => {
+    render(
+      <Provider store={store}>
+        <SpouseAndDependent />
+      </Provider>
+    )
+
+    screen.getByText('Spouse Information')
+    screen.getByText('Dependent Information')
+
+    // initial state has an add button
+    const addButtons = screen.getAllByRole('button', {
+      name: /Add/
+    })
+    // Both spouse and dependent add buttons should appear
+    expect(addButtons).toHaveLength(2)
+
+    // initial state does not have any forms or labels
+    const firstNameLabel = screen.queryByLabelText('First Name and Initial')
+    expect(firstNameLabel).not.toBeInTheDocument()
+
+    const lastNameLabel = screen.queryByLabelText('Last Name')
+    expect(lastNameLabel).not.toBeInTheDocument()
+
+    const ssnLabel = screen.queryByLabelText('SSN / TIN')
+    expect(ssnLabel).not.toBeInTheDocument()
+  })
+  it('renders dependent form element when add button is clicked', async () => {
+    render(
+      <Provider store={store}>
+        <SpouseAndDependent />
+      </Provider>
+    )
+
+    const addButtons = screen.getAllByRole('button', {
+      name: /Add/
+    })
+
+    /* eslint-disable @typescript-eslint/no-unused-vars */
+    const [_, addDependentButton] = addButtons
+
+    fireEvent.click(addDependentButton)
+
+    const labels = ['First Name and Initial', 'Last Name', 'SSN / TIN', 'Relationship to Taxpayer', 'Birth Year', 'How many months did you live together this year?', 'Is this person a full-time student?']
+    // Assert all form labels appear
+    for (const label of labels) {
+      screen.getByText(label)
+    }
+
+    const saveButton = screen.getByRole('button', {
+      name: /Save/
+    })
+
+    // click the save button with empty inputs
+    fireEvent.click(saveButton)
+
+    // expect six `Input is required` errors
+    const nameErrors = await screen.findAllByText('Input is required')
+    expect(nameErrors).toHaveLength(6)
+
+    const closeButton = screen.getByRole('button', {
+      name: /Close/
+    })
+
+    fireEvent.click(closeButton)
+
+    for (const label of labels) {
+      expect(screen.queryByText(label)).not.toBeInTheDocument()
+    }
+  })
+  it('saves multiple dependents', async () => {
+    render(
+      <Provider store={store}>
+        <SpouseAndDependent />
+      </Provider>
+    )
+
+    const addButtons = screen.getAllByRole('button', {
+      name: /Add/
+    })
+
+    /* eslint-disable @typescript-eslint/no-unused-vars */
+    const [_, addDependentButton] = addButtons
+
+    fireEvent.click(addDependentButton)
+
+    const saveButton = screen.getByRole('button', {
+      name: /Save/
+    })
+
+    const studentLabel = screen.getByText('Is this person a full-time student?')
+
+    // get all inputs
+    const inputs = screen.getAllByRole('textbox')
+    const [firstNameInput, lastNameInput, ssnInput, relationInput, birthYearInput, durationInput] = inputs
+
+    // add values for each input
+    userEvent.type(firstNameInput, 'Charlie')
+    userEvent.type(lastNameInput, 'Brown')
+    fireEvent.change(ssnInput, { target: { value: '222222222' } })
+    userEvent.type(relationInput, 'Son')
+    userEvent.type(birthYearInput, '1999')
+    userEvent.type(durationInput, '12')
+    fireEvent.click(studentLabel)
+
+    fireEvent.click(saveButton)
+
+    await screen.findByText('Charlie Brown')
+    screen.getByText('222-22-2222')
+
+    const addButtonsAfterAdd = screen.getAllByRole('button', {
+      name: /Add/
+    })
+    /* eslint-disable @typescript-eslint/no-unused-vars */
+    const [_addSpouse, addAnotherDependentButton] = addButtonsAfterAdd
+
+    fireEvent.click(addAnotherDependentButton)
+    const newStudentLabel = screen.getByText('Is this person a full-time student?')
+
+    const newInputs = screen.getAllByRole('textbox')
+    const [newFirstNameInput, newLastNameInput, newSsnInput, newRelationInput, newBirthYearInput, newDurationInput] = newInputs
+
+    userEvent.type(newFirstNameInput, 'Sally')
+    userEvent.type(newLastNameInput, 'Brown')
+    fireEvent.change(newSsnInput, { target: { value: '333333333' } })
+    userEvent.type(newRelationInput, 'Daughter')
+    userEvent.type(newBirthYearInput, '2002')
+    userEvent.type(newDurationInput, '12')
+    fireEvent.click(newStudentLabel)
+
+    const newSaveButton = screen.getByRole('button', {
+      name: /Save/
+    })
+    fireEvent.click(newSaveButton)
+
+    await screen.findByText('Charlie Brown')
+    screen.getByText('222-22-2222')
+    screen.getByText('Sally Brown')
+    screen.getByText('333-33-3333')
+
+    const deleteButtons = screen.getAllByLabelText('delete')
+    expect(deleteButtons).toHaveLength(2)
+
+    const [deleteCharlie, deleteSally] = deleteButtons
+
+    fireEvent.click(deleteSally)
+    await waitFor(() => expect(screen.queryByText('Sally Brown')).not.toBeInTheDocument())
+
+    fireEvent.click(deleteCharlie)
+    await waitFor(() => expect(screen.queryByText('Charlie Brown')).not.toBeInTheDocument())
   })
 })
