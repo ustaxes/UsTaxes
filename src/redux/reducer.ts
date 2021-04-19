@@ -51,6 +51,21 @@ function formReducer (state: Information | undefined, action: Actions): Informat
         }
       }
     }
+
+    // Replace dependent by index with a new object.
+    case ActionName.EDIT_DEPENDENT: {
+      const newDependents = [...(newState.taxPayer?.dependents ?? [])]
+      newDependents.splice(action.formData.index, 1, action.formData.dependent)
+
+      return {
+        ...newState,
+        taxPayer: {
+          ...newState.taxPayer,
+          dependents: newDependents
+        }
+      }
+    }
+
     case ActionName.REMOVE_DEPENDENT: {
       const newDependents = [...(newState.taxPayer?.dependents ?? [])]
       newDependents.splice(action.formData, 1)
