@@ -1,6 +1,7 @@
 import F1040 from '../F1040'
-import { FilingStatus } from '../../redux/data'
+import { Dependent, FilingStatus } from '../../redux/data'
 import { computeField, sumFields } from '../util'
+import { ChildDependentCredit, CURRENT_YEAR } from '../../data/federal'
 
 export default class ChildTaxCreditWorksheet {
   f1040: F1040
@@ -9,13 +10,16 @@ export default class ChildTaxCreditWorksheet {
     this.f1040 = f1040
   }
 
+  qualifies = (d: Dependent): boolean =>
+    d.qualifyingInfo !== undefined && (CURRENT_YEAR - d.qualifyingInfo.birthYear <= ChildDependentCredit.maxAge)
+
   // worksheet line 1
-  numberQualifyingChildren = (): number => this.f1040.dependents.reduce((total, dependent) => (dependent.isQualifiedForChildTaxCredit ? total + 1 : total), 0)
+  numberQualifyingChildren = (): number => this.f1040.dependents.reduce((total, dependent) => (this.qualifies(dependent) ? total + 1 : total), 0)
 
   l1 = (): number => this.numberQualifyingChildren() * 2000
 
   // worksheet line 2
-  numberQualifyingOtherDependents = (): number => this.f1040.dependents.reduce((total, dependent) => (dependent.isQualifiedForChildTaxCredit ? total : total + 1), 0)
+  numberQualifyingOtherDependents = (): number => this.f1040.dependents.reduce((total, dependent) => (this.qualifies(dependent) ? total : total + 1), 0)
 
   l2 = (): number => this.numberQualifyingOtherDependents() * 500
 

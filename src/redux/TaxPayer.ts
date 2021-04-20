@@ -21,7 +21,7 @@ export default class TaxPayer {
     return (
       ps
         .map((p: Person) => `${p.firstName} ${p.lastName}`)
-        .join(',')
+        .join(', ')
     )
   }
 }

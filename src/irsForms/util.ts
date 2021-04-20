@@ -3,7 +3,7 @@ export const displayNumber = (n: number): number | undefined => {
   if (n <= 0) {
     return undefined
   }
-  return n
+  return Math.round(n)
 }
 
 export const computeField = (f: number | undefined): number => f === undefined ? 0 : f

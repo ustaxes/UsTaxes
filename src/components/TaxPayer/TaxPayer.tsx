@@ -1,11 +1,11 @@
-import React, { ReactElement, useState } from 'react'
-import { useForm } from 'react-hook-form'
+import React, { ReactElement } from 'react'
+import { useForm, useWatch } from 'react-hook-form'
 import { Box } from '@material-ui/core'
 import { useDispatch, useSelector } from 'react-redux'
 import { savePrimaryPersonInfo } from '../../redux/actions'
 import { Address, PersonRole, PrimaryPerson, TaxesState, TaxPayer } from '../../redux/data'
 import { PersonFields } from './PersonFields'
-import { LabeledCheckBox, LabeledInput, USStateDropDown } from '../input'
+import { LabeledCheckbox, LabeledInput, USStateDropDown } from '../input'
 import { Patterns } from '../Patterns'
 import { PagerContext } from '../pager'
 
@@ -15,6 +15,7 @@ interface TaxPayerUserForm {
   ssid: string
   role: PersonRole
   address: Address
+  isTaxpayerDependent: boolean
 }
 
 const asPrimaryPerson = (formData: TaxPayerUserForm): PrimaryPerson => ({
@@ -22,10 +23,11 @@ const asPrimaryPerson = (formData: TaxPayerUserForm): PrimaryPerson => ({
   firstName: formData.firstName,
   lastName: formData.lastName,
   ssid: formData.ssid.replace(/-/g, ''),
+  isTaxpayerDependent: formData.isTaxpayerDependent,
   role: PersonRole.PRIMARY
 })
 
-export default function TaxPayerInfo (): ReactElement {
+export default function PrimaryTaxpayer (): ReactElement {
   const { register, handleSubmit, control, errors } = useForm<PrimaryPerson>()
   // const variable dispatch to allow use inside function
   const dispatch = useDispatch()
@@ -34,9 +36,11 @@ export default function TaxPayerInfo (): ReactElement {
     return state.information.taxPayer
   })
 
-  const [isForeignCountry, updateForeignCountry] = useState<boolean>(
-    taxPayer?.primaryPerson?.address.foreignCountry !== undefined
-  )
+  const isForeignCountry = useWatch<boolean>({
+    control,
+    name: 'isForeignCountry',
+    defaultValue: taxPayer?.primaryPerson?.address.foreignCountry !== undefined
+  })
 
   const onSubmit = (onAdvance: () => void) => (primaryPerson: PrimaryPerson): void => {
     dispatch(savePrimaryPersonInfo(asPrimaryPerson(primaryPerson)))
@@ -103,15 +107,20 @@ export default function TaxPayerInfo (): ReactElement {
         <Box display="flex" justifyContent="center">
           <form onSubmit={handleSubmit(onSubmit(onAdvance))}>
             <Box display="flex" justifyContent="flex-start">
-              <h2>Taxpayer Information</h2>
+              <h2>Primary Taxpayer Information</h2>
             </Box>
 
-            <h4>Primary Taxpayer Information</h4>
             <PersonFields
               register={register}
               errors={errors}
               defaults={taxPayer?.primaryPerson}
               control={control}
+            />
+            <LabeledCheckbox
+              label="Check if you are a dependent"
+              control={control}
+              defaultValue={taxPayer?.primaryPerson?.isTaxpayerDependent}
+              name="isTaxpayerDependent"
             />
             <LabeledInput
               label="Address"
@@ -138,12 +147,11 @@ export default function TaxPayerInfo (): ReactElement {
               error={errors.address?.city}
               defaultValue={taxPayer?.primaryPerson?.address.city}
             />
-            <LabeledCheckBox
+            <LabeledCheckbox
               label="Check if you have a foreign address"
               control={control}
-              value={isForeignCountry}
-              setValue={updateForeignCountry}
               name="isForeignCountry"
+              defaultValue={taxPayer?.primaryPerson?.address?.foreignCountry !== undefined}
             />
             {csz}
             {navButtons}

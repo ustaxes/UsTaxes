@@ -1,4 +1,5 @@
 import { AccountType, Dependent, FilingStatus, IncomeW2, PersonRole, Refund, TaxPayer } from '../redux/data'
+import federalBrackets from '../data/federal'
 import F4972 from './F4972'
 import F5695 from './F5695'
 import F8814 from './F8814'
@@ -23,6 +24,10 @@ import { computeOrdinaryTax } from './TaxTable'
 import SDQualifiedAndCapGains from './worksheets/SDQualifiedAndCapGains'
 import ChildTaxCreditWorksheet from './worksheets/ChildTaxCreditWorksheet'
 
+export enum F1040Error {
+  filingStatusUndefined = 'Select a filing status'
+}
+
 export default class F1040 implements Form {
   // intentionally mirroring many fields from the state,
   // trying to represent the fields that the 1040 requires
@@ -42,8 +47,8 @@ export default class F1040 implements Form {
   province?: string
   postalCode?: string
   virtualCurrency: boolean
-  claimDependentPrimary: boolean
-  claimDependentSpouse: boolean
+  isTaxpayerDependent: boolean
+  isSpouseDependent: boolean
   dependents: Dependent[]
   refund?: Refund
   contactPhoneNumber?: string
@@ -88,8 +93,8 @@ export default class F1040 implements Form {
     this.province = tp.primaryPerson?.address.province
     this.postalCode = tp.primaryPerson?.address.postalCode
     this.virtualCurrency = false
-    this.claimDependentPrimary = false
-    this.claimDependentSpouse = false
+    this.isTaxpayerDependent = Boolean(tp.primaryPerson?.isTaxpayerDependent)
+    this.isSpouseDependent = Boolean(tp.spouse?.isTaxpayerDependent)
     this.dependents = tp.dependents
     this.w2s = []
     this.contactPhoneNumber = tp.contactPhoneNumber
@@ -171,19 +176,16 @@ export default class F1040 implements Form {
   w2ForRole = (r: PersonRole): IncomeW2 | undefined =>
     (this.w2s ?? []).find((w2) => w2.personRole === r)
 
-  static standardDeductions: {[key: string]: number} = {
-    [FilingStatus.S]: 12400,
-    [FilingStatus.MFS]: 12400,
-    [FilingStatus.HOH]: 18650,
-    [FilingStatus.MFJ]: 24800,
-    [FilingStatus.W]: 24800
-  }
-
-  standardDeduction = (): number => {
+  standardDeduction = (): number | undefined => {
     if (this.filingStatus === undefined) {
-      return 12400
+      return undefined
+    } else if (this.isTaxpayerDependent || this.isSpouseDependent) {
+      return Math.min(
+        (federalBrackets.ordinary.status[this.filingStatus].deductions[0].amount),
+        (this.wages() > 750) ? (this.wages() + 350) : 1100
+      )
     }
-    return F1040.standardDeductions[this.filingStatus]
+    return federalBrackets.ordinary.status[this.filingStatus].deductions[0].amount
   }
 
   totalQualifiedDividends = (): number | undefined => displayNumber(
@@ -315,7 +317,7 @@ export default class F1040 implements Form {
   // TODO: handle estimated tax payments
   l26 = (): number | undefined => undefined
 
-  l27 = (): number | undefined => this.scheduleEIC?.credit()
+  l27 = (): number | undefined => displayNumber(this.scheduleEIC?.credit(this) ?? 0)
 
   l28 = (): number | undefined => this.schedule8812?.l15()
 
@@ -376,7 +378,7 @@ export default class F1040 implements Form {
     if (depIdx < deps.length) {
       const dep = deps[depIdx]
       // Based on the PDF column, select the correct field
-      fieldArr = [`${dep.firstName} ${dep.lastName}`, dep.ssid, dep.relationship, Boolean(dep.isQualifiedForChildTaxCredit), Boolean(!dep.isQualifiedForChildTaxCredit)]
+      fieldArr = [`${dep.firstName} ${dep.lastName}`, dep.ssid, dep.relationship, qualifies, !qualifies]
     }
 
     return fieldArr[depFieldIdx]
@@ -386,6 +388,15 @@ export default class F1040 implements Form {
   // so create field mappings for 4x5 grid of fields
   _depFieldMappings = (): Array<string | boolean> =>
     Array.from(Array(20)).map((u, n: number) => this._depField(n))
+
+  errors = (): F1040Error[] => {
+    const result: F1040Error[] = []
+    if (this.filingStatus === undefined) {
+      result.push(F1040Error.filingStatusUndefined)
+    }
+
+    return result
+  }
 
   fields = (): Array<string | number | boolean | undefined> => ([
     this.filingStatus === FilingStatus.S,
@@ -413,8 +424,8 @@ export default class F1040 implements Form {
     false,
     this.virtualCurrency,
     !this.virtualCurrency,
-    this.claimDependentPrimary,
-    this.claimDependentSpouse,
+    this.isTaxpayerDependent,
+    this.isSpouseDependent,
     false, // TODO: spouse itemizes separately,
     this.bornBeforeDate(),
     this.blind(),

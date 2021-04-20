@@ -12,11 +12,15 @@ export interface Person {
   role: PersonRole
 }
 
+export interface QualifyingInformation {
+  birthYear: number
+  numberOfMonths: number
+  isStudent: boolean
+}
+
 export interface Dependent extends Person {
   relationship: string
-  birthYear: number
-  isQualifiedForChildTaxCredit: boolean
-  // Assumes dependent qualifies for either child credit or other dependent credit
+  qualifyingInfo?: QualifyingInformation
 }
 
 export interface Address {
@@ -32,6 +36,11 @@ export interface Address {
 
 export interface PrimaryPerson extends Person {
   address: Address
+  isTaxpayerDependent: boolean
+}
+
+export interface Spouse extends Person {
+  isTaxpayerDependent: boolean
 }
 
 export interface Employer {
@@ -135,7 +144,7 @@ export interface ContactInfo {
 export interface TaxPayer extends ContactInfo {
   filingStatus?: FilingStatus
   primaryPerson?: PrimaryPerson
-  spouse?: Person
+  spouse?: Spouse
   dependents: Dependent[]
 }
 
@@ -157,4 +166,9 @@ export interface Information {
 
 export interface TaxesState {
   information: Information
+}
+
+export interface EditDependentAction {
+  index: number
+  dependent: Dependent
 }
