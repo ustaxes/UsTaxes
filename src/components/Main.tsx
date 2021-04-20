@@ -9,7 +9,7 @@ import W2JobInfo from './income/W2JobInfo'
 import CreatePDF from './createPDF'
 import ResponsiveDrawer, { item, Section, SectionItem } from './ResponsiveDrawer'
 import { PagerButtons, PagerContext, usePager } from './pager'
-import TaxPayerInfo from './TaxPayer'
+import PrimaryTaxpayer from './TaxPayer'
 import RefundBankAccount from './RefundBankAccount'
 import SpouseAndDependent from './TaxPayer/SpouseAndDependent'
 import ContactInfo from './TaxPayer/ContactInfo'
@@ -61,7 +61,7 @@ const drawerSections: Section[] = [
   {
     title: 'Personal',
     items: [
-      item('Primary Taxpayer Information', Urls.taxPayer.info, <TaxPayerInfo />),
+      item('Primary Taxpayer', Urls.taxPayer.info, <PrimaryTaxpayer />),
       item('Spouse and Dependents', Urls.taxPayer.spouseAndDependent, <SpouseAndDependent />),
       item('Filing Status', Urls.taxPayer.filingStatus, <FilingStatusSelect />),
       item('Contact Information', Urls.taxPayer.contactInfo, <ContactInfo />)

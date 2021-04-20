@@ -27,7 +27,7 @@ const asPrimaryPerson = (formData: TaxPayerUserForm): PrimaryPerson => ({
   role: PersonRole.PRIMARY
 })
 
-export default function TaxPayerInfo (): ReactElement {
+export default function PrimaryTaxpayer (): ReactElement {
   const { register, handleSubmit, control, errors } = useForm<PrimaryPerson>()
   // const variable dispatch to allow use inside function
   const dispatch = useDispatch()
