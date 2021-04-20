@@ -26,7 +26,7 @@ const asPrimaryPerson = (formData: TaxPayerUserForm): PrimaryPerson => ({
   role: PersonRole.PRIMARY
 })
 
-export default function TaxPayerInfo (): ReactElement {
+export default function PrimaryTaxpayer (): ReactElement {
   const { register, handleSubmit, control, errors } = useForm<PrimaryPerson>()
   // const variable dispatch to allow use inside function
   const dispatch = useDispatch()
@@ -104,9 +104,7 @@ export default function TaxPayerInfo (): ReactElement {
     <PagerContext.Consumer>
       { ({ navButtons, onAdvance }) =>
           <form onSubmit={handleSubmit(onSubmit(onAdvance))}>
-            <h2>Taxpayer Information</h2>
-
-            <h4>Primary Taxpayer Information</h4>
+            <h2>Primary Taxpayer Information</h2>
             <PersonFields
               register={register}
               errors={errors}

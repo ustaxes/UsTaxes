@@ -269,10 +269,10 @@ export default function F1099Info (): ReactElement {
           error={errors.personRole}
           label="Recipient"
           required={true}
-          valueMapping={(p, i) => [PersonRole.PRIMARY, PersonRole.SPOUSE][i]}
+          valueMapping={(p: Person, i: number) => [PersonRole.PRIMARY, PersonRole.SPOUSE][i]}
           name="personRole"
-          keyMapping={(p, i) => i}
-          textMapping={(p) => `${p.firstName} ${p.lastName} (${formatSSID(p.ssid)})`}
+          keyMapping={(p: Person, i: number) => i}
+          textMapping={(p: Person) => `${p.firstName} ${p.lastName} (${formatSSID(p.ssid)})`}
           defaultValue={PersonRole.PRIMARY}
         />
         <Box display="flex" justifyContent="flex-start" paddingTop={2} paddingBottom={1}>

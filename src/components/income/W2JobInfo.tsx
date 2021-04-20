@@ -133,9 +133,9 @@ export default function W2JobInfo (): ReactElement {
           error={errors.personRole}
           label="Employee"
           required={true}
-          valueMapping={(p, i) => [PersonRole.PRIMARY, PersonRole.SPOUSE][i]}
+          valueMapping={(p: Person, i: number) => [PersonRole.PRIMARY, PersonRole.SPOUSE][i]}
           name="personRole"
-          keyMapping={(p, i) => i}
+          keyMapping={(p: Person, i: number) => i}
           textMapping={(p) => `${p.firstName} ${p.lastName} (${formatSSID(p.ssid)})`}
           defaultValue={PersonRole.PRIMARY}
         />
