@@ -61,7 +61,7 @@ const drawerSections: Section[] = [
   {
     title: 'Personal',
     items: [
-      item('Taxpayer Information', Urls.taxPayer.info, <TaxPayerInfo />),
+      item('Primary Taxpayer Information', Urls.taxPayer.info, <TaxPayerInfo />),
       item('Spouse and Dependents', Urls.taxPayer.spouseAndDependent, <SpouseAndDependent />),
       item('Filing Status', Urls.taxPayer.filingStatus, <FilingStatusSelect />),
       item('Contact Information', Urls.taxPayer.contactInfo, <ContactInfo />)
