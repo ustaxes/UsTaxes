@@ -155,8 +155,10 @@ interface EICDef {
   formulas: { [k in FilingStatus]: Piecewise[] | undefined }
 }
 
-export const ChildDependentCredit = {
-  maxAge: 17
+export const QualifyingDependents = {
+  childMaxAge: 17,
+  qualifyingDependentMaxAge: 19,
+  qualifyingStudentMaxAge: 24
 }
 
 export const EIC: EICDef = {
