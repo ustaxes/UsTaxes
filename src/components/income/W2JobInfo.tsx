@@ -6,7 +6,7 @@ import { Actions, addW2, removeW2 } from '../../redux/actions'
 import { PagerContext } from '../pager'
 import { TaxesState, IncomeW2, Person, PersonRole } from '../../redux/data'
 import DeleteIcon from '@material-ui/icons/Delete'
-import { Currency, GenericLabeledDropdown, LabeledInput } from '../input'
+import { Currency, formatSSID, GenericLabeledDropdown, LabeledInput } from '../input'
 import { Patterns } from '../Patterns'
 import { DevTool } from '@hookform/devtools'
 
@@ -23,7 +23,7 @@ const W2ListItem = ({ w2, remove }: W2ListItemProps): ReactElement => (
     </ListItemAvatar>
     <ListItemText
       primary={w2.occupation}
-      secondary={<div>Income: <Currency value={w2.income} /></div>}
+      secondary={<span>Income: <Currency value={w2.income} /></span>}
     />
     <ListItemSecondaryAction>
       <IconButton onClick={remove} edge="end" aria-label="delete">
@@ -145,10 +145,10 @@ export default function W2JobInfo (): ReactElement {
           error={errors.personRole}
           label="Employee"
           required={true}
-          valueMapping={(p, i) => [PersonRole.PRIMARY, PersonRole.SPOUSE][i]}
+          valueMapping={(p: Person, i: number) => [PersonRole.PRIMARY, PersonRole.SPOUSE][i]}
           name="personRole"
-          keyMapping={(p, i) => i}
-          textMapping={(p) => `${p.firstName} ${p.lastName} (${p.ssid})`}
+          keyMapping={(p: Person, i: number) => i}
+          textMapping={(p) => `${p.firstName} ${p.lastName} (${formatSSID(p.ssid)})`}
           defaultValue={PersonRole.PRIMARY}
         />
         <Box display="flex" justifyContent="flex-start" paddingTop={2} paddingBottom={1}>

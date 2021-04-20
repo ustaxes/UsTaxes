@@ -6,7 +6,7 @@ import { Actions, add1099, remove1099 } from '../../redux/actions'
 import { PagerContext } from '../pager'
 import { TaxesState, Person, PersonRole, Supported1099, Income1099Type } from '../../redux/data'
 import DeleteIcon from '@material-ui/icons/Delete'
-import { Currency, GenericLabeledDropdown, LabeledInput } from '../input'
+import { Currency, formatSSID, GenericLabeledDropdown, LabeledInput } from '../input'
 import { Patterns } from '../Patterns'
 import { DevTool } from '@hookform/devtools'
 
@@ -19,10 +19,10 @@ const showIncome = (a: Supported1099): ReactElement => {
       const ltg = a.form.longTermProceeds - a.form.longTermCostBasis
       const stg = a.form.shortTermProceeds - a.form.shortTermCostBasis
       return (
-        <ListItemText>
-          Long term: <Currency value={ltg} /><br />
-          Short term: <Currency value={stg} />
-        </ListItemText>
+        <span>
+        Long term: <Currency value={ltg} /><br />
+        Short term: <Currency value={stg} />
+        </span>
       )
     }
     case Income1099Type.DIV: {
@@ -290,10 +290,10 @@ export default function F1099Info (): ReactElement {
           error={errors.personRole}
           label="Recipient"
           required={true}
-          valueMapping={(p, i) => [PersonRole.PRIMARY, PersonRole.SPOUSE][i]}
+          valueMapping={(p: Person, i: number) => [PersonRole.PRIMARY, PersonRole.SPOUSE][i]}
           name="personRole"
-          keyMapping={(p, i) => i}
-          textMapping={(p) => `${p.firstName} ${p.lastName} (${p.ssid})`}
+          keyMapping={(p: Person, i: number) => i}
+          textMapping={(p: Person) => `${p.firstName} ${p.lastName} (${formatSSID(p.ssid)})`}
           defaultValue={PersonRole.PRIMARY}
         />
         <Box display="flex" justifyContent="flex-start" paddingTop={2} paddingBottom={1}>

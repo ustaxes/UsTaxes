@@ -6,7 +6,19 @@ import { InputType } from '../Patterns'
 import { Controller } from 'react-hook-form'
 
 export function LabeledInput<A> (props: LabeledInputProps<A>): ReactElement {
-  const { strongLabel, label, register, error, required = false, patternConfig, name, defaultValue } = props
+  const { strongLabel, label, register, error, required = false, patternConfig, name, defaultValue = '' } = props
+
+  const errorMessage: string | undefined = (() => {
+    if (error?.message !== undefined && error?.message !== '') {
+      return error?.message
+    }
+    if (error?.type === 'max' && patternConfig?.inputType === InputType.numeric && patternConfig.max !== undefined) {
+      return `Input must be less than or equal to ${patternConfig.max}`
+    }
+    if (error?.type === 'min' && patternConfig?.inputType === InputType.numeric && patternConfig.min !== undefined) {
+      return `Input must be greater than or equal to ${patternConfig.min}`
+    }
+  })()
 
   const requiredRegex: RegExp = patternConfig?.regexp ?? (required ? /.+/ : /.*/)
   const requiredMessage: string = patternConfig?.description ?? (required ? 'Input is required' : '')
@@ -30,7 +42,7 @@ export function LabeledInput<A> (props: LabeledInputProps<A>): ReactElement {
             // derive directly
               value={value as number}
               error={error !== undefined}
-              helperText={error?.message}
+              helperText={errorMessage}
               variant="filled"
             />
           }
@@ -38,7 +50,9 @@ export function LabeledInput<A> (props: LabeledInputProps<A>): ReactElement {
           control={patternConfig.control}
           defaultValue={defaultValue}
           rules={{
-            required,
+            min: patternConfig.min,
+            max: patternConfig.max,
+            required: required ? 'Input is required' : undefined,
             pattern: {
               value: requiredRegex,
               message: requiredMessage

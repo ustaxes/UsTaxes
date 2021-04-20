@@ -12,8 +12,15 @@ export interface Person {
   role: PersonRole
 }
 
+export interface QualifyingInformation {
+  birthYear: number
+  numberOfMonths: number
+  isStudent: boolean
+}
+
 export interface Dependent extends Person {
   relationship: string
+  qualifyingInfo?: QualifyingInformation
 }
 
 export interface Address {
@@ -157,4 +164,9 @@ export interface Information {
 
 export interface TaxesState {
   information: Information
+}
+
+export interface EditDependentAction {
+  index: number
+  dependent: Dependent
 }

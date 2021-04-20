@@ -5,7 +5,8 @@ import locationPostalCodes from '../../data/locationPostalCodes'
 import { BaseDropdownProps, LabeledDropdownProps } from './types'
 
 export function GenericLabeledDropdown<A> (props: LabeledDropdownProps<A>): ReactElement {
-  const { label, dropDownData, valueMapping, error, keyMapping, textMapping, control, required = false, name, defaultValue } = props
+  const { label, dropDownData, valueMapping, error, keyMapping, textMapping, control, required = false, name } = props
+  const { defaultValue = undefined } = props
 
   return (
     <div>
@@ -21,12 +22,10 @@ export function GenericLabeledDropdown<A> (props: LabeledDropdownProps<A>): Reac
               onChange={onChange}
               helperText={error !== undefined ? 'Make a selection' : undefined}
               error={error !== undefined}
-              defaultValue=""
-              fullWidth
-              variant="filled"
               SelectProps={{
                 native: true
               }}
+              variant="filled"
             >
               <option value={undefined} />
               {dropDownData.map((dropDownItem: A, i: number) =>
