@@ -7,6 +7,7 @@ import { Actions, removeDependent } from '../../redux/actions'
 import { TaxesState, Person } from '../../redux/data'
 import { BaseFormProps } from '../types'
 import DeleteIcon from '@material-ui/icons/Delete'
+import EditIcon from '@material-ui/icons/Edit'
 import ListItemText from '@material-ui/core/ListItemText'
 import PersonIcon from '@material-ui/icons/Person'
 import { Control, DeepMap, FieldError } from 'react-hook-form'
@@ -15,10 +16,11 @@ interface PersonFieldsProps<T extends Person> extends BaseFormProps {
   defaults?: T
   children?: ReactNode
   errors: DeepMap<Partial<Person>, FieldError>
+  person?: Person
   control: Control
 }
 
-export const PersonFields = <T extends Person>({ register, control, errors, defaults, children }: PersonFieldsProps<T>): ReactElement => (
+export const PersonFields = <T extends Person>({ register, control, errors, defaults, children, person }: PersonFieldsProps<T>): ReactElement => (
   <div>
     <LabeledInput
       label="First Name and Initial"
@@ -27,7 +29,7 @@ export const PersonFields = <T extends Person>({ register, control, errors, defa
       patternConfig={Patterns.name}
       required={true}
       error={errors.firstName}
-      defaultValue={defaults?.firstName}
+      defaultValue={person?.firstName ?? defaults?.firstName}
     />
     <LabeledInput
       label="Last Name"
@@ -36,7 +38,7 @@ export const PersonFields = <T extends Person>({ register, control, errors, defa
       patternConfig={Patterns.name}
       required={true}
       error={errors.lastName}
-      defaultValue={defaults?.lastName}
+      defaultValue={person?.lastName ?? defaults?.lastName}
     />
     <LabeledInput
       label="SSN / TIN"
@@ -45,7 +47,7 @@ export const PersonFields = <T extends Person>({ register, control, errors, defa
       patternConfig={Patterns.ssn(control)}
       required={true}
       error={errors.ssid}
-      defaultValue={defaults?.ssid}
+      defaultValue={person?.ssid ?? defaults?.ssid}
     />
     {children}
   </div>
@@ -54,10 +56,12 @@ export const PersonFields = <T extends Person>({ register, control, errors, defa
 interface PersonListItemProps {
   person: Person
   remove: () => void
+  onEdit?: () => void
+  editing?: boolean
 }
 
-export const PersonListItem = ({ person, remove }: PersonListItemProps): ReactElement => (
-  <ListItem>
+export const PersonListItem = ({ person, remove, onEdit, editing = false }: PersonListItemProps): ReactElement => (
+  <ListItem className={editing ? 'active' : ''}>
     <ListItemIcon>
       <PersonIcon />
     </ListItemIcon>
@@ -65,6 +69,17 @@ export const PersonListItem = ({ person, remove }: PersonListItemProps): ReactEl
       primary={`${person.firstName} ${person.lastName}`}
       secondary={formatSSID(person.ssid)}
     />
+    {(() => {
+      if (editing !== undefined) {
+        return (
+          <ListItemIcon>
+            <IconButton onClick={onEdit} edge="end" aria-label="edit">
+              <EditIcon />
+            </IconButton>
+          </ListItemIcon>
+        )
+      }
+    })()}
     <ListItemSecondaryAction>
       <IconButton onClick={remove} edge="end" aria-label="delete">
         <DeleteIcon />
@@ -73,7 +88,12 @@ export const PersonListItem = ({ person, remove }: PersonListItemProps): ReactEl
   </ListItem>
 )
 
-export function ListDependents (): ReactElement {
+interface ListDependentsProps {
+  onEdit?: (index: number) => void
+  editing?: number
+}
+
+export function ListDependents ({ onEdit, editing }: ListDependentsProps): ReactElement {
   const dependents = useSelector((state: TaxesState) =>
     state.information.taxPayer?.dependents ?? []
   )
@@ -86,7 +106,7 @@ export function ListDependents (): ReactElement {
     <List dense={true}>
       {
         dependents.map((p, i) =>
-          <PersonListItem key={i} remove={() => drop(i)} person={p} />
+          <PersonListItem key={i} remove={() => drop(i)} person={p} editing={editing === i} onEdit={() => (onEdit ?? (() => { }))(i)} />
         )
       }
     </List>
