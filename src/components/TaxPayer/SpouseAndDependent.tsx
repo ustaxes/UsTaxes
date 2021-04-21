@@ -1,7 +1,7 @@
 import React, { ReactElement, useState } from 'react'
 
 import { useForm } from 'react-hook-form'
-import { Box, Button, List } from '@material-ui/core'
+import { Button, List } from '@material-ui/core'
 import { useDispatch, useSelector } from 'react-redux'
 import { Patterns } from '../Patterns'
 import { LabeledInput, LabeledCheckbox } from '../input'
@@ -127,11 +127,9 @@ export const AddDependentForm = ({ defaultValues, onSubmit, setOpen, open = fals
     )
   } else {
     return (
-      <Box display="flex" justifyContent="flex-start">
-        <Button type="button" onClick={() => setOpen(true)} variant="contained" color="secondary">
-          Add
-        </Button>
-      </Box>
+      <Button type="button" onClick={() => setOpen(true)} variant="contained" color="secondary">
+        Add
+      </Button>
     )
   }
 }
@@ -203,11 +201,9 @@ export const SpouseInfo = (): ReactElement => {
     )
   }
   return (
-    <Box display="flex" flexDirection="flex-start">
-      <Button type="button" onClick={() => setCreateSpouse(true)} variant="contained" color="secondary">
-        Add
-      </Button>
-    </Box>
+    <Button type="button" onClick={() => setCreateSpouse(true)} variant="contained" color="secondary">
+      Add
+    </Button>
   )
 }
 
@@ -229,28 +225,30 @@ const SpouseAndDependent = (): ReactElement => {
     }
   }
 
+  const dependentsList: ReactElement | undefined = (() => {
+    if (dependents.length > 0) {
+      return (
+        <ListDependents onEdit={(i) => { setDependentOpen(true); setEditingIdx(i) }} editing={editing} />
+      )
+    }
+  })()
+
   return (
     <PagerContext.Consumer>
       { ({ onAdvance, navButtons }) =>
-        <Box display="flex" justifyContent="center">
-          <form onSubmit={onAdvance}>
-            <Box display="flex" justifyContent="flex-start">
-              <h2>Spouse Information</h2>
-            </Box>
-            <SpouseInfo />
-            <Box display="flex" justifyContent="flex-start">
-              <h2>Dependent Information</h2>
-            </Box>
-            <ListDependents onEdit={(i) => { setDependentOpen(true); setEditingIdx(i) }} editing={editing} />
-            <AddDependentForm
-              onSubmit={onSubmit}
-              defaultValues={editing !== undefined ? toDependentForm(dependents[editing]) : undefined}
-              open={dependentOpen}
-              setOpen={(v) => { setDependentOpen(v); setEditingIdx(undefined) }}
-            />
-            {navButtons}
-          </form>
-        </Box>
+        <form onSubmit={onAdvance}>
+          <h2>Spouse Information</h2>
+          <SpouseInfo />
+          <h2>Dependent Information</h2>
+          {dependentsList}
+          <AddDependentForm
+            onSubmit={onSubmit}
+            defaultValues={editing !== undefined ? toDependentForm(dependents[editing]) : undefined}
+            open={dependentOpen}
+            setOpen={(v) => { setDependentOpen(v); setEditingIdx(undefined) }}
+          />
+          {navButtons}
+        </form>
       }
     </PagerContext.Consumer>
   )

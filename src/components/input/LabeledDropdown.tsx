@@ -1,5 +1,5 @@
-import { Box, TextField } from '@material-ui/core'
 import React, { ReactElement } from 'react'
+import { Box, TextField } from '@material-ui/core'
 import { Controller } from 'react-hook-form'
 import locationPostalCodes from '../../data/locationPostalCodes'
 import { BaseDropdownProps, LabeledDropdownProps } from './types'

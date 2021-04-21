@@ -1,6 +1,5 @@
 import React, { ReactElement } from 'react'
 import { useForm } from 'react-hook-form'
-import { Box } from '@material-ui/core'
 import { useDispatch, useSelector } from 'react-redux'
 import { LabeledInput } from '../input'
 import { Patterns } from '../Patterns'
@@ -25,31 +24,27 @@ export default function ContactInfo (): ReactElement {
   return (
     <PagerContext.Consumer>
       { ({ navButtons, onAdvance }) =>
-        <Box display="flex" justifyContent="center">
-          <form onSubmit={handleSubmit(onSubmit(onAdvance))}>
-            <Box display="flex" justifyContent="flex-start">
-              <h2>Family Contact Information</h2>
-            </Box>
-            <LabeledInput
-              label="Contact phone number"
-              register={register}
-              required={true}
-              patternConfig={Patterns.usPhoneNumber(control)}
-              name="contactPhoneNumber"
-              defaultValue={taxPayer?.contactPhoneNumber}
-              error={errors.contactPhoneNumber}
-            />
-            <LabeledInput
-              label="Contact email address"
-              register={register}
-              required={true}
-              name="contactEmail"
-              defaultValue={taxPayer?.contactEmail}
-              error={errors.contactEmail}
-            />
-            {navButtons}
-          </form>
-        </Box>
+        <form onSubmit={handleSubmit(onSubmit(onAdvance))}>
+          <h2>Family Contact Information</h2>
+          <LabeledInput
+            label="Contact phone number"
+            register={register}
+            required={true}
+            patternConfig={Patterns.usPhoneNumber(control)}
+            name="contactPhoneNumber"
+            defaultValue={taxPayer?.contactPhoneNumber}
+            error={errors.contactPhoneNumber}
+          />
+          <LabeledInput
+            label="Contact email address"
+            register={register}
+            required={true}
+            name="contactEmail"
+            defaultValue={taxPayer?.contactEmail}
+            error={errors.contactEmail}
+          />
+          {navButtons}
+        </form>
       }
     </PagerContext.Consumer>
   )
