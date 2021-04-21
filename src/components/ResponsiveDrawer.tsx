@@ -29,10 +29,10 @@ const useStyles = makeStyles((theme) => ({
   },
   listItem: {
     marginLeft: theme.spacing(0),
-    paddingLeft: theme.spacing(1)
+    paddingLeft: theme.spacing(2)
   },
   sectionHeader: {
-    marginLeft: theme.spacing(1)
+    marginLeft: theme.spacing(2)
   }
 }))
 

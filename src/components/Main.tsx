@@ -166,7 +166,7 @@ export default function Main (): ReactElement {
           <div className={classes.toolbar} />
           <Grid container spacing={2}>
             <Grid item sm />
-            <Grid item sm={10} >
+            <Grid item sm={6} >
               <Switch>
                 <Redirect path="/" to={Urls.default} exact />
                 <PagerContext.Provider value={{ onAdvance: (onAdvance ?? (() => {})), navButtons }}>
