@@ -5,7 +5,7 @@ description = "A Tauri App"
 license = ""
 repository = ""
 default-run = "us-taxes"
-edition = "2018"
+edition = "2020"
 build = "src/build.rs"
 
 [dependencies]
