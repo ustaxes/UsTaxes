@@ -8,6 +8,7 @@ import { TaxesState, Person, PersonRole, Supported1099, Income1099Type } from '.
 import DeleteIcon from '@material-ui/icons/Delete'
 import { Currency, formatSSID, GenericLabeledDropdown, LabeledInput } from '../input'
 import { Patterns } from '../Patterns'
+import FormContainer from '../FormContainer'
 
 const showIncome = (a: Supported1099): ReactElement => {
   switch (a.type) {
@@ -236,7 +237,10 @@ export default function F1099Info (): ReactElement {
   let form: ReactElement | undefined
   if (adding) {
     form = (
-      <div>
+      <FormContainer
+        onDone={onAdd1099}
+        onCancel={clear}
+      >
         <strong>Input data from 1099</strong>
 
         <GenericLabeledDropdown
@@ -275,17 +279,7 @@ export default function F1099Info (): ReactElement {
           textMapping={(p: Person) => `${p.firstName} ${p.lastName} (${formatSSID(p.ssid)})`}
           defaultValue={PersonRole.PRIMARY}
         />
-        <Box display="flex" justifyContent="flex-start" paddingTop={2} paddingBottom={1}>
-          <Box paddingRight={2}>
-            <Button type="button" onClick={onAdd1099} variant="contained" color="secondary">
-              Add
-            </Button>
-          </Box>
-          <Button type="button" onClick={clear} variant="contained" color="secondary">
-            Close
-          </Button>
-        </Box>
-      </div>
+      </FormContainer>
     )
   } else {
     form = (

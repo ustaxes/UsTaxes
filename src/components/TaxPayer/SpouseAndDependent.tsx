@@ -8,7 +8,7 @@ import { LabeledInput, LabeledCheckbox } from '../input'
 import { TaxesState, Dependent, Spouse, PersonRole } from '../../redux/data'
 import { addDependent, addSpouse, editDependent, removeSpouse } from '../../redux/actions'
 import { ListDependents, PersonFields, PersonListItem } from './PersonFields'
-import FormContainer from './FormContainer'
+import FormContainer from '../FormContainer'
 import { PagerContext } from '../pager'
 
 interface UserPersonForm {

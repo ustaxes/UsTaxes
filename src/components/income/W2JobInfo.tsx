@@ -1,6 +1,6 @@
 import React, { ReactElement, useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { Avatar, Box, Button, IconButton, List, ListItem, ListItemAvatar, ListItemSecondaryAction, ListItemText } from '@material-ui/core'
+import { Avatar, Button, IconButton, List, ListItem, ListItemAvatar, ListItemSecondaryAction, ListItemText } from '@material-ui/core'
 import { useDispatch, useSelector } from 'react-redux'
 import { Actions, addW2, removeW2 } from '../../redux/actions'
 import { PagerContext } from '../pager'
@@ -8,6 +8,7 @@ import { TaxesState, IncomeW2, Person, PersonRole } from '../../redux/data'
 import DeleteIcon from '@material-ui/icons/Delete'
 import { Currency, formatSSID, GenericLabeledDropdown, LabeledInput } from '../input'
 import { Patterns } from '../Patterns'
+import FormContainer from '../FormContainer'
 
 interface W2ListItemProps {
   w2: IncomeW2
@@ -96,9 +97,11 @@ export default function W2JobInfo (): ReactElement {
   let form: ReactElement | undefined
   if (adding) {
     form = (
-      <div>
+      <FormContainer
+        onDone={onAddW2}
+        onCancel={clear}
+      >
         <strong>Input data from W-2</strong>
-
         <LabeledInput
           label="Occupation"
           register={register}
@@ -139,17 +142,7 @@ export default function W2JobInfo (): ReactElement {
           textMapping={(p) => `${p.firstName} ${p.lastName} (${formatSSID(p.ssid)})`}
           defaultValue={PersonRole.PRIMARY}
         />
-        <Box display="flex" justifyContent="flex-start" paddingTop={2} paddingBottom={1}>
-          <Box paddingRight={2}>
-            <Button type="button" onClick={onAddW2} variant="contained" color="secondary">
-              Add
-            </Button>
-          </Box>
-          <Button type="button" onClick={clear} variant="contained" color="secondary">
-            Close
-          </Button>
-        </Box>
-      </div>
+      </FormContainer>
     )
   } else {
     form = (
