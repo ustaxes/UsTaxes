@@ -15,6 +15,7 @@ export interface BaseDropdownProps {
 export interface CurrencyProps {
   prefix?: string
   value: number
+  plain?: boolean
 }
 
 export interface LabeledDropdownProps<A> extends BaseDropdownProps {

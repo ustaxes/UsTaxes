@@ -67,6 +67,7 @@ const text = (regexp: RegExp, description: string): TextPattern => ({
 export const Patterns = {
   year: numeric(/[12][0-9]{3}/, 'Input should be a valid year', 1900, CURRENT_YEAR, '####', '_'),
   numMonths: numeric(/[0-9]{1,2}/, 'Input should be 0-12', 0, 12, '##', ''),
+  numDays: numeric(/[0-9]{1,3}/, 'Input should be 0-366', 0, 366, '###', ''),
   name: text(/^[A-Za-z ]+$/i, 'Input should only include letters and spaces'),
   zip: numeric(/[0-9]{5}([0-9]{4})?/, 'Input should be filled with 5 or 9 digits', undefined, undefined, '#####-####'),
   ssn: numeric(/[0-9]{9}/, 'Input should be filled with 9 digits', undefined, undefined, '###-##-####'),

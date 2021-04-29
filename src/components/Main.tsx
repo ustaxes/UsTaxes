@@ -27,6 +27,7 @@ import ContactInfo from './TaxPayer/ContactInfo'
 import FilingStatusSelect from './TaxPayer/FilingStatus'
 import F1099Info from './income/F1099Info'
 import Summary from './Summary'
+import RealEstate from './income/RealEstate'
 
 const theme = createMuiTheme({
   palette: {
@@ -87,7 +88,8 @@ const Urls = {
   refund: '/refundinfo',
   income: {
     w2s: '/income/w2jobinfo',
-    f1099s: '/income/f1099s'
+    f1099s: '/income/f1099s',
+    realEstate: '/income/realestate'
   },
   credits: {
     main: '/credits',
@@ -113,7 +115,8 @@ const drawerSections: Section[] = [
     title: 'Income',
     items: [
       item('Wages (W2)', Urls.income.w2s, <W2JobInfo />),
-      item('Income (1099)', Urls.income.f1099s, <F1099Info />)
+      item('Income (1099)', Urls.income.f1099s, <F1099Info />),
+      item('Real Estate', Urls.income.realEstate, <RealEstate />)
     ]
   },
   {

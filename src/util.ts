@@ -6,7 +6,7 @@
  * @returns tyepsafe array of keys
  */
 export const enumKeys = <A extends Object>(a: A): Array<keyof typeof a> =>
-  Object.keys(a) as Array<keyof typeof a>
+  Object.keys(a).filter((k) => isNaN(Number(k))) as Array<keyof typeof a>
 
 export const anArrayOf = <A>(n: number, a: A): A[] => Array.from(Array(n)).map(() => a)
 
@@ -44,3 +44,9 @@ export const evaluatePiecewise = (f: Piecewise, x: number): number => {
   })()
   return f[selection][1](x)
 }
+
+export const unzip = <A, B>(xs: Array<[A, B]>): [A[], B[]] =>
+  xs.reduce<[A[], B[]]>(([as, bs], [a, b]) => [[...as, a], [...bs, b]], [[], []])
+
+export const unzip3 = <A, B, C>(xs: Array<[A, B, C]>): [A[], B[], C[]] =>
+  xs.reduce<[A[], B[], C[]]>(([as, bs, cs], [a, b, c]) => [[...as, a], [...bs, b], [...cs, c]], [[], [], []])
