@@ -50,9 +50,9 @@ Thank you for taking the time to contribute, let's make tax filing free for ever
 
 To make sure working on this project is fun for everyone, please review:
 
-* [Code of conduct](.github/CODE_OF_CONDUCT.md)
-* [Contributing guide](.github/CONTRIBUTING.md)
-* [Project Architecture](.github/ARCHITECTURE.md)
+* [Code of conduct](docs/CODE_OF_CONDUCT.md)
+* [Contributing guide](docs/CONTRIBUTING.md)
+* [Project Architecture](docs/ARCHITECTURE.md)
 
 ## Running
 
