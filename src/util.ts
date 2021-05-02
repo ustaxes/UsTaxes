@@ -33,7 +33,14 @@ export const linear = (m: number, b: number) => (x: number): number => b + m * x
 export type Piecewise = Array<[number, ((x: number) => number)]>
 
 export const evaluatePiecewise = (f: Piecewise, x: number): number => {
-  // select the piece of the function that we are in.
-  const selection: number = Math.max(f.findIndex(([lowerBound]) => lowerBound > x), f.length) - 1
+  // Select the function segment to evaulate.
+  // The function segment is the one before the segment with the lower bound above x.
+  const selection: number = (() => {
+    const idx = f.findIndex(([lowerBound]) => lowerBound > x)
+    if (idx < 0) {
+      return f.length - 1
+    }
+    return idx - 1
+  })()
   return f[selection][1](x)
 }
