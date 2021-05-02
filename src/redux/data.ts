@@ -105,6 +105,8 @@ export enum FilingStatus {
   W = 'W'
 }
 
+export type FilingStatusName = keyof typeof FilingStatus
+
 export const FilingStatusTexts = ({
   [FilingStatus.S]: 'Single',
   [FilingStatus.MFJ]: 'Married Filing Jointly',
