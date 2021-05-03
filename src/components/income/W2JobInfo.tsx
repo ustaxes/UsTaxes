@@ -7,7 +7,7 @@ import { Currency, formatSSID, GenericLabeledDropdown, LabeledInput } from '../i
 import { Patterns } from '../Patterns'
 import { FormListContainer } from '../FormContainer'
 import { Work } from '@material-ui/icons'
-import { addW2, editW2 } from '../../redux/actions'
+import { addW2, editW2, removeW2 } from '../../redux/actions'
 
 interface IncomeW2UserInput {
   occupation: string
@@ -72,6 +72,7 @@ export default function W2JobInfo (): ReactElement {
       onDone={(onSuccess) => handleSubmit(onAddW2(onSuccess))}
       editing={editing}
       editItem={setEditing}
+      removeItem={(i) => dispatch(removeW2(i))}
       icon={() => <Work />}
       primary={(w2: IncomeW2) => w2.occupation }
       secondary={(w2) => <span>Income: <Currency value={w2.income} /></span>}
