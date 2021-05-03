@@ -16,12 +16,9 @@ jest.mock('redux-persist', () => {
   }
 })
 
-beforeAll(async () => {
-  jest.spyOn(console, 'log').mockImplementation(() => {})
+beforeAll(async () =>
   jest.spyOn(console, 'warn').mockImplementation(() => {})
-  jest.spyOn(console, 'info').mockImplementation(() => {})
-  jest.spyOn(console, 'debug').mockImplementation(() => {})
-})
+)
 
 describe('ScheduleEIC', () => {
   it('should disallow EIC for no income', () => {
