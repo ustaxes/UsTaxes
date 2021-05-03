@@ -27,6 +27,9 @@ const useStyles = makeStyles((theme) => ({
   },
   inline: {
     display: 'inline'
+  },
+  block: {
+    display: 'block'
   }
 }))
 
@@ -47,10 +50,9 @@ const BinaryStateListItem = ({ active, children }: BinaryStateListItemProps): Re
 
 const Summary = (): ReactElement => {
   const state: Information = useSelector((state: TaxesState) => state.information)
+  const classes = useStyles()
 
   const f1040 = create1040(state)
-
-  const classes = useStyles()
 
   return (
     <PagerContext.Consumer>
@@ -67,8 +69,15 @@ const Summary = (): ReactElement => {
                     <Typography
                       component="span"
                       variant="body2"
-                      className={classes.inline}
                       color="textPrimary"
+                      className={classes.block}
+                    >
+                      Qualifying Dependents:
+                    </Typography>
+                    <Typography
+                      component="span"
+                      variant="body2"
+                      color="textSecondary"
                     >
                       {
                         f1040.scheduleEIC?.qualifyingDependents().map((d, i) =>
@@ -76,13 +85,13 @@ const Summary = (): ReactElement => {
                         )
                       }
                     </Typography>
+                    <br />
                     <Typography
                       component="span"
                       variant="body2"
-                      className={classes.inline}
                       color="textPrimary"
                     >
-                      <Currency value={Math.round(f1040.scheduleEIC?.credit(f1040) ?? 0)} />
+                      Credit: <Currency value={Math.round(f1040.scheduleEIC?.credit(f1040) ?? 0)} />
                     </Typography>
                   </React.Fragment>
                 }
