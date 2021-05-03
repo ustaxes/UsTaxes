@@ -5,6 +5,7 @@ import { create1040 } from '../irsForms/Main'
 import { useSelector } from 'react-redux'
 import { Information, TaxesState } from '../redux/data'
 import { Check, Close } from '@material-ui/icons'
+import { Currency } from './input'
 
 interface BinaryStateListItemProps {
   active: boolean
@@ -74,6 +75,14 @@ const Summary = (): ReactElement => {
                           <span key={i}>{`${d?.firstName ?? ''} ${d?.lastName ?? ''}`}</span>
                         )
                       }
+                    </Typography>
+                    <Typography
+                      component="span"
+                      variant="body2"
+                      className={classes.inline}
+                      color="textPrimary"
+                    >
+                      <Currency value={Math.round(f1040.scheduleEIC?.credit(f1040) ?? 0)} />
                     </Typography>
                   </React.Fragment>
                 }
