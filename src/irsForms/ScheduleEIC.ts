@@ -210,13 +210,19 @@ export default class ScheduleEIC implements Form {
     return l9
   }
 
+  /**
+   * The credit table in Publication 596 provides an
+   * amount for each interval of $50, calculated from the
+   * midpoint of the interval.
+   *
+   * @param income The earned income
+   * @returns the earned income rounded to the nearest 25
+   */
   roundIncome = (income: number): number => {
-    const intIncome = Math.round(income)
-    const mod = intIncome % 50
-    if (mod < 25) {
-      return Math.round(income / 50) * 50 + 25
+    if (income < 1) {
+      return 0
     }
-    return income
+    return Math.round(Math.round(income) / 50) * 50 + 25
   }
 
   /**
@@ -238,9 +244,6 @@ export default class ScheduleEIC implements Form {
    * that is found in the table is calculated based on an income of $5025 and
    * comes out ahead. Conversely, someone with an earned income of $5049 finds
    * a credit in the table calculated off the same $5,025 and loses out.
-   *
-   * So our calculator rounds up to the middle of a $50 interval if necessary
-   * before applying the credit formula.
    *
    * https://www.irs.gov/pub/irs-pdf/p596.pdf
    *
