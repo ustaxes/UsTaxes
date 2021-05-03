@@ -210,6 +210,43 @@ export default class ScheduleEIC implements Form {
     return l9
   }
 
+  roundIncome = (income: number): number => {
+    const intIncome = Math.round(income)
+    const mod = intIncome % 50
+    if (mod < 25) {
+      return Math.round(income / 50) * 50 + 25
+    }
+    return income
+  }
+
+  /**
+   * Based on the earned income and filing status, calculate the
+   * allowed EITC.
+   *
+   * For tax year 2020, IRS Rev. Proc. 2019-44 outlines the required
+   * calculation for the EITC based on number of qualifying children
+   * and filing status.
+   *
+   * https://www.irs.gov/pub/irs-drop/rp-19-44.pdf
+   *
+   * IRS publication 596 provides a table that can be used
+   * to figure the EITC, and is the basis of online calculators published
+   * by IRS. This table uses the formulas outlined in Rev Proc 2019-44
+   * but applies them to incomes lying in $50 intervals, with the midpoint
+   * of those intervals used to calculate the credit for the entire window.
+   * For example, if the taxpayer has an earned income of $5000, the amount
+   * that is found in the table is calculated based on an income of $5025 and
+   * comes out ahead. Conversely, someone with an earned income of $5049 finds
+   * a credit in the table calculated off the same $5,025 and loses out.
+   *
+   * So our calculator rounds up to the middle of a $50 interval if necessary
+   * before applying the credit formula.
+   *
+   * https://www.irs.gov/pub/irs-pdf/p596.pdf
+   *
+   * @param income The earned income
+   * @returns
+   */
   calculateEICForIncome = (income: number): number => {
     if (this.tp.tp.filingStatus === undefined) {
       return 0
@@ -219,7 +256,10 @@ export default class ScheduleEIC implements Form {
       return 0
     }
 
-    return Math.max(0, evaluatePiecewise(f[this.qualifyingDependents().length], income))
+    return Math.max(
+      0,
+      evaluatePiecewise(f[this.qualifyingDependents().length], this.roundIncome(income))
+    )
   }
 
   // 5.2

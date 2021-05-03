@@ -135,7 +135,8 @@ const line11MfjCaps = [21710, 47646, 53330, 56844]
 
 type Point = [number, number]
 
-// Provided
+// Provided a list of points, create a piecewise function
+// that makes linear segments through the list of points.
 const toPieceWise = (points: Point[]): Piecewise => (
   points
     .slice(0, points.length - 1)
