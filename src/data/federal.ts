@@ -133,20 +133,41 @@ const federalBrackets: FederalBrackets = {
 const line11Caps = [15820, 41756, 47440, 50954]
 const line11MfjCaps = [21710, 47646, 53330, 56844]
 
-const unmarriedFormulas: Piecewise[] = [
-  // phase in             constant                phase out
-  [[0, linear(0.0765, 0)], [7030, linear(0, 538)], [8790, linear(-0.0765, (538 + 0.0765 * 8790))]],
-  [[0, linear(0.34, 0)], [10540, linear(0, 3584)], [19330, linear(-0.1598, (3584 + 0.1598 * 19330))]],
-  [[0, linear(0.40, 0)], [14800, linear(0, 5920)], [19330, linear(-0.2106, (5920 + 0.2106 * 19330))]],
-  [[0, linear(0.45, 0)], [14800, linear(0, 6660)], [19330, linear(-0.2106, (6660 + 0.2106 * 19330))]]
-]
+type Point = [number, number]
 
-const marriedFormulas: Piecewise[] = [
-  [[0, linear(0.0765, 0)], [7030, linear(0, 538)], [14680, linear(-0.0765, (538 + 0.0765 * 14680))]],
-  [[0, linear(0.34, 0)], [10540, linear(0, 3584)], [25220, linear(-0.1598, (3584 + 0.1598 * 19330))]],
-  [[0, linear(0.40, 0)], [14800, linear(0, 5920)], [25220, linear(-0.2106, (5920 + 0.2106 * 19330))]],
-  [[0, linear(0.45, 0)], [14800, linear(0, 6660)], [25220, linear(-0.2106, (6660 + 0.2106 * 19330))]]
-]
+// Provided
+const toPieceWise = (points: Point[]): Piecewise => (
+  points
+    .slice(0, points.length - 1)
+    .map((point, idx) => [point, points[idx + 1]])
+    .map(([[x1, y1], [x2, y2]]) =>
+      // starting point     slope              intercept
+      [x1, linear((y2 - y1) / (x2 - x1), y1 - x1 * (y2 - y1) / (x2 - x1))]
+    )
+)
+
+// These points are taken directly from IRS publication
+// IRS Rev. Proc. 2019-44 for tax year 2020
+// https://www.irs.gov/pub/irs-drop/rp-19-44.pdf
+const unmarriedFormulas: Piecewise[] = (() => {
+  const points: Point[][] = [
+    [[0, 0], [7030, 538], [8790, 3584], [15820, 0]], // 0
+    [[0, 0], [10540, 3584], [19330, 3584], [41756, 0]], // 1
+    [[0, 0], [14800, 5920], [19330, 5920], [47440, 0]], // 2
+    [[0, 0], [14800, 6660], [19330, 6660], [50954, 0]] // 3 or more
+  ]
+  return points.map((ps: Point[]) => toPieceWise(ps))
+})()
+
+const marriedFormulas: Piecewise[] = (() => {
+  const points: Point[][] = [
+    [[0, 0], [7030, 538], [14680, 3584], [21710, 0]], // 0
+    [[0, 0], [10540, 3584], [25220, 3584], [47646, 0]], // 1
+    [[0, 0], [14800, 5920], [25220, 5920], [53330, 0]], // 2
+    [[0, 0], [14800, 6660], [25220, 6660], [56844, 0]] // 3 or more
+  ]
+  return points.map((ps) => toPieceWise(ps))
+})()
 
 interface EICDef {
   caps: {[k in FilingStatus]: number[] | undefined}
