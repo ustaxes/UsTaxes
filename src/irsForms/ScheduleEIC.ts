@@ -65,7 +65,7 @@ export default class ScheduleEIC implements Form {
     if (this.tp.tp.filingStatus !== undefined) {
       const incomeLimits = federal.EIC.caps[this.tp.tp.filingStatus]
       if (incomeLimits !== undefined) {
-        const limit = incomeLimits[Math.min(this.qualifyingDependents.length, incomeLimits.length - 1)]
+        const limit = incomeLimits[Math.min(this.qualifyingDependents().length, incomeLimits.length - 1)]
         return (f1040.l11() ?? 0) < limit
       }
     }
