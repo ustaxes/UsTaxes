@@ -136,7 +136,7 @@ export default function F1099Info (): ReactElement {
     return blankUserInput
   })()
 
-  const { register, errors, handleSubmit, control, reset, watch, setValue } = useForm<F1099UserInput>({ defaultValues })
+  const { register, errors, handleSubmit, control, reset, watch, setValue } = useForm<F1099UserInput>()
   const selectedType: Income1099Type | undefined = watch('formType')
 
   const dispatch = useDispatch()
@@ -177,6 +177,7 @@ export default function F1099Info (): ReactElement {
       patternConfig={Patterns.currency(control)}
       name="interest"
       error={errors.interest}
+      defaultValue={defaultValues?.interest.toString()}
     />
   )
 
