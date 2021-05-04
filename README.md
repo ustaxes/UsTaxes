@@ -15,8 +15,10 @@ Most income information from the following forms are supported:
 
 So far this project can attach the following schedules to form 1040:
 
+* Schedule 1
 * Schedule B
 * Schedule D
+* Schedule E
 
 ## Supported Credits
 
