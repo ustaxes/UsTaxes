@@ -71,7 +71,7 @@ export const Patterns = {
   zip: numeric(/[0-9]{5}([0-9]{4})?/, 'Input should be filled with 5 or 9 digits', undefined, undefined, '#####-####'),
   ssn: numeric(/[0-9]{9}/, 'Input should be filled with 9 digits', undefined, undefined, '###-##-####'),
   ein: numeric(/[0-9]{9}/, 'Input should be filled with 9 digits', undefined, undefined, '##-#######'),
-  currency: numeric(/[1-9][0-9]+(\.[0-9]{1,2})?/, 'Input should be a numeric value', undefined, undefined, undefined, '_', true, '$', 2),
+  currency: numeric(/[0-9]+(\.[0-9]{1,2})?/, 'Input should be a numeric value', undefined, undefined, undefined, '_', true, '$', 2),
   bankAccount: numeric(/[0-9]{4,17}/, 'Input should be filled with 4-17 digits', undefined, undefined, '#################', ''),
   bankRouting: numeric(/[0-9]{9}/, 'Input should be filled with 9 digits', undefined, undefined, '#########', '_'),
   usPhoneNumber: numeric(/[2-9][0-9]{9}/, 'Input should be 10 digits, not starting with 0 or 1', undefined, undefined, '(###)-###-####')
