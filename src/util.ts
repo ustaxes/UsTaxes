@@ -10,6 +10,9 @@ export const enumKeys = <A extends Object>(a: A): Array<keyof typeof a> =>
 
 export const anArrayOf = <A>(n: number, a: A): A[] => Array.from(Array(n)).map(() => a)
 
+export const range = (from: number, to: number): number[] =>
+  anArrayOf(to - from, undefined).map((_, i) => from + i)
+
 /**
  * Given two arrays [a1, a2, ...], [b1, b2, ...] make an array
  * [[a1, b1], [a2, b2], ...]
@@ -50,3 +53,14 @@ export const unzip = <A, B>(xs: Array<[A, B]>): [A[], B[]] =>
 
 export const unzip3 = <A, B, C>(xs: Array<[A, B, C]>): [A[], B[], C[]] =>
   xs.reduce<[A[], B[], C[]]>(([as, bs, cs], [a, b, c]) => [[...as, a], [...bs, b], [...cs, c]], [[], [], []])
+
+/**
+ * Split an array of elements into an array of n arrays.
+ * @param n number of segments to produce
+ * @param xs array of items
+ * @returns array of n arrays of items
+ */
+export const segments = <A>(n: number, xs: A[]): A[][] => {
+  const size: number = Math.ceil(xs.length / n)
+  return anArrayOf(n, undefined).map((_, i) => xs.slice(i * size, (i + 1) * size))
+}

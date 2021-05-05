@@ -1,4 +1,4 @@
-import React, { ReactElement, useState } from 'react'
+import React, { Fragment, ReactElement, useState } from 'react'
 import { useForm, useWatch } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { addProperty, editProperty, removeProperty } from '../../redux/actions'
@@ -7,9 +7,10 @@ import { Property, Address, PropertyExpenseType, PropertyExpenseTypeName, TaxesS
 import AddressFields from '../TaxPayer/Address'
 import { Currency, GenericLabeledDropdown, LabeledCheckbox, LabeledInput } from '../input'
 import { Patterns } from '../Patterns'
-import { enumKeys } from '../../util'
+import { enumKeys, segments } from '../../util'
 import { HouseOutlined } from '@material-ui/icons'
 import { FormListContainer } from '../FormContainer'
+import { Grid } from '@material-ui/core'
 
 interface PropertyAddForm {
   address?: Address
@@ -262,6 +263,7 @@ export default function RealEstate (): ReactElement {
         defaultValue={defaultValues?.qualifiedJointVenture ?? false}
       />
       <h4>Property Financials</h4>
+      <h5>Income</h5>
       <LabeledInput
         name="rentReceived"
         label="Rent received"
@@ -270,8 +272,26 @@ export default function RealEstate (): ReactElement {
         error={errors.rentReceived}
         defaultValue={defaultValues?.rentReceived?.toString()}
       />
-      {expenseFields}
-      {otherExpenseDescription}
+      <h5>Expenses</h5>
+      <Grid container spacing={3} direction="row" justify="flex-start">
+        {(() => {
+          // Layout expense fields in two columns
+          return (
+            segments(2, [...expenseFields, otherExpenseDescription])
+              .map((segment, i) =>
+                <Grid item key={i} lg={6}>
+                  {
+                    segment.map((item, k) =>
+                      <Fragment key={`${i}-${k}`}>
+                        {item}
+                      </Fragment>
+                    )
+                  }
+                </Grid>
+              )
+          )
+        })()}
+      </Grid>
     </FormListContainer>
   )
 
