@@ -183,7 +183,6 @@ export default class ScheduleE implements Form {
       ...(this.l4()),
       ...(this.allExpenses().flat()),
       ...(this.l19().flat()),
-      // ...(Array.from(Array(12)).map((_, i) => i))
       ...(this.l20()),
       ...(this.l21()),
       ...(this.l22()),
