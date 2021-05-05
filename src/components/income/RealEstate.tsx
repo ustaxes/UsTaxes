@@ -212,6 +212,7 @@ export default function RealEstate (): ReactElement {
         errors={errors.address}
         checkboxText="Does the property have a foreign address"
         address={defaultValues?.address}
+        allowForeignCountry={false}
       />
       <GenericLabeledDropdown
         dropDownData={enumKeys(PropertyType)}

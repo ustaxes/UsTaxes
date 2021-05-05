@@ -11,7 +11,8 @@ interface AddressProps {
   control: Control
   address?: Address
   errors?: Errors<Address>
-  isForeignCountry?: boolean | undefined
+  isForeignCountry?: boolean
+  allowForeignCountry?: boolean
 }
 
 export default function AddressFields (props: AddressProps): ReactElement {
@@ -21,11 +22,12 @@ export default function AddressFields (props: AddressProps): ReactElement {
     control,
     address,
     errors,
-    checkboxText = 'Check if you have a foreign address'
+    checkboxText = 'Check if you have a foreign address',
+    allowForeignCountry = true
   } = props
 
   const csz: ReactElement = (() => {
-    if (!isForeignCountry) {
+    if (!allowForeignCountry || !isForeignCountry) {
       return (
         <div>
           <USStateDropDown
@@ -105,12 +107,18 @@ export default function AddressFields (props: AddressProps): ReactElement {
         error={errors?.city}
         defaultValue={address?.city}
       />
-      <LabeledCheckbox
-        label={checkboxText}
-        control={control}
-        name="isForeignCountry"
-        defaultValue={isForeignCountry}
-      />
+      {(() => {
+        if (allowForeignCountry) {
+          return (
+            <LabeledCheckbox
+              label={checkboxText}
+              control={control}
+              name="isForeignCountry"
+              defaultValue={isForeignCountry}
+            />
+          )
+        }
+      })()}
       {csz}
     </Fragment>
   )
