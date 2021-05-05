@@ -168,7 +168,11 @@ export interface TaxesState {
   information: Information
 }
 
-export interface EditDependentAction {
+export interface ArrayItemEditAction<A> {
   index: number
-  dependent: Dependent
+  value: A
 }
+
+export type EditDependentAction = ArrayItemEditAction<Dependent>
+export type EditW2Action = ArrayItemEditAction<IncomeW2>
+export type Edit1099Action = ArrayItemEditAction<Supported1099>

@@ -1,10 +1,11 @@
 import React, { ReactElement } from 'react'
-import { Box, List, ListItem, ListItemAvatar, ListItemIcon, ListItemText, makeStyles, Typography } from '@material-ui/core'
+import { List, ListItem, ListItemAvatar, ListItemIcon, ListItemText, makeStyles, Typography } from '@material-ui/core'
 import { PagerContext } from './pager'
 import { create1040 } from '../irsForms/Main'
 import { useSelector } from 'react-redux'
 import { Information, TaxesState } from '../redux/data'
 import { Check, Close } from '@material-ui/icons'
+import { Currency } from './input'
 
 interface BinaryStateListItemProps {
   active: boolean
@@ -26,6 +27,9 @@ const useStyles = makeStyles((theme) => ({
   },
   inline: {
     display: 'inline'
+  },
+  block: {
+    display: 'block'
   }
 }))
 
@@ -46,50 +50,56 @@ const BinaryStateListItem = ({ active, children }: BinaryStateListItemProps): Re
 
 const Summary = (): ReactElement => {
   const state: Information = useSelector((state: TaxesState) => state.information)
+  const classes = useStyles()
 
   const f1040 = create1040(state)
-
-  const classes = useStyles()
 
   return (
     <PagerContext.Consumer>
       { ({ navButtons, onAdvance }) =>
-        <Box display="flex" justifyContent="center">
-          <form onSubmit={onAdvance}>
-            <div>
-              <Box display="flex" justifyContent="flex-start">
-                <h2>Summary</h2>
-              </Box>
-              <Box display="flex" justifyContent="flex-start">
-                <h4>Credits</h4>
-              </Box>
-              <List>
-                <BinaryStateListItem active={f1040.scheduleEIC?.allowed(f1040) ?? false} >
-                  <ListItemText
-                    primary="Earned Income Tax Credit"
-                    secondary={
-                      <React.Fragment>
-                        <Typography
-                          component="span"
-                          variant="body2"
-                          className={classes.inline}
-                          color="textPrimary"
-                        >
-                          {
-                            f1040.scheduleEIC?.qualifyingDependents().map((d, i) =>
-                              <span key={i}>{`${d?.firstName ?? ''} ${d?.lastName ?? ''}`}</span>
-                            )
-                          }
-                        </Typography>
-                      </React.Fragment>
-                    }
-                  />
-                </BinaryStateListItem>
-              </List>
-              {navButtons}
-            </div>
-          </form>
-        </Box>
+        <form onSubmit={onAdvance}>
+          <h2>Summary</h2>
+          <h4>Credits</h4>
+          <List>
+            <BinaryStateListItem active={f1040.scheduleEIC?.allowed(f1040) ?? false} >
+              <ListItemText
+                primary="Earned Income Tax Credit"
+                secondary={
+                  <React.Fragment>
+                    <Typography
+                      component="span"
+                      variant="body2"
+                      color="textPrimary"
+                      className={classes.block}
+                    >
+                      Qualifying Dependents:
+                    </Typography>
+                    <Typography
+                      component="span"
+                      variant="body2"
+                      color="textSecondary"
+                    >
+                      {
+                        f1040.scheduleEIC?.qualifyingDependents().map((d, i) =>
+                          <span key={i}>{`${d?.firstName ?? ''} ${d?.lastName ?? ''}`}</span>
+                        )
+                      }
+                    </Typography>
+                    <br />
+                    <Typography
+                      component="span"
+                      variant="body2"
+                      color="textPrimary"
+                    >
+                      Credit: <Currency value={Math.round(f1040.scheduleEIC?.credit(f1040) ?? 0)} />
+                    </Typography>
+                  </React.Fragment>
+                }
+              />
+            </BinaryStateListItem>
+          </List>
+          {navButtons}
+       </form>
       }
     </PagerContext.Consumer>
   )

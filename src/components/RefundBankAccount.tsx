@@ -1,6 +1,5 @@
 import React, { ReactElement } from 'react'
 import { useForm } from 'react-hook-form'
-import { Box } from '@material-ui/core'
 import { useDispatch, useSelector } from 'react-redux'
 import { LabeledInput, LabeledRadio } from './input'
 import { Patterns } from './Patterns'
@@ -35,43 +34,39 @@ export default function RefundBankAccount (): ReactElement {
   return (
     <PagerContext.Consumer>
       { ({ onAdvance, navButtons }) =>
-        <Box display="flex" justifyContent="center">
-          <form onSubmit={handleSubmit(onSubmit(onAdvance))}>
-            <div>
-              <Box display="flex" justifyContent="flex-start">
-                <h2>Refund Information</h2>
-              </Box>
+        <form onSubmit={handleSubmit(onSubmit(onAdvance))}>
+          <div>
+            <h2>Refund Information</h2>
 
-              <LabeledInput
-                label="Bank Routing number"
-                register={register}
-                required={true}
-                patternConfig={Patterns.bankRouting(control)}
-                name="routingNumber"
-                defaultValue={prevFormData?.routingNumber}
-                error={errors.routingNumber}
-              />
+            <LabeledInput
+              label="Bank Routing number"
+              register={register}
+              required={true}
+              patternConfig={Patterns.bankRouting(control)}
+              name="routingNumber"
+              defaultValue={prevFormData?.routingNumber}
+              error={errors.routingNumber}
+            />
 
-              <LabeledInput
-                label="Bank Account number"
-                register={register}
-                required={true}
-                patternConfig={Patterns.bankAccount(control)}
-                name="accountNumber"
-                defaultValue={prevFormData?.accountNumber}
-                error={errors.accountNumber}
-              />
-              <LabeledRadio
-                label="Account Type"
-                control={control}
-                name="accountType"
-                defaultValue={prevFormData?.accountType as string}
-                values={[['Checking', 'checking'], ['Savings', 'savings']]}
-              />
-              {navButtons}
-            </div>
-          </form>
-        </Box>
+            <LabeledInput
+              label="Bank Account number"
+              register={register}
+              required={true}
+              patternConfig={Patterns.bankAccount(control)}
+              name="accountNumber"
+              defaultValue={prevFormData?.accountNumber}
+              error={errors.accountNumber}
+            />
+            <LabeledRadio
+              label="Account Type"
+              control={control}
+              name="accountType"
+              defaultValue={prevFormData?.accountType as string}
+              values={[['Checking', 'checking'], ['Savings', 'savings']]}
+            />
+            {navButtons}
+          </div>
+        </form>
       }
     </PagerContext.Consumer>
   )

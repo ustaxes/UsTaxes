@@ -65,7 +65,7 @@ export default class ScheduleEIC implements Form {
     if (this.tp.tp.filingStatus !== undefined) {
       const incomeLimits = federal.EIC.caps[this.tp.tp.filingStatus]
       if (incomeLimits !== undefined) {
-        const limit = incomeLimits[Math.min(this.qualifyingDependents.length, incomeLimits.length - 1)]
+        const limit = incomeLimits[Math.min(this.qualifyingDependents().length, incomeLimits.length - 1)]
         return (f1040.l11() ?? 0) < limit
       }
     }
@@ -210,6 +210,46 @@ export default class ScheduleEIC implements Form {
     return l9
   }
 
+  /**
+   * The credit table in Publication 596 provides an
+   * amount for each interval of $50, calculated from the
+   * midpoint of the interval.
+   *
+   * @param income The earned income
+   * @returns the earned income rounded to the nearest 25
+   */
+  roundIncome = (income: number): number => {
+    if (income < 1) {
+      return 0
+    }
+    return Math.round(Math.round(income) / 50) * 50 + 25
+  }
+
+  /**
+   * Based on the earned income and filing status, calculate the
+   * allowed EITC.
+   *
+   * For tax year 2020, IRS Rev. Proc. 2019-44 outlines the required
+   * calculation for the EITC based on number of qualifying children
+   * and filing status.
+   *
+   * https://www.irs.gov/pub/irs-drop/rp-19-44.pdf
+   *
+   * IRS publication 596 provides a table that can be used
+   * to figure the EITC, and is the basis of online calculators published
+   * by IRS. This table uses the formulas outlined in Rev Proc 2019-44
+   * but applies them to incomes lying in $50 intervals, with the midpoint
+   * of those intervals used to calculate the credit for the entire window.
+   * For example, if the taxpayer has an earned income of $5000, the amount
+   * that is found in the table is calculated based on an income of $5025 and
+   * comes out ahead. Conversely, someone with an earned income of $5049 finds
+   * a credit in the table calculated off the same $5,025 and loses out.
+   *
+   * https://www.irs.gov/pub/irs-pdf/p596.pdf
+   *
+   * @param income The earned income
+   * @returns
+   */
   calculateEICForIncome = (income: number): number => {
     if (this.tp.tp.filingStatus === undefined) {
       return 0
@@ -219,7 +259,10 @@ export default class ScheduleEIC implements Form {
       return 0
     }
 
-    return Math.max(0, evaluatePiecewise(f[this.qualifyingDependents().length], income))
+    return Math.max(
+      0,
+      evaluatePiecewise(f[this.qualifyingDependents().length], this.roundIncome(income))
+    )
   }
 
   // 5.2

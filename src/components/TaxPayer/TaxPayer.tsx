@@ -1,6 +1,5 @@
 import React, { ReactElement } from 'react'
 import { useForm, useWatch } from 'react-hook-form'
-import { Box } from '@material-ui/core'
 import { useDispatch, useSelector } from 'react-redux'
 import { savePrimaryPersonInfo } from '../../redux/actions'
 import { Address, PersonRole, PrimaryPerson, TaxesState, TaxPayer } from '../../redux/data'
@@ -104,12 +103,8 @@ export default function PrimaryTaxpayer (): ReactElement {
   return (
     <PagerContext.Consumer>
       { ({ navButtons, onAdvance }) =>
-        <Box display="flex" justifyContent="center">
           <form onSubmit={handleSubmit(onSubmit(onAdvance))}>
-            <Box display="flex" justifyContent="flex-start">
-              <h2>Primary Taxpayer Information</h2>
-            </Box>
-
+            <h2>Primary Taxpayer Information</h2>
             <PersonFields
               register={register}
               errors={errors}
@@ -156,7 +151,6 @@ export default function PrimaryTaxpayer (): ReactElement {
             {csz}
             {navButtons}
           </form>
-        </Box>
       }
     </PagerContext.Consumer>
   )

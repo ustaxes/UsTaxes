@@ -1,5 +1,5 @@
 import React, { ReactElement } from 'react'
-import { TextField, Box } from '@material-ui/core'
+import { TextField } from '@material-ui/core'
 import { LabeledInputProps } from './types'
 import NumberFormat from 'react-number-format'
 import { InputType } from '../Patterns'
@@ -78,12 +78,8 @@ export function LabeledInput (props: LabeledInputProps): ReactElement {
 
   return (
     <div>
-      <Box display="flex" justifyContent="flex-start">
-        <p><strong>{strongLabel}</strong>{label}</p>
-      </Box>
-      <Box display="flex" justifyContent="flex-start">
-        {input}
-      </Box>
+      <p><strong>{strongLabel}</strong>{label}</p>
+      {input}
     </div>
   )
 }

@@ -55,7 +55,7 @@ function formReducer (state: Information | undefined, action: Actions): Informat
     // Replace dependent by index with a new object.
     case ActionName.EDIT_DEPENDENT: {
       const newDependents = [...(newState.taxPayer?.dependents ?? [])]
-      newDependents.splice(action.formData.index, 1, action.formData.dependent)
+      newDependents.splice(action.formData.index, 1, action.formData.value)
 
       return {
         ...newState,
@@ -101,6 +101,14 @@ function formReducer (state: Information | undefined, action: Actions): Informat
         ]
       }
     }
+    case ActionName.EDIT_W2: {
+      const newW2s = [...newState.w2s]
+      newW2s.splice(action.formData.index, 1, action.formData.value)
+      return {
+        ...newState,
+        w2s: newW2s
+      }
+    }
     case ActionName.REMOVE_W2: {
       const newW2s = [...newState.w2s]
       newW2s.splice(action.formData, 1)
@@ -118,6 +126,14 @@ function formReducer (state: Information | undefined, action: Actions): Informat
         ]
       }
     }
+    case ActionName.EDIT_1099: {
+      const new1099s = [...newState.f1099s]
+      new1099s.splice(action.formData.index, 1, action.formData.value)
+      return {
+        ...newState,
+        f1099s: new1099s
+      }
+    }
     case ActionName.REMOVE_1099: {
       const new1099s = [...newState.f1099s]
       new1099s.splice(action.formData, 1)
@@ -126,7 +142,6 @@ function formReducer (state: Information | undefined, action: Actions): Informat
         f1099s: new1099s
       }
     }
-
     case ActionName.ADD_SPOUSE: {
       return {
         ...newState,

@@ -1,4 +1,4 @@
-import { Person, IncomeW2, Refund, Dependent, FilingStatus, PrimaryPerson, ContactInfo, Supported1099, Spouse, EditDependentAction } from './data'
+import { Person, IncomeW2, Refund, Dependent, FilingStatus, PrimaryPerson, ContactInfo, Supported1099, Spouse, EditDependentAction, Edit1099Action, EditW2Action } from './data'
 import { ValidateFunction } from 'ajv-latest'
 import ajv, { checkType } from './validate'
 
@@ -13,8 +13,10 @@ export enum ActionName {
   ADD_SPOUSE = 'TAXPAYER/ADD_SPOUSE',
   REMOVE_SPOUSE = 'TAXPAYER/REMOVE_SPOUSE',
   ADD_W2 = 'ADD_W2',
+  EDIT_W2 = 'EDIT_W2',
   REMOVE_W2 = 'REMOVE_W2',
   ADD_1099 = 'ADD_1099',
+  EDIT_1099 = 'EDIT_1099',
   REMOVE_1099 = 'REMOVE_1099'
 }
 
@@ -33,8 +35,10 @@ type RemoveDependent = Save<typeof ActionName.REMOVE_DEPENDENT, number>
 type AddSpouse = Save<typeof ActionName.ADD_SPOUSE, Spouse>
 type RemoveSpouse = Save<typeof ActionName.REMOVE_SPOUSE, {}>
 type AddW2 = Save<typeof ActionName.ADD_W2, IncomeW2>
+type EditW2 = Save<typeof ActionName.EDIT_W2, EditW2Action>
 type RemoveW2 = Save<typeof ActionName.REMOVE_W2, number>
 type Add1099 = Save<typeof ActionName.ADD_1099, Supported1099>
+type Edit1099 = Save<typeof ActionName.EDIT_1099, Edit1099Action>
 type Remove1099 = Save<typeof ActionName.REMOVE_1099, number>
 
 export type Actions =
@@ -48,8 +52,10 @@ export type Actions =
   | AddSpouse
   | RemoveSpouse
   | AddW2
+  | EditW2
   | RemoveW2
   | Add1099
+  | Edit1099
   | Remove1099
 
 export type ActionCreator<A> = (formData: A) => Actions
@@ -132,7 +138,7 @@ export const addDependent: ActionCreator<Dependent> = makePreprocessActionCreato
 export const editDependent: ActionCreator<EditDependentAction> = makePreprocessActionCreator(
   ActionName.EDIT_DEPENDENT,
   ajv.getSchema('#/definitions/EditDependentAction') as ValidateFunction<EditDependentAction>,
-  ({ index, dependent }: EditDependentAction) => ({ index, dependent: cleanPerson(dependent) })
+  ({ index, value }: EditDependentAction) => ({ index, value: cleanPerson(value) })
 )
 
 const indexSchema = {
@@ -160,6 +166,11 @@ export const addW2: ActionCreator<IncomeW2> = makeActionCreator(
   ajv.getSchema('#/definitions/IncomeW2') as ValidateFunction<IncomeW2>
 )
 
+export const editW2: ActionCreator<EditW2Action> = makeActionCreator(
+  ActionName.EDIT_W2,
+  ajv.getSchema('#/definitions/EditW2Action') as ValidateFunction<EditW2Action>
+)
+
 export const removeW2: ActionCreator<number> = makeActionCreator(
   ActionName.REMOVE_W2,
   ajv.compile(indexSchema)
@@ -168,6 +179,11 @@ export const removeW2: ActionCreator<number> = makeActionCreator(
 export const add1099: ActionCreator<Supported1099> = makeActionCreator(
   ActionName.ADD_1099,
   ajv.getSchema('#/definitions/Supported1099') as ValidateFunction<Supported1099>
+)
+
+export const edit1099: ActionCreator<Edit1099Action> = makeActionCreator(
+  ActionName.EDIT_1099,
+  ajv.getSchema('#/definitions/Edit1099Action') as ValidateFunction<Edit1099Action>
 )
 
 export const remove1099: ActionCreator<number> = makeActionCreator(
