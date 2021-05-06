@@ -27,7 +27,7 @@ Note the information in the datamodel is automatically synced to browser's Local
 
 ### Data model
 
-The root schema of data stored from form submissions is defined in [src/redux/data.ts](src/redux/data.ts) as:
+The root schema of data stored from form submissions is defined in [src/redux/data.ts](../src/redux/data.ts) as:
 
 ```ts
 export interface Information {
@@ -45,7 +45,7 @@ export interface Information {
 
 ### PDF Export
 
-Supported tax forms are included in the source control of this repository. [src/irsForms/](src/irsForms/) includes all schedules that can be filled by this project. Each of these schedule definitions implements this interface:
+Supported tax forms are included in the source control of this repository. [src/irsForms/](../src/irsForms/) includes all schedules that can be filled by this project. Each of these schedule definitions implements this interface:
 
   ```ts
     export default interface Form {
@@ -58,12 +58,12 @@ This array of `fields` must line up exactly with the fields expected by the PDF 
 ## Guide for contributing a new form implementation
 
 * Add new data schema if needed
-  * Interfaces in [src/redux/data](src/redux/data.ts) may need to be expanded if you're collecting additional data from the user
-* For a new UI form that needs its own page, add to routes in [Main.tsx](src/components/Main.tsx)
-* A UI form can push new data into the state using Redux actions. Define your new action in [src/redux/actions.ts](src/redux/actions.ts), and add your state updates to [src/redux/reducer.ts](src/redux/reducer.ts)
+  * Interfaces in [src/redux/data](../src/redux/data.ts) may need to be expanded if you're collecting additional data from the user
+* For a new UI form that needs its own page, add to routes in [Main.tsx](../src/components/Main.tsx)
+* A UI form can push new data into the state using Redux actions. Define your new action in [src/redux/actions.ts](../src/redux/actions.ts), and add your state updates to [src/redux/reducer.ts](../src/redux/reducer.ts)
 * If there is a new attachment to the 1040:
-  * The blank PDF goes in `public/forms/`. The locations of all supported attachments and logic about what attachments are required, is in [fillPdf.ts](src/pdfFiller/fillPdf.ts)
-  * The data model for the PDF goes in [irsForms](src/irsForms), and implements the `Form` interface as above
+  * The blank PDF goes in `public/forms/`. The locations of all supported attachments and logic about what attachments are required, is in [fillPdf.ts](../src/pdfFiller/fillPdf.ts)
+  * The data model for the PDF goes in [irsForms](../src/irsForms), and implements the `Form` interface as above
 
 [npm-install]: https://www.npmjs.com/get-npm
 [tauri-root]: https://tauri.studio/
