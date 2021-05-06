@@ -114,7 +114,7 @@ export default function PrimaryTaxpayer (): ReactElement {
             <LabeledCheckbox
               label="Check if you are a dependent"
               control={control}
-              defaultValue={taxPayer?.primaryPerson?.isTaxpayerDependent}
+              defaultValue={taxPayer?.primaryPerson?.isTaxpayerDependent ?? false}
               name="isTaxpayerDependent"
             />
             <LabeledInput
