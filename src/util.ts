@@ -64,3 +64,7 @@ export const segments = <A>(n: number, xs: A[]): A[][] => {
   const size: number = Math.ceil(xs.length / n)
   return anArrayOf(n, undefined).map((_, i) => xs.slice(i * size, (i + 1) * size))
 }
+
+export const isLeapYear = (year: number): boolean => {
+  return ((year % 4 === 0) && (year % 100 !== 0)) || (year % 400 === 0)
+}
