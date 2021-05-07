@@ -60,6 +60,17 @@ export default class ScheduleE implements Form {
     }
   }
 
+  /**
+   * Whether or not you can deduct expenses for the unit depends on whether or not you used
+   * the unit as a home in 2020. You used the unit as a home if your personal use of the unit
+   * was more than the greater of:
+   * 14 days, or
+   * 10% of the total days it was rented to others at a fair rental price.
+   * @param p
+   */
+  propertyUseTest = (p: Property): boolean =>
+    p.personalUseDays <= Math.max(14, 0.1 * p.rentalDays)
+
   l3 = (): MatrixRow => {
     const properties = this.state.realEstate
     return fill(properties.map((a) => a.rentReceived))
@@ -73,9 +84,12 @@ export default class ScheduleE implements Form {
 
   getExpensesRow = (expType: PropertyExpenseTypeName): MatrixRow =>
     fill(
-      this.state.realEstate.map((p) =>
-        p.expenses[expType] ?? 0
-      )
+      this.state.realEstate.map((p) => {
+        if (this.propertyUseTest(p)) {
+          return p.expenses[expType] ?? 0
+        }
+        return 0
+      })
     )
 
   // Matching order of expenses in rows of form
