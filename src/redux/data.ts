@@ -161,7 +161,6 @@ export enum PropertyType {
   vacation,
   commercial,
   land,
-  royalties,
   selfRental,
   other
 }

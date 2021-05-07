@@ -57,7 +57,6 @@ const displayPropertyType = (k: PropertyType): string => {
     [PropertyType.vacation]: 'Vacation',
     [PropertyType.commercial]: 'Commercial',
     [PropertyType.land]: 'Land',
-    [PropertyType.royalties]: 'Royalties',
     [PropertyType.selfRental]: 'Self rental',
     [PropertyType.other]: 'Other'
   }

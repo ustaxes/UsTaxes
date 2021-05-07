@@ -32,7 +32,6 @@ const propTypeIndex = {
   [PropertyType.vacation]: 3,
   [PropertyType.commercial]: 4,
   [PropertyType.land]: 5,
-  [PropertyType.royalties]: 6,
   [PropertyType.selfRental]: 7,
   [PropertyType.other]: 8
 }
@@ -136,6 +135,11 @@ export default class ScheduleE implements Form {
   rentalNet = (): MatrixRow => (
     zip(this.l3(), this.l20()).map(([x, y]) => (x ?? 0) - (y ?? 0))
   ) as MatrixRow
+
+  l25 = (): number => {
+    unimplemented('Ignoring royalty losses on L25')
+    return sumFields(this.l22())
+  }
 
   l32 = (): number | undefined => {
     unimplemented('Partnership and S corporation income or loss')
