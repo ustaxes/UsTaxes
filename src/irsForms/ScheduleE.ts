@@ -117,10 +117,13 @@ export default class ScheduleE implements Form {
 
   l21 = (): MatrixRow => (
     zip3(this.l3(), this.l4(), this.l20())
-      .map(([x, y, z]) => (x ?? 0) + (y ?? 0) - (z ?? 0))
+      .map(([x, y, z]) => displayNumber((x ?? 0) + (y ?? 0) - (z ?? 0)))
   ) as MatrixRow
 
-  l22 = (): MatrixRow => this.f8582.deductibleRealEstateLossAfterLimitation()
+  // Deductible real estate loss from 8582, as positive number
+  l22 = (): MatrixRow =>
+    this.f8582.deductibleRealEstateLossAfterLimitation()
+      .map((x) => x === undefined ? undefined : Math.abs(x)) as MatrixRow
 
   l24 = (): number => sumFields(this.l21().filter((x) => x !== undefined && x > 0))
   l25 = (): number => (

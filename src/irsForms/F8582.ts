@@ -22,7 +22,7 @@ export default class F8582 {
     const rentalNet = this.scheduleE.rentalNet()
     return (
       rentalNet.map((v) => {
-        if (v === undefined || v > 0) {
+        if (v === undefined || v >= 0) {
           return undefined
         }
         return v
