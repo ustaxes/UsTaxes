@@ -4,7 +4,7 @@ import TaxPayer from '../redux/TaxPayer'
 import { anArrayOf, unzip3, zip, zip3 } from '../util'
 import F6168 from './F6168'
 import F8582 from './F8582'
-import { displayNumber, sumFields } from './util'
+import { displayNegPos, displayNumber, sumFields } from './util'
 
 type Cell = number | undefined
 export type MatrixRow = [Cell, Cell, Cell]
@@ -122,24 +122,20 @@ export default class ScheduleE implements Form {
   // Deductible real estate loss from 8582, as positive number
   l22 = (): MatrixRow =>
     this.f8582.deductibleRealEstateLossAfterLimitation()
-      .map((x) => x === undefined ? undefined : Math.abs(x)) as MatrixRow
-
-  l24 = (): number => sumFields(this.l21().filter((x) => x !== undefined && x > 0))
-  l25 = (): number => (
-    sumFields(this.l21().filter((x) => x !== undefined && x < 0)) +
-    sumFields(this.l22())
-  )
-
-  l26 = (): number => sumFields([this.l24(), this.l25()])
 
   rentalNet = (): MatrixRow => (
     zip(this.l3(), this.l20()).map(([x, y]) => (x ?? 0) - (y ?? 0))
   ) as MatrixRow
 
+  l24 = (): number =>
+    sumFields(this.l21().filter((x) => x !== undefined && x > 0))
+
   l25 = (): number => {
     unimplemented('Ignoring royalty losses on L25')
     return sumFields(this.l22())
   }
+
+  l26 = (): number => sumFields([this.l24(), this.l25()])
 
   l32 = (): number | undefined => {
     unimplemented('Partnership and S corporation income or loss')
@@ -193,14 +189,14 @@ export default class ScheduleE implements Form {
       ...(this.l20()),
       ...(this.l21()),
       ...(this.l22()),
-      sumFields(this.l3()),
-      sumFields(this.l4()),
-      sumFields(this.l12()),
-      sumFields(this.l18()),
-      sumFields(this.l20()),
-      this.l24(),
-      this.l25(),
-      this.l26(),
+      displayNumber(sumFields(this.l3())),
+      displayNumber(sumFields(this.l4())),
+      displayNumber(sumFields(this.l12())),
+      displayNumber(sumFields(this.l18())),
+      displayNumber(sumFields(this.l20())),
+      displayNumber(this.l24()),
+      displayNumber(Math.abs(this.l25())),
+      displayNegPos(this.l26()),
       // Page 2 - TODO: completely unimplemented
       tp.namesString(),
       tp.tp.primaryPerson?.ssid,
