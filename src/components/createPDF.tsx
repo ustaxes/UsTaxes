@@ -19,7 +19,16 @@ export default function CreatePDF (): ReactElement {
 
   const onSubmit = async (e: FormEvent<any>): Promise<void> => {
     e.preventDefault()
-    return await createPDFPopup().catch((errors: string[]) => updateErrors(errors))
+    return await createPDFPopup()
+      .catch((errors: string[]) => {
+        if (errors.length !== undefined && errors.length > 0) {
+          updateErrors(errors)
+        } else {
+          console.error('unhandled exception')
+          console.error(errors)
+          return Promise.reject(errors)
+        }
+      })
   }
 
   return (

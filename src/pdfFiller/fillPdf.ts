@@ -13,11 +13,15 @@ import { Income1099Type } from '../redux/data'
 import ScheduleD from '../irsForms/ScheduleD'
 import ScheduleEIC from '../irsForms/ScheduleEIC'
 import F1040V from '../irsForms/F1040v'
+import ScheduleE from '../irsForms/ScheduleE'
+import Schedule1 from '../irsForms/Schedule1'
 
 const downloadUrls = {
   f1040: '/forms/f1040.pdf',
+  f1040s1: '/forms/f1040s1.pdf',
   f1040sb: '/forms/f1040sb.pdf',
   f1040sd: '/forms/f1040sd.pdf',
+  f1040se: '/forms/f1040se.pdf',
   f1040sei: '/forms/f1040sei.pdf',
   f1040v: '/forms/f1040v.pdf'
 }
@@ -78,6 +82,21 @@ async function getSchedules (f1040: F1040): Promise<Array<[Form, PDFDocument]>> 
     const eicPdf = await downloadPDF(downloadUrls.f1040sei)
     f1040.addScheduleEIC(eic)
     attachments = [...attachments, [eic, eicPdf]]
+  }
+
+  if (state.realEstate.length > 0) {
+    const se = new ScheduleE(state)
+    const sePdf = await downloadPDF(downloadUrls.f1040se)
+    f1040.addScheduleE(se)
+    attachments = [...attachments, [se, sePdf]]
+  }
+
+  if (f1040.scheduleE !== undefined) {
+    const s1 = new Schedule1(state)
+    const s1Pdf = await downloadPDF(downloadUrls.f1040s1)
+    s1.addScheduleE(f1040.scheduleE)
+    f1040.addSchedule1(s1)
+    attachments = [[s1, s1Pdf], ...attachments]
   }
 
   // Attach payment voucher to front if there is a payment due

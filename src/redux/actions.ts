@@ -1,6 +1,22 @@
-import { Person, IncomeW2, Refund, Dependent, FilingStatus, PrimaryPerson, ContactInfo, Supported1099, Spouse, EditDependentAction, Edit1099Action, EditW2Action } from './data'
+import {
+  Person,
+  IncomeW2,
+  Refund,
+  Dependent,
+  FilingStatus,
+  PrimaryPerson,
+  ContactInfo,
+  Supported1099,
+  Spouse,
+  EditDependentAction,
+  EditPropertyAction,
+  Property,
+  Edit1099Action,
+  EditW2Action
+} from './data'
 import { ValidateFunction } from 'ajv-latest'
-import ajv, { checkType } from './validate'
+import ajv,
+{ checkType } from './validate'
 
 export enum ActionName {
   SAVE_REFUND_INFO = 'SAVE_REFUND_INFO',
@@ -17,7 +33,10 @@ export enum ActionName {
   REMOVE_W2 = 'REMOVE_W2',
   ADD_1099 = 'ADD_1099',
   EDIT_1099 = 'EDIT_1099',
-  REMOVE_1099 = 'REMOVE_1099'
+  REMOVE_1099 = 'REMOVE_1099',
+  ADD_PROPERTY = 'ADD_PROPERTY',
+  EDIT_PROPERTY = 'EDIT_PROPERTY',
+  REMOVE_PROPERTY = 'REMOVE_PROPERTY'
 }
 
 interface Save<T, R> {
@@ -40,6 +59,9 @@ type RemoveW2 = Save<typeof ActionName.REMOVE_W2, number>
 type Add1099 = Save<typeof ActionName.ADD_1099, Supported1099>
 type Edit1099 = Save<typeof ActionName.EDIT_1099, Edit1099Action>
 type Remove1099 = Save<typeof ActionName.REMOVE_1099, number>
+type AddProperty = Save<typeof ActionName.ADD_PROPERTY, Property>
+type EditProperty = Save<typeof ActionName.EDIT_PROPERTY, EditPropertyAction>
+type RemoveProperty = Save<typeof ActionName.REMOVE_PROPERTY, number>
 
 export type Actions =
   SaveRefundInfo
@@ -57,6 +79,9 @@ export type Actions =
   | Add1099
   | Edit1099
   | Remove1099
+  | AddProperty
+  | EditProperty
+  | RemoveProperty
 
 export type ActionCreator<A> = (formData: A) => Actions
 
@@ -188,5 +213,20 @@ export const edit1099: ActionCreator<Edit1099Action> = makeActionCreator(
 
 export const remove1099: ActionCreator<number> = makeActionCreator(
   ActionName.REMOVE_1099,
+  ajv.compile(indexSchema)
+)
+
+export const addProperty: ActionCreator<Property> = makeActionCreator(
+  ActionName.ADD_PROPERTY,
+  ajv.getSchema('#/definitions/Property') as ValidateFunction<Property>
+)
+
+export const editProperty: ActionCreator<EditPropertyAction> = makeActionCreator(
+  ActionName.EDIT_PROPERTY,
+  ajv.getSchema('#/definitions/EditPropertyAction') as ValidateFunction<EditPropertyAction>
+)
+
+export const removeProperty: ActionCreator<number> = makeActionCreator(
+  ActionName.REMOVE_PROPERTY,
   ajv.compile(indexSchema)
 )

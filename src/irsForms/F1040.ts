@@ -12,6 +12,7 @@ import Schedule3 from './Schedule3'
 import Schedule8812 from './Schedule8812'
 import ScheduleA from './ScheduleA'
 import ScheduleD from './ScheduleD'
+import ScheduleE from './ScheduleE'
 import ScheduleEIC from './ScheduleEIC'
 import Form from './Form'
 import { displayNumber, computeField, sumFields } from './util'
@@ -57,6 +58,7 @@ export default class F1040 implements Form {
   scheduleA?: ScheduleA
   scheduleB?: ScheduleB
   scheduleD?: ScheduleD
+  scheduleE?: ScheduleE
   scheduleEIC?: ScheduleEIC
   schedule8812?: Schedule8812
   schedule8863?: Schedule8863
@@ -116,6 +118,10 @@ export default class F1040 implements Form {
 
   addScheduleD (s: ScheduleD): void {
     this.scheduleD = s
+  }
+
+  addScheduleE (s: ScheduleE): void {
+    this.scheduleE = s
   }
 
   addScheduleEIC (s: ScheduleEIC): void {
