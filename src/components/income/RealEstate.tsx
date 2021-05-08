@@ -118,7 +118,7 @@ const toUserInput = (property: Property): PropertyAddForm => {
 }
 
 export default function RealEstate (): ReactElement {
-  const { register, control, errors, handleSubmit, reset } = useForm<PropertyAddForm>()
+  const { register, control, errors, getValues, handleSubmit, reset } = useForm<PropertyAddForm>()
   const dispatch = useDispatch()
 
   const properties: Property[] = useSelector((state: TaxesState) => state.information.realEstate)
@@ -142,16 +142,16 @@ export default function RealEstate (): ReactElement {
     defaultValue: defaultValues?.expenses.other ?? ''
   })
 
-  const rentalDays = useWatch({
-    control,
-    name: 'rentalDays',
-    defaultValue: defaultValues?.rentalDays
-  })
-
-  const validatePersonalDays = (n: number): Message | true => {
+  const validateDays = (n: number, other: number): Message | true => {
     const days = daysInYear(CURRENT_YEAR)
-    return n + (rentalDays ?? 0) <= days ? true : `Total use days must be less than ${days}`
+    return (n + other) <= days ? true : `Total use days must be less than ${days}`
   }
+
+  const validatePersonal = (n: number): Message | true =>
+    validateDays(n, Number(getValues().rentalDays ?? 0))
+
+  const validateRental = (n: number): Message | true =>
+    validateDays(n, Number(getValues().personalUseDays ?? 0))
 
   const clear = (): void => {
     reset()
@@ -256,7 +256,7 @@ export default function RealEstate (): ReactElement {
         name="rentalDays"
         register={register}
         required={true}
-        rules={{ validate: validatePersonalDays }}
+        rules={{ validate: (n: String) => validateRental(Number(n)) }}
         label="Number of days in the year used for rental"
         patternConfig={Patterns.numDays(control)}
         error={errors.rentalDays}
@@ -265,7 +265,7 @@ export default function RealEstate (): ReactElement {
       <LabeledInput
         name="personalUseDays"
         register={register}
-        rules={{ validate: validatePersonalDays }}
+        rules={{ validate: (n: String) => validatePersonal(Number(n)) }}
         label="Number of days in the year for personal use"
         patternConfig={Patterns.numDays(control)}
         error={errors.personalUseDays}
