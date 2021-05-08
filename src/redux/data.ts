@@ -157,9 +157,54 @@ export type Supported1099 =
   | Income1099B
   | Income1099Div
 
+export enum PropertyType {
+  singleFamily,
+  multiFamily,
+  vacation,
+  commercial,
+  land,
+  selfRental,
+  other
+}
+
+export type PropertyTypeName = keyof typeof PropertyType
+
+export enum PropertyExpenseType {
+  advertising,
+  auto,
+  cleaning,
+  commissions,
+  insurance,
+  legal,
+  management,
+  mortgage,
+  otherInterest,
+  repairs,
+  supplies,
+  taxes,
+  utilities,
+  depreciation,
+  other
+}
+
+export type PropertyExpenseTypeName = keyof typeof PropertyExpenseType
+
+export interface Property {
+  address: Address
+  rentalDays: number
+  personalUseDays: number
+  rentReceived: number
+  propertyType: PropertyTypeName
+  otherPropertyType?: string
+  qualifiedJointVenture: boolean
+  expenses: Partial<{ [K in PropertyExpenseTypeName]: number }>
+  otherExpenseType?: string
+}
+
 export interface Information {
   f1099s: Supported1099[]
   w2s: IncomeW2[]
+  realEstate: Property[]
   refund?: Refund
   taxPayer: TaxPayer
 }
@@ -176,3 +221,4 @@ export interface ArrayItemEditAction<A> {
 export type EditDependentAction = ArrayItemEditAction<Dependent>
 export type EditW2Action = ArrayItemEditAction<IncomeW2>
 export type Edit1099Action = ArrayItemEditAction<Supported1099>
+export type EditPropertyAction = ArrayItemEditAction<Property>
