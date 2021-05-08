@@ -1,6 +1,6 @@
 import { Control } from 'react-hook-form'
 import { CURRENT_YEAR } from '../data/federal'
-import { isLeapYear } from '../util'
+import { daysInYear } from '../util'
 
 export enum InputType {
   text = 'text',
@@ -65,7 +65,7 @@ const text = (regexp: RegExp, description: string): TextPattern => ({
   description
 })
 
-const numDaysInYear = isLeapYear(CURRENT_YEAR) ? 366 : 365
+const numDaysInYear = daysInYear(CURRENT_YEAR)
 
 export const Patterns = {
   year: numeric(/[12][0-9]{3}/, 'Input should be a valid year', 1900, CURRENT_YEAR, '####', '_'),

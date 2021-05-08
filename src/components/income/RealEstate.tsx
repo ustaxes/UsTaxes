@@ -1,5 +1,5 @@
 import React, { Fragment, ReactElement, useState } from 'react'
-import { useForm, useWatch } from 'react-hook-form'
+import { Message, useForm, useWatch } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { addProperty, editProperty, removeProperty } from '../../redux/actions'
 import { PagerContext } from '../pager'
@@ -7,10 +7,11 @@ import { Property, Address, PropertyExpenseType, PropertyExpenseTypeName, TaxesS
 import AddressFields from '../TaxPayer/Address'
 import { Currency, GenericLabeledDropdown, LabeledCheckbox, LabeledInput } from '../input'
 import { Patterns } from '../Patterns'
-import { enumKeys, segments } from '../../util'
+import { daysInYear, enumKeys, segments } from '../../util'
 import { HouseOutlined } from '@material-ui/icons'
 import { FormListContainer } from '../FormContainer'
 import { Grid } from '@material-ui/core'
+import { CURRENT_YEAR } from '../../data/federal'
 
 interface PropertyAddForm {
   address?: Address
@@ -141,6 +142,17 @@ export default function RealEstate (): ReactElement {
     defaultValue: defaultValues?.expenses.other ?? ''
   })
 
+  const rentalDays = useWatch({
+    control,
+    name: 'rentalDays',
+    defaultValue: defaultValues?.rentalDays
+  })
+
+  const validatePersonalDays = (n: number): Message | true => {
+    const days = daysInYear(CURRENT_YEAR)
+    return n + (rentalDays ?? 0) <= days ? true : `Total use days must be less than ${days}`
+  }
+
   const clear = (): void => {
     reset()
     setEditing(undefined)
@@ -243,6 +255,8 @@ export default function RealEstate (): ReactElement {
       <LabeledInput
         name="rentalDays"
         register={register}
+        required={true}
+        rules={{ validate: validatePersonalDays }}
         label="Number of days in the year used for rental"
         patternConfig={Patterns.numDays(control)}
         error={errors.rentalDays}
@@ -251,6 +265,7 @@ export default function RealEstate (): ReactElement {
       <LabeledInput
         name="personalUseDays"
         register={register}
+        rules={{ validate: validatePersonalDays }}
         label="Number of days in the year for personal use"
         patternConfig={Patterns.numDays(control)}
         error={errors.personalUseDays}

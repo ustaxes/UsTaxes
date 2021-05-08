@@ -68,3 +68,6 @@ export const segments = <A>(n: number, xs: A[]): A[][] => {
 export const isLeapYear = (year: number): boolean => {
   return ((year % 4 === 0) && (year % 100 !== 0)) || (year % 400 === 0)
 }
+
+export const daysInYear = (year: number): number =>
+  isLeapYear(year) ? 366 : 365
