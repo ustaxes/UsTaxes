@@ -14,6 +14,9 @@ export const checkType = <A>(data: A, validate: ValidateFunction<A>): A => {
     for (const err of errs) {
       console.error(err.message)
     }
+
+    console.error(validate.errors)
+    console.error(data)
   }
 
   return data
@@ -40,9 +43,14 @@ ajv.getSchema('#/definitions/BData')
 ajv.getSchema('#/definitions/Income1099Int')
 ajv.getSchema('#/definitions/Income1099B')
 ajv.getSchema('#/definitions/Supported1099')
+ajv.getSchema('#/definitions/Edit1099Action')
 ajv.getSchema('#/definitions/IncomeW2')
+ajv.getSchema('#/definitions/EditW2Action')
 ajv.getSchema('#/definitions/Refund')
 ajv.getSchema('#/definitions/TaxPayer')
 ajv.getSchema('#/definitions/Information')
+ajv.getSchema('#/definitions/Property')
+ajv.getSchema('#/definitions/PropertyType')
+ajv.getSchema('#/definitions/EditPropertyAction')
 
 export default ajv

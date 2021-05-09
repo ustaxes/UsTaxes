@@ -15,8 +15,10 @@ Most income information from the following forms are supported:
 
 So far this project can attach the following schedules to form 1040:
 
+* Schedule 1 (as to Schedule E data only)
 * Schedule B
 * Schedule D
+* Schedule E
 
 ## Supported Credits
 
@@ -50,9 +52,9 @@ Thank you for taking the time to contribute, let's make tax filing free for ever
 
 To make sure working on this project is fun for everyone, please review:
 
-* [Code of conduct](.github/CODE_OF_CONDUCT.md)
-* [Contributing guide](.github/CONTRIBUTING.md)
-* [Project Architecture](.github/ARCHITECTURE.md)
+* [Code of conduct](docs/CODE_OF_CONDUCT.md)
+* [Contributing guide](docs/CONTRIBUTING.md)
+* [Project Architecture](docs/ARCHITECTURE.md)
 
 ## Running
 

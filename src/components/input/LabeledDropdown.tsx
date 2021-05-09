@@ -6,7 +6,7 @@ import { BaseDropdownProps, LabeledDropdownProps } from './types'
 
 export function GenericLabeledDropdown<A> (props: LabeledDropdownProps<A>): ReactElement {
   const { label, dropDownData, valueMapping, error, keyMapping, textMapping, control, required = false, name } = props
-  const { defaultValue = undefined } = props
+  const { defaultValue = '' } = props
 
   return (
     <div>
@@ -24,7 +24,7 @@ export function GenericLabeledDropdown<A> (props: LabeledDropdownProps<A>): Reac
                 native: true
               }}
             >
-              <option value={undefined} />
+              <option value={''} />
               {dropDownData.map((dropDownItem: A, i: number) =>
                 <option
                   value={valueMapping(dropDownItem, i)}

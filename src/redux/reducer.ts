@@ -6,7 +6,12 @@ import {
   Actions
 } from './actions'
 
-export const blankState: Information = { f1099s: [], w2s: [], taxPayer: { dependents: [] } }
+export const blankState: Information = {
+  f1099s: [],
+  w2s: [],
+  realEstate: [],
+  taxPayer: { dependents: [] }
+}
 
 function formReducer (state: Information | undefined, action: Actions): Information {
   const newState: Information = state ?? blankState
@@ -55,7 +60,7 @@ function formReducer (state: Information | undefined, action: Actions): Informat
     // Replace dependent by index with a new object.
     case ActionName.EDIT_DEPENDENT: {
       const newDependents = [...(newState.taxPayer?.dependents ?? [])]
-      newDependents.splice(action.formData.index, 1, action.formData.dependent)
+      newDependents.splice(action.formData.index, 1, action.formData.value)
 
       return {
         ...newState,
@@ -101,6 +106,14 @@ function formReducer (state: Information | undefined, action: Actions): Informat
         ]
       }
     }
+    case ActionName.EDIT_W2: {
+      const newW2s = [...newState.w2s]
+      newW2s.splice(action.formData.index, 1, action.formData.value)
+      return {
+        ...newState,
+        w2s: newW2s
+      }
+    }
     case ActionName.REMOVE_W2: {
       const newW2s = [...newState.w2s]
       newW2s.splice(action.formData, 1)
@@ -118,6 +131,14 @@ function formReducer (state: Information | undefined, action: Actions): Informat
         ]
       }
     }
+    case ActionName.EDIT_1099: {
+      const new1099s = [...newState.f1099s]
+      new1099s.splice(action.formData.index, 1, action.formData.value)
+      return {
+        ...newState,
+        f1099s: new1099s
+      }
+    }
     case ActionName.REMOVE_1099: {
       const new1099s = [...newState.f1099s]
       new1099s.splice(action.formData, 1)
@@ -126,7 +147,6 @@ function formReducer (state: Information | undefined, action: Actions): Informat
         f1099s: new1099s
       }
     }
-
     case ActionName.ADD_SPOUSE: {
       return {
         ...newState,
@@ -152,6 +172,31 @@ function formReducer (state: Information | undefined, action: Actions): Informat
           filingStatus,
           spouse: undefined
         }
+      }
+    }
+    case ActionName.ADD_PROPERTY: {
+      return {
+        ...newState,
+        realEstate: [
+          ...newState.realEstate,
+          action.formData
+        ]
+      }
+    }
+    case ActionName.EDIT_PROPERTY: {
+      const newProperties = [...newState.realEstate]
+      newProperties.splice(action.formData.index, 1, action.formData.value)
+      return {
+        ...newState,
+        realEstate: newProperties
+      }
+    }
+    case ActionName.REMOVE_PROPERTY: {
+      const newProperties = [...newState.realEstate]
+      newProperties.splice(action.formData, 1)
+      return {
+        ...newState,
+        realEstate: newProperties
       }
     }
     default: {
