@@ -26,6 +26,7 @@ describe('ScheduleEIC', () => {
       information: {
         f1099s: [],
         w2s: [],
+        realEstate: [],
         taxPayer: {
           filingStatus: FilingStatus.MFJ,
           dependents: [],
@@ -42,7 +43,7 @@ describe('ScheduleEIC', () => {
     const f1040 = new F1040(model.information.taxPayer)
     model.information.w2s.forEach((w2) => f1040.addW2(w2))
 
-    const eic = new ScheduleEIC(model.information.taxPayer)
+    const eic = new ScheduleEIC(model.information.taxPayer, f1040)
     expect(eic.allowed(f1040)).toBe(false)
     expect(eic.credit(f1040)).toBe(0)
   })

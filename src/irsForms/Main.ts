@@ -37,7 +37,7 @@ export const getSchedules = (f1040: F1040, state: Information): Form[] => {
     attachments = [s1, ...attachments]
   }
 
-  const eic = new ScheduleEIC(state.taxPayer)
+  const eic = new ScheduleEIC(state.taxPayer, f1040)
   if (eic.allowed(f1040)) {
     f1040.addScheduleEIC(eic)
     attachments = [...attachments, eic]

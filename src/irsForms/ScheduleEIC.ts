@@ -52,13 +52,15 @@ export default class ScheduleEIC implements Form {
   qualifyingStudentCutoffYear: number = 1996
   qualifyingCutoffYear: number = 2001
   investmentIncomeLimit: number = 3650
+  f1040: F1040
 
-  constructor (tp: TP) {
+  constructor (tp: TP, f1040: F1040) {
     this.tp = new TaxPayer(tp)
     this.f2555 = new F2555(tp)
     this.f4797 = new F4797(tp)
     this.f8814 = new F8814(tp)
-    this.pub596Worksheet1 = new Pub596Worksheet1(tp)
+    this.f1040 = f1040
+    this.pub596Worksheet1 = new Pub596Worksheet1(tp, f1040)
   }
 
   // instructions step 1.1
@@ -73,7 +75,7 @@ export default class ScheduleEIC implements Form {
     return false
   }
 
-  // Step 1.2, todo, boths spouses must have a SSN issued before 2020 due date
+  // Step 1.2, todo, both spouses must have a SSN issued before 2020 due date
   // and without work restriction and valid for eic purposes
   validSSNs = (): boolean => {
     unimplemented('Step 1.2 (valid SSNs) unchecked')
@@ -107,10 +109,7 @@ export default class ScheduleEIC implements Form {
   f4797AllowsEIC = (): boolean => !precludesEIC(checks4797)(this.f4797)
 
   // Todo, instruction 2.4.1
-  filingScheduleE = (): boolean => {
-    unimplemented('Not checking Schedule E')
-    return false
-  }
+  filingScheduleE = (): boolean => this.f1040.scheduleE !== undefined
 
   // 2.4.2
   passIncomeFromPersonalProperty = (): boolean => {

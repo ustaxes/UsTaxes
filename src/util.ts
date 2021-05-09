@@ -71,3 +71,9 @@ export const isLeapYear = (year: number): boolean => {
 
 export const daysInYear = (year: number): number =>
   isLeapYear(year) ? 366 : 365
+
+export const ifNegative = <A = number>(n: number, orElse: A | number = 0): A | number =>
+  n < 0 ? n : orElse
+
+export const ifPositive = <A = number>(n: number, orElse: A | number = 0): A | number =>
+  n > 0 ? n : orElse
