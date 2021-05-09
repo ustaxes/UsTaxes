@@ -52,7 +52,7 @@ const Summary = (): ReactElement => {
   const state: Information = useSelector((state: TaxesState) => state.information)
   const classes = useStyles()
 
-  const f1040 = create1040(state)
+  const [f1040] = create1040(state)
 
   return (
     <PagerContext.Consumer>

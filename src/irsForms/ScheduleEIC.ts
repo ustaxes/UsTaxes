@@ -7,7 +7,7 @@ import F2555 from './F2555'
 import F4797 from './F4797'
 import F8814 from './F8814'
 import Pub596Worksheet1 from './worksheets/Pub596Worksheet1'
-import Form from './Form'
+import Form, { FormTag } from './Form'
 import { anArrayOf, evaluatePiecewise, Piecewise } from '../util'
 
 type PrecludesEIC<F> = (f: F) => boolean
@@ -43,6 +43,7 @@ const precludesEIC = <F>(p: PrecludesEIC<F>) => (f: F | undefined) => {
 }
 
 export default class ScheduleEIC implements Form {
+  tag: FormTag = 'f1040sei'
   tp: TaxPayer
   f2555?: F2555
   f4797?: F4797

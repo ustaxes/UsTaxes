@@ -1,5 +1,5 @@
 import { Address, Information, Property, PropertyType, PropertyExpenseTypeName } from '../redux/data'
-import Form from './Form'
+import Form, { FormTag } from './Form'
 import TaxPayer from '../redux/TaxPayer'
 import { anArrayOf, unzip3, zip, zip3 } from '../util'
 import F6168 from './F6168'
@@ -37,6 +37,7 @@ const propTypeIndex = {
 }
 
 export default class ScheduleE implements Form {
+  tag: FormTag = 'f1040se'
   state: Information
   f6168: F6168
   f8582: F8582
