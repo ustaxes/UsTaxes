@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react'
+import React, { Fragment, ReactElement } from 'react'
 import { List, ListItem, ListItemAvatar, ListItemIcon, ListItemText, makeStyles, Typography } from '@material-ui/core'
 import { PagerContext } from './pager'
 import { create1040 } from '../irsForms/Main'
@@ -52,52 +52,64 @@ const Summary = (): ReactElement => {
   const state: Information = useSelector((state: TaxesState) => state.information)
   const classes = useStyles()
 
-  const [f1040] = create1040(state)
-
   return (
     <PagerContext.Consumer>
       { ({ navButtons, onAdvance }) =>
         <form onSubmit={onAdvance}>
           <h2>Summary</h2>
-          <h4>Credits</h4>
-          <List>
-            <BinaryStateListItem active={f1040.scheduleEIC?.allowed(f1040) ?? false} >
-              <ListItemText
-                primary="Earned Income Tax Credit"
-                secondary={
-                  <React.Fragment>
-                    <Typography
-                      component="span"
-                      variant="body2"
-                      color="textPrimary"
-                      className={classes.block}
-                    >
-                      Qualifying Dependents:
-                    </Typography>
-                    <Typography
-                      component="span"
-                      variant="body2"
-                      color="textSecondary"
-                    >
-                      {
-                        f1040.scheduleEIC?.qualifyingDependents().map((d, i) =>
-                          <span key={i}>{`${d?.firstName ?? ''} ${d?.lastName ?? ''}`}</span>
-                        )
-                      }
-                    </Typography>
-                    <br />
-                    <Typography
-                      component="span"
-                      variant="body2"
-                      color="textPrimary"
-                    >
-                      Credit: <Currency value={Math.round(f1040.scheduleEIC?.credit(f1040) ?? 0)} />
-                    </Typography>
-                  </React.Fragment>
-                }
-              />
-            </BinaryStateListItem>
-          </List>
+          {(() => {
+            if (state.taxPayer.primaryPerson === undefined) {
+              return (
+                <Fragment><h4>No data entered yet</h4></Fragment>
+              )
+            } else {
+              const [f1040] = create1040(state)
+
+              return (
+                <Fragment>
+                  <h4>Credits</h4>
+                  <List>
+                    <BinaryStateListItem active={f1040.scheduleEIC?.allowed(f1040) ?? false} >
+                      <ListItemText
+                        primary="Earned Income Tax Credit"
+                        secondary={
+                          <React.Fragment>
+                            <Typography
+                              component="span"
+                              variant="body2"
+                              color="textPrimary"
+                              className={classes.block}
+                            >
+                              Qualifying Dependents:
+                            </Typography>
+                            <Typography
+                              component="span"
+                              variant="body2"
+                              color="textSecondary"
+                            >
+                              {
+                                f1040.scheduleEIC?.qualifyingDependents().map((d, i) =>
+                                  <span key={i}>{`${d?.firstName ?? ''} ${d?.lastName ?? ''}`}</span>
+                                )
+                              }
+                            </Typography>
+                            <br />
+                            <Typography
+                              component="span"
+                              variant="body2"
+                              color="textPrimary"
+                            >
+                              Credit: <Currency value={Math.round(f1040.scheduleEIC?.credit(f1040) ?? 0)} />
+                            </Typography>
+                          </React.Fragment>
+                        }
+                      />
+                    </BinaryStateListItem>
+                  </List>
+                </Fragment>
+              )
+            }
+          })()}
           {navButtons}
        </form>
       }
