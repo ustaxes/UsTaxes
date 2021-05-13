@@ -45,8 +45,17 @@ export async function create1040PDF (): Promise<Uint8Array> {
   const state = store.getState().information
 
   if (state.taxPayer !== undefined) {
-    const [,forms] = create1040(state)
+    const { result, errors } = create1040(state)
     // Get data and pdf links applicable to the model state
+    if (errors !== undefined) {
+      return await Promise.reject(errors)
+    } else if (result === undefined) {
+      // This should never happen, since create1040 is supposd to
+      // return either result or errors.
+      return await Promise.reject(new Error('No F1040 was generated'))
+    }
+
+    const [,forms] = result
     const pdfs: PDFDocument[] = await Promise.all(forms.map(async (f) => await downloadPDF(`/forms/${f.tag}.pdf`)))
     const formData: Array<[Form, PDFDocument]> = zip(forms, pdfs)
 

@@ -6,6 +6,7 @@ import { useSelector } from 'react-redux'
 import { Information, TaxesState } from '../redux/data'
 import { Check, Close } from '@material-ui/icons'
 import { Currency } from './input'
+import Alert from '@material-ui/lab/Alert'
 
 interface BinaryStateListItemProps {
   active: boolean
@@ -63,13 +64,26 @@ const Summary = (): ReactElement => {
                 <h4>No data entered yet</h4>
               )
             } else {
-              const [f1040] = create1040(state)
+              const { result, errors } = create1040(state)
+              const f1040 = result?.[0]
+
+              if (result === undefined) {
+                return (
+                  <Fragment>
+                    {errors?.map((error, i) => <Alert key={i} severity="warning">{error}</Alert>)}
+                  </Fragment>
+                )
+              } else if (f1040 === undefined) {
+                // create1040 returns either a result or errors, but we don't really have
+                // a good Either<E, A> type right now. This case should never happen.
+                throw new Error('1040 was undefined.')
+              }
 
               return (
                 <Fragment>
                   <h4>Credits</h4>
                   <List>
-                    <BinaryStateListItem active={f1040.scheduleEIC?.allowed(f1040) ?? false} >
+                    <BinaryStateListItem active={f1040.scheduleEIC?.allowed(result?.[0]) ?? false} >
                       <ListItemText
                         primary="Earned Income Tax Credit"
                         secondary={
