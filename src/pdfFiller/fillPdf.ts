@@ -8,7 +8,7 @@ import { store } from '../redux/store'
 import { savePdf } from './pdfHandler'
 import Form from '../irsForms/Form'
 import { create1040 } from '../irsForms/Main'
-import { zip } from '../util'
+import { isLeft, zip } from '../util'
 
 /**
   * Attempt to fill fields in a PDF from a Form,
@@ -45,8 +45,13 @@ export async function create1040PDF (): Promise<Uint8Array> {
   const state = store.getState().information
 
   if (state.taxPayer !== undefined) {
-    const [,forms] = create1040(state)
+    const f1040Result = create1040(state)
     // Get data and pdf links applicable to the model state
+    if (isLeft(f1040Result)) {
+      return await Promise.reject(f1040Result.left)
+    }
+
+    const [,forms] = f1040Result.right
     const pdfs: PDFDocument[] = await Promise.all(forms.map(async (f) => await downloadPDF(`/forms/${f.tag}.pdf`)))
     const formData: Array<[Form, PDFDocument]> = zip(forms, pdfs)
 

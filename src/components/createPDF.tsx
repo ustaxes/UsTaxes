@@ -37,11 +37,11 @@ export default function CreatePDF (): ReactElement {
         <form onSubmit={onSubmit}>
           <div>
             <h2>Print Copy to File</h2>
-            {navButtons}
           </div>
           <div className={classes.root}>
             {errors.map((error, i) => <Alert key={i} severity="warning">{error}</Alert>)}
           </div>
+          {navButtons}
         </form>
       }
     </PagerContext.Consumer>

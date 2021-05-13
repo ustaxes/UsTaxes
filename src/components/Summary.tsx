@@ -6,6 +6,8 @@ import { useSelector } from 'react-redux'
 import { Information, TaxesState } from '../redux/data'
 import { Check, Close } from '@material-ui/icons'
 import { Currency } from './input'
+import Alert from '@material-ui/lab/Alert'
+import { isLeft } from '../util'
 
 interface BinaryStateListItemProps {
   active: boolean
@@ -60,10 +62,22 @@ const Summary = (): ReactElement => {
           {(() => {
             if (state.taxPayer.primaryPerson === undefined) {
               return (
-                <Fragment><h4>No data entered yet</h4></Fragment>
+                <h4>No data entered yet</h4>
               )
             } else {
-              const [f1040] = create1040(state)
+              const f1040Result = create1040(state)
+
+              if (isLeft(f1040Result)) {
+                const errors = f1040Result.left
+
+                return (
+                  <Fragment>
+                    {errors.map((error, i) => <Alert key={i} severity="warning">{error}</Alert>)}
+                  </Fragment>
+                )
+              }
+
+              const [f1040] = f1040Result.right
 
               return (
                 <Fragment>

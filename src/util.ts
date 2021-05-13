@@ -77,3 +77,22 @@ export const ifNegative = <A = number>(n: number, orElse: A | number = 0): A | n
 
 export const ifPositive = <A = number>(n: number, orElse: A | number = 0): A | number =>
   n > 0 ? n : orElse
+
+// idea from https://github.com/gcanti/fp-ts/blob/3e2af038982cb4090ccc8c2912e4b22f907bdaea/src/Either.ts
+export interface Left<E> {
+  readonly _tag: 'left'
+  left: E
+}
+
+export interface Right<A> {
+  readonly _tag: 'right'
+  right: A
+}
+
+export type Either<E, A> = Left<E> | Right<A>
+
+export const left = <E = never, A = never>(left: E): Either <E, A> => ({ _tag: 'left', left })
+export const right = <E = never, A = never>(right: A): Either<E, A> => ({ _tag: 'right', right })
+
+export const isLeft = <E, A>(e: Either<E, A>): e is Left<E> => e._tag === 'left'
+export const isRight = <E, A>(e: Either<E, A>): e is Right<A> => e._tag === 'right'
