@@ -1,6 +1,6 @@
 import { Income1099Type, Information, Income1099Int, Income1099Div } from '../redux/data'
 import TaxPayer from '../redux/TaxPayer'
-import Form from './Form'
+import Form, { FormTag } from './Form'
 import { computeField, displayNumber, sumFields } from './util'
 import { anArrayOf } from '../util'
 
@@ -10,6 +10,7 @@ interface PayerAmount {
 }
 
 export default class ScheduleB implements Form {
+  tag: FormTag = 'f1040sb'
   state: Information
   readonly interestPayersLimit = 14
   readonly dividendPayersLimit = 16

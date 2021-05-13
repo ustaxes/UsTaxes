@@ -1,8 +1,9 @@
 import { Information } from '../redux/data'
 import F1040 from './F1040'
-import Form from './Form'
+import Form, { FormTag } from './Form'
 
 export default class F1040V implements Form {
+  tag: FormTag = 'f1040v'
   state: Information
   f1040: F1040
 
