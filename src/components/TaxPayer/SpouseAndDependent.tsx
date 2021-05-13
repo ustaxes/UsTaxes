@@ -87,7 +87,6 @@ export const AddDependentForm = (): ReactElement => {
 
   const clear = (): void => {
     setEditingIdx(undefined)
-    reset()
   }
 
   return (
@@ -211,15 +210,17 @@ const SpouseAndDependent = (): ReactElement => {
     <PagerContext.Consumer>
       { ({ onAdvance, navButtons }) =>
         <form onSubmit={handleSubmit(onSubmit(onAdvance))}>
-          <h2>Spouse Information</h2>
+          <h2>Family Information</h2>
+
+          <strong><p>Spouse Information</p></strong>
           <SpouseInfo />
 
-          <h2>Dependent Information</h2>
+          <strong><p>Dependent Information</p></strong>
           <AddDependentForm />
 
-          <h2>Filing Status</h2>
           <GenericLabeledDropdown<FilingStatus>
             label=""
+            strongLabel="Filing Status"
             dropDownData={filingStatuses(taxPayer)}
             valueMapping={(x, i) => x}
             keyMapping={(x, i) => i}
