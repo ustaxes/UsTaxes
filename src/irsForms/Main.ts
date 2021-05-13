@@ -1,4 +1,5 @@
 import { Income1099Type, Information } from '../redux/data'
+import { Either, left, right } from '../util'
 import F1040, { F1040Error } from './F1040'
 import F1040V from './F1040v'
 import Form from './Form'
@@ -52,7 +53,7 @@ export const getSchedules = (f1040: F1040, state: Information): Form[] => {
   return [...prepends, f1040, ...attachments]
 }
 
-export function create1040 (state: Information): { result?: [F1040, Form[]], errors?: F1040Error[] } {
+export function create1040 (state: Information): Either<F1040Error[], [F1040, Form[]]> {
   const f1040 = new F1040(state.taxPayer)
 
   state.w2s.forEach((w2) => f1040.addW2(w2))
@@ -62,8 +63,8 @@ export function create1040 (state: Information): { result?: [F1040, Form[]], err
   }
 
   if (f1040.errors().length > 0) {
-    return { errors: f1040.errors() }
+    return left(f1040.errors())
   }
 
-  return { result: [f1040, getSchedules(f1040, state)] }
+  return right([f1040, getSchedules(f1040, state)])
 }
