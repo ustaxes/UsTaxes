@@ -30,12 +30,9 @@ const checks8814: PrecludesEIC<F8814> = (f): boolean => {
   return false
 }
 
-const checksPub596: PrecludesEIC<Pub596Worksheet1> = (f): boolean => {
-  unimplemented('check Pub596 worksheet 1')
-  return false
-}
+const checksPub596: PrecludesEIC<Pub596Worksheet1> = (f): boolean => f.precludesEIC()
 
-const precludesEIC = <F>(p: PrecludesEIC<F>) => (f: F | undefined) => {
+const precludesEIC = <F>(p: PrecludesEIC<F>) => (f: F | undefined): boolean => {
   if (f === undefined) {
     return false
   }
@@ -127,7 +124,7 @@ export default class ScheduleEIC implements Form {
   }
 
   // 2.4.5
-  passPub596 = (): boolean => precludesEIC(checksPub596)(this.pub596Worksheet1)
+  passPub596 = (): boolean => !precludesEIC(checksPub596)(this.pub596Worksheet1)
 
   // 3.1
   atLeastOneChild = (): boolean => this.qualifyingDependents().length > 0
