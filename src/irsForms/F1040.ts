@@ -14,7 +14,7 @@ import ScheduleA from './ScheduleA'
 import ScheduleD from './ScheduleD'
 import ScheduleE from './ScheduleE'
 import ScheduleEIC from './ScheduleEIC'
-import Form from './Form'
+import Form, { FormTag } from './Form'
 import { displayNumber, computeField, sumFields } from './util'
 import ScheduleB from './ScheduleB'
 import { computeOrdinaryTax } from './TaxTable'
@@ -25,6 +25,7 @@ export enum F1040Error {
 }
 
 export default class F1040 implements Form {
+  tag: FormTag = 'f1040'
   // intentionally mirroring many fields from the state,
   // trying to represent the fields that the 1040 requires
   filingStatus?: FilingStatus

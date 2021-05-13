@@ -6,13 +6,14 @@ import {
   F1099BData,
   FilingStatus
 } from '../redux/data'
-import Form from './Form'
+import Form, { FormTag } from './Form'
 import TaxPayer from '../redux/TaxPayer'
 import { computeField, displayNumber, sumFields } from './util'
 import SDRateGainWorksheet from './worksheets/SDRateGainWorksheet'
 import SDUnrecaptured1250 from './worksheets/SDUnrecaptured1250'
 
 export default class ScheduleD implements Form {
+  tag: FormTag = 'f1040sd'
   state: Information
   aggregated: F1099BData
   rateGainWorksheet: SDRateGainWorksheet
