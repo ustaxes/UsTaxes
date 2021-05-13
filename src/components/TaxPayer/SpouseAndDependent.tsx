@@ -3,9 +3,9 @@ import React, { ReactElement, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { Patterns } from '../Patterns'
-import { LabeledInput, LabeledCheckbox, formatSSID } from '../input'
-import { TaxesState, Dependent, Spouse, PersonRole } from '../../redux/data'
-import { addDependent, addSpouse, editDependent, removeDependent, removeSpouse } from '../../redux/actions'
+import { LabeledInput, LabeledCheckbox, formatSSID, GenericLabeledDropdown } from '../input'
+import { TaxesState, TaxPayer, Dependent, Spouse, PersonRole, FilingStatus, FilingStatusTexts, filingStatuses } from '../../redux/data'
+import { addDependent, addSpouse, editDependent, removeDependent, removeSpouse, saveFilingStatusInfo } from '../../redux/actions'
 import { PersonFields } from './PersonFields'
 import { FormListContainer } from '../FormContainer'
 import { PagerContext } from '../pager'
@@ -195,14 +195,41 @@ export const SpouseInfo = (): ReactElement => {
 }
 
 const SpouseAndDependent = (): ReactElement => {
+  const { handleSubmit, errors, control } = useForm<{filingStatus: FilingStatus}>()
+  // const variable dispatch to allow use inside function
+  const dispatch = useDispatch()
+
+  const taxPayer: TaxPayer | undefined = useSelector((state: TaxesState) => {
+    return state.information.taxPayer
+  })
+
+  const onSubmit = (onAdvance: () => void) => (formData: {filingStatus: FilingStatus}): void => {
+    dispatch(saveFilingStatusInfo(formData.filingStatus))
+    onAdvance()
+  }
   return (
     <PagerContext.Consumer>
       { ({ onAdvance, navButtons }) =>
-        <form onSubmit={onAdvance}>
+        <form onSubmit={handleSubmit(onSubmit(onAdvance))}>
           <h2>Spouse Information</h2>
           <SpouseInfo />
+
           <h2>Dependent Information</h2>
           <AddDependentForm />
+
+          <h2>Filing Status</h2>
+          <GenericLabeledDropdown<FilingStatus>
+            label=""
+            dropDownData={filingStatuses(taxPayer)}
+            valueMapping={(x, i) => x}
+            keyMapping={(x, i) => i}
+            error={errors.filingStatus}
+            textMapping={status => FilingStatusTexts[status]}
+            required={true}
+            control={control}
+            name="filingStatus"
+            defaultValue={taxPayer?.filingStatus}
+          />
           {navButtons}
         </form>
       }

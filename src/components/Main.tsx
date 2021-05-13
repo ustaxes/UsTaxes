@@ -24,7 +24,6 @@ import PrimaryTaxpayer from './TaxPayer'
 import RefundBankAccount from './RefundBankAccount'
 import SpouseAndDependent from './TaxPayer/SpouseAndDependent'
 import ContactInfo from './TaxPayer/ContactInfo'
-import FilingStatusSelect from './TaxPayer/FilingStatus'
 import F1099Info from './income/F1099Info'
 import Summary from './Summary'
 import RealEstate from './income/RealEstate'
@@ -82,7 +81,6 @@ const Urls = {
     root: '/taxpayer',
     info: '/info',
     spouseAndDependent: '/spouseanddependent',
-    filingStatus: '/filingstatus',
     contactInfo: '/contact'
   },
   refund: '/refundinfo',
@@ -107,7 +105,6 @@ const drawerSections: Section[] = [
     items: [
       item('Primary Taxpayer', Urls.taxPayer.info, <PrimaryTaxpayer />),
       item('Spouse and Dependents', Urls.taxPayer.spouseAndDependent, <SpouseAndDependent />),
-      item('Filing Status', Urls.taxPayer.filingStatus, <FilingStatusSelect />),
       item('Contact Information', Urls.taxPayer.contactInfo, <ContactInfo />)
     ]
   },
