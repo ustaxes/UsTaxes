@@ -59,7 +59,6 @@
     "@types/node-fetch": "^2.5.10",
     "@types/react": "^17.0.5",
     "@types/react-dom": "^17.0.3",
-    "@types/react-pdf": "^5.0.2",
     "@types/react-redux": "^7.1.16",
     "@types/react-router-dom": "^5.1.7",
     "@types/redux-logger": "^3.0.6",
