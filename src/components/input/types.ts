@@ -5,6 +5,7 @@ export * from '../types'
 
 export interface BaseDropdownProps {
   label: string
+  strongLabel?: string
   required?: boolean
   name: string
   error?: FieldError
