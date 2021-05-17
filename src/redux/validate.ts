@@ -1,4 +1,4 @@
-import Ajv, { DefinedError, ValidateFunction } from 'ajv-latest'
+import Ajv, { DefinedError, ValidateFunction } from 'ajv'
 import schema from './validation.json'
 
 // We will simply throw a runtime error if the data does not
