@@ -2,6 +2,7 @@ import { waitFor } from '@testing-library/react'
 import { FilingStatus, PersonRole, TaxesState } from '../redux/data'
 import ScheduleEIC from './ScheduleEIC'
 import F1040 from './F1040'
+import log from '../log'
 
 afterEach(async () => {
   await waitFor(() => localStorage.clear())
@@ -16,9 +17,10 @@ jest.mock('redux-persist', () => {
   }
 })
 
-beforeAll(async () =>
-  jest.spyOn(console, 'warn').mockImplementation(() => {})
-)
+beforeAll(async () => {
+  log.setLevel(log.levels.ERROR, true)
+  jest.spyOn(console, 'warn').mockImplementation(() => { })
+})
 
 describe('ScheduleEIC', () => {
   it('should disallow EIC for no income', () => {

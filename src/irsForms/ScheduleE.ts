@@ -5,12 +5,13 @@ import { anArrayOf, unzip3, zip, zip3 } from '../util'
 import F6168 from './F6168'
 import F8582 from './F8582'
 import { displayNegPos, displayNumber, sumFields } from './util'
+import log from '../log'
 
 type Cell = number | undefined
 export type MatrixRow = [Cell, Cell, Cell]
 
 const unimplemented = (message: string): void =>
-  console.warn(`[Schedule E] unimplemented ${message}`)
+  log.warn(`[Schedule E] unimplemented ${message}`)
 
 const fill = (values: number[]): MatrixRow => {
   const realValues = (
