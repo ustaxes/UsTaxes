@@ -9,11 +9,12 @@ import F8814 from './F8814'
 import Pub596Worksheet1 from './worksheets/Pub596Worksheet1'
 import Form, { FormTag } from './Form'
 import { anArrayOf, evaluatePiecewise, Piecewise } from '../util'
+import log from '../log'
 
 type PrecludesEIC<F> = (f: F) => boolean
 
 const unimplemented = (message: string): void =>
-  console.warn(`[Schedule EIC] unimplemented ${message}`)
+  log.warn(`[Schedule EIC] unimplemented ${message}`)
 
 const checks2555: PrecludesEIC<F2555> = (f): boolean => {
   unimplemented('check F2555')

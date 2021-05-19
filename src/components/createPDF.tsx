@@ -3,6 +3,7 @@ import { createPDFPopup } from '../pdfFiller/fillPdf'
 import { PagerContext } from './pager'
 import Alert from '@material-ui/lab/Alert'
 import { makeStyles } from '@material-ui/core/styles'
+import log from '../log'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -24,8 +25,8 @@ export default function CreatePDF (): ReactElement {
         if (errors.length !== undefined && errors.length > 0) {
           updateErrors(errors)
         } else {
-          console.error('unhandled exception')
-          console.error(errors)
+          log.error('unhandled exception')
+          log.error(errors)
           return Promise.reject(errors)
         }
       })

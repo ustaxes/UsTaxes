@@ -8,6 +8,7 @@
     "@material-ui/lab": "^4.0.0-alpha.58",
     "ajv": "^6.12.6",
     "ajv-latest": "npm:ajv@^8.0.1",
+    "loglevel": "^1.7.1",
     "node-fetch": "^2.6.1",
     "pdf-lib": "^1.16.0",
     "react": "^17.0.1",

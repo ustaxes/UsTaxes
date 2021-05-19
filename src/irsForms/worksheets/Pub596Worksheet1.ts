@@ -3,9 +3,10 @@ import { TaxPayer } from '../../redux/data'
 import { ifNegative, ifPositive } from '../../util'
 import F1040 from '../F1040'
 import { sumFields } from '../util'
+import log from '../../log'
 
 const unimplemented = (message: string): void =>
-  console.warn(`[Pub 596 Worksheet 1] unimplemented ${message}`)
+  log.warn(`[Pub 596 Worksheet 1] unimplemented ${message}`)
 
 export default class Pub596Worksheet1 {
   tp: TaxPayer

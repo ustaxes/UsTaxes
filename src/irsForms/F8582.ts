@@ -1,8 +1,9 @@
 import { TaxPayer } from '../redux/data'
 import ScheduleE, { MatrixRow } from './ScheduleE'
+import log from '../log'
 
 const unimplemented = (message: string): void => {
-  console.warn(`[Form 8582]: ${message}`)
+  log.warn(`[Form 8582]: ${message}`)
 }
 
 /**
