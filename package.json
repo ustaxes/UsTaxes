@@ -9,6 +9,7 @@
     "@tauri-apps/api": "^1.0.0-beta.1",
     "@tauri-apps/cli": "^1.0.0-beta.1",
     "ajv": "^8.4.0",
+    "loglevel": "^1.7.1",
     "node-fetch": "^2.6.1",
     "pdf-lib": "^1.16.0",
     "react": "^17.0.1",

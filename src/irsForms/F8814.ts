@@ -1,7 +1,8 @@
 import { TaxPayer } from '../redux/data'
+import log from '../log'
 
 const unimplemented = (message: string): void =>
-  console.warn(`[Form 8814] unimplemented ${message}`)
+  log.warn(`[Form 8814] unimplemented ${message}`)
 
 export default class F8814 {
   tp: TaxPayer
