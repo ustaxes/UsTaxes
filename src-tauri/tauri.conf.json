@@ -1,19 +1,18 @@
 {
   "build": {
-    "distDir": "../",
+    "distDir": "../build",
     "devPath": "http://localhost:3000",
     "beforeDevCommand": "npm run start",
-    "beforeBuildCommand": "npm run build"
+    "beforeBuildCommand": "npm run build",
+    "withGlobalTauri": true
   },
   "tauri": {
     "bundle": {
       "active": true,
       "targets": "all",
-      "identifier": "com.tauri.dev",
+      "identifier": "ustaxes",
       "icon": [
-        "../public/logo192.png",
-        "../public/logo512.png",
-        "../public/favicon.ico"
+        "./icons/favicon.ico"
       ],
       "resources": [],
       "externalBin": [],
