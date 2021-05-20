@@ -6,7 +6,7 @@ import { InputType } from '../Patterns'
 import { Controller } from 'react-hook-form'
 
 export function LabeledInput (props: LabeledInputProps): ReactElement {
-  const { strongLabel, label, register, error, required = false, patternConfig, name, defaultValue = '' } = props
+  const { strongLabel, label, register, error, required = false, patternConfig, name, rules = {}, defaultValue = '' } = props
 
   const errorMessage: string | undefined = (() => {
     if (error?.message !== undefined && error?.message !== '') {
@@ -45,6 +45,7 @@ export function LabeledInput (props: LabeledInputProps): ReactElement {
           required={required}
           defaultValue={defaultValue}
           rules={{
+            ...rules,
             min: patternConfig.min,
             max: patternConfig.max,
             required: required ? 'Input is required' : undefined,
@@ -62,6 +63,7 @@ export function LabeledInput (props: LabeledInputProps): ReactElement {
         name={name}
         defaultValue={defaultValue}
         inputRef={register({
+          ...rules,
           required: required ? 'Input is required' : undefined,
           pattern: {
             value: patternConfig?.regexp ?? (required ? /.+/ : /.*/),

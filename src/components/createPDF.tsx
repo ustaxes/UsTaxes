@@ -3,6 +3,7 @@ import { createPDFPopup } from '../pdfFiller/fillPdf'
 import { PagerContext } from './pager'
 import Alert from '@material-ui/lab/Alert'
 import { makeStyles } from '@material-ui/core/styles'
+import log from '../log'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -19,7 +20,16 @@ export default function CreatePDF (): ReactElement {
 
   const onSubmit = async (e: FormEvent<any>): Promise<void> => {
     e.preventDefault()
-    return await createPDFPopup().catch((errors: string[]) => updateErrors(errors))
+    return await createPDFPopup()
+      .catch((errors: string[]) => {
+        if (errors.length !== undefined && errors.length > 0) {
+          updateErrors(errors)
+        } else {
+          log.error('unhandled exception')
+          log.error(errors)
+          return Promise.reject(errors)
+        }
+      })
   }
 
   return (
@@ -28,11 +38,11 @@ export default function CreatePDF (): ReactElement {
         <form onSubmit={onSubmit}>
           <div>
             <h2>Print Copy to File</h2>
-            {navButtons}
           </div>
           <div className={classes.root}>
             {errors.map((error, i) => <Alert key={i} severity="warning">{error}</Alert>)}
           </div>
+          {navButtons}
         </form>
       }
     </PagerContext.Consumer>
