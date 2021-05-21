@@ -14,7 +14,7 @@ import {
   Edit1099Action,
   EditW2Action
 } from './data'
-import { ValidateFunction } from 'ajv-latest'
+import { ValidateFunction } from 'ajv'
 import ajv,
 { checkType } from './validate'
 
