@@ -1,8 +1,8 @@
-import { save } from 'tauri/api/dialog'
-import { writeBinaryFile } from 'tauri/api/fs'
+import { save } from '@tauri-apps/api/dialog'
+import { writeBinaryFile } from '@tauri-apps/api/fs'
 
 export async function savePdf (contents) {
-  if (window.__TAURI_INVOKE_HANDLER__ === undefined) {
+  if (window.__TAURI__ === undefined) {
     const blob = new Blob([contents], { type: 'application/pdf' })
     const blobURL = URL.createObjectURL(blob)
     window.open(blobURL)
