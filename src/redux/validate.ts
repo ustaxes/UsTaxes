@@ -1,5 +1,6 @@
-import Ajv, { DefinedError, ValidateFunction } from 'ajv-latest'
+import Ajv, { DefinedError, ValidateFunction } from 'ajv'
 import schema from './validation.json'
+import log from '../log'
 
 // We will simply throw a runtime error if the data does not
 // validate against the schema.definitions.
@@ -12,8 +13,11 @@ export const checkType = <A>(data: A, validate: ValidateFunction<A>): A => {
     const errs = validate.errors as DefinedError[]
 
     for (const err of errs) {
-      console.error(err.message)
+      log.error(err.message)
     }
+
+    log.error(validate.errors)
+    log.error(data)
   }
 
   return data
@@ -40,9 +44,14 @@ ajv.getSchema('#/definitions/BData')
 ajv.getSchema('#/definitions/Income1099Int')
 ajv.getSchema('#/definitions/Income1099B')
 ajv.getSchema('#/definitions/Supported1099')
+ajv.getSchema('#/definitions/Edit1099Action')
 ajv.getSchema('#/definitions/IncomeW2')
+ajv.getSchema('#/definitions/EditW2Action')
 ajv.getSchema('#/definitions/Refund')
 ajv.getSchema('#/definitions/TaxPayer')
 ajv.getSchema('#/definitions/Information')
+ajv.getSchema('#/definitions/Property')
+ajv.getSchema('#/definitions/PropertyType')
+ajv.getSchema('#/definitions/EditPropertyAction')
 
 export default ajv

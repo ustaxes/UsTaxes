@@ -1,12 +1,12 @@
 import React, { ReactElement } from 'react'
-import { TextField, Box } from '@material-ui/core'
+import { TextField } from '@material-ui/core'
 import { LabeledInputProps } from './types'
 import NumberFormat from 'react-number-format'
 import { InputType } from '../Patterns'
 import { Controller } from 'react-hook-form'
 
-export function LabeledInput<A> (props: LabeledInputProps<A>): ReactElement {
-  const { strongLabel, label, register, error, required = false, patternConfig, name, defaultValue = '' } = props
+export function LabeledInput (props: LabeledInputProps): ReactElement {
+  const { strongLabel, label, register, error, required = false, patternConfig, name, rules = {}, defaultValue = '' } = props
 
   const errorMessage: string | undefined = (() => {
     if (error?.message !== undefined && error?.message !== '') {
@@ -50,6 +50,7 @@ export function LabeledInput<A> (props: LabeledInputProps<A>): ReactElement {
           control={patternConfig.control}
           defaultValue={defaultValue}
           rules={{
+            ...rules,
             min: patternConfig.min,
             max: patternConfig.max,
             required: required ? 'Input is required' : undefined,
@@ -65,6 +66,14 @@ export function LabeledInput<A> (props: LabeledInputProps<A>): ReactElement {
     return (
       <TextField
         defaultValue={defaultValue}
+        inputRef={register({
+          ...rules,
+          required: required ? 'Input is required' : undefined,
+          pattern: {
+            value: patternConfig?.regexp ?? (required ? /.+/ : /.*/),
+            message: patternConfig?.description ?? (required ? 'Input is required' : '')
+          }
+        })}
         fullWidth={patternConfig?.format === undefined}
         helperText={error?.message}
         error={error !== undefined}
@@ -82,12 +91,8 @@ export function LabeledInput<A> (props: LabeledInputProps<A>): ReactElement {
 
   return (
     <div>
-      <Box display="flex" justifyContent="flex-start">
-        <p><strong>{strongLabel}</strong>{label}</p>
-      </Box>
-      <Box display="flex" justifyContent="flex-start">
-        {input}
-      </Box>
+      <p><strong>{strongLabel}</strong>{label}</p>
+      {input}
     </div>
   )
 }

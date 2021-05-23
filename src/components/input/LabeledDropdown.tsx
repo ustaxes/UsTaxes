@@ -1,17 +1,17 @@
-import { Box, TextField } from '@material-ui/core'
 import React, { ReactElement } from 'react'
+import { Box, TextField } from '@material-ui/core'
 import { Controller } from 'react-hook-form'
 import locationPostalCodes from '../../data/locationPostalCodes'
 import { BaseDropdownProps, LabeledDropdownProps } from './types'
 
 export function GenericLabeledDropdown<A> (props: LabeledDropdownProps<A>): ReactElement {
-  const { label, dropDownData, valueMapping, error, keyMapping, textMapping, control, required = false, name } = props
-  const { defaultValue = undefined } = props
+  const { strongLabel, label, dropDownData, valueMapping, error, keyMapping, textMapping, control, required = false, name } = props
+  const { defaultValue = '' } = props
 
   return (
     <div>
       <Box display="flex" justifyContent="flex-start">
-        <p>{label}</p>
+        <p><strong>{strongLabel}</strong>{label}</p>
       </Box>
       <Box display="flex" justifyContent="flex-start">
         <Controller
@@ -27,7 +27,7 @@ export function GenericLabeledDropdown<A> (props: LabeledDropdownProps<A>): Reac
               }}
               variant="filled"
             >
-              <option value={undefined} />
+              <option value={''} />
               {dropDownData.map((dropDownItem: A, i: number) =>
                 <option
                   value={valueMapping(dropDownItem, i)}

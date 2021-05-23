@@ -9,4 +9,9 @@ export default class F4797 {
   constructor (tp: TaxPayer) {
     this.tp = tp
   }
+
+  // TODO, required from schedule EIC, PUB 596, worksheet 1
+  l7 = (): number | undefined => undefined
+  l8 = (): number | undefined => undefined
+  l9 = (): number | undefined => undefined
 }

@@ -7,13 +7,14 @@ import F2555 from './F2555'
 import F4797 from './F4797'
 import F8814 from './F8814'
 import Pub596Worksheet1 from './worksheets/Pub596Worksheet1'
-import Form from './Form'
+import Form, { FormTag } from './Form'
 import { anArrayOf, evaluatePiecewise, Piecewise } from '../util'
+import log from '../log'
 
 type PrecludesEIC<F> = (f: F) => boolean
 
 const unimplemented = (message: string): void =>
-  console.warn(`[Schedule EIC] unimplemented ${message}`)
+  log.warn(`[Schedule EIC] unimplemented ${message}`)
 
 const checks2555: PrecludesEIC<F2555> = (f): boolean => {
   unimplemented('check F2555')
@@ -30,12 +31,9 @@ const checks8814: PrecludesEIC<F8814> = (f): boolean => {
   return false
 }
 
-const checksPub596: PrecludesEIC<Pub596Worksheet1> = (f): boolean => {
-  unimplemented('check Pub596 worksheet 1')
-  return false
-}
+const checksPub596: PrecludesEIC<Pub596Worksheet1> = (f): boolean => f.precludesEIC()
 
-const precludesEIC = <F>(p: PrecludesEIC<F>) => (f: F | undefined) => {
+const precludesEIC = <F>(p: PrecludesEIC<F>) => (f: F | undefined): boolean => {
   if (f === undefined) {
     return false
   }
@@ -43,6 +41,7 @@ const precludesEIC = <F>(p: PrecludesEIC<F>) => (f: F | undefined) => {
 }
 
 export default class ScheduleEIC implements Form {
+  tag: FormTag = 'f1040sei'
   tp: TaxPayer
   f2555?: F2555
   f4797?: F4797
@@ -51,13 +50,15 @@ export default class ScheduleEIC implements Form {
   qualifyingStudentCutoffYear: number = 1996
   qualifyingCutoffYear: number = 2001
   investmentIncomeLimit: number = 3650
+  f1040: F1040
 
-  constructor (tp: TP) {
+  constructor (tp: TP, f1040: F1040) {
     this.tp = new TaxPayer(tp)
     this.f2555 = new F2555(tp)
     this.f4797 = new F4797(tp)
     this.f8814 = new F8814(tp)
-    this.pub596Worksheet1 = new Pub596Worksheet1(tp)
+    this.f1040 = f1040
+    this.pub596Worksheet1 = new Pub596Worksheet1(tp, f1040)
   }
 
   // instructions step 1.1
@@ -65,14 +66,14 @@ export default class ScheduleEIC implements Form {
     if (this.tp.tp.filingStatus !== undefined) {
       const incomeLimits = federal.EIC.caps[this.tp.tp.filingStatus]
       if (incomeLimits !== undefined) {
-        const limit = incomeLimits[Math.min(this.qualifyingDependents.length, incomeLimits.length - 1)]
+        const limit = incomeLimits[Math.min(this.qualifyingDependents().length, incomeLimits.length - 1)]
         return (f1040.l11() ?? 0) < limit
       }
     }
     return false
   }
 
-  // Step 1.2, todo, boths spouses must have a SSN issued before 2020 due date
+  // Step 1.2, todo, both spouses must have a SSN issued before 2020 due date
   // and without work restriction and valid for eic purposes
   validSSNs = (): boolean => {
     unimplemented('Step 1.2 (valid SSNs) unchecked')
@@ -106,10 +107,7 @@ export default class ScheduleEIC implements Form {
   f4797AllowsEIC = (): boolean => !precludesEIC(checks4797)(this.f4797)
 
   // Todo, instruction 2.4.1
-  filingScheduleE = (): boolean => {
-    unimplemented('Not checking Schedule E')
-    return false
-  }
+  filingScheduleE = (): boolean => this.f1040.scheduleE !== undefined
 
   // 2.4.2
   passIncomeFromPersonalProperty = (): boolean => {
@@ -127,7 +125,7 @@ export default class ScheduleEIC implements Form {
   }
 
   // 2.4.5
-  passPub596 = (): boolean => precludesEIC(checksPub596)(this.pub596Worksheet1)
+  passPub596 = (): boolean => !precludesEIC(checksPub596)(this.pub596Worksheet1)
 
   // 3.1
   atLeastOneChild = (): boolean => this.qualifyingDependents().length > 0
@@ -210,6 +208,46 @@ export default class ScheduleEIC implements Form {
     return l9
   }
 
+  /**
+   * The credit table in Publication 596 provides an
+   * amount for each interval of $50, calculated from the
+   * midpoint of the interval.
+   *
+   * @param income The earned income
+   * @returns the earned income rounded to the nearest 25
+   */
+  roundIncome = (income: number): number => {
+    if (income < 1) {
+      return 0
+    }
+    return Math.round(Math.round(income) / 50) * 50 + 25
+  }
+
+  /**
+   * Based on the earned income and filing status, calculate the
+   * allowed EITC.
+   *
+   * For tax year 2020, IRS Rev. Proc. 2019-44 outlines the required
+   * calculation for the EITC based on number of qualifying children
+   * and filing status.
+   *
+   * https://www.irs.gov/pub/irs-drop/rp-19-44.pdf
+   *
+   * IRS publication 596 provides a table that can be used
+   * to figure the EITC, and is the basis of online calculators published
+   * by IRS. This table uses the formulas outlined in Rev Proc 2019-44
+   * but applies them to incomes lying in $50 intervals, with the midpoint
+   * of those intervals used to calculate the credit for the entire window.
+   * For example, if the taxpayer has an earned income of $5000, the amount
+   * that is found in the table is calculated based on an income of $5025 and
+   * comes out ahead. Conversely, someone with an earned income of $5049 finds
+   * a credit in the table calculated off the same $5,025 and loses out.
+   *
+   * https://www.irs.gov/pub/irs-pdf/p596.pdf
+   *
+   * @param income The earned income
+   * @returns
+   */
   calculateEICForIncome = (income: number): number => {
     if (this.tp.tp.filingStatus === undefined) {
       return 0
@@ -219,7 +257,10 @@ export default class ScheduleEIC implements Form {
       return 0
     }
 
-    return Math.max(0, evaluatePiecewise(f[this.qualifyingDependents().length], income))
+    return Math.max(
+      0,
+      evaluatePiecewise(f[this.qualifyingDependents().length], this.roundIncome(income))
+    )
   }
 
   // 5.2

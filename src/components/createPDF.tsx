@@ -1,9 +1,9 @@
 import React, { FormEvent, ReactElement, useState } from 'react'
-import { Box } from '@material-ui/core'
 import { createPDFPopup } from '../pdfFiller/fillPdf'
 import { PagerContext } from './pager'
 import Alert from '@material-ui/lab/Alert'
 import { makeStyles } from '@material-ui/core/styles'
+import log from '../log'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -20,25 +20,30 @@ export default function CreatePDF (): ReactElement {
 
   const onSubmit = async (e: FormEvent<any>): Promise<void> => {
     e.preventDefault()
-    return await createPDFPopup().catch((errors: string[]) => updateErrors(errors))
+    return await createPDFPopup()
+      .catch((errors: string[]) => {
+        if (errors.length !== undefined && errors.length > 0) {
+          updateErrors(errors)
+        } else {
+          log.error('unhandled exception')
+          log.error(errors)
+          return Promise.reject(errors)
+        }
+      })
   }
 
   return (
     <PagerContext.Consumer>
       { ({ navButtons }) =>
-        <Box display="flex" justifyContent="center">
-          <form onSubmit={onSubmit}>
-            <div>
-              <Box display="flex" justifyContent="flex-start">
-                <h2>Print Copy to File</h2>
-              </Box>
-              {navButtons}
-            </div>
-            <div className={classes.root}>
-              {errors.map((error, i) => <Alert key={i} severity="warning">{error}</Alert>)}
-            </div>
-          </form>
-        </Box>
+        <form onSubmit={onSubmit}>
+          <div>
+            <h2>Print Copy to File</h2>
+          </div>
+          <div className={classes.root}>
+            {errors.map((error, i) => <Alert key={i} severity="warning">{error}</Alert>)}
+          </div>
+          {navButtons}
+        </form>
       }
     </PagerContext.Consumer>
   )

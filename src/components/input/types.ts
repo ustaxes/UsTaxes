@@ -1,10 +1,11 @@
 import { BaseFormProps } from '../types'
-import { Control, FieldError, Path } from 'react-hook-form'
+import { Control, FieldError, RegisterOptions } from 'react-hook-form'
 import { Pattern } from '../Patterns'
 export * from '../types'
 
 export interface BaseDropdownProps {
   label: string
+  strongLabel?: string
   required?: boolean
   name: string
   error?: FieldError
@@ -15,6 +16,7 @@ export interface BaseDropdownProps {
 export interface CurrencyProps {
   prefix?: string
   value: number
+  plain?: boolean
 }
 
 export interface LabeledDropdownProps<A> extends BaseDropdownProps {
@@ -31,6 +33,7 @@ export interface LabeledInputProps<A> extends BaseFormProps<A> {
   required?: boolean
   name: Path<A>
   defaultValue?: string
+  rules?: Exclude<RegisterOptions, 'valueAsNumber' | 'valueAsDate' | 'setValueAs'>
 }
 
 export interface LabeledFormProps<A> {
