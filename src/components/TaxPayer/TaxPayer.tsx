@@ -77,7 +77,7 @@ export default function PrimaryTaxpayer (): ReactElement {
             isForeignCountry={isForeignCountry}
           ></AddressFields>
           {navButtons}
-          <DevTool control={control} />
+          <DevTool control={control} placement="top-right" />
         </form>
       }
     </PagerContext.Consumer>

@@ -1,5 +1,5 @@
 import { BaseFormProps } from '../types'
-import { Control, FieldError, RegisterOptions } from 'react-hook-form'
+import { Control, FieldError, FieldValues, Path, RegisterOptions } from 'react-hook-form'
 import { Pattern } from '../Patterns'
 export * from '../types'
 
@@ -26,7 +26,7 @@ export interface LabeledDropdownProps<A> extends BaseDropdownProps {
   textMapping: (a: A, n: number) => string
 }
 
-export interface LabeledInputProps<A> extends BaseFormProps<A> {
+export interface LabeledInputProps<A extends FieldValues> extends BaseFormProps<A> {
   strongLabel?: string
   patternConfig?: Pattern<A>
   label: string

@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { PagerContext } from '../pager'
 import { TaxesState, IncomeW2, Person, PersonRole } from '../../redux/data'
 import { Currency, formatSSID, GenericLabeledDropdown, LabeledInput } from '../input'
-import { Patterns } from '../Patterns'
+import Patterns from '../Patterns'
 import { FormListContainer } from '../FormContainer'
 import { Work } from '@material-ui/icons'
 import { addW2, editW2, removeW2 } from '../../redux/actions'
@@ -36,6 +36,8 @@ export default function W2JobInfo (): ReactElement {
       errors
     }
   } = useForm<IncomeW2UserInput>()
+  const patterns = new Patterns(control)
+
   const dispatch = useDispatch()
 
   const [editing, setEditing] = useState<number | undefined>(undefined)
@@ -102,7 +104,7 @@ export default function W2JobInfo (): ReactElement {
         label="Wages, tips, other compensation"
         register={register}
         required={true}
-        patternConfig={Patterns.currency(control)}
+        patternConfig={patterns.currency}
         name="income"
         error={errors.income}
         defaultValue={defaultValues?.income.toString()}
@@ -114,7 +116,7 @@ export default function W2JobInfo (): ReactElement {
         register={register}
         required={true}
         name="fedWithholding"
-        patternConfig={Patterns.currency(control)}
+        patternConfig={patterns.currency}
         error={errors.fedWithholding}
         defaultValue={defaultValues?.fedWithholding.toString()}
       />

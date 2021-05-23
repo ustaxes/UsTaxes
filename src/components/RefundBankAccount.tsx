@@ -2,7 +2,7 @@ import React, { ReactElement } from 'react'
 import { useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { LabeledInput, LabeledRadio } from './input'
-import { Patterns } from './Patterns'
+import Patterns from './Patterns'
 import { saveRefundInfo } from '../redux/actions'
 
 import { AccountType, Refund, TaxesState } from '../redux/data'
@@ -26,6 +26,7 @@ export default function RefundBankAccount (): ReactElement {
       errors
     }
   } = useForm<UserRefundForm>()
+  const patterns = new Patterns(control)
   // const variable dispatch to allow use inside function
   const dispatch = useDispatch()
 
@@ -50,7 +51,7 @@ export default function RefundBankAccount (): ReactElement {
               label="Bank Routing number"
               register={register}
               required={true}
-              patternConfig={Patterns.bankRouting(control)}
+              patternConfig={patterns.bankRouting}
               name="routingNumber"
               defaultValue={prevFormData?.routingNumber}
               error={errors.routingNumber}
@@ -60,7 +61,7 @@ export default function RefundBankAccount (): ReactElement {
               label="Bank Account number"
               register={register}
               required={true}
-              patternConfig={Patterns.bankAccount(control)}
+              patternConfig={patterns.bankAccount}
               name="accountNumber"
               defaultValue={prevFormData?.accountNumber}
               error={errors.accountNumber}
@@ -74,9 +75,9 @@ export default function RefundBankAccount (): ReactElement {
             />
             {navButtons}
           </div>
+          <DevTool control={control} placement="top-right"/>
         </form>
       }
-      <DevTool control={control}/>
     </PagerContext.Consumer>
   )
 }

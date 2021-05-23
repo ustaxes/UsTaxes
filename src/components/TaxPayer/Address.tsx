@@ -1,21 +1,21 @@
 import React, { Fragment, ReactElement } from 'react'
-import { Control } from 'react-hook-form'
+import { Control, Path, UseFormRegister } from 'react-hook-form'
 import { Address } from '../../redux/data'
 import { LabeledCheckbox, LabeledInput, USStateDropDown } from '../input'
-import { Patterns } from '../Patterns'
-import { Register, Errors } from '../types'
+import Patterns from '../Patterns'
+import { Errors } from '../types'
 
-interface AddressProps {
-  register: Register
+interface AddressProps<A extends {address?: Address, isForeignCountry: boolean}> {
+  register: UseFormRegister<A>
   checkboxText: string
-  control: Control
+  control: Control<A>
   address?: Address
   errors?: Errors<Address>
   isForeignCountry?: boolean
   allowForeignCountry?: boolean
 }
 
-export default function AddressFields (props: AddressProps): ReactElement {
+export default function AddressFields<A extends {address?: Address, isForeignCountry: boolean}> (props: AddressProps<A>): ReactElement {
   const {
     register,
     isForeignCountry = false,
@@ -25,6 +25,10 @@ export default function AddressFields (props: AddressProps): ReactElement {
     checkboxText = 'Check if you have a foreign address',
     allowForeignCountry = true
   } = props
+  const patterns = new Patterns(control)
+
+  type AddressKey = keyof Address
+  const path = (name: AddressKey): Path<A> => `address.${name}` as Path<A>
 
   const csz: ReactElement = (() => {
     if (!allowForeignCountry || !isForeignCountry) {
@@ -42,8 +46,8 @@ export default function AddressFields (props: AddressProps): ReactElement {
             label="Zip"
             register={register}
             error={errors?.zip}
-            name="address.zip"
-            patternConfig={Patterns.zip(control)}
+            name={path('zip')}
+            patternConfig={patterns.zip}
             required={!isForeignCountry}
             defaultValue={address?.zip}
           />
@@ -54,14 +58,14 @@ export default function AddressFields (props: AddressProps): ReactElement {
       <div>
         <LabeledInput
           label="Province"
-          name="address.province"
+          name={path('province')}
           register={register}
           error={errors?.province}
           required={isForeignCountry}
           defaultValue={address?.province}
         />
         <LabeledInput
-          name="address.postalCode"
+          name={path('postalCode')}
           label="Postal Code"
           register={register}
           error={errors?.postalCode}
@@ -69,7 +73,7 @@ export default function AddressFields (props: AddressProps): ReactElement {
           defaultValue={address?.postalCode}
         />
         <LabeledInput
-          name="address.foreignCountry"
+          name={path('foreignCountry')}
           label="Country"
           register={register}
           error={errors?.foreignCountry}
@@ -84,7 +88,7 @@ export default function AddressFields (props: AddressProps): ReactElement {
     <Fragment>
       <LabeledInput
         label="Address"
-        name="address.address"
+        name={path('address')}
         register={register}
         required={true}
         error={errors?.address}
@@ -93,7 +97,7 @@ export default function AddressFields (props: AddressProps): ReactElement {
       <LabeledInput
         label="Unit No"
         register={register}
-        name="address.aptNo"
+        name={path('aptNo')}
         required={false}
         error={errors?.aptNo}
         defaultValue={address?.aptNo}
@@ -101,8 +105,8 @@ export default function AddressFields (props: AddressProps): ReactElement {
       <LabeledInput
         label="City"
         register={register}
-        name="address.city"
-        patternConfig={Patterns.name}
+        name={path('city')}
+        patternConfig={patterns.name}
         required={true}
         error={errors?.city}
         defaultValue={address?.city}

@@ -6,7 +6,7 @@ import { PagerContext } from '../pager'
 import { Property, Address, PropertyExpenseType, PropertyExpenseTypeName, TaxesState, PropertyType, PropertyTypeName } from '../../redux/data'
 import AddressFields from '../TaxPayer/Address'
 import { Currency, GenericLabeledDropdown, LabeledCheckbox, LabeledInput } from '../input'
-import { Patterns } from '../Patterns'
+import Patterns from '../Patterns'
 import { daysInYear, enumKeys, segments } from '../../util'
 import { HouseOutlined } from '@material-ui/icons'
 import { FormListContainer } from '../FormContainer'
@@ -15,6 +15,7 @@ import { CURRENT_YEAR } from '../../data/federal'
 
 interface PropertyAddForm {
   address?: Address
+  isForeignCountry: boolean
   rentReceived?: number
   rentalDays?: number
   personalUseDays?: number
@@ -27,6 +28,7 @@ interface PropertyAddForm {
 
 const blankAddForm: PropertyAddForm = {
   qualifiedJointVenture: false,
+  isForeignCountry: false,
   expenses: {}
 }
 
@@ -118,7 +120,9 @@ const toUserInput = (property: Property): PropertyAddForm => {
 }
 
 export default function RealEstate (): ReactElement {
-  const { register, control, errors, getValues, handleSubmit, reset } = useForm<PropertyAddForm>()
+  const { register, control, formState: { errors }, getValues, handleSubmit, reset } = useForm<PropertyAddForm>()
+  const patterns = new Patterns(control)
+
   const dispatch = useDispatch()
 
   const properties: Property[] = useSelector((state: TaxesState) => state.information.realEstate)
@@ -139,7 +143,7 @@ export default function RealEstate (): ReactElement {
   const otherExpensesEntered = useWatch({
     control,
     name: 'expenses.other',
-    defaultValue: defaultValues?.expenses.other ?? ''
+    defaultValue: defaultValues?.expenses.other
   })
 
   const validateDays = (n: number, other: number): Message | true => {
@@ -180,9 +184,9 @@ export default function RealEstate (): ReactElement {
       <LabeledInput
         key={i}
         label={displayExpense(PropertyExpenseType[k])}
-        name={`expenses.${k.toString()}`}
+        name={`expenses.${k.toString()}` as 'expenses'}
         register={register}
-        patternConfig={Patterns.currency(control)}
+        patternConfig={patterns.currency}
         defaultValue={defaultValues?.expenses[k]?.toString() ?? ''}
       />
     )
@@ -190,7 +194,7 @@ export default function RealEstate (): ReactElement {
 
   const otherExpenseDescription = (() => {
     if (defaultValues?.expenses.other !== undefined ||
-      (otherExpensesEntered !== '' && Number(otherExpensesEntered) !== 0)
+      (otherExpensesEntered !== undefined && Number(otherExpensesEntered) !== 0)
     ) {
       return (
         <LabeledInput
@@ -258,7 +262,7 @@ export default function RealEstate (): ReactElement {
         required={true}
         rules={{ validate: (n: String) => validateRental(Number(n)) }}
         label="Number of days in the year used for rental"
-        patternConfig={Patterns.numDays(control)}
+        patternConfig={patterns.numDays}
         error={errors.rentalDays}
         defaultValue={defaultValues?.rentalDays?.toString()}
       />
@@ -267,7 +271,7 @@ export default function RealEstate (): ReactElement {
         register={register}
         rules={{ validate: (n: String) => validatePersonal(Number(n)) }}
         label="Number of days in the year for personal use"
-        patternConfig={Patterns.numDays(control)}
+        patternConfig={patterns.numDays}
         error={errors.personalUseDays}
         defaultValue={defaultValues?.personalUseDays?.toString()}
       />
@@ -283,7 +287,7 @@ export default function RealEstate (): ReactElement {
         name="rentReceived"
         label="Rent received"
         register={register}
-        patternConfig={Patterns.currency(control)}
+        patternConfig={patterns.currency}
         error={errors.rentReceived}
         defaultValue={defaultValues?.rentReceived?.toString()}
       />

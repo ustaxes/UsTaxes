@@ -2,20 +2,12 @@ import React, { ReactElement, useState } from 'react'
 
 import { useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
-import { Patterns } from '../Patterns'
-<<<<<<< HEAD
-import { LabeledInput, LabeledCheckbox } from '../input'
-import { TaxesState, Dependent, Spouse, PersonRole } from '../../redux/data'
-import { addDependent, addSpouse, editDependent, removeSpouse } from '../../redux/actions'
-import { ListDependents, PersonFields, PersonListItem, UserPersonForm } from './PersonFields'
-import FormContainer from './FormContainer'
-=======
+import Patterns from '../Patterns'
 import { LabeledInput, LabeledCheckbox, formatSSID, GenericLabeledDropdown } from '../input'
 import { TaxesState, TaxPayer, Dependent, Spouse, PersonRole, FilingStatus, FilingStatusTexts, filingStatuses } from '../../redux/data'
 import { addDependent, addSpouse, editDependent, removeDependent, removeSpouse, saveFilingStatusInfo } from '../../redux/actions'
-import { PersonFields } from './PersonFields'
+import { PersonFields, UserPersonForm } from './PersonFields'
 import { FormListContainer } from '../FormContainer'
->>>>>>> master
 import { PagerContext } from '../pager'
 import { Person } from '@material-ui/icons'
 
@@ -61,7 +53,9 @@ const toSpouse = (formData: UserSpouseForm): Spouse => ({
 })
 
 export const AddDependentForm = (): ReactElement => {
-  const { register, errors, handleSubmit, control, reset } = useForm<UserDependentForm>()
+  const { register, formState: { errors }, handleSubmit, control, reset } = useForm<UserDependentForm>()
+
+  const patterns = new Patterns(control)
 
   const dependents = useSelector((state: TaxesState) =>
     state.information.taxPayer?.dependents ?? []
@@ -114,14 +108,14 @@ export const AddDependentForm = (): ReactElement => {
         register={register}
         name="relationship"
         required={true}
-        patternConfig={Patterns.name}
+        patternConfig={patterns.name}
         error={errors.relationship}
         defaultValue={defaultValues?.relationship}
       />
       <LabeledInput
         register={register}
         label="Birth Year"
-        patternConfig={Patterns.year(control)}
+        patternConfig={patterns.year}
         name="birthYear"
         required={true}
         error={errors.birthYear}
@@ -130,7 +124,7 @@ export const AddDependentForm = (): ReactElement => {
       <LabeledInput
         register={register}
         label="How many months did you live together this year?"
-        patternConfig={Patterns.numMonths(control)}
+        patternConfig={patterns.numMonths}
         name="numberOfMonths"
         required={true}
         error={errors.numberOfMonths}
@@ -205,7 +199,7 @@ export const SpouseInfo = (): ReactElement => {
 }
 
 const SpouseAndDependent = (): ReactElement => {
-  const { handleSubmit, errors, control } = useForm<{filingStatus: FilingStatus}>()
+  const { handleSubmit, formState: { errors }, control } = useForm<{filingStatus: FilingStatus}>()
   // const variable dispatch to allow use inside function
   const dispatch = useDispatch()
 

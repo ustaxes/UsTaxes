@@ -6,12 +6,8 @@ import { add1099, edit1099, remove1099 } from '../../redux/actions'
 import { PagerContext } from '../pager'
 import { TaxesState, Person, PersonRole, Supported1099, Income1099Type } from '../../redux/data'
 import { Currency, formatSSID, GenericLabeledDropdown, LabeledInput } from '../input'
-import { Patterns } from '../Patterns'
-<<<<<<< HEAD
-import { DevTool } from '@hookform/devtools'
-=======
+import Patterns from '../Patterns'
 import { FormListContainer } from '../FormContainer'
->>>>>>> master
 
 const showIncome = (a: Supported1099): ReactElement => {
   switch (a.type) {
@@ -35,11 +31,7 @@ const showIncome = (a: Supported1099): ReactElement => {
 }
 
 interface F1099UserInput {
-<<<<<<< HEAD
-  formType?: Income1099Type
-=======
   formType: Income1099Type | undefined
->>>>>>> master
   payer: string
   // Int fields
   interest: string | number
@@ -147,8 +139,10 @@ export default function F1099Info (): ReactElement {
     return blankUserInput
   })()
 
-  const { register, errors, handleSubmit, control, reset, watch, setValue } = useForm<F1099UserInput>()
+  const { register, formState: { errors }, handleSubmit, control, reset, watch, setValue } = useForm<F1099UserInput>()
   const selectedType: Income1099Type | undefined = watch('formType')
+
+  const patterns = new Patterns<F1099UserInput>(control)
 
   const dispatch = useDispatch()
 
@@ -185,7 +179,7 @@ export default function F1099Info (): ReactElement {
       label="Box 1 - Interest Income"
       register={register}
       required={true}
-      patternConfig={Patterns.currency(control)}
+      patternConfig={patterns.currency}
       name="interest"
       error={errors.interest}
       defaultValue={defaultValues?.interest.toString()}
@@ -199,7 +193,7 @@ export default function F1099Info (): ReactElement {
         label="Proceeds"
         register={register}
         required={true}
-        patternConfig={Patterns.currency(control)}
+        patternConfig={patterns.currency}
         name="longTermProceeds"
         error={errors.longTermProceeds}
         defaultValue={defaultValues?.longTermProceeds.toString()}
@@ -208,7 +202,7 @@ export default function F1099Info (): ReactElement {
         label="Cost basis"
         register={register}
         required={true}
-        patternConfig={Patterns.currency(control)}
+        patternConfig={patterns.currency}
         name="longTermCostBasis"
         error={errors.longTermCostBasis}
         defaultValue={defaultValues?.longTermCostBasis.toString()}
@@ -218,7 +212,7 @@ export default function F1099Info (): ReactElement {
         label="Proceeds"
         register={register}
         required={true}
-        patternConfig={Patterns.currency(control)}
+        patternConfig={patterns.currency}
         name="shortTermProceeds"
         error={errors.shortTermProceeds}
         defaultValue={defaultValues?.shortTermProceeds.toString()}
@@ -227,7 +221,7 @@ export default function F1099Info (): ReactElement {
         label="Cost basis"
         register={register}
         required={true}
-        patternConfig={Patterns.currency(control)}
+        patternConfig={patterns.currency}
         name="shortTermCostBasis"
         error={errors.shortTermCostBasis}
         defaultValue={defaultValues?.shortTermCostBasis.toString()}
@@ -241,7 +235,7 @@ export default function F1099Info (): ReactElement {
         label="Total Dividends"
         register={register}
         required={true}
-        patternConfig={Patterns.currency(control)}
+        patternConfig={patterns.currency}
         name="dividends"
         error={errors.dividends}
         defaultValue={defaultValues?.dividends.toString()}
@@ -250,7 +244,7 @@ export default function F1099Info (): ReactElement {
         label="Qualified Dividends"
         register={register}
         required={true}
-        patternConfig={Patterns.currency(control)}
+        patternConfig={patterns.currency}
         name="qualifiedDividends"
         error={errors.qualifiedDividends}
         defaultValue={defaultValues?.qualifiedDividends.toString()}
@@ -301,7 +295,7 @@ export default function F1099Info (): ReactElement {
         label="Enter name of bank, broker firm, or other payer"
         register={register}
         required={true}
-        patternConfig={Patterns.name}
+        patternConfig={patterns.name}
         name="payer"
         error={errors.payer}
         defaultValue={defaultValues?.payer}

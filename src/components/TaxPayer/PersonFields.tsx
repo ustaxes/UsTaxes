@@ -2,7 +2,7 @@ import React, { ReactElement, ReactNode } from 'react'
 import { IconButton, List, ListItem, ListItemIcon, ListItemSecondaryAction } from '@material-ui/core'
 import { useDispatch, useSelector } from 'react-redux'
 import { formatSSID, LabeledInput } from '../input'
-import { Patterns } from '../Patterns'
+import Patterns from '../Patterns'
 import { Actions, removeDependent } from '../../redux/actions'
 import { TaxesState, Person } from '../../redux/data'
 import { BaseFormProps } from '../types'
@@ -26,38 +26,41 @@ interface PersonFieldsProps<T extends UserPersonForm> extends BaseFormProps<T> {
   control: Control<T>
 }
 
-export const PersonFields = <T extends UserPersonForm>({ register, person, control, errors, defaults, children }: PersonFieldsProps<T>): ReactElement => (
-  <div>
-    <LabeledInput
-      label="First Name and Initial"
-      register={register}
-      name={'firstName' as Path<T>}
-      patternConfig={Patterns.name}
-      required={true}
-      error={errors.firstName}
-      defaultValue={person?.firstName ?? defaults?.firstName}
-    />
-    <LabeledInput<T>
-      label="Last Name"
-      register={register}
-      name={'lastName' as Path<T>}
-      patternConfig={Patterns.name}
-      required={true}
-      error={errors.lastName}
-      defaultValue={person?.lastName ?? defaults?.lastName}
-    />
-    <LabeledInput<T>
-      label="SSN / TIN"
-      register={register}
-      name={'ssid' as Path<T>}
-      patternConfig={Patterns.ssn(control)}
-      required={true}
-      error={errors.ssid}
-      defaultValue={person?.ssid ?? defaults?.ssid}
-    />
-    {children}
-  </div>
-)
+export const PersonFields = <T extends UserPersonForm>({ register, person, control, errors, defaults, children }: PersonFieldsProps<T>): ReactElement => {
+  const patterns = new Patterns(control)
+  return (
+    <div>
+      <LabeledInput
+        label="First Name and Initial"
+        register={register}
+        name={'firstName' as Path<T>}
+        patternConfig={patterns.name}
+        required={true}
+        error={errors.firstName}
+        defaultValue={person?.firstName ?? defaults?.firstName}
+      />
+      <LabeledInput
+        label="Last Name"
+        register={register}
+        name={'lastName' as Path<T>}
+        patternConfig={patterns.name}
+        required={true}
+        error={errors.lastName}
+        defaultValue={person?.lastName ?? defaults?.lastName}
+      />
+      <LabeledInput<T>
+        label="SSN / TIN"
+        register={register}
+        name={'ssid' as Path<T>}
+        patternConfig={patterns.ssn}
+        required={true}
+        error={errors.ssid}
+        defaultValue={person?.ssid ?? defaults?.ssid}
+      />
+      {children}
+    </div>
+  )
+}
 
 interface PersonListItemProps {
   person: Person

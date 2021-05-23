@@ -2,29 +2,31 @@ import React, { ReactElement } from 'react'
 import { TextField } from '@material-ui/core'
 import { LabeledInputProps } from './types'
 import NumberFormat from 'react-number-format'
-import { InputType } from '../Patterns'
 import { Controller } from 'react-hook-form'
+import { isNumeric } from '../Patterns'
 
-export function LabeledInput (props: LabeledInputProps): ReactElement {
+export function LabeledInput <A> (props: LabeledInputProps<A>): ReactElement {
   const { strongLabel, label, register, error, required = false, patternConfig, name, rules = {}, defaultValue = '' } = props
 
   const errorMessage: string | undefined = (() => {
     if (error?.message !== undefined && error?.message !== '') {
       return error?.message
     }
-    if (error?.type === 'max' && patternConfig?.inputType === InputType.numeric && patternConfig.max !== undefined) {
-      return `Input must be less than or equal to ${patternConfig.max}`
-    }
-    if (error?.type === 'min' && patternConfig?.inputType === InputType.numeric && patternConfig.min !== undefined) {
-      return `Input must be greater than or equal to ${patternConfig.min}`
+    if (patternConfig !== undefined && isNumeric(patternConfig)) {
+      if (error?.type === 'max' && patternConfig.max !== undefined) {
+        return `Input must be less than or equal to ${patternConfig.max}`
+      }
+      if (error?.type === 'min' && patternConfig.min !== undefined) {
+        return `Input must be greater than or equal to ${patternConfig.min}`
+      }
     }
   })()
 
   const requiredRegex: RegExp = patternConfig?.regexp ?? (required ? /.+/ : /.*/)
   const requiredMessage: string = patternConfig?.description ?? (required ? 'Input is required' : '')
 
-  const input: ReactElement = (() => {
-    if (patternConfig?.inputType === InputType.numeric) {
+  const input: ReactElement = ((): ReactElement => {
+    if (patternConfig !== undefined && isNumeric(patternConfig)) {
       return (
         <Controller<A>
           render={({ field: { onChange, value } }) =>
@@ -66,7 +68,7 @@ export function LabeledInput (props: LabeledInputProps): ReactElement {
     return (
       <TextField
         defaultValue={defaultValue}
-        inputRef={register({
+        {...register(name, {
           ...rules,
           required: required ? 'Input is required' : undefined,
           pattern: {

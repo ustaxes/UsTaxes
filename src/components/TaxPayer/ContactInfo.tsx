@@ -2,7 +2,7 @@ import React, { ReactElement } from 'react'
 import { useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { LabeledInput } from '../input'
-import { Patterns } from '../Patterns'
+import Patterns from '../Patterns'
 import { saveContactInfo } from '../../redux/actions'
 import { ContactInfo as Contact, TaxesState, TaxPayer } from '../../redux/data'
 import { PagerContext } from '../pager'
@@ -17,6 +17,8 @@ export default function ContactInfo (): ReactElement {
       errors
     }
   } = useForm<Contact>()
+  const patterns = new Patterns(control)
+
   // const variable dispatch to allow use inside function
   const dispatch = useDispatch()
 
@@ -38,7 +40,7 @@ export default function ContactInfo (): ReactElement {
             label="Contact phone number"
             register={register}
             required={true}
-            patternConfig={Patterns.usPhoneNumber(control)}
+            patternConfig={patterns.usPhoneNumber}
             name="contactPhoneNumber"
             defaultValue={taxPayer?.contactPhoneNumber}
             error={errors.contactPhoneNumber}
