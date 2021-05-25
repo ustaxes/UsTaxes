@@ -4,6 +4,8 @@ import { PagerContext } from './pager'
 import Alert from '@material-ui/lab/Alert'
 import { makeStyles } from '@material-ui/core/styles'
 import log from '../log'
+import { useSelector } from 'react-redux'
+import { TaxesState } from '../redux/data'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -18,9 +20,11 @@ export default function CreatePDF (): ReactElement {
   const [errors, updateErrors] = useState<string[]>([])
   const classes = useStyles()
 
+  const lastName = useSelector((state: TaxesState) => state.information.taxPayer.primaryPerson?.lastName ?? '')
+
   const onSubmit = async (e: FormEvent<any>): Promise<void> => {
     e.preventDefault()
-    return await createPDFPopup()
+    return await createPDFPopup(`${lastName}-1040.pdf`)
       .catch((errors: string[]) => {
         if (errors.length !== undefined && errors.length > 0) {
           updateErrors(errors)
