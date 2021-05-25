@@ -1,5 +1,5 @@
 import React, { ReactElement, useState } from 'react'
-import { useForm } from 'react-hook-form'
+import useForm from '../useForm'
 import { useDispatch, useSelector } from 'react-redux'
 import { PagerContext } from '../pager'
 import { TaxesState, IncomeW2, Person, PersonRole } from '../../redux/data'

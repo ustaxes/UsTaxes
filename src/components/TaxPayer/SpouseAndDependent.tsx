@@ -1,8 +1,6 @@
 import React, { ReactElement, useState } from 'react'
-
-import { useForm } from 'react-hook-form'
+import useForm from '../useForm'
 import { useDispatch, useSelector } from 'react-redux'
-import Patterns from '../Patterns'
 import { LabeledInput, LabeledCheckbox, formatSSID, GenericLabeledDropdown } from '../input'
 import { TaxesState, TaxPayer, Dependent, Spouse, PersonRole, FilingStatus, FilingStatusTexts, filingStatuses } from '../../redux/data'
 import { addDependent, addSpouse, editDependent, removeDependent, removeSpouse, saveFilingStatusInfo } from '../../redux/actions'
@@ -53,9 +51,7 @@ const toSpouse = (formData: UserSpouseForm): Spouse => ({
 })
 
 export const AddDependentForm = (): ReactElement => {
-  const { register, formState: { errors }, handleSubmit, control, reset } = useForm<UserDependentForm>()
-
-  const patterns = new Patterns(control)
+  const { register, formState: { errors }, handleSubmit, control, reset, patterns } = useForm<UserDependentForm>()
 
   const dependents = useSelector((state: TaxesState) =>
     state.information.taxPayer?.dependents ?? []

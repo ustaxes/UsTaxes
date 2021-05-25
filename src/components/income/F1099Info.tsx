@@ -1,12 +1,11 @@
 import React, { ReactElement, useState } from 'react'
-import { useForm } from 'react-hook-form'
+import useForm from '../useForm'
 import { Icon } from '@material-ui/core'
 import { useDispatch, useSelector } from 'react-redux'
 import { add1099, edit1099, remove1099 } from '../../redux/actions'
 import { PagerContext } from '../pager'
 import { TaxesState, Person, PersonRole, Supported1099, Income1099Type } from '../../redux/data'
 import { Currency, formatSSID, GenericLabeledDropdown, LabeledInput } from '../input'
-import Patterns from '../Patterns'
 import { FormListContainer } from '../FormContainer'
 
 const showIncome = (a: Supported1099): ReactElement => {
@@ -139,10 +138,8 @@ export default function F1099Info (): ReactElement {
     return blankUserInput
   })()
 
-  const { register, formState: { errors }, handleSubmit, control, reset, watch, setValue } = useForm<F1099UserInput>()
+  const { register, formState: { errors }, handleSubmit, patterns, control, reset, watch, setValue } = useForm<F1099UserInput>()
   const selectedType: Income1099Type | undefined = watch('formType')
-
-  const patterns = new Patterns<F1099UserInput>(control)
 
   const dispatch = useDispatch()
 

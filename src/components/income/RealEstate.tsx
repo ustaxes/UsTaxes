@@ -1,12 +1,12 @@
 import React, { Fragment, ReactElement, useState } from 'react'
-import { Message, useForm, useWatch } from 'react-hook-form'
+import useForm from '../useForm'
+import { Message, useWatch } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { addProperty, editProperty, removeProperty } from '../../redux/actions'
 import { PagerContext } from '../pager'
 import { Property, Address, PropertyExpenseType, PropertyExpenseTypeName, TaxesState, PropertyType, PropertyTypeName } from '../../redux/data'
 import AddressFields from '../TaxPayer/Address'
 import { Currency, GenericLabeledDropdown, LabeledCheckbox, LabeledInput } from '../input'
-import Patterns from '../Patterns'
 import { daysInYear, enumKeys, segments } from '../../util'
 import { HouseOutlined } from '@material-ui/icons'
 import { FormListContainer } from '../FormContainer'
@@ -120,8 +120,7 @@ const toUserInput = (property: Property): PropertyAddForm => {
 }
 
 export default function RealEstate (): ReactElement {
-  const { register, control, formState: { errors }, getValues, handleSubmit, reset } = useForm<PropertyAddForm>()
-  const patterns = new Patterns(control)
+  const { register, control, patterns, formState: { errors }, getValues, handleSubmit, reset } = useForm<PropertyAddForm>()
 
   const dispatch = useDispatch()
 

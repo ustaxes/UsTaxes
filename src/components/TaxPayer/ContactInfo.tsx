@@ -1,8 +1,7 @@
 import React, { ReactElement } from 'react'
-import { useForm } from 'react-hook-form'
+import useForm from '../useForm'
 import { useDispatch, useSelector } from 'react-redux'
 import { LabeledInput } from '../input'
-import Patterns from '../Patterns'
 import { saveContactInfo } from '../../redux/actions'
 import { ContactInfo as Contact, TaxesState, TaxPayer } from '../../redux/data'
 import { PagerContext } from '../pager'
@@ -11,13 +10,11 @@ export default function ContactInfo (): ReactElement {
   const {
     register,
     handleSubmit,
-    control,
-
     formState: {
       errors
-    }
+    },
+    patterns
   } = useForm<Contact>()
-  const patterns = new Patterns(control)
 
   // const variable dispatch to allow use inside function
   const dispatch = useDispatch()

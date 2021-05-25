@@ -1,5 +1,6 @@
 import React, { ReactElement } from 'react'
-import { useForm, useWatch } from 'react-hook-form'
+import useForm from '../useForm'
+import { useWatch } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { savePrimaryPersonInfo } from '../../redux/actions'
 import { Address, PersonRole, PrimaryPerson, TaxesState, TaxPayer } from '../../redux/data'
