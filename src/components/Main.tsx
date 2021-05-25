@@ -13,7 +13,8 @@ import {
 import {
   Switch,
   Route,
-  Redirect
+  Redirect,
+  useLocation
 } from 'react-router-dom'
 import MenuIcon from '@material-ui/icons/Menu'
 import W2JobInfo from './income/W2JobInfo'
@@ -27,6 +28,7 @@ import ContactInfo from './TaxPayer/ContactInfo'
 import F1099Info from './income/F1099Info'
 import Summary from './Summary'
 import RealEstate from './income/RealEstate'
+import NoMatchPage from './NoMatchPage'
 
 const theme = createMuiTheme({
   palette: {
@@ -126,12 +128,20 @@ const drawerSections: Section[] = [
   }
 ]
 
+const flattenUrlsElements = (arg: string | object): string[] => {
+  if (typeof arg === 'object') {
+    return Object.values(arg)
+  } else {
+    return [arg]
+  }
+}
+
+const urlList: string[] = Object.values(Object.values(Urls)).map(flattenUrlsElements).flat()
+
 export default function Main (): ReactElement {
   const allItems: SectionItem[] = drawerSections.flatMap((section: Section) => section.items)
-
   const [prev, onAdvance] = usePager(allItems, (item) => item.url)
   const [mobileOpen, setMobileOpen] = useState(false)
-
   const classes = useStyles()
 
   const navButtons: ReactElement = (
@@ -156,6 +166,10 @@ export default function Main (): ReactElement {
       </Toolbar>
     </AppBar>
   )
+
+  if (!urlList.includes(useLocation().pathname)) {
+    allItems.push(item('404', useLocation().pathname, <NoMatchPage/>))
+  }
 
   return (
     <ThemeProvider theme={theme}>
