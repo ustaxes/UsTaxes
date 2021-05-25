@@ -9,6 +9,7 @@ import { savePdf } from './pdfHandler'
 import Form from '../irsForms/Form'
 import { create1040 } from '../irsForms/Main'
 import { isLeft, zip } from '../util'
+import log from '../log'
 
 /**
   * Attempt to fill fields in a PDF from a Form,
@@ -80,7 +81,7 @@ export async function create1040PDF (): Promise<Uint8Array> {
     return await res.save()
   }
 
-  console.error('Attempt to create pdf with no data, will be empty')
+  log.error('Attempt to create pdf with no data, will be empty')
   return new Uint8Array()
 }
 

@@ -19,6 +19,7 @@ import { displayNumber, computeField, sumFields } from './util'
 import ScheduleB from './ScheduleB'
 import { computeOrdinaryTax } from './TaxTable'
 import SDQualifiedAndCapGains from './worksheets/SDQualifiedAndCapGains'
+import F4797 from './F4797'
 
 export enum F1040Error {
   filingStatusUndefined = 'Select a filing status'
@@ -63,6 +64,7 @@ export default class F1040 implements Form {
   scheduleEIC?: ScheduleEIC
   schedule8812?: Schedule8812
   schedule8863?: Schedule8863
+  f4797?: F4797
   f4972?: F4972
   f8814?: F8814
   f8888?: F8888
@@ -135,6 +137,10 @@ export default class F1040 implements Form {
 
   add8814 (s: F8814): void {
     this.f8814 = s
+  }
+
+  add4797 (s: F4797): void {
+    this.f4797 = s
   }
 
   add4972 (s: F4972): void {

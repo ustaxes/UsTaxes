@@ -9,11 +9,12 @@ import F8814 from './F8814'
 import Pub596Worksheet1 from './worksheets/Pub596Worksheet1'
 import Form, { FormTag } from './Form'
 import { anArrayOf, evaluatePiecewise, Piecewise } from '../util'
+import log from '../log'
 
 type PrecludesEIC<F> = (f: F) => boolean
 
 const unimplemented = (message: string): void =>
-  console.warn(`[Schedule EIC] unimplemented ${message}`)
+  log.warn(`[Schedule EIC] unimplemented ${message}`)
 
 const checks2555: PrecludesEIC<F2555> = (f): boolean => {
   unimplemented('check F2555')
@@ -30,12 +31,9 @@ const checks8814: PrecludesEIC<F8814> = (f): boolean => {
   return false
 }
 
-const checksPub596: PrecludesEIC<Pub596Worksheet1> = (f): boolean => {
-  unimplemented('check Pub596 worksheet 1')
-  return false
-}
+const checksPub596: PrecludesEIC<Pub596Worksheet1> = (f): boolean => f.precludesEIC()
 
-const precludesEIC = <F>(p: PrecludesEIC<F>) => (f: F | undefined) => {
+const precludesEIC = <F>(p: PrecludesEIC<F>) => (f: F | undefined): boolean => {
   if (f === undefined) {
     return false
   }
@@ -52,13 +50,15 @@ export default class ScheduleEIC implements Form {
   qualifyingStudentCutoffYear: number = 1996
   qualifyingCutoffYear: number = 2001
   investmentIncomeLimit: number = 3650
+  f1040: F1040
 
-  constructor (tp: TP) {
+  constructor (tp: TP, f1040: F1040) {
     this.tp = new TaxPayer(tp)
     this.f2555 = new F2555(tp)
     this.f4797 = new F4797(tp)
     this.f8814 = new F8814(tp)
-    this.pub596Worksheet1 = new Pub596Worksheet1(tp)
+    this.f1040 = f1040
+    this.pub596Worksheet1 = new Pub596Worksheet1(tp, f1040)
   }
 
   // instructions step 1.1
@@ -73,7 +73,7 @@ export default class ScheduleEIC implements Form {
     return false
   }
 
-  // Step 1.2, todo, boths spouses must have a SSN issued before 2020 due date
+  // Step 1.2, todo, both spouses must have a SSN issued before 2020 due date
   // and without work restriction and valid for eic purposes
   validSSNs = (): boolean => {
     unimplemented('Step 1.2 (valid SSNs) unchecked')
@@ -107,10 +107,7 @@ export default class ScheduleEIC implements Form {
   f4797AllowsEIC = (): boolean => !precludesEIC(checks4797)(this.f4797)
 
   // Todo, instruction 2.4.1
-  filingScheduleE = (): boolean => {
-    unimplemented('Not checking Schedule E')
-    return false
-  }
+  filingScheduleE = (): boolean => this.f1040.scheduleE !== undefined
 
   // 2.4.2
   passIncomeFromPersonalProperty = (): boolean => {
@@ -128,7 +125,7 @@ export default class ScheduleEIC implements Form {
   }
 
   // 2.4.5
-  passPub596 = (): boolean => precludesEIC(checksPub596)(this.pub596Worksheet1)
+  passPub596 = (): boolean => !precludesEIC(checksPub596)(this.pub596Worksheet1)
 
   // 3.1
   atLeastOneChild = (): boolean => this.qualifyingDependents().length > 0

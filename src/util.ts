@@ -72,6 +72,12 @@ export const isLeapYear = (year: number): boolean => {
 export const daysInYear = (year: number): number =>
   isLeapYear(year) ? 366 : 365
 
+export const ifNegative = <A = number>(n: number, orElse: A | number = 0): A | number =>
+  n < 0 ? n : orElse
+
+export const ifPositive = <A = number>(n: number, orElse: A | number = 0): A | number =>
+  n > 0 ? n : orElse
+
 // idea from https://github.com/gcanti/fp-ts/blob/3e2af038982cb4090ccc8c2912e4b22f907bdaea/src/Either.ts
 export interface Left<E> {
   readonly _tag: 'left'
