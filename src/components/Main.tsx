@@ -27,6 +27,8 @@ import ContactInfo from './TaxPayer/ContactInfo'
 import F1099Info from './income/F1099Info'
 import Summary from './Summary'
 import RealEstate from './income/RealEstate'
+import GettingStarted from './GettingStarted'
+import AboutThisProject from './AboutThisProject'
 
 const theme = createMuiTheme({
   palette: {
@@ -77,6 +79,10 @@ const useStyles = makeStyles((theme: Theme) =>
 )
 
 const Urls = {
+  usTaxes: {
+    start: '/start',
+    about: '/about'
+  },
   taxPayer: {
     root: '/taxpayer',
     info: '/info',
@@ -100,6 +106,13 @@ const Urls = {
 Urls.default = Urls.taxPayer.info
 
 const drawerSections: Section[] = [
+  {
+    title: 'USTaxes.org',
+    items: [
+      item('Getting Started', Urls.usTaxes.start, <GettingStarted/>),
+      item('About this probject', Urls.usTaxes.about, <AboutThisProject/>)
+    ]
+  },
   {
     title: 'Personal',
     items: [
