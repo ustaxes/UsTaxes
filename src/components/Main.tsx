@@ -28,6 +28,7 @@ import F1099Info from './income/F1099Info'
 import Summary from './Summary'
 import RealEstate from './income/RealEstate'
 import { StateLoader } from './debug'
+import NoMatchPage from './NoMatchPage'
 
 const theme = createMuiTheme({
   palette: {
@@ -129,10 +130,8 @@ const drawerSections: Section[] = [
 
 export default function Main (): ReactElement {
   const allItems: SectionItem[] = drawerSections.flatMap((section: Section) => section.items)
-
   const [prev, onAdvance] = usePager(allItems, (item) => item.url)
   const [mobileOpen, setMobileOpen] = useState(false)
-
   const classes = useStyles()
 
   const navButtons: ReactElement = (
@@ -169,16 +168,19 @@ export default function Main (): ReactElement {
           <Grid container spacing={2}>
             <Grid item sm />
             <Grid item sm={10} lg={6} >
+            <PagerContext.Provider value={{ onAdvance: (onAdvance ?? (() => {})), navButtons }}>
               <Switch>
                 <Redirect path="/" to={Urls.default} exact />
-                <PagerContext.Provider value={{ onAdvance: (onAdvance ?? (() => {})), navButtons }}>
                 {
                   allItems.map((item, index) =>
-                    <Route key={index} path={item.url}>{item.element}</Route>
+                    <Route key={index} exact path={item.url}>{item.element}</Route>
                   )
                 }
-                </PagerContext.Provider>
+                <Route>
+                  <NoMatchPage/>
+                </Route>
               </Switch>
+            </PagerContext.Provider>
             </Grid>
             <Grid item sm />
           </Grid>
