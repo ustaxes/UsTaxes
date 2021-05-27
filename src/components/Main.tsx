@@ -13,8 +13,7 @@ import {
 import {
   Switch,
   Route,
-  Redirect,
-  useLocation
+  Redirect
 } from 'react-router-dom'
 import MenuIcon from '@material-ui/icons/Menu'
 import W2JobInfo from './income/W2JobInfo'
@@ -128,16 +127,6 @@ const drawerSections: Section[] = [
   }
 ]
 
-const flattenUrlsElements = (arg: string | object): string[] => {
-  if (typeof arg === 'object') {
-    return Object.values(arg)
-  } else {
-    return [arg]
-  }
-}
-
-const urlList: string[] = Object.values(Object.values(Urls)).map(flattenUrlsElements).flat()
-
 export default function Main (): ReactElement {
   const allItems: SectionItem[] = drawerSections.flatMap((section: Section) => section.items)
   const [prev, onAdvance] = usePager(allItems, (item) => item.url)
@@ -167,10 +156,6 @@ export default function Main (): ReactElement {
     </AppBar>
   )
 
-  if (!urlList.includes(useLocation().pathname)) {
-    allItems.push(item('404', useLocation().pathname, <NoMatchPage/>))
-  }
-
   return (
     <ThemeProvider theme={theme}>
       <div className={classes.root}>
@@ -189,6 +174,9 @@ export default function Main (): ReactElement {
                     <Route key={index} path={item.url}>{item.element}</Route>
                   )
                 }
+                <Route>
+                  <NoMatchPage/>
+                </Route>
                 </PagerContext.Provider>
               </Switch>
             </Grid>
