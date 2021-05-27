@@ -166,19 +166,19 @@ export default function Main (): ReactElement {
           <Grid container spacing={2}>
             <Grid item sm />
             <Grid item sm={10} lg={6} >
+            <PagerContext.Provider value={{ onAdvance: (onAdvance ?? (() => {})), navButtons }}>
               <Switch>
                 <Redirect path="/" to={Urls.default} exact />
-                <PagerContext.Provider value={{ onAdvance: (onAdvance ?? (() => {})), navButtons }}>
                 {
                   allItems.map((item, index) =>
-                    <Route key={index} path={item.url}>{item.element}</Route>
+                    <Route key={index} exact path={item.url}>{item.element}</Route>
                   )
                 }
                 <Route>
                   <NoMatchPage/>
                 </Route>
-                </PagerContext.Provider>
               </Switch>
+            </PagerContext.Provider>
             </Grid>
             <Grid item sm />
           </Grid>
