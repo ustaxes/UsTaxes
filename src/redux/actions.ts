@@ -1,6 +1,23 @@
-import { Person, IncomeW2, Refund, Dependent, FilingStatus, PrimaryPerson, ContactInfo, Income1099 } from './data'
+import {
+  Person,
+  IncomeW2,
+  Refund,
+  Dependent,
+  FilingStatus,
+  PrimaryPerson,
+  ContactInfo,
+  Supported1099,
+  Spouse,
+  EditDependentAction,
+  EditPropertyAction,
+  Property,
+  Edit1099Action,
+  EditW2Action,
+  TaxesState
+} from './data'
 import { ValidateFunction } from 'ajv'
-import ajv, { checkType } from './validate'
+import ajv,
+{ checkType } from './validate'
 
 export enum ActionName {
   SAVE_REFUND_INFO = 'SAVE_REFUND_INFO',
@@ -8,13 +25,20 @@ export enum ActionName {
   SAVE_CONTACT_INFO = 'SAVE_CONTACT_INFO',
   SAVE_FILING_STATUS_INFO = 'SAFE_FILING_STATUS_INFO',
   ADD_DEPENDENT = 'TAXPAYER/ADD_DEPENDENT',
+  EDIT_DEPENDENT = 'TAXPAYER/EDIT_DEPENDENT',
   REMOVE_DEPENDENT = 'TAXPAYER/REMOVE_DEPENDENT',
   ADD_SPOUSE = 'TAXPAYER/ADD_SPOUSE',
   REMOVE_SPOUSE = 'TAXPAYER/REMOVE_SPOUSE',
   ADD_W2 = 'ADD_W2',
+  EDIT_W2 = 'EDIT_W2',
   REMOVE_W2 = 'REMOVE_W2',
   ADD_1099 = 'ADD_1099',
-  REMOVE_1099 = 'REMOVE_1099'
+  EDIT_1099 = 'EDIT_1099',
+  REMOVE_1099 = 'REMOVE_1099',
+  ADD_PROPERTY = 'ADD_PROPERTY',
+  EDIT_PROPERTY = 'EDIT_PROPERTY',
+  REMOVE_PROPERTY = 'REMOVE_PROPERTY',
+  SET_ENTIRE_STATE = 'SET_ENTIRE_STATE'
 }
 
 interface Save<T, R> {
@@ -27,13 +51,20 @@ type SavePrimaryPersonInfo = Save<typeof ActionName.SAVE_PRIMARY_PERSON_INFO, Pr
 type SaveFilingStatusInfo = Save<typeof ActionName.SAVE_FILING_STATUS_INFO, FilingStatus>
 type SaveContactInfo = Save<typeof ActionName.SAVE_CONTACT_INFO, ContactInfo>
 type AddDependent = Save<typeof ActionName.ADD_DEPENDENT, Dependent>
+type EditDependent = Save<typeof ActionName.EDIT_DEPENDENT, EditDependentAction>
 type RemoveDependent = Save<typeof ActionName.REMOVE_DEPENDENT, number>
-type AddSpouse = Save<typeof ActionName.ADD_SPOUSE, Person>
+type AddSpouse = Save<typeof ActionName.ADD_SPOUSE, Spouse>
 type RemoveSpouse = Save<typeof ActionName.REMOVE_SPOUSE, {}>
 type AddW2 = Save<typeof ActionName.ADD_W2, IncomeW2>
+type EditW2 = Save<typeof ActionName.EDIT_W2, EditW2Action>
 type RemoveW2 = Save<typeof ActionName.REMOVE_W2, number>
-type Add1099 = Save<typeof ActionName.ADD_1099, Income1099>
+type Add1099 = Save<typeof ActionName.ADD_1099, Supported1099>
+type Edit1099 = Save<typeof ActionName.EDIT_1099, Edit1099Action>
 type Remove1099 = Save<typeof ActionName.REMOVE_1099, number>
+type AddProperty = Save<typeof ActionName.ADD_PROPERTY, Property>
+type EditProperty = Save<typeof ActionName.EDIT_PROPERTY, EditPropertyAction>
+type RemoveProperty = Save<typeof ActionName.REMOVE_PROPERTY, number>
+type SetEntireState = Save<typeof ActionName.SET_ENTIRE_STATE, TaxesState>
 
 export type Actions =
   SaveRefundInfo
@@ -41,13 +72,20 @@ export type Actions =
   | SaveFilingStatusInfo
   | SaveContactInfo
   | AddDependent
+  | EditDependent
   | RemoveDependent
   | AddSpouse
   | RemoveSpouse
   | AddW2
+  | EditW2
   | RemoveW2
   | Add1099
+  | Edit1099
   | Remove1099
+  | AddProperty
+  | EditProperty
+  | RemoveProperty
+  | SetEntireState
 
 export type ActionCreator<A> = (formData: A) => Actions
 
@@ -126,6 +164,12 @@ export const addDependent: ActionCreator<Dependent> = makePreprocessActionCreato
   (t: Dependent) => cleanPerson(t)
 )
 
+export const editDependent: ActionCreator<EditDependentAction> = makePreprocessActionCreator(
+  ActionName.EDIT_DEPENDENT,
+  ajv.getSchema('#/definitions/EditDependentAction') as ValidateFunction<EditDependentAction>,
+  ({ index, value }: EditDependentAction) => ({ index, value: cleanPerson(value) })
+)
+
 const indexSchema = {
   type: 'number',
   minimum: 0
@@ -136,9 +180,9 @@ export const removeDependent: ActionCreator<number> = makeActionCreator(
   ajv.compile(indexSchema)
 )
 
-export const addSpouse: ActionCreator<Person> = makePreprocessActionCreator(
+export const addSpouse: ActionCreator<Spouse> = makePreprocessActionCreator(
   ActionName.ADD_SPOUSE,
-  ajv.getSchema('#/definitions/Person') as ValidateFunction<Person>,
+  ajv.getSchema('#/definitions/Spouse') as ValidateFunction<Spouse>,
   cleanPerson
 )
 
@@ -151,17 +195,48 @@ export const addW2: ActionCreator<IncomeW2> = makeActionCreator(
   ajv.getSchema('#/definitions/IncomeW2') as ValidateFunction<IncomeW2>
 )
 
+export const editW2: ActionCreator<EditW2Action> = makeActionCreator(
+  ActionName.EDIT_W2,
+  ajv.getSchema('#/definitions/EditW2Action') as ValidateFunction<EditW2Action>
+)
+
 export const removeW2: ActionCreator<number> = makeActionCreator(
   ActionName.REMOVE_W2,
   ajv.compile(indexSchema)
 )
 
-export const add1099: ActionCreator<Income1099> = makeActionCreator(
+export const add1099: ActionCreator<Supported1099> = makeActionCreator(
   ActionName.ADD_1099,
-  ajv.getSchema('#/definitions/Income1099') as ValidateFunction<Income1099>
+  ajv.getSchema('#/definitions/Supported1099') as ValidateFunction<Supported1099>
+)
+
+export const edit1099: ActionCreator<Edit1099Action> = makeActionCreator(
+  ActionName.EDIT_1099,
+  ajv.getSchema('#/definitions/Edit1099Action') as ValidateFunction<Edit1099Action>
 )
 
 export const remove1099: ActionCreator<number> = makeActionCreator(
   ActionName.REMOVE_1099,
   ajv.compile(indexSchema)
 )
+
+export const addProperty: ActionCreator<Property> = makeActionCreator(
+  ActionName.ADD_PROPERTY,
+  ajv.getSchema('#/definitions/Property') as ValidateFunction<Property>
+)
+
+export const editProperty: ActionCreator<EditPropertyAction> = makeActionCreator(
+  ActionName.EDIT_PROPERTY,
+  ajv.getSchema('#/definitions/EditPropertyAction') as ValidateFunction<EditPropertyAction>
+)
+
+export const removeProperty: ActionCreator<number> = makeActionCreator(
+  ActionName.REMOVE_PROPERTY,
+  ajv.compile(indexSchema)
+)
+
+// debugging purposes only, leaving unchecked.
+export const setEntireState = (formData: TaxesState): SetEntireState => ({
+  type: ActionName.SET_ENTIRE_STATE,
+  formData
+})

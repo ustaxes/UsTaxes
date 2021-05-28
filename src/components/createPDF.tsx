@@ -1,25 +1,54 @@
-import React, { FormEvent, ReactElement } from 'react'
-import { Box } from '@material-ui/core'
+import React, { FormEvent, ReactElement, useState } from 'react'
 import { createPDFPopup } from '../pdfFiller/fillPdf'
-import { DonePagedFormProps } from './pager'
+import { PagerContext } from './pager'
+import Alert from '@material-ui/lab/Alert'
+import { makeStyles } from '@material-ui/core/styles'
+import log from '../log'
+import { useSelector } from 'react-redux'
+import { TaxesState } from '../redux/data'
 
-export default function CreatePDF ({ navButtons }: DonePagedFormProps): ReactElement {
+const useStyles = makeStyles((theme) => ({
+  root: {
+    width: '100%',
+    '& > * + *': {
+      marginTop: theme.spacing(2)
+    }
+  }
+}))
+
+export default function CreatePDF (): ReactElement {
+  const [errors, updateErrors] = useState<string[]>([])
+  const classes = useStyles()
+
+  const lastName = useSelector((state: TaxesState) => state.information.taxPayer.primaryPerson?.lastName ?? '')
+
   const onSubmit = async (e: FormEvent<any>): Promise<void> => {
     e.preventDefault()
-    return await createPDFPopup()
+    return await createPDFPopup(`${lastName}-1040.pdf`)
+      .catch((errors: string[]) => {
+        if (errors.length !== undefined && errors.length > 0) {
+          updateErrors(errors)
+        } else {
+          log.error('unhandled exception')
+          log.error(errors)
+          return Promise.reject(errors)
+        }
+      })
   }
 
   return (
-    <Box display="flex" justifyContent="center">
-      <form onSubmit={onSubmit}>
-        <div>
-          <Box display="flex" justifyContent="flex-start">
+    <PagerContext.Consumer>
+      { ({ navButtons }) =>
+        <form onSubmit={onSubmit}>
+          <div>
             <h2>Print Copy to File</h2>
-          </Box>
-
+          </div>
+          <div className={classes.root}>
+            {errors.map((error, i) => <Alert key={i} severity="warning">{error}</Alert>)}
+          </div>
           {navButtons}
-        </div>
-      </form>
-    </Box>
+        </form>
+      }
+    </PagerContext.Consumer>
   )
 }

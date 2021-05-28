@@ -1,59 +1,87 @@
 import React, { ReactElement } from 'react'
-import { TextField, Box } from '@material-ui/core'
-import InputMask from 'react-input-mask'
+import { TextField } from '@material-ui/core'
 import { LabeledInputProps } from './types'
+import NumberFormat from 'react-number-format'
+import { InputType } from '../Patterns'
+import { Controller } from 'react-hook-form'
 
 export function LabeledInput (props: LabeledInputProps): ReactElement {
-  const { strongLabel, label, register, error, required = false, patternConfig = {}, name, defaultValue } = props
-  //  let helperText: string | undefined
-  // fix error where pattern wouldn't match if input wasn't filled out even if required was set to false
-  if (!required) {
-    patternConfig.regexp = /.?/
-  }
+  const { strongLabel, label, register, error, required = false, patternConfig, name, rules = {}, defaultValue = '' } = props
 
-  /* default regex pattern is to accept any input. Otherwise, use input pattern */
-  const textField = (
-    <TextField
-      fullWidth={patternConfig.mask === undefined}
-      defaultValue={defaultValue}
-      helperText={error?.message}
-      inputRef={
-        register({
+  const errorMessage: string | undefined = (() => {
+    if (error?.message !== undefined && error?.message !== '') {
+      return error?.message
+    }
+    if (error?.type === 'max' && patternConfig?.inputType === InputType.numeric && patternConfig.max !== undefined) {
+      return `Input must be less than or equal to ${patternConfig.max}`
+    }
+    if (error?.type === 'min' && patternConfig?.inputType === InputType.numeric && patternConfig.min !== undefined) {
+      return `Input must be greater than or equal to ${patternConfig.min}`
+    }
+  })()
+
+  const input: ReactElement = (() => {
+    if (patternConfig?.inputType === InputType.numeric) {
+      return (
+        <Controller
+          render={({ onChange, value }) =>
+            <NumberFormat
+              mask={patternConfig.mask}
+              thousandSeparator={patternConfig.thousandSeparator}
+              prefix={patternConfig.prefix}
+              allowEmptyFormatting={true}
+              format={patternConfig.format}
+              customInput={TextField}
+              isNumericString={false}
+              onValueChange={(v) => onChange(v.value)}
+              value={value}
+              error={error !== undefined}
+              helperText={errorMessage}
+              variant="filled"
+            />
+          }
+          name={name}
+          control={patternConfig.control}
+          required={required}
+          defaultValue={defaultValue}
+          rules={{
+            ...rules,
+            min: patternConfig.min,
+            max: patternConfig.max,
+            required: required ? 'Input is required' : undefined,
+            pattern: {
+              value: patternConfig.regexp ?? (required ? /.+/ : /.*/),
+              message: patternConfig.description ?? (required ? 'Input is required' : '')
+            }
+          }}
+        />
+      )
+    }
+
+    return (
+      <TextField
+        name={name}
+        defaultValue={defaultValue}
+        inputRef={register({
+          ...rules,
           required: required ? 'Input is required' : undefined,
           pattern: {
-            value: patternConfig.regexp ?? (required ? /.+/ : /.*/),
-            message: patternConfig.description ?? (required ? 'Input is required' : '')
+            value: patternConfig?.regexp ?? (required ? /.+/ : /.*/),
+            message: patternConfig?.description ?? (required ? 'Input is required' : '')
           }
-        })
-      }
-      error={error !== undefined}
-      name={name}
-      variant="filled"
-    />
-  )
-
-  /* if there is a mask prop, create masked textfield rather than standard */
-  let input = textField
-  if (patternConfig.mask !== undefined) {
-    input = (
-      <InputMask
-        mask={patternConfig.mask}
-        alwaysShowMask={true}
-        defaultValue={defaultValue}
-      >
-        {textField}
-      </InputMask>
+        })}
+        fullWidth={patternConfig?.format === undefined}
+        helperText={error?.message}
+        error={error !== undefined}
+        variant="filled"
+      />
     )
-  }
+  })()
 
   return (
     <div>
-      <Box display="flex" justifyContent="flex-start">
-        <p><strong>{strongLabel}</strong>{label}</p>
-      </Box>
-      <Box display="flex" justifyContent="flex-start">
-        {input}
-      </Box>
+      <p><strong>{strongLabel}</strong>{label}</p>
+      {input}
     </div>
   )
 }

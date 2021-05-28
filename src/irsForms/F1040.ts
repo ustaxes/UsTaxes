@@ -1,4 +1,5 @@
 import { AccountType, Dependent, FilingStatus, IncomeW2, PersonRole, Refund, TaxPayer } from '../redux/data'
+import federalBrackets from '../data/federal'
 import F4972 from './F4972'
 import F8814 from './F8814'
 import Schedule8863 from './F8863'
@@ -11,13 +12,21 @@ import Schedule3 from './Schedule3'
 import Schedule8812 from './Schedule8812'
 import ScheduleA from './ScheduleA'
 import ScheduleD from './ScheduleD'
+import ScheduleE from './ScheduleE'
 import ScheduleEIC from './ScheduleEIC'
-import Form from './Form'
-import federalBrackets from '../data/federal'
+import Form, { FormTag } from './Form'
 import { displayNumber, computeField, sumFields } from './util'
 import ScheduleB from './ScheduleB'
+import { computeOrdinaryTax } from './TaxTable'
+import SDQualifiedAndCapGains from './worksheets/SDQualifiedAndCapGains'
+import F4797 from './F4797'
+
+export enum F1040Error {
+  filingStatusUndefined = 'Select a filing status'
+}
 
 export default class F1040 implements Form {
+  tag: FormTag = 'f1040'
   // intentionally mirroring many fields from the state,
   // trying to represent the fields that the 1040 requires
   filingStatus?: FilingStatus
@@ -36,8 +45,8 @@ export default class F1040 implements Form {
   province?: string
   postalCode?: string
   virtualCurrency: boolean
-  claimDependentPrimary: boolean
-  claimDependentSpouse: boolean
+  isTaxpayerDependent: boolean
+  isSpouseDependent: boolean
   dependents: Dependent[]
   refund?: Refund
   contactPhoneNumber?: string
@@ -51,9 +60,11 @@ export default class F1040 implements Form {
   scheduleA?: ScheduleA
   scheduleB?: ScheduleB
   scheduleD?: ScheduleD
+  scheduleE?: ScheduleE
   scheduleEIC?: ScheduleEIC
   schedule8812?: Schedule8812
   schedule8863?: Schedule8863
+  f4797?: F4797
   f4972?: F4972
   f8814?: F8814
   f8888?: F8888
@@ -76,8 +87,8 @@ export default class F1040 implements Form {
     this.province = tp.primaryPerson?.address.province
     this.postalCode = tp.primaryPerson?.address.postalCode
     this.virtualCurrency = false
-    this.claimDependentPrimary = false
-    this.claimDependentSpouse = false
+    this.isTaxpayerDependent = Boolean(tp.primaryPerson?.isTaxpayerDependent)
+    this.isSpouseDependent = Boolean(tp.spouse?.isTaxpayerDependent)
     this.dependents = tp.dependents
     this.w2s = []
     this.contactPhoneNumber = tp.contactPhoneNumber
@@ -112,6 +123,10 @@ export default class F1040 implements Form {
     this.scheduleD = s
   }
 
+  addScheduleE (s: ScheduleE): void {
+    this.scheduleE = s
+  }
+
   addScheduleEIC (s: ScheduleEIC): void {
     this.scheduleEIC = s
   }
@@ -122,6 +137,10 @@ export default class F1040 implements Form {
 
   add8814 (s: F8814): void {
     this.f8814 = s
+  }
+
+  add4797 (s: F4797): void {
+    this.f4797 = s
   }
 
   add4972 (s: F4972): void {
@@ -149,7 +168,7 @@ export default class F1040 implements Form {
 
   wages (): number {
     if (this.w2s.length > 0) {
-      return this.w2s.map((w2) => w2.income).reduce((l, r) => l + r)
+      return this.w2s.map((w2) => w2.income).reduce((l, r) => l + r, 0)
     }
     return 0
   }
@@ -157,25 +176,28 @@ export default class F1040 implements Form {
   w2ForRole = (r: PersonRole): IncomeW2 | undefined =>
     (this.w2s ?? []).find((w2) => w2.personRole === r)
 
-  static standardDeductions: {[key: string]: number} = {
-    [FilingStatus.S]: 12400,
-    [FilingStatus.MFS]: 12400,
-    [FilingStatus.HOH]: 18650,
-    [FilingStatus.MFJ]: 24800,
-    [FilingStatus.W]: 24800
+  standardDeduction = (): number | undefined => {
+    if (this.filingStatus === undefined) {
+      return undefined
+    } else if (this.isTaxpayerDependent || this.isSpouseDependent) {
+      return Math.min(
+        (federalBrackets.ordinary.status[this.filingStatus].deductions[0].amount),
+        (this.wages() > 750) ? (this.wages() + 350) : 1100
+      )
+    }
+    return federalBrackets.ordinary.status[this.filingStatus].deductions[0].amount
   }
 
-  standardDeduction = (): number => {
-    if (this.filingStatus === undefined) {
-      return 12400
-    }
-    return F1040.standardDeductions[this.filingStatus]
-  }
+  totalQualifiedDividends = (): number | undefined => displayNumber(
+    (this.scheduleB?.f1099divs() ?? [])
+      .map((f) => f.form.qualifiedDividends)
+      .reduce((l, r) => l + r, 0)
+  )
 
   l1 = (): number | undefined => displayNumber(this.wages())
   l2a = (): number | undefined => this.scheduleB?.l3()
   l2b = (): number | undefined => this.scheduleB?.l4()
-  l3a = (): number | undefined => undefined
+  l3a = (): number | undefined => this.totalQualifiedDividends()
   l3b = (): number | undefined => this.scheduleB?.l6()
   l4a = (): number | undefined => undefined
   l4b = (): number | undefined => undefined
@@ -183,7 +205,7 @@ export default class F1040 implements Form {
   l5b = (): number | undefined => undefined
   l6a = (): number | undefined => undefined
   l6b = (): number | undefined => undefined
-  l7 = (): number | undefined => undefined
+  l7 = (): number | undefined => this.scheduleD?.l16()
   l8 = (): number | undefined => this.schedule1?.l9()
   l9 = (): number | undefined => displayNumber(
     sumFields([
@@ -228,42 +250,26 @@ export default class F1040 implements Form {
   )
 
   computeTax = (): number | undefined => {
-    const table = federalBrackets.tax_withholding_percentage_method_tables.annual
-    const filingStatusLookup = {
-      [FilingStatus.S]: table.single,
-      [FilingStatus.MFS]: table.married_separately,
-      [FilingStatus.MFJ]: table.married,
-      [FilingStatus.HOH]: table.head_of_household
+    if (this.scheduleD?.computeTaxOnQDWorksheet() ?? false) {
+      const wksht = new SDQualifiedAndCapGains(this)
+      return wksht.tax()
     }
 
-    if (this.filingStatus !== FilingStatus.W && this.filingStatus !== undefined) {
-      const table = filingStatusLookup[this.filingStatus].income_tax_brackets
-
-      const taxableIncome = this.l15() ?? 0
-      const ordinaryIncome = taxableIncome
-
-      let oi = table.length - 1
-
-      while (table[oi].bracket > ordinaryIncome) {
-        oi--
-      }
-      const ordinaryBracket = table[oi]
-      const baseTax = ordinaryBracket.amount
-      const bracketTaxableOrdinaryIncome = ordinaryIncome - ordinaryBracket.bracket
-      // TODO - otherwise ignoring long-term vs short term capital gains
-      const ordinaryTax = baseTax + bracketTaxableOrdinaryIncome * table[oi].marginal_rate / 100
-
-      return Math.floor(ordinaryTax)
+    if (this.filingStatus !== undefined) {
+      return computeOrdinaryTax(this.filingStatus, computeField(this.l15()))
     }
+
     return undefined
   }
 
   l16 = (): number | undefined => displayNumber(
-    sumFields([
-      this.f8814?.tax(),
-      this.f4972?.tax(),
-      this.computeTax()
-    ])
+    Math.round(
+      sumFields([
+        this.f8814?.tax(),
+        this.f4972?.tax(),
+        this.computeTax()
+      ])
+    )
   )
 
   l17 = (): number | undefined => this.schedule2?.l3()
@@ -291,7 +297,7 @@ export default class F1040 implements Form {
 
   l25a = (): number | undefined => {
     if (this.w2s.length > 0) {
-      return this.w2s.map((w2) => computeField(w2.fedWithholding)).reduce((l, r) => l + r)
+      return this.w2s.map((w2) => computeField(w2.fedWithholding)).reduce((l, r) => l + r, 0)
     }
     return undefined
   }
@@ -311,7 +317,7 @@ export default class F1040 implements Form {
   // TODO: handle estimated tax payments
   l26 = (): number | undefined => undefined
 
-  l27 = (): number | undefined => this.scheduleEIC?.credit()
+  l27 = (): number | undefined => displayNumber(this.scheduleEIC?.credit(this) ?? 0)
 
   l28 = (): number | undefined => this.schedule8812?.credit()
 
@@ -383,6 +389,15 @@ export default class F1040 implements Form {
   _depFieldMappings = (): Array<string | boolean> =>
     Array.from(Array(20)).map((u, n: number) => this._depField(n))
 
+  errors = (): F1040Error[] => {
+    const result: F1040Error[] = []
+    if (this.filingStatus === undefined) {
+      result.push(F1040Error.filingStatusUndefined)
+    }
+
+    return result
+  }
+
   fields = (): Array<string | number | boolean | undefined> => ([
     this.filingStatus === FilingStatus.S,
     this.filingStatus === FilingStatus.MFJ,
@@ -409,8 +424,8 @@ export default class F1040 implements Form {
     false,
     this.virtualCurrency,
     !this.virtualCurrency,
-    this.claimDependentPrimary,
-    this.claimDependentSpouse,
+    this.isTaxpayerDependent,
+    this.isSpouseDependent,
     false, // TODO: spouse itemizes separately,
     this.bornBeforeDate(),
     this.blind(),
@@ -429,7 +444,7 @@ export default class F1040 implements Form {
     this.l5b(),
     this.l6a(),
     this.l6b(),
-    this.scheduleD !== undefined,
+    this.scheduleD === undefined,
     this.l7(),
     this.l8(),
     this.l9(),

@@ -1,80 +1,164 @@
 import React, { ReactElement, useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { Avatar, Box, Button, IconButton, List, ListItem, ListItemAvatar, ListItemSecondaryAction, ListItemText } from '@material-ui/core'
+import { Icon } from '@material-ui/core'
 import { useDispatch, useSelector } from 'react-redux'
-import { Actions, add1099, remove1099 } from '../../redux/actions'
-import { PagedFormProps } from '../pager'
-import { Income1099, TaxesState, Person, PersonRole, Income1099Type, form1099Types } from '../../redux/data'
-import DeleteIcon from '@material-ui/icons/Delete'
-import { GenericLabeledDropdown, LabeledInput } from '../input'
+import { add1099, edit1099, remove1099 } from '../../redux/actions'
+import { PagerContext } from '../pager'
+import { TaxesState, Person, PersonRole, Supported1099, Income1099Type } from '../../redux/data'
+import { Currency, formatSSID, GenericLabeledDropdown, LabeledInput } from '../input'
 import { Patterns } from '../Patterns'
+import { FormListContainer } from '../FormContainer'
 
-interface F1099ListItemProps {
-  form: Income1099
-  remove: () => void
-}
-
-const F1099Item = ({ form, remove }: F1099ListItemProps): ReactElement => (
-  <ListItem>
-    <ListItemAvatar>
-      <Avatar>
-      </Avatar>
-    </ListItemAvatar>
-    <ListItemText
-      primary={form.payer}
-      secondary={`Income (${form.formType}): $${form.income}`}
-    />
-    <ListItemSecondaryAction>
-      <IconButton onClick={remove} edge="end" aria-label="delete">
-        <DeleteIcon />
-      </IconButton>
-    </ListItemSecondaryAction>
-  </ListItem>
-)
-
-function List1099s (): ReactElement {
-  const f1099s = useSelector((state: TaxesState) =>
-    state.information.f1099s
-  )
-
-  const dispatch = useDispatch()
-
-  const drop = (i: number): Actions => dispatch(remove1099(i))
-
-  return (
-    <List dense={true}>
-      {
-        f1099s.map((f1099, i) =>
-          <F1099Item key={i} remove={() => drop(i)} form={f1099} />
-        )
-      }
-    </List>
-  )
+const showIncome = (a: Supported1099): ReactElement => {
+  switch (a.type) {
+    case Income1099Type.INT: {
+      return <Currency value={a.form.income} />
+    }
+    case Income1099Type.B: {
+      const ltg = a.form.longTermProceeds - a.form.longTermCostBasis
+      const stg = a.form.shortTermProceeds - a.form.shortTermCostBasis
+      return (
+        <span>
+        Long term: <Currency value={ltg} /><br />
+        Short term: <Currency value={stg} />
+        </span>
+      )
+    }
+    case Income1099Type.DIV: {
+      return <Currency value={a.form.dividends} />
+    }
+  }
 }
 
 interface F1099UserInput {
+  formType: Income1099Type | undefined
   payer: string
-  income: string
-  formType: Income1099Type
+  // Int fields
+  interest: string | number
+  // B Fields
+  shortTermProceeds: string | number
+  shortTermCostBasis: string | number
+  longTermProceeds: string | number
+  longTermCostBasis: string | number
+  // Div fields
+  dividends: string | number
+  qualifiedDividends: string | number
   personRole: PersonRole.PRIMARY | PersonRole.SPOUSE
 }
 
-const toF1099 = (formData: F1099UserInput): Income1099 => ({
-  ...formData,
-  // Note we are not error checking here because
-  // we are already in the input validated happy path
-  // of handleSubmit.
-  income: parseInt(formData.income)
+const blankUserInput: F1099UserInput = {
+  formType: undefined,
+  payer: '',
+  personRole: PersonRole.PRIMARY,
+  interest: '',
+  // B Fields
+  shortTermProceeds: '',
+  shortTermCostBasis: '',
+  longTermProceeds: '',
+  longTermCostBasis: '',
+  // Div fields
+  dividends: '',
+  qualifiedDividends: ''
+}
+
+const toUserInput = (f: Supported1099): F1099UserInput => ({
+  ...blankUserInput,
+  formType: f.type,
+  payer: f.payer,
+  personRole: f.personRole,
+
+  ...((() => {
+    switch (f.type) {
+      case Income1099Type.INT: {
+        return {
+          interest: f.form.income
+        }
+      }
+      case Income1099Type.B: {
+        return f.form
+      }
+      case Income1099Type.DIV: {
+        return f.form
+      }
+    }
+  })())
 })
 
-export default function F1099Info ({ navButtons, onAdvance }: PagedFormProps): ReactElement {
-  const { register, errors, handleSubmit, control, reset } = useForm<F1099UserInput>()
+const toF1099 = (input: F1099UserInput): Supported1099 | undefined => {
+  switch (input.formType) {
+    case Income1099Type.INT: {
+      return {
+        payer: input.payer,
+        personRole: input.personRole,
+        type: input.formType,
+        form: {
+          income: Number(input.interest)
+        }
+      }
+    }
+    case Income1099Type.B: {
+      return {
+        payer: input.payer,
+        personRole: input.personRole,
+        type: input.formType,
+        form: {
+          shortTermCostBasis: Number(input.shortTermCostBasis),
+          shortTermProceeds: Number(input.shortTermProceeds),
+          longTermCostBasis: Number(input.longTermCostBasis),
+          longTermProceeds: Number(input.longTermProceeds)
+        }
+      }
+    }
+    case Income1099Type.DIV: {
+      return {
+        payer: input.payer,
+        personRole: input.personRole,
+        type: input.formType,
+        form: {
+          dividends: Number(input.dividends),
+          qualifiedDividends: Number(input.qualifiedDividends)
+        }
+      }
+    }
+  }
+}
+
+export default function F1099Info (): ReactElement {
+  const f1099s = useSelector((state: TaxesState) =>
+    state.information.f1099s
+  )
+  const [editing, setEditing] = useState<number | undefined>(undefined)
+
+  const defaultValues: F1099UserInput = (() => {
+    if (editing !== undefined) {
+      return toUserInput(f1099s[editing])
+    }
+    return blankUserInput
+  })()
+
+  const { register, errors, handleSubmit, control, reset, watch, setValue } = useForm<F1099UserInput>()
+  const selectedType: Income1099Type | undefined = watch('formType')
+
   const dispatch = useDispatch()
 
-  const onAdd1099 = handleSubmit((formData: F1099UserInput): void => {
-    dispatch(add1099(toF1099(formData)))
+  const clear = (): void => {
     reset()
-  })
+    setValue('formType', undefined)
+    setEditing(undefined)
+  }
+
+  const onAdd1099 = (onSuccess: () => void) => (formData: F1099UserInput): void => {
+    const payload = toF1099(formData)
+    if (payload !== undefined) {
+      if (editing === undefined) {
+        dispatch(add1099(payload))
+      } else {
+        dispatch(edit1099({ index: editing, value: payload }))
+      }
+      clear()
+      onSuccess()
+    }
+  }
 
   const people: Person[] = (
     useSelector((state: TaxesState) => ([
@@ -85,95 +169,162 @@ export default function F1099Info ({ navButtons, onAdvance }: PagedFormProps): R
       .map((p) => p as Person)
   )
 
-  const [adding, updateAdding] = useState(false)
+  const intFields = (
+    <LabeledInput
+      label="Box 1 - Interest Income"
+      register={register}
+      required={true}
+      patternConfig={Patterns.currency(control)}
+      name="interest"
+      error={errors.interest}
+      defaultValue={defaultValues?.interest.toString()}
+    />
+  )
 
-  const cancel = (): void => {
-    reset()
-    updateAdding(false)
+  const bFields = (
+    <div>
+      <h4>Long Term Covered Transactions</h4>
+      <LabeledInput
+        label="Proceeds"
+        register={register}
+        required={true}
+        patternConfig={Patterns.currency(control)}
+        name="longTermProceeds"
+        error={errors.longTermProceeds}
+        defaultValue={defaultValues?.longTermProceeds.toString()}
+      />
+      <LabeledInput
+        label="Cost basis"
+        register={register}
+        required={true}
+        patternConfig={Patterns.currency(control)}
+        name="longTermCostBasis"
+        error={errors.longTermCostBasis}
+        defaultValue={defaultValues?.longTermCostBasis.toString()}
+      />
+      <h4>Short Term Covered Transactions</h4>
+      <LabeledInput
+        label="Proceeds"
+        register={register}
+        required={true}
+        patternConfig={Patterns.currency(control)}
+        name="shortTermProceeds"
+        error={errors.shortTermProceeds}
+        defaultValue={defaultValues?.shortTermProceeds.toString()}
+      />
+      <LabeledInput
+        label="Cost basis"
+        register={register}
+        required={true}
+        patternConfig={Patterns.currency(control)}
+        name="shortTermCostBasis"
+        error={errors.shortTermCostBasis}
+        defaultValue={defaultValues?.shortTermCostBasis.toString()}
+      />
+    </div>
+  )
+
+  const divFields = (
+    <div>
+      <LabeledInput
+        label="Total Dividends"
+        register={register}
+        required={true}
+        patternConfig={Patterns.currency(control)}
+        name="dividends"
+        error={errors.dividends}
+        defaultValue={defaultValues?.dividends.toString()}
+      />
+      <LabeledInput
+        label="Qualified Dividends"
+        register={register}
+        required={true}
+        patternConfig={Patterns.currency(control)}
+        name="qualifiedDividends"
+        error={errors.qualifiedDividends}
+        defaultValue={defaultValues?.qualifiedDividends.toString()}
+      />
+    </div>
+  )
+
+  const specificFields = {
+    [Income1099Type.INT]: intFields,
+    [Income1099Type.B]: bFields,
+    [Income1099Type.DIV]: divFields
   }
 
-  let form: ReactElement | undefined
-  if (adding) {
-    form = (
-      <div>
-        <Box display="flex" justifyContent="flex-start">
-          <strong>Input data from 1099</strong>
-        </Box>
-
-        <GenericLabeledDropdown
-          dropDownData={form1099Types}
-          control={control}
-          error={errors.formType}
-          label="Form Type"
-          required={true}
-          valueMapping={(name: string, i: number) => form1099Types[i]}
-          name="formType"
-          keyMapping={(name: string, i: number) => i}
-          textMapping={(name: string, i: number) => name}
-          defaultValue={undefined}
-        />
-
-        <LabeledInput
-          label="Enter name of bank, broker firm, or other payer"
-          register={register}
-          required={true}
-          patternConfig={Patterns.name}
-          name="payer"
-          error={errors.payer}
-        />
-
-        <LabeledInput
-          label="Box 1 - Interest Income"
-          register={register}
-          required={true}
-          patternConfig={Patterns.currency}
-          name="income"
-          error={errors.income}
-        />
-
-        <GenericLabeledDropdown
-          dropDownData={people}
-          control={control}
-          error={errors.personRole}
-          label="Recipient"
-          required={true}
-          valueMapping={(p, i) => [PersonRole.PRIMARY, PersonRole.SPOUSE][i]}
-          name="personRole"
-          keyMapping={(p, i) => i}
-          textMapping={(p) => `${p.firstName} ${p.lastName} (${p.ssid})`}
-          defaultValue={PersonRole.PRIMARY}
-        />
-        <Box display="flex" justifyContent="flex-start" paddingTop={2} paddingBottom={1}>
-          <Box paddingRight={2}>
-            <Button type="button" onClick={onAdd1099} variant="contained" color="secondary">
-              Add
-            </Button>
-          </Box>
-          <Button type="button" onClick={cancel} variant="contained" color="secondary">
-            Close
-          </Button>
-        </Box>
-      </div>
-    )
-  } else {
-    form = (
-      <Box display="flex" justifyContent="flex-start" paddingTop={2} paddingBottom={1}>
-        <Button type="button" variant="contained" color="secondary" onClick={() => updateAdding(true)}>Add 1099</Button>
-      </Box>
-    )
+  const titles = {
+    [Income1099Type.INT]: '1099-INT',
+    [Income1099Type.B]: '1099-B',
+    [Income1099Type.DIV]: '1099-DIV'
   }
+
+  const form: ReactElement | undefined = (
+    <FormListContainer
+      onDone={(onSuccess) => handleSubmit(onAdd1099(onSuccess))}
+      onCancel={clear}
+      items={f1099s}
+      removeItem={(i) => dispatch(remove1099(i))}
+      editing={editing}
+      editItem={setEditing}
+      primary={(f) => f.payer}
+      secondary={(f) => showIncome(f)}
+      icon={(f) => <Icon title={titles[f.type]}>{f.type}</Icon>}
+    >
+      <strong>Input data from 1099</strong>
+
+      <GenericLabeledDropdown
+        dropDownData={Object.values(Income1099Type)}
+        control={control}
+        error={errors.formType}
+        label="Form Type"
+        required={true}
+        valueMapping={(v: Income1099Type) => v}
+        name="formType"
+        keyMapping={(_, i: number) => i}
+        textMapping={(name: string) => `1099-${name}`}
+        defaultValue={defaultValues?.formType}
+      />
+
+      <LabeledInput
+        label="Enter name of bank, broker firm, or other payer"
+        register={register}
+        required={true}
+        patternConfig={Patterns.name}
+        name="payer"
+        error={errors.payer}
+        defaultValue={defaultValues?.payer}
+      />
+
+      {(() => {
+        if (selectedType !== undefined) return specificFields[selectedType]
+        else if (defaultValues?.formType !== undefined) return specificFields[defaultValues.formType]
+      })()}
+
+      <GenericLabeledDropdown
+        dropDownData={people}
+        control={control}
+        error={errors.personRole}
+        label="Recipient"
+        required={true}
+        valueMapping={(p: Person, i: number) => [PersonRole.PRIMARY, PersonRole.SPOUSE][i]}
+        name="personRole"
+        keyMapping={(p: Person, i: number) => i}
+        textMapping={(p: Person) => `${p.firstName} ${p.lastName} (${formatSSID(p.ssid)})`}
+        defaultValue={defaultValues?.personRole ?? PersonRole.PRIMARY}
+      />
+    </FormListContainer>
+  )
 
   return (
-    <Box display="flex" justifyContent="center">
-      <form onSubmit={onAdvance}>
-        <Box display="flex" justifyContent="flex-start">
+    <PagerContext.Consumer>
+      { ({ onAdvance, navButtons }) =>
+        <form onSubmit={onAdvance}>
           <h2>1099 Information</h2>
-        </Box>
-
-        <List1099s />
-        {form}
-        { navButtons }
-      </form>
-    </Box>
+          {form}
+          { navButtons }
+        </form>
+      }
+    </PagerContext.Consumer>
   )
 }

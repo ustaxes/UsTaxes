@@ -1,5 +1,9 @@
 import { Person, TaxPayer as TP } from './data'
 
+/**
+ * Used to augment the TaxPayer data interface with some convenience
+ * methods.
+ */
 export default class TaxPayer {
   tp: TP
 
@@ -17,7 +21,7 @@ export default class TaxPayer {
     return (
       ps
         .map((p: Person) => `${p.firstName} ${p.lastName}`)
-        .join(',')
+        .join(', ')
     )
   }
 }

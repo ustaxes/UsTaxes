@@ -1,28 +1,22 @@
-import React, { ReactElement, useState } from 'react'
+import React, { ReactElement } from 'react'
 import { useForm } from 'react-hook-form'
-import { Box } from '@material-ui/core'
 import { useDispatch, useSelector } from 'react-redux'
-import { LabeledCheckBox, LabeledInput } from './input'
+import { LabeledInput, LabeledRadio } from './input'
 import { Patterns } from './Patterns'
 import { saveRefundInfo } from '../redux/actions'
 
 import { AccountType, Refund, TaxesState } from '../redux/data'
-import { PagedFormProps } from './pager'
+import { PagerContext } from './pager'
 
 interface UserRefundForm {
   routingNumber: string
   accountNumber: string
-  isChecking: boolean
-  isSavings: boolean
+  accountType: AccountType
 }
 
-const toRefund = (formData: UserRefundForm): Refund => ({
-  routingNumber: formData.routingNumber,
-  accountNumber: formData.accountNumber,
-  accountType: formData.isChecking ? AccountType.checking : AccountType.savings
-})
+const toRefund = (formData: UserRefundForm): Refund => formData
 
-export default function RefundBankAccount ({ navButtons, onAdvance }: PagedFormProps): ReactElement {
+export default function RefundBankAccount (): ReactElement {
   const { register, handleSubmit, errors, control } = useForm<UserRefundForm>()
   // const variable dispatch to allow use inside function
   const dispatch = useDispatch()
@@ -31,62 +25,49 @@ export default function RefundBankAccount ({ navButtons, onAdvance }: PagedFormP
     return state.information.refund
   })
 
-  const [isChecking, updateChecking] = useState(prevFormData?.accountType === AccountType.checking)
-
   // component functions
-  const onSubmit = (formData: UserRefundForm): void => {
+  const onSubmit = (onAdvance: () => void) => (formData: UserRefundForm): void => {
     dispatch(saveRefundInfo(toRefund(formData)))
     onAdvance()
   }
 
   return (
-    <Box display="flex" justifyContent="center">
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <div>
-          <Box display="flex" justifyContent="flex-start">
+    <PagerContext.Consumer>
+      { ({ onAdvance, navButtons }) =>
+        <form onSubmit={handleSubmit(onSubmit(onAdvance))}>
+          <div>
             <h2>Refund Information</h2>
-          </Box>
 
-          <LabeledInput
-            label="Bank Routing number"
-            register={register}
-            required={true}
-            patternConfig={Patterns.bankRouting}
-            name="routingNumber"
-            defaultValue={prevFormData?.routingNumber}
-            error={errors.routingNumber}
-          />
+            <LabeledInput
+              label="Bank Routing number"
+              register={register}
+              required={true}
+              patternConfig={Patterns.bankRouting(control)}
+              name="routingNumber"
+              defaultValue={prevFormData?.routingNumber}
+              error={errors.routingNumber}
+            />
 
-          <LabeledInput
-            label="Bank Account number"
-            register={register}
-            required={true}
-            patternConfig={Patterns.bankAccount}
-            name="accountNumber"
-            defaultValue={prevFormData?.accountNumber}
-            error={errors.accountNumber}
-          />
-          <Box display="flex" justifyContent="flex-start">
-            <h4>Type</h4>
-          </Box>
-          <LabeledCheckBox
-            control={control}
-            name="isChecking"
-            value={isChecking}
-            setValue={updateChecking}
-            label="Checking"
-          />
-          <LabeledCheckBox
-            name="isSavings"
-            control={control}
-            value={!isChecking}
-            setValue={(v) => updateChecking(!v)}
-            label="Savings"
-          />
-
-          {navButtons}
-        </div>
-      </form>
-    </Box>
+            <LabeledInput
+              label="Bank Account number"
+              register={register}
+              required={true}
+              patternConfig={Patterns.bankAccount(control)}
+              name="accountNumber"
+              defaultValue={prevFormData?.accountNumber}
+              error={errors.accountNumber}
+            />
+            <LabeledRadio
+              label="Account Type"
+              control={control}
+              name="accountType"
+              defaultValue={prevFormData?.accountType as string}
+              values={[['Checking', 'checking'], ['Savings', 'savings']]}
+            />
+            {navButtons}
+          </div>
+        </form>
+      }
+    </PagerContext.Consumer>
   )
 }
