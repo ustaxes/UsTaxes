@@ -12,7 +12,8 @@ import {
   EditPropertyAction,
   Property,
   Edit1099Action,
-  EditW2Action
+  EditW2Action,
+  TaxesState
 } from './data'
 import { ValidateFunction } from 'ajv'
 import ajv,
@@ -36,7 +37,8 @@ export enum ActionName {
   REMOVE_1099 = 'REMOVE_1099',
   ADD_PROPERTY = 'ADD_PROPERTY',
   EDIT_PROPERTY = 'EDIT_PROPERTY',
-  REMOVE_PROPERTY = 'REMOVE_PROPERTY'
+  REMOVE_PROPERTY = 'REMOVE_PROPERTY',
+  SET_ENTIRE_STATE = 'SET_ENTIRE_STATE'
 }
 
 interface Save<T, R> {
@@ -62,6 +64,7 @@ type Remove1099 = Save<typeof ActionName.REMOVE_1099, number>
 type AddProperty = Save<typeof ActionName.ADD_PROPERTY, Property>
 type EditProperty = Save<typeof ActionName.EDIT_PROPERTY, EditPropertyAction>
 type RemoveProperty = Save<typeof ActionName.REMOVE_PROPERTY, number>
+type SetEntireState = Save<typeof ActionName.SET_ENTIRE_STATE, TaxesState>
 
 export type Actions =
   SaveRefundInfo
@@ -82,6 +85,7 @@ export type Actions =
   | AddProperty
   | EditProperty
   | RemoveProperty
+  | SetEntireState
 
 export type ActionCreator<A> = (formData: A) => Actions
 
@@ -230,3 +234,9 @@ export const removeProperty: ActionCreator<number> = makeActionCreator(
   ActionName.REMOVE_PROPERTY,
   ajv.compile(indexSchema)
 )
+
+// debugging purposes only, leaving unchecked.
+export const setEntireState = (formData: TaxesState): SetEntireState => ({
+  type: ActionName.SET_ENTIRE_STATE,
+  formData
+})

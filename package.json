@@ -73,6 +73,7 @@
     "eslint-plugin-promise": "^5.1.0",
     "eslint-plugin-react": "^7.23.2",
     "eslint-plugin-standard": "^5.0.0",
+    "fast-check": "^2.14.0",
     "husky": "^6.0.0",
     "typescript-eslint": "0.0.1-alpha.0"
   },

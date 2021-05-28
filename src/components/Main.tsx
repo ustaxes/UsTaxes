@@ -27,6 +27,7 @@ import ContactInfo from './TaxPayer/ContactInfo'
 import F1099Info from './income/F1099Info'
 import Summary from './Summary'
 import RealEstate from './income/RealEstate'
+import { StateLoader } from './debug'
 import NoMatchPage from './NoMatchPage'
 
 const theme = createMuiTheme({
@@ -162,6 +163,7 @@ export default function Main (): ReactElement {
         {appBar}
         <ResponsiveDrawer sections={drawerSections} isOpen={mobileOpen} onClose={() => setMobileOpen(false)} />
         <main className={classes.content}>
+          <StateLoader />
           <div className={classes.toolbar} />
           <Grid container spacing={2}>
             <Grid item sm />
