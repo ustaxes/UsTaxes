@@ -59,6 +59,21 @@ export const PagerButtons = ({ submitText, previousUrl }: PagerButtonsProps): Re
   )
 }
 
+interface DirectButtonsProps {
+  targetUrl?: string
+  submitText: string
+}
+
+export const DirectButtons = ({ submitText, targetUrl }: DirectButtonsProps): ReactElement => {
+  return (
+    <Box display="flex" justifyContent="flex-start" paddingRight={2}>
+      <Button href={ targetUrl } variant="contained" color="primary" >
+        { submitText }
+      </Button>
+    </Box>
+  )
+}
+
 interface PagerProps {
   onAdvance: (() => void)
   navButtons: ReactElement

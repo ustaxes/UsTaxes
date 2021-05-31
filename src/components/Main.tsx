@@ -103,14 +103,14 @@ const Urls = {
   summary: '/summary',
   default: ''
 }
-Urls.default = Urls.taxPayer.info
+Urls.default = Urls.usTaxes.start
 
 const drawerSections: Section[] = [
   {
-    title: 'USTaxes.org',
+    title: 'UsTaxes.org',
     items: [
       item('Getting Started', Urls.usTaxes.start, <GettingStarted/>),
-      item('About this probject', Urls.usTaxes.about, <AboutThisProject/>)
+      item('About This Project', Urls.usTaxes.about, <AboutThisProject/>)
     ]
   },
   {
