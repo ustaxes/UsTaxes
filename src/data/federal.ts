@@ -141,10 +141,11 @@ const toPieceWise = (points: Point[]): Piecewise => (
   points
     .slice(0, points.length - 1)
     .map((point, idx) => [point, points[idx + 1]])
-    .map(([[x1, y1], [x2, y2]]) =>
+    .map(([[x1, y1], [x2, y2]]) => ({
       // starting point     slope              intercept
-      [x1, linear((y2 - y1) / (x2 - x1), y1 - x1 * (y2 - y1) / (x2 - x1))]
-    )
+      lowerBound: x1,
+      f: linear((y2 - y1) / (x2 - x1), y1 - x1 * (y2 - y1) / (x2 - x1))
+    }))
 )
 
 // These points are taken directly from IRS publication

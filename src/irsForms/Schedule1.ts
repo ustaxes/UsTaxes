@@ -1,14 +1,16 @@
 import { Information } from '../redux/data'
 import TaxPayer from '../redux/TaxPayer'
 import { anArrayOf } from '../util'
-import Form from './Form'
+import Form, { FormTag } from './Form'
 import ScheduleE from './ScheduleE'
 import { sumFields } from './util'
+import log from '../log'
 
 const unimplemented = (message: string): void =>
-  console.warn(`[Schedule 1] unimplemented ${message}`)
+  log.warn(`[Schedule 1] unimplemented ${message}`)
 
 export default class Schedule1 implements Form {
+  tag: FormTag = 'f1040s1'
   state: Information
   scheduleE?: ScheduleE
 

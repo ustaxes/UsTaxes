@@ -47,10 +47,6 @@ jobs:
       with:
         toolchain: stable
         profile: minimal
-    - name: install tauri bundler
-      run: cargo install tauri-bundler --force
-      shell: bash
-      if: steps.cache_rust_bin.outputs.cache-hit != 'true' || steps.cache_rust_reg_index.outputs.cache-hit != 'true' || steps.cache_rust_reg_cache.outputs.cache-hit != 'true'
     - name: install webkit2gtk (ubuntu only)
       if: matrix.platform == 'ubuntu-latest'
       run: |
@@ -65,7 +61,7 @@ jobs:
     - name: install app dependencies and build it
       run: npm install --no-optional && npm run desktop-release
       if: steps.cache_node_modules.outputs.cache-hit != 'true'
-    - uses: loloof64/tauri-action@marketplace_2
+    - uses: tauri-apps/tauri-action@dev
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:

@@ -18,18 +18,20 @@ import ScheduleD from './ScheduleD'
 import ScheduleE from './ScheduleE'
 import ScheduleEIC from './ScheduleEIC'
 import ScheduleR from './ScheduleR'
-import Form from './Form'
+import Form, { FormTag } from './Form'
 import { displayNumber, computeField, sumFields } from './util'
 import ScheduleB from './ScheduleB'
 import { computeOrdinaryTax } from './TaxTable'
 import SDQualifiedAndCapGains from './worksheets/SDQualifiedAndCapGains'
 import ChildTaxCreditWorksheet from './worksheets/ChildTaxCreditWorksheet'
+import F4797 from './F4797'
 
 export enum F1040Error {
   filingStatusUndefined = 'Select a filing status'
 }
 
 export default class F1040 implements Form {
+  tag: FormTag = 'f1040'
   // intentionally mirroring many fields from the state,
   // trying to represent the fields that the 1040 requires
   filingStatus?: FilingStatus
@@ -68,6 +70,7 @@ export default class F1040 implements Form {
   scheduleR?: ScheduleR
   schedule8812?: Schedule8812
   schedule8863?: Schedule8863
+  f4797?: F4797
   f4972?: F4972
   f5695?: F5695
   f8814?: F8814
@@ -147,6 +150,10 @@ export default class F1040 implements Form {
 
   add8814 (s: F8814): void {
     this.f8814 = s
+  }
+
+  add4797 (s: F4797): void {
+    this.f4797 = s
   }
 
   add4972 (s: F4972): void {

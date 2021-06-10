@@ -199,6 +199,12 @@ function formReducer (state: Information | undefined, action: Actions): Informat
         realEstate: newProperties
       }
     }
+    case ActionName.SET_ENTIRE_STATE: {
+      return {
+        ...newState,
+        ...action.formData.information
+      }
+    }
     default: {
       return newState
     }

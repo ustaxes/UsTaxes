@@ -33,19 +33,23 @@ export const zip3 = <A, B, C>(as: A[], bs: B[], cs: C[]): Array<[A, B, C]> =>
 export const linear = (m: number, b: number) => (x: number): number => b + m * x
 
 // Lower bound, and function to apply above that bound.
-export type Piecewise = Array<[number, ((x: number) => number)]>
+interface Piece {
+  lowerBound: number
+  f: (x: number) => number
+}
+export type Piecewise = Piece[]
 
 export const evaluatePiecewise = (f: Piecewise, x: number): number => {
   // Select the function segment to evaulate.
   // The function segment is the one before the segment with the lower bound above x.
   const selection: number = (() => {
-    const idx = f.findIndex(([lowerBound]) => lowerBound > x)
+    const idx = f.findIndex(({ lowerBound }) => lowerBound > x)
     if (idx < 0) {
       return f.length - 1
     }
     return idx - 1
   })()
-  return f[selection][1](x)
+  return f[selection].f(x)
 }
 
 export const unzip = <A, B>(xs: Array<[A, B]>): [A[], B[]] =>
@@ -61,8 +65,18 @@ export const unzip3 = <A, B, C>(xs: Array<[A, B, C]>): [A[], B[], C[]] =>
  * @returns array of n arrays of items
  */
 export const segments = <A>(n: number, xs: A[]): A[][] => {
-  const size: number = Math.ceil(xs.length / n)
-  return anArrayOf(n, undefined).map((_, i) => xs.slice(i * size, (i + 1) * size))
+  if (n <= 1 || xs.length === 0) {
+    return [xs]
+  } else if (n >= xs.length) {
+    return xs.map((x) => [x])
+  }
+  const size: number = Math.floor(xs.length / n)
+  return anArrayOf(n, undefined).map((_, i) => {
+    if (i === n - 1) {
+      return xs.slice(i * size, xs.length)
+    }
+    return xs.slice(i * size, (i + 1) * size)
+  })
 }
 
 export const isLeapYear = (year: number): boolean => {
@@ -71,3 +85,28 @@ export const isLeapYear = (year: number): boolean => {
 
 export const daysInYear = (year: number): number =>
   isLeapYear(year) ? 366 : 365
+
+export const ifNegative = <A = number>(n: number, orElse: A | number = 0): A | number =>
+  n < 0 ? n : orElse
+
+export const ifPositive = <A = number>(n: number, orElse: A | number = 0): A | number =>
+  n > 0 ? n : orElse
+
+// idea from https://github.com/gcanti/fp-ts/blob/3e2af038982cb4090ccc8c2912e4b22f907bdaea/src/Either.ts
+export interface Left<E> {
+  readonly _tag: 'left'
+  left: E
+}
+
+export interface Right<A> {
+  readonly _tag: 'right'
+  right: A
+}
+
+export type Either<E, A> = Left<E> | Right<A>
+
+export const left = <E = never, A = never>(left: E): Either <E, A> => ({ _tag: 'left', left })
+export const right = <E = never, A = never>(right: A): Either<E, A> => ({ _tag: 'right', right })
+
+export const isLeft = <E, A>(e: Either<E, A>): e is Left<E> => e._tag === 'left'
+export const isRight = <E, A>(e: Either<E, A>): e is Right<A> => e._tag === 'right'

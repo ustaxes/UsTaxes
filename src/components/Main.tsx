@@ -24,10 +24,11 @@ import PrimaryTaxpayer from './TaxPayer'
 import RefundBankAccount from './RefundBankAccount'
 import SpouseAndDependent from './TaxPayer/SpouseAndDependent'
 import ContactInfo from './TaxPayer/ContactInfo'
-import FilingStatusSelect from './TaxPayer/FilingStatus'
 import F1099Info from './income/F1099Info'
 import Summary from './Summary'
 import RealEstate from './income/RealEstate'
+import { StateLoader } from './debug'
+import NoMatchPage from './NoMatchPage'
 
 const theme = createMuiTheme({
   palette: {
@@ -82,7 +83,6 @@ const Urls = {
     root: '/taxpayer',
     info: '/info',
     spouseAndDependent: '/spouseanddependent',
-    filingStatus: '/filingstatus',
     contactInfo: '/contact'
   },
   refund: '/refundinfo',
@@ -107,7 +107,6 @@ const drawerSections: Section[] = [
     items: [
       item('Primary Taxpayer', Urls.taxPayer.info, <PrimaryTaxpayer />),
       item('Spouse and Dependents', Urls.taxPayer.spouseAndDependent, <SpouseAndDependent />),
-      item('Filing Status', Urls.taxPayer.filingStatus, <FilingStatusSelect />),
       item('Contact Information', Urls.taxPayer.contactInfo, <ContactInfo />)
     ]
   },
@@ -131,10 +130,8 @@ const drawerSections: Section[] = [
 
 export default function Main (): ReactElement {
   const allItems: SectionItem[] = drawerSections.flatMap((section: Section) => section.items)
-
   const [prev, onAdvance] = usePager(allItems, (item) => item.url)
   const [mobileOpen, setMobileOpen] = useState(false)
-
   const classes = useStyles()
 
   const navButtons: ReactElement = (
@@ -166,20 +163,24 @@ export default function Main (): ReactElement {
         {appBar}
         <ResponsiveDrawer sections={drawerSections} isOpen={mobileOpen} onClose={() => setMobileOpen(false)} />
         <main className={classes.content}>
+          <StateLoader />
           <div className={classes.toolbar} />
           <Grid container spacing={2}>
             <Grid item sm />
             <Grid item sm={10} lg={6} >
+            <PagerContext.Provider value={{ onAdvance: (onAdvance ?? (() => {})), navButtons }}>
               <Switch>
                 <Redirect path="/" to={Urls.default} exact />
-                <PagerContext.Provider value={{ onAdvance: (onAdvance ?? (() => {})), navButtons }}>
                 {
                   allItems.map((item, index) =>
-                    <Route key={index} path={item.url}>{item.element}</Route>
+                    <Route key={index} exact path={item.url}>{item.element}</Route>
                   )
                 }
-                </PagerContext.Provider>
+                <Route>
+                  <NoMatchPage/>
+                </Route>
               </Switch>
+            </PagerContext.Provider>
             </Grid>
             <Grid item sm />
           </Grid>

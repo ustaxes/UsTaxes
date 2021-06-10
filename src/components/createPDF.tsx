@@ -3,6 +3,9 @@ import { createPDFPopup } from '../pdfFiller/fillPdf'
 import { PagerContext } from './pager'
 import Alert from '@material-ui/lab/Alert'
 import { makeStyles } from '@material-ui/core/styles'
+import log from '../log'
+import { useSelector } from 'react-redux'
+import { TaxesState } from '../redux/data'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -17,15 +20,17 @@ export default function CreatePDF (): ReactElement {
   const [errors, updateErrors] = useState<string[]>([])
   const classes = useStyles()
 
+  const lastName = useSelector((state: TaxesState) => state.information.taxPayer.primaryPerson?.lastName ?? '')
+
   const onSubmit = async (e: FormEvent<any>): Promise<void> => {
     e.preventDefault()
-    return await createPDFPopup()
+    return await createPDFPopup(`${lastName}-1040.pdf`)
       .catch((errors: string[]) => {
         if (errors.length !== undefined && errors.length > 0) {
           updateErrors(errors)
         } else {
-          console.error('unhandled exception')
-          console.error(errors)
+          log.error('unhandled exception')
+          log.error(errors)
           return Promise.reject(errors)
         }
       })
@@ -37,11 +42,11 @@ export default function CreatePDF (): ReactElement {
         <form onSubmit={onSubmit}>
           <div>
             <h2>Print Copy to File</h2>
-            {navButtons}
           </div>
           <div className={classes.root}>
             {errors.map((error, i) => <Alert key={i} severity="warning">{error}</Alert>)}
           </div>
+          {navButtons}
         </form>
       }
     </PagerContext.Consumer>
