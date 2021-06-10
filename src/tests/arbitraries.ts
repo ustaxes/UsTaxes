@@ -70,9 +70,9 @@ const employer: Arbitrary<types.Employer> =
     }))
 
 const w2: Arbitrary<types.IncomeW2> =
-  fc.tuple(maxWords(2), wages, fc.nat(), employer)
-    .map(([occupation, income, fedWithholding, employer]) => ({
-      occupation, income, fedWithholding, employer, personRole: types.PersonRole.PRIMARY
+  fc.tuple(maxWords(2), wages, fc.nat(), fc.nat(), fc.nat(), employer)
+    .map(([occupation, income, fedWithholding, ssWithholding, medicareWithholding, employer]) => ({
+      occupation, income, fedWithholding, employer, personRole: types.PersonRole.PRIMARY, ssWithholding, medicareWithholding
     }))
 
 export const f1099IntData: Arbitrary<types.F1099IntData> =
