@@ -104,8 +104,6 @@ export default class F1040 implements Form {
     this.w2s = []
     this.contactPhoneNumber = tp.contactPhoneNumber
     this.contactEmail = tp.contactEmail
-    this.childTaxCreditWorksheet = new ChildTaxCreditWorksheet(this)
-    this.schedule8812 = new Schedule8812(tp, this)
   }
 
   addW2 (w2: IncomeW2): void {
@@ -158,6 +156,10 @@ export default class F1040 implements Form {
 
   add4972 (s: F4972): void {
     this.f4972 = s
+  }
+
+  addChildTaxCreditWorksheet (s: ChildTaxCreditWorksheet) : void {
+    this.childTaxCreditWorksheet = s
   }
 
   addSchedule8812 (s: Schedule8812): void {
