@@ -1,3 +1,5 @@
+import { QuestionTag } from '../data/questions'
+
 export enum PersonRole {
   PRIMARY = 'PRIMARY',
   SPOUSE = 'SPOUSE',
@@ -201,12 +203,15 @@ export interface Property {
   otherExpenseType?: string
 }
 
+export type QuestionResponses = {[k in keyof typeof QuestionTag]?: boolean}
+
 export interface Information {
   f1099s: Supported1099[]
   w2s: IncomeW2[]
   realEstate: Property[]
   refund?: Refund
   taxPayer: TaxPayer
+  questions: QuestionResponses
 }
 
 export interface TaxesState {
@@ -216,6 +221,11 @@ export interface TaxesState {
 export interface ArrayItemEditAction<A> {
   index: number
   value: A
+}
+
+export interface AnswerQuestionAction {
+  tag: keyof typeof QuestionTag
+  value: boolean
 }
 
 export type EditDependentAction = ArrayItemEditAction<Dependent>

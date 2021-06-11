@@ -13,7 +13,8 @@ import {
   Property,
   Edit1099Action,
   EditW2Action,
-  TaxesState
+  TaxesState,
+  AnswerQuestionAction
 } from './data'
 import { ValidateFunction } from 'ajv'
 import ajv,
@@ -38,6 +39,7 @@ export enum ActionName {
   ADD_PROPERTY = 'ADD_PROPERTY',
   EDIT_PROPERTY = 'EDIT_PROPERTY',
   REMOVE_PROPERTY = 'REMOVE_PROPERTY',
+  ANSWER_QUESTION = 'ANSWER_QUESTION',
   SET_ENTIRE_STATE = 'SET_ENTIRE_STATE'
 }
 
@@ -64,6 +66,7 @@ type Remove1099 = Save<typeof ActionName.REMOVE_1099, number>
 type AddProperty = Save<typeof ActionName.ADD_PROPERTY, Property>
 type EditProperty = Save<typeof ActionName.EDIT_PROPERTY, EditPropertyAction>
 type RemoveProperty = Save<typeof ActionName.REMOVE_PROPERTY, number>
+type AnswerQuestion = Save<typeof ActionName.ANSWER_QUESTION, AnswerQuestionAction>
 type SetEntireState = Save<typeof ActionName.SET_ENTIRE_STATE, TaxesState>
 
 export type Actions =
@@ -85,6 +88,7 @@ export type Actions =
   | AddProperty
   | EditProperty
   | RemoveProperty
+  | AnswerQuestion
   | SetEntireState
 
 export type ActionCreator<A> = (formData: A) => Actions
@@ -233,6 +237,11 @@ export const editProperty: ActionCreator<EditPropertyAction> = makeActionCreator
 export const removeProperty: ActionCreator<number> = makeActionCreator(
   ActionName.REMOVE_PROPERTY,
   ajv.compile(indexSchema)
+)
+
+export const answerQuestion: ActionCreator<AnswerQuestionAction> = makeActionCreator(
+  ActionName.ANSWER_QUESTION,
+  ajv.getSchema('#/definitions/AnswerQuestionAction') as ValidateFunction<AnswerQuestionAction>
 )
 
 // debugging purposes only, leaving unchecked.

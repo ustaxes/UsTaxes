@@ -54,5 +54,6 @@ ajv.getSchema('#/definitions/Property')
 ajv.getSchema('#/definitions/PropertyType')
 ajv.getSchema('#/definitions/EditPropertyAction')
 ajv.getSchema('#/definitions/TaxesState')
+ajv.getSchema('#/definitions/AnswerQuestionAction')
 
 export default ajv

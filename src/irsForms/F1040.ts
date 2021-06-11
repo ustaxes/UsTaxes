@@ -20,6 +20,7 @@ import ScheduleB from './ScheduleB'
 import { computeOrdinaryTax } from './TaxTable'
 import SDQualifiedAndCapGains from './worksheets/SDQualifiedAndCapGains'
 import F4797 from './F4797'
+import { QuestionTag } from '../data/questions'
 
 export enum F1040Error {
   filingStatusUndefined = 'Select a filing status'
@@ -97,6 +98,10 @@ export default class F1040 implements Form {
 
   addW2 (w2: IncomeW2): void {
     this.w2s.push(w2)
+  }
+
+  addQuestions (questions: { [k in keyof typeof QuestionTag]?: boolean }): void {
+    this.virtualCurrency = questions.CRYPTO ?? false
   }
 
   addSchedule1 (s: Schedule1): void {

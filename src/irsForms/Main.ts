@@ -58,6 +58,8 @@ export function create1040 (state: Information): Either<F1040Error[], [F1040, Fo
 
   state.w2s.forEach((w2) => f1040.addW2(w2))
 
+  f1040.addQuestions(state.questions)
+
   if (state.refund !== undefined) {
     f1040.addRefund(state.refund)
   }
