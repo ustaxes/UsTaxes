@@ -158,7 +158,7 @@ export default class F1040 implements Form {
     this.f4972 = s
   }
 
-  addChildTaxCreditWorksheet (s: ChildTaxCreditWorksheet) : void {
+  addChildTaxCreditWorksheet (s: ChildTaxCreditWorksheet): void {
     this.childTaxCreditWorksheet = s
   }
 

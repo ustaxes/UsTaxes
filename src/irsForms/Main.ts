@@ -9,7 +9,7 @@ import ScheduleD from './ScheduleD'
 import ScheduleE from './ScheduleE'
 import ScheduleEIC from './ScheduleEIC'
 import Schedule8812 from './Schedule8812'
-import ChildTaxCreditWorksheet from "./worksheets/ChildTaxCreditWorksheet"
+import ChildTaxCreditWorksheet from './worksheets/ChildTaxCreditWorksheet'
 
 export const getSchedules = (f1040: F1040, state: Information): Form[] => {
   let attachments: Form[] = []
@@ -48,7 +48,7 @@ export const getSchedules = (f1040: F1040, state: Information): Form[] => {
 
   const childtaxcreditws = new ChildTaxCreditWorksheet(f1040)
   const schedule8812 = new Schedule8812(state.taxPayer, f1040)
-  if(f1040.dependents.reduce((total, dependent) => (childtaxcreditws.qualifiesChild(dependent) || childtaxcreditws.qualifiesOther(dependent) ? total + 1 : total), 0) > 0){
+  if (f1040.dependents.reduce((total, dependent) => (childtaxcreditws.qualifiesChild(dependent) || childtaxcreditws.qualifiesOther(dependent) ? total + 1 : total), 0) > 0) {
     f1040.addChildTaxCreditWorksheet(childtaxcreditws)
     f1040.addSchedule8812(schedule8812)
     attachments = [...attachments, schedule8812]
