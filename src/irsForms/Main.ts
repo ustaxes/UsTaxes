@@ -33,14 +33,15 @@ export const getSchedules = (f1040: F1040, state: Information): Form[] => {
   }
 
   if (state.f1098es.length > 0) {
+    const studentLoanInterestWorksheet = new StudentLoanInterestWorksheet(f1040, state.taxPayer, state.f1098es)
+    f1040.addStudentLoanInterestWorksheet(studentLoanInterestWorksheet)
     // Future proofing be checking if Schedule 1 exists before adding it
-    if (f1040.schedule1 === undefined) {
+    // Don't add s1 if unable to take deduction
+    if (f1040.schedule1 === undefined && studentLoanInterestWorksheet.notMFS() && studentLoanInterestWorksheet.isNotDependent()) {
       const s1 = new Schedule1(state, f1040)
       f1040.addSchedule1(s1)
       attachments = [s1, ...attachments]
     }
-    const studentLoanInterestWorksheet = new StudentLoanInterestWorksheet(f1040, state.taxPayer, state.f1098es)
-    f1040.addStudentLoanInterestWorksheet(studentLoanInterestWorksheet)
   }
 
   if (f1040.scheduleE !== undefined) {

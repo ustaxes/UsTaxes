@@ -17,8 +17,13 @@ export default class StudentLoanInterestWorksheet {
   // Can't take deduction if filling Married Filling Seperate
   notMFS = (): boolean => this.f1040.filingStatus !== FilingStatus.MFS
 
-  // Can't take deduction if someone else claims you as a dependent or spouse if MFJ
-  isNotDependent = (): boolean => true // !this.tp.tp.primaryPerson?.isTaxpayerDependent && (!this.tp.tp.spouse?.isTaxpayerDependent || this.f1040.filingStatus !== FilingStatus.MFJ)
+  // Can't take deduction if MFJ and spouse is a dependent
+  isNotDependentSpouse = (): boolean => this.f1040.filingStatus !== FilingStatus.MFJ ? true : this.tp.tp.spouse === undefined ? true : !this.tp.tp.spouse?.isTaxpayerDependent
+
+  // Can't take deduction if someone else claims you as a dependent
+  isNotDependentSelf = (): boolean => this.tp.tp.primaryPerson === undefined ? true : !this.tp.tp.primaryPerson?.isTaxpayerDependent
+
+  isNotDependent = (): boolean => this.isNotDependentSpouse() && this.isNotDependentSelf()
 
   // Sum interest, but maximum of 2500 can be deducted
   l1 = (): number | undefined => Math.min(this.f1098es.map((f1098e) => f1098e.interest).reduce((l, r) => l + r, 0), 2500)
