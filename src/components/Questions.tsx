@@ -1,30 +1,23 @@
 import React, { ReactElement } from 'react'
 import { List, ListItem } from '@material-ui/core'
 import { useDispatch, useSelector } from 'react-redux'
-import { getRequiredQuestions, QuestionTag } from '../data/questions'
+import { getRequiredQuestions, Responses } from '../data/questions'
 import { TaxesState } from '../redux/data'
 import { answerQuestion } from '../redux/actions'
-import { LabeledCheckbox } from './input'
+import { LabeledCheckbox, LabeledInput } from './input'
 import { useForm } from 'react-hook-form'
-import { enumKeys } from '../util'
 import { PagerContext } from './pager'
-
-type Responses = {[k in keyof typeof QuestionTag]: boolean}
 
 const Questions = (): ReactElement => {
   const state = useSelector((state: TaxesState) => state)
   const questions = getRequiredQuestions(state)
 
-  const { control, handleSubmit } = useForm<Responses>({
-    defaultValues: Object.fromEntries(enumKeys(QuestionTag).map((x) => [x, false])) as Responses
-  })
+  const { control, register, handleSubmit } = useForm<Responses>()
 
   const dispatch = useDispatch()
 
   const onSubmit = (onAdvance: () => void) => (responses: Responses): void => {
-    Object.entries(responses).forEach(([tag, value]) => {
-      dispatch(answerQuestion({ tag: tag as keyof typeof QuestionTag, value }))
-    })
+    dispatch(answerQuestion(responses))
     onAdvance()
   }
 
@@ -38,11 +31,30 @@ const Questions = (): ReactElement => {
             {
               questions.map((q, i) =>
                 <ListItem key={i}>
-                  <LabeledCheckbox
-                    name={QuestionTag[q.tag]}
-                    label={q.text}
-                    control={control}
-                  />
+                  {(() => {
+                    switch (q.valueTag) {
+                      case 'boolean': {
+                        return (
+                          <LabeledCheckbox
+                            name={q.tag}
+                            label={q.text}
+                            control={control}
+                            defaultValue={state.information.questions[q.tag] as (boolean | undefined)}
+                          />
+                        )
+                      }
+                      default: {
+                        return (
+                          <LabeledInput
+                            name={q.tag}
+                            register={register}
+                            label={q.text}
+                            defaultValue={state.information.questions[q.tag] as (string | undefined)}
+                          />
+                        )
+                      }
+                    }
+                  })()}
                 </ListItem>
               )
             }

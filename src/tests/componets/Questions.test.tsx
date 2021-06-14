@@ -3,7 +3,7 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 import { Provider } from 'react-redux'
 import Questions from '../../components/Questions'
 import { InfoStore, createStoreUnpersisted } from '../../redux/store'
-import { questions, QuestionTag } from '../../data/questions'
+import { questions } from '../../data/questions'
 import { create1040 } from '../../irsForms/Main'
 import { isRight } from '../../util'
 import * as fc from 'fast-check'
@@ -45,7 +45,7 @@ describe('Questions', () => {
     return [store, component]
   }
 
-  const cryptoQuestion = questions.find((q) => q.tag === QuestionTag.CRYPTO)
+  const cryptoQuestion = questions.find((q) => q.tag === 'CRYPTO')
 
   if (cryptoQuestion === undefined) {
     throw new Error('crypto question undefined')

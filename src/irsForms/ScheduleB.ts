@@ -70,14 +70,19 @@ export default class ScheduleB implements Form {
     sumFields(this.l5Fields().map(({ amount }) => amount))
   )
 
+  foreignAccount = (): boolean => this.state.questions.FOREIGN_ACCOUNT_EXISTS ?? false
+  fincenForm = (): boolean => this.state.questions.FINCEN_114 ?? false
+  fincenCountry = (): string | undefined => this.state.questions.FINCEN_114_ACCOUNT_COUNTRY
+  foreignTrust = (): boolean => this.state.questions.FOREIGN_TRUST_RELATIONSHIP ?? false
+
   // TODO - FINCEN questions
-  l7a = (): [boolean, boolean] => [false, false]
+  l7a = (): [boolean, boolean] => [this.foreignAccount(), !this.foreignAccount()]
 
-  l7a2 = (): [boolean, boolean] => [false, false]
+  l7a2 = (): [boolean, boolean] => [this.fincenForm(), !this.fincenForm()]
 
-  l7b = (): string | undefined => undefined
+  l7b = (): string | undefined => this.fincenCountry()
 
-  l8 = (): [boolean, boolean] => [false, false]
+  l8 = (): [boolean, boolean] => [this.foreignTrust(), !this.foreignTrust()]
 
   fields = (): Array<string | number | boolean | undefined> => {
     const tp = new TaxPayer(this.state.taxPayer)

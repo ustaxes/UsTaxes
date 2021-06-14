@@ -203,7 +203,7 @@ function formReducer (state: Information | undefined, action: Actions): Informat
     case ActionName.ANSWER_QUESTION: {
       const newQuestions = {
         ...newState.questions,
-        [action.formData.tag]: action.formData.value
+        ...action.formData
       }
       return {
         ...newState,

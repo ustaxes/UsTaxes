@@ -1,7 +1,7 @@
 import fc, { Arbitrary } from 'fast-check'
 import { CURRENT_YEAR } from '../data/federal'
 import locationPostalCodes from '../data/locationPostalCodes'
-import { QuestionTag } from '../data/questions'
+import { QuestionTagName, questionTagNames, Responses } from '../data/questions'
 import F1040 from '../irsForms/F1040'
 import Form from '../irsForms/Form'
 import { create1040 } from '../irsForms/Main'
@@ -189,10 +189,10 @@ export const taxPayer: Arbitrary<types.TaxPayer> =
       filingStatus, primaryPerson, spouse, dependents, contactEmail, contactPhoneNumber
     }))
 
-const questionTag: Arbitrary<keyof typeof QuestionTag> =
-  fc.constantFrom(...util.enumKeys(QuestionTag))
+const questionTag: Arbitrary<QuestionTagName> =
+  fc.constantFrom(...questionTagNames)
 
-export const questions: Arbitrary<types.QuestionResponses> =
+export const questions: Arbitrary<Responses> =
   fc.set(questionTag).map((tags) => Object.fromEntries(tags.map((t) => [t, true])))
 
 export const information: Arbitrary<types.Information> =

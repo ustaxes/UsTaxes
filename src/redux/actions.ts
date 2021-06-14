@@ -13,12 +13,12 @@ import {
   Property,
   Edit1099Action,
   EditW2Action,
-  TaxesState,
-  AnswerQuestionAction
+  TaxesState
 } from './data'
 import { ValidateFunction } from 'ajv'
 import ajv,
 { checkType } from './validate'
+import { Responses } from '../data/questions'
 
 export enum ActionName {
   SAVE_REFUND_INFO = 'SAVE_REFUND_INFO',
@@ -66,7 +66,7 @@ type Remove1099 = Save<typeof ActionName.REMOVE_1099, number>
 type AddProperty = Save<typeof ActionName.ADD_PROPERTY, Property>
 type EditProperty = Save<typeof ActionName.EDIT_PROPERTY, EditPropertyAction>
 type RemoveProperty = Save<typeof ActionName.REMOVE_PROPERTY, number>
-type AnswerQuestion = Save<typeof ActionName.ANSWER_QUESTION, AnswerQuestionAction>
+type AnswerQuestion = Save<typeof ActionName.ANSWER_QUESTION, Responses>
 type SetEntireState = Save<typeof ActionName.SET_ENTIRE_STATE, TaxesState>
 
 export type Actions =
@@ -104,7 +104,7 @@ function signalAction<T extends ActionName> (t: T): Save<T, {}> {
   *  Create an action constructor given an action name and a validator
   *  for the action's payload. The validator checks the payload against
   *  the schema at runtime so we can see errors if data of the wrong types
-  *  about to be inserted into the
+  *  about to be inserted into the model
   */
 function makeActionCreator<A extends Object, T extends ActionName> (
   t: T,
@@ -239,9 +239,9 @@ export const removeProperty: ActionCreator<number> = makeActionCreator(
   ajv.compile(indexSchema)
 )
 
-export const answerQuestion: ActionCreator<AnswerQuestionAction> = makeActionCreator(
+export const answerQuestion: ActionCreator<Responses> = makeActionCreator(
   ActionName.ANSWER_QUESTION,
-  ajv.getSchema('#/definitions/AnswerQuestionAction') as ValidateFunction<AnswerQuestionAction>
+  ajv.getSchema('#/definitions/Responses') as ValidateFunction<Responses>
 )
 
 // debugging purposes only, leaving unchecked.
