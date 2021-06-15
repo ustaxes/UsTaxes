@@ -53,6 +53,8 @@ ajv.getSchema('#/definitions/Information')
 ajv.getSchema('#/definitions/Property')
 ajv.getSchema('#/definitions/PropertyType')
 ajv.getSchema('#/definitions/EditPropertyAction')
+ajv.getSchema('#/definitions/F1098e')
+ajv.getSchema('#/definitions/Edit1098eAction')
 ajv.getSchema('#/definitions/TaxesState')
 
 export default ajv

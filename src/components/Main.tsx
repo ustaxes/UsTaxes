@@ -27,6 +27,7 @@ import ContactInfo from './TaxPayer/ContactInfo'
 import F1099Info from './income/F1099Info'
 import Summary from './Summary'
 import RealEstate from './income/RealEstate'
+import F1098eInfo from './deductions/F1098eInfo'
 import { StateLoader } from './debug'
 import NoMatchPage from './NoMatchPage'
 
@@ -91,6 +92,9 @@ const Urls = {
     f1099s: '/income/f1099s',
     realEstate: '/income/realestate'
   },
+  deductions: {
+    f1098es: '/deductions/studentloaninterest'
+  },
   credits: {
     main: '/credits',
     eic: '/credits/eic'
@@ -116,6 +120,12 @@ const drawerSections: Section[] = [
       item('Wages (W2)', Urls.income.w2s, <W2JobInfo />),
       item('Income (1099)', Urls.income.f1099s, <F1099Info />),
       item('Real Estate', Urls.income.realEstate, <RealEstate />)
+    ]
+  },
+  {
+    title: 'Deductions',
+    items: [
+      item('Student Loan Interest', Urls.deductions.f1098es, <F1098eInfo />)
     ]
   },
   {

@@ -1,10 +1,10 @@
 import { Information } from '../redux/data'
 import TaxPayer from '../redux/TaxPayer'
-import { anArrayOf } from '../util'
 import Form, { FormTag } from './Form'
 import ScheduleE from './ScheduleE'
 import { sumFields } from './util'
 import log from '../log'
+import F1040 from './F1040'
 
 const unimplemented = (message: string): void =>
   log.warn(`[Schedule 1] unimplemented ${message}`)
@@ -13,9 +13,11 @@ export default class Schedule1 implements Form {
   tag: FormTag = 'f1040s1'
   state: Information
   scheduleE?: ScheduleE
+  f1040: F1040
 
-  constructor (info: Information) {
+  constructor (info: Information, f1040: F1040) {
     this.state = info
+    this.f1040 = f1040
   }
 
   addScheduleE = (scheduleE: ScheduleE): void => {
@@ -42,9 +44,38 @@ export default class Schedule1 implements Form {
     this.l8()
   ])
 
+  l10 = (): number | undefined => undefined
+  l11 = (): number | undefined => undefined
+  l12 = (): number | undefined => undefined
+  l13 = (): number | undefined => undefined
+  l14 = (): number | undefined => undefined
+  l15 = (): number | undefined => undefined
+  l16 = (): number | undefined => undefined
+  l17 = (): number | undefined => undefined
+  l18 = (): number | undefined => undefined
+  l19 = (): number | undefined => undefined
+  l20 = (): number | undefined => this.f1040.studentLoanInterestWorksheet?.l9()
+  l21 = (): number | undefined => undefined
+  // TO DO: Write in Deductions
+  l22writeIn = (): number | undefined => undefined
+
   l22 = (): number | undefined => {
     unimplemented('Adjustments to income')
-    return undefined
+    return sumFields([
+      this.l10(),
+      this.l11(),
+      this.l12(),
+      this.l13(),
+      this.l14(),
+      this.l15(),
+      this.l16(),
+      this.l17(),
+      this.l18(),
+      this.l19(),
+      this.l20(),
+      this.l21(),
+      this.l22writeIn()
+    ])
   }
 
   fields = (): Array<string | number | boolean | undefined> => {
@@ -65,7 +96,20 @@ export default class Schedule1 implements Form {
       undefined, // Other income type 2
       this.l8(),
       this.l9(),
-      ...anArrayOf(14, undefined),
+      this.l10(),
+      this.l11(),
+      this.l12(),
+      this.l13(),
+      this.l14(),
+      this.l15(),
+      this.l16(),
+      this.l17(),
+      this.l18(),
+      undefined, // Alimony Recipient SSN
+      undefined, // Date of Divorce/Seperation
+      this.l19(),
+      this.l20(),
+      this.l21(),
       this.l22()
     ]
   }
