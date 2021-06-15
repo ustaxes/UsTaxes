@@ -7,12 +7,14 @@ import {
   PrimaryPerson,
   ContactInfo,
   Supported1099,
+  F1098e,
   Spouse,
   EditDependentAction,
   EditPropertyAction,
   Property,
   Edit1099Action,
   EditW2Action,
+  Edit1098eAction,
   TaxesState
 } from './data'
 import { ValidateFunction } from 'ajv'
@@ -40,6 +42,9 @@ export enum ActionName {
   EDIT_PROPERTY = 'EDIT_PROPERTY',
   REMOVE_PROPERTY = 'REMOVE_PROPERTY',
   ANSWER_QUESTION = 'ANSWER_QUESTION',
+  ADD_1098e = 'ADD_1098e',
+  EDIT_1098e = 'EDIT_1098e',
+  REMOVE_1098e = 'REMOVE_1098e',
   SET_ENTIRE_STATE = 'SET_ENTIRE_STATE'
 }
 
@@ -67,6 +72,9 @@ type AddProperty = Save<typeof ActionName.ADD_PROPERTY, Property>
 type EditProperty = Save<typeof ActionName.EDIT_PROPERTY, EditPropertyAction>
 type RemoveProperty = Save<typeof ActionName.REMOVE_PROPERTY, number>
 type AnswerQuestion = Save<typeof ActionName.ANSWER_QUESTION, Responses>
+type Add1098e = Save<typeof ActionName.ADD_1098e, F1098e>
+type Edit1098e = Save<typeof ActionName.EDIT_1098e, Edit1098eAction>
+type Remove1098e = Save<typeof ActionName.REMOVE_1098e, number>
 type SetEntireState = Save<typeof ActionName.SET_ENTIRE_STATE, TaxesState>
 
 export type Actions =
@@ -89,6 +97,9 @@ export type Actions =
   | EditProperty
   | RemoveProperty
   | AnswerQuestion
+  | Add1098e
+  | Edit1098e
+  | Remove1098e
   | SetEntireState
 
 export type ActionCreator<A> = (formData: A) => Actions
@@ -242,6 +253,21 @@ export const removeProperty: ActionCreator<number> = makeActionCreator(
 export const answerQuestion: ActionCreator<Responses> = makeActionCreator(
   ActionName.ANSWER_QUESTION,
   ajv.getSchema('#/definitions/Responses') as ValidateFunction<Responses>
+)
+
+export const add1098e: ActionCreator<F1098e> = makeActionCreator(
+  ActionName.ADD_1098e,
+  ajv.getSchema('#/definitions/F1098e') as ValidateFunction<F1098e>
+)
+
+export const edit1098e: ActionCreator<Edit1098eAction> = makeActionCreator(
+  ActionName.EDIT_1098e,
+  ajv.getSchema('#/definitions/Edit1098eAction') as ValidateFunction<Edit1098eAction>
+)
+
+export const remove1098e: ActionCreator<number> = makeActionCreator(
+  ActionName.REMOVE_1098e,
+  ajv.compile(indexSchema)
 )
 
 // debugging purposes only, leaving unchecked.

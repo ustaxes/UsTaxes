@@ -21,6 +21,7 @@ import { computeOrdinaryTax } from './TaxTable'
 import SDQualifiedAndCapGains from './worksheets/SDQualifiedAndCapGains'
 import F4797 from './F4797'
 import { Responses } from '../data/questions'
+import StudentLoanInterestWorksheet from './worksheets/StudentLoanInterestWorksheet'
 
 export enum F1040Error {
   filingStatusUndefined = 'Select a filing status'
@@ -70,6 +71,7 @@ export default class F1040 implements Form {
   f8814?: F8814
   f8888?: F8888
   f8995?: F8995 | F8995A
+  studentLoanInterestWorksheet?: StudentLoanInterestWorksheet
 
   constructor (tp: TaxPayer) {
     this.filingStatus = tp.filingStatus
@@ -154,6 +156,10 @@ export default class F1040 implements Form {
 
   addSchedule8812 (s: Schedule8812): void {
     this.schedule8812 = s
+  }
+
+  addStudentLoanInterestWorksheet (s: StudentLoanInterestWorksheet): void {
+    this.studentLoanInterestWorksheet = s
   }
 
   addRefund (r: Refund): void {

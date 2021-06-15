@@ -40,6 +40,7 @@ const concat = (as: Arbitrary<string>, bs: Arbitrary<string>, sep: string = ' ')
 const wages: Arbitrary<number> = fc.nat({ max: 10000000 })
 const investment: Arbitrary<number> = fc.nat({ max: 100000 })
 const expense: Arbitrary<number> = fc.nat({ max: 10000 })
+const interest: Arbitrary<number> = fc.nat({ max: 2000 })
 const daysInYear: Arbitrary<number> = fc.nat({ max: util.daysInYear(CURRENT_YEAR) })
 const daysInYearPair: Arbitrary<[number, number]> =
   daysInYear.chain((d) =>
@@ -141,6 +142,12 @@ export const property: Arbitrary<types.Property> =
       address, rentalDays, personalUseDays, rentReceived, propertyType, otherPropertyType, qualifiedJointVenture, expenses
     }))
 
+const f1098e: Arbitrary<types.F1098e> =
+  fc.tuple(maxWords(2), interest)
+    .map(([lender, interest]) => ({
+      lender, interest
+    }))
+
 export const accountType: Arbitrary<types.AccountType> =
   fc.constantFrom(types.AccountType.checking, types.AccountType.savings)
 
@@ -196,9 +203,9 @@ export const questions: Arbitrary<Responses> =
   fc.set(questionTag).map((tags) => Object.fromEntries(tags.map((t) => [t, true])))
 
 export const information: Arbitrary<types.Information> =
-  fc.tuple(fc.array(f1099), fc.array(w2), fc.array(property), refund, taxPayer, questions)
-    .map(([f1099s, w2s, realEstate, refund, taxPayer, questions]) => ({
-      f1099s, w2s, realEstate, refund, taxPayer, questions
+  fc.tuple(fc.array(f1099), fc.array(w2), fc.array(property), fc.array(f1098e), refund, taxPayer, questions)
+    .map(([f1099s, w2s, realEstate, f1098es, refund, taxPayer, questions]) => ({
+      f1099s, w2s, realEstate, f1098es, refund, taxPayer, questions
     }))
 
 export const taxesState: Arbitrary<types.TaxesState> =
