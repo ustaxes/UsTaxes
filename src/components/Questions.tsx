@@ -10,9 +10,20 @@ import { PagerContext } from './pager'
 
 const Questions = (): ReactElement => {
   const state = useSelector((state: TaxesState) => state)
-  const questions = getRequiredQuestions(state)
 
-  const { control, register, handleSubmit } = useForm<Responses>()
+  const { control, register, handleSubmit, watch } = useForm<Responses>()
+
+  const currentValues = watch()
+
+  const questions = getRequiredQuestions({
+    information: {
+      ...state.information,
+      questions: {
+        ...state.information.questions,
+        ...currentValues
+      }
+    }
+  })
 
   const dispatch = useDispatch()
 
