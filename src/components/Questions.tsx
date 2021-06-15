@@ -1,7 +1,7 @@
 import React, { ReactElement } from 'react'
 import { List, ListItem } from '@material-ui/core'
 import { useDispatch, useSelector } from 'react-redux'
-import { getRequiredQuestions, Responses } from '../data/questions'
+import { getRequiredQuestions, QuestionTagName, Responses } from '../data/questions'
 import { TaxesState } from '../redux/data'
 import { answerQuestion } from '../redux/actions'
 import { LabeledCheckbox, LabeledInput } from './input'
@@ -28,7 +28,16 @@ const Questions = (): ReactElement => {
   const dispatch = useDispatch()
 
   const onSubmit = (onAdvance: () => void) => (responses: Responses): void => {
-    dispatch(answerQuestion(responses))
+    // fix to remove unrequired answers:
+    const qtags = questions.map((q) => q.tag)
+    const unrequired = Object.keys(responses).filter((rtag) => qtags.find((t) => t === rtag as QuestionTagName) === undefined)
+
+    const newResponses = {
+      ...responses,
+      ...Object.fromEntries(unrequired.map((k) => [k, undefined]))
+    }
+
+    dispatch(answerQuestion(newResponses))
     onAdvance()
   }
 
