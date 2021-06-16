@@ -75,7 +75,6 @@ export default class ScheduleB implements Form {
   fincenCountry = (): string | undefined => this.state.questions.FINCEN_114_ACCOUNT_COUNTRY
   foreignTrust = (): boolean => this.state.questions.FOREIGN_TRUST_RELATIONSHIP ?? false
 
-  // TODO - FINCEN questions
   l7a = (): [boolean, boolean] => [this.foreignAccount(), !this.foreignAccount()]
 
   l7a2 = (): [boolean, boolean] => [this.fincenForm(), !this.fincenForm()]
