@@ -1,6 +1,7 @@
 import fc, { Arbitrary } from 'fast-check'
 import { CURRENT_YEAR } from '../data/federal'
 import locationPostalCodes from '../data/locationPostalCodes'
+import { QuestionTagName, questionTagNames, Responses } from '../data/questions'
 import F1040 from '../irsForms/F1040'
 import Form from '../irsForms/Form'
 import { create1040 } from '../irsForms/Main'
@@ -195,10 +196,16 @@ export const taxPayer: Arbitrary<types.TaxPayer> =
       filingStatus, primaryPerson, spouse, dependents, contactEmail, contactPhoneNumber
     }))
 
+const questionTag: Arbitrary<QuestionTagName> =
+  fc.constantFrom(...questionTagNames)
+
+export const questions: Arbitrary<Responses> =
+  fc.set(questionTag).map((tags) => Object.fromEntries(tags.map((t) => [t, true])))
+
 export const information: Arbitrary<types.Information> =
-  fc.tuple(fc.array(f1099), fc.array(w2), fc.array(property), fc.array(f1098e), refund, taxPayer)
-    .map(([f1099s, w2s, realEstate, f1098es, refund, taxPayer]) => ({
-      f1099s, w2s, realEstate, f1098es, refund, taxPayer
+  fc.tuple(fc.array(f1099), fc.array(w2), fc.array(property), fc.array(f1098e), refund, taxPayer, questions)
+    .map(([f1099s, w2s, realEstate, f1098es, refund, taxPayer, questions]) => ({
+      f1099s, w2s, realEstate, f1098es, refund, taxPayer, questions
     }))
 
 export const taxesState: Arbitrary<types.TaxesState> =

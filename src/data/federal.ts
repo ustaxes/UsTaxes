@@ -173,7 +173,6 @@ const marriedFormulas: Piecewise[] = (() => {
 
 interface EICDef {
   caps: {[k in FilingStatus]: number[] | undefined}
-  questions: Array<[string, boolean]>
   maxInvestmentIncome: number
   formulas: { [k in FilingStatus]: Piecewise[] | undefined }
 }
@@ -188,21 +187,6 @@ export const EIC: EICDef = {
     [FilingStatus.MFS]: undefined,
     [FilingStatus.MFJ]: line11MfjCaps
   },
-  // step 1 required questions
-  questions: [
-    [
-      'Do you, and your spouse if filing a joint return, have a social security number issued on or before the due date of your 2020 return (including extensions) that allows you to work and is valid for EIC purposes (explained later under Definitions and Special Rules)?',
-      true
-    ],
-    [
-      'Are you filing Form 2555 (relating to foreign earned income)?',
-      false
-    ],
-    [
-      'Were you or your spouse a nonresident alien for any part of 2020?',
-      false
-    ]
-  ],
   maxInvestmentIncome: 3650,
   formulas: {
     [FilingStatus.S]: unmarriedFormulas,

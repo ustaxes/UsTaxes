@@ -1,3 +1,5 @@
+import { Responses } from '../data/questions'
+
 export enum PersonRole {
   PRIMARY = 'PRIMARY',
   SPOUSE = 'SPOUSE',
@@ -213,6 +215,7 @@ export interface Information {
   f1098es: F1098e[]
   refund?: Refund
   taxPayer: TaxPayer
+  questions: Responses
 }
 
 export interface TaxesState {

@@ -30,6 +30,7 @@ import RealEstate from './income/RealEstate'
 import F1098eInfo from './deductions/F1098eInfo'
 import { StateLoader } from './debug'
 import NoMatchPage from './NoMatchPage'
+import Questions from './Questions'
 
 const theme = createMuiTheme({
   palette: {
@@ -87,6 +88,7 @@ const Urls = {
     contactInfo: '/contact'
   },
   refund: '/refundinfo',
+  questions: '/questions',
   income: {
     w2s: '/income/w2jobinfo',
     f1099s: '/income/f1099s',
@@ -132,6 +134,7 @@ const drawerSections: Section[] = [
     title: 'Results',
     items: [
       item('Refund Information', Urls.refund, <RefundBankAccount />),
+      item('Informational Questions', Urls.questions, <Questions />),
       item('Summary', Urls.summary, <Summary />),
       item('Review and Print', Urls.createPdf, <CreatePDF />)
     ]

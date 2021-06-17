@@ -10,8 +10,9 @@ export const blankState: Information = {
   f1099s: [],
   w2s: [],
   realEstate: [],
-  f1098es: [],
-  taxPayer: { dependents: [] }
+  taxPayer: { dependents: [] },
+  questions: {},
+  f1098es: []
 }
 
 function formReducer (state: Information | undefined, action: Actions): Information {
@@ -198,6 +199,13 @@ function formReducer (state: Information | undefined, action: Actions): Informat
       return {
         ...newState,
         realEstate: newProperties
+      }
+    }
+    case ActionName.ANSWER_QUESTION: {
+      // must reset all questions
+      return {
+        ...newState,
+        questions: action.formData
       }
     }
     case ActionName.ADD_1098e: {

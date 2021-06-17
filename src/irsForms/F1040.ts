@@ -20,6 +20,7 @@ import ScheduleB from './ScheduleB'
 import { computeOrdinaryTax } from './TaxTable'
 import SDQualifiedAndCapGains from './worksheets/SDQualifiedAndCapGains'
 import F4797 from './F4797'
+import { Responses } from '../data/questions'
 import StudentLoanInterestWorksheet from './worksheets/StudentLoanInterestWorksheet'
 
 export enum F1040Error {
@@ -99,6 +100,10 @@ export default class F1040 implements Form {
 
   addW2 (w2: IncomeW2): void {
     this.w2s.push(w2)
+  }
+
+  addQuestions (questions: Responses): void {
+    this.virtualCurrency = questions.CRYPTO ?? false
   }
 
   addSchedule1 (s: Schedule1): void {

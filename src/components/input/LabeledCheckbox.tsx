@@ -12,7 +12,7 @@ export function LabeledCheckbox (props: LabeledCheckboxProps): ReactElement {
   return (
     <Controller
       name={name}
-      defaultValue={defaultValue}
+      defaultValue={defaultValue ?? false}
       render={ ({ value, onChange }) =>
         <div className={classes.root}>
           <FormControl component="fieldset">

@@ -20,6 +20,7 @@ import {
 import { ValidateFunction } from 'ajv'
 import ajv,
 { checkType } from './validate'
+import { Responses } from '../data/questions'
 
 export enum ActionName {
   SAVE_REFUND_INFO = 'SAVE_REFUND_INFO',
@@ -40,6 +41,7 @@ export enum ActionName {
   ADD_PROPERTY = 'ADD_PROPERTY',
   EDIT_PROPERTY = 'EDIT_PROPERTY',
   REMOVE_PROPERTY = 'REMOVE_PROPERTY',
+  ANSWER_QUESTION = 'ANSWER_QUESTION',
   ADD_1098e = 'ADD_1098e',
   EDIT_1098e = 'EDIT_1098e',
   REMOVE_1098e = 'REMOVE_1098e',
@@ -69,6 +71,7 @@ type Remove1099 = Save<typeof ActionName.REMOVE_1099, number>
 type AddProperty = Save<typeof ActionName.ADD_PROPERTY, Property>
 type EditProperty = Save<typeof ActionName.EDIT_PROPERTY, EditPropertyAction>
 type RemoveProperty = Save<typeof ActionName.REMOVE_PROPERTY, number>
+type AnswerQuestion = Save<typeof ActionName.ANSWER_QUESTION, Responses>
 type Add1098e = Save<typeof ActionName.ADD_1098e, F1098e>
 type Edit1098e = Save<typeof ActionName.EDIT_1098e, Edit1098eAction>
 type Remove1098e = Save<typeof ActionName.REMOVE_1098e, number>
@@ -93,6 +96,7 @@ export type Actions =
   | AddProperty
   | EditProperty
   | RemoveProperty
+  | AnswerQuestion
   | Add1098e
   | Edit1098e
   | Remove1098e
@@ -111,7 +115,7 @@ function signalAction<T extends ActionName> (t: T): Save<T, {}> {
   *  Create an action constructor given an action name and a validator
   *  for the action's payload. The validator checks the payload against
   *  the schema at runtime so we can see errors if data of the wrong types
-  *  about to be inserted into the
+  *  about to be inserted into the model
   */
 function makeActionCreator<A extends Object, T extends ActionName> (
   t: T,
@@ -244,6 +248,11 @@ export const editProperty: ActionCreator<EditPropertyAction> = makeActionCreator
 export const removeProperty: ActionCreator<number> = makeActionCreator(
   ActionName.REMOVE_PROPERTY,
   ajv.compile(indexSchema)
+)
+
+export const answerQuestion: ActionCreator<Responses> = makeActionCreator(
+  ActionName.ANSWER_QUESTION,
+  ajv.getSchema('#/definitions/Responses') as ValidateFunction<Responses>
 )
 
 export const add1098e: ActionCreator<F1098e> = makeActionCreator(
