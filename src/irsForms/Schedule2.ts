@@ -11,5 +11,11 @@ export default class Schedule2 {
   l3 = (): number | undefined => undefined
 
   // TODO
+  l5 = (): number | undefined => undefined
+
+  // TODO
+  l8 = (): number | undefined => undefined
+
+  // TODO
   l10 = (): number | undefined => undefined
 }
