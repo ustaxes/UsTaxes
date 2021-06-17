@@ -63,4 +63,9 @@ export default class ChildTaxCreditWorksheet {
   // if l8 > l11, returns l11 following instructions
   // Otherwise, returns l8, either because l8 is the deduction or because l8 is undefined and they can't take the deduction
   l12 = (): number | undefined => this.l11() !== undefined ? (computeField(this.l8()) > computeField(this.l11()) ? this.l11() : this.l8()) : undefined
+
+  // alias
+  credit = (): number | undefined => this.l12()
+
+  isAllowed = (): boolean => this.credit() !== undefined
 }
