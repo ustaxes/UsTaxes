@@ -6,22 +6,25 @@ UsTaxes is a free open source tax filing application that can be used to file th
 
 ## Supported Income data
 
-Most income information from the following forms are supported:
+Most income and deduction information from the following forms are supported:
 
 * W2
 * 1099-INT
 * 1099-DIV
 * 1099-B
+* 1098-E
 
 So far, this project can attach the following schedules to form 1040:
 
-* Schedule 1 (as to Schedule E data only)
+* Schedule 1 (as to Schedule E and 8812 data only)
+* Schedule 8812
 * Schedule B
 * Schedule D
 * Schedule E
 
 ## Supported Credits
 
+* Credit for children and other dependents
 * Earned income credit
 
 ## Supported states
