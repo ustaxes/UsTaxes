@@ -29,7 +29,9 @@ export default class Schedule8812 implements Form {
   // This is a horrible, horrible line
   // have net earnings from self-employment and used optional methods => report pub972 Earned Income Worksheet (even if taking EIC)
   // Taking EIC => completed worksheet B? => worksheet B line 4b, plus combat pay, minus clergy housing and meals, else EIC step 5 plus combat pay
-  // Not taking EIC? => pub 972 Earned Income Worksheet if self employed, or filing Schedule SE, or filing Schedule C as a "statutory employee" , else Form 1040 l1, minus fellowships, income as an inmate, deferred compensation, and Medicaid waiver, unless you chose to inclue the Medicaid waivers, and add combat pay in as well
+  // Not taking EIC? => pub 972 Earned Income Worksheet if self employed, or filing Schedule SE, or filing Schedule C as a "statutory employee" ,
+  // else Form 1040 l1, minus fellowships, income as an inmate, deferred compensation, and Medicaid waiver, unless you chose to inclue the Medicaid waivers,
+  // and add combat pay in as well
   // So for now, it's just line 1 or EIC step 5 (line 9)
   // TODO: Add other earned income definitions
   l6 = (): number | undefined => this.f1040.scheduleEIC !== undefined ? this.f1040.scheduleEIC?.earnedIncome(this.f1040) : this.f1040.l1()
