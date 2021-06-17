@@ -16,7 +16,7 @@ Most income and deduction information from the following forms are supported:
 
 So far, this project can attach the following schedules to form 1040:
 
-* Schedule 1 (as to Schedule E and 8812 data only)
+* Schedule 1 (as to Schedule E and 1098-E data only)
 * Schedule 8812
 * Schedule B
 * Schedule D
