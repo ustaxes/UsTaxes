@@ -5,13 +5,14 @@ import { getRequiredQuestions, QuestionTagName, Responses } from '../data/questi
 import { TaxesState } from '../redux/data'
 import { answerQuestion } from '../redux/actions'
 import { LabeledCheckbox, LabeledInput } from './input'
-import { useForm } from 'react-hook-form'
+import { FormProvider, useForm } from 'react-hook-form'
 import { PagerContext } from './pager'
 
 const Questions = (): ReactElement => {
   const state = useSelector((state: TaxesState) => state)
 
-  const { control, register, handleSubmit, watch } = useForm<Responses>()
+  const methods = useForm<Responses>()
+  const { handleSubmit, watch } = methods
 
   const currentValues = watch()
 
@@ -41,7 +42,7 @@ const Questions = (): ReactElement => {
     onAdvance()
   }
 
-  return (
+  const page = (
     <PagerContext.Consumer>
       { ({ onAdvance, navButtons }) =>
         <form onSubmit={handleSubmit(onSubmit(onAdvance))}>
@@ -58,7 +59,6 @@ const Questions = (): ReactElement => {
                           <LabeledCheckbox
                             name={q.tag}
                             label={q.text}
-                            control={control}
                             defaultValue={state.information.questions[q.tag] as (boolean | undefined)}
                           />
                         )
@@ -67,7 +67,6 @@ const Questions = (): ReactElement => {
                         return (
                           <LabeledInput
                             name={q.tag}
-                            register={register}
                             label={q.text}
                             defaultValue={state.information.questions[q.tag] as (string | undefined)}
                           />
@@ -83,6 +82,10 @@ const Questions = (): ReactElement => {
         </form>
       }
     </PagerContext.Consumer>
+  )
+
+  return (
+    <FormProvider {...methods}>{page}</FormProvider>
   )
 }
 

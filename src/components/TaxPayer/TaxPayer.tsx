@@ -1,5 +1,5 @@
 import React, { ReactElement } from 'react'
-import { useForm, useWatch } from 'react-hook-form'
+import { FormProvider, useForm, useWatch } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { savePrimaryPersonInfo } from '../../redux/actions'
 import { Address, PersonRole, PrimaryPerson, TaxesState, TaxPayer } from '../../redux/data'
@@ -27,7 +27,8 @@ const asPrimaryPerson = (formData: TaxPayerUserForm): PrimaryPerson => ({
 })
 
 export default function PrimaryTaxpayer (): ReactElement {
-  const { register, handleSubmit, control, errors } = useForm<PrimaryPerson>()
+  const methods = useForm<PrimaryPerson>()
+  const { handleSubmit, control, formState: { errors } } = methods
   // const variable dispatch to allow use inside function
   const dispatch = useDispatch()
 
@@ -46,26 +47,21 @@ export default function PrimaryTaxpayer (): ReactElement {
     onAdvance()
   }
 
-  return (
+  const page = (
     <PagerContext.Consumer>
       { ({ navButtons, onAdvance }) =>
         <form onSubmit={handleSubmit(onSubmit(onAdvance))}>
           <h2>Primary Taxpayer Information</h2>
           <PersonFields
-            register={register}
             errors={errors}
             defaults={taxPayer?.primaryPerson}
-            control={control}
           />
           <LabeledCheckbox
             label="Check if you are a dependent"
-            control={control}
             defaultValue={taxPayer?.primaryPerson?.isTaxpayerDependent ?? false}
             name="isTaxpayerDependent"
           />
           <AddressFields
-            register={register}
-            control={control}
             errors={errors.address}
             address={taxPayer?.primaryPerson?.address}
             checkboxText="Do you have a foreign address?"
@@ -76,4 +72,6 @@ export default function PrimaryTaxpayer (): ReactElement {
       }
     </PagerContext.Consumer>
   )
+
+  return <FormProvider {...methods}>{page}</FormProvider>
 }

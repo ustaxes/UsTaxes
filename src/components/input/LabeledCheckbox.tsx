@@ -1,11 +1,12 @@
 import React, { ReactElement } from 'react'
 import { Checkbox, FormControl, FormControlLabel, FormGroup } from '@material-ui/core'
-import { Controller } from 'react-hook-form'
+import { Controller, useFormContext } from 'react-hook-form'
 import { LabeledCheckboxProps } from './types'
 import useStyles from './styles'
 
 export function LabeledCheckbox (props: LabeledCheckboxProps): ReactElement {
-  const { label, name, control, defaultValue } = props
+  const { label, name, defaultValue } = props
+  const { control } = useFormContext()
 
   const classes = useStyles()
 

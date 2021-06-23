@@ -1,5 +1,5 @@
 import React, { ReactElement } from 'react'
-import { useForm } from 'react-hook-form'
+import { useForm, FormProvider } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { LabeledInput, LabeledRadio } from './input'
 import { Patterns } from './Patterns'
@@ -17,7 +17,8 @@ interface UserRefundForm {
 const toRefund = (formData: UserRefundForm): Refund => formData
 
 export default function RefundBankAccount (): ReactElement {
-  const { register, handleSubmit, errors, control } = useForm<UserRefundForm>()
+  const methods = useForm<UserRefundForm>()
+  const { handleSubmit, errors } = methods
   // const variable dispatch to allow use inside function
   const dispatch = useDispatch()
 
@@ -35,14 +36,13 @@ export default function RefundBankAccount (): ReactElement {
     <PagerContext.Consumer>
       { ({ onAdvance, navButtons }) =>
         <form onSubmit={handleSubmit(onSubmit(onAdvance))}>
-          <div>
+          <FormProvider {...methods}>
             <h2>Refund Information</h2>
 
             <LabeledInput
               label="Bank Routing number"
-              register={register}
               required={true}
-              patternConfig={Patterns.bankRouting(control)}
+              patternConfig={Patterns.bankRouting}
               name="routingNumber"
               defaultValue={prevFormData?.routingNumber}
               error={errors.routingNumber}
@@ -50,22 +50,20 @@ export default function RefundBankAccount (): ReactElement {
 
             <LabeledInput
               label="Bank Account number"
-              register={register}
               required={true}
-              patternConfig={Patterns.bankAccount(control)}
+              patternConfig={Patterns.bankAccount}
               name="accountNumber"
               defaultValue={prevFormData?.accountNumber}
               error={errors.accountNumber}
             />
             <LabeledRadio
               label="Account Type"
-              control={control}
               name="accountType"
               defaultValue={prevFormData?.accountType as string}
               values={[['Checking', 'checking'], ['Savings', 'savings']]}
             />
             {navButtons}
-          </div>
+          </FormProvider>
         </form>
       }
     </PagerContext.Consumer>
