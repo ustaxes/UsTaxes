@@ -1,5 +1,5 @@
 import React, { ReactElement, useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { useForm, FormProvider } from 'react-hook-form'
 import { Icon } from '@material-ui/core'
 import { useDispatch, useSelector } from 'react-redux'
 import { add1099, edit1099, remove1099 } from '../../redux/actions'
@@ -136,7 +136,8 @@ export default function F1099Info (): ReactElement {
     return blankUserInput
   })()
 
-  const { register, errors, handleSubmit, control, reset, watch, setValue } = useForm<F1099UserInput>()
+  const methods = useForm<F1099UserInput>()
+  const { errors, handleSubmit, reset, watch, setValue } = methods
   const selectedType: Income1099Type | undefined = watch('formType')
 
   const dispatch = useDispatch()
@@ -172,9 +173,8 @@ export default function F1099Info (): ReactElement {
   const intFields = (
     <LabeledInput
       label="Box 1 - Interest Income"
-      register={register}
       required={true}
-      patternConfig={Patterns.currency(control)}
+      patternConfig={Patterns.currency}
       name="interest"
       error={errors.interest}
       defaultValue={defaultValues?.interest.toString()}
@@ -186,18 +186,16 @@ export default function F1099Info (): ReactElement {
       <h4>Long Term Covered Transactions</h4>
       <LabeledInput
         label="Proceeds"
-        register={register}
         required={true}
-        patternConfig={Patterns.currency(control)}
+        patternConfig={Patterns.currency}
         name="longTermProceeds"
         error={errors.longTermProceeds}
         defaultValue={defaultValues?.longTermProceeds.toString()}
       />
       <LabeledInput
         label="Cost basis"
-        register={register}
         required={true}
-        patternConfig={Patterns.currency(control)}
+        patternConfig={Patterns.currency}
         name="longTermCostBasis"
         error={errors.longTermCostBasis}
         defaultValue={defaultValues?.longTermCostBasis.toString()}
@@ -205,18 +203,16 @@ export default function F1099Info (): ReactElement {
       <h4>Short Term Covered Transactions</h4>
       <LabeledInput
         label="Proceeds"
-        register={register}
         required={true}
-        patternConfig={Patterns.currency(control)}
+        patternConfig={Patterns.currency}
         name="shortTermProceeds"
         error={errors.shortTermProceeds}
         defaultValue={defaultValues?.shortTermProceeds.toString()}
       />
       <LabeledInput
         label="Cost basis"
-        register={register}
         required={true}
-        patternConfig={Patterns.currency(control)}
+        patternConfig={Patterns.currency}
         name="shortTermCostBasis"
         error={errors.shortTermCostBasis}
         defaultValue={defaultValues?.shortTermCostBasis.toString()}
@@ -228,18 +224,16 @@ export default function F1099Info (): ReactElement {
     <div>
       <LabeledInput
         label="Total Dividends"
-        register={register}
         required={true}
-        patternConfig={Patterns.currency(control)}
+        patternConfig={Patterns.currency}
         name="dividends"
         error={errors.dividends}
         defaultValue={defaultValues?.dividends.toString()}
       />
       <LabeledInput
         label="Qualified Dividends"
-        register={register}
         required={true}
-        patternConfig={Patterns.currency(control)}
+        patternConfig={Patterns.currency}
         name="qualifiedDividends"
         error={errors.qualifiedDividends}
         defaultValue={defaultValues?.qualifiedDividends.toString()}
@@ -275,7 +269,6 @@ export default function F1099Info (): ReactElement {
 
       <GenericLabeledDropdown
         dropDownData={Object.values(Income1099Type)}
-        control={control}
         error={errors.formType}
         label="Form Type"
         required={true}
@@ -288,7 +281,6 @@ export default function F1099Info (): ReactElement {
 
       <LabeledInput
         label="Enter name of bank, broker firm, or other payer"
-        register={register}
         required={true}
         patternConfig={Patterns.name}
         name="payer"
@@ -303,7 +295,6 @@ export default function F1099Info (): ReactElement {
 
       <GenericLabeledDropdown
         dropDownData={people}
-        control={control}
         error={errors.personRole}
         label="Recipient"
         required={true}
@@ -321,7 +312,9 @@ export default function F1099Info (): ReactElement {
       { ({ onAdvance, navButtons }) =>
         <form onSubmit={onAdvance}>
           <h2>1099 Information</h2>
-          {form}
+          <FormProvider {...methods}>
+            {form}
+          </FormProvider>
           { navButtons }
         </form>
       }

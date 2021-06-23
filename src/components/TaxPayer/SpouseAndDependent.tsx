@@ -1,6 +1,6 @@
 import React, { ReactElement, useState } from 'react'
 
-import { useForm } from 'react-hook-form'
+import { useForm, FormProvider } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { Patterns } from '../Patterns'
 import { LabeledInput, LabeledCheckbox, formatSSID, GenericLabeledDropdown } from '../input'
@@ -59,7 +59,8 @@ const toSpouse = (formData: UserSpouseForm): Spouse => ({
 })
 
 export const AddDependentForm = (): ReactElement => {
-  const { register, errors, handleSubmit, control, reset } = useForm<UserDependentForm>()
+  const methods = useForm<UserDependentForm>()
+  const { errors, handleSubmit, reset } = methods
 
   const dependents = useSelector((state: TaxesState) =>
     state.information.taxPayer?.dependents ?? []
@@ -89,7 +90,7 @@ export const AddDependentForm = (): ReactElement => {
     setEditingIdx(undefined)
   }
 
-  return (
+  const page = (
     <FormListContainer
       onDone={(onSuccess) => handleSubmit(_onSubmit(onSuccess))}
       onCancel={clear}
@@ -102,14 +103,11 @@ export const AddDependentForm = (): ReactElement => {
       removeItem={(i) => dispatch(removeDependent(i))}
     >
       <PersonFields
-        register={register}
         errors={errors}
-        control={control}
         defaults={defaultValues !== undefined ? toDependent(defaultValues) : undefined}
       />
       <LabeledInput
         label="Relationship to Taxpayer"
-        register={register}
         name="relationship"
         required={true}
         patternConfig={Patterns.name}
@@ -117,18 +115,16 @@ export const AddDependentForm = (): ReactElement => {
         defaultValue={defaultValues?.relationship}
       />
       <LabeledInput
-        register={register}
         label="Birth Year"
-        patternConfig={Patterns.year(control)}
+        patternConfig={Patterns.year}
         name="birthYear"
         required={true}
         error={errors.birthYear}
         defaultValue={defaultValues?.birthYear}
       />
       <LabeledInput
-        register={register}
         label="How many months did you live together this year?"
-        patternConfig={Patterns.numMonths(control)}
+        patternConfig={Patterns.numMonths}
         name="numberOfMonths"
         required={true}
         error={errors.numberOfMonths}
@@ -137,15 +133,17 @@ export const AddDependentForm = (): ReactElement => {
       <LabeledCheckbox
         label="Is this person a full-time student?"
         name="isStudent"
-        control={control}
         defaultValue={defaultValues?.isStudent ?? false}
       />
     </FormListContainer>
   )
+
+  return <FormProvider {...methods}>{page}</FormProvider>
 }
 
 export const SpouseInfo = (): ReactElement => {
-  const { register, control, errors, handleSubmit, getValues } = useForm<UserSpouseForm>()
+  const methods = useForm<UserSpouseForm>()
+  const { errors, handleSubmit, getValues } = methods
   const [editSpouse, setEditSpouse] = useState<boolean>(false)
   const dispatch = useDispatch()
 
@@ -163,7 +161,7 @@ export const SpouseInfo = (): ReactElement => {
     onSuccess()
   }
 
-  return (
+  const page = (
     <FormListContainer
       items={spouse !== undefined ? [spouse] : []}
       primary={(s) => `${s.firstName} ${s.lastName}`}
@@ -177,24 +175,24 @@ export const SpouseInfo = (): ReactElement => {
       removeItem={() => dispatch(removeSpouse)}
     >
       <PersonFields
-        register={register}
         errors={errors}
         person={spouse}
-        control={control}
       >
         <LabeledCheckbox
           label="Check if your spouse is a dependent"
-          control={control}
-          defaultValue={spouse?.isTaxpayerDependent ?? false}
+            defaultValue={spouse?.isTaxpayerDependent ?? false}
           name="isTaxpayerDependent"
         />
       </PersonFields>
     </FormListContainer>
   )
+
+  return <FormProvider {...methods}>{page}</FormProvider>
 }
 
 const SpouseAndDependent = (): ReactElement => {
-  const { handleSubmit, errors, control } = useForm<{filingStatus: FilingStatus}>()
+  const methods = useForm<{ filingStatus: FilingStatus }>()
+  const { handleSubmit, errors } = methods
   // const variable dispatch to allow use inside function
   const dispatch = useDispatch()
 
@@ -206,7 +204,8 @@ const SpouseAndDependent = (): ReactElement => {
     dispatch(saveFilingStatusInfo(formData.filingStatus))
     onAdvance()
   }
-  return (
+
+  const page = (
     <PagerContext.Consumer>
       { ({ onAdvance, navButtons }) =>
         <form onSubmit={handleSubmit(onSubmit(onAdvance))}>
@@ -227,8 +226,7 @@ const SpouseAndDependent = (): ReactElement => {
             error={errors.filingStatus}
             textMapping={status => FilingStatusTexts[status]}
             required={true}
-            control={control}
-            name="filingStatus"
+                name="filingStatus"
             defaultValue={taxPayer?.filingStatus}
           />
           {navButtons}
@@ -236,6 +234,8 @@ const SpouseAndDependent = (): ReactElement => {
       }
     </PagerContext.Consumer>
   )
+
+  return <FormProvider {...methods}>{page}</FormProvider>
 }
 
 export default SpouseAndDependent

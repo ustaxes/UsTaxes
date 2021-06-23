@@ -1,6 +1,6 @@
 import React, { ReactElement, useState } from 'react'
-import { useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
+import { FormProvider, useForm } from 'react-hook-form'
 import { PagerContext } from '../pager'
 import { TaxesState, IncomeW2, Person, PersonRole } from '../../redux/data'
 import { Currency, formatSSID, GenericLabeledDropdown, LabeledInput } from '../input'
@@ -30,7 +30,8 @@ const toIncomeW2 = (formData: IncomeW2UserInput): IncomeW2 => ({
 })
 
 export default function W2JobInfo (): ReactElement {
-  const { register, errors, handleSubmit, control, reset } = useForm<IncomeW2UserInput>()
+  const methods = useForm<IncomeW2UserInput>()
+  const { errors, handleSubmit, reset } = methods
   const dispatch = useDispatch()
 
   const [editing, setEditing] = useState<number | undefined>(undefined)
@@ -85,7 +86,6 @@ export default function W2JobInfo (): ReactElement {
       <strong>Input data from W-2</strong>
       <LabeledInput
         label="Occupation"
-        register={register}
         required={true}
         name="occupation"
         error={errors.occupation}
@@ -95,9 +95,8 @@ export default function W2JobInfo (): ReactElement {
       <LabeledInput
         strongLabel="Box 1 - "
         label="Wages, tips, other compensation"
-        register={register}
         required={true}
-        patternConfig={Patterns.currency(control)}
+        patternConfig={Patterns.currency}
         name="income"
         error={errors.income}
         defaultValue={defaultValues?.income.toString()}
@@ -106,10 +105,9 @@ export default function W2JobInfo (): ReactElement {
       <LabeledInput
         strongLabel="Box 2 - "
         label="Federal income tax withheld"
-        register={register}
         required={true}
         name="fedWithholding"
-        patternConfig={Patterns.currency(control)}
+        patternConfig={Patterns.currency}
         error={errors.fedWithholding}
         defaultValue={defaultValues?.fedWithholding.toString()}
       />
@@ -117,26 +115,23 @@ export default function W2JobInfo (): ReactElement {
       <LabeledInput
         strongLabel="Box 4 - "
         label="Social security tax withheld"
-        register={register}
         required={true}
         name="ssWithholding"
-        patternConfig={Patterns.currency(control)}
+        patternConfig={Patterns.currency}
         error={errors.ssWithholding}
       />
 
       <LabeledInput
         strongLabel="Box 6 - "
         label="Medicare tax withheld"
-        register={register}
         required={true}
         name="medicareWithholding"
-        patternConfig={Patterns.currency(control)}
+        patternConfig={Patterns.currency}
         error={errors.medicareWithholding}
       />
 
       <GenericLabeledDropdown
         dropDownData={people}
-        control={control}
         error={errors.personRole}
         label="Employee"
         required={true}
@@ -154,7 +149,9 @@ export default function W2JobInfo (): ReactElement {
       { ({ navButtons, onAdvance }) =>
         <form onSubmit={onAdvance}>
           <h2>Job Information</h2>
-          {form}
+          <FormProvider {...methods}>
+            {form}
+          </FormProvider>
           { navButtons }
         </form>
       }

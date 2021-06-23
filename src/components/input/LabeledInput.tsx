@@ -2,26 +2,30 @@ import React, { ReactElement } from 'react'
 import { TextField } from '@material-ui/core'
 import { LabeledInputProps } from './types'
 import NumberFormat from 'react-number-format'
-import { InputType } from '../Patterns'
-import { Controller } from 'react-hook-form'
+import { Controller, useFormContext } from 'react-hook-form'
+import { isNumeric, Patterns } from '../Patterns'
 
 export function LabeledInput (props: LabeledInputProps): ReactElement {
-  const { strongLabel, label, register, error, required = false, patternConfig, name, rules = {}, defaultValue = '' } = props
+  const { strongLabel, label, error, required = false, patternConfig = Patterns.plain, name, rules = {}, defaultValue = '' } = props
+
+  const { control, register } = useFormContext()
 
   const errorMessage: string | undefined = (() => {
     if (error?.message !== undefined && error?.message !== '') {
       return error?.message
     }
-    if (error?.type === 'max' && patternConfig?.inputType === InputType.numeric && patternConfig.max !== undefined) {
-      return `Input must be less than or equal to ${patternConfig.max}`
-    }
-    if (error?.type === 'min' && patternConfig?.inputType === InputType.numeric && patternConfig.min !== undefined) {
-      return `Input must be greater than or equal to ${patternConfig.min}`
+    if (patternConfig !== undefined && isNumeric(patternConfig)) {
+      if (error?.type === 'max' && patternConfig.max !== undefined) {
+        return `Input must be less than or equal to ${patternConfig.max}`
+      }
+      if (error?.type === 'min' && patternConfig.min !== undefined) {
+        return `Input must be greater than or equal to ${patternConfig.min}`
+      }
     }
   })()
 
   const input: ReactElement = (() => {
-    if (patternConfig?.inputType === InputType.numeric) {
+    if (isNumeric(patternConfig)) {
       return (
         <Controller
           render={({ onChange, value }) =>
@@ -41,7 +45,7 @@ export function LabeledInput (props: LabeledInputProps): ReactElement {
             />
           }
           name={name}
-          control={patternConfig.control}
+          control={control}
           required={required}
           defaultValue={defaultValue}
           rules={{

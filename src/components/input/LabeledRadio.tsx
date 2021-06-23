@@ -1,13 +1,14 @@
 import React, { ReactElement } from 'react'
 import { FormControl, FormControlLabel, Radio, RadioGroup } from '@material-ui/core'
-import { Controller } from 'react-hook-form'
+import { Controller, useFormContext } from 'react-hook-form'
 import { LabeledRadioProps } from './types'
 import useStyles from './styles'
 
 export function LabeledRadio (props: LabeledRadioProps): ReactElement {
-  const { label, name, control, defaultValue, values } = props
+  const { label, name, defaultValue, values } = props
 
   const classes = useStyles()
+  const { control } = useFormContext()
 
   return (
     <Controller

@@ -1,11 +1,12 @@
 import React, { ReactElement } from 'react'
 import { Box, TextField } from '@material-ui/core'
-import { Controller } from 'react-hook-form'
+import { Controller, useFormContext } from 'react-hook-form'
 import locationPostalCodes from '../../data/locationPostalCodes'
 import { BaseDropdownProps, LabeledDropdownProps } from './types'
 
 export function GenericLabeledDropdown<A> (props: LabeledDropdownProps<A>): ReactElement {
-  const { strongLabel, label, dropDownData, valueMapping, error, keyMapping, textMapping, control, required = false, name } = props
+  const { control } = useFormContext()
+  const { strongLabel, label, dropDownData, valueMapping, error, keyMapping, textMapping, required = false, name } = props
   const { defaultValue = '' } = props
 
   return (
