@@ -7,7 +7,7 @@
     "@material-ui/icons": "^4.11.2",
     "@material-ui/lab": "^4.0.0-alpha.58",
     "@tauri-apps/api": "^1.0.0-beta.3",
-    "@tauri-apps/cli": "^1.0.0-beta.2",
+    "@tauri-apps/cli": "^1.0.0-beta.3",
     "ajv": "^8.6.0",
     "loglevel": "^1.7.1",
     "node-fetch": "^2.6.1",
