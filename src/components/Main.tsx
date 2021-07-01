@@ -13,7 +13,8 @@ import {
 import {
   Switch,
   Route,
-  Redirect
+  Redirect,
+  useLocation
 } from 'react-router-dom'
 import MenuIcon from '@material-ui/icons/Menu'
 import W2JobInfo from './income/W2JobInfo'
@@ -28,7 +29,6 @@ import F1099Info from './income/F1099Info'
 import Summary from './Summary'
 import RealEstate from './income/RealEstate'
 import GettingStarted from './GettingStarted'
-import AboutThisProject from './AboutThisProject'
 
 const theme = createMuiTheme({
   palette: {
@@ -80,8 +80,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 const Urls = {
   usTaxes: {
-    start: '/start',
-    about: '/about'
+    start: '/start'
   },
   taxPayer: {
     root: '/taxpayer',
@@ -109,8 +108,7 @@ const drawerSections: Section[] = [
   {
     title: 'UsTaxes.org',
     items: [
-      item('Getting Started', Urls.usTaxes.start, <GettingStarted/>),
-      item('About This Project', Urls.usTaxes.about, <AboutThisProject/>)
+      item('Getting Started', Urls.usTaxes.start, <GettingStarted/>)
     ]
   },
   {
@@ -174,7 +172,6 @@ export default function Main (): ReactElement {
     <ThemeProvider theme={theme}>
       <div className={classes.root}>
         {appBar}
-        <ResponsiveDrawer sections={drawerSections} isOpen={mobileOpen} onClose={() => setMobileOpen(false)} />
         <main className={classes.content}>
           <div className={classes.toolbar} />
           <Grid container spacing={2}>
@@ -188,12 +185,14 @@ export default function Main (): ReactElement {
                     <Route key={index} path={item.url}>{item.element}</Route>
                   )
                 }
+                { useLocation().pathname !== '/start' ? <ResponsiveDrawer sections={drawerSections} isOpen={mobileOpen} onClose={() => setMobileOpen(false)} /> : null }
                 </PagerContext.Provider>
               </Switch>
             </Grid>
             <Grid item sm />
           </Grid>
         </main>
+        {appBar}
       </div>
     </ThemeProvider>
   )

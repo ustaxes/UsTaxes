@@ -59,16 +59,21 @@ export const PagerButtons = ({ submitText, previousUrl }: PagerButtonsProps): Re
   )
 }
 
-interface DirectButtonsProps {
-  targetUrl?: string
-  submitText: string
+interface StartButtonsProps {
+  firstUrl: string
+  firstText: string
+  secondUrl: string
+  secondText: string
 }
 
-export const DirectButtons = ({ submitText, targetUrl }: DirectButtonsProps): ReactElement => {
+export const StartButtons = ({ firstUrl, firstText, secondUrl, secondText }: StartButtonsProps): ReactElement => {
   return (
-    <Box display="flex" justifyContent="flex-start" paddingRight={2}>
-      <Button href={ targetUrl } variant="contained" color="primary" >
-        { submitText }
+    <Box display="flex" justifyContent="space-evenly" paddingTop={3} paddingBottom={6}>
+      <Button href={ firstUrl } variant="contained" color="primary" >
+        { firstText }
+      </Button>
+      <Button href={ secondUrl } variant="contained" color="secondary" >
+        { secondText }
       </Button>
     </Box>
   )
