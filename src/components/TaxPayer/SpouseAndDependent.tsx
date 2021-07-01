@@ -58,27 +58,30 @@ const toSpouse = (formData: UserSpouseForm): Spouse => ({
   role: PersonRole.SPOUSE
 })
 
-export const AddDependentForm = (): ReactElement => {
-  const methods = useForm<UserDependentForm>()
-  const { errors, handleSubmit, reset } = methods
+const toSpouseForm = (spouse: Spouse): UserSpouseForm => ({
+  ...spouse
+})
 
+export const AddDependentForm = (): ReactElement => {
   const dependents = useSelector((state: TaxesState) =>
     state.information.taxPayer?.dependents ?? []
   )
 
-  const [editing, setEditingIdx] = useState<number | undefined>(undefined)
+  const [editing, doSetEditing] = useState<number | undefined>(undefined)
   const dispatch = useDispatch()
 
-  const defaultValues: UserDependentForm | undefined = (() => {
-    if (editing !== undefined) {
-      return toDependentForm(dependents[editing])
-    }
-  })()
+  const methods = useForm<UserDependentForm>()
+  const { formState: { errors }, handleSubmit, reset } = methods
+
+  const setEditing = (idx: number): void => {
+    reset(toDependentForm(dependents[idx]))
+    doSetEditing(idx)
+  }
 
   const _onSubmit = (onSuccess: () => void) => (dependent: UserDependentForm): void => {
     if (editing !== undefined) {
       dispatch(editDependent({ index: editing, value: toDependent(dependent) }))
-      setEditingIdx(undefined)
+      clear()
     } else {
       dispatch(addDependent(toDependent(dependent)))
     }
@@ -87,7 +90,7 @@ export const AddDependentForm = (): ReactElement => {
   }
 
   const clear = (): void => {
-    setEditingIdx(undefined)
+    doSetEditing(undefined)
   }
 
   const page = (
@@ -97,22 +100,18 @@ export const AddDependentForm = (): ReactElement => {
       items={dependents}
       primary={(a) => `${a.firstName} ${a.lastName}`}
       secondary={(a) => formatSSID(a.ssid)}
-      editItem={setEditingIdx}
+      editItem={setEditing}
       editing={editing}
       icon={() => <Person />}
       removeItem={(i) => dispatch(removeDependent(i))}
     >
-      <PersonFields
-        errors={errors}
-        defaults={defaultValues !== undefined ? toDependent(defaultValues) : undefined}
-      />
+      <PersonFields errors={errors} />
       <LabeledInput
         label="Relationship to Taxpayer"
         name="relationship"
         required={true}
         patternConfig={Patterns.name}
         error={errors.relationship}
-        defaultValue={defaultValues?.relationship}
       />
       <LabeledInput
         label="Birth Year"
@@ -120,7 +119,6 @@ export const AddDependentForm = (): ReactElement => {
         name="birthYear"
         required={true}
         error={errors.birthYear}
-        defaultValue={defaultValues?.birthYear}
       />
       <LabeledInput
         label="How many months did you live together this year?"
@@ -128,12 +126,10 @@ export const AddDependentForm = (): ReactElement => {
         name="numberOfMonths"
         required={true}
         error={errors.numberOfMonths}
-        defaultValue={defaultValues?.numberOfMonths}
       />
       <LabeledCheckbox
         label="Is this person a full-time student?"
         name="isStudent"
-        defaultValue={defaultValues?.isStudent ?? false}
       />
     </FormListContainer>
   )
@@ -143,21 +139,29 @@ export const AddDependentForm = (): ReactElement => {
 
 export const SpouseInfo = (): ReactElement => {
   const methods = useForm<UserSpouseForm>()
-  const { errors, handleSubmit, getValues } = methods
-  const [editSpouse, setEditSpouse] = useState<boolean>(false)
+  const { formState: { errors }, handleSubmit, getValues, reset } = methods
+  const [editing, doSetEditing] = useState<boolean>(false)
   const dispatch = useDispatch()
 
   const spouse: Spouse | undefined = useSelector((state: TaxesState) => {
     return state.information.taxPayer?.spouse
   })
 
-  const onDisable = (): void => {
-    setEditSpouse(false)
+  const clear = (): void => {
+    reset()
+    doSetEditing(false)
+  }
+
+  const setEditing = (): void => {
+    if (spouse !== undefined) {
+      reset(toSpouseForm(spouse))
+    }
+    doSetEditing(true)
   }
 
   const onSubmit = (onSuccess: () => void) => (): void => {
     dispatch(addSpouse(toSpouse(getValues())))
-    setEditSpouse(false)
+    doSetEditing(false)
     onSuccess()
   }
 
@@ -168,19 +172,15 @@ export const SpouseInfo = (): ReactElement => {
       secondary={(s) => formatSSID(s.ssid)}
       icon={() => <Person />}
       onDone={(onSuccess) => handleSubmit(onSubmit(onSuccess))}
-      onCancel={onDisable}
+      onCancel={clear}
       max={1}
-      editItem={() => setEditSpouse(true)}
-      editing={editSpouse ? 0 : undefined}
+      editItem={() => setEditing()}
+      editing={editing ? 0 : undefined}
       removeItem={() => dispatch(removeSpouse)}
     >
-      <PersonFields
-        errors={errors}
-        person={spouse}
-      >
+      <PersonFields errors={errors}>
         <LabeledCheckbox
           label="Check if your spouse is a dependent"
-            defaultValue={spouse?.isTaxpayerDependent ?? false}
           name="isTaxpayerDependent"
         />
       </PersonFields>
@@ -192,7 +192,7 @@ export const SpouseInfo = (): ReactElement => {
 
 const SpouseAndDependent = (): ReactElement => {
   const methods = useForm<{ filingStatus: FilingStatus }>()
-  const { handleSubmit, errors } = methods
+  const { handleSubmit, formState: { errors } } = methods
   // const variable dispatch to allow use inside function
   const dispatch = useDispatch()
 
@@ -226,8 +226,7 @@ const SpouseAndDependent = (): ReactElement => {
             error={errors.filingStatus}
             textMapping={status => FilingStatusTexts[status]}
             required={true}
-                name="filingStatus"
-            defaultValue={taxPayer?.filingStatus}
+            name="filingStatus"
           />
           {navButtons}
         </form>

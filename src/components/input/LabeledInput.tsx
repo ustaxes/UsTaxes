@@ -6,7 +6,7 @@ import { Controller, useFormContext } from 'react-hook-form'
 import { isNumeric, Patterns } from '../Patterns'
 
 export function LabeledInput (props: LabeledInputProps): ReactElement {
-  const { strongLabel, label, error, required = false, patternConfig = Patterns.plain, name, rules = {}, defaultValue = '' } = props
+  const { strongLabel, label, error, required = false, patternConfig = Patterns.plain, name, rules = {} } = props
 
   const { control, register } = useFormContext()
 
@@ -28,7 +28,7 @@ export function LabeledInput (props: LabeledInputProps): ReactElement {
     if (isNumeric(patternConfig)) {
       return (
         <Controller
-          render={({ onChange, value }) =>
+          render={({ field: { onChange, value } }) =>
             <NumberFormat
               mask={patternConfig.mask}
               thousandSeparator={patternConfig.thousandSeparator}
@@ -46,8 +46,6 @@ export function LabeledInput (props: LabeledInputProps): ReactElement {
           }
           name={name}
           control={control}
-          required={required}
-          defaultValue={defaultValue}
           rules={{
             ...rules,
             min: patternConfig.min,
@@ -63,21 +61,27 @@ export function LabeledInput (props: LabeledInputProps): ReactElement {
     }
 
     return (
-      <TextField
+      <Controller
+        control={control}
         name={name}
-        defaultValue={defaultValue}
-        inputRef={register({
-          ...rules,
-          required: required ? 'Input is required' : undefined,
-          pattern: {
-            value: patternConfig?.regexp ?? (required ? /.+/ : /.*/),
-            message: patternConfig?.description ?? (required ? 'Input is required' : '')
-          }
-        })}
-        fullWidth={patternConfig?.format === undefined}
-        helperText={error?.message}
-        error={error !== undefined}
-        variant="filled"
+        render={({ field: { onChange, value } }) =>
+          <TextField
+            {...register(name, {
+              ...rules,
+              required: required ? 'Input is required' : undefined,
+              pattern: {
+                value: patternConfig?.regexp ?? (required ? /.+/ : /.*/),
+                message: patternConfig?.description ?? (required ? 'Input is required' : '')
+              }
+            })}
+            value={value}
+            onChange={onChange}
+            fullWidth={patternConfig?.format === undefined}
+            helperText={error?.message}
+            error={error !== undefined}
+            variant="filled"
+          />
+        }
       />
     )
   })()

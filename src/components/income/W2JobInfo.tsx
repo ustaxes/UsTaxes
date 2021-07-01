@@ -29,20 +29,42 @@ const toIncomeW2 = (formData: IncomeW2UserInput): IncomeW2 => ({
   medicareWithholding: parseInt(formData.medicareWithholding)
 })
 
-export default function W2JobInfo (): ReactElement {
-  const methods = useForm<IncomeW2UserInput>()
-  const { errors, handleSubmit, reset } = methods
-  const dispatch = useDispatch()
+const toIncomeW2UserInput = (data: IncomeW2): IncomeW2UserInput => ({
+  ...data,
+  income: data.income.toString(),
+  fedWithholding: data.fedWithholding.toString(),
+  ssWithholding: data.ssWithholding.toString(),
+  medicareWithholding: data.medicareWithholding.toString()
+})
 
-  const [editing, setEditing] = useState<number | undefined>(undefined)
+export default function W2JobInfo (): ReactElement {
+  const dispatch = useDispatch()
+  const [editing, doSetEditing] = useState<number | undefined>(undefined)
+
+  const methods = useForm<IncomeW2UserInput>()
+  const { formState: { errors }, handleSubmit, reset } = methods
+
+  const people: Person[] = (
+    useSelector((state: TaxesState) => ([
+      state.information.taxPayer?.primaryPerson,
+      state.information.taxPayer?.spouse
+    ]))
+      .filter((p) => p !== undefined)
+      .map((p) => p as Person)
+  )
 
   const w2s = useSelector((state: TaxesState) =>
     state.information.w2s
   )
 
+  const setEditing = (idx: number): void => {
+    reset(toIncomeW2UserInput(w2s[idx]))
+    doSetEditing(idx)
+  }
+
   const clear = (): void => {
     reset()
-    setEditing(undefined)
+    doSetEditing(undefined)
   }
 
   const onAddW2 = (onSuccess: (() => void)) => (formData: IncomeW2UserInput): void => {
@@ -55,21 +77,6 @@ export default function W2JobInfo (): ReactElement {
     clear()
     onSuccess()
   }
-
-  const defaultValues = (() => {
-    if (editing !== undefined) {
-      return w2s[editing]
-    }
-  })()
-
-  const people: Person[] = (
-    useSelector((state: TaxesState) => ([
-      state.information.taxPayer?.primaryPerson,
-      state.information.taxPayer?.spouse
-    ]))
-      .filter((p) => p !== undefined)
-      .map((p) => p as Person)
-  )
 
   const form: ReactElement = (
     <FormListContainer<IncomeW2 >
@@ -89,7 +96,6 @@ export default function W2JobInfo (): ReactElement {
         required={true}
         name="occupation"
         error={errors.occupation}
-        defaultValue={defaultValues?.occupation}
       />
 
       <LabeledInput
@@ -99,7 +105,6 @@ export default function W2JobInfo (): ReactElement {
         patternConfig={Patterns.currency}
         name="income"
         error={errors.income}
-        defaultValue={defaultValues?.income.toString()}
       />
 
       <LabeledInput
@@ -109,7 +114,6 @@ export default function W2JobInfo (): ReactElement {
         name="fedWithholding"
         patternConfig={Patterns.currency}
         error={errors.fedWithholding}
-        defaultValue={defaultValues?.fedWithholding.toString()}
       />
 
       <LabeledInput
@@ -139,7 +143,6 @@ export default function W2JobInfo (): ReactElement {
         name="personRole"
         keyMapping={(p: Person, i: number) => i}
         textMapping={(p) => `${p.firstName} ${p.lastName} (${formatSSID(p.ssid)})`}
-        defaultValue={defaultValues?.personRole ?? PersonRole.PRIMARY}
       />
     </FormListContainer>
   )

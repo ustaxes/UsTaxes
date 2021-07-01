@@ -12,14 +12,12 @@ import ListItemText from '@material-ui/core/ListItemText'
 import PersonIcon from '@material-ui/icons/Person'
 import { DeepMap, FieldError } from 'react-hook-form'
 
-interface PersonFieldsProps<T extends Person> extends BaseFormProps {
-  defaults?: T
+interface PersonFieldsProps extends BaseFormProps {
   children?: ReactNode
   errors: DeepMap<Partial<Person>, FieldError>
-  person?: Person
 }
 
-export const PersonFields = <T extends Person>({ errors, defaults, children, person }: PersonFieldsProps<T>): ReactElement => (
+export const PersonFields = ({ errors, children }: PersonFieldsProps): ReactElement => (
   <div>
     <LabeledInput
       label="First Name and Initial"
@@ -27,7 +25,6 @@ export const PersonFields = <T extends Person>({ errors, defaults, children, per
       patternConfig={Patterns.name}
       required={true}
       error={errors.firstName}
-      defaultValue={person?.firstName ?? defaults?.firstName}
     />
     <LabeledInput
       label="Last Name"
@@ -35,7 +32,6 @@ export const PersonFields = <T extends Person>({ errors, defaults, children, per
       patternConfig={Patterns.name}
       required={true}
       error={errors.lastName}
-      defaultValue={person?.lastName ?? defaults?.lastName}
     />
     <LabeledInput
       label="SSN / TIN"
@@ -43,7 +39,6 @@ export const PersonFields = <T extends Person>({ errors, defaults, children, per
       patternConfig={Patterns.ssn}
       required={true}
       error={errors.ssid}
-      defaultValue={person?.ssid ?? defaults?.ssid}
     />
     {children}
   </div>

@@ -9,7 +9,6 @@ export interface BaseDropdownProps {
   required?: boolean
   name: string
   error?: FieldError
-  defaultValue?: string
 }
 
 export interface CurrencyProps {

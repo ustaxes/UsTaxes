@@ -6,7 +6,6 @@ import { Errors } from '../types'
 
 interface AddressProps {
   checkboxText: string
-  address?: Address
   errors?: Errors<Address>
   isForeignCountry?: boolean
   allowForeignCountry?: boolean
@@ -15,7 +14,6 @@ interface AddressProps {
 export default function AddressFields (props: AddressProps): ReactElement {
   const {
     isForeignCountry = false,
-    address,
     errors,
     checkboxText = 'Check if you have a foreign address',
     allowForeignCountry = true
@@ -30,7 +28,6 @@ export default function AddressFields (props: AddressProps): ReactElement {
             name="address.state"
             error={errors?.state}
             required={!isForeignCountry}
-            defaultValue={address?.state}
           />
           <LabeledInput
             label="Zip"
@@ -38,7 +35,6 @@ export default function AddressFields (props: AddressProps): ReactElement {
             name="address.zip"
             patternConfig={Patterns.zip}
             required={!isForeignCountry}
-            defaultValue={address?.zip}
           />
         </div>
       )
@@ -50,21 +46,18 @@ export default function AddressFields (props: AddressProps): ReactElement {
           name="address.province"
           error={errors?.province}
           required={isForeignCountry}
-          defaultValue={address?.province}
         />
         <LabeledInput
           name="address.postalCode"
           label="Postal Code"
           error={errors?.postalCode}
           required={isForeignCountry}
-          defaultValue={address?.postalCode}
         />
         <LabeledInput
           name="address.foreignCountry"
           label="Country"
           error={errors?.foreignCountry}
           required={isForeignCountry}
-          defaultValue={address?.foreignCountry}
         />
       </div>
     )
@@ -77,14 +70,12 @@ export default function AddressFields (props: AddressProps): ReactElement {
         name="address.address"
         required={true}
         error={errors?.address}
-        defaultValue={address?.address}
       />
       <LabeledInput
         label="Unit No"
         name="address.aptNo"
         required={false}
         error={errors?.aptNo}
-        defaultValue={address?.aptNo}
       />
       <LabeledInput
         label="City"
@@ -92,7 +83,6 @@ export default function AddressFields (props: AddressProps): ReactElement {
         patternConfig={Patterns.name}
         required={true}
         error={errors?.city}
-        defaultValue={address?.city}
       />
       {(() => {
         if (allowForeignCountry) {
@@ -100,7 +90,6 @@ export default function AddressFields (props: AddressProps): ReactElement {
             <LabeledCheckbox
               label={checkboxText}
               name="isForeignCountry"
-              defaultValue={isForeignCountry}
             />
           )
         }

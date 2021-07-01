@@ -27,8 +27,6 @@ const asPrimaryPerson = (formData: TaxPayerUserForm): PrimaryPerson => ({
 })
 
 export default function PrimaryTaxpayer (): ReactElement {
-  const methods = useForm<PrimaryPerson>()
-  const { handleSubmit, control, formState: { errors } } = methods
   // const variable dispatch to allow use inside function
   const dispatch = useDispatch()
 
@@ -36,11 +34,14 @@ export default function PrimaryTaxpayer (): ReactElement {
     return state.information.taxPayer
   })
 
-  const isForeignCountry = useWatch<boolean>({
+  const methods = useForm<PrimaryPerson>({ defaultValues: taxPayer.primaryPerson })
+  const { handleSubmit, control, formState: { errors } } = methods
+
+  const isForeignCountry: boolean = useWatch({
     control,
-    name: 'isForeignCountry',
-    defaultValue: taxPayer?.primaryPerson?.address.foreignCountry !== undefined
-  })
+    name: 'address.foreignCountry',
+    defaultValue: taxPayer?.primaryPerson?.address.foreignCountry
+  }) !== undefined
 
   const onSubmit = (onAdvance: () => void) => (primaryPerson: PrimaryPerson): void => {
     dispatch(savePrimaryPersonInfo(asPrimaryPerson(primaryPerson)))
@@ -54,19 +55,16 @@ export default function PrimaryTaxpayer (): ReactElement {
           <h2>Primary Taxpayer Information</h2>
           <PersonFields
             errors={errors}
-            defaults={taxPayer?.primaryPerson}
           />
           <LabeledCheckbox
             label="Check if you are a dependent"
-            defaultValue={taxPayer?.primaryPerson?.isTaxpayerDependent ?? false}
             name="isTaxpayerDependent"
           />
           <AddressFields
             errors={errors.address}
-            address={taxPayer?.primaryPerson?.address}
             checkboxText="Do you have a foreign address?"
             isForeignCountry={isForeignCountry}
-          ></AddressFields>
+          />
           {navButtons}
         </form>
       }

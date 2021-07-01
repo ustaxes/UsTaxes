@@ -14,7 +14,7 @@ export function LabeledRadio (props: LabeledRadioProps): ReactElement {
     <Controller
       name={name}
       defaultValue={defaultValue}
-      render={ ({ value, onChange }) =>
+      render={({ field: { value, onChange } }) =>
         <div className={classes.root}>
           <FormControl component="fieldset">
             {label}

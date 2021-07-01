@@ -14,7 +14,7 @@ export function LabeledCheckbox (props: LabeledCheckboxProps): ReactElement {
     <Controller
       name={name}
       defaultValue={defaultValue ?? false}
-      render={ ({ value, onChange }) =>
+      render={({ field: { value, onChange } }) =>
         <div className={classes.root}>
           <FormControl component="fieldset">
             <FormGroup>

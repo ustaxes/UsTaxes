@@ -9,7 +9,7 @@ import { PagerContext } from '../pager'
 
 export default function ContactInfo (): ReactElement {
   const methods = useForm<Contact>()
-  const { handleSubmit, errors } = methods
+  const { handleSubmit, formState: { errors } } = methods
   // const variable dispatch to allow use inside function
   const dispatch = useDispatch()
 

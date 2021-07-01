@@ -49,8 +49,8 @@ export default function F1098eInfo (): ReactElement {
     return blankUserInput
   })()
 
-  const methods = useForm<F1098EUserInput>()
-  const { errors, handleSubmit, reset } = methods
+  const methods = useForm<F1098EUserInput>({ defaultValues })
+  const { formState: { errors }, handleSubmit, reset } = methods
 
   const dispatch = useDispatch()
 
@@ -94,7 +94,6 @@ export default function F1098eInfo (): ReactElement {
       patternConfig={Patterns.name}
       name="lender"
       error={errors.lender}
-      defaultValue={defaultValues?.lender}
     />
 
     <LabeledInput
@@ -103,7 +102,6 @@ export default function F1098eInfo (): ReactElement {
         patternConfig={Patterns.currency}
         name="interest"
         error={errors.interest}
-        defaultValue={defaultValues?.interest.toString()}
       />
 
     </FormListContainer>

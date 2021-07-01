@@ -119,7 +119,7 @@ const toUserInput = (property: Property): PropertyAddForm => {
 
 export default function RealEstate (): ReactElement {
   const methods = useForm<PropertyAddForm>()
-  const { control, errors, getValues, handleSubmit, reset } = methods
+  const { control, formState: { errors }, getValues, handleSubmit, reset } = methods
   const dispatch = useDispatch()
 
   const properties: Property[] = useSelector((state: TaxesState) => state.information.realEstate)
@@ -140,7 +140,7 @@ export default function RealEstate (): ReactElement {
   const otherExpensesEntered = useWatch({
     control,
     name: 'expenses.other',
-    defaultValue: defaultValues?.expenses.other ?? ''
+    defaultValue: defaultValues?.expenses.other
   })
 
   const validateDays = (n: number, other: number): Message | true => {
@@ -189,9 +189,7 @@ export default function RealEstate (): ReactElement {
   )
 
   const otherExpenseDescription = (() => {
-    if (defaultValues?.expenses.other !== undefined ||
-      (otherExpensesEntered !== '' && Number(otherExpensesEntered) !== 0)
-    ) {
+    if (defaultValues?.expenses.other !== undefined || otherExpensesEntered !== 0) {
       return (
         <LabeledInput
           key={enumKeys(PropertyExpenseType).length}
@@ -219,7 +217,6 @@ export default function RealEstate (): ReactElement {
       <AddressFields
         errors={errors.address}
         checkboxText="Does the property have a foreign address"
-        address={defaultValues?.address}
         allowForeignCountry={false}
       />
       <GenericLabeledDropdown
@@ -230,7 +227,6 @@ export default function RealEstate (): ReactElement {
         textMapping={(t) => displayPropertyType(PropertyType[t])}
         keyMapping={(_, n) => n}
         name="propertyType"
-        defaultValue={defaultValues?.propertyType?.toString()}
         valueMapping={(n) => n}
       />
       {(() => {
@@ -238,7 +234,6 @@ export default function RealEstate (): ReactElement {
           return (
             <LabeledInput
               name="otherPropertyType"
-              defaultValue={defaultValues?.otherPropertyType ?? '' }
               label="Short property type description"
               error={errors.otherPropertyType}
               required={true}
@@ -254,7 +249,6 @@ export default function RealEstate (): ReactElement {
         label="Number of days in the year used for rental"
         patternConfig={Patterns.numDays}
         error={errors.rentalDays}
-        defaultValue={defaultValues?.rentalDays?.toString()}
       />
       <LabeledInput
         name="personalUseDays"
@@ -262,12 +256,10 @@ export default function RealEstate (): ReactElement {
         label="Number of days in the year for personal use"
         patternConfig={Patterns.numDays}
         error={errors.personalUseDays}
-        defaultValue={defaultValues?.personalUseDays?.toString()}
       />
       <LabeledCheckbox
         name="qualifiedJointVenture"
         label="Is this a qualified joint venture"
-        defaultValue={defaultValues?.qualifiedJointVenture ?? false}
       />
       <h4>Property Financials</h4>
       <h5>Income</h5>
@@ -276,7 +268,6 @@ export default function RealEstate (): ReactElement {
         label="Rent received"
         patternConfig={Patterns.currency}
         error={errors.rentReceived}
-        defaultValue={defaultValues?.rentReceived?.toString()}
       />
       <h5>Expenses</h5>
       <Grid container spacing={3} direction="row" justify="flex-start">

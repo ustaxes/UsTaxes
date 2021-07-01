@@ -7,7 +7,6 @@ import { BaseDropdownProps, LabeledDropdownProps } from './types'
 export function GenericLabeledDropdown<A> (props: LabeledDropdownProps<A>): ReactElement {
   const { control } = useFormContext()
   const { strongLabel, label, dropDownData, valueMapping, error, keyMapping, textMapping, required = false, name } = props
-  const { defaultValue = '' } = props
 
   return (
     <div>
@@ -16,13 +15,17 @@ export function GenericLabeledDropdown<A> (props: LabeledDropdownProps<A>): Reac
       </Box>
       <Box display="flex" justifyContent="flex-start">
         <Controller
-          as={
+          render={(({ field: { value, onChange } }) =>
             <TextField
               select
+              fullWidth
+              variant="filled"
               helperText={error !== undefined ? 'Make a selection' : undefined}
               error={error !== undefined}
               SelectProps={{
-                native: true
+                native: true,
+                value,
+                onChange
               }}
             >
               <option value={''} />
@@ -34,14 +37,10 @@ export function GenericLabeledDropdown<A> (props: LabeledDropdownProps<A>): Reac
                 </option>
               )}
             </TextField>
-          }
-          error={error !== undefined}
-          fullWidth
+          )}
           name={name}
-          defaultValue={defaultValue}
           rules={{ required: required }}
           control={control}
-          variant="filled"
         />
       </Box>
     </div>

@@ -127,25 +127,23 @@ export default function F1099Info (): ReactElement {
   const f1099s = useSelector((state: TaxesState) =>
     state.information.f1099s
   )
-  const [editing, setEditing] = useState<number | undefined>(undefined)
-
-  const defaultValues: F1099UserInput = (() => {
-    if (editing !== undefined) {
-      return toUserInput(f1099s[editing])
-    }
-    return blankUserInput
-  })()
+  const [editing, doSetEditing] = useState<number | undefined>(undefined)
 
   const methods = useForm<F1099UserInput>()
-  const { errors, handleSubmit, reset, watch, setValue } = methods
+  const { formState: { errors }, handleSubmit, reset, watch, setValue } = methods
   const selectedType: Income1099Type | undefined = watch('formType')
 
   const dispatch = useDispatch()
 
+  const setEditing = (idx: number): void => {
+    reset(toUserInput(f1099s[idx]))
+    doSetEditing(idx)
+  }
+
   const clear = (): void => {
     reset()
     setValue('formType', undefined)
-    setEditing(undefined)
+    doSetEditing(undefined)
   }
 
   const onAdd1099 = (onSuccess: () => void) => (formData: F1099UserInput): void => {
@@ -177,7 +175,6 @@ export default function F1099Info (): ReactElement {
       patternConfig={Patterns.currency}
       name="interest"
       error={errors.interest}
-      defaultValue={defaultValues?.interest.toString()}
     />
   )
 
@@ -190,7 +187,6 @@ export default function F1099Info (): ReactElement {
         patternConfig={Patterns.currency}
         name="longTermProceeds"
         error={errors.longTermProceeds}
-        defaultValue={defaultValues?.longTermProceeds.toString()}
       />
       <LabeledInput
         label="Cost basis"
@@ -198,7 +194,6 @@ export default function F1099Info (): ReactElement {
         patternConfig={Patterns.currency}
         name="longTermCostBasis"
         error={errors.longTermCostBasis}
-        defaultValue={defaultValues?.longTermCostBasis.toString()}
       />
       <h4>Short Term Covered Transactions</h4>
       <LabeledInput
@@ -207,7 +202,6 @@ export default function F1099Info (): ReactElement {
         patternConfig={Patterns.currency}
         name="shortTermProceeds"
         error={errors.shortTermProceeds}
-        defaultValue={defaultValues?.shortTermProceeds.toString()}
       />
       <LabeledInput
         label="Cost basis"
@@ -215,7 +209,6 @@ export default function F1099Info (): ReactElement {
         patternConfig={Patterns.currency}
         name="shortTermCostBasis"
         error={errors.shortTermCostBasis}
-        defaultValue={defaultValues?.shortTermCostBasis.toString()}
       />
     </div>
   )
@@ -228,7 +221,6 @@ export default function F1099Info (): ReactElement {
         patternConfig={Patterns.currency}
         name="dividends"
         error={errors.dividends}
-        defaultValue={defaultValues?.dividends.toString()}
       />
       <LabeledInput
         label="Qualified Dividends"
@@ -236,7 +228,6 @@ export default function F1099Info (): ReactElement {
         patternConfig={Patterns.currency}
         name="qualifiedDividends"
         error={errors.qualifiedDividends}
-        defaultValue={defaultValues?.qualifiedDividends.toString()}
       />
     </div>
   )
@@ -276,7 +267,6 @@ export default function F1099Info (): ReactElement {
         name="formType"
         keyMapping={(_, i: number) => i}
         textMapping={(name: string) => `1099-${name}`}
-        defaultValue={defaultValues?.formType}
       />
 
       <LabeledInput
@@ -285,13 +275,9 @@ export default function F1099Info (): ReactElement {
         patternConfig={Patterns.name}
         name="payer"
         error={errors.payer}
-        defaultValue={defaultValues?.payer}
       />
 
-      {(() => {
-        if (selectedType !== undefined) return specificFields[selectedType]
-        else if (defaultValues?.formType !== undefined) return specificFields[defaultValues.formType]
-      })()}
+      {selectedType !== undefined ? specificFields[selectedType] : undefined }
 
       <GenericLabeledDropdown
         dropDownData={people}
@@ -302,7 +288,6 @@ export default function F1099Info (): ReactElement {
         name="personRole"
         keyMapping={(p: Person, i: number) => i}
         textMapping={(p: Person) => `${p.firstName} ${p.lastName} (${formatSSID(p.ssid)})`}
-        defaultValue={defaultValues?.personRole ?? PersonRole.PRIMARY}
       />
     </FormListContainer>
   )
