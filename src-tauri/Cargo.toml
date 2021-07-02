@@ -1,7 +1,7 @@
 [package]
 name = "us-taxes"
-version = "0.1.4"
-description = "A Tauri App"
+version = "0.1.5"
+description = "UsTaxes is an open source webapp for filing US federal income tax. All tax calculations are performed in the browser, so no personal information is stored on external servers!"
 license = ""
 repository = ""
 default-run = "us-taxes"
