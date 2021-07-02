@@ -2,55 +2,58 @@
 
 ## What is UsTaxes?
 
-UsTaxes is an open source tax filing application that can be used to file the Federal 1040 form. It is different from paid tax preparation software in that it protects user privacy and is provided for free. It is available in both [web](https://ustaxes.org/) and [desktop](#desktop-application) formats
+UsTaxes is a free open source tax filing application that can be used to file the Federal 1040 form. It is different from paid tax preparation software in that it protects user privacy. It is available in both [web](https://ustaxes.org/) and [desktop](#desktop-application) formats.
 
 ## Supported Income data
 
-Most income information from the following forms are supported:
+Most income and deduction information from the following forms are supported:
 
 * W2
 * 1099-INT
 * 1099-DIV
 * 1099-B
+* 1098-E
 
-So far this project can attach the following schedules to form 1040:
+So far, this project can attach the following schedules to form 1040:
 
-* Schedule 1 (as to Schedule E data only)
+* Schedule 1 (as to Schedule E and 1098-E data only)
+* Schedule 8812
 * Schedule B
 * Schedule D
 * Schedule E
 
 ## Supported Credits
 
+* Credit for children and other dependents
 * Earned income credit
 
 ## Supported states
 
-Users who only have wage income and live in the below states should be able to file taxes using this site, since they do not have state level income tax.
+Users who only have wage income and live in the states below should be able to file taxes using this site, since they do not have state level income tax.
 
 * Alaska
-* Tennessee
-* Wyoming
-* Florida
+* Florida 
+* Nevada
 * New Hampshire
 * South Dakota
+* Tennessee
 * Texas
 * Washington
-* Nevada
+* Wyoming
 
 ## Note on using this project
 
-* This project is built by a growing community. If you notice an error in the outputted PDF, or any other error, please submit an issue.
+* This project is built by a growing community. If you notice an error in the outputted PDF or any other error, please submit an issue on the Github issues tab. We appreciate your feedback!
 
 ## User Data
 
-The site is client side only. Data is persisted to the site's localstorage so no personal information ever leaves the user's computer. For those who want extra security, the codebase can also be built as a [desktop application](#desktop-application).
+The project is available strictly via client side. Data is persisted to the site's localstorage so *no personal information ever leaves the user's computer.* For those who want extra security, the codebase can also be built as a [desktop application](#desktop-application).
 
 ## Contributing
 
-Thank you for taking the time to contribute, let's make tax filing free for everyone! 🎉
+Thank you for taking the time to contribute; let's make tax filing free for everyone! 🎉
 
-To make sure working on this project is fun for everyone, please review:
+To ensure the project is fun for every contributor, please review:
 
 * [Code of conduct](docs/CODE_OF_CONDUCT.md)
 * [Contributing guide](docs/CONTRIBUTING.md)
@@ -58,7 +61,7 @@ To make sure working on this project is fun for everyone, please review:
 
 ## Running
 
-This application can be either run as a web application or a standalone desktop application.
+This application can be run as either a web application or a standalone desktop application.
 
 ### Web application
 
@@ -75,7 +78,7 @@ To stop and remove running containers, run `docker-compose down`.
 
 ### Desktop application
 
-For Windows users, please install [Microsoft Edge WebView2][WebView2] before running the desktop app
+For Windows users, please install [Microsoft Edge WebView2][WebView2] before running the desktop application.
 
 To run, `npm run desktop` or `yarn run desktop`. This requires [rust and cargo][Cargo-docs] to be available on PATH. To avoid a browser window being spawned in addition to the desktop window, just set the BROWSER environment variable as in: `BROWSER=none npm run desktop` or `BROWSER=none yarn desktop`.
 

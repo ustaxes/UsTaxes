@@ -6,7 +6,9 @@ export type FormTag =
   'f1040sb' |
   'f1040sd' |
   'f1040se' |
-  'f1040sei'
+  'f1040sei' |
+  'f1040s8'
+
 /**
   * Base interface for what every form implementation should include.
   * Any PDF can be filled from an array of values.

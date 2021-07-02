@@ -1,3 +1,5 @@
+import { Responses } from '../data/questions'
+
 export enum PersonRole {
   PRIMARY = 'PRIMARY',
   SPOUSE = 'SPOUSE',
@@ -64,6 +66,8 @@ export interface IncomeW2 {
   occupation: string
   income: number
   fedWithholding: number
+  ssWithholding: number
+  medicareWithholding: number
   employer?: Employer
   personRole: PersonRole.PRIMARY | PersonRole.SPOUSE
 }
@@ -104,6 +108,8 @@ export enum FilingStatus {
   HOH = 'HOH',
   W = 'W'
 }
+
+export type FilingStatusName = keyof typeof FilingStatus
 
 export const FilingStatusTexts = ({
   [FilingStatus.S]: 'Single',
@@ -199,12 +205,19 @@ export interface Property {
   otherExpenseType?: string
 }
 
+export interface F1098e {
+  lender: string
+  interest: number
+}
+
 export interface Information {
   f1099s: Supported1099[]
   w2s: IncomeW2[]
   realEstate: Property[]
+  f1098es: F1098e[]
   refund?: Refund
   taxPayer: TaxPayer
+  questions: Responses
 }
 
 export interface TaxesState {
@@ -220,3 +233,4 @@ export type EditDependentAction = ArrayItemEditAction<Dependent>
 export type EditW2Action = ArrayItemEditAction<IncomeW2>
 export type Edit1099Action = ArrayItemEditAction<Supported1099>
 export type EditPropertyAction = ArrayItemEditAction<Property>
+export type Edit1098eAction = ArrayItemEditAction<F1098e>

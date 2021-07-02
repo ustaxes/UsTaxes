@@ -13,6 +13,8 @@ interface IncomeW2UserInput {
   occupation: string
   income: string
   fedWithholding: string
+  ssWithholding: string
+  medicareWithholding: string
   personRole: PersonRole.PRIMARY | PersonRole.SPOUSE
 }
 
@@ -22,7 +24,9 @@ const toIncomeW2 = (formData: IncomeW2UserInput): IncomeW2 => ({
   // we are already in the input validated happy path
   // of handleSubmit.
   income: parseInt(formData.income),
-  fedWithholding: parseInt(formData.fedWithholding)
+  fedWithholding: parseInt(formData.fedWithholding),
+  ssWithholding: parseInt(formData.ssWithholding),
+  medicareWithholding: parseInt(formData.medicareWithholding)
 })
 
 export default function W2JobInfo (): ReactElement {
@@ -108,6 +112,26 @@ export default function W2JobInfo (): ReactElement {
         patternConfig={Patterns.currency(control)}
         error={errors.fedWithholding}
         defaultValue={defaultValues?.fedWithholding.toString()}
+      />
+
+      <LabeledInput
+        strongLabel="Box 4 - "
+        label="Social security tax withheld"
+        register={register}
+        required={true}
+        name="ssWithholding"
+        patternConfig={Patterns.currency(control)}
+        error={errors.ssWithholding}
+      />
+
+      <LabeledInput
+        strongLabel="Box 6 - "
+        label="Medicare tax withheld"
+        register={register}
+        required={true}
+        name="medicareWithholding"
+        patternConfig={Patterns.currency(control)}
+        error={errors.medicareWithholding}
       />
 
       <GenericLabeledDropdown

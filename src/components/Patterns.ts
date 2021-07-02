@@ -68,7 +68,7 @@ const text = (regexp: RegExp, description: string): TextPattern => ({
 const numDaysInYear = daysInYear(CURRENT_YEAR)
 
 export const Patterns = {
-  year: numeric(/[12][0-9]{3}/, 'Input should be a valid year', 1900, CURRENT_YEAR, '####', '_'),
+  year: numeric(/[12][0-9]{3}/, 'Input should be a four digit year', 1900, CURRENT_YEAR, '####', '_'),
   numMonths: numeric(/[0-9]{1,2}/, 'Input should be 0-12', 0, 12, '##', ''),
   numDays: numeric(/[0-9]{1,3}/, `Input should be 0-${numDaysInYear}`, 0, numDaysInYear, '###', ''),
   name: text(/^[A-Za-z ]+$/i, 'Input should only include letters and spaces'),
