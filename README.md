@@ -78,8 +78,6 @@ To stop and remove running containers, run `docker-compose down`.
 
 ### Desktop application
 
-For Windows users, please install [Microsoft Edge WebView2][WebView2] before running the desktop application.
-
 To run, `npm run desktop` or `yarn run desktop`. This requires [rust and cargo][Cargo-docs] to be available on PATH. To avoid a browser window being spawned in addition to the desktop window, just set the BROWSER environment variable as in: `BROWSER=none npm run desktop` or `BROWSER=none yarn desktop`.
 
 To release, run `npm run desktop-release` or `yarn desktop-release`. This will produce executables for your current environment.
