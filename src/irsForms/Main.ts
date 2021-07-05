@@ -4,6 +4,7 @@ import F1040, { F1040Error } from './F1040'
 import F1040V from './F1040v'
 import Form from './Form'
 import Schedule1 from './Schedule1'
+import Schedule3, { claimableExcessSSTaxWithholding } from './Schedule3'
 import ScheduleB from './ScheduleB'
 import ScheduleD from './ScheduleD'
 import ScheduleE from './ScheduleE'
@@ -55,6 +56,12 @@ export const getSchedules = (f1040: F1040, state: Information): Form[] => {
     } else {
       f1040.schedule1.addScheduleE(f1040.scheduleE)
     }
+  }
+
+  if (claimableExcessSSTaxWithholding(state.w2s) > 0 && f1040.schedule3 === undefined) {
+    const s3 = new Schedule3(state)
+    f1040.addSchedule3(s3)
+    attachments = [s3, ...attachments]
   }
 
   const eic = new ScheduleEIC(state.taxPayer, f1040)
