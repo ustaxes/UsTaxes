@@ -22,6 +22,7 @@ export function GenericLabeledDropdown<A> (props: LabeledDropdownProps<A>): Reac
               select
               fullWidth
               variant="filled"
+              name={name}
               helperText={error !== undefined ? 'Make a selection' : undefined}
               error={error !== undefined}
               SelectProps={{

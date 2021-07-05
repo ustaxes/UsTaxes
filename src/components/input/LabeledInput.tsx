@@ -34,6 +34,7 @@ export function LabeledInput (props: LabeledInputProps): ReactElement {
         <Controller
           render={({ field: { onChange, value } }) =>
             <NumberFormat
+              name={name}
               mask={patternConfig.mask}
               thousandSeparator={patternConfig.thousandSeparator}
               prefix={patternConfig.prefix}

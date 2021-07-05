@@ -52,7 +52,7 @@ export const PagerButtons = ({ submitText, previousUrl }: PagerButtonsProps): Re
   return (
     <Box display="flex" justifyContent="flex-start" paddingTop={2} paddingBottom={1}>
       {backButton}
-      <Button type="submit" variant="contained" color="primary">
+      <Button type="submit" name="submit" variant="contained" color="primary">
         { submitText }
       </Button>
     </Box>
