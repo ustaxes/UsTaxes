@@ -9,18 +9,18 @@ import { FormProvider, useForm } from 'react-hook-form'
 import { PagerContext } from './pager'
 
 const Questions = (): ReactElement => {
-  const state = useSelector((state: TaxesState) => state)
+  const information = useSelector((state: TaxesState) => state.information)
 
-  const methods = useForm<Responses>()
+  const methods = useForm<Responses>({ defaultValues: information.questions })
   const { handleSubmit, watch } = methods
 
   const currentValues = watch()
 
   const questions = getRequiredQuestions({
     information: {
-      ...state.information,
+      ...information,
       questions: {
-        ...state.information.questions,
+        ...information.questions,
         ...currentValues
       }
     }
