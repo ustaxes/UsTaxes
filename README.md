@@ -1,4 +1,4 @@
-v# [ustaxes.org](//ustaxes.org) [![Netlify Status][Netlify-badge]][Netlify-url] [![Github Latest Release][release-badge]][github-release] [![discord-badge]][discord-url]
+# [ustaxes.org](//ustaxes.org) [![Netlify Status][Netlify-badge]][Netlify-url] [![Github Latest Release][release-badge]][github-release] [![discord-badge]][discord-url]
 
 ## What is UsTaxes?
 
