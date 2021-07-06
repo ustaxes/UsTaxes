@@ -3,10 +3,9 @@ import { displayNumber, sumFields } from './util'
 import Form, { FormTag } from './Form'
 import { anArrayOf } from '../util'
 import TaxPayer from '../redux/TaxPayer'
+import { fica } from '../data/federal'
 
 export const claimableExcessSSTaxWithholding = (w2s: IncomeW2[]): number => {
-  const maxSSTax = 8537.40
-  const maxIncomeSSTaxApplies = 137700
   // 1040 instructions:
   // If you had more than one employer and total wages of more than $137,700, too
   // much SS or RRTA tax may have been withheld. You can take a credit for the amount
@@ -14,9 +13,9 @@ export const claimableExcessSSTaxWithholding = (w2s: IncomeW2[]): number => {
   // If any one employer withheld more than $8,537.40, you can't claim the excess on
   // your return.
   if (w2s.length > 1 &&
-    w2s.map((w2) => w2.income).reduce((l, r) => l + r, 0) > maxIncomeSSTaxApplies &&
-    w2s.every((w2) => w2.ssWithholding <= maxSSTax)) {
-    return w2s.map((w2) => w2.ssWithholding).reduce((l, r) => l + r, 0) - maxSSTax
+    w2s.map((w2) => w2.income).reduce((l, r) => l + r, 0) > fica.maxIncomeSSTaxApplies &&
+    w2s.every((w2) => w2.ssWithholding <= fica.maxSSTax)) {
+    return w2s.map((w2) => w2.ssWithholding).reduce((l, r) => l + r, 0) - fica.maxSSTax
   } else {
     return 0 // Cannot claim credit for excess SS tax
   }
