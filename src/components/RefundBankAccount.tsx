@@ -17,14 +17,14 @@ interface UserRefundForm {
 const toRefund = (formData: UserRefundForm): Refund => formData
 
 export default function RefundBankAccount (): ReactElement {
-  const methods = useForm<UserRefundForm>()
+  const defaultValues: Refund | undefined = useSelector((state: TaxesState) => {
+    return state.information.refund
+  })
+
+  const methods = useForm<UserRefundForm>({ defaultValues })
   const { handleSubmit, formState: { errors } } = methods
   // const variable dispatch to allow use inside function
   const dispatch = useDispatch()
-
-  const prevFormData: Refund | undefined = useSelector((state: TaxesState) => {
-    return state.information.refund
-  })
 
   // component functions
   const onSubmit = (onAdvance: () => void) => (formData: UserRefundForm): void => {
@@ -44,7 +44,6 @@ export default function RefundBankAccount (): ReactElement {
               required={true}
               patternConfig={Patterns.bankRouting}
               name="routingNumber"
-              defaultValue={prevFormData?.routingNumber}
               error={errors.routingNumber}
             />
 
@@ -53,13 +52,11 @@ export default function RefundBankAccount (): ReactElement {
               required={true}
               patternConfig={Patterns.bankAccount}
               name="accountNumber"
-              defaultValue={prevFormData?.accountNumber}
               error={errors.accountNumber}
             />
             <LabeledRadio
               label="Account Type"
               name="accountType"
-              defaultValue={prevFormData?.accountType as string}
               values={[['Checking', 'checking'], ['Savings', 'savings']]}
             />
             {navButtons}

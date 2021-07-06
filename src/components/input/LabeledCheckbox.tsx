@@ -5,7 +5,7 @@ import { LabeledCheckboxProps } from './types'
 import useStyles from './styles'
 
 export function LabeledCheckbox (props: LabeledCheckboxProps): ReactElement {
-  const { label, name, defaultValue } = props
+  const { label, name } = props
   const { control } = useFormContext()
 
   const classes = useStyles()
@@ -13,7 +13,6 @@ export function LabeledCheckbox (props: LabeledCheckboxProps): ReactElement {
   return (
     <Controller
       name={name}
-      defaultValue={defaultValue ?? false}
       render={({ field: { value, onChange } }) =>
         <div className={classes.root}>
           <FormControl component="fieldset">

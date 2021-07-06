@@ -34,14 +34,13 @@ export interface LabeledInputProps extends BaseFormProps {
   rules?: Exclude<RegisterOptions, 'valueAsNumber' | 'valueAsDate' | 'setValueAs'>
 }
 
-export interface LabeledFormProps<A> {
+export interface LabeledFormProps {
   name: string
   label: string
-  defaultValue?: A
 }
 
-export type LabeledCheckboxProps = LabeledFormProps<boolean>
+export type LabeledCheckboxProps = LabeledFormProps
 
-export interface LabeledRadioProps extends LabeledFormProps<string> {
+export interface LabeledRadioProps extends LabeledFormProps {
   values: Array<[string, string]>
 }

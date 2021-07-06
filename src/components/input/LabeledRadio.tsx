@@ -5,7 +5,7 @@ import { LabeledRadioProps } from './types'
 import useStyles from './styles'
 
 export function LabeledRadio (props: LabeledRadioProps): ReactElement {
-  const { label, name, defaultValue, values } = props
+  const { label, name, values } = props
 
   const classes = useStyles()
   const { control } = useFormContext()
@@ -13,7 +13,6 @@ export function LabeledRadio (props: LabeledRadioProps): ReactElement {
   return (
     <Controller
       name={name}
-      defaultValue={defaultValue}
       render={({ field: { value, onChange } }) =>
         <div className={classes.root}>
           <FormControl component="fieldset">

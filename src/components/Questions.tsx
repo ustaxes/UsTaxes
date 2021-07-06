@@ -59,7 +59,6 @@ const Questions = (): ReactElement => {
                           <LabeledCheckbox
                             name={q.tag}
                             label={q.text}
-                            defaultValue={state.information.questions[q.tag] as (boolean | undefined)}
                           />
                         )
                       }
@@ -68,7 +67,6 @@ const Questions = (): ReactElement => {
                           <LabeledInput
                             name={q.tag}
                             label={q.text}
-                            defaultValue={state.information.questions[q.tag] as (string | undefined)}
                           />
                         )
                       }

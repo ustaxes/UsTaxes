@@ -183,7 +183,6 @@ export default function RealEstate (): ReactElement {
         label={displayExpense(PropertyExpenseType[k])}
         name={`expenses.${k.toString()}`}
         patternConfig={Patterns.currency}
-        defaultValue={defaultValues?.expenses[k]?.toString() ?? ''}
       />
     )
   )
@@ -195,7 +194,6 @@ export default function RealEstate (): ReactElement {
           key={enumKeys(PropertyExpenseType).length}
           label="Other description"
           name="otherExpenseType"
-          defaultValue={defaultValues?.otherExpenseType ?? ''}
           required={true}
         />
       )

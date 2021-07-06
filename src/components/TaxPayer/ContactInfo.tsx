@@ -8,14 +8,15 @@ import { ContactInfo as Contact, TaxesState, TaxPayer } from '../../redux/data'
 import { PagerContext } from '../pager'
 
 export default function ContactInfo (): ReactElement {
-  const methods = useForm<Contact>()
-  const { handleSubmit, formState: { errors } } = methods
   // const variable dispatch to allow use inside function
   const dispatch = useDispatch()
 
-  const taxPayer: TaxPayer | undefined = useSelector((state: TaxesState) => {
+  const defaultValues: TaxPayer | undefined = useSelector((state: TaxesState) => {
     return state.information.taxPayer
   })
+
+  const methods = useForm<Contact>({ defaultValues })
+  const { handleSubmit, formState: { errors } } = methods
 
   const onSubmit = (onAdvance: () => void) => (formData: Contact): void => {
     dispatch(saveContactInfo(formData))
@@ -32,14 +33,12 @@ export default function ContactInfo (): ReactElement {
             required={true}
             patternConfig={Patterns.usPhoneNumber}
             name="contactPhoneNumber"
-            defaultValue={taxPayer?.contactPhoneNumber}
             error={errors.contactPhoneNumber}
           />
           <LabeledInput
             label="Contact email address"
             required={true}
             name="contactEmail"
-            defaultValue={taxPayer?.contactEmail}
             error={errors.contactEmail}
           />
           {navButtons}
