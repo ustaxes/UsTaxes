@@ -47,6 +47,12 @@ export const getSchedules = (f1040: F1040, state: Information): Form[] => {
     }
   }
 
+  if (claimableExcessSSTaxWithholding(state.w2s) > 0 && f1040.schedule3 === undefined) {
+    const s3 = new Schedule3(state)
+    f1040.addSchedule3(s3)
+    attachments = [...attachments, s3]
+  }
+
   if (f1040.scheduleE !== undefined) {
     if (f1040.schedule1 === undefined) {
       const s1 = new Schedule1(state, f1040)
@@ -56,12 +62,6 @@ export const getSchedules = (f1040: F1040, state: Information): Form[] => {
     } else {
       f1040.schedule1.addScheduleE(f1040.scheduleE)
     }
-  }
-
-  if (claimableExcessSSTaxWithholding(state.w2s) > 0 && f1040.schedule3 === undefined) {
-    const s3 = new Schedule3(state)
-    f1040.addSchedule3(s3)
-    attachments = [s3, ...attachments]
   }
 
   const eic = new ScheduleEIC(state.taxPayer, f1040)
