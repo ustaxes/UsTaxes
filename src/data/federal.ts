@@ -129,6 +129,11 @@ const federalBrackets: FederalBrackets = {
   }
 }
 
+export const fica = {
+  maxSSTax: 8537.40,
+  maxIncomeSSTaxApplies: 137700
+}
+
 // line 11 caps based on step one in instructions
 const line11Caps = [15820, 41756, 47440, 50954]
 const line11MfjCaps = [21710, 47646, 53330, 56844]
