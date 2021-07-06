@@ -51,7 +51,7 @@ export default class Schedule3 implements Form {
   l9 = (): number | undefined => undefined
   l10 = (): number | undefined => displayNumber(
     claimableExcessSSTaxWithholding(this.state.w2s)
-  ) // TODO: also applies to RTTA tax
+  ) // TODO: also applies to RRTA tax
 
   l11 = (): number | undefined => undefined
 
