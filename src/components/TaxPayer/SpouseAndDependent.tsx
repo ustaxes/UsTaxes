@@ -191,14 +191,14 @@ export const SpouseInfo = (): ReactElement => {
 }
 
 const SpouseAndDependent = (): ReactElement => {
-  const methods = useForm<{ filingStatus: FilingStatus }>()
-  const { handleSubmit, formState: { errors } } = methods
-  // const variable dispatch to allow use inside function
-  const dispatch = useDispatch()
-
   const taxPayer: TaxPayer | undefined = useSelector((state: TaxesState) => {
     return state.information.taxPayer
   })
+
+  const methods = useForm<{ filingStatus: FilingStatus }>({ defaultValues: { filingStatus: taxPayer.filingStatus } })
+  const { handleSubmit, formState: { errors } } = methods
+  // const variable dispatch to allow use inside function
+  const dispatch = useDispatch()
 
   const onSubmit = (onAdvance: () => void) => (formData: {filingStatus: FilingStatus}): void => {
     dispatch(saveFilingStatusInfo(formData.filingStatus))
