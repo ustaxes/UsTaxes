@@ -1,4 +1,4 @@
-# [ustaxes.org](//ustaxes.org) [![Netlify Status][Netlify-badge]][Netlify-url] [![Github Latest Release][release-badge]][github-release] [![discord-badge]][discord-url]
+v# [ustaxes.org](//ustaxes.org) [![Netlify Status][Netlify-badge]][Netlify-url] [![Github Latest Release][release-badge]][github-release] [![discord-badge]][discord-url]
 
 ## What is UsTaxes?
 
@@ -17,6 +17,7 @@ Most income and deduction information from the following forms are supported:
 So far, this project can attach the following schedules to form 1040:
 
 * Schedule 1 (as to Schedule E and 1098-E data only)
+* Schedule 3 (as to excess FICA tax only)
 * Schedule 8812
 * Schedule B
 * Schedule D

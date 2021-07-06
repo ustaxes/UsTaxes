@@ -29,6 +29,7 @@ export default function GettingStarted (): ReactElement {
           <p>Supported Attachments to Form 1040</p>
           <ul>
             <li>Schedule 1 (as related to Schedule E only)</li>
+            <li>Schedule 3 (as related to excess FICA only)</li>
             <li>Schedule B</li>
             <li>Schedule D</li>
             <li>Schedule E</li>
