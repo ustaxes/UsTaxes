@@ -122,6 +122,7 @@ export default function W2JobInfo (): ReactElement {
         name="ssWithholding"
         patternConfig={Patterns.currency(control)}
         error={errors.ssWithholding}
+        defaultValue={defaultValues?.ssWithholding.toString()}
       />
 
       <LabeledInput
@@ -132,6 +133,7 @@ export default function W2JobInfo (): ReactElement {
         name="medicareWithholding"
         patternConfig={Patterns.currency(control)}
         error={errors.medicareWithholding}
+        defaultValue={defaultValues?.medicareWithholding.toString()}
       />
 
       <GenericLabeledDropdown
