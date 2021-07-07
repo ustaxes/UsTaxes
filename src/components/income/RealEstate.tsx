@@ -1,5 +1,5 @@
 import React, { Fragment, ReactElement, useState } from 'react'
-import { Message, useForm, useWatch } from 'react-hook-form'
+import { Message, useForm, useWatch, FormProvider } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { addProperty, editProperty, removeProperty } from '../../redux/actions'
 import { PagerContext } from '../pager'
@@ -118,7 +118,8 @@ const toUserInput = (property: Property): PropertyAddForm => {
 }
 
 export default function RealEstate (): ReactElement {
-  const { register, control, errors, getValues, handleSubmit, reset } = useForm<PropertyAddForm>()
+  const methods = useForm<PropertyAddForm>()
+  const { control, formState: { errors }, getValues, handleSubmit, reset } = methods
   const dispatch = useDispatch()
 
   const properties: Property[] = useSelector((state: TaxesState) => state.information.realEstate)
@@ -139,7 +140,7 @@ export default function RealEstate (): ReactElement {
   const otherExpensesEntered = useWatch({
     control,
     name: 'expenses.other',
-    defaultValue: defaultValues?.expenses.other ?? ''
+    defaultValue: defaultValues?.expenses.other
   })
 
   const validateDays = (n: number, other: number): Message | true => {
@@ -181,24 +182,18 @@ export default function RealEstate (): ReactElement {
         key={i}
         label={displayExpense(PropertyExpenseType[k])}
         name={`expenses.${k.toString()}`}
-        register={register}
-        patternConfig={Patterns.currency(control)}
-        defaultValue={defaultValues?.expenses[k]?.toString() ?? ''}
+        patternConfig={Patterns.currency}
       />
     )
   )
 
   const otherExpenseDescription = (() => {
-    if (defaultValues?.expenses.other !== undefined ||
-      (otherExpensesEntered !== '' && Number(otherExpensesEntered) !== 0)
-    ) {
+    if (defaultValues?.expenses.other !== undefined || otherExpensesEntered !== 0) {
       return (
         <LabeledInput
           key={enumKeys(PropertyExpenseType).length}
           label="Other description"
           name="otherExpenseType"
-          register={register}
-          defaultValue={defaultValues?.otherExpenseType ?? ''}
           required={true}
         />
       )
@@ -218,11 +213,8 @@ export default function RealEstate (): ReactElement {
     >
       <h4>Property location</h4>
       <AddressFields
-        register={register}
-        control={control}
         errors={errors.address}
         checkboxText="Does the property have a foreign address"
-        address={defaultValues?.address}
         allowForeignCountry={false}
       />
       <GenericLabeledDropdown
@@ -232,9 +224,7 @@ export default function RealEstate (): ReactElement {
         required={true}
         textMapping={(t) => displayPropertyType(PropertyType[t])}
         keyMapping={(_, n) => n}
-        control={control}
         name="propertyType"
-        defaultValue={defaultValues?.propertyType?.toString()}
         valueMapping={(n) => n}
       />
       {(() => {
@@ -242,10 +232,8 @@ export default function RealEstate (): ReactElement {
           return (
             <LabeledInput
               name="otherPropertyType"
-              defaultValue={defaultValues?.otherPropertyType ?? '' }
               label="Short property type description"
               error={errors.otherPropertyType}
-              register={register}
               required={true}
             />
           )
@@ -254,38 +242,30 @@ export default function RealEstate (): ReactElement {
       <h4>Use</h4>
       <LabeledInput
         name="rentalDays"
-        register={register}
         required={true}
         rules={{ validate: (n: String) => validateRental(Number(n)) }}
         label="Number of days in the year used for rental"
-        patternConfig={Patterns.numDays(control)}
+        patternConfig={Patterns.numDays}
         error={errors.rentalDays}
-        defaultValue={defaultValues?.rentalDays?.toString()}
       />
       <LabeledInput
         name="personalUseDays"
-        register={register}
         rules={{ validate: (n: String) => validatePersonal(Number(n)) }}
         label="Number of days in the year for personal use"
-        patternConfig={Patterns.numDays(control)}
+        patternConfig={Patterns.numDays}
         error={errors.personalUseDays}
-        defaultValue={defaultValues?.personalUseDays?.toString()}
       />
       <LabeledCheckbox
         name="qualifiedJointVenture"
-        control={control}
         label="Is this a qualified joint venture"
-        defaultValue={defaultValues?.qualifiedJointVenture ?? false}
       />
       <h4>Property Financials</h4>
       <h5>Income</h5>
       <LabeledInput
         name="rentReceived"
         label="Rent received"
-        register={register}
-        patternConfig={Patterns.currency(control)}
+        patternConfig={Patterns.currency}
         error={errors.rentReceived}
-        defaultValue={defaultValues?.rentReceived?.toString()}
       />
       <h5>Expenses</h5>
       <Grid container spacing={3} direction="row" justify="flex-start">
@@ -315,7 +295,9 @@ export default function RealEstate (): ReactElement {
       { ({ navButtons, onAdvance }) =>
         <form onSubmit={onAdvance}>
           <h2>Properties</h2>
-          {form}
+          <FormProvider {...methods}>
+            {form}
+          </FormProvider>
           { navButtons }
         </form>
       }

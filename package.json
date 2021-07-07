@@ -14,7 +14,7 @@
     "pdf-lib": "^1.16.0",
     "react": "^17.0.1",
     "react-dom": "^17.0.2",
-    "react-hook-form": "^6.15.8",
+    "react-hook-form": "^7.9.0",
     "react-number-format": "^4.6.4",
     "react-redux": "^7.2.4",
     "react-router-dom": "^5.2.0",

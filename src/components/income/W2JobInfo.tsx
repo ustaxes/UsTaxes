@@ -1,6 +1,6 @@
 import React, { ReactElement, useState } from 'react'
-import { useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
+import { FormProvider, useForm } from 'react-hook-form'
 import { PagerContext } from '../pager'
 import { TaxesState, IncomeW2, Person, PersonRole } from '../../redux/data'
 import { Currency, formatSSID, GenericLabeledDropdown, LabeledInput } from '../input'
@@ -29,19 +29,42 @@ const toIncomeW2 = (formData: IncomeW2UserInput): IncomeW2 => ({
   medicareWithholding: parseInt(formData.medicareWithholding)
 })
 
-export default function W2JobInfo (): ReactElement {
-  const { register, errors, handleSubmit, control, reset } = useForm<IncomeW2UserInput>()
-  const dispatch = useDispatch()
+const toIncomeW2UserInput = (data: IncomeW2): IncomeW2UserInput => ({
+  ...data,
+  income: data.income.toString(),
+  fedWithholding: data.fedWithholding.toString(),
+  ssWithholding: data.ssWithholding.toString(),
+  medicareWithholding: data.medicareWithholding.toString()
+})
 
-  const [editing, setEditing] = useState<number | undefined>(undefined)
+export default function W2JobInfo (): ReactElement {
+  const dispatch = useDispatch()
+  const [editing, doSetEditing] = useState<number | undefined>(undefined)
+
+  const methods = useForm<IncomeW2UserInput>()
+  const { formState: { errors }, handleSubmit, reset } = methods
+
+  const people: Person[] = (
+    useSelector((state: TaxesState) => ([
+      state.information.taxPayer?.primaryPerson,
+      state.information.taxPayer?.spouse
+    ]))
+      .filter((p) => p !== undefined)
+      .map((p) => p as Person)
+  )
 
   const w2s = useSelector((state: TaxesState) =>
     state.information.w2s
   )
 
+  const setEditing = (idx: number): void => {
+    reset(toIncomeW2UserInput(w2s[idx]))
+    doSetEditing(idx)
+  }
+
   const clear = (): void => {
     reset()
-    setEditing(undefined)
+    doSetEditing(undefined)
   }
 
   const onAddW2 = (onSuccess: (() => void)) => (formData: IncomeW2UserInput): void => {
@@ -54,21 +77,6 @@ export default function W2JobInfo (): ReactElement {
     clear()
     onSuccess()
   }
-
-  const defaultValues = (() => {
-    if (editing !== undefined) {
-      return w2s[editing]
-    }
-  })()
-
-  const people: Person[] = (
-    useSelector((state: TaxesState) => ([
-      state.information.taxPayer?.primaryPerson,
-      state.information.taxPayer?.spouse
-    ]))
-      .filter((p) => p !== undefined)
-      .map((p) => p as Person)
-  )
 
   const form: ReactElement = (
     <FormListContainer<IncomeW2 >
@@ -85,60 +93,49 @@ export default function W2JobInfo (): ReactElement {
       <strong>Input data from W-2</strong>
       <LabeledInput
         label="Occupation"
-        register={register}
         required={true}
         name="occupation"
         error={errors.occupation}
-        defaultValue={defaultValues?.occupation}
       />
 
       <LabeledInput
         strongLabel="Box 1 - "
         label="Wages, tips, other compensation"
-        register={register}
         required={true}
-        patternConfig={Patterns.currency(control)}
+        patternConfig={Patterns.currency}
         name="income"
         error={errors.income}
-        defaultValue={defaultValues?.income.toString()}
       />
 
       <LabeledInput
         strongLabel="Box 2 - "
         label="Federal income tax withheld"
-        register={register}
         required={true}
         name="fedWithholding"
-        patternConfig={Patterns.currency(control)}
+        patternConfig={Patterns.currency}
         error={errors.fedWithholding}
-        defaultValue={defaultValues?.fedWithholding.toString()}
       />
 
       <LabeledInput
         strongLabel="Box 4 - "
         label="Social security tax withheld"
-        register={register}
         required={true}
         name="ssWithholding"
-        patternConfig={Patterns.currency(control)}
+        patternConfig={Patterns.currency}
         error={errors.ssWithholding}
-        defaultValue={defaultValues?.ssWithholding.toString()}
       />
 
       <LabeledInput
         strongLabel="Box 6 - "
         label="Medicare tax withheld"
-        register={register}
         required={true}
         name="medicareWithholding"
-        patternConfig={Patterns.currency(control)}
+        patternConfig={Patterns.currency}
         error={errors.medicareWithholding}
-        defaultValue={defaultValues?.medicareWithholding.toString()}
       />
 
       <GenericLabeledDropdown
         dropDownData={people}
-        control={control}
         error={errors.personRole}
         label="Employee"
         required={true}
@@ -146,7 +143,6 @@ export default function W2JobInfo (): ReactElement {
         name="personRole"
         keyMapping={(p: Person, i: number) => i}
         textMapping={(p) => `${p.firstName} ${p.lastName} (${formatSSID(p.ssid)})`}
-        defaultValue={defaultValues?.personRole ?? PersonRole.PRIMARY}
       />
     </FormListContainer>
   )
@@ -156,7 +152,9 @@ export default function W2JobInfo (): ReactElement {
       { ({ navButtons, onAdvance }) =>
         <form onSubmit={onAdvance}>
           <h2>Job Information</h2>
-          {form}
+          <FormProvider {...methods}>
+            {form}
+          </FormProvider>
           { navButtons }
         </form>
       }

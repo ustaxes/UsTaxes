@@ -1,5 +1,5 @@
 import React, { ReactElement, useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { useForm, FormProvider } from 'react-hook-form'
 import { Icon } from '@material-ui/core'
 import { useDispatch, useSelector } from 'react-redux'
 import { add1099, edit1099, remove1099 } from '../../redux/actions'
@@ -127,24 +127,23 @@ export default function F1099Info (): ReactElement {
   const f1099s = useSelector((state: TaxesState) =>
     state.information.f1099s
   )
-  const [editing, setEditing] = useState<number | undefined>(undefined)
+  const [editing, doSetEditing] = useState<number | undefined>(undefined)
 
-  const defaultValues: F1099UserInput = (() => {
-    if (editing !== undefined) {
-      return toUserInput(f1099s[editing])
-    }
-    return blankUserInput
-  })()
-
-  const { register, errors, handleSubmit, control, reset, watch, setValue } = useForm<F1099UserInput>()
+  const methods = useForm<F1099UserInput>()
+  const { formState: { errors }, handleSubmit, reset, watch, setValue } = methods
   const selectedType: Income1099Type | undefined = watch('formType')
 
   const dispatch = useDispatch()
 
+  const setEditing = (idx: number): void => {
+    reset(toUserInput(f1099s[idx]))
+    doSetEditing(idx)
+  }
+
   const clear = (): void => {
     reset()
     setValue('formType', undefined)
-    setEditing(undefined)
+    doSetEditing(undefined)
   }
 
   const onAdd1099 = (onSuccess: () => void) => (formData: F1099UserInput): void => {
@@ -172,12 +171,10 @@ export default function F1099Info (): ReactElement {
   const intFields = (
     <LabeledInput
       label="Box 1 - Interest Income"
-      register={register}
       required={true}
-      patternConfig={Patterns.currency(control)}
+      patternConfig={Patterns.currency}
       name="interest"
       error={errors.interest}
-      defaultValue={defaultValues?.interest.toString()}
     />
   )
 
@@ -186,40 +183,32 @@ export default function F1099Info (): ReactElement {
       <h4>Long Term Covered Transactions</h4>
       <LabeledInput
         label="Proceeds"
-        register={register}
         required={true}
-        patternConfig={Patterns.currency(control)}
+        patternConfig={Patterns.currency}
         name="longTermProceeds"
         error={errors.longTermProceeds}
-        defaultValue={defaultValues?.longTermProceeds.toString()}
       />
       <LabeledInput
         label="Cost basis"
-        register={register}
         required={true}
-        patternConfig={Patterns.currency(control)}
+        patternConfig={Patterns.currency}
         name="longTermCostBasis"
         error={errors.longTermCostBasis}
-        defaultValue={defaultValues?.longTermCostBasis.toString()}
       />
       <h4>Short Term Covered Transactions</h4>
       <LabeledInput
         label="Proceeds"
-        register={register}
         required={true}
-        patternConfig={Patterns.currency(control)}
+        patternConfig={Patterns.currency}
         name="shortTermProceeds"
         error={errors.shortTermProceeds}
-        defaultValue={defaultValues?.shortTermProceeds.toString()}
       />
       <LabeledInput
         label="Cost basis"
-        register={register}
         required={true}
-        patternConfig={Patterns.currency(control)}
+        patternConfig={Patterns.currency}
         name="shortTermCostBasis"
         error={errors.shortTermCostBasis}
-        defaultValue={defaultValues?.shortTermCostBasis.toString()}
       />
     </div>
   )
@@ -228,21 +217,17 @@ export default function F1099Info (): ReactElement {
     <div>
       <LabeledInput
         label="Total Dividends"
-        register={register}
         required={true}
-        patternConfig={Patterns.currency(control)}
+        patternConfig={Patterns.currency}
         name="dividends"
         error={errors.dividends}
-        defaultValue={defaultValues?.dividends.toString()}
       />
       <LabeledInput
         label="Qualified Dividends"
-        register={register}
         required={true}
-        patternConfig={Patterns.currency(control)}
+        patternConfig={Patterns.currency}
         name="qualifiedDividends"
         error={errors.qualifiedDividends}
-        defaultValue={defaultValues?.qualifiedDividends.toString()}
       />
     </div>
   )
@@ -275,7 +260,6 @@ export default function F1099Info (): ReactElement {
 
       <GenericLabeledDropdown
         dropDownData={Object.values(Income1099Type)}
-        control={control}
         error={errors.formType}
         label="Form Type"
         required={true}
@@ -283,27 +267,20 @@ export default function F1099Info (): ReactElement {
         name="formType"
         keyMapping={(_, i: number) => i}
         textMapping={(name: string) => `1099-${name}`}
-        defaultValue={defaultValues?.formType}
       />
 
       <LabeledInput
         label="Enter name of bank, broker firm, or other payer"
-        register={register}
         required={true}
         patternConfig={Patterns.name}
         name="payer"
         error={errors.payer}
-        defaultValue={defaultValues?.payer}
       />
 
-      {(() => {
-        if (selectedType !== undefined) return specificFields[selectedType]
-        else if (defaultValues?.formType !== undefined) return specificFields[defaultValues.formType]
-      })()}
+      {selectedType !== undefined ? specificFields[selectedType] : undefined }
 
       <GenericLabeledDropdown
         dropDownData={people}
-        control={control}
         error={errors.personRole}
         label="Recipient"
         required={true}
@@ -311,7 +288,6 @@ export default function F1099Info (): ReactElement {
         name="personRole"
         keyMapping={(p: Person, i: number) => i}
         textMapping={(p: Person) => `${p.firstName} ${p.lastName} (${formatSSID(p.ssid)})`}
-        defaultValue={defaultValues?.personRole ?? PersonRole.PRIMARY}
       />
     </FormListContainer>
   )
@@ -321,7 +297,9 @@ export default function F1099Info (): ReactElement {
       { ({ onAdvance, navButtons }) =>
         <form onSubmit={onAdvance}>
           <h2>1099 Information</h2>
-          {form}
+          <FormProvider {...methods}>
+            {form}
+          </FormProvider>
           { navButtons }
         </form>
       }

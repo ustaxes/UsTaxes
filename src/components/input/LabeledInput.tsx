@@ -2,29 +2,33 @@ import React, { ReactElement } from 'react'
 import { TextField } from '@material-ui/core'
 import { LabeledInputProps } from './types'
 import NumberFormat from 'react-number-format'
-import { InputType } from '../Patterns'
-import { Controller } from 'react-hook-form'
+import { Controller, useFormContext } from 'react-hook-form'
+import { isNumeric, Patterns } from '../Patterns'
 
 export function LabeledInput (props: LabeledInputProps): ReactElement {
-  const { strongLabel, label, register, error, required = false, patternConfig, name, rules = {}, defaultValue = '' } = props
+  const { strongLabel, label, error, required = false, patternConfig = Patterns.plain, name, rules = {} } = props
+
+  const { control, register } = useFormContext()
 
   const errorMessage: string | undefined = (() => {
     if (error?.message !== undefined && error?.message !== '') {
       return error?.message
     }
-    if (error?.type === 'max' && patternConfig?.inputType === InputType.numeric && patternConfig.max !== undefined) {
-      return `Input must be less than or equal to ${patternConfig.max}`
-    }
-    if (error?.type === 'min' && patternConfig?.inputType === InputType.numeric && patternConfig.min !== undefined) {
-      return `Input must be greater than or equal to ${patternConfig.min}`
+    if (patternConfig !== undefined && isNumeric(patternConfig)) {
+      if (error?.type === 'max' && patternConfig.max !== undefined) {
+        return `Input must be less than or equal to ${patternConfig.max}`
+      }
+      if (error?.type === 'min' && patternConfig.min !== undefined) {
+        return `Input must be greater than or equal to ${patternConfig.min}`
+      }
     }
   })()
 
   const input: ReactElement = (() => {
-    if (patternConfig?.inputType === InputType.numeric) {
+    if (isNumeric(patternConfig)) {
       return (
         <Controller
-          render={({ onChange, value }) =>
+          render={({ field: { onChange, value } }) =>
             <NumberFormat
               mask={patternConfig.mask}
               thousandSeparator={patternConfig.thousandSeparator}
@@ -41,9 +45,7 @@ export function LabeledInput (props: LabeledInputProps): ReactElement {
             />
           }
           name={name}
-          control={patternConfig.control}
-          required={required}
-          defaultValue={defaultValue}
+          control={control}
           rules={{
             ...rules,
             min: patternConfig.min,
@@ -59,21 +61,27 @@ export function LabeledInput (props: LabeledInputProps): ReactElement {
     }
 
     return (
-      <TextField
+      <Controller
+        control={control}
         name={name}
-        defaultValue={defaultValue}
-        inputRef={register({
-          ...rules,
-          required: required ? 'Input is required' : undefined,
-          pattern: {
-            value: patternConfig?.regexp ?? (required ? /.+/ : /.*/),
-            message: patternConfig?.description ?? (required ? 'Input is required' : '')
-          }
-        })}
-        fullWidth={patternConfig?.format === undefined}
-        helperText={error?.message}
-        error={error !== undefined}
-        variant="filled"
+        render={({ field: { onChange, value } }) =>
+          <TextField
+            {...register(name, {
+              ...rules,
+              required: required ? 'Input is required' : undefined,
+              pattern: {
+                value: patternConfig?.regexp ?? (required ? /.+/ : /.*/),
+                message: patternConfig?.description ?? (required ? 'Input is required' : '')
+              }
+            })}
+            value={value}
+            onChange={onChange}
+            fullWidth={patternConfig?.format === undefined}
+            helperText={error?.message}
+            error={error !== undefined}
+            variant="filled"
+          />
+        }
       />
     )
   })()

@@ -10,44 +10,35 @@ import DeleteIcon from '@material-ui/icons/Delete'
 import EditIcon from '@material-ui/icons/Edit'
 import ListItemText from '@material-ui/core/ListItemText'
 import PersonIcon from '@material-ui/icons/Person'
-import { Control, DeepMap, FieldError } from 'react-hook-form'
+import { DeepMap, FieldError } from 'react-hook-form'
 
-interface PersonFieldsProps<T extends Person> extends BaseFormProps {
-  defaults?: T
+interface PersonFieldsProps extends BaseFormProps {
   children?: ReactNode
   errors: DeepMap<Partial<Person>, FieldError>
-  person?: Person
-  control: Control
 }
 
-export const PersonFields = <T extends Person>({ register, control, errors, defaults, children, person }: PersonFieldsProps<T>): ReactElement => (
+export const PersonFields = ({ errors, children }: PersonFieldsProps): ReactElement => (
   <div>
     <LabeledInput
       label="First Name and Initial"
-      register={register}
       name="firstName"
       patternConfig={Patterns.name}
       required={true}
       error={errors.firstName}
-      defaultValue={person?.firstName ?? defaults?.firstName}
     />
     <LabeledInput
       label="Last Name"
-      register={register}
       name="lastName"
       patternConfig={Patterns.name}
       required={true}
       error={errors.lastName}
-      defaultValue={person?.lastName ?? defaults?.lastName}
     />
     <LabeledInput
       label="SSN / TIN"
-      register={register}
       name="ssid"
-      patternConfig={Patterns.ssn(control)}
+      patternConfig={Patterns.ssn}
       required={true}
       error={errors.ssid}
-      defaultValue={person?.ssid ?? defaults?.ssid}
     />
     {children}
   </div>
