@@ -7,6 +7,7 @@ import Schedule8863 from './F8863'
 import F8888 from './F8888'
 import F8910 from './F8910'
 import F8936 from './F8936'
+import F8959 from './F8959'
 import F8995 from './F8995'
 import F8995A from './F8995A'
 import Schedule1 from './Schedule1'
@@ -79,6 +80,7 @@ export default class F1040 implements Form {
   f8888?: F8888
   f8910?: F8910
   f8936?: F8936
+  f8959?: F8959
   f8995?: F8995 | F8995A
   studentLoanInterestWorksheet?: StudentLoanInterestWorksheet
 
@@ -147,6 +149,10 @@ export default class F1040 implements Form {
 
   addScheduleEIC (s: ScheduleEIC): void {
     this.scheduleEIC = s
+  }
+
+  add8959 (f: F8959): void {
+    this.f8959 = f
   }
 
   add8995 (s: F8995 | F8995A): void {
@@ -331,8 +337,8 @@ export default class F1040 implements Form {
   // TODO: 1099s
   l25b = (): number | undefined => undefined
 
-  // TODO: Other withholding forms?
-  l25c = (): number | undefined => undefined
+  // TODO: form(s) W-2G box 4, schedule K-1, form 1042-S, form 8805, form 8288-A
+  l25c = (): number | undefined => this.f8959?.l24()
 
   l25d = (): number | undefined => displayNumber(
     sumFields([
