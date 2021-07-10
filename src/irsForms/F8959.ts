@@ -33,8 +33,8 @@ export default class F8959 implements Form {
     return filingStatus !== undefined ? fica.additionalMedicareTaxThreshold(filingStatus) : undefined
   }
 
-  computeAdditionalMedicareTax = (compensation: number | undefined): number | undefined => {
-    return 0.009 * computeField(compensation)
+  computeAdditionalMedicareTax = (compensation: number | undefined): number => {
+    return fica.additionalMedicareTaxRate * computeField(compensation)
   }
 
   // Part I: Additional Medicare Tax on Medicare Wages
@@ -54,7 +54,7 @@ export default class F8959 implements Form {
     computeField(this.l4()) - computeField(this.l5())
   )
 
-  l7 = (): number | undefined => this.computeAdditionalMedicareTax(this.l6())
+  l7 = (): number | undefined => displayNumber(this.computeAdditionalMedicareTax(this.l6()))
 
   // Part II: Additional Medicare Tax on Self-Employment Income
   l8 = (): number | undefined => this.scheduleSE?.l6()
@@ -68,7 +68,7 @@ export default class F8959 implements Form {
     computeField(this.l8()) - computeField(this.l11())
   )
 
-  l13 = (): number | undefined => this.computeAdditionalMedicareTax(this.l12())
+  l13 = (): number | undefined => displayNumber(this.computeAdditionalMedicareTax(this.l12()))
 
   // Part III: Additional Medicare Tax on Railroad Retirement Tax Act
   // (RRTA) Compensation
@@ -78,7 +78,7 @@ export default class F8959 implements Form {
     computeField(this.l14()) - computeField(this.l15())
   )
 
-  l17 = (): number | undefined => this.computeAdditionalMedicareTax(this.l12())
+  l17 = (): number | undefined => displayNumber(this.computeAdditionalMedicareTax(this.l12()))
 
   // Part IV: Total Medicare Tax
   l18 = (): number | undefined => displayNumber(
