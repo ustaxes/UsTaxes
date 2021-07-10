@@ -10,7 +10,9 @@ export const blankState: Information = {
   f1099s: [],
   w2s: [],
   realEstate: [],
-  taxPayer: { dependents: [] }
+  taxPayer: { dependents: [] },
+  questions: {},
+  f1098es: []
 }
 
 function formReducer (state: Information | undefined, action: Actions): Information {
@@ -197,6 +199,44 @@ function formReducer (state: Information | undefined, action: Actions): Informat
       return {
         ...newState,
         realEstate: newProperties
+      }
+    }
+    case ActionName.ANSWER_QUESTION: {
+      // must reset all questions
+      return {
+        ...newState,
+        questions: action.formData
+      }
+    }
+    case ActionName.ADD_1098e: {
+      return {
+        ...newState,
+        f1098es: [
+          ...newState.f1098es,
+          action.formData
+        ]
+      }
+    }
+    case ActionName.EDIT_1098e: {
+      const new1098es = [...newState.f1098es]
+      new1098es.splice(action.formData.index, 1, action.formData.value)
+      return {
+        ...newState,
+        f1098es: new1098es
+      }
+    }
+    case ActionName.REMOVE_1098e: {
+      const new1098es = [...newState.f1098es]
+      new1098es.splice(action.formData, 1)
+      return {
+        ...newState,
+        f1098es: new1098es
+      }
+    }
+    case ActionName.SET_ENTIRE_STATE: {
+      return {
+        ...newState,
+        ...action.formData.information
       }
     }
     default: {

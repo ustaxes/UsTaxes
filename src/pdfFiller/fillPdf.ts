@@ -86,7 +86,7 @@ export async function create1040PDF (): Promise<Uint8Array> {
 }
 
 // opens new with filled information in the window of the component it is called from
-export async function createPDFPopup (): Promise<void> {
+export async function createPDFPopup (defaultFilename: string): Promise<void> {
   const pdfBytes = await create1040PDF()
-  return await savePdf(pdfBytes)
+  return await savePdf(pdfBytes, defaultFilename)
 }

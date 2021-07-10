@@ -59,6 +59,26 @@ export const PagerButtons = ({ submitText, previousUrl }: PagerButtonsProps): Re
   )
 }
 
+interface StartButtonsProps {
+  firstUrl: string
+  firstText: string
+  secondUrl: string
+  secondText: string
+}
+
+export const StartButtons = ({ firstUrl, firstText, secondUrl, secondText }: StartButtonsProps): ReactElement => {
+  return (
+    <Box display="flex" justifyContent="space-evenly" paddingTop={3} paddingBottom={6}>
+      <Button href={ firstUrl } variant="contained" color="primary" >
+        { firstText }
+      </Button>
+      <Button href={ secondUrl } variant="contained" color="secondary" >
+        { secondText }
+      </Button>
+    </Box>
+  )
+}
+
 interface PagerProps {
   onAdvance: (() => void)
   navButtons: ReactElement

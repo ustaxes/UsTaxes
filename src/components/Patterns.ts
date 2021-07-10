@@ -1,37 +1,28 @@
-import { Control } from 'react-hook-form'
 import { CURRENT_YEAR } from '../data/federal'
 import { daysInYear } from '../util'
 
-export enum InputType {
-  text = 'text',
-  numeric = 'numeric',
-  preNumeric = 'prenumeric'
-}
-
-export interface PatternConfig<A> {
+export interface BasePattern {
   regexp?: RegExp
-  inputType: A
   description?: string
   format?: string
 }
 
-export interface NumericPattern extends PatternConfig<typeof InputType.numeric> {
+export interface NumericPattern extends BasePattern {
+  readonly inputType: 'numeric'
   thousandSeparator?: boolean
   mask?: string
   prefix?: string
   allowEmptyFormatting?: boolean
   decimalScale?: number
-  control: Control
   min?: number
   max?: number
 }
 
-// Numeric patterns require the control property, which is not available now.
-// This allows us to generate numeric patterns at render time.
-type PreNumeric = (control: Control) => NumericPattern
+export interface TextPattern extends BasePattern {
+  readonly inputType: 'text'
+}
 
-export type TextPattern = PatternConfig<typeof InputType.text>
-export type Pattern = NumericPattern | TextPattern
+export type PatternConfig = NumericPattern | TextPattern
 
 // Convenience record syntax constructor for numeric patterns
 const numeric = (
@@ -44,31 +35,32 @@ const numeric = (
   thousandSeparator: boolean = false,
   prefix: string = '',
   decimalScale: number | undefined = 0
-): PreNumeric =>
-  (control: Control) => ({
-    inputType: InputType.numeric,
-    regexp,
-    description,
-    decimalScale,
-    min,
-    max,
-    format,
-    mask,
-    thousandSeparator,
-    prefix,
-    control
-  })
+): NumericPattern => ({
+  inputType: 'numeric',
+  regexp,
+  description,
+  decimalScale,
+  min,
+  max,
+  format,
+  mask,
+  thousandSeparator,
+  prefix
+})
 
 const text = (regexp: RegExp, description: string): TextPattern => ({
-  inputType: InputType.text,
+  inputType: 'text',
   regexp,
   description
 })
 
 const numDaysInYear = daysInYear(CURRENT_YEAR)
 
+export const isNumeric = (p: PatternConfig): p is NumericPattern => p.inputType === 'numeric'
+export const isText = (p: PatternConfig): p is TextPattern => p.inputType === 'text'
+
 export const Patterns = {
-  year: numeric(/[12][0-9]{3}/, 'Input should be a valid year', 1900, CURRENT_YEAR, '####', '_'),
+  year: numeric(/[12][0-9]{3}/, 'Input should be a four digit year', 1900, CURRENT_YEAR, '####', '_'),
   numMonths: numeric(/[0-9]{1,2}/, 'Input should be 0-12', 0, 12, '##', ''),
   numDays: numeric(/[0-9]{1,3}/, `Input should be 0-${numDaysInYear}`, 0, numDaysInYear, '###', ''),
   name: text(/^[A-Za-z ]+$/i, 'Input should only include letters and spaces'),
@@ -78,5 +70,6 @@ export const Patterns = {
   currency: numeric(/[0-9]+(\.[0-9]{1,2})?/, 'Input should be a numeric value', undefined, undefined, undefined, '_', true, '$', 2),
   bankAccount: numeric(/[0-9]{4,17}/, 'Input should be filled with 4-17 digits', undefined, undefined, '#################', ''),
   bankRouting: numeric(/[0-9]{9}/, 'Input should be filled with 9 digits', undefined, undefined, '#########', '_'),
-  usPhoneNumber: numeric(/[2-9][0-9]{9}/, 'Input should be 10 digits, not starting with 0 or 1', undefined, undefined, '(###)-###-####')
+  usPhoneNumber: numeric(/[2-9][0-9]{9}/, 'Input should be 10 digits, not starting with 0 or 1', undefined, undefined, '(###)-###-####'),
+  plain: text(/.*/, '')
 }

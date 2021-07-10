@@ -1,6 +1,6 @@
 import React, { ReactElement, useState } from 'react'
 
-import { useForm } from 'react-hook-form'
+import { useForm, FormProvider } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { Patterns } from '../Patterns'
 import { LabeledInput, LabeledCheckbox, formatSSID, GenericLabeledDropdown } from '../input'
@@ -58,26 +58,30 @@ const toSpouse = (formData: UserSpouseForm): Spouse => ({
   role: PersonRole.SPOUSE
 })
 
-export const AddDependentForm = (): ReactElement => {
-  const { register, errors, handleSubmit, control, reset } = useForm<UserDependentForm>()
+const toSpouseForm = (spouse: Spouse): UserSpouseForm => ({
+  ...spouse
+})
 
+export const AddDependentForm = (): ReactElement => {
   const dependents = useSelector((state: TaxesState) =>
     state.information.taxPayer?.dependents ?? []
   )
 
-  const [editing, setEditingIdx] = useState<number | undefined>(undefined)
+  const [editing, doSetEditing] = useState<number | undefined>(undefined)
   const dispatch = useDispatch()
 
-  const defaultValues: UserDependentForm | undefined = (() => {
-    if (editing !== undefined) {
-      return toDependentForm(dependents[editing])
-    }
-  })()
+  const methods = useForm<UserDependentForm>()
+  const { formState: { errors }, handleSubmit, reset } = methods
+
+  const setEditing = (idx: number): void => {
+    reset(toDependentForm(dependents[idx]))
+    doSetEditing(idx)
+  }
 
   const _onSubmit = (onSuccess: () => void) => (dependent: UserDependentForm): void => {
     if (editing !== undefined) {
       dispatch(editDependent({ index: editing, value: toDependent(dependent) }))
-      setEditingIdx(undefined)
+      clear()
     } else {
       dispatch(addDependent(toDependent(dependent)))
     }
@@ -86,127 +90,122 @@ export const AddDependentForm = (): ReactElement => {
   }
 
   const clear = (): void => {
-    setEditingIdx(undefined)
+    doSetEditing(undefined)
   }
 
-  return (
+  const page = (
     <FormListContainer
       onDone={(onSuccess) => handleSubmit(_onSubmit(onSuccess))}
       onCancel={clear}
       items={dependents}
       primary={(a) => `${a.firstName} ${a.lastName}`}
       secondary={(a) => formatSSID(a.ssid)}
-      editItem={setEditingIdx}
+      editItem={setEditing}
       editing={editing}
       icon={() => <Person />}
       removeItem={(i) => dispatch(removeDependent(i))}
     >
-      <PersonFields
-        register={register}
-        errors={errors}
-        control={control}
-        defaults={defaultValues !== undefined ? toDependent(defaultValues) : undefined}
-      />
+      <PersonFields errors={errors} />
       <LabeledInput
         label="Relationship to Taxpayer"
-        register={register}
         name="relationship"
         required={true}
         patternConfig={Patterns.name}
         error={errors.relationship}
-        defaultValue={defaultValues?.relationship}
       />
       <LabeledInput
-        register={register}
         label="Birth Year"
-        patternConfig={Patterns.year(control)}
+        patternConfig={Patterns.year}
         name="birthYear"
         required={true}
         error={errors.birthYear}
-        defaultValue={defaultValues?.birthYear}
       />
       <LabeledInput
-        register={register}
         label="How many months did you live together this year?"
-        patternConfig={Patterns.numMonths(control)}
+        patternConfig={Patterns.numMonths}
         name="numberOfMonths"
         required={true}
         error={errors.numberOfMonths}
-        defaultValue={defaultValues?.numberOfMonths}
       />
       <LabeledCheckbox
         label="Is this person a full-time student?"
         name="isStudent"
-        control={control}
-        defaultValue={defaultValues?.isStudent ?? false}
       />
     </FormListContainer>
   )
+
+  return <FormProvider {...methods}>{page}</FormProvider>
 }
 
 export const SpouseInfo = (): ReactElement => {
-  const { register, control, errors, handleSubmit, getValues } = useForm<UserSpouseForm>()
-  const [editSpouse, setEditSpouse] = useState<boolean>(false)
+  const methods = useForm<UserSpouseForm>()
+  const { formState: { errors }, handleSubmit, getValues, reset } = methods
+  const [editing, doSetEditing] = useState<boolean>(false)
   const dispatch = useDispatch()
 
   const spouse: Spouse | undefined = useSelector((state: TaxesState) => {
     return state.information.taxPayer?.spouse
   })
 
-  const onDisable = (): void => {
-    setEditSpouse(false)
+  const clear = (): void => {
+    reset()
+    doSetEditing(false)
+  }
+
+  const setEditing = (): void => {
+    if (spouse !== undefined) {
+      reset(toSpouseForm(spouse))
+    }
+    doSetEditing(true)
   }
 
   const onSubmit = (onSuccess: () => void) => (): void => {
     dispatch(addSpouse(toSpouse(getValues())))
-    setEditSpouse(false)
+    doSetEditing(false)
     onSuccess()
   }
 
-  return (
+  const page = (
     <FormListContainer
       items={spouse !== undefined ? [spouse] : []}
       primary={(s) => `${s.firstName} ${s.lastName}`}
       secondary={(s) => formatSSID(s.ssid)}
       icon={() => <Person />}
       onDone={(onSuccess) => handleSubmit(onSubmit(onSuccess))}
-      onCancel={onDisable}
+      onCancel={clear}
       max={1}
-      editItem={() => setEditSpouse(true)}
-      editing={editSpouse ? 0 : undefined}
+      editItem={() => setEditing()}
+      editing={editing ? 0 : undefined}
       removeItem={() => dispatch(removeSpouse)}
     >
-      <PersonFields
-        register={register}
-        errors={errors}
-        person={spouse}
-        control={control}
-      >
+      <PersonFields errors={errors}>
         <LabeledCheckbox
           label="Check if your spouse is a dependent"
-          control={control}
-          defaultValue={spouse?.isTaxpayerDependent ?? false}
           name="isTaxpayerDependent"
         />
       </PersonFields>
     </FormListContainer>
   )
+
+  return <FormProvider {...methods}>{page}</FormProvider>
 }
 
 const SpouseAndDependent = (): ReactElement => {
-  const { handleSubmit, errors, control } = useForm<{filingStatus: FilingStatus}>()
-  // const variable dispatch to allow use inside function
-  const dispatch = useDispatch()
-
   const taxPayer: TaxPayer | undefined = useSelector((state: TaxesState) => {
     return state.information.taxPayer
   })
+
+  const methods = useForm<{ filingStatus: FilingStatus }>({ defaultValues: { filingStatus: taxPayer.filingStatus } })
+  const { handleSubmit, formState: { errors } } = methods
+  // const variable dispatch to allow use inside function
+  const dispatch = useDispatch()
 
   const onSubmit = (onAdvance: () => void) => (formData: {filingStatus: FilingStatus}): void => {
     dispatch(saveFilingStatusInfo(formData.filingStatus))
     onAdvance()
   }
-  return (
+
+  const page = (
     <PagerContext.Consumer>
       { ({ onAdvance, navButtons }) =>
         <form onSubmit={handleSubmit(onSubmit(onAdvance))}>
@@ -227,15 +226,15 @@ const SpouseAndDependent = (): ReactElement => {
             error={errors.filingStatus}
             textMapping={status => FilingStatusTexts[status]}
             required={true}
-            control={control}
             name="filingStatus"
-            defaultValue={taxPayer?.filingStatus}
           />
           {navButtons}
         </form>
       }
     </PagerContext.Consumer>
   )
+
+  return <FormProvider {...methods}>{page}</FormProvider>
 }
 
 export default SpouseAndDependent

@@ -119,6 +119,22 @@ const Summary = (): ReactElement => {
                         }
                       />
                     </BinaryStateListItem>
+                    <BinaryStateListItem active={f1040.childTaxCreditWorksheet?.isAllowed() ?? false}>
+                      <ListItemText
+                        primary="Credit for children and other dependents"
+                        secondary={
+                          <React.Fragment>
+                            <Typography
+                              component="span"
+                              variant="body2"
+                              color="textPrimary"
+                            >
+                              Credit: <Currency value={Math.round(f1040.childTaxCreditWorksheet?.credit() ?? 0)} />
+                            </Typography>
+                          </React.Fragment>
+                        }
+                      />
+                    </BinaryStateListItem>
                   </List>
                 </Fragment>
               )

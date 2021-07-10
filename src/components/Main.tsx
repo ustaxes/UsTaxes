@@ -13,7 +13,8 @@ import {
 import {
   Switch,
   Route,
-  Redirect
+  Redirect,
+  useLocation
 } from 'react-router-dom'
 import MenuIcon from '@material-ui/icons/Menu'
 import W2JobInfo from './income/W2JobInfo'
@@ -27,6 +28,11 @@ import ContactInfo from './TaxPayer/ContactInfo'
 import F1099Info from './income/F1099Info'
 import Summary from './Summary'
 import RealEstate from './income/RealEstate'
+import GettingStarted from './GettingStarted'
+import F1098eInfo from './deductions/F1098eInfo'
+import { StateLoader } from './debug'
+import NoMatchPage from './NoMatchPage'
+import Questions from './Questions'
 
 const theme = createMuiTheme({
   palette: {
@@ -77,6 +83,9 @@ const useStyles = makeStyles((theme: Theme) =>
 )
 
 const Urls = {
+  usTaxes: {
+    start: '/start'
+  },
   taxPayer: {
     root: '/taxpayer',
     info: '/info',
@@ -84,10 +93,14 @@ const Urls = {
     contactInfo: '/contact'
   },
   refund: '/refundinfo',
+  questions: '/questions',
   income: {
     w2s: '/income/w2jobinfo',
     f1099s: '/income/f1099s',
     realEstate: '/income/realestate'
+  },
+  deductions: {
+    f1098es: '/deductions/studentloaninterest'
   },
   credits: {
     main: '/credits',
@@ -97,9 +110,15 @@ const Urls = {
   summary: '/summary',
   default: ''
 }
-Urls.default = Urls.taxPayer.info
+Urls.default = Urls.usTaxes.start
 
 const drawerSections: Section[] = [
+  {
+    title: 'UsTaxes.org',
+    items: [
+      item('Getting Started', Urls.usTaxes.start, <GettingStarted/>)
+    ]
+  },
   {
     title: 'Personal',
     items: [
@@ -117,9 +136,16 @@ const drawerSections: Section[] = [
     ]
   },
   {
+    title: 'Deductions',
+    items: [
+      item('Student Loan Interest', Urls.deductions.f1098es, <F1098eInfo />)
+    ]
+  },
+  {
     title: 'Results',
     items: [
       item('Refund Information', Urls.refund, <RefundBankAccount />),
+      item('Informational Questions', Urls.questions, <Questions />),
       item('Summary', Urls.summary, <Summary />),
       item('Review and Print', Urls.createPdf, <CreatePDF />)
     ]
@@ -128,10 +154,8 @@ const drawerSections: Section[] = [
 
 export default function Main (): ReactElement {
   const allItems: SectionItem[] = drawerSections.flatMap((section: Section) => section.items)
-
   const [prev, onAdvance] = usePager(allItems, (item) => item.url)
   const [mobileOpen, setMobileOpen] = useState(false)
-
   const classes = useStyles()
 
   const navButtons: ReactElement = (
@@ -161,26 +185,31 @@ export default function Main (): ReactElement {
     <ThemeProvider theme={theme}>
       <div className={classes.root}>
         {appBar}
-        <ResponsiveDrawer sections={drawerSections} isOpen={mobileOpen} onClose={() => setMobileOpen(false)} />
         <main className={classes.content}>
+          <StateLoader />
           <div className={classes.toolbar} />
           <Grid container spacing={2}>
             <Grid item sm />
             <Grid item sm={10} lg={6} >
+            <PagerContext.Provider value={{ onAdvance: (onAdvance ?? (() => {})), navButtons }}>
               <Switch>
                 <Redirect path="/" to={Urls.default} exact />
-                <PagerContext.Provider value={{ onAdvance: (onAdvance ?? (() => {})), navButtons }}>
                 {
                   allItems.map((item, index) =>
-                    <Route key={index} path={item.url}>{item.element}</Route>
+                    <Route key={index} exact path={item.url}>{item.element}</Route>
                   )
                 }
-                </PagerContext.Provider>
+                <Route>
+                  <NoMatchPage/>
+                </Route>
               </Switch>
+                { useLocation().pathname !== '/start' ? <ResponsiveDrawer sections={drawerSections} isOpen={mobileOpen} onClose={() => setMobileOpen(false)} /> : null }
+            </PagerContext.Provider>
             </Grid>
             <Grid item sm />
           </Grid>
         </main>
+        {appBar}
       </div>
     </ThemeProvider>
   )
