@@ -43,18 +43,14 @@ export default class Schedule8812 implements Form {
   l8 = (): number | undefined => computeField(this.l7()) * 0.15
 
   ssWithholding (): number {
-    if (this.f1040.w2s.length > 0) {
-      return this.f1040.w2s.map((w2) => computeField(w2.ssWithholding)).reduce((l, r) => l + r, 0)
+    if (this.f1040.validW2s().length > 0) {
+      return this.f1040.validW2s().reduce((res, w2) => res + computeField(w2.ssWithholding), 0)
     }
     return 0
   }
 
-  medicareWithholding (): number {
-    if (this.f1040.w2s.length > 0) {
-      return this.f1040.w2s.map((w2) => computeField(w2.medicareWithholding)).reduce((l, r) => l + r, 0)
-    }
-    return 0
-  }
+  medicareWithholding = (): number =>
+    this.f1040.validW2s().reduce((res, w2) => res + computeField(w2.medicareWithholding), 0)
 
   l9checkBox = (): boolean => computeField(this.l4()) > 4200
 

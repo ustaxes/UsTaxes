@@ -59,7 +59,7 @@ export default class F1040 implements Form {
   contactPhoneNumber?: string
   contactEmail?: string
 
-  w2s: IncomeW2[]
+  _w2s: IncomeW2[]
 
   schedule1?: Schedule1
   schedule2?: Schedule2
@@ -104,13 +104,13 @@ export default class F1040 implements Form {
     this.isTaxpayerDependent = Boolean(tp.primaryPerson?.isTaxpayerDependent)
     this.isSpouseDependent = Boolean(tp.spouse?.isTaxpayerDependent)
     this.dependents = tp.dependents
-    this.w2s = []
+    this._w2s = []
     this.contactPhoneNumber = tp.contactPhoneNumber
     this.contactEmail = tp.contactEmail
   }
 
   addW2 (w2: IncomeW2): void {
-    this.w2s.push(w2)
+    this._w2s.push(w2)
   }
 
   addQuestions (questions: Responses): void {
@@ -192,15 +192,17 @@ export default class F1040 implements Form {
   // TODO
   spouseBlind = (): boolean => false
 
-  wages (): number {
-    if (this.w2s.length > 0) {
-      return this.w2s.map((w2) => w2.income).reduce((l, r) => l + r, 0)
+  validW2s = (): IncomeW2[] => {
+    if (this.filingStatus === FilingStatus.MFS) {
+      return this._w2s.filter((w2) => w2.personRole === PersonRole.PRIMARY)
+    } else {
+      return this._w2s
     }
-    return 0
   }
 
-  w2ForRole = (r: PersonRole): IncomeW2 | undefined =>
-    (this.w2s ?? []).find((w2) => w2.personRole === r)
+  wages = (): number => this.validW2s().reduce((res, w2) => res + w2.income, 0)
+
+  occupation = (r: PersonRole): string | undefined => this._w2s.find((w2) => w2.personRole === r && w2.occupation !== '')?.occupation
 
   standardDeduction = (): number | undefined => {
     if (this.filingStatus === undefined) {
@@ -321,12 +323,9 @@ export default class F1040 implements Form {
     sumFields([this.l22(), this.l23()])
   )
 
-  l25a = (): number | undefined => {
-    if (this.w2s.length > 0) {
-      return this.w2s.map((w2) => computeField(w2.fedWithholding)).reduce((l, r) => l + r, 0)
-    }
-    return undefined
-  }
+  l25a = (): number | undefined => displayNumber(
+    this.validW2s().reduce((res, w2) => res + computeField(w2.fedWithholding), 0)
+  )
 
   // TODO: 1099s
   l25b = (): number | undefined => undefined
@@ -529,10 +528,10 @@ export default class F1040 implements Form {
     '',
     '',
     '',
-    this.w2ForRole(PersonRole.PRIMARY)?.occupation,
+    this.occupation(PersonRole.PRIMARY),
     // TODO: pin numbers
     '',
-    this.w2ForRole(PersonRole.SPOUSE)?.occupation,
+    this.occupation(PersonRole.SPOUSE),
     '',
     this.contactPhoneNumber,
     this.contactEmail,
