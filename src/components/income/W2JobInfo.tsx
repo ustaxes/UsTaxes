@@ -2,7 +2,7 @@ import React, { Fragment, ReactElement, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { FormProvider, useForm } from 'react-hook-form'
 import { PagerContext } from '../pager'
-import { TaxesState, IncomeW2, Person, PersonRole, Spouse, PrimaryPerson } from '../../redux/data'
+import { TaxesState, IncomeW2, Person, PersonRole, Spouse, PrimaryPerson, FilingStatus } from '../../redux/data'
 import { Currency, formatSSID, GenericLabeledDropdown, LabeledInput } from '../input'
 import { Patterns } from '../Patterns'
 import { FormListContainer } from '../FormContainer'
@@ -10,6 +10,7 @@ import { Box } from '@material-ui/core'
 import { Work } from '@material-ui/icons'
 import { addW2, editW2, removeW2 } from '../../redux/actions'
 import { Else, If, Then } from 'react-if'
+import { Alert } from '@material-ui/lab'
 
 interface IncomeW2UserInput {
   occupation: string
@@ -52,6 +53,10 @@ export default function W2JobInfo (): ReactElement {
 
   const primary: PrimaryPerson | undefined = useSelector((state: TaxesState) =>
     state.information.taxPayer?.primaryPerson
+  )
+
+  const filingStatus: FilingStatus | undefined = useSelector((state: TaxesState) =>
+    state.information.taxPayer.filingStatus
   )
 
   // People for employee selector
@@ -172,12 +177,15 @@ export default function W2JobInfo (): ReactElement {
         <Box className="inner">
           <h3>{spouse?.firstName ?? 'Spouse'} {spouse?.lastName ?? 'Taxpayer'}&apos;s W2s</h3>
           {showW2s(spouseW2s, true)}
+          <If condition={filingStatus === FilingStatus.MFS}>
+            <Alert className="inner" severity="warning">Filing status is set to Married Filing Separately. These W2s will not be added to your return.</Alert>
+          </If>
         </Box>
       </If>
       <If condition={editing === undefined}>
         {
           // just for Add button:
-          showW2s([])
+          <Box className="inner">{showW2s([])}</Box>
         }
       </If>
     </Fragment>
