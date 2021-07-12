@@ -90,7 +90,6 @@ export default function F1098eInfo (): ReactElement {
 
     <LabeledInput
       label="Enter name of Lender"
-      required={true}
       patternConfig={Patterns.name}
       name="lender"
       error={errors.lender}
@@ -98,7 +97,6 @@ export default function F1098eInfo (): ReactElement {
 
     <LabeledInput
         label="Student Interest Paid"
-        required={true}
         patternConfig={Patterns.currency}
         name="interest"
         error={errors.interest}

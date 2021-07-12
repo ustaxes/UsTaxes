@@ -23,21 +23,18 @@ export const PersonFields = ({ errors, children }: PersonFieldsProps): ReactElem
       label="First Name and Initial"
       name="firstName"
       patternConfig={Patterns.name}
-      required={true}
       error={errors.firstName}
     />
     <LabeledInput
       label="Last Name"
       name="lastName"
       patternConfig={Patterns.name}
-      required={true}
       error={errors.lastName}
     />
     <LabeledInput
       label="SSN / TIN"
       name="ssid"
       patternConfig={Patterns.ssn}
-      required={true}
       error={errors.ssid}
     />
     {children}
