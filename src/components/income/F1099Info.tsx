@@ -130,7 +130,7 @@ export default function F1099Info (): ReactElement {
   const [editing, doSetEditing] = useState<number | undefined>(undefined)
 
   const methods = useForm<F1099UserInput>()
-  const { formState: { errors }, handleSubmit, reset, watch, setValue } = methods
+  const { handleSubmit, reset, watch, setValue } = methods
   const selectedType: Income1099Type | undefined = watch('formType')
 
   const dispatch = useDispatch()
@@ -174,7 +174,6 @@ export default function F1099Info (): ReactElement {
       required={true}
       patternConfig={Patterns.currency}
       name="interest"
-      error={errors.interest}
     />
   )
 
@@ -186,14 +185,12 @@ export default function F1099Info (): ReactElement {
         required={true}
         patternConfig={Patterns.currency}
         name="longTermProceeds"
-        error={errors.longTermProceeds}
       />
       <LabeledInput
         label="Cost basis"
         required={true}
         patternConfig={Patterns.currency}
         name="longTermCostBasis"
-        error={errors.longTermCostBasis}
       />
       <h4>Short Term Covered Transactions</h4>
       <LabeledInput
@@ -201,14 +198,12 @@ export default function F1099Info (): ReactElement {
         required={true}
         patternConfig={Patterns.currency}
         name="shortTermProceeds"
-        error={errors.shortTermProceeds}
       />
       <LabeledInput
         label="Cost basis"
         required={true}
         patternConfig={Patterns.currency}
         name="shortTermCostBasis"
-        error={errors.shortTermCostBasis}
       />
     </div>
   )
@@ -220,14 +215,12 @@ export default function F1099Info (): ReactElement {
         required={true}
         patternConfig={Patterns.currency}
         name="dividends"
-        error={errors.dividends}
       />
       <LabeledInput
         label="Qualified Dividends"
         required={true}
         patternConfig={Patterns.currency}
         name="qualifiedDividends"
-        error={errors.qualifiedDividends}
       />
     </div>
   )
@@ -260,7 +253,7 @@ export default function F1099Info (): ReactElement {
 
       <GenericLabeledDropdown
         dropDownData={Object.values(Income1099Type)}
-        error={errors.formType}
+
         label="Form Type"
         required={true}
         valueMapping={(v: Income1099Type) => v}
@@ -274,14 +267,14 @@ export default function F1099Info (): ReactElement {
         required={true}
         patternConfig={Patterns.name}
         name="payer"
-        error={errors.payer}
+
       />
 
       {selectedType !== undefined ? specificFields[selectedType] : undefined }
 
       <GenericLabeledDropdown
         dropDownData={people}
-        error={errors.personRole}
+
         label="Recipient"
         required={true}
         valueMapping={(p: Person, i: number) => [PersonRole.PRIMARY, PersonRole.SPOUSE][i]}

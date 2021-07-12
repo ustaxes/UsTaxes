@@ -42,7 +42,7 @@ export default function W2JobInfo (): ReactElement {
   const [editing, doSetEditing] = useState<number | undefined>(undefined)
 
   const methods = useForm<IncomeW2UserInput>()
-  const { formState: { errors }, handleSubmit, reset } = methods
+  const { handleSubmit, reset } = methods
 
   const people: Person[] = (
     useSelector((state: TaxesState) => ([
@@ -95,7 +95,6 @@ export default function W2JobInfo (): ReactElement {
         label="Occupation"
         required={true}
         name="occupation"
-        error={errors.occupation}
       />
 
       <LabeledInput
@@ -104,7 +103,6 @@ export default function W2JobInfo (): ReactElement {
         required={true}
         patternConfig={Patterns.currency}
         name="income"
-        error={errors.income}
       />
 
       <LabeledInput
@@ -113,7 +111,6 @@ export default function W2JobInfo (): ReactElement {
         required={true}
         name="fedWithholding"
         patternConfig={Patterns.currency}
-        error={errors.fedWithholding}
       />
 
       <LabeledInput
@@ -122,7 +119,6 @@ export default function W2JobInfo (): ReactElement {
         required={true}
         name="ssWithholding"
         patternConfig={Patterns.currency}
-        error={errors.ssWithholding}
       />
 
       <LabeledInput
@@ -131,12 +127,10 @@ export default function W2JobInfo (): ReactElement {
         required={true}
         name="medicareWithholding"
         patternConfig={Patterns.currency}
-        error={errors.medicareWithholding}
       />
 
       <GenericLabeledDropdown
         dropDownData={people}
-        error={errors.personRole}
         label="Employee"
         required={true}
         valueMapping={(p: Person, i: number) => [PersonRole.PRIMARY, PersonRole.SPOUSE][i]}

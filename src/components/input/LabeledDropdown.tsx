@@ -3,10 +3,12 @@ import { Box, TextField } from '@material-ui/core'
 import { Controller, useFormContext } from 'react-hook-form'
 import locationPostalCodes from '../../data/locationPostalCodes'
 import { BaseDropdownProps, LabeledDropdownProps } from './types'
+import _ from 'lodash'
 
 export function GenericLabeledDropdown<A> (props: LabeledDropdownProps<A>): ReactElement {
-  const { control } = useFormContext()
-  const { strongLabel, label, dropDownData, valueMapping, error, keyMapping, textMapping, required = false, name } = props
+  const { control, formState: { errors } } = useFormContext()
+  const { strongLabel, label, dropDownData, valueMapping, keyMapping, textMapping, required = false, name } = props
+  const error = _.get(errors, name)
 
   return (
     <div>

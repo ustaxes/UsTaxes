@@ -119,7 +119,7 @@ const toUserInput = (property: Property): PropertyAddForm => {
 
 export default function RealEstate (): ReactElement {
   const methods = useForm<PropertyAddForm>()
-  const { control, formState: { errors }, getValues, handleSubmit, reset } = methods
+  const { control, getValues, handleSubmit, reset } = methods
   const dispatch = useDispatch()
 
   const properties: Property[] = useSelector((state: TaxesState) => state.information.realEstate)
@@ -213,14 +213,12 @@ export default function RealEstate (): ReactElement {
     >
       <h4>Property location</h4>
       <AddressFields
-        errors={errors.address}
         checkboxText="Does the property have a foreign address"
         allowForeignCountry={false}
       />
       <GenericLabeledDropdown
         dropDownData={enumKeys(PropertyType)}
         label="Property type"
-        error={errors.propertyType}
         required={true}
         textMapping={(t) => displayPropertyType(PropertyType[t])}
         keyMapping={(_, n) => n}
@@ -233,7 +231,6 @@ export default function RealEstate (): ReactElement {
             <LabeledInput
               name="otherPropertyType"
               label="Short property type description"
-              error={errors.otherPropertyType}
               required={true}
             />
           )
@@ -246,14 +243,12 @@ export default function RealEstate (): ReactElement {
         rules={{ validate: (n: String) => validateRental(Number(n)) }}
         label="Number of days in the year used for rental"
         patternConfig={Patterns.numDays}
-        error={errors.rentalDays}
       />
       <LabeledInput
         name="personalUseDays"
         rules={{ validate: (n: String) => validatePersonal(Number(n)) }}
         label="Number of days in the year for personal use"
         patternConfig={Patterns.numDays}
-        error={errors.personalUseDays}
       />
       <LabeledCheckbox
         name="qualifiedJointVenture"
@@ -265,7 +260,6 @@ export default function RealEstate (): ReactElement {
         name="rentReceived"
         label="Rent received"
         patternConfig={Patterns.currency}
-        error={errors.rentReceived}
       />
       <h5>Expenses</h5>
       <Grid container spacing={3} direction="row" justify="flex-start">

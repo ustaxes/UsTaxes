@@ -50,7 +50,7 @@ export default function F1098eInfo (): ReactElement {
   })()
 
   const methods = useForm<F1098EUserInput>({ defaultValues })
-  const { formState: { errors }, handleSubmit, reset } = methods
+  const { handleSubmit, reset } = methods
 
   const dispatch = useDispatch()
 
@@ -93,16 +93,14 @@ export default function F1098eInfo (): ReactElement {
       required={true}
       patternConfig={Patterns.name}
       name="lender"
-      error={errors.lender}
     />
 
     <LabeledInput
-        label="Student Interest Paid"
-        required={true}
-        patternConfig={Patterns.currency}
-        name="interest"
-        error={errors.interest}
-      />
+      label="Student Interest Paid"
+      required={true}
+      patternConfig={Patterns.currency}
+      name="interest"
+    />
 
     </FormListContainer>
   )

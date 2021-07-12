@@ -22,7 +22,7 @@ export default function RefundBankAccount (): ReactElement {
   })
 
   const methods = useForm<UserRefundForm>({ defaultValues })
-  const { handleSubmit, formState: { errors } } = methods
+  const { handleSubmit } = methods
   // const variable dispatch to allow use inside function
   const dispatch = useDispatch()
 
@@ -44,7 +44,6 @@ export default function RefundBankAccount (): ReactElement {
               required={true}
               patternConfig={Patterns.bankRouting}
               name="routingNumber"
-              error={errors.routingNumber}
             />
 
             <LabeledInput
@@ -52,7 +51,6 @@ export default function RefundBankAccount (): ReactElement {
               required={true}
               patternConfig={Patterns.bankAccount}
               name="accountNumber"
-              error={errors.accountNumber}
             />
             <LabeledRadio
               label="Account Type"

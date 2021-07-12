@@ -16,7 +16,7 @@ export default function ContactInfo (): ReactElement {
   })
 
   const methods = useForm<Contact>({ defaultValues })
-  const { handleSubmit, formState: { errors } } = methods
+  const { handleSubmit } = methods
 
   const onSubmit = (onAdvance: () => void) => (formData: Contact): void => {
     dispatch(saveContactInfo(formData))
@@ -33,13 +33,11 @@ export default function ContactInfo (): ReactElement {
             required={true}
             patternConfig={Patterns.usPhoneNumber}
             name="contactPhoneNumber"
-            error={errors.contactPhoneNumber}
           />
           <LabeledInput
             label="Contact email address"
             required={true}
             name="contactEmail"
-            error={errors.contactEmail}
           />
           {navButtons}
         </form>
