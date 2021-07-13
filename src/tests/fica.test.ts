@@ -7,20 +7,21 @@ import Schedule2 from '../irsForms/Schedule2'
 import Schedule3 from '../irsForms/Schedule3'
 import * as arbitraries from './arbitraries'
 
-function hasSSRefund(f1040: F1040) {
+function hasSSRefund (f1040: F1040): boolean {
   const s3 = f1040.schedule3
   const l10 = s3?.l10()
   return l10 !== undefined && l10 > 0
 }
 
-function hasAdditionalMedicareTax(f1040: F1040) {
+function hasAdditionalMedicareTax (f1040: F1040): boolean {
   const s2 = f1040.schedule2
   const l8 = s2?.l8()
   return l8 !== undefined && l8 > 0
 }
 
-function hasAttachment<FormType>(attachments: Form[]) {
-  return attachments.find((f) => { f instanceof Schedule3 }) !== undefined
+type Constructor<T> = new (...args: any[]) => T
+function hasAttachment<FormType> (attachments: Form[], formType: Constructor<FormType>): boolean {
+  return attachments.find((f) => { return f instanceof formType }) !== undefined
 }
 
 describe('fica', () => {
@@ -39,7 +40,7 @@ describe('fica', () => {
           } else {
             // Otherwise, should always give SS refund, and attach schedule 3
             expect(hasSSRefund(f1040))
-            expect(hasAttachment<Schedule3>(forms))
+            expect(hasAttachment(forms, Schedule3))
           }
         }
       })
@@ -50,11 +51,11 @@ describe('fica', () => {
     fc.assert(
       fc.property(arbitraries.f1040, ([f1040, forms]) => {
         if (hasSSRefund(f1040)) {
-          const s3l10 = f1040.schedule3?.l10()!
-          expect(s3l10 > 0)
+          const s3l10 = f1040.schedule3?.l10()
+          expect(s3l10 !== undefined && s3l10 > 0)
 
           const ssWithheld = f1040.w2s.map((w2) => w2.ssWithholding).reduce((l, r) => l + r, 0)
-          expect(s3l10 == (ssWithheld - fica.maxSSTax))
+          expect(s3l10 === (ssWithheld - fica.maxSSTax))
         }
       })
     )
@@ -63,17 +64,20 @@ describe('fica', () => {
   it('should add Additional Medicare Tax form 8959', () => {
     fc.assert(
       fc.property(arbitraries.f1040, ([f1040, forms]) => {
-        const filingStatus = f1040.filingStatus!;
+        if (f1040.filingStatus === undefined) {
+          return
+        }
+        const filingStatus = f1040.filingStatus
         // Should add Additional Medicare Tax iff wages over threshold
         if (f1040.wages() > fica.additionalMedicareTaxThreshold(filingStatus)) {
           expect(hasAdditionalMedicareTax(f1040))
 
           // Should attach both S2 and F8959 to return
-          expect(hasAttachment<Schedule2>(forms))
-          expect(hasAttachment<F8959>(forms))
+          expect(hasAttachment(forms, Schedule2))
+          expect(hasAttachment(forms, F8959))
         } else {
           expect(!hasAdditionalMedicareTax(f1040))
-          expect(!hasAttachment<F8959>(forms))
+          expect(!hasAttachment(forms, F8959))
         }
       })
     )
@@ -82,21 +86,25 @@ describe('fica', () => {
   it('should add Additional Medicare Tax based on filing status', () => {
     fc.assert(
       fc.property(arbitraries.f1040, ([f1040, forms]) => {
+        if (f1040.filingStatus === undefined) {
+          return
+        }
         if (hasAdditionalMedicareTax(f1040)) {
-          const filingStatus = f1040.filingStatus!
+          const filingStatus = f1040.filingStatus
           const incomeOverThreshold = f1040.wages() - fica.additionalMedicareTaxThreshold(filingStatus)
           expect(incomeOverThreshold > 0)
 
           // Adds the right amount of additional tax
-          const s2l8 = f1040.schedule2?.l8()!
-          expect(s2l8 == incomeOverThreshold * fica.additionalMedicareTaxRate)
+          const s2l8 = f1040.schedule2?.l8()
+          expect(s2l8 !== undefined && s2l8 === incomeOverThreshold * fica.additionalMedicareTaxRate)
 
           // Also adds in the extra Medicare tax withheld to 1040 taxes already paid
           const medicareWithheld = f1040.w2s.map((w2) => w2.medicareWithholding).reduce((l, r) => l + r, 0)
           const regularWithholding = fica.additionalMedicareTaxThreshold(filingStatus) * fica.regularMedicareTaxRate
           if (medicareWithheld > regularWithholding) {
             const additionalWithheld = medicareWithheld - regularWithholding
-            expect(f1040.l25c()! == additionalWithheld)
+            const f1040l25c = f1040.l25c()
+            expect(f1040l25c !== undefined && f1040l25c === additionalWithheld)
           }
         }
       })
