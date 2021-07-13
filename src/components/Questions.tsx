@@ -7,6 +7,7 @@ import { answerQuestion } from '../redux/actions'
 import { LabeledCheckbox, LabeledInput } from './input'
 import { FormProvider, useForm } from 'react-hook-form'
 import { PagerContext } from './pager'
+import { Else, If, Then } from 'react-if'
 
 const Questions = (): ReactElement => {
   const information = useSelector((state: TaxesState) => state.information)
@@ -52,26 +53,14 @@ const Questions = (): ReactElement => {
             {
               questions.map((q, i) =>
                 <ListItem key={i}>
-                  {(() => {
-                    switch (q.valueTag) {
-                      case 'boolean': {
-                        return (
-                          <LabeledCheckbox
-                            name={q.tag}
-                            label={q.text}
-                          />
-                        )
-                      }
-                      default: {
-                        return (
-                          <LabeledInput
-                            name={q.tag}
-                            label={q.text}
-                          />
-                        )
-                      }
-                    }
-                  })()}
+                  <If condition={q.valueTag === 'boolean'}>
+                    <Then>
+                      <LabeledCheckbox name={q.tag} label={q.text} />
+                    </Then>
+                    <Else>
+                      <LabeledInput name={q.tag} label={q.text} />
+                    </Else>
+                  </If>
                 </ListItem>
               )
             }

@@ -2,6 +2,7 @@ import React, { PropsWithChildren, ReactElement, useState } from 'react'
 import { IconButton, List, ListItem, ListItemIcon, ListItemSecondaryAction, ListItemText, Box, Button, unstable_createMuiStrictModeTheme as createMuiTheme, ThemeProvider } from '@material-ui/core'
 import { red } from '@material-ui/core/colors'
 import { Delete, Edit } from '@material-ui/icons'
+import { Else, If, Then } from 'react-if'
 
 interface FormContainerProps {
   onDone: () => void
@@ -150,24 +151,23 @@ const FormListContainer = <A extends object>(props: PropsWithChildren<FormListCo
   return (
     <div>
       {itemDisplay}
-      {(() => {
-        if (formState !== FormState.Closed) {
-          return (
-            <FormContainer
-              onDone={_onDone}
-              onCancel={_onCancel}
-            >
-              {children}
-            </FormContainer>
-          )
-        } else if (max === undefined || items.length < max) {
-          return (
+      <If condition={formState !== FormState.Closed}>
+        <Then>
+          <FormContainer
+            onDone={_onDone}
+            onCancel={_onCancel}
+          >
+            {children}
+          </FormContainer>
+        </Then>
+        <Else>
+          <If condition={max === undefined || items.length < max}>
             <Button type="button" onClick={() => setFormState(FormState.Adding)} variant="contained" color="secondary">
               Add
             </Button>
-          )
-        }
-      })()}
+          </If>
+        </Else>
+      </If>
     </div>
   )
 }
