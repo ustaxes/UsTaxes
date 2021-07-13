@@ -1,4 +1,5 @@
 import React, { Fragment, ReactElement } from 'react'
+import { If } from 'react-if'
 import { Address } from '../../redux/data'
 import { LabeledCheckbox, LabeledInput, USStateDropDown } from '../input'
 import { Patterns } from '../Patterns'
@@ -84,16 +85,9 @@ export default function AddressFields (props: AddressProps): ReactElement {
         required={true}
         error={errors?.city}
       />
-      {(() => {
-        if (allowForeignCountry) {
-          return (
-            <LabeledCheckbox
-              label={checkboxText}
-              name="isForeignCountry"
-            />
-          )
-        }
-      })()}
+      <If condition={allowForeignCountry}>
+        <LabeledCheckbox label={checkboxText} name="isForeignCountry" />
+      </If>
       {csz}
     </Fragment>
   )
