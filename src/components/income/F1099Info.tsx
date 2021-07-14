@@ -170,7 +170,8 @@ export default function F1099Info (): ReactElement {
 
   const intFields = (
     <LabeledInput
-      label="Box 1 - Interest Income" patternConfig={Patterns.currency}
+      label="Box 1 - Interest Income"
+      patternConfig={Patterns.currency}
       name="interest"
       error={errors.interest}
     />
