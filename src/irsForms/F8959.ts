@@ -90,7 +90,7 @@ export default class F8959 implements Form {
     this.state.w2s.map((w2) => w2.medicareWithholding).reduce((l, r) => l + r, 0)
 
   l20 = (): number | undefined => computeField(this.l1())
-  l21 = (): number | undefined => fica.regularMedicareTaxRate * computeField(this.l20())
+  l21 = (): number | undefined => displayNumber(fica.regularMedicareTaxRate * computeField(this.l20()))
   l22 = (): number | undefined => displayNumber(
     computeField(this.l19()) - computeField(this.l21())
   )
