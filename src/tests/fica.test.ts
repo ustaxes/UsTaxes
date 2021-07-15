@@ -30,13 +30,13 @@ describe('fica', () => {
       fc.property(arbitraries.f1040, ([f1040, forms]) => {
         if (f1040.w2s.length <= 1) {
           // Should never give SS refund with 1 or fewer W2s
-          expect(!hasSSRefund(f1040)).toEqual(true)
+          expect(hasSSRefund(f1040)).toEqual(false)
         } else {
           if (f1040.wages() <= fica.maxIncomeSSTaxApplies ||
             f1040.w2s.some((w2) => w2.ssWithholding > fica.maxSSTax)) {
             // Should never give SS refund if W2 income below max threshold, or
             // some W2 has withheld over the max.
-            expect(!hasSSRefund(f1040)).toEqual(true)
+            expect(hasSSRefund(f1040)).toEqual(false)
           } else {
             // Otherwise, should always give SS refund, and attach schedule 3
             expect(hasSSRefund(f1040)).toEqual(true)
@@ -77,8 +77,8 @@ describe('fica', () => {
           expect(hasAttachment(forms, Schedule2)).toEqual(true)
           expect(hasAttachment(forms, F8959)).toEqual(true)
         } else {
-          expect(!hasAdditionalMedicareTax(f1040)).toEqual(true)
-          expect(!hasAttachment(forms, F8959)).toEqual(true)
+          expect(hasAdditionalMedicareTax(f1040)).toEqual(false)
+          expect(hasAttachment(forms, F8959)).toEqual(false)
         }
       })
     )
