@@ -222,7 +222,6 @@ export default function RealEstate (): ReactElement {
         dropDownData={enumKeys(PropertyType)}
         label="Property type"
         error={errors.propertyType}
-        required={true}
         textMapping={(t) => displayPropertyType(PropertyType[t])}
         keyMapping={(_, n) => n}
         name="propertyType"
@@ -239,7 +238,6 @@ export default function RealEstate (): ReactElement {
       <h4>Use</h4>
       <LabeledInput
         name="rentalDays"
-        required={true}
         rules={{ validate: (n: String) => validateRental(Number(n)) }}
         label="Number of days in the year used for rental"
         patternConfig={Patterns.numDays}

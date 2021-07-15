@@ -41,7 +41,6 @@ export default function RefundBankAccount (): ReactElement {
 
             <LabeledInput
               label="Bank Routing number"
-              required={true}
               patternConfig={Patterns.bankRouting}
               name="routingNumber"
               error={errors.routingNumber}
@@ -49,7 +48,6 @@ export default function RefundBankAccount (): ReactElement {
 
             <LabeledInput
               label="Bank Account number"
-              required={true}
               patternConfig={Patterns.bankAccount}
               name="accountNumber"
               error={errors.accountNumber}

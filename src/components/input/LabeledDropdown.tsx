@@ -6,7 +6,7 @@ import { BaseDropdownProps, LabeledDropdownProps } from './types'
 
 export function GenericLabeledDropdown<A> (props: LabeledDropdownProps<A>): ReactElement {
   const { control } = useFormContext()
-  const { strongLabel, label, dropDownData, valueMapping, error, keyMapping, textMapping, required = false, name } = props
+  const { strongLabel, label, dropDownData, valueMapping, error, keyMapping, textMapping, required = true, name } = props
 
   return (
     <div>
