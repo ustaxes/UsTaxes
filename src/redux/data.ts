@@ -46,8 +46,8 @@ export interface Spouse extends Person {
 }
 
 export interface Employer {
-  EIN: string
-  employerName: string
+  EIN?: string
+  employerName?: string
   address?: Address
 }
 
