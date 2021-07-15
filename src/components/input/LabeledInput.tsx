@@ -4,12 +4,13 @@ import { LabeledInputProps } from './types'
 import NumberFormat from 'react-number-format'
 import { Controller, useFormContext } from 'react-hook-form'
 import { isNumeric, Patterns } from '../Patterns'
+import _ from 'lodash'
 
 export function LabeledInput (props: LabeledInputProps): ReactElement {
   const { strongLabel, label, required = false, patternConfig = Patterns.plain, name, rules = {} } = props
 
   const { control, register, formState: { errors } } = useFormContext()
-  const error = errors[name]
+  const error = _.get(errors, name)
 
   const errorMessage: string | undefined = (() => {
     if (error?.message !== undefined && error?.message !== '') {
