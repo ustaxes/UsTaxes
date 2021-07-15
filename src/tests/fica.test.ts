@@ -3,8 +3,10 @@ import { fica } from '../data/federal'
 import F1040 from '../irsForms/F1040'
 import F8959 from '../irsForms/F8959'
 import Form from '../irsForms/Form'
+import { create1040 } from '../irsForms/Main'
 import Schedule2 from '../irsForms/Schedule2'
 import Schedule3 from '../irsForms/Schedule3'
+import { isRight } from '../util'
 import * as arbitraries from './arbitraries'
 
 function hasSSRefund (f1040: F1040): boolean {
@@ -27,20 +29,24 @@ function hasAttachment<FormType> (attachments: Form[], formType: Constructor<For
 describe('fica', () => {
   it('should give refund SS tax overpayment only in some conditions', () => {
     fc.assert(
-      fc.property(arbitraries.f1040, ([f1040, forms]) => {
-        if (f1040.w2s.length <= 1) {
-          // Should never give SS refund with 1 or fewer W2s
-          expect(hasSSRefund(f1040)).toEqual(false)
-        } else {
-          if (f1040.wages() <= fica.maxIncomeSSTaxApplies ||
-            f1040.w2s.some((w2) => w2.ssWithholding > fica.maxSSTax)) {
-            // Should never give SS refund if W2 income below max threshold, or
-            // some W2 has withheld over the max.
+      fc.property(arbitraries.information, (information) => {
+        const f1040Result = create1040(information)
+        if (isRight(f1040Result)) {
+          const [f1040, forms] = f1040Result.right
+          if (f1040.w2s.length <= 1) {
+            // Should never give SS refund with 1 or fewer W2s
             expect(hasSSRefund(f1040)).toEqual(false)
           } else {
-            // Otherwise, should always give SS refund, and attach schedule 3
-            expect(hasSSRefund(f1040)).toEqual(true)
-            expect(hasAttachment(forms, Schedule3)).toEqual(true)
+            if (f1040.wages() <= fica.maxIncomeSSTaxApplies ||
+              f1040.w2s.some((w2) => w2.ssWithholding > fica.maxSSTax)) {
+              // Should never give SS refund if W2 income below max threshold, or
+              // some W2 has withheld over the max.
+              expect(hasSSRefund(f1040)).toEqual(false)
+            } else {
+              // Otherwise, should always give SS refund, and attach schedule 3
+              expect(hasSSRefund(f1040)).toEqual(true)
+              expect(hasAttachment(forms, Schedule3)).toEqual(true)
+            }
           }
         }
       })
