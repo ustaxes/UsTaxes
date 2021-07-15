@@ -253,7 +253,6 @@ export default function F1099Info (): ReactElement {
 
       <GenericLabeledDropdown
         dropDownData={Object.values(Income1099Type)}
-
         label="Form Type"
         required={true}
         valueMapping={(v: Income1099Type) => v}
@@ -267,14 +266,12 @@ export default function F1099Info (): ReactElement {
         required={true}
         patternConfig={Patterns.name}
         name="payer"
-
       />
 
       {selectedType !== undefined ? specificFields[selectedType] : undefined }
 
       <GenericLabeledDropdown
         dropDownData={people}
-
         label="Recipient"
         required={true}
         valueMapping={(p: Person, i: number) => [PersonRole.PRIMARY, PersonRole.SPOUSE][i]}
