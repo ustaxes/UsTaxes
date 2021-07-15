@@ -1,4 +1,4 @@
-import React, { Fragment, ReactElement, useState } from 'react'
+import React, { Fragment, ReactElement, ReactNode, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { FormProvider, useForm } from 'react-hook-form'
 import { PagerContext } from '../pager'
@@ -9,7 +9,7 @@ import { FormListContainer } from '../FormContainer'
 import { Box } from '@material-ui/core'
 import { Work } from '@material-ui/icons'
 import { addW2, editW2, removeW2 } from '../../redux/actions'
-import { Else, If, Then } from 'react-if'
+import { If } from 'react-if'
 import { Alert } from '@material-ui/lab'
 
 interface IncomeW2UserInput {
@@ -157,27 +157,41 @@ export default function W2JobInfo (): ReactElement {
     </FormListContainer>
   )
 
-  const form: ReactElement = (
-    <Fragment>
-      <If condition={spouse !== undefined}>
-        <Then>
+  const primaryW2sBlock: ReactNode = (() => {
+    if (primary !== undefined && primaryW2s.length > 0) {
+      if (spouse !== undefined) {
+        return (
           <Box className="inner">
-            <h3>{primary?.firstName ?? 'Primary'} {primary?.lastName ?? 'Taxpayer'}&apos;s W2s</h3>
+            <h3>{primary.firstName ?? 'Primary'} {primary.lastName ?? 'Taxpayer'}&apos;s W2s</h3>
             {showW2s(primaryW2s, true)}
           </Box>
-        </Then><Else>
-          {showW2s(primaryW2s, true)}
-        </Else>
-      </If>
-      <If condition={spouse !== undefined && spouseW2s.length > 0}>
+        )
+      } else {
+        return (
+          showW2s(primaryW2s, true)
+        )
+      }
+    }
+  })()
+
+  const spouseW2sBlock: ReactNode = (() => {
+    if (spouse !== undefined && spouseW2s.length > 0) {
+      return (
         <Box className="inner">
-          <h3>{spouse?.firstName ?? 'Spouse'} {spouse?.lastName ?? 'Taxpayer'}&apos;s W2s</h3>
+          <h3>{spouse.firstName ?? 'Spouse'} {spouse.lastName ?? 'Taxpayer'}&apos;s W2s</h3>
           {showW2s(spouseW2s, true)}
           <If condition={filingStatus === FilingStatus.MFS}>
             <Alert className="inner" severity="warning">Filing status is set to Married Filing Separately. These W2s will not be added to your return.</Alert>
           </If>
         </Box>
-      </If>
+      )
+    }
+  })()
+
+  const form: ReactElement = (
+    <Fragment>
+      {primaryW2sBlock}
+      {spouseW2sBlock}
       <If condition={editing === undefined}>
         {
           // just for Add button:
