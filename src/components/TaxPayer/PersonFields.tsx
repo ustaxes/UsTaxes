@@ -9,7 +9,6 @@ import DeleteIcon from '@material-ui/icons/Delete'
 import EditIcon from '@material-ui/icons/Edit'
 import ListItemText from '@material-ui/core/ListItemText'
 import PersonIcon from '@material-ui/icons/Person'
-import { DeepMap, FieldError } from 'react-hook-form'
 import { If } from 'react-if'
 
 export const PersonFields = ({ children }: PropsWithChildren<{}>): ReactElement => (

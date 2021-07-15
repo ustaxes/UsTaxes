@@ -1,6 +1,5 @@
 import React, { Fragment, ReactElement } from 'react'
 import { If } from 'react-if'
-import { Address } from '../../redux/data'
 import { LabeledCheckbox, LabeledInput, USStateDropDown } from '../input'
 import { Patterns } from '../Patterns'
 
