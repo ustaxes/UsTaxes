@@ -171,7 +171,6 @@ export default function F1099Info (): ReactElement {
   const intFields = (
     <LabeledInput
       label="Box 1 - Interest Income"
-      required={true}
       patternConfig={Patterns.currency}
       name="interest"
     />
@@ -182,26 +181,22 @@ export default function F1099Info (): ReactElement {
       <h4>Long Term Covered Transactions</h4>
       <LabeledInput
         label="Proceeds"
-        required={true}
         patternConfig={Patterns.currency}
         name="longTermProceeds"
       />
       <LabeledInput
         label="Cost basis"
-        required={true}
         patternConfig={Patterns.currency}
         name="longTermCostBasis"
       />
       <h4>Short Term Covered Transactions</h4>
       <LabeledInput
         label="Proceeds"
-        required={true}
         patternConfig={Patterns.currency}
         name="shortTermProceeds"
       />
       <LabeledInput
         label="Cost basis"
-        required={true}
         patternConfig={Patterns.currency}
         name="shortTermCostBasis"
       />
@@ -212,13 +207,11 @@ export default function F1099Info (): ReactElement {
     <div>
       <LabeledInput
         label="Total Dividends"
-        required={true}
         patternConfig={Patterns.currency}
         name="dividends"
       />
       <LabeledInput
         label="Qualified Dividends"
-        required={true}
         patternConfig={Patterns.currency}
         name="qualifiedDividends"
       />
@@ -254,7 +247,6 @@ export default function F1099Info (): ReactElement {
       <GenericLabeledDropdown
         dropDownData={Object.values(Income1099Type)}
         label="Form Type"
-        required={true}
         valueMapping={(v: Income1099Type) => v}
         name="formType"
         keyMapping={(_, i: number) => i}
@@ -263,7 +255,6 @@ export default function F1099Info (): ReactElement {
 
       <LabeledInput
         label="Enter name of bank, broker firm, or other payer"
-        required={true}
         patternConfig={Patterns.name}
         name="payer"
       />
@@ -273,7 +264,6 @@ export default function F1099Info (): ReactElement {
       <GenericLabeledDropdown
         dropDownData={people}
         label="Recipient"
-        required={true}
         valueMapping={(p: Person, i: number) => [PersonRole.PRIMARY, PersonRole.SPOUSE][i]}
         name="personRole"
         keyMapping={(p: Person, i: number) => i}

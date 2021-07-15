@@ -7,7 +7,9 @@ import { isNumeric, Patterns } from '../Patterns'
 import _ from 'lodash'
 
 export function LabeledInput (props: LabeledInputProps): ReactElement {
-  const { strongLabel, label, required = false, patternConfig = Patterns.plain, name, rules = {} } = props
+  const { strongLabel, label, patternConfig: patternConfigDefined, name, rules = {} } = props
+  const { required = patternConfigDefined !== undefined } = props
+  const { patternConfig = Patterns.plain } = props
 
   const { control, register, formState: { errors } } = useFormContext()
   const error = _.get(errors, name)

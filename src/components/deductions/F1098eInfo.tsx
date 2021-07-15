@@ -85,23 +85,17 @@ export default function F1098eInfo (): ReactElement {
       secondary={(f) => showInterest(f)}
       icon={(f) => <SchoolIcon />}
     >
-
-    <strong>Input data from 1098-E</strong>
-
-    <LabeledInput
-      label="Enter name of Lender"
-      required={true}
-      patternConfig={Patterns.name}
-      name="lender"
-    />
-
-    <LabeledInput
-      label="Student Interest Paid"
-      required={true}
-      patternConfig={Patterns.currency}
-      name="interest"
-    />
-
+      <strong>Input data from 1098-E</strong>
+      <LabeledInput
+        label="Enter name of Lender"
+        patternConfig={Patterns.name}
+        name="lender"
+      />
+      <LabeledInput
+        label="Student Interest Paid"
+        patternConfig={Patterns.currency}
+        name="interest"
+      />
     </FormListContainer>
   )
 

@@ -30,7 +30,6 @@ export default function ContactInfo (): ReactElement {
           <h2>Family Contact Information</h2>
           <LabeledInput
             label="Contact phone number"
-            required={true}
             patternConfig={Patterns.usPhoneNumber}
             name="contactPhoneNumber"
           />

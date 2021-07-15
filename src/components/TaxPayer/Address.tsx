@@ -71,7 +71,6 @@ export default function AddressFields (props: AddressProps): ReactElement {
         label="City"
         name="address.city"
         patternConfig={Patterns.name}
-        required={true}
       />
       <If condition={allowForeignCountry}>
         <LabeledCheckbox label={checkboxText} name="isForeignCountry" />

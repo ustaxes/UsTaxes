@@ -7,7 +7,7 @@ import _ from 'lodash'
 
 export function GenericLabeledDropdown<A> (props: LabeledDropdownProps<A>): ReactElement {
   const { control, formState: { errors } } = useFormContext()
-  const { strongLabel, label, dropDownData, valueMapping, keyMapping, textMapping, required = false, name } = props
+  const { strongLabel, label, dropDownData, valueMapping, keyMapping, textMapping, required = true, name } = props
   const error = _.get(errors, name)
 
   return (

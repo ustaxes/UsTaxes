@@ -17,19 +17,16 @@ export const PersonFields = ({ children }: PropsWithChildren<{}>): ReactElement 
       label="First Name and Initial"
       name="firstName"
       patternConfig={Patterns.name}
-      required={true}
     />
     <LabeledInput
       label="Last Name"
       name="lastName"
       patternConfig={Patterns.name}
-      required={true}
     />
     <LabeledInput
       label="SSN / TIN"
       name="ssid"
       patternConfig={Patterns.ssn}
-      required={true}
     />
     {children}
   </Fragment>

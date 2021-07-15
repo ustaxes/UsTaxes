@@ -93,14 +93,13 @@ export default function W2JobInfo (): ReactElement {
       <strong>Input data from W-2</strong>
       <LabeledInput
         label="Occupation"
-        required={true}
+        patternConfig={Patterns.name}
         name="occupation"
       />
 
       <LabeledInput
         strongLabel="Box 1 - "
         label="Wages, tips, other compensation"
-        required={true}
         patternConfig={Patterns.currency}
         name="income"
       />
@@ -108,7 +107,6 @@ export default function W2JobInfo (): ReactElement {
       <LabeledInput
         strongLabel="Box 2 - "
         label="Federal income tax withheld"
-        required={true}
         name="fedWithholding"
         patternConfig={Patterns.currency}
       />
@@ -116,7 +114,6 @@ export default function W2JobInfo (): ReactElement {
       <LabeledInput
         strongLabel="Box 4 - "
         label="Social security tax withheld"
-        required={true}
         name="ssWithholding"
         patternConfig={Patterns.currency}
       />
@@ -124,7 +121,6 @@ export default function W2JobInfo (): ReactElement {
       <LabeledInput
         strongLabel="Box 6 - "
         label="Medicare tax withheld"
-        required={true}
         name="medicareWithholding"
         patternConfig={Patterns.currency}
       />

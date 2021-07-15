@@ -109,20 +109,17 @@ export const AddDependentForm = (): ReactElement => {
       <LabeledInput
         label="Relationship to Taxpayer"
         name="relationship"
-        required={true}
         patternConfig={Patterns.name}
       />
       <LabeledInput
         label="Birth Year"
         patternConfig={Patterns.year}
         name="birthYear"
-        required={true}
       />
       <LabeledInput
         label="How many months did you live together this year?"
         patternConfig={Patterns.numMonths}
         name="numberOfMonths"
-        required={true}
       />
       <LabeledCheckbox
         label="Is this person a full-time student?"
@@ -221,7 +218,6 @@ const SpouseAndDependent = (): ReactElement => {
             valueMapping={(x, i) => x}
             keyMapping={(x, i) => i}
             textMapping={status => FilingStatusTexts[status]}
-            required={true}
             name="filingStatus"
           />
           {navButtons}
