@@ -176,12 +176,15 @@ export default function W2JobInfo (): ReactElement {
 
   const spouseW2sBlock: ReactNode = (() => {
     if (spouse !== undefined && spouseW2s.length > 0) {
+      const name = `${spouse.firstName} ${spouse.lastName}`
       return (
         <Box className="inner">
-          <h3>{spouse.firstName ?? 'Spouse'} {spouse.lastName ?? 'Taxpayer'}&apos;s W2s</h3>
+          <h3>{name}&apos;s W2s</h3>
           {showW2s(spouseW2s, true)}
           <If condition={filingStatus === FilingStatus.MFS}>
-            <Alert className="inner" severity="warning">Filing status is set to Married Filing Separately. These W2s will not be added to your return.</Alert>
+            <Alert className="inner" severity="warning">
+              Filing status is set to Married Filing Separately. <strong>{name}</strong>&apos;s W2s will not be added to the return.
+            </Alert>
           </If>
         </Box>
       )
