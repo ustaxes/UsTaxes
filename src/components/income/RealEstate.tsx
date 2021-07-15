@@ -12,6 +12,7 @@ import { HouseOutlined } from '@material-ui/icons'
 import { FormListContainer } from '../FormContainer'
 import { Grid } from '@material-ui/core'
 import { CURRENT_YEAR } from '../../data/federal'
+import { If } from 'react-if'
 
 interface PropertyAddForm {
   address?: Address
@@ -225,17 +226,13 @@ export default function RealEstate (): ReactElement {
         name="propertyType"
         valueMapping={(n) => n}
       />
-      {(() => {
-        if ([propertyType, defaultValues?.propertyType].includes('other')) {
-          return (
-            <LabeledInput
-              name="otherPropertyType"
-              label="Short property type description"
-              required={true}
-            />
-          )
-        }
-      })()}
+      <If condition={[propertyType, defaultValues?.propertyType].includes('other')}>
+        <LabeledInput
+          name="otherPropertyType"
+          label="Short property type description"
+          required={true}
+        />
+      </If>
       <h4>Use</h4>
       <LabeledInput
         name="rentalDays"
@@ -263,23 +260,21 @@ export default function RealEstate (): ReactElement {
       />
       <h5>Expenses</h5>
       <Grid container spacing={3} direction="row" justify="flex-start">
-        {(() => {
+        {
           // Layout expense fields in two columns
-          return (
-            segments(2, [...expenseFields, otherExpenseDescription])
-              .map((segment, i) =>
-                <Grid item key={i} lg={6}>
-                  {
-                    segment.map((item, k) =>
-                      <Fragment key={`${i}-${k}`}>
-                        {item}
-                      </Fragment>
-                    )
-                  }
-                </Grid>
-              )
-          )
-        })()}
+          segments(2, [...expenseFields, otherExpenseDescription])
+            .map((segment, i) =>
+              <Grid item key={i} lg={6}>
+                {
+                  segment.map((item, k) =>
+                    <Fragment key={`${i}-${k}`}>
+                      {item}
+                    </Fragment>
+                  )
+                }
+              </Grid>
+            )
+        }
       </Grid>
     </FormListContainer>
   )

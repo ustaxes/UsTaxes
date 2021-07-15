@@ -9,6 +9,8 @@ import DeleteIcon from '@material-ui/icons/Delete'
 import EditIcon from '@material-ui/icons/Edit'
 import ListItemText from '@material-ui/core/ListItemText'
 import PersonIcon from '@material-ui/icons/Person'
+import { DeepMap, FieldError } from 'react-hook-form'
+import { If } from 'react-if'
 
 export const PersonFields = ({ children }: PropsWithChildren<{}>): ReactElement => (
   <Fragment>
@@ -50,17 +52,13 @@ export const PersonListItem = ({ person, remove, onEdit, editing = false }: Pers
       primary={`${person.firstName} ${person.lastName}`}
       secondary={formatSSID(person.ssid)}
     />
-    {(() => {
-      if (editing !== undefined) {
-        return (
-          <ListItemIcon>
-            <IconButton onClick={onEdit} edge="end" aria-label="edit">
-              <EditIcon />
-            </IconButton>
-          </ListItemIcon>
-        )
-      }
-    })()}
+    <If condition={editing !== undefined}>
+      <ListItemIcon>
+        <IconButton onClick={onEdit} edge="end" aria-label="edit">
+          <EditIcon />
+        </IconButton>
+      </ListItemIcon>
+    </If>
     <ListItemSecondaryAction>
       <IconButton onClick={remove} edge="end" aria-label="delete">
         <DeleteIcon />
