@@ -2,7 +2,7 @@ import React, { Fragment, ReactElement, ReactNode, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { FormProvider, useForm } from 'react-hook-form'
 import { PagerContext } from '../pager'
-import { TaxesState, IncomeW2, Person, PersonRole, Spouse, PrimaryPerson, FilingStatus } from '../../redux/data'
+import { TaxesState, IncomeW2, Person, PersonRole, Employer, Spouse, PrimaryPerson, FilingStatus } from '../../redux/data'
 import { Currency, formatSSID, GenericLabeledDropdown, LabeledInput } from '../input'
 import { Patterns } from '../Patterns'
 import { FormListContainer } from '../FormContainer'
@@ -13,6 +13,7 @@ import { If } from 'react-if'
 import { Alert } from '@material-ui/lab'
 
 interface IncomeW2UserInput {
+  employer?: Employer
   occupation: string
   income: string
   fedWithholding: string
@@ -105,6 +106,11 @@ export default function W2JobInfo (): ReactElement {
       max={omitAdd ? 0 : undefined}
     >
       <strong>Input data from W-2</strong>
+      <LabeledInput
+        label="Employer name"
+        patternConfig={Patterns.name}
+        name="employer.employerName"
+      />
       <LabeledInput
         label="Occupation"
         patternConfig={Patterns.name}
