@@ -6,7 +6,9 @@ import { Controller, useFormContext } from 'react-hook-form'
 import { isNumeric, Patterns } from '../Patterns'
 
 export function LabeledInput (props: LabeledInputProps): ReactElement {
-  const { strongLabel, label, error, required = false, patternConfig = Patterns.plain, name, rules = {} } = props
+  const { strongLabel, label, error, patternConfig: patternConfigDefined, name, rules = {} } = props
+  const { required = patternConfigDefined !== undefined } = props
+  const { patternConfig = Patterns.plain } = props
 
   const { control, register } = useFormContext()
 

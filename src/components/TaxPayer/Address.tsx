@@ -82,7 +82,6 @@ export default function AddressFields (props: AddressProps): ReactElement {
         label="City"
         name="address.city"
         patternConfig={Patterns.name}
-        required={true}
         error={errors?.city}
       />
       <If condition={allowForeignCountry}>
