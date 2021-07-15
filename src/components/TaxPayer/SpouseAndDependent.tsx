@@ -71,7 +71,7 @@ export const AddDependentForm = (): ReactElement => {
   const dispatch = useDispatch()
 
   const methods = useForm<UserDependentForm>()
-  const { formState: { errors }, handleSubmit, reset } = methods
+  const { handleSubmit, reset } = methods
 
   const setEditing = (idx: number): void => {
     reset(toDependentForm(dependents[idx]))
@@ -105,24 +105,21 @@ export const AddDependentForm = (): ReactElement => {
       icon={() => <Person />}
       removeItem={(i) => dispatch(removeDependent(i))}
     >
-      <PersonFields errors={errors} />
+      <PersonFields />
       <LabeledInput
         label="Relationship to Taxpayer"
         name="relationship"
         patternConfig={Patterns.name}
-        error={errors.relationship}
       />
       <LabeledInput
         label="Birth Year"
         patternConfig={Patterns.year}
         name="birthYear"
-        error={errors.birthYear}
       />
       <LabeledInput
         label="How many months did you live together this year?"
         patternConfig={Patterns.numMonths}
         name="numberOfMonths"
-        error={errors.numberOfMonths}
       />
       <LabeledCheckbox
         label="Is this person a full-time student?"
@@ -136,7 +133,7 @@ export const AddDependentForm = (): ReactElement => {
 
 export const SpouseInfo = (): ReactElement => {
   const methods = useForm<UserSpouseForm>()
-  const { formState: { errors }, handleSubmit, getValues, reset } = methods
+  const { handleSubmit, getValues, reset } = methods
   const [editing, doSetEditing] = useState<boolean>(false)
   const dispatch = useDispatch()
 
@@ -175,7 +172,7 @@ export const SpouseInfo = (): ReactElement => {
       editing={editing ? 0 : undefined}
       removeItem={() => dispatch(removeSpouse)}
     >
-      <PersonFields errors={errors}>
+      <PersonFields>
         <LabeledCheckbox
           label="Check if your spouse is a dependent"
           name="isTaxpayerDependent"
@@ -193,7 +190,7 @@ const SpouseAndDependent = (): ReactElement => {
   })
 
   const methods = useForm<{ filingStatus: FilingStatus }>({ defaultValues: { filingStatus: taxPayer.filingStatus } })
-  const { handleSubmit, formState: { errors } } = methods
+  const { handleSubmit } = methods
   // const variable dispatch to allow use inside function
   const dispatch = useDispatch()
 
@@ -220,7 +217,6 @@ const SpouseAndDependent = (): ReactElement => {
             dropDownData={filingStatuses(taxPayer)}
             valueMapping={(x, i) => x}
             keyMapping={(x, i) => i}
-            error={errors.filingStatus}
             textMapping={status => FilingStatusTexts[status]}
             name="filingStatus"
           />
