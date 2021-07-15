@@ -59,7 +59,7 @@ export const getSchedules = (f1040: F1040, state: Information): Form[] => {
   }
 
   if (claimableExcessSSTaxWithholding(state.w2s) > 0 && f1040.schedule3 === undefined) {
-    const s3 = new Schedule3(state)
+    const s3 = new Schedule3(state, f1040)
     f1040.addSchedule3(s3)
     attachments = [...attachments, s3]
   }

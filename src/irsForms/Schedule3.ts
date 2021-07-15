@@ -4,6 +4,7 @@ import Form, { FormTag } from './Form'
 import { anArrayOf } from '../util'
 import TaxPayer from '../redux/TaxPayer'
 import { fica } from '../data/federal'
+import F1040 from './F1040'
 
 export const claimableExcessSSTaxWithholding = (w2s: IncomeW2[]): number => {
   // 1040 instructions:
@@ -24,9 +25,11 @@ export const claimableExcessSSTaxWithholding = (w2s: IncomeW2[]): number => {
 export default class Schedule3 implements Form {
   tag: FormTag = 'f1040s3'
   state: Information
+  f1040: F1040
 
-  constructor (state: Information) {
+  constructor (state: Information, f1040: F1040) {
     this.state = state
+    this.f1040 = f1040
   }
 
   deductions = (): number => 0
@@ -49,7 +52,7 @@ export default class Schedule3 implements Form {
   l8 = (): number | undefined => undefined
   l9 = (): number | undefined => undefined
   l10 = (): number | undefined => displayNumber(
-    claimableExcessSSTaxWithholding(this.state.w2s)
+    claimableExcessSSTaxWithholding(this.f1040.validW2s())
   ) // TODO: also applies to RRTA tax
 
   l11 = (): number | undefined => undefined
