@@ -37,10 +37,12 @@ describe('fica', () => {
             // Should never give SS refund with 1 or fewer W2s
             expect(hasSSRefund(f1040)).toEqual(false)
           } else {
+            const ssWithheld = f1040.w2s.map((w2) => w2.ssWithholding).reduce((l, r) => l + r, 0)
             if (f1040.wages() <= fica.maxIncomeSSTaxApplies ||
-              f1040.w2s.some((w2) => w2.ssWithholding > fica.maxSSTax)) {
-              // Should never give SS refund if W2 income below max threshold, or
-              // some W2 has withheld over the max.
+              f1040.w2s.some((w2) => w2.ssWithholding > fica.maxSSTax) ||
+              ssWithheld === 0) {
+              // Should never give SS refund if W2 income below max threshold, some W2 has
+              // withheld over the max, or there is no SS withholding to refund.
               expect(hasSSRefund(f1040)).toEqual(false)
             } else {
               // Otherwise, should always give SS refund, and attach schedule 3
