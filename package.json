@@ -8,7 +8,7 @@
     "@material-ui/lab": "^4.0.0-alpha.60",
     "@tauri-apps/api": "^1.0.0-beta.4",
     "@tauri-apps/cli": "^1.0.0-beta.5",
-    "ajv": "^8.6.1",
+    "ajv": "^8.6.2",
     "loglevel": "^1.7.1",
     "node-fetch": "^2.6.1",
     "pdf-lib": "^1.16.0",
