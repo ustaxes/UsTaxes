@@ -33,13 +33,13 @@ describe('fica', () => {
         const f1040Result = create1040(information)
         if (isRight(f1040Result)) {
           const [f1040, forms] = f1040Result.right
-          if (f1040.w2s.length <= 1) {
+          if (f1040.validW2s().length <= 1) {
             // Should never give SS refund with 1 or fewer W2s
             expect(hasSSRefund(f1040)).toEqual(false)
           } else {
-            const ssWithheld = f1040.w2s.map((w2) => w2.ssWithholding).reduce((l, r) => l + r, 0)
+            const ssWithheld = f1040.validW2s().map((w2) => w2.ssWithholding).reduce((l, r) => l + r, 0)
             if (f1040.wages() <= fica.maxIncomeSSTaxApplies ||
-              f1040.w2s.some((w2) => w2.ssWithholding > fica.maxSSTax) ||
+              f1040.validW2s().some((w2) => w2.ssWithholding > fica.maxSSTax) ||
               ssWithheld === 0) {
               // Should never give SS refund if W2 income below max threshold, some W2 has
               // withheld over the max, or there is no SS withholding to refund.
@@ -63,7 +63,7 @@ describe('fica', () => {
           expect(s3l10).not.toBeUndefined()
           expect(s3l10).toBeGreaterThan(0)
 
-          const ssWithheld = f1040.w2s.map((w2) => w2.ssWithholding).reduce((l, r) => l + r, 0)
+          const ssWithheld = f1040.validW2s().map((w2) => w2.ssWithholding).reduce((l, r) => l + r, 0)
           expect(s3l10).toEqual(ssWithheld - fica.maxSSTax)
         }
       })
@@ -109,7 +109,7 @@ describe('fica', () => {
           expect(s2l8).toEqual(Math.round(incomeOverThreshold * fica.additionalMedicareTaxRate))
 
           // Also adds in the extra Medicare tax withheld to 1040 taxes already paid
-          const medicareWithheld = f1040.w2s.map((w2) => w2.medicareWithholding).reduce((l, r) => l + r, 0)
+          const medicareWithheld = f1040.validW2s().map((w2) => w2.medicareWithholding).reduce((l, r) => l + r, 0)
           const regularWithholding = Math.round(fica.regularMedicareTaxRate * f1040.wages())
           if (medicareWithheld > regularWithholding) {
             const f1040l25c = f1040.l25c()
