@@ -25,7 +25,7 @@ export default function AddressFields (props: AddressProps): ReactElement {
   const csz: ReactElement = (() => {
     if (!allowForeignCountry || !isForeignCountry) {
       return (
-        <div>
+        <Fragment>
           <USStateDropDown
             label="State"
             name="address.state"
@@ -37,11 +37,11 @@ export default function AddressFields (props: AddressProps): ReactElement {
             patternConfig={Patterns.zip}
             required={!isForeignCountry}
           />
-        </div>
+        </Fragment>
       )
     }
     return (
-      <div>
+      <Fragment>
         <LabeledInput
           label="Province"
           name="address.province"
@@ -57,7 +57,7 @@ export default function AddressFields (props: AddressProps): ReactElement {
           label="Country"
           required={isForeignCountry}
         />
-      </div>
+      </Fragment>
     )
   })()
 
