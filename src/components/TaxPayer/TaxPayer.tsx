@@ -1,5 +1,5 @@
 import React, { ReactElement } from 'react'
-import { FormProvider, useForm, useWatch } from 'react-hook-form'
+import { FormProvider, useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { savePrimaryPersonInfo } from '../../redux/actions'
 import { Address, PersonRole, PrimaryPerson, TaxesState, TaxPayer } from '../../redux/data'
@@ -14,6 +14,7 @@ interface TaxPayerUserForm {
   ssid: string
   role: PersonRole
   address: Address
+  isForeignCountry: boolean
   isTaxpayerDependent: boolean
 }
 
@@ -26,6 +27,15 @@ const asPrimaryPerson = (formData: TaxPayerUserForm): PrimaryPerson => ({
   role: PersonRole.PRIMARY
 })
 
+const asTaxPayerUserForm = (person: PrimaryPerson): TaxPayerUserForm => {
+  const { role, ...rest } = person
+  return {
+    ...rest,
+    isForeignCountry: person.address.foreignCountry !== undefined,
+    role: PersonRole.PRIMARY
+  }
+}
+
 export default function PrimaryTaxpayer (): ReactElement {
   // const variable dispatch to allow use inside function
   const dispatch = useDispatch()
@@ -34,17 +44,13 @@ export default function PrimaryTaxpayer (): ReactElement {
     return state.information.taxPayer
   })
 
-  const methods = useForm<PrimaryPerson>({ defaultValues: taxPayer.primaryPerson })
-  const { handleSubmit, control } = methods
+  const methods = useForm<TaxPayerUserForm>({
+    defaultValues: taxPayer.primaryPerson !== undefined ? asTaxPayerUserForm(taxPayer.primaryPerson) : undefined
+  })
+  const { handleSubmit } = methods
 
-  const isForeignCountry: boolean = useWatch({
-    control,
-    name: 'address.foreignCountry',
-    defaultValue: taxPayer?.primaryPerson?.address.foreignCountry
-  }) !== undefined
-
-  const onSubmit = (onAdvance: () => void) => (primaryPerson: PrimaryPerson): void => {
-    dispatch(savePrimaryPersonInfo(asPrimaryPerson(primaryPerson)))
+  const onSubmit = (onAdvance: () => void) => (form: TaxPayerUserForm): void => {
+    dispatch(savePrimaryPersonInfo(asPrimaryPerson(form)))
     onAdvance()
   }
 
@@ -58,10 +64,7 @@ export default function PrimaryTaxpayer (): ReactElement {
             label="Check if you are a dependent"
             name="isTaxpayerDependent"
           />
-          <AddressFields
-            checkboxText="Do you have a foreign address?"
-            isForeignCountry={isForeignCountry}
-          />
+          <AddressFields checkboxText="Do you have a foreign address?" />
           {navButtons}
         </form>
       }

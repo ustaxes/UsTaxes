@@ -1,20 +1,26 @@
 import React, { Fragment, ReactElement } from 'react'
+import { useFormContext, useWatch } from 'react-hook-form'
 import { If } from 'react-if'
 import { LabeledCheckbox, LabeledInput, USStateDropDown } from '../input'
 import { Patterns } from '../Patterns'
 
 interface AddressProps {
   checkboxText: string
-  isForeignCountry?: boolean
   allowForeignCountry?: boolean
 }
 
 export default function AddressFields (props: AddressProps): ReactElement {
   const {
-    isForeignCountry = false,
     checkboxText = 'Check if you have a foreign address',
     allowForeignCountry = true
   } = props
+
+  const { control } = useFormContext<{isForeignCountry: boolean }>()
+
+  const isForeignCountry = useWatch({
+    name: 'isForeignCountry',
+    control
+  })
 
   const csz: ReactElement = (() => {
     if (!allowForeignCountry || !isForeignCountry) {
