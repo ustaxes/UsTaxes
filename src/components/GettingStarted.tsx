@@ -24,11 +24,14 @@ export default function GettingStarted (): ReactElement {
             <li>1099-INT</li>
             <li>1099-DIV</li>
             <li>1099-B</li>
+            <li>1098-E</li>
           </ul>
 
           <p>Supported Attachments to Form 1040</p>
           <ul>
             <li>Schedule 1 (as related to Schedule E only)</li>
+            <li>Schedule 3 (as related to excess FICA only)</li>
+            <li>Schedule 8812</li>
             <li>Schedule B</li>
             <li>Schedule D</li>
             <li>Schedule E</li>
@@ -36,6 +39,7 @@ export default function GettingStarted (): ReactElement {
 
           <p>Supported Credits</p>
           <ul>
+            <li>Credit for children and other dependents</li>
             <li>Earned Income Tax Credit</li>
           </ul>
 

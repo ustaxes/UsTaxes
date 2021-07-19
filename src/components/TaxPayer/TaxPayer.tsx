@@ -1,5 +1,5 @@
 import React, { ReactElement } from 'react'
-import { useForm, useWatch } from 'react-hook-form'
+import { FormProvider, useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { savePrimaryPersonInfo } from '../../redux/actions'
 import { Address, PersonRole, PrimaryPerson, TaxesState, TaxPayer } from '../../redux/data'
@@ -14,6 +14,7 @@ interface TaxPayerUserForm {
   ssid: string
   role: PersonRole
   address: Address
+  isForeignCountry: boolean
   isTaxpayerDependent: boolean
 }
 
@@ -26,8 +27,16 @@ const asPrimaryPerson = (formData: TaxPayerUserForm): PrimaryPerson => ({
   role: PersonRole.PRIMARY
 })
 
+const asTaxPayerUserForm = (person: PrimaryPerson): TaxPayerUserForm => {
+  const { role, ...rest } = person
+  return {
+    ...rest,
+    isForeignCountry: person.address.foreignCountry !== undefined,
+    role: PersonRole.PRIMARY
+  }
+}
+
 export default function PrimaryTaxpayer (): ReactElement {
-  const { register, handleSubmit, control, errors } = useForm<PrimaryPerson>()
   // const variable dispatch to allow use inside function
   const dispatch = useDispatch()
 
@@ -35,45 +44,32 @@ export default function PrimaryTaxpayer (): ReactElement {
     return state.information.taxPayer
   })
 
-  const isForeignCountry = useWatch<boolean>({
-    control,
-    name: 'isForeignCountry',
-    defaultValue: taxPayer?.primaryPerson?.address.foreignCountry !== undefined
+  const methods = useForm<TaxPayerUserForm>({
+    defaultValues: taxPayer.primaryPerson !== undefined ? asTaxPayerUserForm(taxPayer.primaryPerson) : undefined
   })
+  const { handleSubmit } = methods
 
-  const onSubmit = (onAdvance: () => void) => (primaryPerson: PrimaryPerson): void => {
-    dispatch(savePrimaryPersonInfo(asPrimaryPerson(primaryPerson)))
+  const onSubmit = (onAdvance: () => void) => (form: TaxPayerUserForm): void => {
+    dispatch(savePrimaryPersonInfo(asPrimaryPerson(form)))
     onAdvance()
   }
 
-  return (
+  const page = (
     <PagerContext.Consumer>
       { ({ navButtons, onAdvance }) =>
         <form onSubmit={handleSubmit(onSubmit(onAdvance))}>
           <h2>Primary Taxpayer Information</h2>
-          <PersonFields
-            register={register}
-            errors={errors}
-            defaults={taxPayer?.primaryPerson}
-            control={control}
-          />
+          <PersonFields />
           <LabeledCheckbox
             label="Check if you are a dependent"
-            control={control}
-            defaultValue={taxPayer?.primaryPerson?.isTaxpayerDependent ?? false}
             name="isTaxpayerDependent"
           />
-          <AddressFields
-            register={register}
-            control={control}
-            errors={errors.address}
-            address={taxPayer?.primaryPerson?.address}
-            checkboxText="Do you have a foreign address?"
-            isForeignCountry={isForeignCountry}
-          ></AddressFields>
+          <AddressFields checkboxText="Do you have a foreign address?" />
           {navButtons}
         </form>
       }
     </PagerContext.Consumer>
   )
+
+  return <FormProvider {...methods}>{page}</FormProvider>
 }

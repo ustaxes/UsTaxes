@@ -2,6 +2,7 @@ import React, { PropsWithChildren, ReactElement, useState } from 'react'
 import { IconButton, List, ListItem, ListItemIcon, ListItemSecondaryAction, ListItemText, Box, Button, unstable_createMuiStrictModeTheme as createMuiTheme, ThemeProvider } from '@material-ui/core'
 import { red } from '@material-ui/core/colors'
 import { Delete, Edit } from '@material-ui/icons'
+import { Else, If, Then } from 'react-if'
 
 interface FormContainerProps {
   onDone: () => void
@@ -87,6 +88,7 @@ interface FormListContainerProps<A> {
   items: A[]
   editItem?: (v: number) => void
   editing?: number
+  disableEditing?: boolean
   removeItem?: (v: number) => void
   primary: (a: A) => string
   secondary?: (a: A) => string | ReactElement
@@ -101,7 +103,7 @@ enum FormState {
 }
 
 const FormListContainer = <A extends object>(props: PropsWithChildren<FormListContainerProps<A>>): ReactElement => {
-  const { children, items, icon, max, primary, secondary, editItem, editing, removeItem, onDone, onCancel } = props
+  const { children, items, icon, max, primary, secondary, editItem, editing, disableEditing = false, removeItem, onDone, onCancel } = props
   const [formState, setFormState] = useState(FormState.Closed)
 
   const close = (): void => {
@@ -116,7 +118,7 @@ const FormListContainer = <A extends object>(props: PropsWithChildren<FormListCo
   const _onDone: (() => void) = onDone(close)
 
   const editAction = (() => {
-    if (editItem !== undefined && formState === FormState.Closed) {
+    if (editItem !== undefined && !disableEditing && formState === FormState.Closed) {
       return (n: number) => () => {
         setFormState(FormState.Editing)
         editItem(n)
@@ -150,24 +152,23 @@ const FormListContainer = <A extends object>(props: PropsWithChildren<FormListCo
   return (
     <div>
       {itemDisplay}
-      {(() => {
-        if (formState !== FormState.Closed) {
-          return (
-            <FormContainer
-              onDone={_onDone}
-              onCancel={_onCancel}
-            >
-              {children}
-            </FormContainer>
-          )
-        } else if (max === undefined || items.length < max) {
-          return (
+      <If condition={formState !== FormState.Closed}>
+        <Then>
+          <FormContainer
+            onDone={_onDone}
+            onCancel={_onCancel}
+          >
+            {children}
+          </FormContainer>
+        </Then>
+        <Else>
+          <If condition={max === undefined || items.length < max}>
             <Button type="button" onClick={() => setFormState(FormState.Adding)} variant="contained" color="secondary">
               Add
             </Button>
-          )
-        }
-      })()}
+          </If>
+        </Else>
+      </If>
     </div>
   )
 }

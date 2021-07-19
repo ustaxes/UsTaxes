@@ -1,5 +1,5 @@
 import React, { ReactElement, useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { FormProvider, useForm } from 'react-hook-form'
 import SchoolIcon from '@material-ui/icons/School'
 import { useDispatch, useSelector } from 'react-redux'
 import { add1098e, edit1098e, remove1098e } from '../../redux/actions'
@@ -49,7 +49,8 @@ export default function F1098eInfo (): ReactElement {
     return blankUserInput
   })()
 
-  const { register, errors, handleSubmit, control, reset } = useForm<F1098EUserInput>()
+  const methods = useForm<F1098EUserInput>({ defaultValues })
+  const { handleSubmit, reset } = methods
 
   const dispatch = useDispatch()
 
@@ -84,29 +85,17 @@ export default function F1098eInfo (): ReactElement {
       secondary={(f) => showInterest(f)}
       icon={(f) => <SchoolIcon />}
     >
-
-    <strong>Input data from 1098-E</strong>
-
-    <LabeledInput
-      label="Enter name of Lender"
-      register={register}
-      required={true}
-      patternConfig={Patterns.name}
-      name="lender"
-      error={errors.lender}
-      defaultValue={defaultValues?.lender}
-    />
-
-    <LabeledInput
-        label="Student Interest Paid"
-        register={register}
-        required={true}
-        patternConfig={Patterns.currency(control)}
-        name="interest"
-        error={errors.interest}
-        defaultValue={defaultValues?.interest.toString()}
+      <strong>Input data from 1098-E</strong>
+      <LabeledInput
+        label="Enter name of Lender"
+        patternConfig={Patterns.name}
+        name="lender"
       />
-
+      <LabeledInput
+        label="Student Interest Paid"
+        patternConfig={Patterns.currency}
+        name="interest"
+      />
     </FormListContainer>
   )
 
@@ -114,9 +103,11 @@ export default function F1098eInfo (): ReactElement {
     <PagerContext.Consumer>
       { ({ onAdvance, navButtons }) =>
         <form onSubmit={onAdvance}>
-          <h2>1098-E Information</h2>
-            {form}
-            { navButtons }
+          <FormProvider {...methods}>
+            <h2>1098-E Information</h2>
+              {form}
+            {navButtons}
+          </FormProvider>
         </form>
       }
     </PagerContext.Consumer>

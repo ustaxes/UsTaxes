@@ -5,21 +5,23 @@ import { getRequiredQuestions, QuestionTagName, Responses } from '../data/questi
 import { TaxesState } from '../redux/data'
 import { answerQuestion } from '../redux/actions'
 import { LabeledCheckbox, LabeledInput } from './input'
-import { useForm } from 'react-hook-form'
+import { FormProvider, useForm } from 'react-hook-form'
 import { PagerContext } from './pager'
+import { Else, If, Then } from 'react-if'
 
 const Questions = (): ReactElement => {
-  const state = useSelector((state: TaxesState) => state)
+  const information = useSelector((state: TaxesState) => state.information)
 
-  const { control, register, handleSubmit, watch } = useForm<Responses>()
+  const methods = useForm<Responses>({ defaultValues: information.questions })
+  const { handleSubmit, watch } = methods
 
   const currentValues = watch()
 
   const questions = getRequiredQuestions({
     information: {
-      ...state.information,
+      ...information,
       questions: {
-        ...state.information.questions,
+        ...information.questions,
         ...currentValues
       }
     }
@@ -41,7 +43,7 @@ const Questions = (): ReactElement => {
     onAdvance()
   }
 
-  return (
+  const page = (
     <PagerContext.Consumer>
       { ({ onAdvance, navButtons }) =>
         <form onSubmit={handleSubmit(onSubmit(onAdvance))}>
@@ -51,30 +53,14 @@ const Questions = (): ReactElement => {
             {
               questions.map((q, i) =>
                 <ListItem key={i}>
-                  {(() => {
-                    switch (q.valueTag) {
-                      case 'boolean': {
-                        return (
-                          <LabeledCheckbox
-                            name={q.tag}
-                            label={q.text}
-                            control={control}
-                            defaultValue={state.information.questions[q.tag] as (boolean | undefined)}
-                          />
-                        )
-                      }
-                      default: {
-                        return (
-                          <LabeledInput
-                            name={q.tag}
-                            register={register}
-                            label={q.text}
-                            defaultValue={state.information.questions[q.tag] as (string | undefined)}
-                          />
-                        )
-                      }
-                    }
-                  })()}
+                  <If condition={q.valueTag === 'boolean'}>
+                    <Then>
+                      <LabeledCheckbox name={q.tag} label={q.text} />
+                    </Then>
+                    <Else>
+                      <LabeledInput name={q.tag} label={q.text} />
+                    </Else>
+                  </If>
                 </ListItem>
               )
             }
@@ -83,6 +69,10 @@ const Questions = (): ReactElement => {
         </form>
       }
     </PagerContext.Consumer>
+  )
+
+  return (
+    <FormProvider {...methods}>{page}</FormProvider>
   )
 }
 

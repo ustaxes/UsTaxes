@@ -129,6 +129,26 @@ const federalBrackets: FederalBrackets = {
   }
 }
 
+export const fica = {
+  maxSSTax: 8537.40,
+  maxIncomeSSTaxApplies: 137700,
+
+  additionalMedicareTaxRate: 0.9 / 100,
+  additionalMedicareTaxThreshold: (filingStatus: FilingStatus) => {
+    switch (filingStatus) {
+      case FilingStatus.MFJ: {
+        return 250000
+      }
+      case FilingStatus.MFS: {
+        return 125000
+      }
+      default: {
+        return 200000 // Single, Head of Household, Windower
+      }
+    }
+  }
+}
+
 // line 11 caps based on step one in instructions
 const line11Caps = [15820, 41756, 47440, 50954]
 const line11MfjCaps = [21710, 47646, 53330, 56844]

@@ -5,6 +5,7 @@ import { create1040 } from '../irsForms/Main'
 import { useSelector } from 'react-redux'
 import { Information, TaxesState } from '../redux/data'
 import { Check, Close } from '@material-ui/icons'
+import F1040 from '../irsForms/F1040'
 import { Currency } from './input'
 import Alert from '@material-ui/lab/Alert'
 import { isLeft } from '../util'
@@ -50,98 +51,114 @@ const BinaryStateListItem = ({ active, children }: BinaryStateListItemProps): Re
   )
 }
 
-const Summary = (): ReactElement => {
-  const state: Information = useSelector((state: TaxesState) => state.information)
+interface F1040Props {
+  f1040: F1040
+}
+
+const F1040Summary = ({ f1040 }: F1040Props): ReactElement => {
   const classes = useStyles()
+
+  const earnedIncomeTaxCredit = (
+    <BinaryStateListItem active={f1040.scheduleEIC?.allowed(f1040) ?? false} >
+      <ListItemText
+        primary="Earned Income Tax Credit"
+        secondary={
+          <React.Fragment>
+            <Typography
+              component="span"
+              variant="body2"
+              color="textPrimary"
+              className={classes.block}
+            >
+              Qualifying Dependents:
+            </Typography>
+            <Typography
+              component="span"
+              variant="body2"
+              color="textSecondary"
+            >
+              {
+                f1040.scheduleEIC?.qualifyingDependents().map((d, i) =>
+                  <span key={i}>{`${d?.firstName ?? ''} ${d?.lastName ?? ''}`}</span>
+                )
+              }
+            </Typography>
+            <br />
+            <Typography
+              component="span"
+              variant="body2"
+              color="textPrimary"
+            >
+              Credit: <Currency value={Math.round(f1040.scheduleEIC?.credit(f1040) ?? 0)} />
+            </Typography>
+          </React.Fragment>
+        }
+      />
+    </BinaryStateListItem>
+  )
+
+  const creditForChildrenAndOtherDependents = (
+    <BinaryStateListItem active={f1040.childTaxCreditWorksheet?.isAllowed() ?? false}>
+      <ListItemText
+        primary="Credit for children and other dependents"
+        secondary={
+          <React.Fragment>
+            <Typography
+              component="span"
+              variant="body2"
+              color="textPrimary"
+            >
+              Credit: <Currency value={Math.round(f1040.childTaxCreditWorksheet?.credit() ?? 0)} />
+            </Typography>
+          </React.Fragment>
+        }
+      />
+    </BinaryStateListItem>
+  )
+
+  return (
+    <Fragment>
+      <h4>Credits</h4>
+      <List>
+        {earnedIncomeTaxCredit}
+        {creditForChildrenAndOtherDependents}
+      </List>
+    </Fragment>
+  )
+}
+
+const Summary = (): ReactElement => {
+  const information: Information = useSelector((state: TaxesState) => state.information)
+
+  const summaryBody = (() => {
+    if (information.taxPayer.primaryPerson === undefined) {
+      return <h4>No data entered yet</h4>
+    } else {
+      const f1040Result = create1040(information)
+
+      if (isLeft(f1040Result)) {
+        const errors = f1040Result.left
+
+        return (
+          <Fragment>
+            {errors.map((error, i) => <Alert key={i} severity="warning">{error}</Alert>)}
+          </Fragment>
+        )
+      } else {
+        const [f1040] = f1040Result.right
+        return <F1040Summary f1040={f1040} />
+      }
+    }
+  })()
 
   return (
     <PagerContext.Consumer>
-      { ({ navButtons, onAdvance }) =>
+      {({ navButtons, onAdvance }) =>
         <form onSubmit={onAdvance}>
           <h2>Summary</h2>
-          {(() => {
-            if (state.taxPayer.primaryPerson === undefined) {
-              return (
-                <h4>No data entered yet</h4>
-              )
-            } else {
-              const f1040Result = create1040(state)
-
-              if (isLeft(f1040Result)) {
-                const errors = f1040Result.left
-
-                return (
-                  <Fragment>
-                    {errors.map((error, i) => <Alert key={i} severity="warning">{error}</Alert>)}
-                  </Fragment>
-                )
-              }
-
-              const [f1040] = f1040Result.right
-
-              return (
-                <Fragment>
-                  <h4>Credits</h4>
-                  <List>
-                    <BinaryStateListItem active={f1040.scheduleEIC?.allowed(f1040) ?? false} >
-                      <ListItemText
-                        primary="Earned Income Tax Credit"
-                        secondary={
-                          <React.Fragment>
-                            <Typography
-                              component="span"
-                              variant="body2"
-                              color="textPrimary"
-                              className={classes.block}
-                            >
-                              Qualifying Dependents:
-                            </Typography>
-                            <Typography
-                              component="span"
-                              variant="body2"
-                              color="textSecondary"
-                            >
-                              {
-                                f1040.scheduleEIC?.qualifyingDependents().map((d, i) =>
-                                  <span key={i}>{`${d?.firstName ?? ''} ${d?.lastName ?? ''}`}</span>
-                                )
-                              }
-                            </Typography>
-                            <br />
-                            <Typography
-                              component="span"
-                              variant="body2"
-                              color="textPrimary"
-                            >
-                              Credit: <Currency value={Math.round(f1040.scheduleEIC?.credit(f1040) ?? 0)} />
-                            </Typography>
-                          </React.Fragment>
-                        }
-                      />
-                    </BinaryStateListItem>
-                    <BinaryStateListItem active={f1040.childTaxCreditWorksheet?.isAllowed() ?? false}>
-                      <ListItemText
-                        primary="Credit for children and other dependents"
-                        secondary={
-                          <React.Fragment>
-                            <Typography
-                              component="span"
-                              variant="body2"
-                              color="textPrimary"
-                            >
-                              Credit: <Currency value={Math.round(f1040.childTaxCreditWorksheet?.credit() ?? 0)} />
-                            </Typography>
-                          </React.Fragment>
-                        }
-                      />
-                    </BinaryStateListItem>
-                  </List>
-                </Fragment>
-              )
-            }
-          })()}
+          {summaryBody}
           {navButtons}
-       </form>
+        </form>
       }
     </PagerContext.Consumer>
   )

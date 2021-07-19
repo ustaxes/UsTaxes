@@ -2,8 +2,10 @@ import { Income1099Type, Information } from '../redux/data'
 import { Either, left, right } from '../util'
 import F1040, { F1040Error } from './F1040'
 import F1040V from './F1040v'
+import F8959, { needsF8959 } from './F8959'
 import Form from './Form'
 import Schedule1 from './Schedule1'
+import Schedule3, { claimableExcessSSTaxWithholding } from './Schedule3'
 import ScheduleB from './ScheduleB'
 import ScheduleD from './ScheduleD'
 import ScheduleE from './ScheduleE'
@@ -11,6 +13,7 @@ import ScheduleEIC from './ScheduleEIC'
 import Schedule8812 from './Schedule8812'
 import ChildTaxCreditWorksheet from './worksheets/ChildTaxCreditWorksheet'
 import StudentLoanInterestWorksheet from './worksheets/StudentLoanInterestWorksheet'
+import Schedule2 from './Schedule2'
 
 export const getSchedules = (f1040: F1040, state: Information): Form[] => {
   let attachments: Form[] = []
@@ -44,6 +47,21 @@ export const getSchedules = (f1040: F1040, state: Information): Form[] => {
       f1040.addSchedule1(s1)
       attachments = [s1, ...attachments]
     }
+  }
+
+  if (needsF8959(state)) {
+    const f8959 = f1040.f8959 !== undefined ? f1040.f8959 : new F8959(state, undefined, undefined, undefined)
+    f1040.add8959(f8959)
+
+    const s2 = f1040.schedule2 !== undefined ? f1040.schedule2 : new Schedule2(state.taxPayer, f8959)
+    f1040.addSchedule2(s2)
+    attachments = [...attachments, s2, f8959]
+  }
+
+  if (claimableExcessSSTaxWithholding(state.w2s) > 0 && f1040.schedule3 === undefined) {
+    const s3 = new Schedule3(state, f1040)
+    f1040.addSchedule3(s3)
+    attachments = [...attachments, s3]
   }
 
   if (f1040.scheduleE !== undefined) {
