@@ -4,6 +4,7 @@ import { Controller, useFormContext } from 'react-hook-form'
 import locationPostalCodes from '../../data/locationPostalCodes'
 import { BaseDropdownProps, LabeledDropdownProps } from './types'
 import _ from 'lodash'
+import countries from '../../data/countries'
 
 export function GenericLabeledDropdown<A> (props: LabeledDropdownProps<A>): ReactElement {
   const { control, formState: { errors } } = useFormContext()
@@ -71,6 +72,16 @@ export const USStateDropDown = (props: BaseDropdownProps): ReactElement => (
     valueMapping={([,code], n) => code}
     keyMapping={([,code], n) => code}
     textMapping={([name, code], n) => `${code} - ${name}`}
+  />
+)
+
+export const CountryDropDown = (props: BaseDropdownProps): ReactElement => (
+  <GenericLabeledDropdown<string>
+    {...props}
+    dropDownData={countries}
+    valueMapping={(name, _) => name}
+    keyMapping={(_, idx) => idx}
+    textMapping={(name, _) => name}
   />
 )
 

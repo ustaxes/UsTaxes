@@ -2,6 +2,7 @@ import React, { Fragment, ReactElement } from 'react'
 import { useFormContext, useWatch } from 'react-hook-form'
 import { If } from 'react-if'
 import { LabeledCheckbox, LabeledInput, USStateDropDown } from '../input'
+import { CountryDropDown } from '../input/LabeledDropdown'
 import { Patterns } from '../Patterns'
 
 interface AddressProps {
@@ -52,7 +53,7 @@ export default function AddressFields (props: AddressProps): ReactElement {
           label="Postal Code"
           required={isForeignCountry}
         />
-        <LabeledInput
+        <CountryDropDown
           name="address.foreignCountry"
           label="Country"
           required={isForeignCountry}
