@@ -34,6 +34,7 @@ export function LabeledInput (props: LabeledInputProps): ReactElement {
         <Controller
           render={({ field: { onChange, value } }) =>
             <NumberFormat
+              name={name}
               mask={patternConfig.mask}
               thousandSeparator={patternConfig.thousandSeparator}
               prefix={patternConfig.prefix}
@@ -42,7 +43,7 @@ export function LabeledInput (props: LabeledInputProps): ReactElement {
               customInput={TextField}
               isNumericString={false}
               onValueChange={(v) => onChange(v.value)}
-              value={value}
+              value={value ?? ''}
               error={error !== undefined}
               helperText={errorMessage}
               variant="filled"
@@ -78,7 +79,7 @@ export function LabeledInput (props: LabeledInputProps): ReactElement {
                 message: patternConfig?.description ?? (required ? 'Input is required' : '')
               }
             })}
-            value={value}
+            value={value ?? ''}
             onChange={onChange}
             fullWidth={patternConfig?.format === undefined}
             helperText={error?.message}
