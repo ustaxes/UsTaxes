@@ -133,6 +133,7 @@ export const fica = {
   maxSSTax: 8537.40,
   maxIncomeSSTaxApplies: 137700,
 
+  regularMedicareTaxRate: 1.45 / 100,
   additionalMedicareTaxRate: 0.9 / 100,
   additionalMedicareTaxThreshold: (filingStatus: FilingStatus) => {
     switch (filingStatus) {
