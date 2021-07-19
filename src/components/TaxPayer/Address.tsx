@@ -1,25 +1,32 @@
 import React, { Fragment, ReactElement } from 'react'
+import { useFormContext, useWatch } from 'react-hook-form'
 import { If } from 'react-if'
 import { LabeledCheckbox, LabeledInput, USStateDropDown } from '../input'
+import { CountryDropDown } from '../input/LabeledDropdown'
 import { Patterns } from '../Patterns'
 
 interface AddressProps {
   checkboxText: string
-  isForeignCountry?: boolean
   allowForeignCountry?: boolean
 }
 
 export default function AddressFields (props: AddressProps): ReactElement {
   const {
-    isForeignCountry = false,
     checkboxText = 'Check if you have a foreign address',
     allowForeignCountry = true
   } = props
 
+  const { control } = useFormContext<{isForeignCountry: boolean }>()
+
+  const isForeignCountry = useWatch({
+    name: 'isForeignCountry',
+    control
+  })
+
   const csz: ReactElement = (() => {
     if (!allowForeignCountry || !isForeignCountry) {
       return (
-        <div>
+        <Fragment>
           <USStateDropDown
             label="State"
             name="address.state"
@@ -31,11 +38,11 @@ export default function AddressFields (props: AddressProps): ReactElement {
             patternConfig={Patterns.zip}
             required={!isForeignCountry}
           />
-        </div>
+        </Fragment>
       )
     }
     return (
-      <div>
+      <Fragment>
         <LabeledInput
           label="Province"
           name="address.province"
@@ -46,12 +53,12 @@ export default function AddressFields (props: AddressProps): ReactElement {
           label="Postal Code"
           required={isForeignCountry}
         />
-        <LabeledInput
+        <CountryDropDown
           name="address.foreignCountry"
           label="Country"
           required={isForeignCountry}
         />
-      </div>
+      </Fragment>
     )
   })()
 
