@@ -4,10 +4,9 @@ import { useDispatch, useSelector } from 'react-redux'
 import { getRequiredQuestions, QuestionTagName, Responses } from '../data/questions'
 import { TaxesState } from '../redux/data'
 import { answerQuestion } from '../redux/actions'
-import { LabeledCheckbox, LabeledInput } from './input'
 import { FormProvider, useForm } from 'react-hook-form'
 import { PagerContext } from './pager'
-import { Else, If, Then } from 'react-if'
+import { field, Fields } from './Fields'
 
 const Questions = (): ReactElement => {
   const information = useSelector((state: TaxesState) => state.information)
@@ -43,6 +42,8 @@ const Questions = (): ReactElement => {
     onAdvance()
   }
 
+  const questionFields = questions.map((q) => field(q.text, q.tag, undefined, q.valueTag === 'boolean' ? 'checkbox' : 'text'))
+
   const page = (
     <PagerContext.Consumer>
       { ({ onAdvance, navButtons }) =>
@@ -51,16 +52,9 @@ const Questions = (): ReactElement => {
           <p>Based on your prior responses, reseponses to these questions are required.</p>
           <List>
             {
-              questions.map((q, i) =>
+              questionFields.map((field, i) =>
                 <ListItem key={i}>
-                  <If condition={q.valueTag === 'boolean'}>
-                    <Then>
-                      <LabeledCheckbox name={q.tag} label={q.text} />
-                    </Then>
-                    <Else>
-                      <LabeledInput name={q.tag} label={q.text} />
-                    </Else>
-                  </If>
+                  <Fields fields={[field]} />
                 </ListItem>
               )
             }

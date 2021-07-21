@@ -1,11 +1,11 @@
-import React, { Fragment, ReactElement, useState } from 'react'
+import React, { ReactElement, useState } from 'react'
 import { Message, useForm, useWatch, FormProvider } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { addProperty, editProperty, removeProperty } from '../../redux/actions'
 import { PagerContext } from '../pager'
 import { Property, Address, PropertyExpenseType, PropertyExpenseTypeName, TaxesState, PropertyType, PropertyTypeName } from '../../redux/data'
 import AddressFields from '../TaxPayer/Address'
-import { Currency, GenericLabeledDropdown, LabeledCheckbox, LabeledInput } from '../input'
+import { Currency, GenericLabeledDropdown } from '../input'
 import { Patterns } from '../Patterns'
 import { daysInYear, enumKeys, segments } from '../../util'
 import { HouseOutlined } from '@material-ui/icons'
@@ -13,6 +13,7 @@ import { FormListContainer } from '../FormContainer'
 import { Grid } from '@material-ui/core'
 import { CURRENT_YEAR } from '../../data/federal'
 import { If } from 'react-if'
+import { Field, field, FieldDef, Fields } from '../Fields'
 
 interface PropertyAddForm {
   address?: Address
@@ -118,6 +119,18 @@ const toUserInput = (property: Property): PropertyAddForm => {
   }
 }
 
+const expenseFields: FieldDef[] = (
+  enumKeys(PropertyExpenseType).map((k) =>
+    field(displayExpense(PropertyExpenseType[k]), `expenses.${k.toString()}`, Patterns.currency)
+  )
+)
+
+const otherExpense = field('Other description', 'otherExpenseType', undefined, 'text', true)
+
+const otherPropertyType: FieldDef = field('Short property type description', 'otherPropertyType', undefined, 'text', true)
+
+const incomeField: FieldDef = field('Rent Received', 'rentReceived', Patterns.currency)
+
 export default function RealEstate (): ReactElement {
   const methods = useForm<PropertyAddForm>()
   const { control, getValues, handleSubmit, reset } = methods
@@ -155,6 +168,12 @@ export default function RealEstate (): ReactElement {
   const validateRental = (n: number): Message | true =>
     validateDays(n, Number(getValues().personalUseDays ?? 0))
 
+  const useFields = [
+    field('rentalDays', 'Number of days in the year used for rental', Patterns.numDays, 'text', true, undefined, { validate: (n: String) => validateRental(Number(n)) }),
+    field('personalUseDays', 'Number of days in the year for personal use', Patterns.numDays, 'text', true, undefined, { validate: (n: String) => validatePersonal(Number(n)) }),
+    field('Is this a qualified joint venture', 'qualifiedJointVenture', undefined, 'checkbox')
+  ]
+
   const clear = (): void => {
     reset()
     setEditing(undefined)
@@ -177,29 +196,8 @@ export default function RealEstate (): ReactElement {
     onSuccess()
   }
 
-  const expenseFields: ReactElement[] = (
-    enumKeys(PropertyExpenseType).map((k, i) =>
-      <LabeledInput
-        key={i}
-        label={displayExpense(PropertyExpenseType[k])}
-        name={`expenses.${k.toString()}`}
-        patternConfig={Patterns.currency}
-      />
-    )
-  )
-
-  const otherExpenseDescription = (() => {
-    if (defaultValues?.expenses.other !== undefined || otherExpensesEntered !== 0) {
-      return (
-        <LabeledInput
-          key={enumKeys(PropertyExpenseType).length}
-          label="Other description"
-          name="otherExpenseType"
-          required={true}
-        />
-      )
-    }
-  })()
+  const otherExpenseDescription: FieldDef[] =
+    defaultValues?.expenses.other !== undefined || otherExpensesEntered !== 0 ? [otherExpense] : []
 
   const form = (
     <FormListContainer<Property>
@@ -226,49 +224,22 @@ export default function RealEstate (): ReactElement {
         valueMapping={(n) => n}
       />
       <If condition={[propertyType, defaultValues?.propertyType].includes('other')}>
-        <LabeledInput
-          name="otherPropertyType"
-          label="Short property type description"
-          required={true}
-        />
+        <Field field={otherPropertyType} />
       </If>
       <h4>Use</h4>
-      <LabeledInput
-        name="rentalDays"
-        rules={{ validate: (n: String) => validateRental(Number(n)) }}
-        label="Number of days in the year used for rental"
-        patternConfig={Patterns.numDays}
-      />
-      <LabeledInput
-        name="personalUseDays"
-        rules={{ validate: (n: String) => validatePersonal(Number(n)) }}
-        label="Number of days in the year for personal use"
-        patternConfig={Patterns.numDays}
-      />
-      <LabeledCheckbox
-        name="qualifiedJointVenture"
-        label="Is this a qualified joint venture"
-      />
+      <Fields fields={useFields} />
       <h4>Property Financials</h4>
       <h5>Income</h5>
-      <LabeledInput
-        name="rentReceived"
-        label="Rent received"
-        patternConfig={Patterns.currency}
-      />
+      <Field field={incomeField} />
       <h5>Expenses</h5>
       <Grid container spacing={3} direction="row" justify="flex-start">
         {
           // Layout expense fields in two columns
-          segments(2, [...expenseFields, otherExpenseDescription])
+          segments(2, [...expenseFields, ...otherExpenseDescription])
             .map((segment, i) =>
               <Grid item key={i} lg={6}>
                 {
-                  segment.map((item, k) =>
-                    <Fragment key={`${i}-${k}`}>
-                      {item}
-                    </Fragment>
-                  )
+                  segment.map((item, k) => <Fields fields={segment} key={`${i}-${k}`} />)
                 }
               </Grid>
             )

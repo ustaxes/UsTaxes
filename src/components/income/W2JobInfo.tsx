@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { FormProvider, useForm } from 'react-hook-form'
 import { PagerContext } from '../pager'
 import { TaxesState, IncomeW2, Person, PersonRole, Employer, Spouse, PrimaryPerson, FilingStatus } from '../../redux/data'
-import { Currency, formatSSID, GenericLabeledDropdown, LabeledInput } from '../input'
+import { Currency, formatSSID, GenericLabeledDropdown } from '../input'
 import { Patterns } from '../Patterns'
 import { FormListContainer } from '../FormContainer'
 import { Box } from '@material-ui/core'
@@ -11,6 +11,7 @@ import { Work } from '@material-ui/icons'
 import { addW2, editW2, removeW2 } from '../../redux/actions'
 import { If } from 'react-if'
 import { Alert } from '@material-ui/lab'
+import { field, FieldDef, Fields } from '../Fields'
 
 interface IncomeW2UserInput {
   employer?: Employer
@@ -40,6 +41,15 @@ const toIncomeW2UserInput = (data: IncomeW2): IncomeW2UserInput => ({
   ssWithholding: data.ssWithholding.toString(),
   medicareWithholding: data.medicareWithholding.toString()
 })
+
+const fields: FieldDef[] = [
+  field('Employer name', 'employer.employerName', Patterns.name),
+  field('Occupation', 'occupation', Patterns.name),
+  field('Wages, tips, other compensation', 'income', Patterns.currency, 'text', undefined, 'Box 1 - '),
+  field('Federal income tax withheld', 'fedWithholding', Patterns.currency, 'text', undefined, 'Box 2 -'),
+  field('Social security tax withheld', 'ssWithholding', Patterns.currency, 'text', undefined, 'Box 4 - '),
+  field('Medicare tax withheld', 'medicareWithholding', Patterns.currency, 'text', undefined, 'Box 6 - ')
+]
 
 export default function W2JobInfo (): ReactElement {
   const dispatch = useDispatch()
@@ -106,45 +116,7 @@ export default function W2JobInfo (): ReactElement {
       max={omitAdd ? 0 : undefined}
     >
       <strong>Input data from W-2</strong>
-      <LabeledInput
-        label="Employer name"
-        patternConfig={Patterns.name}
-        name="employer.employerName"
-      />
-      <LabeledInput
-        label="Occupation"
-        patternConfig={Patterns.name}
-        name="occupation"
-      />
-
-      <LabeledInput
-        strongLabel="Box 1 - "
-        label="Wages, tips, other compensation"
-        patternConfig={Patterns.currency}
-        name="income"
-      />
-
-      <LabeledInput
-        strongLabel="Box 2 - "
-        label="Federal income tax withheld"
-        name="fedWithholding"
-        patternConfig={Patterns.currency}
-      />
-
-      <LabeledInput
-        strongLabel="Box 4 - "
-        label="Social security tax withheld"
-        name="ssWithholding"
-        patternConfig={Patterns.currency}
-      />
-
-      <LabeledInput
-        strongLabel="Box 6 - "
-        label="Medicare tax withheld"
-        name="medicareWithholding"
-        patternConfig={Patterns.currency}
-      />
-
+      <Fields fields={fields} />
       <GenericLabeledDropdown
         dropDownData={people}
         label="Employee"

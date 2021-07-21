@@ -1,13 +1,14 @@
-import React, { ReactElement, useState } from 'react'
+import React, { Fragment, ReactElement, useState } from 'react'
 import { useForm, FormProvider } from 'react-hook-form'
 import { Icon } from '@material-ui/core'
 import { useDispatch, useSelector } from 'react-redux'
 import { add1099, edit1099, remove1099 } from '../../redux/actions'
 import { PagerContext } from '../pager'
 import { TaxesState, Person, PersonRole, Supported1099, Income1099Type } from '../../redux/data'
-import { Currency, formatSSID, GenericLabeledDropdown, LabeledInput } from '../input'
+import { Currency, formatSSID, GenericLabeledDropdown } from '../input'
 import { Patterns } from '../Patterns'
 import { FormListContainer } from '../FormContainer'
+import { field, Field, FieldDef, Fields } from '../Fields'
 
 const showIncome = (a: Supported1099): ReactElement => {
   switch (a.type) {
@@ -123,6 +124,46 @@ const toF1099 = (input: F1099UserInput): Supported1099 | undefined => {
   }
 }
 
+const longTerm: FieldDef[] = [
+  field('Proceeds', 'longTermProceeds', Patterns.currency),
+  field('Cost basis', 'longTermCostBasis', Patterns.currency)
+]
+
+const shortTerm: FieldDef[] = [
+  field('Proceeds', 'shortTermProceeds', Patterns.currency),
+  field('Cost basis', 'shortTermCostBasis', Patterns.currency)
+]
+
+const dividends: FieldDef[] = [
+  field('Total Dividends', 'dividends', Patterns.currency),
+  field('Qualified Dividends', 'qualifiedDividends', Patterns.currency)
+]
+
+const interest: FieldDef = field('Box 1 - Interest Income', 'interest', Patterns.currency)
+
+const payer: FieldDef = field('Enter name of bank, broker firm, or other payer', 'payer', Patterns.name)
+
+const bFields = (
+  <Fragment>
+    <h4>Long Term Covered Transactions</h4>
+    <Fields fields={longTerm} />
+    <h4>Short Term Covered Transactions</h4>
+    <Fields fields={shortTerm} />
+  </Fragment>
+)
+
+const specificFields = {
+  [Income1099Type.INT]: <Field field={interest} />,
+  [Income1099Type.B]: bFields,
+  [Income1099Type.DIV]: <Fields fields={dividends} />
+}
+
+const titles = {
+  [Income1099Type.INT]: '1099-INT',
+  [Income1099Type.B]: '1099-B',
+  [Income1099Type.DIV]: '1099-DIV'
+}
+
 export default function F1099Info (): ReactElement {
   const f1099s = useSelector((state: TaxesState) =>
     state.information.f1099s
@@ -168,68 +209,6 @@ export default function F1099Info (): ReactElement {
       .map((p) => p as Person)
   )
 
-  const intFields = (
-    <LabeledInput
-      label="Box 1 - Interest Income"
-      patternConfig={Patterns.currency}
-      name="interest"
-    />
-  )
-
-  const bFields = (
-    <div>
-      <h4>Long Term Covered Transactions</h4>
-      <LabeledInput
-        label="Proceeds"
-        patternConfig={Patterns.currency}
-        name="longTermProceeds"
-      />
-      <LabeledInput
-        label="Cost basis"
-        patternConfig={Patterns.currency}
-        name="longTermCostBasis"
-      />
-      <h4>Short Term Covered Transactions</h4>
-      <LabeledInput
-        label="Proceeds"
-        patternConfig={Patterns.currency}
-        name="shortTermProceeds"
-      />
-      <LabeledInput
-        label="Cost basis"
-        patternConfig={Patterns.currency}
-        name="shortTermCostBasis"
-      />
-    </div>
-  )
-
-  const divFields = (
-    <div>
-      <LabeledInput
-        label="Total Dividends"
-        patternConfig={Patterns.currency}
-        name="dividends"
-      />
-      <LabeledInput
-        label="Qualified Dividends"
-        patternConfig={Patterns.currency}
-        name="qualifiedDividends"
-      />
-    </div>
-  )
-
-  const specificFields = {
-    [Income1099Type.INT]: intFields,
-    [Income1099Type.B]: bFields,
-    [Income1099Type.DIV]: divFields
-  }
-
-  const titles = {
-    [Income1099Type.INT]: '1099-INT',
-    [Income1099Type.B]: '1099-B',
-    [Income1099Type.DIV]: '1099-DIV'
-  }
-
   const form: ReactElement | undefined = (
     <FormListContainer
       onDone={(onSuccess) => handleSubmit(onAdd1099(onSuccess))}
@@ -253,11 +232,7 @@ export default function F1099Info (): ReactElement {
         textMapping={(name: string) => `1099-${name}`}
       />
 
-      <LabeledInput
-        label="Enter name of bank, broker firm, or other payer"
-        patternConfig={Patterns.name}
-        name="payer"
-      />
+      <Field field={payer} />
 
       {selectedType !== undefined ? specificFields[selectedType] : undefined }
 

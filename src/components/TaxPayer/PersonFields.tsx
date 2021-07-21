@@ -1,7 +1,7 @@
-import React, { Fragment, PropsWithChildren, ReactElement } from 'react'
+import React, { PropsWithChildren, ReactElement } from 'react'
 import { IconButton, List, ListItem, ListItemIcon, ListItemSecondaryAction } from '@material-ui/core'
 import { useDispatch, useSelector } from 'react-redux'
-import { formatSSID, LabeledInput } from '../input'
+import { formatSSID } from '../input'
 import { Patterns } from '../Patterns'
 import { Actions, removeDependent } from '../../redux/actions'
 import { TaxesState, Person } from '../../redux/data'
@@ -10,26 +10,18 @@ import EditIcon from '@material-ui/icons/Edit'
 import ListItemText from '@material-ui/core/ListItemText'
 import PersonIcon from '@material-ui/icons/Person'
 import { If } from 'react-if'
+import { field, Fields } from '../Fields'
+
+export const personFields = [
+  field('First Name and Initial', 'firstName', Patterns.name),
+  field('Last Name', 'lastName', Patterns.name),
+  field('SSN / TIN', 'ssid', Patterns.ssn)
+]
 
 export const PersonFields = ({ children }: PropsWithChildren<{}>): ReactElement => (
-  <Fragment>
-    <LabeledInput
-      label="First Name and Initial"
-      name="firstName"
-      patternConfig={Patterns.name}
-    />
-    <LabeledInput
-      label="Last Name"
-      name="lastName"
-      patternConfig={Patterns.name}
-    />
-    <LabeledInput
-      label="SSN / TIN"
-      name="ssid"
-      patternConfig={Patterns.ssn}
-    />
+  <Fields fields={personFields}>
     {children}
-  </Fragment>
+  </Fields>
 )
 
 interface PersonListItemProps {

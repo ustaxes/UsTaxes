@@ -1,12 +1,13 @@
 import React, { ReactElement } from 'react'
 import { useForm, FormProvider } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
-import { LabeledInput, LabeledRadio } from './input'
+import { LabeledRadio } from './input'
 import { Patterns } from './Patterns'
 import { saveRefundInfo } from '../redux/actions'
 
 import { AccountType, Refund, TaxesState } from '../redux/data'
 import { PagerContext } from './pager'
+import { field, FieldDef, Fields } from './Fields'
 
 interface UserRefundForm {
   routingNumber: string
@@ -15,6 +16,11 @@ interface UserRefundForm {
 }
 
 const toRefund = (formData: UserRefundForm): Refund => formData
+
+const fields: FieldDef[] = [
+  field('Bank Routing number', 'routingNumber', Patterns.bankRouting),
+  field('Bank Account number', 'accountNumber', Patterns.bankAccount)
+]
 
 export default function RefundBankAccount (): ReactElement {
   const defaultValues: Refund | undefined = useSelector((state: TaxesState) => {
@@ -39,22 +45,13 @@ export default function RefundBankAccount (): ReactElement {
           <FormProvider {...methods}>
             <h2>Refund Information</h2>
 
-            <LabeledInput
-              label="Bank Routing number"
-              patternConfig={Patterns.bankRouting}
-              name="routingNumber"
-            />
-
-            <LabeledInput
-              label="Bank Account number"
-              patternConfig={Patterns.bankAccount}
-              name="accountNumber"
-            />
-            <LabeledRadio
-              label="Account Type"
-              name="accountType"
-              values={[['Checking', 'checking'], ['Savings', 'savings']]}
-            />
+            <Fields fields={fields}>
+              <LabeledRadio
+                label="Account Type"
+                name="accountType"
+                values={[['Checking', 'checking'], ['Savings', 'savings']]}
+              />
+            </Fields>
             {navButtons}
           </FormProvider>
         </form>

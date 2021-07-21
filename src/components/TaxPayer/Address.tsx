@@ -1,14 +1,29 @@
-import React, { Fragment, ReactElement } from 'react'
+import React, { ReactElement } from 'react'
 import { useFormContext, useWatch } from 'react-hook-form'
-import { If } from 'react-if'
-import { LabeledCheckbox, LabeledInput, USStateDropDown } from '../input'
-import { CountryDropDown } from '../input/LabeledDropdown'
+import { field, Fields } from '../Fields'
 import { Patterns } from '../Patterns'
 
 interface AddressProps {
   checkboxText: string
   allowForeignCountry?: boolean
 }
+
+const domesticFields = [
+  field('State', 'address.state', undefined, 'state'),
+  field('Zip', 'address.zip', Patterns.zip)
+]
+
+const foreignFields = [
+  field('Province', 'address.province', Patterns.name),
+  field('Postal Code', 'address.postalCode'),
+  field('Country', 'address.foreignCountry', undefined, 'country')
+]
+
+const mainFields = [
+  field('Address', 'address.address', undefined, 'text', true),
+  field('Unit No', 'address.aptNo', undefined, 'text', false),
+  field('City', 'address.city', Patterns.name)
+]
 
 export default function AddressFields (props: AddressProps): ReactElement {
   const {
@@ -23,66 +38,13 @@ export default function AddressFields (props: AddressProps): ReactElement {
     control
   })
 
-  const csz: ReactElement = (() => {
-    if (!allowForeignCountry || !isForeignCountry) {
-      return (
-        <Fragment>
-          <USStateDropDown
-            label="State"
-            name="address.state"
-            required={!isForeignCountry}
-          />
-          <LabeledInput
-            label="Zip"
-            name="address.zip"
-            patternConfig={Patterns.zip}
-            required={!isForeignCountry}
-          />
-        </Fragment>
-      )
-    }
-    return (
-      <Fragment>
-        <LabeledInput
-          label="Province"
-          name="address.province"
-          required={isForeignCountry}
-        />
-        <LabeledInput
-          name="address.postalCode"
-          label="Postal Code"
-          required={isForeignCountry}
-        />
-        <CountryDropDown
-          name="address.foreignCountry"
-          label="Country"
-          required={isForeignCountry}
-        />
-      </Fragment>
-    )
-  })()
+  const foreignCountryField = field(checkboxText, 'isForeignCountry', undefined, 'checkbox')
 
   return (
-    <Fragment>
-      <LabeledInput
-        label="Address"
-        name="address.address"
-        required={true}
-      />
-      <LabeledInput
-        label="Unit No"
-        name="address.aptNo"
-        required={false}
-      />
-      <LabeledInput
-        label="City"
-        name="address.city"
-        patternConfig={Patterns.name}
-      />
-      <If condition={allowForeignCountry}>
-        <LabeledCheckbox label={checkboxText} name="isForeignCountry" />
-      </If>
-      {csz}
-    </Fragment>
+    <Fields fields={[
+      ...mainFields,
+      ...(allowForeignCountry ? [foreignCountryField] : []),
+      ...(!allowForeignCountry || !isForeignCountry ? domesticFields : foreignFields)
+    ]} />
   )
 }

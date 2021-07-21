@@ -4,10 +4,11 @@ import SchoolIcon from '@material-ui/icons/School'
 import { useDispatch, useSelector } from 'react-redux'
 import { add1098e, edit1098e, remove1098e } from '../../redux/actions'
 import { PagerContext } from '../pager'
-import { Currency, LabeledInput } from '../input'
+import { Currency } from '../input'
 import { TaxesState, F1098e } from '../../redux/data'
 import { Patterns } from '../Patterns'
 import { FormListContainer } from '../FormContainer'
+import { field, FieldDef, Fields } from '../Fields'
 
 const showInterest = (a: F1098e): ReactElement => {
   return <Currency value={a.interest} />
@@ -35,6 +36,11 @@ const toF1098e = (f: F1098EUserInput): F1098e => {
     interest: Number(f.interest)
   }
 }
+
+const fields: FieldDef[] = [
+  field('Enter name of Lender', 'lender', Patterns.name),
+  field('Student Interest Paid', 'interest', Patterns.currency)
+]
 
 export default function F1098eInfo (): ReactElement {
   const f1098es = useSelector((state: TaxesState) =>
@@ -86,16 +92,7 @@ export default function F1098eInfo (): ReactElement {
       icon={(f) => <SchoolIcon />}
     >
       <strong>Input data from 1098-E</strong>
-      <LabeledInput
-        label="Enter name of Lender"
-        patternConfig={Patterns.name}
-        name="lender"
-      />
-      <LabeledInput
-        label="Student Interest Paid"
-        patternConfig={Patterns.currency}
-        name="interest"
-      />
+      <Fields fields={fields} />
     </FormListContainer>
   )
 

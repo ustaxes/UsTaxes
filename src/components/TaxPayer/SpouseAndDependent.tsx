@@ -3,13 +3,14 @@ import React, { ReactElement, useState } from 'react'
 import { useForm, FormProvider } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { Patterns } from '../Patterns'
-import { LabeledInput, LabeledCheckbox, formatSSID, GenericLabeledDropdown } from '../input'
+import { formatSSID, GenericLabeledDropdown } from '../input'
 import { TaxesState, TaxPayer, Dependent, Spouse, PersonRole, FilingStatus, FilingStatusTexts, filingStatuses } from '../../redux/data'
 import { addDependent, addSpouse, editDependent, removeDependent, removeSpouse, saveFilingStatusInfo } from '../../redux/actions'
 import { PersonFields } from './PersonFields'
 import { FormListContainer } from '../FormContainer'
 import { PagerContext } from '../pager'
 import { Person } from '@material-ui/icons'
+import { field, Fields } from '../Fields'
 
 interface UserPersonForm {
   firstName: string
@@ -23,6 +24,15 @@ interface UserDependentForm extends UserPersonForm {
   isStudent: boolean
   numberOfMonths: string
 }
+
+const fields = [
+  field('Relationship to Taxpayer', 'relationship', Patterns.name),
+  field('Birth Year', 'birthYear', Patterns.year),
+  field('How many months did you live together this year?', 'numberOfMonths', Patterns.numMonths),
+  field('Is this person a full-time student?', 'isStudent', undefined, 'checkbox')
+]
+
+const spouseDependent = field('Check if your spouse is a dependent', 'isTaxpayerDependent', undefined, 'checkbox')
 
 const toDependent = (formData: UserDependentForm): Dependent => {
   const { birthYear, numberOfMonths, isStudent, ...rest } = formData
@@ -106,25 +116,7 @@ export const AddDependentForm = (): ReactElement => {
       removeItem={(i) => dispatch(removeDependent(i))}
     >
       <PersonFields />
-      <LabeledInput
-        label="Relationship to Taxpayer"
-        name="relationship"
-        patternConfig={Patterns.name}
-      />
-      <LabeledInput
-        label="Birth Year"
-        patternConfig={Patterns.year}
-        name="birthYear"
-      />
-      <LabeledInput
-        label="How many months did you live together this year?"
-        patternConfig={Patterns.numMonths}
-        name="numberOfMonths"
-      />
-      <LabeledCheckbox
-        label="Is this person a full-time student?"
-        name="isStudent"
-      />
+      <Fields fields={fields} />
     </FormListContainer>
   )
 
@@ -173,10 +165,7 @@ export const SpouseInfo = (): ReactElement => {
       removeItem={() => dispatch(removeSpouse)}
     >
       <PersonFields>
-        <LabeledCheckbox
-          label="Check if your spouse is a dependent"
-          name="isTaxpayerDependent"
-        />
+        <Fields fields={[spouseDependent]} />
       </PersonFields>
     </FormListContainer>
   )
