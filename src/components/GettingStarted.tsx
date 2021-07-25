@@ -1,10 +1,14 @@
 import React, { ReactElement } from 'react'
-import { StartButtons } from './pager'
+import { StartButtons, SingleButtons } from './pager'
 
 const repoUrl: string = 'https://github.com/ustaxes/UsTaxes'
 const codeOfConductUrl: string = 'https://github.com/ustaxes/UsTaxes/blob/master/docs/CODE_OF_CONDUCT.md'
 const contributingUrl: string = 'https://github.com/ustaxes/UsTaxes/blob/master/docs/CONTRIBUTING.md'
 const architecture: string = 'https://github.com/ustaxes/UsTaxes/blob/master/docs/ARCHITECTURE.md'
+const releases: string = 'https://github.com/ustaxes/UsTaxes/releases'
+
+const doubleButtons: ReactElement = <StartButtons firstText={ 'Start Return In Browser' } firstUrl ={ '/info' } secondText={ 'Download Desktop Version' } secondUrl={ releases } />
+const singleButtons: ReactElement = <SingleButtons text={ 'Start Return' } url={ '/info' } />
 
 export default function GettingStarted (): ReactElement {
   return (
@@ -58,7 +62,7 @@ export default function GettingStarted (): ReactElement {
 
         <p>If your types of income and state residency are supported, you should be able to use UsTaxes to paper file your return!</p>
 
-        { <StartButtons firstText={ 'Start Return In Browser' } firstUrl ={ '/info' } secondText={ 'Download Desktop Version' } secondUrl={ 'https://github.com/ustaxes/UsTaxes/releases' } />}
+        { ((window as any).__TAURI__ === undefined) ? doubleButtons : singleButtons }
 
         <h2>About This Project</h2>
           <p>

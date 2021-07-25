@@ -69,11 +69,26 @@ interface StartButtonsProps {
 export const StartButtons = ({ firstUrl, firstText, secondUrl, secondText }: StartButtonsProps): ReactElement => {
   return (
     <Box display="flex" justifyContent="space-evenly" paddingTop={3} paddingBottom={6}>
-      <Button href={ firstUrl } variant="contained" color="primary" >
+      <Button component={Link} to={ firstUrl } variant="contained" color="primary" >
         { firstText }
       </Button>
       <Button href={ secondUrl } variant="contained" color="secondary" >
         { secondText }
+      </Button>
+    </Box>
+  )
+}
+
+interface SingleButtonsProps {
+  url: string
+  text: string
+}
+
+export const SingleButtons = ({ url, text }: SingleButtonsProps): ReactElement => {
+  return (
+    <Box display="flex" justifyContent="space-evenly" paddingTop={3} paddingBottom={6}>
+      <Button component={Link} to = { url } variant="contained" color="primary" >
+        { text }
       </Button>
     </Box>
   )
