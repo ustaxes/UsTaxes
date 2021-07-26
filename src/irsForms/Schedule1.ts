@@ -11,6 +11,7 @@ const unimplemented = (message: string): void =>
 
 export default class Schedule1 implements Form {
   tag: FormTag = 'f1040s1'
+  sequenceIndex = 1
   state: Information
   scheduleE?: ScheduleE
   f1040: F1040

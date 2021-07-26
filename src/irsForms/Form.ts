@@ -18,6 +18,10 @@ export type FormTag =
   *
   */
 export default interface Form {
+
+  // Match the filename without extension when downloaded from IRS
   tag: FormTag
+  // Match the sequence number in the header of the PDF.
+  sequenceIndex: number
   fields: () => Array<string | number | boolean | undefined>
 }

@@ -11,6 +11,7 @@ interface PayerAmount {
 
 export default class ScheduleB implements Form {
   tag: FormTag = 'f1040sb'
+  sequenceIndex: number = 8
   state: Information
   readonly interestPayersLimit = 14
   readonly dividendPayersLimit = 16

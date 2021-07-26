@@ -14,6 +14,7 @@ import SDUnrecaptured1250 from './worksheets/SDUnrecaptured1250'
 
 export default class ScheduleD implements Form {
   tag: FormTag = 'f1040sd'
+  sequenceIndex: number = 12
   state: Information
   aggregated: F1099BData
   rateGainWorksheet: SDRateGainWorksheet

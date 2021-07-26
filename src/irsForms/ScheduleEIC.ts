@@ -42,6 +42,7 @@ const precludesEIC = <F>(p: PrecludesEIC<F>) => (f: F | undefined): boolean => {
 
 export default class ScheduleEIC implements Form {
   tag: FormTag = 'f1040sei'
+  sequenceIndex: number = 43
   tp: TaxPayer
   f2555?: F2555
   f4797?: F4797

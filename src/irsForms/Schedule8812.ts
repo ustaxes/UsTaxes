@@ -8,6 +8,7 @@ export default class Schedule8812 implements Form {
   tp: TaxPayer
   f1040: F1040
   tag: FormTag = 'f1040s8'
+  sequenceIndex: number = 47
 
   constructor (tp: TP, f1040: F1040) {
     this.tp = new TaxPayer(tp)

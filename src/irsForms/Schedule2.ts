@@ -6,6 +6,7 @@ import F8959 from './F8959'
 
 export default class Schedule2 implements Form {
   tag: FormTag = 'f1040s2'
+  sequenceIndex: number = 2
   tp: TaxPayer
   f8959?: F8959
 
