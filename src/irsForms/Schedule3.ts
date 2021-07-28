@@ -24,6 +24,7 @@ export const claimableExcessSSTaxWithholding = (w2s: IncomeW2[]): number => {
 
 export default class Schedule3 implements Form {
   tag: FormTag = 'f1040s3'
+  sequenceIndex: number = 3
   state: Information
   f1040: F1040
 

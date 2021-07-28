@@ -16,25 +16,24 @@ import StudentLoanInterestWorksheet from './worksheets/StudentLoanInterestWorksh
 import Schedule2 from './Schedule2'
 
 export const getSchedules = (f1040: F1040, state: Information): Form[] => {
-  let attachments: Form[] = []
-  const prepends: Form[] = []
+  const forms: Form[] = [f1040]
 
   if (state.f1099s.find((v) => v.type === Income1099Type.INT) !== undefined) {
     const schB = new ScheduleB(state)
     f1040.addScheduleB(schB)
-    attachments = [...attachments, schB]
+    forms.push(schB)
   }
 
   if (state.f1099s.find((v) => v.type === Income1099Type.B) !== undefined) {
     const schD = new ScheduleD(state)
     f1040.addScheduleD(schD)
-    attachments = [...attachments, schD]
+    forms.push(schD)
   }
 
   if (state.realEstate.length > 0) {
     const se = new ScheduleE(state)
     f1040.addScheduleE(se)
-    attachments = [...attachments, se]
+    forms.push(se)
   }
 
   if (state.f1098es.length > 0) {
@@ -45,7 +44,7 @@ export const getSchedules = (f1040: F1040, state: Information): Form[] => {
     if (f1040.schedule1 === undefined && studentLoanInterestWorksheet.notMFS() && studentLoanInterestWorksheet.isNotDependent()) {
       const s1 = new Schedule1(state, f1040)
       f1040.addSchedule1(s1)
-      attachments = [s1, ...attachments]
+      forms.push(s1)
     }
   }
 
@@ -55,13 +54,14 @@ export const getSchedules = (f1040: F1040, state: Information): Form[] => {
 
     const s2 = f1040.schedule2 !== undefined ? f1040.schedule2 : new Schedule2(state.taxPayer, f8959)
     f1040.addSchedule2(s2)
-    attachments = [...attachments, s2, f8959]
+    forms.push(s2)
+    forms.push(f8959)
   }
 
   if (claimableExcessSSTaxWithholding(state.w2s) > 0 && f1040.schedule3 === undefined) {
     const s3 = new Schedule3(state, f1040)
     f1040.addSchedule3(s3)
-    attachments = [...attachments, s3]
+    forms.push(s3)
   }
 
   if (f1040.scheduleE !== undefined) {
@@ -69,7 +69,7 @@ export const getSchedules = (f1040: F1040, state: Information): Form[] => {
       const s1 = new Schedule1(state, f1040)
       f1040.addSchedule1(s1)
       s1.addScheduleE(f1040.scheduleE)
-      attachments = [s1, ...attachments]
+      forms.push(s1)
     } else {
       f1040.schedule1.addScheduleE(f1040.scheduleE)
     }
@@ -78,7 +78,7 @@ export const getSchedules = (f1040: F1040, state: Information): Form[] => {
   const eic = new ScheduleEIC(state.taxPayer, f1040)
   if (eic.allowed(f1040)) {
     f1040.addScheduleEIC(eic)
-    attachments = [...attachments, eic]
+    forms.push(eic)
   }
 
   const ws = new ChildTaxCreditWorksheet(f1040)
@@ -87,16 +87,17 @@ export const getSchedules = (f1040: F1040, state: Information): Form[] => {
   if (f1040.dependents.some((dep) => ws.qualifiesChild(dep) || ws.qualifiesOther(dep))) {
     f1040.addChildTaxCreditWorksheet(ws)
     f1040.addSchedule8812(schedule8812)
-    attachments = [...attachments, schedule8812]
+    forms.push(schedule8812)
   }
 
   // Attach payment voucher to front if there is a payment due
   if ((f1040.l37() ?? 0) > 0) {
-    const f1040v = new F1040V(state, f1040)
-    prepends.push(f1040v)
+    forms.push(new F1040V(state, f1040))
   }
 
-  return [...prepends, f1040, ...attachments]
+  forms.sort((a, b) => a.sequenceIndex - b.sequenceIndex)
+
+  return forms
 }
 
 export function create1040 (state: Information): Either<F1040Error[], [F1040, Form[]]> {

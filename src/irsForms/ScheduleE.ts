@@ -39,6 +39,7 @@ const propTypeIndex = {
 
 export default class ScheduleE implements Form {
   tag: FormTag = 'f1040se'
+  sequenceIndex: number = 13
   state: Information
   f6168: F6168
   f8582: F8582
