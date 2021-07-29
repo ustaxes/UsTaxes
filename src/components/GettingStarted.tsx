@@ -66,10 +66,8 @@ export default function GettingStarted (): ReactElement {
 
         <h2>About This Project</h2>
           <p>
-            UsTaxes is an open source project maintained by Aidan Grimshaw and Zak Patterson, and outside contributions to the
-            <a href={repoUrl}> GitHub</a> repository are welcome. Please review the
-            <a href={codeOfConductUrl}> Code of Conduct</a>, <a href={contributingUrl}>Contributing Guide</a>
-            , and <a href={architecture}>Project Architecture</a> documents before making any contributions. For those that would like to financially support the project we, unfortunately,
+            UsTaxes is an open source project maintained by Aidan Grimshaw and Zak Patterson, and outside contributions to the <a href={repoUrl}>GitHub</a> repository are welcome. Please review the <a href={codeOfConductUrl}>Code of Conduct</a>, <a href={contributingUrl}>Contributing Guide</a>
+            , and <a href={architecture}>Project Architecture</a> documents before making any contributions. For those that would like to financially support the project we unfortunately
             do not have a mechanism to receive donations at this time.
           </p>
 
