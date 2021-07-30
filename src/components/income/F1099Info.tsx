@@ -28,7 +28,7 @@ const showIncome = (a: Supported1099): ReactElement => {
       return <Currency value={a.form.dividends} />
     }
     case Income1099Type.R: {
-      return <Currency value={a.form.taxableAmount} />
+      return <Currency value={a.form.grossDistribution} />
     }
   }
 }
@@ -48,7 +48,7 @@ interface F1099UserInput {
   qualifiedDividends: string | number
   personRole: PersonRole.PRIMARY | PersonRole.SPOUSE
   // R fields
-  taxableAmount: string | number
+  grossDistribution: string | number
 }
 
 const blankUserInput: F1099UserInput = {
@@ -65,7 +65,7 @@ const blankUserInput: F1099UserInput = {
   dividends: '',
   qualifiedDividends: '',
   // R fields
-  taxableAmount: ''
+  grossDistribution: ''
 }
 
 const toUserInput = (f: Supported1099): F1099UserInput => ({
@@ -133,7 +133,7 @@ const toF1099 = (input: F1099UserInput): Supported1099 | undefined => {
         personRole: input.personRole,
         type: input.formType,
         form: {
-          taxableAmount: Number(input.taxableAmount)
+          grossDistribution: Number(input.grossDistribution)
         }
       }
     }
@@ -237,9 +237,9 @@ export default function F1099Info (): ReactElement {
 
   const rFields = (
     <LabeledInput
-      label="Box 1 - Interest Income"
+      label="Box 1 - Gross Distribution"
       patternConfig={Patterns.currency}
-      name="taxableAmount"
+      name="grossDistribution"
     />
   )
 

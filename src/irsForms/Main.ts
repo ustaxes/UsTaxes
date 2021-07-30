@@ -1,4 +1,4 @@
-import { Income1099Type, Information } from '../redux/data'
+import { Income1099Type, Income1099R, Information } from '../redux/data'
 import { Either, left, right } from '../util'
 import F1040, { F1040Error } from './F1040'
 import F1040V from './F1040v'
@@ -104,6 +104,13 @@ export function create1040 (state: Information): Either<F1040Error[], [F1040, Fo
   const f1040 = new F1040(state.taxPayer)
 
   state.w2s.forEach((w2) => f1040.addW2(w2))
+
+  state.f1099s
+    .filter((f) => f.type === Income1099Type.R)
+    .map((f) => f as Income1099R)
+    .forEach(element => {
+      f1040.add1099R(element)
+    })
 
   f1040.addQuestions(state.questions)
 

@@ -96,7 +96,7 @@ export interface F1099DivData {
 }
 
 export interface F1099RData {
-  taxableAmount: number
+  grossDistribution: number
 }
 
 export interface Income1099<T, D> {
