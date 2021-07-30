@@ -37,7 +37,8 @@
     "tauri": "tauri",
     "schema-generate": "node ./setup.js",
     "lint": "eslint ./src --ext .ts --ext .js --ext .tsx --ext .jsx",
-    "lint:fix": "eslint ./src --fix --ext .ts --ext .js --ext .tsx --ext .jsx"
+    "lint:fix": "eslint ./src --fix --ext .ts --ext .js --ext .tsx --ext .jsx",
+    "postbuild": "react-snap"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -76,8 +77,9 @@
     "eslint-plugin-promise": "^5.1.0",
     "eslint-plugin-react": "^7.24.0",
     "eslint-plugin-standard": "^5.0.0",
-    "husky": "^7.0.1",
     "fast-check": "^2.17.0",
+    "husky": "^7.0.1",
+    "react-snap": "^1.23.0",
     "typescript-eslint": "0.0.1-alpha.0"
   },
   "husky": {
