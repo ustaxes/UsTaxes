@@ -1,5 +1,13 @@
 import React, { Fragment, ReactElement } from 'react'
-import { List, ListItem, ListItemAvatar, ListItemIcon, ListItemText, makeStyles, Typography } from '@material-ui/core'
+import {
+  List,
+  ListItem,
+  ListItemAvatar,
+  ListItemIcon,
+  ListItemText,
+  makeStyles,
+  Typography
+} from '@material-ui/core'
 import { PagerContext } from './pager'
 import { create1040 } from '../irsForms/Main'
 import { useSelector } from 'react-redux'
@@ -36,15 +44,16 @@ const useStyles = makeStyles((theme) => ({
   }
 }))
 
-const BinaryStateListItem = ({ active, children }: BinaryStateListItemProps): ReactElement => {
+const BinaryStateListItem = ({
+  active,
+  children
+}: BinaryStateListItemProps): ReactElement => {
   const classes = useStyles()
 
   return (
     <ListItem className={active ? classes.active : classes.inactive}>
       <ListItemAvatar>
-        <ListItemIcon>
-          {active ? <Check /> : <Close />}
-        </ListItemIcon>
+        <ListItemIcon>{active ? <Check /> : <Close />}</ListItemIcon>
       </ListItemAvatar>
       {children}
     </ListItem>
@@ -59,7 +68,7 @@ const F1040Summary = ({ f1040 }: F1040Props): ReactElement => {
   const classes = useStyles()
 
   const earnedIncomeTaxCredit = (
-    <BinaryStateListItem active={f1040.scheduleEIC?.allowed(f1040) ?? false} >
+    <BinaryStateListItem active={f1040.scheduleEIC?.allowed(f1040) ?? false}>
       <ListItemText
         primary="Earned Income Tax Credit"
         secondary={
@@ -72,24 +81,19 @@ const F1040Summary = ({ f1040 }: F1040Props): ReactElement => {
             >
               Qualifying Dependents:
             </Typography>
-            <Typography
-              component="span"
-              variant="body2"
-              color="textSecondary"
-            >
-              {
-                f1040.scheduleEIC?.qualifyingDependents().map((d, i) =>
-                  <span key={i}>{`${d?.firstName ?? ''} ${d?.lastName ?? ''}`}</span>
-                )
-              }
+            <Typography component="span" variant="body2" color="textSecondary">
+              {f1040.scheduleEIC?.qualifyingDependents().map((d, i) => (
+                <span key={i}>{`${d?.firstName ?? ''} ${
+                  d?.lastName ?? ''
+                }`}</span>
+              ))}
             </Typography>
             <br />
-            <Typography
-              component="span"
-              variant="body2"
-              color="textPrimary"
-            >
-              Credit: <Currency value={Math.round(f1040.scheduleEIC?.credit(f1040) ?? 0)} />
+            <Typography component="span" variant="body2" color="textPrimary">
+              Credit:{' '}
+              <Currency
+                value={Math.round(f1040.scheduleEIC?.credit(f1040) ?? 0)}
+              />
             </Typography>
           </React.Fragment>
         }
@@ -98,17 +102,18 @@ const F1040Summary = ({ f1040 }: F1040Props): ReactElement => {
   )
 
   const creditForChildrenAndOtherDependents = (
-    <BinaryStateListItem active={f1040.childTaxCreditWorksheet?.isAllowed() ?? false}>
+    <BinaryStateListItem
+      active={f1040.childTaxCreditWorksheet?.isAllowed() ?? false}
+    >
       <ListItemText
         primary="Credit for children and other dependents"
         secondary={
           <React.Fragment>
-            <Typography
-              component="span"
-              variant="body2"
-              color="textPrimary"
-            >
-              Credit: <Currency value={Math.round(f1040.childTaxCreditWorksheet?.credit() ?? 0)} />
+            <Typography component="span" variant="body2" color="textPrimary">
+              Credit:{' '}
+              <Currency
+                value={Math.round(f1040.childTaxCreditWorksheet?.credit() ?? 0)}
+              />
             </Typography>
           </React.Fragment>
         }
@@ -128,7 +133,9 @@ const F1040Summary = ({ f1040 }: F1040Props): ReactElement => {
 }
 
 const Summary = (): ReactElement => {
-  const information: Information = useSelector((state: TaxesState) => state.information)
+  const information: Information = useSelector(
+    (state: TaxesState) => state.information
+  )
 
   const summaryBody = (() => {
     if (information.taxPayer.primaryPerson === undefined) {
@@ -141,7 +148,11 @@ const Summary = (): ReactElement => {
 
         return (
           <Fragment>
-            {errors.map((error, i) => <Alert key={i} severity="warning">{error}</Alert>)}
+            {errors.map((error, i) => (
+              <Alert key={i} severity="warning">
+                {error}
+              </Alert>
+            ))}
           </Fragment>
         )
       } else {
@@ -153,13 +164,13 @@ const Summary = (): ReactElement => {
 
   return (
     <PagerContext.Consumer>
-      {({ navButtons, onAdvance }) =>
+      {({ navButtons, onAdvance }) => (
         <form onSubmit={onAdvance}>
           <h2>Summary</h2>
           {summaryBody}
           {navButtons}
         </form>
-      }
+      )}
     </PagerContext.Consumer>
   )
 }

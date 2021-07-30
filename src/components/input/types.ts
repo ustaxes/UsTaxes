@@ -28,7 +28,10 @@ export interface LabeledInputProps {
   required?: boolean
   name: string
   defaultValue?: string
-  rules?: Exclude<RegisterOptions, 'valueAsNumber' | 'valueAsDate' | 'setValueAs'>
+  rules?: Exclude<
+    RegisterOptions,
+    'valueAsNumber' | 'valueAsDate' | 'setValueAs'
+  >
 }
 
 export interface LabeledFormProps {

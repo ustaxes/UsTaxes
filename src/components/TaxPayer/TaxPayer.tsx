@@ -2,7 +2,13 @@ import React, { ReactElement } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { savePrimaryPersonInfo } from '../../redux/actions'
-import { Address, PersonRole, PrimaryPerson, TaxesState, TaxPayer } from '../../redux/data'
+import {
+  Address,
+  PersonRole,
+  PrimaryPerson,
+  TaxesState,
+  TaxPayer
+} from '../../redux/data'
 import { PersonFields } from './PersonFields'
 import { LabeledCheckbox } from '../input'
 import { PagerContext } from '../pager'
@@ -36,7 +42,7 @@ const asTaxPayerUserForm = (person: PrimaryPerson): TaxPayerUserForm => {
   }
 }
 
-export default function PrimaryTaxpayer (): ReactElement {
+export default function PrimaryTaxpayer(): ReactElement {
   // const variable dispatch to allow use inside function
   const dispatch = useDispatch()
 
@@ -45,18 +51,23 @@ export default function PrimaryTaxpayer (): ReactElement {
   })
 
   const methods = useForm<TaxPayerUserForm>({
-    defaultValues: taxPayer.primaryPerson !== undefined ? asTaxPayerUserForm(taxPayer.primaryPerson) : undefined
+    defaultValues:
+      taxPayer.primaryPerson !== undefined
+        ? asTaxPayerUserForm(taxPayer.primaryPerson)
+        : undefined
   })
   const { handleSubmit } = methods
 
-  const onSubmit = (onAdvance: () => void) => (form: TaxPayerUserForm): void => {
-    dispatch(savePrimaryPersonInfo(asPrimaryPerson(form)))
-    onAdvance()
-  }
+  const onSubmit =
+    (onAdvance: () => void) =>
+    (form: TaxPayerUserForm): void => {
+      dispatch(savePrimaryPersonInfo(asPrimaryPerson(form)))
+      onAdvance()
+    }
 
   const page = (
     <PagerContext.Consumer>
-      { ({ navButtons, onAdvance }) =>
+      {({ navButtons, onAdvance }) => (
         <form onSubmit={handleSubmit(onSubmit(onAdvance))}>
           <h2>Primary Taxpayer Information</h2>
           <PersonFields />
@@ -67,7 +78,7 @@ export default function PrimaryTaxpayer (): ReactElement {
           <AddressFields checkboxText="Do you have a foreign address?" />
           {navButtons}
         </form>
-      }
+      )}
     </PagerContext.Consumer>
   )
 

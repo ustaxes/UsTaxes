@@ -7,7 +7,7 @@ const unimplemented = (message: string): void =>
 export default class F8814 {
   tp: TaxPayer
 
-  constructor (tp: TaxPayer) {
+  constructor(tp: TaxPayer) {
     this.tp = tp
   }
 

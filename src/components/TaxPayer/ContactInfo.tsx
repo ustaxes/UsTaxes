@@ -7,25 +7,29 @@ import { saveContactInfo } from '../../redux/actions'
 import { ContactInfo as Contact, TaxesState, TaxPayer } from '../../redux/data'
 import { PagerContext } from '../pager'
 
-export default function ContactInfo (): ReactElement {
+export default function ContactInfo(): ReactElement {
   // const variable dispatch to allow use inside function
   const dispatch = useDispatch()
 
-  const defaultValues: TaxPayer | undefined = useSelector((state: TaxesState) => {
-    return state.information.taxPayer
-  })
+  const defaultValues: TaxPayer | undefined = useSelector(
+    (state: TaxesState) => {
+      return state.information.taxPayer
+    }
+  )
 
   const methods = useForm<Contact>({ defaultValues })
   const { handleSubmit } = methods
 
-  const onSubmit = (onAdvance: () => void) => (formData: Contact): void => {
-    dispatch(saveContactInfo(formData))
-    onAdvance()
-  }
+  const onSubmit =
+    (onAdvance: () => void) =>
+    (formData: Contact): void => {
+      dispatch(saveContactInfo(formData))
+      onAdvance()
+    }
 
   const page = (
     <PagerContext.Consumer>
-      { ({ navButtons, onAdvance }) =>
+      {({ navButtons, onAdvance }) => (
         <form onSubmit={handleSubmit(onSubmit(onAdvance))}>
           <h2>Family Contact Information</h2>
           <LabeledInput
@@ -40,7 +44,7 @@ export default function ContactInfo (): ReactElement {
           />
           {navButtons}
         </form>
-      }
+      )}
     </PagerContext.Consumer>
   )
 

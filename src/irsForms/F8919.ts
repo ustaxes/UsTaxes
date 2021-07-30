@@ -4,7 +4,7 @@ import { TaxPayer } from '../redux/data'
 export default class F8919 {
   tp: TaxPayer
 
-  constructor (tp: TaxPayer) {
+  constructor(tp: TaxPayer) {
     this.tp = tp
   }
 

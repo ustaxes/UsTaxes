@@ -3,9 +3,30 @@ import React, { ReactElement, useState } from 'react'
 import { useForm, FormProvider } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { Patterns } from '../Patterns'
-import { LabeledInput, LabeledCheckbox, formatSSID, GenericLabeledDropdown } from '../input'
-import { TaxesState, TaxPayer, Dependent, Spouse, PersonRole, FilingStatus, FilingStatusTexts, filingStatuses } from '../../redux/data'
-import { addDependent, addSpouse, editDependent, removeDependent, removeSpouse, saveFilingStatusInfo } from '../../redux/actions'
+import {
+  LabeledInput,
+  LabeledCheckbox,
+  formatSSID,
+  GenericLabeledDropdown
+} from '../input'
+import {
+  TaxesState,
+  TaxPayer,
+  Dependent,
+  Spouse,
+  PersonRole,
+  FilingStatus,
+  FilingStatusTexts,
+  filingStatuses
+} from '../../redux/data'
+import {
+  addDependent,
+  addSpouse,
+  editDependent,
+  removeDependent,
+  removeSpouse,
+  saveFilingStatusInfo
+} from '../../redux/actions'
 import { PersonFields } from './PersonFields'
 import { FormListContainer } from '../FormContainer'
 import { PagerContext } from '../pager'
@@ -63,8 +84,8 @@ const toSpouseForm = (spouse: Spouse): UserSpouseForm => ({
 })
 
 export const AddDependentForm = (): ReactElement => {
-  const dependents = useSelector((state: TaxesState) =>
-    state.information.taxPayer?.dependents ?? []
+  const dependents = useSelector(
+    (state: TaxesState) => state.information.taxPayer?.dependents ?? []
   )
 
   const [editing, doSetEditing] = useState<number | undefined>(undefined)
@@ -78,16 +99,20 @@ export const AddDependentForm = (): ReactElement => {
     doSetEditing(idx)
   }
 
-  const _onSubmit = (onSuccess: () => void) => (dependent: UserDependentForm): void => {
-    if (editing !== undefined) {
-      dispatch(editDependent({ index: editing, value: toDependent(dependent) }))
-      clear()
-    } else {
-      dispatch(addDependent(toDependent(dependent)))
+  const _onSubmit =
+    (onSuccess: () => void) =>
+    (dependent: UserDependentForm): void => {
+      if (editing !== undefined) {
+        dispatch(
+          editDependent({ index: editing, value: toDependent(dependent) })
+        )
+        clear()
+      } else {
+        dispatch(addDependent(toDependent(dependent)))
+      }
+      onSuccess()
+      reset()
     }
-    onSuccess()
-    reset()
-  }
 
   const clear = (): void => {
     doSetEditing(undefined)
@@ -189,26 +214,34 @@ const SpouseAndDependent = (): ReactElement => {
     return state.information.taxPayer
   })
 
-  const methods = useForm<{ filingStatus: FilingStatus }>({ defaultValues: { filingStatus: taxPayer.filingStatus } })
+  const methods = useForm<{ filingStatus: FilingStatus }>({
+    defaultValues: { filingStatus: taxPayer.filingStatus }
+  })
   const { handleSubmit } = methods
   // const variable dispatch to allow use inside function
   const dispatch = useDispatch()
 
-  const onSubmit = (onAdvance: () => void) => (formData: {filingStatus: FilingStatus}): void => {
-    dispatch(saveFilingStatusInfo(formData.filingStatus))
-    onAdvance()
-  }
+  const onSubmit =
+    (onAdvance: () => void) =>
+    (formData: { filingStatus: FilingStatus }): void => {
+      dispatch(saveFilingStatusInfo(formData.filingStatus))
+      onAdvance()
+    }
 
   const page = (
     <PagerContext.Consumer>
-      { ({ onAdvance, navButtons }) =>
+      {({ onAdvance, navButtons }) => (
         <form onSubmit={handleSubmit(onSubmit(onAdvance))}>
           <h2>Family Information</h2>
 
-          <strong><p>Spouse Information</p></strong>
+          <strong>
+            <p>Spouse Information</p>
+          </strong>
           <SpouseInfo />
 
-          <strong><p>Dependent Information</p></strong>
+          <strong>
+            <p>Dependent Information</p>
+          </strong>
           <AddDependentForm />
 
           <GenericLabeledDropdown<FilingStatus>
@@ -217,12 +250,12 @@ const SpouseAndDependent = (): ReactElement => {
             dropDownData={filingStatuses(taxPayer)}
             valueMapping={(x, i) => x}
             keyMapping={(x, i) => i}
-            textMapping={status => FilingStatusTexts[status]}
+            textMapping={(status) => FilingStatusTexts[status]}
             name="filingStatus"
           />
           {navButtons}
         </form>
-      }
+      )}
     </PagerContext.Consumer>
   )
 
