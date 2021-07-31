@@ -99,6 +99,10 @@ export const AddDependentForm = (): ReactElement => {
     doSetEditing(idx)
   }
 
+  const clear = (): void => {
+    doSetEditing(undefined)
+  }
+
   const _onSubmit =
     (onSuccess: () => void) =>
     (dependent: UserDependentForm): void => {
@@ -113,10 +117,6 @@ export const AddDependentForm = (): ReactElement => {
       onSuccess()
       reset()
     }
-
-  const clear = (): void => {
-    doSetEditing(undefined)
-  }
 
   const page = (
     <FormListContainer
