@@ -4,7 +4,7 @@ import { TaxPayer } from '../redux/data'
 export default class ScheduleSE {
   tp: TaxPayer
 
-  constructor (tp: TaxPayer) {
+  constructor(tp: TaxPayer) {
     this.tp = tp
   }
 

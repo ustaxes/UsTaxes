@@ -12,7 +12,10 @@ import { PersistGate } from 'redux-persist/integration/react'
 const component = (
   <React.StrictMode>
     <Provider store={store}>
-      <PersistGate loading={<h1>Loading from Local Storage</h1>} persistor={persistor}>
+      <PersistGate
+        loading={<h1>Loading from Local Storage</h1>}
+        persistor={persistor}
+      >
         <BrowserRouter>
           <App />
         </BrowserRouter>

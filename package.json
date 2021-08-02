@@ -36,8 +36,9 @@
     "desktop": "node ./notice.js && node ./setup.js && tauri dev",
     "tauri": "tauri",
     "schema-generate": "node ./setup.js",
-    "lint": "eslint ./src --ext .ts --ext .js --ext .tsx --ext .jsx",
-    "lint:fix": "eslint ./src --fix --ext .ts --ext .js --ext .tsx --ext .jsx",
+    "lint": "eslint ./src --ext .ts --ext .js --ext .tsx --ext .jsx && prettier -c",
+    "lint:fix": "eslint ./src --fix --ext .ts --ext .js --ext .tsx --ext .jsx && prettier --write .",
+    "prettier": "prettier --write .",
     "postbuild": "react-snap"
   },
   "eslintConfig": {
@@ -68,17 +69,19 @@
     "@types/react-redux": "^7.1.18",
     "@types/react-router-dom": "^5.1.8",
     "@types/redux-logger": "^3.0.9",
-    "@typescript-eslint/eslint-plugin": "^4.28.3",
-    "@typescript-eslint/parser": "^4.28.3",
+    "@typescript-eslint/eslint-plugin": "^4.28.5",
+    "@typescript-eslint/parser": "^4.28.5",
     "eslint": "^7.31.0",
-    "eslint-config-standard-with-typescript": "^20.0.0",
+    "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-import": "^2.23.4",
     "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-prettier": "^3.4.0",
     "eslint-plugin-promise": "^5.1.0",
     "eslint-plugin-react": "^7.24.0",
-    "eslint-plugin-standard": "^5.0.0",
     "fast-check": "^2.17.0",
     "husky": "^7.0.1",
+    "lint-staged": "^11.1.1",
+    "prettier": "2.3.2",
     "react-snap": "^1.23.0",
     "typescript-eslint": "0.0.1-alpha.0"
   },
@@ -87,5 +90,8 @@
       "pre-push": "eslint ./src --ext .ts --ext .js --ext .tsx --ext .jsx",
       "post-merge": "node ./setup.js"
     }
+  },
+  "lint-staged": {
+    "**/*": "prettier --write --ignore-unknown"
   }
 }

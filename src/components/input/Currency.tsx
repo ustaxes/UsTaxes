@@ -12,7 +12,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }))
 
-export default function Currency (props: CurrencyProps): ReactElement {
+export default function Currency(props: CurrencyProps): ReactElement {
   const { prefix = '', value, plain } = props
   const classes = useStyles()
 
@@ -30,9 +30,9 @@ export default function Currency (props: CurrencyProps): ReactElement {
   return (
     <NumberFormat
       className={className}
-      thousandSeparator={ true }
-      prefix={ `${prefix}  $` }
-      value={ value < 0 ? -value : value}
+      thousandSeparator={true}
+      prefix={`${prefix}  $`}
+      value={value < 0 ? -value : value}
       displayType="text"
     />
   )
