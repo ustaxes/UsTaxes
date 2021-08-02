@@ -8,8 +8,8 @@ Before contributing please make sure to take a moment to read through the [Code 
 
 ## Maintaining team
 
-* [Aidan Grimshaw](http://github.com/thegrims)
-* [Zak Patterson](http://github.com/zakpatterson)
+- [Aidan Grimshaw](http://github.com/thegrims)
+- [Zak Patterson](http://github.com/zakpatterson)
 
 ## Issue Reporting Guidelines
 
@@ -26,6 +26,7 @@ Before contributing please make sure to take a moment to read through the [Code 
 - If adding new feature, provide some clear reason to add this feature.
 
 - If fixing a bug:
+
   - If you are resolving a special issue, add `Fixes: #xxx` (#xxx is the issue id) in your PR body. When your PR is merged, the maintainer will move this information into the final commit message for our release log.
   - Provide detailed description of the bug in the PR, or link to an issue that does.
 
@@ -53,23 +54,20 @@ First, [join our Discord server](https://discord.gg/dAaz472mPz) and let us know 
 
 Try
 
-* `npm run desktop` to try out the desktop application. Setting the environment variable `BROWSER=none` will stop the web browser from also loading for you.
-* `npm run start` will serve the site locally on port 3000, so you can view it at `localhost:3000` in your browser.
-
+- `npm run desktop` to try out the desktop application. Setting the environment variable `BROWSER=none` will stop the web browser from also loading for you.
+- `npm run start` will serve the site locally on port 3000, so you can view it at `localhost:3000` in your browser.
 
 #### Stack
 
 This app uses Typescript React and Redux. The structure of this app should look familiar to you if you have used redux before, and it may seem opaque and confusing to you if you have not used Redux before. [Here is a great guide you can use to learn to about redux](https://redux.js.org/tutorials/fundamentals/part-1-overview)
 
-
 #### State Management
 
 In order to manage state between many different components and concerns in a project, we dispatch actions that update a piece of state in a global state object. Each of these actions is received by a reducer that applies that change to the state variable. All of this logic is contained in [src/redux](src/redux).
 
-* `src/redux/actions.ts`: All the actions that can be sent to update our state
-* `src/redux/data.ts`: No functionality, just type definitions for our global state variable.
-* `src/redux/reducer.ts`: All logic for updating our global state.
-
+- `src/redux/actions.ts`: All the actions that can be sent to update our state
+- `src/redux/data.ts`: No functionality, just type definitions for our global state variable.
+- `src/redux/reducer.ts`: All logic for updating our global state.
 
 ### Directories Overview
 
@@ -86,15 +84,14 @@ In order to manage state between many different components and concerns in a pro
 
 UsTaxes is a GPL-licensed open source project. We think this choice is important for a few reasons
 
-* If anyone wants to use the software for any reason, they are welcome to.
-* If anyone wants to sell the software, they can, but they have to provide all the source so users can build the project themselves.
-* If someone wants to improve on the software and sell that, they can, but they also have to provide the source for all their improvements for free.
+- If anyone wants to use the software for any reason, they are welcome to.
+- If anyone wants to sell the software, they can, but they have to provide all the source so users can build the project themselves.
+- If someone wants to improve on the software and sell that, they can, but they also have to provide the source for all their improvements for free.
 
 We believe this choice will help you know your contributions are valued and will be used responsibly.
 
 ## Financial Contribution
 
 If you do not have time to contribute to UsTaxes directly but would like to financially offer support, we have not yet set up a framework to allow that. We promise however that any future financial contributions will be public and without preconditions. So "I would like to provide support to develop support for itemized deductions" is fine, and contributions will be allocated towards those working on that feature. But "I would like to support the project provided you take steps x and y" or conditioned on us providing advertising or selling other services will not be ok. If you have any questions about that feel free to private message one of the maintainers on our discord.
-
 
 This Contributor guide was adapted from the Tauri project's [Contributing document](https://github.com/tauri-apps/tauri/blob/1d66d00506ea79cf803b0e0d025ece1730ffa242/.github/CONTRIBUTING.md)
