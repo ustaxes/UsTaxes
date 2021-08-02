@@ -32,6 +32,7 @@ import F1098eInfo from './deductions/F1098eInfo'
 import { StateLoader } from './debug'
 import NoMatchPage from './NoMatchPage'
 import Questions from './Questions'
+import { If } from 'react-if'
 
 const theme = createMuiTheme({
   palette: {
@@ -208,19 +209,19 @@ export default function Main(): ReactElement {
                     <NoMatchPage />
                   </Route>
                 </Switch>
-                {useLocation().pathname !== '/start' ? (
-                  <ResponsiveDrawer
-                    sections={drawerSections}
-                    isOpen={mobileOpen}
-                    onClose={() => setMobileOpen(false)}
-                  />
-                ) : null}
               </PagerContext.Provider>
             </Grid>
             <Grid item sm />
           </Grid>
         </main>
-        {appBar}
+        <If condition={() => useLocation().pathname !== Urls.usTaxes.start}>
+          <ResponsiveDrawer
+            sections={drawerSections}
+            isOpen={mobileOpen}
+            onClose={() => setMobileOpen(false)}
+          />
+          {appBar}
+        </If>
       </div>
     </ThemeProvider>
   )
