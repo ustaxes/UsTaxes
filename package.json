@@ -36,8 +36,9 @@
     "desktop": "node ./notice.js && node ./setup.js && tauri dev",
     "tauri": "tauri",
     "schema-generate": "node ./setup.js",
-    "lint": "eslint ./src --ext .ts --ext .js --ext .tsx --ext .jsx",
-    "lint:fix": "eslint ./src --fix --ext .ts --ext .js --ext .tsx --ext .jsx"
+    "lint": "eslint ./src --ext .ts --ext .js --ext .tsx --ext .jsx && prettier -c",
+    "lint:fix": "eslint ./src --fix --ext .ts --ext .js --ext .tsx --ext .jsx && prettier --write .",
+    "prettier": "prettier --write ."
   },
   "eslintConfig": {
     "extends": "react-app"
