@@ -33,3 +33,7 @@ yarn-error.log*
 /.devcontainer/
 /.husky/
 /src/redux/validation.json
+
+# don't worry about src-tauri (rust code)
+
+/src-tauri
