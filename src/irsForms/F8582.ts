@@ -13,21 +13,21 @@ export default class F8582 {
   tp: TaxPayer
   scheduleE: ScheduleE
 
-  constructor (tp: TaxPayer, scheduleE: ScheduleE) {
+  constructor(tp: TaxPayer, scheduleE: ScheduleE) {
     this.tp = tp
     this.scheduleE = scheduleE
   }
 
   deductibleRealEstateLossAfterLimitation = (): MatrixRow => {
-    unimplemented('Deducible rental estate loss after limitation, assuming all allowed')
+    unimplemented(
+      'Deducible rental estate loss after limitation, assuming all allowed'
+    )
     const rentalNet = this.scheduleE.rentalNet()
-    return (
-      rentalNet.map((v) => {
-        if (v === undefined || v >= 0) {
-          return undefined
-        }
-        return v
-      })
-    ) as MatrixRow
+    return rentalNet.map((v) => {
+      if (v === undefined || v >= 0) {
+        return undefined
+      }
+      return v
+    }) as MatrixRow
   }
 }

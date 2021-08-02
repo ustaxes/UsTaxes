@@ -2,8 +2,22 @@ import React, { Fragment, ReactElement, ReactNode, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { FormProvider, useForm } from 'react-hook-form'
 import { PagerContext } from '../pager'
-import { TaxesState, IncomeW2, Person, PersonRole, Employer, Spouse, PrimaryPerson, FilingStatus } from '../../redux/data'
-import { Currency, formatSSID, GenericLabeledDropdown, LabeledInput } from '../input'
+import {
+  TaxesState,
+  IncomeW2,
+  Person,
+  PersonRole,
+  Employer,
+  Spouse,
+  PrimaryPerson,
+  FilingStatus
+} from '../../redux/data'
+import {
+  Currency,
+  formatSSID,
+  GenericLabeledDropdown,
+  LabeledInput
+} from '../input'
 import { Patterns } from '../Patterns'
 import { FormListContainer } from '../FormContainer'
 import { Box } from '@material-ui/core'
@@ -41,27 +55,29 @@ const toIncomeW2UserInput = (data: IncomeW2): IncomeW2UserInput => ({
   medicareWithholding: data.medicareWithholding.toString()
 })
 
-export default function W2JobInfo (): ReactElement {
+export default function W2JobInfo(): ReactElement {
   const dispatch = useDispatch()
   const [editing, doSetEditing] = useState<number | undefined>(undefined)
 
   const methods = useForm<IncomeW2UserInput>()
   const { handleSubmit, reset } = methods
 
-  const spouse: Spouse | undefined = useSelector((state: TaxesState) =>
-    state.information.taxPayer?.spouse
+  const spouse: Spouse | undefined = useSelector(
+    (state: TaxesState) => state.information.taxPayer?.spouse
   )
 
-  const primary: PrimaryPerson | undefined = useSelector((state: TaxesState) =>
-    state.information.taxPayer?.primaryPerson
+  const primary: PrimaryPerson | undefined = useSelector(
+    (state: TaxesState) => state.information.taxPayer?.primaryPerson
   )
 
-  const filingStatus: FilingStatus | undefined = useSelector((state: TaxesState) =>
-    state.information.taxPayer.filingStatus
+  const filingStatus: FilingStatus | undefined = useSelector(
+    (state: TaxesState) => state.information.taxPayer.filingStatus
   )
 
   // People for employee selector
-  const people: Person[] = [primary, spouse].flatMap((p) => p !== undefined ? [p as Person] : [])
+  const people: Person[] = [primary, spouse].flatMap((p) =>
+    p !== undefined ? [p as Person] : []
+  )
 
   const w2s: Array<[IncomeW2, number]> = useSelector((state: TaxesState) =>
     state.information.w2s.map((w2, i) => [w2, i])
@@ -80,18 +96,25 @@ export default function W2JobInfo (): ReactElement {
     doSetEditing(undefined)
   }
 
-  const onAddW2 = (onSuccess: (() => void)) => (formData: IncomeW2UserInput): void => {
-    dispatch((() => {
-      if (editing !== undefined) {
-        return editW2({ index: editing, value: toIncomeW2(formData) })
-      }
-      return addW2(toIncomeW2(formData))
-    })())
-    clear()
-    onSuccess()
-  }
+  const onAddW2 =
+    (onSuccess: () => void) =>
+    (formData: IncomeW2UserInput): void => {
+      dispatch(
+        (() => {
+          if (editing !== undefined) {
+            return editW2({ index: editing, value: toIncomeW2(formData) })
+          }
+          return addW2(toIncomeW2(formData))
+        })()
+      )
+      clear()
+      onSuccess()
+    }
 
-  const showW2s = (_w2s: Array<[IncomeW2, number]>, omitAdd: boolean = false): ReactElement => (
+  const showW2s = (
+    _w2s: Array<[IncomeW2, number]>,
+    omitAdd: boolean = false
+  ): ReactElement => (
     <FormListContainer<[IncomeW2, number]>
       items={_w2s}
       onDone={(onSuccess) => handleSubmit(onAddW2(onSuccess))}
@@ -100,8 +123,14 @@ export default function W2JobInfo (): ReactElement {
       editItem={(idx) => setEditing(_w2s[idx][1])}
       removeItem={(i) => dispatch(removeW2(i))}
       icon={() => <Work />}
-      primary={(w2: [IncomeW2, number]) => w2[0].employer?.employerName ?? w2[0].occupation }
-      secondary={(w2: [IncomeW2, number]) => <span>Income: <Currency value={w2[0].income} /></span>}
+      primary={(w2: [IncomeW2, number]) =>
+        w2[0].employer?.employerName ?? w2[0].occupation
+      }
+      secondary={(w2: [IncomeW2, number]) => (
+        <span>
+          Income: <Currency value={w2[0].income} />
+        </span>
+      )}
       onCancel={clear}
       max={omitAdd ? 0 : undefined}
     >
@@ -149,10 +178,14 @@ export default function W2JobInfo (): ReactElement {
         dropDownData={people}
         label="Employee"
         required={true}
-        valueMapping={(p: Person, i: number) => [PersonRole.PRIMARY, PersonRole.SPOUSE][i]}
+        valueMapping={(p: Person, i: number) =>
+          [PersonRole.PRIMARY, PersonRole.SPOUSE][i]
+        }
         name="personRole"
         keyMapping={(p: Person, i: number) => i}
-        textMapping={(p) => `${p.firstName} ${p.lastName} (${formatSSID(p.ssid)})`}
+        textMapping={(p) =>
+          `${p.firstName} ${p.lastName} (${formatSSID(p.ssid)})`
+        }
       />
     </FormListContainer>
   )
@@ -162,14 +195,15 @@ export default function W2JobInfo (): ReactElement {
       if (spouse !== undefined) {
         return (
           <Box className="inner">
-            <h3>{primary.firstName ?? 'Primary'} {primary.lastName ?? 'Taxpayer'}&apos;s W2s</h3>
+            <h3>
+              {primary.firstName ?? 'Primary'} {primary.lastName ?? 'Taxpayer'}
+              &apos;s W2s
+            </h3>
             {showW2s(primaryW2s, true)}
           </Box>
         )
       } else {
-        return (
-          showW2s(primaryW2s, true)
-        )
+        return showW2s(primaryW2s, true)
       }
     }
   })()
@@ -183,7 +217,9 @@ export default function W2JobInfo (): ReactElement {
           {showW2s(spouseW2s, true)}
           <If condition={filingStatus === FilingStatus.MFS}>
             <Alert className="inner" severity="warning">
-              Filing status is set to Married Filing Separately. <strong>{name}</strong>&apos;s W2s will not be added to the return.
+              Filing status is set to Married Filing Separately.{' '}
+              <strong>{name}</strong>
+              &apos;s W2s will not be added to the return.
             </Alert>
           </If>
         </Box>
@@ -206,15 +242,13 @@ export default function W2JobInfo (): ReactElement {
 
   return (
     <PagerContext.Consumer>
-      { ({ navButtons, onAdvance }) =>
+      {({ navButtons, onAdvance }) => (
         <form onSubmit={onAdvance}>
           <h2>Job Information</h2>
-          <FormProvider {...methods}>
-            {form}
-          </FormProvider>
-          { navButtons }
+          <FormProvider {...methods}>{form}</FormProvider>
+          {navButtons}
         </form>
-      }
+      )}
     </PagerContext.Consumer>
   )
 }

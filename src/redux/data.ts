@@ -111,13 +111,13 @@ export enum FilingStatus {
 
 export type FilingStatusName = keyof typeof FilingStatus
 
-export const FilingStatusTexts = ({
+export const FilingStatusTexts = {
   [FilingStatus.S]: 'Single',
   [FilingStatus.MFJ]: 'Married Filing Jointly',
   [FilingStatus.MFS]: 'Married Filing Separately',
   [FilingStatus.HOH]: 'Head of Household',
   [FilingStatus.W]: 'Widow(er)'
-})
+}
 
 export const filingStatuses = (p: TaxPayer | undefined): FilingStatus[] => {
   let withDependents: FilingStatus[] = []
@@ -133,11 +133,7 @@ export const filingStatuses = (p: TaxPayer | undefined): FilingStatus[] => {
   } else {
     spouseStatuses = [FilingStatus.S]
   }
-  return [
-    ...spouseStatuses,
-    ...withDependents,
-    FilingStatus.W
-  ]
+  return [...spouseStatuses, ...withDependents, FilingStatus.W]
 }
 
 export interface ContactInfo {
@@ -156,10 +152,7 @@ export type Income1099Int = Income1099<Income1099Type.INT, F1099IntData>
 export type Income1099B = Income1099<Income1099Type.B, F1099BData>
 export type Income1099Div = Income1099<Income1099Type.DIV, F1099DivData>
 
-export type Supported1099 =
-  Income1099Int
-  | Income1099B
-  | Income1099Div
+export type Supported1099 = Income1099Int | Income1099B | Income1099Div
 
 export enum PropertyType {
   singleFamily,

@@ -1,7 +1,10 @@
 import { save } from '@tauri-apps/api/dialog'
 import { writeBinaryFile } from '@tauri-apps/api/fs'
 
-export async function savePdf (contents: Uint8Array, defaultFilename: string): Promise<void> {
+export async function savePdf(
+  contents: Uint8Array,
+  defaultFilename: string
+): Promise<void> {
   if ((window as any).__TAURI__ === undefined) {
     // To set the download file name, we create a temporary link element,
     // use download property of an anchor tag, supported for most people
@@ -29,4 +32,4 @@ export async function savePdf (contents: Uint8Array, defaultFilename: string): P
     // user canceled save.
     return await Promise.resolve()
   }
-};
+}

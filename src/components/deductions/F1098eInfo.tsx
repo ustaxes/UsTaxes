@@ -36,10 +36,8 @@ const toF1098e = (f: F1098EUserInput): F1098e => {
   }
 }
 
-export default function F1098eInfo (): ReactElement {
-  const f1098es = useSelector((state: TaxesState) =>
-    state.information.f1098es
-  )
+export default function F1098eInfo(): ReactElement {
+  const f1098es = useSelector((state: TaxesState) => state.information.f1098es)
   const [editing, setEditing] = useState<number | undefined>(undefined)
 
   const defaultValues: F1098EUserInput = (() => {
@@ -59,19 +57,21 @@ export default function F1098eInfo (): ReactElement {
     setEditing(undefined)
   }
 
-  const onAdd1098e = (onSuccess: () => void) => (formData: F1098EUserInput): void => {
-    const payload = toF1098e(formData)
-    if (payload !== undefined) {
-      if (editing === undefined) {
-        console.log(payload)
-        dispatch(add1098e(payload))
-      } else {
-        dispatch(edit1098e({ index: editing, value: payload }))
+  const onAdd1098e =
+    (onSuccess: () => void) =>
+    (formData: F1098EUserInput): void => {
+      const payload = toF1098e(formData)
+      if (payload !== undefined) {
+        if (editing === undefined) {
+          console.log(payload)
+          dispatch(add1098e(payload))
+        } else {
+          dispatch(edit1098e({ index: editing, value: payload }))
+        }
+        clear()
+        onSuccess()
       }
-      clear()
-      onSuccess()
     }
-  }
 
   const form: ReactElement | undefined = (
     <FormListContainer
@@ -101,15 +101,15 @@ export default function F1098eInfo (): ReactElement {
 
   return (
     <PagerContext.Consumer>
-      { ({ onAdvance, navButtons }) =>
+      {({ onAdvance, navButtons }) => (
         <form onSubmit={onAdvance}>
           <FormProvider {...methods}>
             <h2>1098-E Information</h2>
-              {form}
+            {form}
             {navButtons}
           </FormProvider>
         </form>
-      }
+      )}
     </PagerContext.Consumer>
   )
 }

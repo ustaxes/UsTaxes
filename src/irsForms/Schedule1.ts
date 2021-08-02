@@ -16,7 +16,7 @@ export default class Schedule1 implements Form {
   scheduleE?: ScheduleE
   f1040: F1040
 
-  constructor (info: Information, f1040: F1040) {
+  constructor(info: Information, f1040: F1040) {
     this.state = info
     this.f1040 = f1040
   }
@@ -34,16 +34,17 @@ export default class Schedule1 implements Form {
   l6 = (): number | undefined => undefined
   l7 = (): number | undefined => undefined
   l8 = (): number | undefined => undefined
-  l9 = (): number => sumFields([
-    this.l1(),
-    this.l2a(),
-    this.l3(),
-    this.l4(),
-    this.l5(),
-    this.l6(),
-    this.l7(),
-    this.l8()
-  ])
+  l9 = (): number =>
+    sumFields([
+      this.l1(),
+      this.l2a(),
+      this.l3(),
+      this.l4(),
+      this.l5(),
+      this.l6(),
+      this.l7(),
+      this.l8()
+    ])
 
   l10 = (): number | undefined => undefined
   l11 = (): number | undefined => undefined

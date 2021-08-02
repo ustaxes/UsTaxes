@@ -30,13 +30,23 @@ const persistConfig = {
   transforms: [baseTransform]
 }
 
-const persistedReducer = persistReducer<{information: Information}, Actions>(persistConfig, rootReducer)
+const persistedReducer = persistReducer<{ information: Information }, Actions>(
+  persistConfig,
+  rootReducer
+)
 
-export type InfoStore = Store<{ information: Information }> & { dispatch: {}}
-export type PersistedStore = Store<{ information: Information } & PersistPartial, Actions> & { dispatch: {}}
+export type InfoStore = Store<{ information: Information }> & { dispatch: {} }
+export type PersistedStore = Store<
+  { information: Information } & PersistPartial,
+  Actions
+> & {
+  dispatch: {}
+}
 
-export const createStoreUnpersisted = (information: Information): InfoStore => reduxCreateStore(rootReducer, { information }, undefined)
-export const createStore = (): PersistedStore => reduxCreateStore(persistedReducer, applyMiddleware(logger))
+export const createStoreUnpersisted = (information: Information): InfoStore =>
+  reduxCreateStore(rootReducer, { information }, undefined)
+export const createStore = (): PersistedStore =>
+  reduxCreateStore(persistedReducer, applyMiddleware(logger))
 export const store = createStore()
 
 export const persistor = persistStore(store)

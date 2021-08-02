@@ -25,17 +25,15 @@ jest.mock('redux-persist', () => {
 })
 
 describe('Taxpayer', () => {
-  const navButtons = (
-    <PagerButtons
-      submitText="save"
-    />
-  )
+  const navButtons = <PagerButtons submitText="save" />
 
-  const testComponent = (info: Information | undefined = blankState): ReactElement => {
+  const testComponent = (
+    info: Information | undefined = blankState
+  ): ReactElement => {
     const store = createStoreUnpersisted(info)
     const component = (
       <Provider store={store}>
-        <PagerContext.Provider value={{ onAdvance: () => { }, navButtons }}>
+        <PagerContext.Provider value={{ onAdvance: () => {}, navButtons }}>
           <TaxPayer />
         </PagerContext.Provider>
       </Provider>
@@ -48,15 +46,18 @@ describe('Taxpayer', () => {
     const component = testComponent()
     const result = render(component)
 
-    const allFieldNames = (): string[] => result.getAllByRole('textbox').flatMap((x) => {
-      const name = x.getAttribute('name')
-      return name !== null ? [name] : []
-    })
+    const allFieldNames = (): string[] =>
+      result.getAllByRole('textbox').flatMap((x) => {
+        const name = x.getAttribute('name')
+        return name !== null ? [name] : []
+      })
 
     expect(allFieldNames()).not.toContain('address.province')
     expect(allFieldNames()).toContain('address.zip')
 
-    const foreignCountry = result.getAllByRole('checkbox').find((x) => x.getAttribute('name') === 'isForeignCountry')
+    const foreignCountry = result
+      .getAllByRole('checkbox')
+      .find((x) => x.getAttribute('name') === 'isForeignCountry')
     if (foreignCountry !== undefined) {
       userEvent.click(foreignCountry)
       expect(allFieldNames()).toContain('address.province')
