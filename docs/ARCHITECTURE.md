@@ -14,7 +14,7 @@ Specific architecture setup requirements we have run into are:
 
 ### Windows
 
-For Windows users, please install [Microsoft Edge WebView2][WebView2] before running the desktop application.
+For Windows users, please install [Microsoft Edge WebView2][webview2] before running the desktop application.
 
 ### Linux
 
@@ -87,3 +87,4 @@ This array of `fields` must line up exactly with the fields expected by the PDF 
 [npm-install]: https://www.npmjs.com/get-npm
 [tauri-root]: https://tauri.studio/
 [rust-root]: https://www.rust-lang.org/
+[webview2]: https://developer.microsoft.com/en-us/microsoft-edge/webview2/
