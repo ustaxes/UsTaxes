@@ -10,6 +10,7 @@
       "src/customTypes",
       "node_modules/@types"
     ],
+    "baseUrl": "src",
     "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,

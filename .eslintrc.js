@@ -24,11 +24,5 @@ module.exports = {
   plugins: [
     'react',
     '@typescript-eslint'
-  ],
-  rules: {
-    // proptypes validation as warnings for now
-    // in js defining extra prop types is a little
-    // cumbersome. Remember to remove if we switch to TS
-    'react/prop-types': 1
-  }
+  ]
 }
