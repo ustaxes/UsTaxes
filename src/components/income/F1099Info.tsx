@@ -28,7 +28,14 @@ const showIncome = (a: Supported1099): ReactElement => {
       return <Currency value={a.form.dividends} />
     }
     case Income1099Type.R: {
-      return <Currency value={a.form.grossDistribution} />
+      return (
+        <span>
+          Note that only Normal distributions from IRAs, corresponding to
+          code 7 in 1099-R box 7 are supported at this time. Entering the
+          gross distribution here will fill in box 4b in form 1040. <br />
+          <Currency value={a.form.grossDistribution} />
+        </span>
+      )
     }
   }
 }

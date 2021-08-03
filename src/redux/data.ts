@@ -94,7 +94,15 @@ export interface F1099DivData {
   dividends: number
   qualifiedDividends: number
 }
-
+/*
+ Currently only the simplest form of 1099-R is implemented where
+ users are taking a normal distribution from an IRA. Corresponding
+ to distribution code 7 in 1099-R box 7.
+ TODO: Separate out IRA from 401k
+ TODO: Add in logic for various different distributions
+ that should go in box 4a and 5a. Will need to implement
+ form 8606 and Schedule 1 line 19.
+ */
 export interface F1099RData {
   grossDistribution: number
 }
