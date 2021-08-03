@@ -1,7 +1,19 @@
 import React, { PropsWithChildren, ReactElement, useState } from 'react'
-import { IconButton, List, ListItem, ListItemIcon, ListItemSecondaryAction, ListItemText, Box, Button, unstable_createMuiStrictModeTheme as createMuiTheme, ThemeProvider } from '@material-ui/core'
+import {
+  IconButton,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemSecondaryAction,
+  ListItemText,
+  Box,
+  Button,
+  unstable_createMuiStrictModeTheme as createMuiTheme,
+  ThemeProvider
+} from '@material-ui/core'
 import { red } from '@material-ui/core/colors'
 import { Delete, Edit } from '@material-ui/icons'
+import { Else, If, Then } from 'react-if'
 
 interface FormContainerProps {
   onDone: () => void
@@ -14,17 +26,36 @@ const theme = createMuiTheme({
   }
 })
 
-const FormContainer = ({ onDone, onCancel, children }: PropsWithChildren<FormContainerProps>): ReactElement => (
+const FormContainer = ({
+  onDone,
+  onCancel,
+  children
+}: PropsWithChildren<FormContainerProps>): ReactElement => (
   <div>
     {children}
-    <Box display="flex" justifyContent="flex-start" paddingTop={2} paddingBottom={1}>
+    <Box
+      display="flex"
+      justifyContent="flex-start"
+      paddingTop={2}
+      paddingBottom={1}
+    >
       <Box paddingRight={2}>
-        <Button type="button" onClick={onDone} variant="contained" color="primary">
+        <Button
+          type="button"
+          onClick={onDone}
+          variant="contained"
+          color="primary"
+        >
           Save
         </Button>
       </Box>
       <ThemeProvider theme={theme}>
-        <Button type="button" onClick={onCancel} variant="contained" color="secondary">
+        <Button
+          type="button"
+          onClick={onCancel}
+          variant="contained"
+          color="secondary"
+        >
           Close
         </Button>
       </ThemeProvider>
@@ -41,7 +72,14 @@ interface MutableListItemProps {
   icon?: ReactElement
 }
 
-export const MutableListItem = ({ icon, primary, secondary, remove, onEdit, editing = false }: MutableListItemProps): ReactElement => {
+export const MutableListItem = ({
+  icon,
+  primary,
+  secondary,
+  remove,
+  onEdit,
+  editing = false
+}: MutableListItemProps): ReactElement => {
   const editAction = (() => {
     if (onEdit !== undefined && !editing) {
       return (
@@ -68,9 +106,7 @@ export const MutableListItem = ({ icon, primary, secondary, remove, onEdit, edit
 
   return (
     <ListItem className={editing ? 'active' : ''}>
-      <ListItemIcon>
-        {icon}
-      </ListItemIcon>
+      <ListItemIcon>{icon}</ListItemIcon>
       <ListItemText
         primary={<strong>{primary}</strong>}
         secondary={secondary}
@@ -82,11 +118,12 @@ export const MutableListItem = ({ icon, primary, secondary, remove, onEdit, edit
 }
 
 interface FormListContainerProps<A> {
-  onDone: (f: (() => void)) => () => void
+  onDone: (f: () => void) => () => void
   onCancel: () => void
   items: A[]
   editItem?: (v: number) => void
   editing?: number
+  disableEditing?: boolean
   removeItem?: (v: number) => void
   primary: (a: A) => string
   secondary?: (a: A) => string | ReactElement
@@ -100,8 +137,23 @@ enum FormState {
   Closed
 }
 
-const FormListContainer = <A extends object>(props: PropsWithChildren<FormListContainerProps<A>>): ReactElement => {
-  const { children, items, icon, max, primary, secondary, editItem, editing, removeItem, onDone, onCancel } = props
+const FormListContainer = <A extends object>(
+  props: PropsWithChildren<FormListContainerProps<A>>
+): ReactElement => {
+  const {
+    children,
+    items,
+    icon,
+    max,
+    primary,
+    secondary,
+    editItem,
+    editing,
+    disableEditing = false,
+    removeItem,
+    onDone,
+    onCancel
+  } = props
   const [formState, setFormState] = useState(FormState.Closed)
 
   const close = (): void => {
@@ -113,10 +165,14 @@ const FormListContainer = <A extends object>(props: PropsWithChildren<FormListCo
     close()
   }
 
-  const _onDone: (() => void) = onDone(close)
+  const _onDone: () => void = onDone(close)
 
   const editAction = (() => {
-    if (editItem !== undefined && formState === FormState.Closed) {
+    if (
+      editItem !== undefined &&
+      !disableEditing &&
+      formState === FormState.Closed
+    ) {
       return (n: number) => () => {
         setFormState(FormState.Editing)
         editItem(n)
@@ -129,19 +185,19 @@ const FormListContainer = <A extends object>(props: PropsWithChildren<FormListCo
     if (items !== undefined && items.length > 0) {
       return (
         <List dense={true}>
-          {
-            items.map((item, i) =>
-              <MutableListItem
-                key={i}
-                primary={primary(item)}
-                secondary={secondary !== undefined ? secondary(item) : undefined}
-                onEdit={editAction(i)}
-                editing={editing === i}
-                remove={removeItem !== undefined ? () => removeItem(i) : undefined}
-                icon={icon !== undefined ? icon(item) : undefined}
-              />
-            )
-          }
+          {items.map((item, i) => (
+            <MutableListItem
+              key={i}
+              primary={primary(item)}
+              secondary={secondary !== undefined ? secondary(item) : undefined}
+              onEdit={editAction(i)}
+              editing={editing === i}
+              remove={
+                removeItem !== undefined ? () => removeItem(i) : undefined
+              }
+              icon={icon !== undefined ? icon(item) : undefined}
+            />
+          ))}
         </List>
       )
     }
@@ -150,29 +206,28 @@ const FormListContainer = <A extends object>(props: PropsWithChildren<FormListCo
   return (
     <div>
       {itemDisplay}
-      {(() => {
-        if (formState !== FormState.Closed) {
-          return (
-            <FormContainer
-              onDone={_onDone}
-              onCancel={_onCancel}
+      <If condition={formState !== FormState.Closed}>
+        <Then>
+          <FormContainer onDone={_onDone} onCancel={_onCancel}>
+            {children}
+          </FormContainer>
+        </Then>
+        <Else>
+          <If condition={max === undefined || items.length < max}>
+            <Button
+              type="button"
+              onClick={() => setFormState(FormState.Adding)}
+              variant="contained"
+              color="secondary"
             >
-              {children}
-            </FormContainer>
-          )
-        } else if (max === undefined || items.length < max) {
-          return (
-            <Button type="button" onClick={() => setFormState(FormState.Adding)} variant="contained" color="secondary">
               Add
             </Button>
-          )
-        }
-      })()}
+          </If>
+        </Else>
+      </If>
     </div>
   )
 }
 
 export default FormContainer
-export {
-  FormListContainer
-}
+export { FormListContainer }

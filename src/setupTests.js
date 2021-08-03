@@ -19,5 +19,5 @@ global.console = {
   // Keep native behaviour for other methods, use those to print out things in your own tests
   warn: console.warn,
   info: console.info,
-  debug: console.debug,
-};
+  debug: console.debug
+}

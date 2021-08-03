@@ -22,8 +22,8 @@ interface Rates {
 }
 
 interface FederalBrackets {
-  ordinary: Rates & {status: {[key in FilingStatus]: Brackets & Deductions}}
-  longTermCapGains: Rates & {status: {[key in FilingStatus]: Brackets}}
+  ordinary: Rates & { status: { [key in FilingStatus]: Brackets & Deductions } }
+  longTermCapGains: Rates & { status: { [key in FilingStatus]: Brackets } }
 }
 
 const federalBrackets: FederalBrackets = {
@@ -130,8 +130,24 @@ const federalBrackets: FederalBrackets = {
 }
 
 export const fica = {
-  maxSSTax: 8537.40,
-  maxIncomeSSTaxApplies: 137700
+  maxSSTax: 8537.4,
+  maxIncomeSSTaxApplies: 137700,
+
+  regularMedicareTaxRate: 1.45 / 100,
+  additionalMedicareTaxRate: 0.9 / 100,
+  additionalMedicareTaxThreshold: (filingStatus: FilingStatus) => {
+    switch (filingStatus) {
+      case FilingStatus.MFJ: {
+        return 250000
+      }
+      case FilingStatus.MFS: {
+        return 125000
+      }
+      default: {
+        return 200000 // Single, Head of Household, Windower
+      }
+    }
+  }
 }
 
 // line 11 caps based on step one in instructions
@@ -142,42 +158,81 @@ type Point = [number, number]
 
 // Provided a list of points, create a piecewise function
 // that makes linear segments through the list of points.
-const toPieceWise = (points: Point[]): Piecewise => (
+const toPieceWise = (points: Point[]): Piecewise =>
   points
     .slice(0, points.length - 1)
     .map((point, idx) => [point, points[idx + 1]])
     .map(([[x1, y1], [x2, y2]]) => ({
       // starting point     slope              intercept
       lowerBound: x1,
-      f: linear((y2 - y1) / (x2 - x1), y1 - x1 * (y2 - y1) / (x2 - x1))
+      f: linear((y2 - y1) / (x2 - x1), y1 - (x1 * (y2 - y1)) / (x2 - x1))
     }))
-)
 
 // These points are taken directly from IRS publication
 // IRS Rev. Proc. 2019-44 for tax year 2020
 // https://www.irs.gov/pub/irs-drop/rp-19-44.pdf
 const unmarriedFormulas: Piecewise[] = (() => {
   const points: Point[][] = [
-    [[0, 0], [7030, 538], [8790, 3584], [15820, 0]], // 0
-    [[0, 0], [10540, 3584], [19330, 3584], [41756, 0]], // 1
-    [[0, 0], [14800, 5920], [19330, 5920], [47440, 0]], // 2
-    [[0, 0], [14800, 6660], [19330, 6660], [50954, 0]] // 3 or more
+    [
+      [0, 0],
+      [7030, 538],
+      [8790, 3584],
+      [15820, 0]
+    ], // 0
+    [
+      [0, 0],
+      [10540, 3584],
+      [19330, 3584],
+      [41756, 0]
+    ], // 1
+    [
+      [0, 0],
+      [14800, 5920],
+      [19330, 5920],
+      [47440, 0]
+    ], // 2
+    [
+      [0, 0],
+      [14800, 6660],
+      [19330, 6660],
+      [50954, 0]
+    ] // 3 or more
   ]
   return points.map((ps: Point[]) => toPieceWise(ps))
 })()
 
 const marriedFormulas: Piecewise[] = (() => {
   const points: Point[][] = [
-    [[0, 0], [7030, 538], [14680, 3584], [21710, 0]], // 0
-    [[0, 0], [10540, 3584], [25220, 3584], [47646, 0]], // 1
-    [[0, 0], [14800, 5920], [25220, 5920], [53330, 0]], // 2
-    [[0, 0], [14800, 6660], [25220, 6660], [56844, 0]] // 3 or more
+    [
+      [0, 0],
+      [7030, 538],
+      [14680, 3584],
+      [21710, 0]
+    ], // 0
+    [
+      [0, 0],
+      [10540, 3584],
+      [25220, 3584],
+      [47646, 0]
+    ], // 1
+    [
+      [0, 0],
+      [14800, 5920],
+      [25220, 5920],
+      [53330, 0]
+    ], // 2
+    [
+      [0, 0],
+      [14800, 6660],
+      [25220, 6660],
+      [56844, 0]
+    ] // 3 or more
   ]
   return points.map((ps) => toPieceWise(ps))
 })()
 
 interface EICDef {
-  caps: {[k in FilingStatus]: number[] | undefined}
+  caps: { [k in FilingStatus]: number[] | undefined }
   maxInvestmentIncome: number
   formulas: { [k in FilingStatus]: Piecewise[] | undefined }
 }

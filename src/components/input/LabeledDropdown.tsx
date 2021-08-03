@@ -3,23 +3,44 @@ import { Box, TextField } from '@material-ui/core'
 import { Controller, useFormContext } from 'react-hook-form'
 import locationPostalCodes from '../../data/locationPostalCodes'
 import { BaseDropdownProps, LabeledDropdownProps } from './types'
+import _ from 'lodash'
+import countries from '../../data/countries'
 
-export function GenericLabeledDropdown<A> (props: LabeledDropdownProps<A>): ReactElement {
-  const { control } = useFormContext()
-  const { strongLabel, label, dropDownData, valueMapping, error, keyMapping, textMapping, required = false, name } = props
+export function GenericLabeledDropdown<A>(
+  props: LabeledDropdownProps<A>
+): ReactElement {
+  const {
+    control,
+    formState: { errors }
+  } = useFormContext()
+  const {
+    strongLabel,
+    label,
+    dropDownData,
+    valueMapping,
+    keyMapping,
+    textMapping,
+    required = true,
+    name
+  } = props
+  const error = _.get(errors, name)
 
   return (
     <div>
       <Box display="flex" justifyContent="flex-start">
-        <p><strong>{strongLabel}</strong>{label}</p>
+        <p>
+          <strong>{strongLabel}</strong>
+          {label}
+        </p>
       </Box>
       <Box display="flex" justifyContent="flex-start">
         <Controller
-          render={(({ field: { value, onChange } }) =>
+          render={({ field: { value, onChange } }) => (
             <TextField
               select
               fullWidth
               variant="filled"
+              name={name}
               helperText={error !== undefined ? 'Make a selection' : undefined}
               error={error !== undefined}
               SelectProps={{
@@ -29,13 +50,14 @@ export function GenericLabeledDropdown<A> (props: LabeledDropdownProps<A>): Reac
               }}
             >
               <option value={''} />
-              {dropDownData.map((dropDownItem: A, i: number) =>
+              {dropDownData.map((dropDownItem: A, i: number) => (
                 <option
                   value={valueMapping(dropDownItem, i)}
-                  key={keyMapping(dropDownItem, i)}>
+                  key={keyMapping(dropDownItem, i)}
+                >
                   {textMapping(dropDownItem, i)}
                 </option>
-              )}
+              ))}
             </TextField>
           )}
           name={name}
@@ -52,7 +74,9 @@ export function GenericLabeledDropdown<A> (props: LabeledDropdownProps<A>): Reac
  *
  * @param props
  */
-export const LabeledDropdown = (props: BaseDropdownProps & {dropDownData: string[]}): ReactElement => (
+export const LabeledDropdown = (
+  props: BaseDropdownProps & { dropDownData: string[] }
+): ReactElement => (
   <GenericLabeledDropdown<string>
     {...props}
     valueMapping={(x) => x}
@@ -65,9 +89,19 @@ export const USStateDropDown = (props: BaseDropdownProps): ReactElement => (
   <GenericLabeledDropdown<[string, string]>
     {...props}
     dropDownData={locationPostalCodes}
-    valueMapping={([,code], n) => code}
-    keyMapping={([,code], n) => code}
+    valueMapping={([, code], n) => code}
+    keyMapping={([, code], n) => code}
     textMapping={([name, code], n) => `${code} - ${name}`}
+  />
+)
+
+export const CountryDropDown = (props: BaseDropdownProps): ReactElement => (
+  <GenericLabeledDropdown<string>
+    {...props}
+    dropDownData={countries}
+    valueMapping={(name, _) => name}
+    keyMapping={(_, idx) => idx}
+    textMapping={(name, _) => name}
   />
 )
 

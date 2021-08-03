@@ -1,4 +1,4 @@
-const countries = [
+const countries: string[] = [
   'Afghanistan',
   'Åland Islands',
   'Albania',
@@ -250,4 +250,5 @@ const countries = [
   'Zambia',
   'Zimbabwe'
 ]
+
 export default countries

@@ -1,4 +1,10 @@
-import { Address, Information, Property, PropertyType, PropertyExpenseTypeName } from '../redux/data'
+import {
+  Address,
+  Information,
+  Property,
+  PropertyType,
+  PropertyExpenseTypeName
+} from '../redux/data'
 import Form, { FormTag } from './Form'
 import TaxPayer from '../redux/TaxPayer'
 import { anArrayOf, unzip3, zip, zip3 } from '../util'
@@ -14,17 +20,16 @@ const unimplemented = (message: string): void =>
   log.warn(`[Schedule E] unimplemented ${message}`)
 
 const fill = (values: number[]): MatrixRow => {
-  const realValues = (
-    (values as Cell[])
-      .slice(0, 3)
-      .map((v) => {
-        if (v === 0) {
-          return undefined
-        }
-        return v
-      })
-  )
-  return [...realValues, ...Array.from(Array(3 - realValues.length)).map(() => undefined)] as MatrixRow
+  const realValues = (values as Cell[]).slice(0, 3).map((v) => {
+    if (v === 0) {
+      return undefined
+    }
+    return v
+  })
+  return [
+    ...realValues,
+    ...Array.from(Array(3 - realValues.length)).map(() => undefined)
+  ] as MatrixRow
 }
 
 const propTypeIndex = {
@@ -39,22 +44,24 @@ const propTypeIndex = {
 
 export default class ScheduleE implements Form {
   tag: FormTag = 'f1040se'
+  sequenceIndex: number = 13
   state: Information
   f6168: F6168
   f8582: F8582
 
-  constructor (info: Information) {
+  constructor(info: Information) {
     this.state = info
     this.f6168 = new F6168(info.taxPayer, this)
     this.f8582 = new F8582(info.taxPayer, this)
   }
 
-  addressString = (address: Address): string => ([
-    address.address,
-    address.city,
-    address.state ?? address.province ?? '',
-    address.zip ?? address.postalCode ?? ''
-  ].join(', '))
+  addressString = (address: Address): string =>
+    [
+      address.address,
+      address.city,
+      address.state ?? address.province ?? '',
+      address.zip ?? address.postalCode ?? ''
+    ].join(', ')
 
   propForRow = (row: number): Property | undefined => {
     if (row < this.state.realEstate.length) {
@@ -114,11 +121,11 @@ export default class ScheduleE implements Form {
 
   l19 = (): [string | undefined, MatrixRow] => {
     const expenseRow = this.getExpensesRow('other')
-    const otherText = (
-      this.state.realEstate
-        .flatMap((p) => p.otherExpenseType !== undefined ? [p.otherExpenseType] : [])
-        .join(',')
-    )
+    const otherText = this.state.realEstate
+      .flatMap((p) =>
+        p.otherExpenseType !== undefined ? [p.otherExpenseType] : []
+      )
+      .join(',')
     return [otherText, expenseRow]
   }
 
@@ -131,16 +138,16 @@ export default class ScheduleE implements Form {
   // TODO - required from pub 596 worksheet 1
   royaltyExpenses = (): number | undefined => undefined
 
-  l20 = (): MatrixRow => fill(unzip3(this.allExpenses()).map((column) => sumFields(column)))
+  l20 = (): MatrixRow =>
+    fill(unzip3(this.allExpenses()).map((column) => sumFields(column)))
 
-  l21 = (): MatrixRow => (
-    zip3(this.l3(), this.l4(), this.l20())
-      .map(([x, y, z]) => displayNumber((x ?? 0) + (y ?? 0) - (z ?? 0)))
-  ) as MatrixRow
+  l21 = (): MatrixRow =>
+    zip3(this.l3(), this.l4(), this.l20()).map(([x, y, z]) =>
+      displayNumber((x ?? 0) + (y ?? 0) - (z ?? 0))
+    ) as MatrixRow
 
   // Deductible real estate loss from 8582, as positive number
-  l22 = (): MatrixRow =>
-    this.f8582.deductibleRealEstateLossAfterLimitation()
+  l22 = (): MatrixRow => this.f8582.deductibleRealEstateLossAfterLimitation()
 
   l23a = (): number => sumFields(this.l3())
   l23b = (): number => sumFields(this.l4())
@@ -148,9 +155,8 @@ export default class ScheduleE implements Form {
   l23d = (): number => sumFields(this.l18())
   l23e = (): number => sumFields(this.l20())
 
-  rentalNet = (): MatrixRow => (
-    zip(this.l3(), this.l20()).map(([x, y]) => (x ?? 0) - (y ?? 0))
-  ) as MatrixRow
+  rentalNet = (): MatrixRow =>
+    zip(this.l3(), this.l20()).map(([x, y]) => (x ?? 0) - (y ?? 0)) as MatrixRow
 
   l24 = (): number =>
     sumFields(this.l21().filter((x) => x !== undefined && x > 0))
@@ -195,13 +201,8 @@ export default class ScheduleE implements Form {
     return displayNumber(0)
   }
 
-  l41 = (): number => sumFields([
-    this.l26(),
-    this.l32(),
-    this.l37(),
-    this.l39(),
-    this.l40()
-  ])
+  l41 = (): number =>
+    sumFields([this.l26(), this.l32(), this.l37(), this.l39(), this.l40()])
 
   fields = (): Array<string | number | boolean | undefined> => {
     const tp = new TaxPayer(this.state.taxPayer)
@@ -210,23 +211,40 @@ export default class ScheduleE implements Form {
     return [
       tp.namesString(),
       tp.tp.primaryPerson?.ssid,
-      false, false,
-      false, false,
-      ...([p0, p1, p2].map((p) => p === undefined ? undefined : this.addressString(p.address))),
-      p0 === undefined ? undefined : propTypeIndex[PropertyType[p0.propertyType]],
-      p1 === undefined ? undefined : propTypeIndex[PropertyType[p1.propertyType]],
-      p2 === undefined ? undefined : propTypeIndex[PropertyType[p2.propertyType]],
-      p0?.rentalDays, p0?.personalUseDays, p0?.qualifiedJointVenture,
-      p1?.rentalDays, p1?.personalUseDays, p1?.qualifiedJointVenture,
-      p2?.rentalDays, p2?.personalUseDays, p2?.qualifiedJointVenture,
-      [p0, p1, p2].find((p) => p?.propertyType === 'other')?.otherPropertyType ?? undefined,
-      ...(this.l3()),
-      ...(this.l4()),
-      ...(this.allExpenses().flat()),
-      ...(this.l19().flat()),
-      ...(this.l20()),
-      ...(this.l21()),
-      ...(this.l22()),
+      false,
+      false,
+      false,
+      false,
+      ...[p0, p1, p2].map((p) =>
+        p === undefined ? undefined : this.addressString(p.address)
+      ),
+      p0 === undefined
+        ? undefined
+        : propTypeIndex[PropertyType[p0.propertyType]],
+      p1 === undefined
+        ? undefined
+        : propTypeIndex[PropertyType[p1.propertyType]],
+      p2 === undefined
+        ? undefined
+        : propTypeIndex[PropertyType[p2.propertyType]],
+      p0?.rentalDays,
+      p0?.personalUseDays,
+      p0?.qualifiedJointVenture,
+      p1?.rentalDays,
+      p1?.personalUseDays,
+      p1?.qualifiedJointVenture,
+      p2?.rentalDays,
+      p2?.personalUseDays,
+      p2?.qualifiedJointVenture,
+      [p0, p1, p2].find((p) => p?.propertyType === 'other')
+        ?.otherPropertyType ?? undefined,
+      ...this.l3(),
+      ...this.l4(),
+      ...this.allExpenses().flat(),
+      ...this.l19().flat(),
+      ...this.l20(),
+      ...this.l21(),
+      ...this.l22(),
       displayNumber(this.l23a()),
       displayNumber(this.l23b()),
       displayNumber(this.l23c()),

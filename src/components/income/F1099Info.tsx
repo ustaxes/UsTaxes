@@ -4,8 +4,19 @@ import { Icon } from '@material-ui/core'
 import { useDispatch, useSelector } from 'react-redux'
 import { add1099, edit1099, remove1099 } from '../../redux/actions'
 import { PagerContext } from '../pager'
-import { TaxesState, Person, PersonRole, Supported1099, Income1099Type } from '../../redux/data'
-import { Currency, formatSSID, GenericLabeledDropdown, LabeledInput } from '../input'
+import {
+  TaxesState,
+  Person,
+  PersonRole,
+  Supported1099,
+  Income1099Type
+} from '../../redux/data'
+import {
+  Currency,
+  formatSSID,
+  GenericLabeledDropdown,
+  LabeledInput
+} from '../input'
 import { Patterns } from '../Patterns'
 import { FormListContainer } from '../FormContainer'
 
@@ -19,8 +30,9 @@ const showIncome = (a: Supported1099): ReactElement => {
       const stg = a.form.shortTermProceeds - a.form.shortTermCostBasis
       return (
         <span>
-        Long term: <Currency value={ltg} /><br />
-        Short term: <Currency value={stg} />
+          Long term: <Currency value={ltg} />
+          <br />
+          Short term: <Currency value={stg} />
         </span>
       )
     }
@@ -67,7 +79,7 @@ const toUserInput = (f: Supported1099): F1099UserInput => ({
   payer: f.payer,
   personRole: f.personRole,
 
-  ...((() => {
+  ...(() => {
     switch (f.type) {
       case Income1099Type.INT: {
         return {
@@ -81,7 +93,7 @@ const toUserInput = (f: Supported1099): F1099UserInput => ({
         return f.form
       }
     }
-  })())
+  })()
 })
 
 const toF1099 = (input: F1099UserInput): Supported1099 | undefined => {
@@ -123,14 +135,12 @@ const toF1099 = (input: F1099UserInput): Supported1099 | undefined => {
   }
 }
 
-export default function F1099Info (): ReactElement {
-  const f1099s = useSelector((state: TaxesState) =>
-    state.information.f1099s
-  )
+export default function F1099Info(): ReactElement {
+  const f1099s = useSelector((state: TaxesState) => state.information.f1099s)
   const [editing, doSetEditing] = useState<number | undefined>(undefined)
 
   const methods = useForm<F1099UserInput>()
-  const { formState: { errors }, handleSubmit, reset, watch, setValue } = methods
+  const { handleSubmit, reset, watch, setValue } = methods
   const selectedType: Income1099Type | undefined = watch('formType')
 
   const dispatch = useDispatch()
@@ -146,35 +156,33 @@ export default function F1099Info (): ReactElement {
     doSetEditing(undefined)
   }
 
-  const onAdd1099 = (onSuccess: () => void) => (formData: F1099UserInput): void => {
-    const payload = toF1099(formData)
-    if (payload !== undefined) {
-      if (editing === undefined) {
-        dispatch(add1099(payload))
-      } else {
-        dispatch(edit1099({ index: editing, value: payload }))
+  const onAdd1099 =
+    (onSuccess: () => void) =>
+    (formData: F1099UserInput): void => {
+      const payload = toF1099(formData)
+      if (payload !== undefined) {
+        if (editing === undefined) {
+          dispatch(add1099(payload))
+        } else {
+          dispatch(edit1099({ index: editing, value: payload }))
+        }
+        clear()
+        onSuccess()
       }
-      clear()
-      onSuccess()
     }
-  }
 
-  const people: Person[] = (
-    useSelector((state: TaxesState) => ([
-      state.information.taxPayer?.primaryPerson,
-      state.information.taxPayer?.spouse
-    ]))
-      .filter((p) => p !== undefined)
-      .map((p) => p as Person)
-  )
+  const people: Person[] = useSelector((state: TaxesState) => [
+    state.information.taxPayer?.primaryPerson,
+    state.information.taxPayer?.spouse
+  ])
+    .filter((p) => p !== undefined)
+    .map((p) => p as Person)
 
   const intFields = (
     <LabeledInput
       label="Box 1 - Interest Income"
-      required={true}
       patternConfig={Patterns.currency}
       name="interest"
-      error={errors.interest}
     />
   )
 
@@ -183,32 +191,24 @@ export default function F1099Info (): ReactElement {
       <h4>Long Term Covered Transactions</h4>
       <LabeledInput
         label="Proceeds"
-        required={true}
         patternConfig={Patterns.currency}
         name="longTermProceeds"
-        error={errors.longTermProceeds}
       />
       <LabeledInput
         label="Cost basis"
-        required={true}
         patternConfig={Patterns.currency}
         name="longTermCostBasis"
-        error={errors.longTermCostBasis}
       />
       <h4>Short Term Covered Transactions</h4>
       <LabeledInput
         label="Proceeds"
-        required={true}
         patternConfig={Patterns.currency}
         name="shortTermProceeds"
-        error={errors.shortTermProceeds}
       />
       <LabeledInput
         label="Cost basis"
-        required={true}
         patternConfig={Patterns.currency}
         name="shortTermCostBasis"
-        error={errors.shortTermCostBasis}
       />
     </div>
   )
@@ -217,17 +217,13 @@ export default function F1099Info (): ReactElement {
     <div>
       <LabeledInput
         label="Total Dividends"
-        required={true}
         patternConfig={Patterns.currency}
         name="dividends"
-        error={errors.dividends}
       />
       <LabeledInput
         label="Qualified Dividends"
-        required={true}
         patternConfig={Patterns.currency}
         name="qualifiedDividends"
-        error={errors.qualifiedDividends}
       />
     </div>
   )
@@ -260,9 +256,7 @@ export default function F1099Info (): ReactElement {
 
       <GenericLabeledDropdown
         dropDownData={Object.values(Income1099Type)}
-        error={errors.formType}
         label="Form Type"
-        required={true}
         valueMapping={(v: Income1099Type) => v}
         name="formType"
         keyMapping={(_, i: number) => i}
@@ -271,38 +265,36 @@ export default function F1099Info (): ReactElement {
 
       <LabeledInput
         label="Enter name of bank, broker firm, or other payer"
-        required={true}
         patternConfig={Patterns.name}
         name="payer"
-        error={errors.payer}
       />
 
-      {selectedType !== undefined ? specificFields[selectedType] : undefined }
+      {selectedType !== undefined ? specificFields[selectedType] : undefined}
 
       <GenericLabeledDropdown
         dropDownData={people}
-        error={errors.personRole}
         label="Recipient"
-        required={true}
-        valueMapping={(p: Person, i: number) => [PersonRole.PRIMARY, PersonRole.SPOUSE][i]}
+        valueMapping={(p: Person, i: number) =>
+          [PersonRole.PRIMARY, PersonRole.SPOUSE][i]
+        }
         name="personRole"
         keyMapping={(p: Person, i: number) => i}
-        textMapping={(p: Person) => `${p.firstName} ${p.lastName} (${formatSSID(p.ssid)})`}
+        textMapping={(p: Person) =>
+          `${p.firstName} ${p.lastName} (${formatSSID(p.ssid)})`
+        }
       />
     </FormListContainer>
   )
 
   return (
     <PagerContext.Consumer>
-      { ({ onAdvance, navButtons }) =>
+      {({ onAdvance, navButtons }) => (
         <form onSubmit={onAdvance}>
           <h2>1099 Information</h2>
-          <FormProvider {...methods}>
-            {form}
-          </FormProvider>
-          { navButtons }
+          <FormProvider {...methods}>{form}</FormProvider>
+          {navButtons}
         </form>
-      }
+      )}
     </PagerContext.Consumer>
   )
 }

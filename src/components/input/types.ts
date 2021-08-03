@@ -1,14 +1,11 @@
-import { BaseFormProps } from '../types'
-import { FieldError, RegisterOptions } from 'react-hook-form'
+import { RegisterOptions } from 'react-hook-form'
 import { PatternConfig } from '../Patterns'
-export * from '../types'
 
 export interface BaseDropdownProps {
   label: string
   strongLabel?: string
   required?: boolean
   name: string
-  error?: FieldError
 }
 
 export interface CurrencyProps {
@@ -24,14 +21,17 @@ export interface LabeledDropdownProps<A> extends BaseDropdownProps {
   textMapping: (a: A, n: number) => string
 }
 
-export interface LabeledInputProps extends BaseFormProps {
+export interface LabeledInputProps {
   strongLabel?: string
   patternConfig?: PatternConfig
   label: string
   required?: boolean
   name: string
   defaultValue?: string
-  rules?: Exclude<RegisterOptions, 'valueAsNumber' | 'valueAsDate' | 'setValueAs'>
+  rules?: Exclude<
+    RegisterOptions,
+    'valueAsNumber' | 'valueAsDate' | 'setValueAs'
+  >
 }
 
 export interface LabeledFormProps {

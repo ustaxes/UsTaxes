@@ -1,47 +1,39 @@
-import React, { ReactElement, ReactNode } from 'react'
-import { IconButton, List, ListItem, ListItemIcon, ListItemSecondaryAction } from '@material-ui/core'
+import React, { Fragment, PropsWithChildren, ReactElement } from 'react'
+import {
+  IconButton,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemSecondaryAction
+} from '@material-ui/core'
 import { useDispatch, useSelector } from 'react-redux'
 import { formatSSID, LabeledInput } from '../input'
 import { Patterns } from '../Patterns'
 import { Actions, removeDependent } from '../../redux/actions'
 import { TaxesState, Person } from '../../redux/data'
-import { BaseFormProps } from '../types'
 import DeleteIcon from '@material-ui/icons/Delete'
 import EditIcon from '@material-ui/icons/Edit'
 import ListItemText from '@material-ui/core/ListItemText'
 import PersonIcon from '@material-ui/icons/Person'
-import { DeepMap, FieldError } from 'react-hook-form'
+import { If } from 'react-if'
 
-interface PersonFieldsProps extends BaseFormProps {
-  children?: ReactNode
-  errors: DeepMap<Partial<Person>, FieldError>
-}
-
-export const PersonFields = ({ errors, children }: PersonFieldsProps): ReactElement => (
-  <div>
+export const PersonFields = ({
+  children
+}: PropsWithChildren<{}>): ReactElement => (
+  <Fragment>
     <LabeledInput
       label="First Name and Initial"
       name="firstName"
       patternConfig={Patterns.name}
-      required={true}
-      error={errors.firstName}
     />
     <LabeledInput
       label="Last Name"
       name="lastName"
       patternConfig={Patterns.name}
-      required={true}
-      error={errors.lastName}
     />
-    <LabeledInput
-      label="SSN / TIN"
-      name="ssid"
-      patternConfig={Patterns.ssn}
-      required={true}
-      error={errors.ssid}
-    />
+    <LabeledInput label="SSN / TIN" name="ssid" patternConfig={Patterns.ssn} />
     {children}
-  </div>
+  </Fragment>
 )
 
 interface PersonListItemProps {
@@ -51,7 +43,12 @@ interface PersonListItemProps {
   editing?: boolean
 }
 
-export const PersonListItem = ({ person, remove, onEdit, editing = false }: PersonListItemProps): ReactElement => (
+export const PersonListItem = ({
+  person,
+  remove,
+  onEdit,
+  editing = false
+}: PersonListItemProps): ReactElement => (
   <ListItem className={editing ? 'active' : ''}>
     <ListItemIcon>
       <PersonIcon />
@@ -60,17 +57,13 @@ export const PersonListItem = ({ person, remove, onEdit, editing = false }: Pers
       primary={`${person.firstName} ${person.lastName}`}
       secondary={formatSSID(person.ssid)}
     />
-    {(() => {
-      if (editing !== undefined) {
-        return (
-          <ListItemIcon>
-            <IconButton onClick={onEdit} edge="end" aria-label="edit">
-              <EditIcon />
-            </IconButton>
-          </ListItemIcon>
-        )
-      }
-    })()}
+    <If condition={editing !== undefined}>
+      <ListItemIcon>
+        <IconButton onClick={onEdit} edge="end" aria-label="edit">
+          <EditIcon />
+        </IconButton>
+      </ListItemIcon>
+    </If>
     <ListItemSecondaryAction>
       <IconButton onClick={remove} edge="end" aria-label="delete">
         <DeleteIcon />
@@ -84,9 +77,12 @@ interface ListDependentsProps {
   editing?: number
 }
 
-export function ListDependents ({ onEdit, editing }: ListDependentsProps): ReactElement {
-  const dependents = useSelector((state: TaxesState) =>
-    state.information.taxPayer?.dependents ?? []
+export function ListDependents({
+  onEdit,
+  editing
+}: ListDependentsProps): ReactElement {
+  const dependents = useSelector(
+    (state: TaxesState) => state.information.taxPayer?.dependents ?? []
   )
 
   const dispatch = useDispatch()
@@ -95,11 +91,15 @@ export function ListDependents ({ onEdit, editing }: ListDependentsProps): React
 
   return (
     <List dense={true}>
-      {
-        dependents.map((p, i) =>
-          <PersonListItem key={i} remove={() => drop(i)} person={p} editing={editing === i} onEdit={() => (onEdit ?? (() => { }))(i)} />
-        )
-      }
+      {dependents.map((p, i) => (
+        <PersonListItem
+          key={i}
+          remove={() => drop(i)}
+          person={p}
+          editing={editing === i}
+          onEdit={() => (onEdit ?? (() => {}))(i)}
+        />
+      ))}
     </List>
   )
 }

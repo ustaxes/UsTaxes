@@ -1,4 +1,12 @@
-import { AccountType, Dependent, FilingStatus, IncomeW2, PersonRole, Refund, TaxPayer } from '../redux/data'
+import {
+  AccountType,
+  Dependent,
+  FilingStatus,
+  IncomeW2,
+  PersonRole,
+  Refund,
+  TaxPayer
+} from '../redux/data'
 import federalBrackets from '../data/federal'
 import F4972 from './F4972'
 import F5695 from './F5695'
@@ -7,6 +15,7 @@ import Schedule8863 from './F8863'
 import F8888 from './F8888'
 import F8910 from './F8910'
 import F8936 from './F8936'
+import F8959 from './F8959'
 import F8995 from './F8995'
 import F8995A from './F8995A'
 import Schedule1 from './Schedule1'
@@ -34,6 +43,7 @@ export enum F1040Error {
 
 export default class F1040 implements Form {
   tag: FormTag = 'f1040'
+  sequenceIndex: number = 0
   // intentionally mirroring many fields from the state,
   // trying to represent the fields that the 1040 requires
   filingStatus?: FilingStatus
@@ -59,7 +69,7 @@ export default class F1040 implements Form {
   contactPhoneNumber?: string
   contactEmail?: string
 
-  w2s: IncomeW2[]
+  _w2s: IncomeW2[]
 
   schedule1?: Schedule1
   schedule2?: Schedule2
@@ -79,12 +89,13 @@ export default class F1040 implements Form {
   f8888?: F8888
   f8910?: F8910
   f8936?: F8936
+  f8959?: F8959
   f8995?: F8995 | F8995A
   studentLoanInterestWorksheet?: StudentLoanInterestWorksheet
 
   childTaxCreditWorksheet?: ChildTaxCreditWorksheet
 
-  constructor (tp: TaxPayer) {
+  constructor(tp: TaxPayer) {
     this.filingStatus = tp.filingStatus
     this.firstNameAndInitial = tp.primaryPerson?.firstName
     this.lastName = tp.primaryPerson?.lastName
@@ -104,80 +115,84 @@ export default class F1040 implements Form {
     this.isTaxpayerDependent = Boolean(tp.primaryPerson?.isTaxpayerDependent)
     this.isSpouseDependent = Boolean(tp.spouse?.isTaxpayerDependent)
     this.dependents = tp.dependents
-    this.w2s = []
+    this._w2s = []
     this.contactPhoneNumber = tp.contactPhoneNumber
     this.contactEmail = tp.contactEmail
   }
 
-  addW2 (w2: IncomeW2): void {
-    this.w2s.push(w2)
+  addW2(w2: IncomeW2): void {
+    this._w2s.push(w2)
   }
 
-  addQuestions (questions: Responses): void {
+  addQuestions(questions: Responses): void {
     this.virtualCurrency = questions.CRYPTO ?? false
   }
 
-  addSchedule1 (s: Schedule1): void {
+  addSchedule1(s: Schedule1): void {
     this.schedule1 = s
   }
 
-  addSchedule2 (s: Schedule2): void {
+  addSchedule2(s: Schedule2): void {
     this.schedule2 = s
   }
 
-  addSchedule3 (s: Schedule3): void {
+  addSchedule3(s: Schedule3): void {
     this.schedule3 = s
   }
 
-  addScheduleA (s: ScheduleA): void {
+  addScheduleA(s: ScheduleA): void {
     this.scheduleA = s
   }
 
-  addScheduleB (s: ScheduleB): void {
+  addScheduleB(s: ScheduleB): void {
     this.scheduleB = s
   }
 
-  addScheduleD (s: ScheduleD): void {
+  addScheduleD(s: ScheduleD): void {
     this.scheduleD = s
   }
 
-  addScheduleE (s: ScheduleE): void {
+  addScheduleE(s: ScheduleE): void {
     this.scheduleE = s
   }
 
-  addScheduleEIC (s: ScheduleEIC): void {
+  addScheduleEIC(s: ScheduleEIC): void {
     this.scheduleEIC = s
   }
 
-  add8995 (s: F8995 | F8995A): void {
+  add8959(f: F8959): void {
+    this.f8959 = f
+  }
+
+  add8995(s: F8995 | F8995A): void {
     this.f8995 = s
   }
 
-  add8814 (s: F8814): void {
+  add8814(s: F8814): void {
     this.f8814 = s
   }
 
-  add4797 (s: F4797): void {
+  add4797(s: F4797): void {
     this.f4797 = s
   }
 
-  add4972 (s: F4972): void {
+  add4972(s: F4972): void {
     this.f4972 = s
   }
 
-  addChildTaxCreditWorksheet (s: ChildTaxCreditWorksheet): void {
+  addChildTaxCreditWorksheet(s: ChildTaxCreditWorksheet): void {
     this.childTaxCreditWorksheet = s
   }
 
-  addSchedule8812 (s: Schedule8812): void {
+  addSchedule8812(s: Schedule8812): void {
     this.schedule8812 = s
   }
 
-  addStudentLoanInterestWorksheet (s: StudentLoanInterestWorksheet): void {
+  addStudentLoanInterestWorksheet(s: StudentLoanInterestWorksheet): void {
     this.studentLoanInterestWorksheet = s
   }
 
-  addRefund (r: Refund): void {
+  addRefund(r: Refund): void {
     this.refund = r
   }
 
@@ -192,33 +207,39 @@ export default class F1040 implements Form {
   // TODO
   spouseBlind = (): boolean => false
 
-  wages (): number {
-    if (this.w2s.length > 0) {
-      return this.w2s.map((w2) => w2.income).reduce((l, r) => l + r, 0)
+  validW2s = (): IncomeW2[] => {
+    if (this.filingStatus === FilingStatus.MFS) {
+      return this._w2s.filter((w2) => w2.personRole === PersonRole.PRIMARY)
+    } else {
+      return this._w2s
     }
-    return 0
   }
 
-  w2ForRole = (r: PersonRole): IncomeW2 | undefined =>
-    (this.w2s ?? []).find((w2) => w2.personRole === r)
+  wages = (): number => this.validW2s().reduce((res, w2) => res + w2.income, 0)
+
+  occupation = (r: PersonRole): string | undefined =>
+    this._w2s.find((w2) => w2.personRole === r && w2.occupation !== '')
+      ?.occupation
 
   standardDeduction = (): number | undefined => {
     if (this.filingStatus === undefined) {
       return undefined
     } else if (this.isTaxpayerDependent || this.isSpouseDependent) {
       return Math.min(
-        (federalBrackets.ordinary.status[this.filingStatus].deductions[0].amount),
-        (this.wages() > 750) ? (this.wages() + 350) : 1100
+        federalBrackets.ordinary.status[this.filingStatus].deductions[0].amount,
+        this.wages() > 750 ? this.wages() + 350 : 1100
       )
     }
-    return federalBrackets.ordinary.status[this.filingStatus].deductions[0].amount
+    return federalBrackets.ordinary.status[this.filingStatus].deductions[0]
+      .amount
   }
 
-  totalQualifiedDividends = (): number | undefined => displayNumber(
-    (this.scheduleB?.f1099divs() ?? [])
-      .map((f) => f.form.qualifiedDividends)
-      .reduce((l, r) => l + r, 0)
-  )
+  totalQualifiedDividends = (): number | undefined =>
+    displayNumber(
+      (this.scheduleB?.f1099divs() ?? [])
+        .map((f) => f.form.qualifiedDividends)
+        .reduce((l, r) => l + r, 0)
+    )
 
   l1 = (): number | undefined => displayNumber(this.wages())
   l2a = (): number | undefined => this.scheduleB?.l3()
@@ -233,29 +254,26 @@ export default class F1040 implements Form {
   l6b = (): number | undefined => undefined
   l7 = (): number | undefined => this.scheduleD?.l16()
   l8 = (): number | undefined => this.schedule1?.l9()
-  l9 = (): number | undefined => displayNumber(
-    sumFields([
-      this.l1(),
-      this.l2b(),
-      this.l3b(),
-      this.l4b(),
-      this.l5b(),
-      this.l7(),
-      this.l8()
-    ])
-  )
+  l9 = (): number | undefined =>
+    displayNumber(
+      sumFields([
+        this.l1(),
+        this.l2b(),
+        this.l3b(),
+        this.l4b(),
+        this.l5b(),
+        this.l7(),
+        this.l8()
+      ])
+    )
 
   l10a = (): number | undefined => this.schedule1?.l22()
   l10b = (): number | undefined => undefined
-  l10c = (): number | undefined => displayNumber(
-    sumFields([
-      this.l10a(), this.l10b()
-    ])
-  )
+  l10c = (): number | undefined =>
+    displayNumber(sumFields([this.l10a(), this.l10b()]))
 
-  l11 = (): number | undefined => displayNumber(
-    computeField(this.l9()) - computeField(this.l10c())
-  )
+  l11 = (): number | undefined =>
+    displayNumber(computeField(this.l9()) - computeField(this.l10c()))
 
   l12 = (): number | undefined => {
     if (this.scheduleA !== undefined) {
@@ -265,15 +283,11 @@ export default class F1040 implements Form {
   }
 
   l13 = (): number | undefined => this.f8995?.deductions()
-  l14 = (): number | undefined => displayNumber(
-    sumFields([
-      this.l12(), this.l13()
-    ])
-  )
+  l14 = (): number | undefined =>
+    displayNumber(sumFields([this.l12(), this.l13()]))
 
-  l15 = (): number | undefined => displayNumber(
-    computeField(this.l11()) - computeField(this.l14())
-  )
+  l15 = (): number | undefined =>
+    displayNumber(computeField(this.l11()) - computeField(this.l14()))
 
   computeTax = (): number | undefined => {
     if (this.scheduleD?.computeTaxOnQDWorksheet() ?? false) {
@@ -288,62 +302,53 @@ export default class F1040 implements Form {
     return undefined
   }
 
-  l16 = (): number | undefined => displayNumber(
-    Math.round(
-      sumFields([
-        this.f8814?.tax(),
-        this.f4972?.tax(),
-        this.computeTax()
-      ])
+  l16 = (): number | undefined =>
+    displayNumber(
+      Math.round(
+        sumFields([this.f8814?.tax(), this.f4972?.tax(), this.computeTax()])
+      )
     )
-  )
 
   l17 = (): number | undefined => this.schedule2?.l3()
-  l18 = (): number | undefined => displayNumber(
-    sumFields([
-      this.l16(), this.l17()
-    ])
-  )
+  l18 = (): number | undefined =>
+    displayNumber(sumFields([this.l16(), this.l17()]))
 
   // TODO
-  l19 = (): number | undefined => computeField(this.childTaxCreditWorksheet?.l12())
+  l19 = (): number | undefined =>
+    computeField(this.childTaxCreditWorksheet?.l12())
   l20 = (): number | undefined => this.schedule3?.l7()
-  l21 = (): number | undefined => displayNumber(
-    sumFields([this.l19(), this.l20()])
-  )
+  l21 = (): number | undefined =>
+    displayNumber(sumFields([this.l19(), this.l20()]))
 
-  l22 = (): number | undefined => displayNumber(
-    computeField(this.l18()) - computeField(this.l21())
-  )
+  l22 = (): number | undefined =>
+    displayNumber(computeField(this.l18()) - computeField(this.l21()))
 
   l23 = (): number | undefined => this.schedule2?.l10()
-  l24 = (): number | undefined => displayNumber(
-    sumFields([this.l22(), this.l23()])
-  )
+  l24 = (): number | undefined =>
+    displayNumber(sumFields([this.l22(), this.l23()]))
 
-  l25a = (): number | undefined => {
-    if (this.w2s.length > 0) {
-      return this.w2s.map((w2) => computeField(w2.fedWithholding)).reduce((l, r) => l + r, 0)
-    }
-    return undefined
-  }
+  l25a = (): number | undefined =>
+    displayNumber(
+      this.validW2s().reduce(
+        (res, w2) => res + computeField(w2.fedWithholding),
+        0
+      )
+    )
 
   // TODO: 1099s
   l25b = (): number | undefined => undefined
 
-  // TODO: Other withholding forms?
-  l25c = (): number | undefined => undefined
+  // TODO: form(s) W-2G box 4, schedule K-1, form 1042-S, form 8805, form 8288-A
+  l25c = (): number | undefined => this.f8959?.l24()
 
-  l25d = (): number | undefined => displayNumber(
-    sumFields([
-      this.l25a(), this.l25b(), this.l25c()
-    ])
-  )
+  l25d = (): number | undefined =>
+    displayNumber(sumFields([this.l25a(), this.l25b(), this.l25c()]))
 
   // TODO: handle estimated tax payments
   l26 = (): number | undefined => undefined
 
-  l27 = (): number | undefined => displayNumber(this.scheduleEIC?.credit(this) ?? 0)
+  l27 = (): number | undefined =>
+    displayNumber(this.scheduleEIC?.credit(this) ?? 0)
 
   l28 = (): number | undefined => this.schedule8812?.l15()
 
@@ -354,49 +359,34 @@ export default class F1040 implements Form {
 
   l31 = (): number | undefined => this.schedule3?.l13()
 
-  l32 = (): number | undefined => displayNumber(
-    sumFields([
-      this.l27(),
-      this.l28(),
-      this.l29(),
-      this.l30(),
-      this.l31()
-    ])
-  )
+  l32 = (): number | undefined =>
+    displayNumber(
+      sumFields([this.l27(), this.l28(), this.l29(), this.l30(), this.l31()])
+    )
 
-  l33 = (): number | undefined => displayNumber(
-    sumFields([
-      this.l25d(),
-      this.l26(),
-      this.l32()
-    ])
-  )
+  l33 = (): number | undefined =>
+    displayNumber(sumFields([this.l25d(), this.l26(), this.l32()]))
 
-  l34 = (): number | undefined => displayNumber(
-    computeField(this.l33()) - computeField(this.l24())
-  )
+  l34 = (): number | undefined =>
+    displayNumber(computeField(this.l33()) - computeField(this.l24()))
 
   // TODO: assuming user wants amount refunded
   // rather than applied to estimated tax
   l35a = (): number | undefined => this.l34()
-  l36 = (): number | undefined => displayNumber(
-    computeField(this.l34()) - computeField(this.l35a())
-  )
+  l36 = (): number | undefined =>
+    displayNumber(computeField(this.l34()) - computeField(this.l35a()))
 
-  l37 = (): number | undefined => displayNumber(
-    computeField(this.l24()) - computeField(this.l33())
-  )
+  l37 = (): number | undefined =>
+    displayNumber(computeField(this.l24()) - computeField(this.l33()))
 
   // TODO - estimated tax penalty
-  l38 = (): number | undefined => displayNumber(
-    0
-  )
+  l38 = (): number | undefined => displayNumber(0)
 
   _depField = (idx: number): string | boolean => {
     const deps: Dependent[] = this.dependents
 
     // Based on the PDF row we are on, select correct dependent
-    const depIdx = Math.floor((idx) / 5)
+    const depIdx = Math.floor(idx / 5)
     const depFieldIdx = idx % 5
 
     let fieldArr = ['', '', '', false, false]
@@ -430,119 +420,126 @@ export default class F1040 implements Form {
     return result
   }
 
-  fields = (): Array<string | number | boolean | undefined> => ([
-    this.filingStatus === FilingStatus.S,
-    this.filingStatus === FilingStatus.MFJ,
-    this.filingStatus === FilingStatus.MFS,
-    this.filingStatus === FilingStatus.HOH,
-    this.filingStatus === FilingStatus.W,
-    // TODO: implement non dependent child for HOH and QW
-    (this.spousesFirstNameAndInitial !== undefined && this.spousesLastName !== undefined && this.filingStatus === 'MFS') ? this.spousesFirstNameAndInitial + ' ' + this.spousesLastName : '',
-    this.firstNameAndInitial,
-    this.lastName,
-    this.yourSocialSecurityNumber,
-    (this.filingStatus === FilingStatus.MFJ) ? (this.spousesFirstNameAndInitial) : '',
-    (this.filingStatus === FilingStatus.MFJ) ? (this.spousesLastName ?? '') : '',
-    this.spousesSocialSecurityNumber,
-    this.homeAddress,
-    this.aptNo,
-    this.city,
-    this.state,
-    this.zip,
-    this.foreignCountryName,
-    this.province,
-    this.postalCode,
-    false, // election campaign boxes
-    false,
-    this.virtualCurrency,
-    !this.virtualCurrency,
-    this.isTaxpayerDependent,
-    this.isSpouseDependent,
-    false, // TODO: spouse itemizes separately,
-    this.bornBeforeDate(),
-    this.blind(),
-    this.spouseBeforeDate(),
-    this.spouseBlind(),
-    this.dependents.length > 4,
-    ...this._depFieldMappings(),
-    this.l1(),
-    this.l2a(),
-    this.l2b(),
-    this.l3a(),
-    this.l3b(),
-    this.l4a(),
-    this.l4b(),
-    this.l5a(),
-    this.l5b(),
-    this.l6a(),
-    this.l6b(),
-    this.scheduleD === undefined,
-    this.l7(),
-    this.l8(),
-    this.l9(),
-    this.l10a(),
-    this.l10b(),
-    this.l10c(),
-    this.l11(),
-    this.l12(),
-    this.l13(),
-    this.l14(),
-    this.l15(),
-    this.f8814 !== undefined,
-    this.f4972 !== undefined,
-    false, // TODO: other tax form
-    '', // TODO: other tax form
-    this.l16(),
-    this.l17(),
-    this.l18(),
-    this.l19(),
-    this.l20(),
-    this.l21(),
-    this.l22(),
-    this.l23(),
-    this.l24(),
-    this.l25a(),
-    this.l25b(),
-    this.l25c(),
-    this.l25d(),
-    this.l26(),
-    this.l27(),
-    this.l28(),
-    this.l29(),
-    this.l30(),
-    this.l31(),
-    this.l32(),
-    this.l33(),
-    this.l34(),
-    this.f8888 !== undefined,
-    this.l35a(),
-    this.refund?.routingNumber,
-    this.refund?.accountType === AccountType.checking,
-    this.refund?.accountType === AccountType.savings,
-    this.refund?.accountNumber,
-    this.l36(),
-    this.l37(),
-    this.l38(),
-    // TODO: 3rd party
-    false,
-    false,
-    '',
-    '',
-    '',
-    this.w2ForRole(PersonRole.PRIMARY)?.occupation,
-    // TODO: pin numbers
-    '',
-    this.w2ForRole(PersonRole.SPOUSE)?.occupation,
-    '',
-    this.contactPhoneNumber,
-    this.contactEmail,
-    // Paid preparer fields:
-    '',
-    '',
-    false,
-    '',
-    '',
-    '',
-    ''
-  ]).map((x) => x === undefined ? '' : x)
+  fields = (): Array<string | number | boolean | undefined> =>
+    [
+      this.filingStatus === FilingStatus.S,
+      this.filingStatus === FilingStatus.MFJ,
+      this.filingStatus === FilingStatus.MFS,
+      this.filingStatus === FilingStatus.HOH,
+      this.filingStatus === FilingStatus.W,
+      // TODO: implement non dependent child for HOH and QW
+      this.spousesFirstNameAndInitial !== undefined &&
+      this.spousesLastName !== undefined &&
+      this.filingStatus === 'MFS'
+        ? this.spousesFirstNameAndInitial + ' ' + this.spousesLastName
+        : '',
+      this.firstNameAndInitial,
+      this.lastName,
+      this.yourSocialSecurityNumber,
+      this.filingStatus === FilingStatus.MFJ
+        ? this.spousesFirstNameAndInitial
+        : '',
+      this.filingStatus === FilingStatus.MFJ ? this.spousesLastName ?? '' : '',
+      this.spousesSocialSecurityNumber,
+      this.homeAddress,
+      this.aptNo,
+      this.city,
+      this.state,
+      this.zip,
+      this.foreignCountryName,
+      this.province,
+      this.postalCode,
+      false, // election campaign boxes
+      false,
+      this.virtualCurrency,
+      !this.virtualCurrency,
+      this.isTaxpayerDependent,
+      this.isSpouseDependent,
+      false, // TODO: spouse itemizes separately,
+      this.bornBeforeDate(),
+      this.blind(),
+      this.spouseBeforeDate(),
+      this.spouseBlind(),
+      this.dependents.length > 4,
+      ...this._depFieldMappings(),
+      this.l1(),
+      this.l2a(),
+      this.l2b(),
+      this.l3a(),
+      this.l3b(),
+      this.l4a(),
+      this.l4b(),
+      this.l5a(),
+      this.l5b(),
+      this.l6a(),
+      this.l6b(),
+      this.scheduleD === undefined,
+      this.l7(),
+      this.l8(),
+      this.l9(),
+      this.l10a(),
+      this.l10b(),
+      this.l10c(),
+      this.l11(),
+      this.l12(),
+      this.l13(),
+      this.l14(),
+      this.l15(),
+      this.f8814 !== undefined,
+      this.f4972 !== undefined,
+      false, // TODO: other tax form
+      '', // TODO: other tax form
+      this.l16(),
+      this.l17(),
+      this.l18(),
+      this.l19(),
+      this.l20(),
+      this.l21(),
+      this.l22(),
+      this.l23(),
+      this.l24(),
+      this.l25a(),
+      this.l25b(),
+      this.l25c(),
+      this.l25d(),
+      this.l26(),
+      this.l27(),
+      this.l28(),
+      this.l29(),
+      this.l30(),
+      this.l31(),
+      this.l32(),
+      this.l33(),
+      this.l34(),
+      this.f8888 !== undefined,
+      this.l35a(),
+      this.refund?.routingNumber,
+      this.refund?.accountType === AccountType.checking,
+      this.refund?.accountType === AccountType.savings,
+      this.refund?.accountNumber,
+      this.l36(),
+      this.l37(),
+      this.l38(),
+      // TODO: 3rd party
+      false,
+      false,
+      '',
+      '',
+      '',
+      this.occupation(PersonRole.PRIMARY),
+      // TODO: pin numbers
+      '',
+      this.occupation(PersonRole.SPOUSE),
+      '',
+      this.contactPhoneNumber,
+      this.contactEmail,
+      // Paid preparer fields:
+      '',
+      '',
+      false,
+      '',
+      '',
+      '',
+      ''
+    ].map((x) => (x === undefined ? '' : x))
 }

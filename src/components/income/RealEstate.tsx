@@ -3,15 +3,29 @@ import { Message, useForm, useWatch, FormProvider } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { addProperty, editProperty, removeProperty } from '../../redux/actions'
 import { PagerContext } from '../pager'
-import { Property, Address, PropertyExpenseType, PropertyExpenseTypeName, TaxesState, PropertyType, PropertyTypeName } from '../../redux/data'
+import {
+  Property,
+  Address,
+  PropertyExpenseType,
+  PropertyExpenseTypeName,
+  TaxesState,
+  PropertyType,
+  PropertyTypeName
+} from '../../redux/data'
 import AddressFields from '../TaxPayer/Address'
-import { Currency, GenericLabeledDropdown, LabeledCheckbox, LabeledInput } from '../input'
+import {
+  Currency,
+  GenericLabeledDropdown,
+  LabeledCheckbox,
+  LabeledInput
+} from '../input'
 import { Patterns } from '../Patterns'
 import { daysInYear, enumKeys, segments } from '../../util'
 import { HouseOutlined } from '@material-ui/icons'
 import { FormListContainer } from '../FormContainer'
 import { Grid } from '@material-ui/core'
 import { CURRENT_YEAR } from '../../data/federal'
+import { If } from 'react-if'
 
 interface PropertyAddForm {
   address?: Address
@@ -81,13 +95,12 @@ const toProperty = (formData: PropertyAddForm): Property => {
     throw new Error('Validation failed')
   }
 
-  const newExpenses: Partial<{[K in PropertyExpenseTypeName]: number}> = (
+  const newExpenses: Partial<{ [K in PropertyExpenseTypeName]: number }> =
     Object.fromEntries(
       enumKeys(PropertyExpenseType)
-        .filter((e) => (e in expenses) && (expenses[e] as number > 0))
-        .map((e) => ([e, Number(expenses[e])]))
+        .filter((e) => e in expenses && (expenses[e] as number) > 0)
+        .map((e) => [e, Number(expenses[e])])
     )
-  )
 
   return {
     address,
@@ -117,12 +130,14 @@ const toUserInput = (property: Property): PropertyAddForm => {
   }
 }
 
-export default function RealEstate (): ReactElement {
+export default function RealEstate(): ReactElement {
   const methods = useForm<PropertyAddForm>()
-  const { control, formState: { errors }, getValues, handleSubmit, reset } = methods
+  const { control, getValues, handleSubmit, reset } = methods
   const dispatch = useDispatch()
 
-  const properties: Property[] = useSelector((state: TaxesState) => state.information.realEstate)
+  const properties: Property[] = useSelector(
+    (state: TaxesState) => state.information.realEstate
+  )
   const [editing, setEditing] = useState<number | undefined>(undefined)
 
   const defaultValues: PropertyAddForm | undefined = (() => {
@@ -145,7 +160,7 @@ export default function RealEstate (): ReactElement {
 
   const validateDays = (n: number, other: number): Message | true => {
     const days = daysInYear(CURRENT_YEAR)
-    return (n + other) <= days ? true : `Total use days must be less than ${days}`
+    return n + other <= days ? true : `Total use days must be less than ${days}`
   }
 
   const validatePersonal = (n: number): Message | true =>
@@ -164,20 +179,24 @@ export default function RealEstate (): ReactElement {
     clear()
   }
 
-  const onAddProperty = (onSuccess: () => void) => (formData: PropertyAddForm): void => {
-    dispatch((() => {
-      if (editing !== undefined) {
-        return editProperty({ value: toProperty(formData), index: editing })
-      } else {
-        return addProperty(toProperty(formData))
-      }
-    })())
-    clear()
-    onSuccess()
-  }
+  const onAddProperty =
+    (onSuccess: () => void) =>
+    (formData: PropertyAddForm): void => {
+      dispatch(
+        (() => {
+          if (editing !== undefined) {
+            return editProperty({ value: toProperty(formData), index: editing })
+          } else {
+            return addProperty(toProperty(formData))
+          }
+        })()
+      )
+      clear()
+      onSuccess()
+    }
 
-  const expenseFields: ReactElement[] = (
-    enumKeys(PropertyExpenseType).map((k, i) =>
+  const expenseFields: ReactElement[] = enumKeys(PropertyExpenseType).map(
+    (k, i) => (
       <LabeledInput
         key={i}
         label={displayExpense(PropertyExpenseType[k])}
@@ -188,7 +207,10 @@ export default function RealEstate (): ReactElement {
   )
 
   const otherExpenseDescription = (() => {
-    if (defaultValues?.expenses.other !== undefined || otherExpensesEntered !== 0) {
+    if (
+      defaultValues?.expenses.other !== undefined ||
+      otherExpensesEntered !== 0
+    ) {
       return (
         <LabeledInput
           key={enumKeys(PropertyExpenseType).length}
@@ -205,7 +227,7 @@ export default function RealEstate (): ReactElement {
       items={properties}
       icon={() => <HouseOutlined />}
       primary={(p) => p.address.address}
-      secondary={(p) => <Currency value={p.rentReceived} /> }
+      secondary={(p) => <Currency value={p.rentReceived} />}
       editItem={(i) => setEditing(i)}
       onDone={(onSuccess) => handleSubmit(onAddProperty(onSuccess))}
       removeItem={(i) => deleteProperty(i)}
@@ -213,47 +235,40 @@ export default function RealEstate (): ReactElement {
     >
       <h4>Property location</h4>
       <AddressFields
-        errors={errors.address}
         checkboxText="Does the property have a foreign address"
         allowForeignCountry={false}
       />
       <GenericLabeledDropdown
         dropDownData={enumKeys(PropertyType)}
         label="Property type"
-        error={errors.propertyType}
-        required={true}
         textMapping={(t) => displayPropertyType(PropertyType[t])}
         keyMapping={(_, n) => n}
         name="propertyType"
         valueMapping={(n) => n}
       />
-      {(() => {
-        if ([propertyType, defaultValues?.propertyType].includes('other')) {
-          return (
-            <LabeledInput
-              name="otherPropertyType"
-              label="Short property type description"
-              error={errors.otherPropertyType}
-              required={true}
-            />
-          )
-        }
-      })()}
+      <If
+        condition={[propertyType, defaultValues?.propertyType].includes(
+          'other'
+        )}
+      >
+        <LabeledInput
+          name="otherPropertyType"
+          label="Short property type description"
+          required={true}
+        />
+      </If>
       <h4>Use</h4>
       <LabeledInput
         name="rentalDays"
-        required={true}
         rules={{ validate: (n: String) => validateRental(Number(n)) }}
         label="Number of days in the year used for rental"
         patternConfig={Patterns.numDays}
-        error={errors.rentalDays}
       />
       <LabeledInput
         name="personalUseDays"
         rules={{ validate: (n: String) => validatePersonal(Number(n)) }}
         label="Number of days in the year for personal use"
         patternConfig={Patterns.numDays}
-        error={errors.personalUseDays}
       />
       <LabeledCheckbox
         name="qualifiedJointVenture"
@@ -265,42 +280,34 @@ export default function RealEstate (): ReactElement {
         name="rentReceived"
         label="Rent received"
         patternConfig={Patterns.currency}
-        error={errors.rentReceived}
       />
       <h5>Expenses</h5>
       <Grid container spacing={3} direction="row" justify="flex-start">
-        {(() => {
+        {
           // Layout expense fields in two columns
-          return (
-            segments(2, [...expenseFields, otherExpenseDescription])
-              .map((segment, i) =>
-                <Grid item key={i} lg={6}>
-                  {
-                    segment.map((item, k) =>
-                      <Fragment key={`${i}-${k}`}>
-                        {item}
-                      </Fragment>
-                    )
-                  }
-                </Grid>
-              )
+          segments(2, [...expenseFields, otherExpenseDescription]).map(
+            (segment, i) => (
+              <Grid item key={i} lg={6}>
+                {segment.map((item, k) => (
+                  <Fragment key={`${i}-${k}`}>{item}</Fragment>
+                ))}
+              </Grid>
+            )
           )
-        })()}
+        }
       </Grid>
     </FormListContainer>
   )
 
   return (
     <PagerContext.Consumer>
-      { ({ navButtons, onAdvance }) =>
+      {({ navButtons, onAdvance }) => (
         <form onSubmit={onAdvance}>
           <h2>Properties</h2>
-          <FormProvider {...methods}>
-            {form}
-          </FormProvider>
-          { navButtons }
+          <FormProvider {...methods}>{form}</FormProvider>
+          {navButtons}
         </form>
-      }
+      )}
     </PagerContext.Consumer>
   )
 }

@@ -1,99 +1,79 @@
 import React, { Fragment, ReactElement } from 'react'
-import { Address } from '../../redux/data'
+import { useFormContext, useWatch } from 'react-hook-form'
+import { If } from 'react-if'
 import { LabeledCheckbox, LabeledInput, USStateDropDown } from '../input'
+import { CountryDropDown } from '../input/LabeledDropdown'
 import { Patterns } from '../Patterns'
-import { Errors } from '../types'
 
 interface AddressProps {
   checkboxText: string
-  errors?: Errors<Address>
-  isForeignCountry?: boolean
   allowForeignCountry?: boolean
 }
 
-export default function AddressFields (props: AddressProps): ReactElement {
+export default function AddressFields(props: AddressProps): ReactElement {
   const {
-    isForeignCountry = false,
-    errors,
     checkboxText = 'Check if you have a foreign address',
     allowForeignCountry = true
   } = props
 
+  const { control } = useFormContext<{ isForeignCountry: boolean }>()
+
+  const isForeignCountry = useWatch({
+    name: 'isForeignCountry',
+    control
+  })
+
   const csz: ReactElement = (() => {
     if (!allowForeignCountry || !isForeignCountry) {
       return (
-        <div>
+        <Fragment>
           <USStateDropDown
             label="State"
             name="address.state"
-            error={errors?.state}
             required={!isForeignCountry}
           />
           <LabeledInput
             label="Zip"
-            error={errors?.zip}
             name="address.zip"
             patternConfig={Patterns.zip}
             required={!isForeignCountry}
           />
-        </div>
+        </Fragment>
       )
     }
     return (
-      <div>
+      <Fragment>
         <LabeledInput
           label="Province"
           name="address.province"
-          error={errors?.province}
           required={isForeignCountry}
         />
         <LabeledInput
           name="address.postalCode"
           label="Postal Code"
-          error={errors?.postalCode}
           required={isForeignCountry}
         />
-        <LabeledInput
+        <CountryDropDown
           name="address.foreignCountry"
           label="Country"
-          error={errors?.foreignCountry}
           required={isForeignCountry}
         />
-      </div>
+      </Fragment>
     )
   })()
 
   return (
     <Fragment>
-      <LabeledInput
-        label="Address"
-        name="address.address"
-        required={true}
-        error={errors?.address}
-      />
-      <LabeledInput
-        label="Unit No"
-        name="address.aptNo"
-        required={false}
-        error={errors?.aptNo}
-      />
+      <LabeledInput label="Address" name="address.address" required={true} />
+      <LabeledInput label="Unit No" name="address.aptNo" required={false} />
       <LabeledInput
         label="City"
         name="address.city"
         patternConfig={Patterns.name}
-        required={true}
-        error={errors?.city}
       />
-      {(() => {
-        if (allowForeignCountry) {
-          return (
-            <LabeledCheckbox
-              label={checkboxText}
-              name="isForeignCountry"
-            />
-          )
-        }
-      })()}
+      <If condition={allowForeignCountry}>
+        <LabeledCheckbox label={checkboxText} name="isForeignCountry" />
+      </If>
       {csz}
     </Fragment>
   )
