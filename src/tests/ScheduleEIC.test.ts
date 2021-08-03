@@ -16,9 +16,7 @@ jest.mock('redux-persist', () => {
   }
 })
 
-beforeAll(async () =>
-  jest.spyOn(console, 'warn').mockImplementation(() => {})
-)
+beforeAll(async () => jest.spyOn(console, 'warn').mockImplementation(() => {}))
 
 describe('ScheduleEIC', () => {
   it('should disallow EIC for income below threshold', () => {
@@ -26,7 +24,10 @@ describe('ScheduleEIC', () => {
       fc.property(arbitraries.f1040, ([f1040, forms]) => {
         if (f1040.filingStatus !== undefined) {
           const formula = federal.EIC.formulas[f1040.filingStatus]
-          if (formula !== undefined && f1040.wages() < formula[0][1].lowerBound) {
+          if (
+            formula !== undefined &&
+            f1040.wages() < formula[0][1].lowerBound
+          ) {
             expect(f1040.scheduleEIC?.allowed(f1040) ?? false).toBe(false)
             expect(f1040.scheduleEIC?.credit(f1040) ?? 0).toBe(0)
           }

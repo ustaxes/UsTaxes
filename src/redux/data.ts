@@ -124,13 +124,13 @@ export enum FilingStatus {
 
 export type FilingStatusName = keyof typeof FilingStatus
 
-export const FilingStatusTexts = ({
+export const FilingStatusTexts = {
   [FilingStatus.S]: 'Single',
   [FilingStatus.MFJ]: 'Married Filing Jointly',
   [FilingStatus.MFS]: 'Married Filing Separately',
   [FilingStatus.HOH]: 'Head of Household',
   [FilingStatus.W]: 'Widow(er)'
-})
+}
 
 export const filingStatuses = (p: TaxPayer | undefined): FilingStatus[] => {
   let withDependents: FilingStatus[] = []
@@ -146,11 +146,7 @@ export const filingStatuses = (p: TaxPayer | undefined): FilingStatus[] => {
   } else {
     spouseStatuses = [FilingStatus.S]
   }
-  return [
-    ...spouseStatuses,
-    ...withDependents,
-    FilingStatus.W
-  ]
+  return [...spouseStatuses, ...withDependents, FilingStatus.W]
 }
 
 export interface ContactInfo {

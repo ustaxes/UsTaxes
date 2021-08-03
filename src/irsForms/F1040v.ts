@@ -8,7 +8,7 @@ export default class F1040V implements Form {
   state: Information
   f1040: F1040
 
-  constructor (info: Information, f1040: F1040) {
+  constructor(info: Information, f1040: F1040) {
     this.state = info
     this.f1040 = f1040
   }

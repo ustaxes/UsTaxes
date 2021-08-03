@@ -9,21 +9,28 @@ import Schedule3 from '../irsForms/Schedule3'
 import { isRight } from '../util'
 import * as arbitraries from './arbitraries'
 
-function hasSSRefund (f1040: F1040): boolean {
+function hasSSRefund(f1040: F1040): boolean {
   const s3 = f1040.schedule3
   const l10 = s3?.l10()
   return l10 !== undefined && l10 > 0
 }
 
-function hasAdditionalMedicareTax (f1040: F1040): boolean {
+function hasAdditionalMedicareTax(f1040: F1040): boolean {
   const s2 = f1040.schedule2
   const l8 = s2?.l8()
   return l8 !== undefined && l8 > 0
 }
 
 type Constructor<T> = new (...args: any[]) => T
-function hasAttachment<FormType> (attachments: Form[], formType: Constructor<FormType>): boolean {
-  return attachments.find((f) => { return f instanceof formType }) !== undefined
+function hasAttachment<FormType>(
+  attachments: Form[],
+  formType: Constructor<FormType>
+): boolean {
+  return (
+    attachments.find((f) => {
+      return f instanceof formType
+    }) !== undefined
+  )
 }
 
 describe('fica', () => {
@@ -37,10 +44,15 @@ describe('fica', () => {
             // Should never give SS refund with 1 or fewer W2s
             expect(hasSSRefund(f1040)).toEqual(false)
           } else {
-            const ssWithheld = f1040.validW2s().map((w2) => w2.ssWithholding).reduce((l, r) => l + r, 0)
-            if (f1040.wages() <= fica.maxIncomeSSTaxApplies ||
+            const ssWithheld = f1040
+              .validW2s()
+              .map((w2) => w2.ssWithholding)
+              .reduce((l, r) => l + r, 0)
+            if (
+              f1040.wages() <= fica.maxIncomeSSTaxApplies ||
               f1040.validW2s().some((w2) => w2.ssWithholding > fica.maxSSTax) ||
-              ssWithheld < fica.maxSSTax) {
+              ssWithheld < fica.maxSSTax
+            ) {
               // Should never give SS refund if W2 income below max threshold, some W2 has
               // withheld over the max, or there is no SS withholding to refund.
               expect(hasSSRefund(f1040)).toEqual(false)
@@ -63,7 +75,10 @@ describe('fica', () => {
           expect(s3l10).not.toBeUndefined()
           expect(s3l10).toBeGreaterThan(0)
 
-          const ssWithheld = f1040.validW2s().map((w2) => w2.ssWithholding).reduce((l, r) => l + r, 0)
+          const ssWithheld = f1040
+            .validW2s()
+            .map((w2) => w2.ssWithholding)
+            .reduce((l, r) => l + r, 0)
           expect(s3l10).toEqual(ssWithheld - fica.maxSSTax)
         }
       })
@@ -100,17 +115,25 @@ describe('fica', () => {
         }
         if (hasAdditionalMedicareTax(f1040)) {
           const filingStatus = f1040.filingStatus
-          const incomeOverThreshold = f1040.wages() - fica.additionalMedicareTaxThreshold(filingStatus)
+          const incomeOverThreshold =
+            f1040.wages() - fica.additionalMedicareTaxThreshold(filingStatus)
           expect(incomeOverThreshold).toBeGreaterThan(0)
 
           // Adds the right amount of additional tax
           const s2l8 = f1040.schedule2?.l8()
           expect(s2l8).not.toBeUndefined()
-          expect(s2l8).toEqual(Math.round(incomeOverThreshold * fica.additionalMedicareTaxRate))
+          expect(s2l8).toEqual(
+            Math.round(incomeOverThreshold * fica.additionalMedicareTaxRate)
+          )
 
           // Also adds in the extra Medicare tax withheld to 1040 taxes already paid
-          const medicareWithheld = f1040.validW2s().map((w2) => w2.medicareWithholding).reduce((l, r) => l + r, 0)
-          const regularWithholding = Math.round(fica.regularMedicareTaxRate * f1040.wages())
+          const medicareWithheld = f1040
+            .validW2s()
+            .map((w2) => w2.medicareWithholding)
+            .reduce((l, r) => l + r, 0)
+          const regularWithholding = Math.round(
+            fica.regularMedicareTaxRate * f1040.wages()
+          )
           if (medicareWithheld > regularWithholding) {
             const f1040l25c = f1040.l25c()
             expect(f1040l25c).not.toBeUndefined()

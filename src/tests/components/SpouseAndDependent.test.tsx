@@ -1,9 +1,17 @@
 import React from 'react'
-import { render, screen, fireEvent, waitFor, waitForElementToBeRemoved } from '@testing-library/react'
+import {
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+  waitForElementToBeRemoved
+} from '@testing-library/react'
 import { Provider } from 'react-redux'
 import userEvent from '@testing-library/user-event'
 
-import SpouseAndDependent, { SpouseInfo } from './SpouseAndDependent'
+import SpouseAndDependent, {
+  SpouseInfo
+} from '../../components/TaxPayer/SpouseAndDependent'
 import { store } from '../../redux/store'
 
 afterEach(async () => {
@@ -22,9 +30,9 @@ jest.mock('redux-persist', () => {
 describe('SpouseInfo', () => {
   it('renders an `Add` button when no spouse has been added', () => {
     render(
-    <Provider store={store}>
-      <SpouseInfo />
-    </Provider>
+      <Provider store={store}>
+        <SpouseInfo />
+      </Provider>
     )
     // initial state has an add button
     screen.getByRole('button', {
@@ -43,9 +51,9 @@ describe('SpouseInfo', () => {
   })
   it('renders form elements when `Add` button is clicked', () => {
     render(
-    <Provider store={store}>
-      <SpouseInfo />
-    </Provider>
+      <Provider store={store}>
+        <SpouseInfo />
+      </Provider>
     )
 
     const addButton = screen.getByRole('button', {
@@ -69,9 +77,9 @@ describe('SpouseInfo', () => {
   })
   it('saves and edits a spouse', async () => {
     render(
-    <Provider store={store}>
-      <SpouseInfo />
-    </Provider>
+      <Provider store={store}>
+        <SpouseInfo />
+      </Provider>
     )
 
     const addButton = screen.getByRole('button', {
@@ -112,7 +120,8 @@ describe('SpouseInfo', () => {
 
     // get all the inputs again, which should be filled this time
     const filledInputs = await screen.findAllByRole('textbox')
-    const [filledFirstName, filledLastName, filledSsn] = filledInputs as HTMLInputElement[]
+    const [filledFirstName, filledLastName, filledSsn] =
+      filledInputs as HTMLInputElement[]
 
     // expect the edit button to no longer be in the document
     expect(editButton).not.toBeInTheDocument()
@@ -131,9 +140,11 @@ describe('SpouseInfo', () => {
     await waitFor(() => {})
 
     // click the save button to save the new values
-    fireEvent.click(screen.getByRole('button', {
-      name: /Save/
-    }))
+    fireEvent.click(
+      screen.getByRole('button', {
+        name: /Save/
+      })
+    )
 
     // expect the new names to be concatenated and new ssn to appear with hyphens
     await screen.findByText('Fella McGee')
@@ -156,9 +167,9 @@ describe('SpouseInfo', () => {
   })
   it('does not save when required fields not completed', async () => {
     render(
-    <Provider store={store}>
-      <SpouseInfo />
-    </Provider>
+      <Provider store={store}>
+        <SpouseInfo />
+      </Provider>
     )
 
     const addButton = screen.getByRole('button', {
@@ -192,7 +203,9 @@ describe('SpouseInfo', () => {
 
     // expect two input errors and an error about restricted characters
     await waitFor(() => {})
-    const nameErrorsAfterBadFirstName = await screen.findAllByText('Input is required')
+    const nameErrorsAfterBadFirstName = await screen.findAllByText(
+      'Input is required'
+    )
     expect(nameErrorsAfterBadFirstName).toHaveLength(2)
     screen.getByText('Input should only include letters and spaces')
 
@@ -202,7 +215,9 @@ describe('SpouseInfo', () => {
 
     // expect two name errors
     await waitFor(() => {})
-    const nameErrorsAfterAddingFirstName = await screen.findAllByText('Input is required')
+    const nameErrorsAfterAddingFirstName = await screen.findAllByText(
+      'Input is required'
+    )
     expect(nameErrorsAfterAddingFirstName).toHaveLength(2)
 
     // add a name with restricted characters
@@ -211,7 +226,9 @@ describe('SpouseInfo', () => {
 
     // expect an error about restricted characters, and one name error
     await waitFor(() => {})
-    const nameErrorsAfterBadLastName = await screen.findAllByText('Input is required')
+    const nameErrorsAfterBadLastName = await screen.findAllByText(
+      'Input is required'
+    )
     expect(nameErrorsAfterBadLastName).toHaveLength(1)
     screen.getByText('Input should only include letters and spaces')
 
@@ -301,7 +318,15 @@ describe('Dependents', () => {
 
     fireEvent.click(addDependentButton)
 
-    const dependentFormLabels = ['First Name and Initial', 'Last Name', 'SSN / TIN', 'Relationship to Taxpayer', 'Birth Year', 'How many months did you live together this year?', 'Is this person a full-time student?']
+    const dependentFormLabels = [
+      'First Name and Initial',
+      'Last Name',
+      'SSN / TIN',
+      'Relationship to Taxpayer',
+      'Birth Year',
+      'How many months did you live together this year?',
+      'Is this person a full-time student?'
+    ]
 
     // Assert all form labels appear
     for (const label of dependentFormLabels) {
@@ -343,7 +368,14 @@ describe('Dependents', () => {
 
     // get all inputs
     const inputs = screen.getAllByRole('textbox')
-    const [firstNameInput, lastNameInput, ssnInput, relationInput, birthYearInput, durationInput] = inputs
+    const [
+      firstNameInput,
+      lastNameInput,
+      ssnInput,
+      relationInput,
+      birthYearInput,
+      durationInput
+    ] = inputs
 
     // add values for each input
     userEvent.type(firstNameInput, 'Charlie')
@@ -366,10 +398,19 @@ describe('Dependents', () => {
     const [_addSpouse, addAnotherDependentButton] = addButtonsAfterAdd
 
     fireEvent.click(addAnotherDependentButton)
-    const newStudentLabel = screen.getByText('Is this person a full-time student?')
+    const newStudentLabel = screen.getByText(
+      'Is this person a full-time student?'
+    )
 
     const newInputs = screen.getAllByRole('textbox')
-    const [newFirstNameInput, newLastNameInput, newSsnInput, newRelationInput, newBirthYearInput, newDurationInput] = newInputs
+    const [
+      newFirstNameInput,
+      newLastNameInput,
+      newSsnInput,
+      newRelationInput,
+      newBirthYearInput,
+      newDurationInput
+    ] = newInputs
 
     userEvent.type(newFirstNameInput, 'Sally')
     userEvent.type(newLastNameInput, 'Brown')
@@ -395,10 +436,14 @@ describe('Dependents', () => {
     const [deleteCharlie, deleteSally] = deleteButtons
 
     fireEvent.click(deleteSally)
-    await waitFor(() => expect(screen.queryByText('Sally Brown')).not.toBeInTheDocument())
+    await waitFor(() =>
+      expect(screen.queryByText('Sally Brown')).not.toBeInTheDocument()
+    )
 
     fireEvent.click(deleteCharlie)
-    await waitFor(() => expect(screen.queryByText('Charlie Brown')).not.toBeInTheDocument())
+    await waitFor(() =>
+      expect(screen.queryByText('Charlie Brown')).not.toBeInTheDocument()
+    )
   })
   it('saves and edits multiple dependents', async () => {
     render(
@@ -424,7 +469,14 @@ describe('Dependents', () => {
 
     // get all inputs
     const inputs = screen.getAllByRole('textbox')
-    const [firstNameInput, lastNameInput, ssnInput, relationInput, birthYearInput, durationInput] = inputs
+    const [
+      firstNameInput,
+      lastNameInput,
+      ssnInput,
+      relationInput,
+      birthYearInput,
+      durationInput
+    ] = inputs
 
     // add values for each input
     userEvent.type(firstNameInput, 'Charlie')
@@ -447,10 +499,19 @@ describe('Dependents', () => {
     const [_addSpouse, addAnotherDependentButton] = addButtonsAfterAdd
 
     fireEvent.click(addAnotherDependentButton)
-    const newStudentLabel = screen.getByText('Is this person a full-time student?')
+    const newStudentLabel = screen.getByText(
+      'Is this person a full-time student?'
+    )
 
     const newInputs = screen.getAllByRole('textbox')
-    const [newFirstNameInput, newLastNameInput, newSsnInput, newRelationInput, newBirthYearInput, newDurationInput] = newInputs
+    const [
+      newFirstNameInput,
+      newLastNameInput,
+      newSsnInput,
+      newRelationInput,
+      newBirthYearInput,
+      newDurationInput
+    ] = newInputs
 
     userEvent.type(newFirstNameInput, 'Sally')
     userEvent.type(newLastNameInput, 'Brown')
@@ -476,7 +537,14 @@ describe('Dependents', () => {
     fireEvent.click(editCharlie)
 
     const filledInputs = await screen.findAllByRole('textbox')
-    const [filledFirstNameInput, filledLastNameInput, filledSsnInput, filledRelationInput, filledBirthYearInput, filledDurationInput] = filledInputs as HTMLInputElement[]
+    const [
+      filledFirstNameInput,
+      filledLastNameInput,
+      filledSsnInput,
+      filledRelationInput,
+      filledBirthYearInput,
+      filledDurationInput
+    ] = filledInputs as HTMLInputElement[]
 
     expect(filledFirstNameInput.value).toBe('Charlie')
     expect(filledLastNameInput.value).toBe('Brown')
@@ -489,9 +557,11 @@ describe('Dependents', () => {
     userEvent.type(filledFirstNameInput, '{selectall}{del}Deebo')
     fireEvent.change(filledSsnInput, { target: { value: '777777777' } })
 
-    fireEvent.click(screen.getByRole('button', {
-      name: /Save/
-    }))
+    fireEvent.click(
+      screen.getByRole('button', {
+        name: /Save/
+      })
+    )
 
     await screen.findByText('Deebo Brown')
     await screen.findByText('777-77-7777')
@@ -502,10 +572,14 @@ describe('Dependents', () => {
     const [deleteDeebo, deleteSally] = deleteButtons
 
     fireEvent.click(deleteSally)
-    await waitFor(() => expect(screen.queryByText('Sally Brown')).not.toBeInTheDocument())
+    await waitFor(() =>
+      expect(screen.queryByText('Sally Brown')).not.toBeInTheDocument()
+    )
 
     fireEvent.click(deleteDeebo)
-    await waitFor(() => expect(screen.queryByText('Deebo Brown')).not.toBeInTheDocument())
+    await waitFor(() =>
+      expect(screen.queryByText('Deebo Brown')).not.toBeInTheDocument()
+    )
   })
 
   it('renders appropriate input errors', async () => {
@@ -524,7 +598,15 @@ describe('Dependents', () => {
 
     fireEvent.click(addDependentButton)
 
-    const labels = ['First Name and Initial', 'Last Name', 'SSN / TIN', 'Relationship to Taxpayer', 'Birth Year', 'How many months did you live together this year?', 'Is this person a full-time student?']
+    const labels = [
+      'First Name and Initial',
+      'Last Name',
+      'SSN / TIN',
+      'Relationship to Taxpayer',
+      'Birth Year',
+      'How many months did you live together this year?',
+      'Is this person a full-time student?'
+    ]
     // Assert all form labels appear
     for (const label of labels) {
       screen.getByText(label)
@@ -542,38 +624,59 @@ describe('Dependents', () => {
     expect(nameErrors).toHaveLength(6)
 
     const inputs = screen.getAllByRole('textbox')
-    const [firstNameInput, lastNameInput, ssnInput, relationInput, birthYearInput, durationInput] = inputs
+    const [
+      firstNameInput,
+      lastNameInput,
+      ssnInput,
+      relationInput,
+      birthYearInput,
+      durationInput
+    ] = inputs
 
     userEvent.type(firstNameInput, '8675309')
     fireEvent.click(saveButton)
 
-    const firstNameErrors = await screen.findAllByText('Input should only include letters and spaces')
+    const firstNameErrors = await screen.findAllByText(
+      'Input should only include letters and spaces'
+    )
     expect(firstNameErrors).toHaveLength(1)
     expect(screen.getAllByText('Input is required')).toHaveLength(5)
 
     userEvent.type(firstNameInput, '{selectall}{del}Booker T')
     fireEvent.click(saveButton)
 
-    await waitFor(() => expect(screen.queryByText('Input should only include letters and spaces')).not.toBeInTheDocument())
+    await waitFor(() =>
+      expect(
+        screen.queryByText('Input should only include letters and spaces')
+      ).not.toBeInTheDocument()
+    )
     expect(screen.getAllByText('Input is required')).toHaveLength(5)
 
     userEvent.type(lastNameInput, '666')
     fireEvent.click(saveButton)
 
-    const lastNameErrors = await screen.findAllByText('Input should only include letters and spaces')
+    const lastNameErrors = await screen.findAllByText(
+      'Input should only include letters and spaces'
+    )
     expect(lastNameErrors).toHaveLength(1)
     expect(screen.getAllByText('Input is required')).toHaveLength(4)
 
     userEvent.type(lastNameInput, '{selectall}{del}Washington')
     fireEvent.click(saveButton)
 
-    await waitFor(() => expect(screen.queryByText('Input should only include letters and spaces')).not.toBeInTheDocument())
+    await waitFor(() =>
+      expect(
+        screen.queryByText('Input should only include letters and spaces')
+      ).not.toBeInTheDocument()
+    )
     expect(screen.getAllByText('Input is required')).toHaveLength(4)
 
     fireEvent.change(ssnInput, { target: { value: '123' } })
     fireEvent.click(saveButton)
 
-    const ssnErrors = await screen.findAllByText('Input should be filled with 9 digits')
+    const ssnErrors = await screen.findAllByText(
+      'Input should be filled with 9 digits'
+    )
     expect(ssnErrors).toHaveLength(1)
     expect(screen.getAllByText('Input is required')).toHaveLength(3)
 
@@ -581,20 +684,30 @@ describe('Dependents', () => {
     fireEvent.change(ssnInput, { target: { value: '123456789' } })
     fireEvent.click(saveButton)
 
-    await waitFor(() => expect(screen.queryByText('Input should be filled with 9 digits')).not.toBeInTheDocument())
+    await waitFor(() =>
+      expect(
+        screen.queryByText('Input should be filled with 9 digits')
+      ).not.toBeInTheDocument()
+    )
     expect(screen.getAllByText('Input is required')).toHaveLength(3)
 
     userEvent.type(relationInput, '1111')
     fireEvent.click(saveButton)
 
-    const relationshipErrors = await screen.findAllByText('Input should only include letters and spaces')
+    const relationshipErrors = await screen.findAllByText(
+      'Input should only include letters and spaces'
+    )
     expect(relationshipErrors).toHaveLength(1)
     expect(screen.getAllByText('Input is required')).toHaveLength(2)
 
     userEvent.type(relationInput, '{selectall}{del}stepchild')
     fireEvent.click(saveButton)
 
-    await waitFor(() => expect(screen.queryByText('Input should only include letters and spaces')).not.toBeInTheDocument())
+    await waitFor(() =>
+      expect(
+        screen.queryByText('Input should only include letters and spaces')
+      ).not.toBeInTheDocument()
+    )
     expect(screen.getAllByText('Input is required')).toHaveLength(2)
 
     userEvent.type(birthYearInput, 'abcd')
@@ -606,14 +719,20 @@ describe('Dependents', () => {
     userEvent.type(birthYearInput, '{selectall}{del}1294')
     fireEvent.click(saveButton)
 
-    const newBirthErrors = await screen.findAllByText('Input must be greater than or equal to 1900')
+    const newBirthErrors = await screen.findAllByText(
+      'Input must be greater than or equal to 1900'
+    )
     expect(newBirthErrors).toHaveLength(1)
     expect(screen.getAllByText('Input is required')).toHaveLength(1)
 
     userEvent.type(birthYearInput, '{selectall}{del}1999')
     fireEvent.click(saveButton)
 
-    await waitFor(() => expect(screen.queryByText('Input must be greater than or equal to 1900')).not.toBeInTheDocument())
+    await waitFor(() =>
+      expect(
+        screen.queryByText('Input must be greater than or equal to 1900')
+      ).not.toBeInTheDocument()
+    )
     expect(screen.getAllByText('Input is required')).toHaveLength(1)
 
     userEvent.type(durationInput, 'abcd')
@@ -624,14 +743,18 @@ describe('Dependents', () => {
     userEvent.type(durationInput, '{selectall}{del}15')
     fireEvent.click(saveButton)
 
-    const newDurationErrors = await screen.findAllByText('Input must be less than or equal to 12')
+    const newDurationErrors = await screen.findAllByText(
+      'Input must be less than or equal to 12'
+    )
     expect(newDurationErrors).toHaveLength(1)
     expect(screen.queryAllByText('Input is required')).toHaveLength(0)
 
     userEvent.type(durationInput, '{selectall}{del}10')
     fireEvent.click(saveButton)
 
-    await waitForElementToBeRemoved(() => screen.queryByText('Input must be less than or equal to 12'))
+    await waitForElementToBeRemoved(() =>
+      screen.queryByText('Input must be less than or equal to 12')
+    )
     expect(screen.queryAllByText('Input is required')).toHaveLength(0)
 
     await screen.findByText('Booker T Washington')
@@ -639,6 +762,8 @@ describe('Dependents', () => {
 
     const deleteBooker = screen.getByLabelText('delete')
     fireEvent.click(deleteBooker)
-    await waitFor(() => expect(screen.queryByText('Booker T Washington')).not.toBeInTheDocument())
+    await waitFor(() =>
+      expect(screen.queryByText('Booker T Washington')).not.toBeInTheDocument()
+    )
   })
 })

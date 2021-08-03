@@ -10,16 +10,15 @@ import {
   IconButton,
   Grid
 } from '@material-ui/core'
-import {
-  Switch,
-  Route,
-  Redirect,
-  useLocation
-} from 'react-router-dom'
+import { Switch, Route, Redirect, useLocation } from 'react-router-dom'
 import MenuIcon from '@material-ui/icons/Menu'
 import W2JobInfo from './income/W2JobInfo'
 import CreatePDF from './createPDF'
-import ResponsiveDrawer, { item, Section, SectionItem } from './ResponsiveDrawer'
+import ResponsiveDrawer, {
+  item,
+  Section,
+  SectionItem
+} from './ResponsiveDrawer'
 import { PagerButtons, PagerContext, usePager } from './pager'
 import PrimaryTaxpayer from './TaxPayer'
 import RefundBankAccount from './RefundBankAccount'
@@ -115,15 +114,17 @@ Urls.default = Urls.usTaxes.start
 const drawerSections: Section[] = [
   {
     title: 'UsTaxes.org',
-    items: [
-      item('Getting Started', Urls.usTaxes.start, <GettingStarted/>)
-    ]
+    items: [item('Getting Started', Urls.usTaxes.start, <GettingStarted />)]
   },
   {
     title: 'Personal',
     items: [
       item('Primary Taxpayer', Urls.taxPayer.info, <PrimaryTaxpayer />),
-      item('Spouse and Dependents', Urls.taxPayer.spouseAndDependent, <SpouseAndDependent />),
+      item(
+        'Spouse and Dependents',
+        Urls.taxPayer.spouseAndDependent,
+        <SpouseAndDependent />
+      ),
       item('Contact Information', Urls.taxPayer.contactInfo, <ContactInfo />)
     ]
   },
@@ -152,8 +153,10 @@ const drawerSections: Section[] = [
   }
 ]
 
-export default function Main (): ReactElement {
-  const allItems: SectionItem[] = drawerSections.flatMap((section: Section) => section.items)
+export default function Main(): ReactElement {
+  const allItems: SectionItem[] = drawerSections.flatMap(
+    (section: Section) => section.items
+  )
   const [prev, onAdvance] = usePager(allItems, (item) => item.url)
   const [mobileOpen, setMobileOpen] = useState(false)
   const classes = useStyles()
@@ -190,21 +193,29 @@ export default function Main (): ReactElement {
           <div className={classes.toolbar} />
           <Grid container spacing={2}>
             <Grid item sm />
-            <Grid item sm={10} lg={6} >
-            <PagerContext.Provider value={{ onAdvance: (onAdvance ?? (() => {})), navButtons }}>
-              <Switch>
-                <Redirect path="/" to={Urls.default} exact />
-                {
-                  allItems.map((item, index) =>
-                    <Route key={index} exact path={item.url}>{item.element}</Route>
-                  )
-                }
-                <Route>
-                  <NoMatchPage/>
-                </Route>
-              </Switch>
-                { useLocation().pathname !== '/start' ? <ResponsiveDrawer sections={drawerSections} isOpen={mobileOpen} onClose={() => setMobileOpen(false)} /> : null }
-            </PagerContext.Provider>
+            <Grid item sm={10} lg={6}>
+              <PagerContext.Provider
+                value={{ onAdvance: onAdvance ?? (() => {}), navButtons }}
+              >
+                <Switch>
+                  <Redirect path="/" to={Urls.default} exact />
+                  {allItems.map((item, index) => (
+                    <Route key={index} exact path={item.url}>
+                      {item.element}
+                    </Route>
+                  ))}
+                  <Route>
+                    <NoMatchPage />
+                  </Route>
+                </Switch>
+                {useLocation().pathname !== '/start' ? (
+                  <ResponsiveDrawer
+                    sections={drawerSections}
+                    isOpen={mobileOpen}
+                    onClose={() => setMobileOpen(false)}
+                  />
+                ) : null}
+              </PagerContext.Provider>
             </Grid>
             <Grid item sm />
           </Grid>

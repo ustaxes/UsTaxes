@@ -35,19 +35,25 @@ export interface Question {
 
 export type Responses = Partial<QuestionTag>
 
-function q (tag: QuestionTagName, text: string, valueTag: ValueTag, required: ((s: TaxesState) => boolean)): Question {
+function q(
+  tag: QuestionTagName,
+  text: string,
+  valueTag: ValueTag,
+  required: (s: TaxesState) => boolean
+): Question {
   return { text, tag, required: right(required), valueTag }
 }
 
-function qr (tag: QuestionTagName, text: string, valueTag: ValueTag = 'boolean'): Question {
+function qr(
+  tag: QuestionTagName,
+  text: string,
+  valueTag: ValueTag = 'boolean'
+): Question {
   return { text, tag, required: left(true), valueTag }
 }
 
 export const questions: Question[] = [
-  qr(
-    'CRYPTO',
-    'Do you have any crypto-currency transactions?'
-  ),
+  qr('CRYPTO', 'Do you have any crypto-currency transactions?'),
   qr(
     'FOREIGN_ACCOUNT_EXISTS',
     'At any time in this year, did you have a financial interest in or signature authority over a financial account such as a bank account, securities account, or brokerage account) located in a foreign country?'
@@ -70,6 +76,8 @@ export const questions: Question[] = [
   )
 ]
 
-export const getRequiredQuestions = (state: TaxesState): Question[] => questions.filter((q) =>
-  isLeft(q.required) || (isRight(q.required) && q.required.right(state))
-)
+export const getRequiredQuestions = (state: TaxesState): Question[] =>
+  questions.filter(
+    (q) =>
+      isLeft(q.required) || (isRight(q.required) && q.required.right(state))
+  )

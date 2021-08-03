@@ -16,16 +16,19 @@ const useStyles = makeStyles((theme) => ({
   }
 }))
 
-export default function CreatePDF (): ReactElement {
+export default function CreatePDF(): ReactElement {
   const [errors, updateErrors] = useState<string[]>([])
   const classes = useStyles()
 
-  const lastName = useSelector((state: TaxesState) => state.information.taxPayer.primaryPerson?.lastName ?? '')
+  const lastName = useSelector(
+    (state: TaxesState) =>
+      state.information.taxPayer.primaryPerson?.lastName ?? ''
+  )
 
   const onSubmit = async (e: FormEvent<any>): Promise<void> => {
     e.preventDefault()
-    return await createPDFPopup(`${lastName}-1040.pdf`)
-      .catch((errors: string[]) => {
+    return await createPDFPopup(`${lastName}-1040.pdf`).catch(
+      (errors: string[]) => {
         if (errors.length !== undefined && errors.length > 0) {
           updateErrors(errors)
         } else {
@@ -33,22 +36,27 @@ export default function CreatePDF (): ReactElement {
           log.error(errors)
           return Promise.reject(errors)
         }
-      })
+      }
+    )
   }
 
   return (
     <PagerContext.Consumer>
-      { ({ navButtons }) =>
+      {({ navButtons }) => (
         <form onSubmit={onSubmit}>
           <div>
             <h2>Print Copy to File</h2>
           </div>
           <div className={classes.root}>
-            {errors.map((error, i) => <Alert key={i} severity="warning">{error}</Alert>)}
+            {errors.map((error, i) => (
+              <Alert key={i} severity="warning">
+                {error}
+              </Alert>
+            ))}
           </div>
           {navButtons}
         </form>
-      }
+      )}
     </PagerContext.Consumer>
   )
 }

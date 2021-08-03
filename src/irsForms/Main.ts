@@ -37,11 +37,19 @@ export const getSchedules = (f1040: F1040, state: Information): Form[] => {
   }
 
   if (state.f1098es.length > 0) {
-    const studentLoanInterestWorksheet = new StudentLoanInterestWorksheet(f1040, state.taxPayer, state.f1098es)
+    const studentLoanInterestWorksheet = new StudentLoanInterestWorksheet(
+      f1040,
+      state.taxPayer,
+      state.f1098es
+    )
     f1040.addStudentLoanInterestWorksheet(studentLoanInterestWorksheet)
     // Future proofing be checking if Schedule 1 exists before adding it
     // Don't add s1 if unable to take deduction
-    if (f1040.schedule1 === undefined && studentLoanInterestWorksheet.notMFS() && studentLoanInterestWorksheet.isNotDependent()) {
+    if (
+      f1040.schedule1 === undefined &&
+      studentLoanInterestWorksheet.notMFS() &&
+      studentLoanInterestWorksheet.isNotDependent()
+    ) {
       const s1 = new Schedule1(state, f1040)
       f1040.addSchedule1(s1)
       forms.push(s1)
@@ -49,16 +57,25 @@ export const getSchedules = (f1040: F1040, state: Information): Form[] => {
   }
 
   if (needsF8959(state)) {
-    const f8959 = f1040.f8959 !== undefined ? f1040.f8959 : new F8959(state, undefined, undefined, undefined)
+    const f8959 =
+      f1040.f8959 !== undefined
+        ? f1040.f8959
+        : new F8959(state, undefined, undefined, undefined)
     f1040.add8959(f8959)
 
-    const s2 = f1040.schedule2 !== undefined ? f1040.schedule2 : new Schedule2(state.taxPayer, f8959)
+    const s2 =
+      f1040.schedule2 !== undefined
+        ? f1040.schedule2
+        : new Schedule2(state.taxPayer, f8959)
     f1040.addSchedule2(s2)
     forms.push(s2)
     forms.push(f8959)
   }
 
-  if (claimableExcessSSTaxWithholding(state.w2s) > 0 && f1040.schedule3 === undefined) {
+  if (
+    claimableExcessSSTaxWithholding(state.w2s) > 0 &&
+    f1040.schedule3 === undefined
+  ) {
     const s3 = new Schedule3(state, f1040)
     f1040.addSchedule3(s3)
     forms.push(s3)
@@ -84,7 +101,11 @@ export const getSchedules = (f1040: F1040, state: Information): Form[] => {
   const ws = new ChildTaxCreditWorksheet(f1040)
   const schedule8812 = new Schedule8812(state.taxPayer, f1040)
 
-  if (f1040.dependents.some((dep) => ws.qualifiesChild(dep) || ws.qualifiesOther(dep))) {
+  if (
+    f1040.dependents.some(
+      (dep) => ws.qualifiesChild(dep) || ws.qualifiesOther(dep)
+    )
+  ) {
     f1040.addChildTaxCreditWorksheet(ws)
     f1040.addSchedule8812(schedule8812)
     forms.push(schedule8812)
@@ -100,7 +121,9 @@ export const getSchedules = (f1040: F1040, state: Information): Form[] => {
   return forms
 }
 
-export function create1040 (state: Information): Either<F1040Error[], [F1040, Form[]]> {
+export function create1040(
+  state: Information
+): Either<F1040Error[], [F1040, Form[]]> {
   const f1040 = new F1040(state.taxPayer)
 
   state.w2s.forEach((w2) => f1040.addW2(w2))

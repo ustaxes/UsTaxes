@@ -1,18 +1,16 @@
 module.exports = {
   settings: {
     react: {
-      "version": "latest",
-    },
+      version: 'latest'
+    }
   },
   env: {
     browser: true,
     es2021: true,
     node: true
   },
-  extends: [
-    'plugin:react/recommended',
-    'standard-with-typescript'
-  ],
+  extends: ['plugin:react/recommended', 'prettier'],
+  parser: '@typescript-eslint/parser',
   parserOptions: {
     ecmaFeatures: {
       jsx: true
@@ -21,14 +19,5 @@ module.exports = {
     sourceType: 'module',
     project: './tsconfig.json'
   },
-  plugins: [
-    'react',
-    '@typescript-eslint'
-  ],
-  rules: {
-    // proptypes validation as warnings for now
-    // in js defining extra prop types is a little
-    // cumbersome. Remember to remove if we switch to TS
-    'react/prop-types': 1
-  }
+  plugins: ['react', '@typescript-eslint', 'prettier']
 }

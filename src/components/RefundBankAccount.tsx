@@ -16,7 +16,7 @@ interface UserRefundForm {
 
 const toRefund = (formData: UserRefundForm): Refund => formData
 
-export default function RefundBankAccount (): ReactElement {
+export default function RefundBankAccount(): ReactElement {
   const defaultValues: Refund | undefined = useSelector((state: TaxesState) => {
     return state.information.refund
   })
@@ -27,14 +27,16 @@ export default function RefundBankAccount (): ReactElement {
   const dispatch = useDispatch()
 
   // component functions
-  const onSubmit = (onAdvance: () => void) => (formData: UserRefundForm): void => {
-    dispatch(saveRefundInfo(toRefund(formData)))
-    onAdvance()
-  }
+  const onSubmit =
+    (onAdvance: () => void) =>
+    (formData: UserRefundForm): void => {
+      dispatch(saveRefundInfo(toRefund(formData)))
+      onAdvance()
+    }
 
   return (
     <PagerContext.Consumer>
-      { ({ onAdvance, navButtons }) =>
+      {({ onAdvance, navButtons }) => (
         <form onSubmit={handleSubmit(onSubmit(onAdvance))}>
           <FormProvider {...methods}>
             <h2>Refund Information</h2>
@@ -53,12 +55,15 @@ export default function RefundBankAccount (): ReactElement {
             <LabeledRadio
               label="Account Type"
               name="accountType"
-              values={[['Checking', 'checking'], ['Savings', 'savings']]}
+              values={[
+                ['Checking', 'checking'],
+                ['Savings', 'savings']
+              ]}
             />
             {navButtons}
           </FormProvider>
         </form>
-      }
+      )}
     </PagerContext.Consumer>
   )
 }
