@@ -13,6 +13,7 @@ Most income and deduction information from the following forms are supported:
 - 1099-DIV
 - 1099-B
 - 1098-E
+- 1099-R: partial support for normal distributions from IRA accounts.
 
 So far, this project can attach the following schedules to form 1040:
 
