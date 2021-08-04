@@ -46,6 +46,13 @@ export default function GettingStarted(): ReactElement {
         <li>1098-E</li>
       </ul>
 
+      <p>Partially Supported Income Forms</p>
+      <ul>
+        <li>
+          1099-R: Only normal distributions from IRAs are currently supported.
+        </li>
+      </ul>
+
       <p>Supported Attachments to Form 1040</p>
       <ul>
         <li>Schedule 1 (as related to Schedule E only)</li>

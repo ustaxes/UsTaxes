@@ -3,6 +3,7 @@ import {
   Dependent,
   FilingStatus,
   IncomeW2,
+  Income1099R,
   PersonRole,
   Refund,
   TaxPayer
@@ -70,6 +71,7 @@ export default class F1040 implements Form {
   contactEmail?: string
 
   _w2s: IncomeW2[]
+  _f1099rs: Income1099R[]
 
   schedule1?: Schedule1
   schedule2?: Schedule2
@@ -116,12 +118,17 @@ export default class F1040 implements Form {
     this.isSpouseDependent = Boolean(tp.spouse?.isTaxpayerDependent)
     this.dependents = tp.dependents
     this._w2s = []
+    this._f1099rs = []
     this.contactPhoneNumber = tp.contactPhoneNumber
     this.contactEmail = tp.contactEmail
   }
 
   addW2(w2: IncomeW2): void {
     this._w2s.push(w2)
+  }
+
+  add1099R(f1099r: Income1099R): void {
+    this._f1099rs.push(f1099r)
   }
 
   addQuestions(questions: Responses): void {
@@ -241,13 +248,18 @@ export default class F1040 implements Form {
         .reduce((l, r) => l + r, 0)
     )
 
+  totalGrossDistributions = (): number | undefined =>
+    displayNumber(
+      this._f1099rs.reduce((res, w2) => res + w2.form.grossDistribution, 0)
+    )
+
   l1 = (): number | undefined => displayNumber(this.wages())
   l2a = (): number | undefined => this.scheduleB?.l3()
   l2b = (): number | undefined => this.scheduleB?.l4()
   l3a = (): number | undefined => this.totalQualifiedDividends()
   l3b = (): number | undefined => this.scheduleB?.l6()
   l4a = (): number | undefined => undefined
-  l4b = (): number | undefined => undefined
+  l4b = (): number | undefined => this.totalGrossDistributions()
   l5a = (): number | undefined => undefined
   l5b = (): number | undefined => undefined
   l6a = (): number | undefined => undefined

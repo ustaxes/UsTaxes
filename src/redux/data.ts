@@ -75,7 +75,8 @@ export interface IncomeW2 {
 export enum Income1099Type {
   B = 'B',
   INT = 'INT',
-  DIV = 'DIV'
+  DIV = 'DIV',
+  R = 'R'
 }
 
 export interface F1099BData {
@@ -92,6 +93,18 @@ export interface F1099IntData {
 export interface F1099DivData {
   dividends: number
   qualifiedDividends: number
+}
+/*
+ Currently only the simplest form of 1099-R is implemented where
+ users are taking a normal distribution from an IRA. Corresponding
+ to distribution code 7 in 1099-R box 7.
+ TODO: Separate out IRA from 401k
+ TODO: Add in logic for various different distributions
+ that should go in box 4a and 5a. Will need to implement
+ form 8606 and Schedule 1 line 19.
+ */
+export interface F1099RData {
+  grossDistribution: number
 }
 
 export interface Income1099<T, D> {
@@ -151,8 +164,13 @@ export interface TaxPayer extends ContactInfo {
 export type Income1099Int = Income1099<Income1099Type.INT, F1099IntData>
 export type Income1099B = Income1099<Income1099Type.B, F1099BData>
 export type Income1099Div = Income1099<Income1099Type.DIV, F1099DivData>
+export type Income1099R = Income1099<Income1099Type.R, F1099RData>
 
-export type Supported1099 = Income1099Int | Income1099B | Income1099Div
+export type Supported1099 =
+  | Income1099Int
+  | Income1099B
+  | Income1099Div
+  | Income1099R
 
 export enum PropertyType {
   singleFamily,

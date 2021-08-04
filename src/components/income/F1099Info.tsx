@@ -39,6 +39,16 @@ const showIncome = (a: Supported1099): ReactElement => {
     case Income1099Type.DIV: {
       return <Currency value={a.form.dividends} />
     }
+    case Income1099Type.R: {
+      return (
+        <span>
+          Note that only Normal distributions from IRAs, corresponding to code 7
+          in 1099-R box 7 are supported at this time. Entering the gross
+          distribution here will fill in box 4b in form 1040. <br />
+          <Currency value={a.form.grossDistribution} />
+        </span>
+      )
+    }
   }
 }
 
@@ -56,6 +66,8 @@ interface F1099UserInput {
   dividends: string | number
   qualifiedDividends: string | number
   personRole: PersonRole.PRIMARY | PersonRole.SPOUSE
+  // R fields
+  grossDistribution: string | number
 }
 
 const blankUserInput: F1099UserInput = {
@@ -70,7 +82,9 @@ const blankUserInput: F1099UserInput = {
   longTermCostBasis: '',
   // Div fields
   dividends: '',
-  qualifiedDividends: ''
+  qualifiedDividends: '',
+  // R fields
+  grossDistribution: ''
 }
 
 const toUserInput = (f: Supported1099): F1099UserInput => ({
@@ -129,6 +143,16 @@ const toF1099 = (input: F1099UserInput): Supported1099 | undefined => {
         form: {
           dividends: Number(input.dividends),
           qualifiedDividends: Number(input.qualifiedDividends)
+        }
+      }
+    }
+    case Income1099Type.R: {
+      return {
+        payer: input.payer,
+        personRole: input.personRole,
+        type: input.formType,
+        form: {
+          grossDistribution: Number(input.grossDistribution)
         }
       }
     }
@@ -228,16 +252,26 @@ export default function F1099Info(): ReactElement {
     </div>
   )
 
+  const rFields = (
+    <LabeledInput
+      label="Box 1 - Gross Distribution"
+      patternConfig={Patterns.currency}
+      name="grossDistribution"
+    />
+  )
+
   const specificFields = {
     [Income1099Type.INT]: intFields,
     [Income1099Type.B]: bFields,
-    [Income1099Type.DIV]: divFields
+    [Income1099Type.DIV]: divFields,
+    [Income1099Type.R]: rFields
   }
 
   const titles = {
     [Income1099Type.INT]: '1099-INT',
     [Income1099Type.B]: '1099-B',
-    [Income1099Type.DIV]: '1099-DIV'
+    [Income1099Type.DIV]: '1099-DIV',
+    [Income1099Type.R]: '1099-R'
   }
 
   const form: ReactElement | undefined = (
