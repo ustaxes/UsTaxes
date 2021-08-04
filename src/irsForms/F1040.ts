@@ -127,11 +127,11 @@ export default class F1040 implements Form {
     this._w2s.push(w2)
   }
 
-  add1099R (f1099r: Income1099R): void {
+  add1099R(f1099r: Income1099R): void {
     this._f1099rs.push(f1099r)
   }
 
-  addQuestions (questions: Responses): void {
+  addQuestions(questions: Responses): void {
     this.virtualCurrency = questions.CRYPTO ?? false
   }
 
@@ -248,9 +248,10 @@ export default class F1040 implements Form {
         .reduce((l, r) => l + r, 0)
     )
 
-  totalGrossDistributions = (): number | undefined => displayNumber(
-    this._f1099rs.reduce((res, w2) => res + w2.form.grossDistribution, 0)
-  )
+  totalGrossDistributions = (): number | undefined =>
+    displayNumber(
+      this._f1099rs.reduce((res, w2) => res + w2.form.grossDistribution, 0)
+    )
 
   l1 = (): number | undefined => displayNumber(this.wages())
   l2a = (): number | undefined => this.scheduleB?.l3()

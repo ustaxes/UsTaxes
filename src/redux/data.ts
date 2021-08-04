@@ -167,7 +167,7 @@ export type Income1099Div = Income1099<Income1099Type.DIV, F1099DivData>
 export type Income1099R = Income1099<Income1099Type.R, F1099RData>
 
 export type Supported1099 =
-  Income1099Int
+  | Income1099Int
   | Income1099B
   | Income1099Div
   | Income1099R

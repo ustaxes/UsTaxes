@@ -131,7 +131,7 @@ export function create1040(
   state.f1099s
     .filter((f) => f.type === Income1099Type.R)
     .map((f) => f as Income1099R)
-    .forEach(element => {
+    .forEach((element) => {
       f1040.add1099R(element)
     })
 
