@@ -93,5 +93,8 @@
   },
   "lint-staged": {
     "**/*": "prettier --write --ignore-unknown"
+  },
+  "reactSnap": {
+    "inlineCss": true
   }
 }
