@@ -185,6 +185,9 @@ export default function Main(): ReactElement {
     </AppBar>
   )
 
+  const pathname = useLocation().pathname
+  console.log(pathname)
+
   return (
     <ThemeProvider theme={theme}>
       <div className={classes.root}>
@@ -210,18 +213,18 @@ export default function Main(): ReactElement {
                   </Route>
                 </Switch>
               </PagerContext.Provider>
+              <If condition={() => pathname !== Urls.usTaxes.start}>
+                <ResponsiveDrawer
+                  sections={drawerSections}
+                  isOpen={mobileOpen}
+                  onClose={() => setMobileOpen(false)}
+                />
+                {appBar}
+              </If>
             </Grid>
             <Grid item sm />
           </Grid>
         </main>
-        <If condition={() => useLocation().pathname !== Urls.usTaxes.start}>
-          <ResponsiveDrawer
-            sections={drawerSections}
-            isOpen={mobileOpen}
-            onClose={() => setMobileOpen(false)}
-          />
-          {appBar}
-        </If>
       </div>
     </ThemeProvider>
   )
