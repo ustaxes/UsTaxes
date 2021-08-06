@@ -202,6 +202,7 @@ export default function Main(): ReactElement {
                 value={{ onAdvance: onAdvance ?? (() => {}), navButtons }}
               >
                 <Switch>
+                  <Redirect from="/:url*(/+)" to={pathname.slice(0, -1)} />
                   <Redirect path="/" to={Urls.default} exact />
                   {allItems.map((item, index) => (
                     <Route key={index} exact path={item.url}>
