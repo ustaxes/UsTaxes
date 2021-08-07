@@ -230,7 +230,7 @@ const SpouseAndDependent = (): ReactElement => {
 
   const page = (
     <PagerContext.Consumer>
-      {({ onAdvance, navButtons }) => (
+      {({ onAdvance = () => {}, navButtons }) => (
         <form onSubmit={handleSubmit(onSubmit(onAdvance))}>
           <h2>Family Information</h2>
 

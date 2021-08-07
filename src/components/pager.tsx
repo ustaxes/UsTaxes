@@ -135,7 +135,7 @@ export const SingleButtons = ({
 }
 
 interface PagerProps {
-  onAdvance: () => void
+  onAdvance?: () => void
   navButtons: ReactElement
 }
 

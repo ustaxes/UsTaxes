@@ -29,7 +29,7 @@ export default function ContactInfo(): ReactElement {
 
   const page = (
     <PagerContext.Consumer>
-      {({ navButtons, onAdvance }) => (
+      {({ navButtons, onAdvance = () => {} }) => (
         <form onSubmit={handleSubmit(onSubmit(onAdvance))}>
           <h2>Family Contact Information</h2>
           <LabeledInput

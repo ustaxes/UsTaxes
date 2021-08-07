@@ -54,7 +54,7 @@ const Questions = (): ReactElement => {
 
   const page = (
     <PagerContext.Consumer>
-      {({ onAdvance, navButtons }) => (
+      {({ onAdvance = () => {}, navButtons }) => (
         <form onSubmit={handleSubmit(onSubmit(onAdvance))}>
           <h2>Informational Questions</h2>
           <p>

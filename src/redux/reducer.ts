@@ -9,7 +9,8 @@ export const blankState: Information = {
   realEstate: [],
   taxPayer: { dependents: [] },
   questions: {},
-  f1098es: []
+  f1098es: [],
+  stateResidencies: []
 }
 
 function formReducer(
@@ -35,6 +36,12 @@ function formReducer(
           ...newState.taxPayer,
           ...action.formData
         }
+      }
+    }
+    case ActionName.SAVE_STATE_RESIDENCY: {
+      return {
+        ...newState,
+        stateResidencies: [action.formData]
       }
     }
     case ActionName.SAVE_FILING_STATUS_INFO: {

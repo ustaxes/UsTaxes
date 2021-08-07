@@ -1,3 +1,5 @@
+import { Field } from '../pdfFiller'
+
 export type FormTag =
   | 'f1040'
   | 'f1040v'
@@ -21,5 +23,5 @@ export default interface Form {
   tag: FormTag
   // Match the sequence number in the header of the PDF.
   sequenceIndex: number
-  fields: () => Array<string | number | boolean | undefined>
+  fields: () => Field[]
 }

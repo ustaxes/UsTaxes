@@ -1,7 +1,15 @@
 import { save } from '@tauri-apps/api/dialog'
 import { writeBinaryFile } from '@tauri-apps/api/fs'
+import fetch from 'node-fetch'
+import { PDFDocument } from 'pdf-lib'
 
-export async function savePdf(
+export async function downloadPDF(url: string): Promise<PDFDocument> {
+  const download = await fetch(url)
+  const buffer = await download.arrayBuffer()
+  return await PDFDocument.load(buffer)
+}
+
+export async function savePDF(
   contents: Uint8Array,
   defaultFilename: string
 ): Promise<void> {

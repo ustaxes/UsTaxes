@@ -1,11 +1,17 @@
 import React, { FormEvent, ReactElement, useState } from 'react'
-import { createPDFPopup } from '../pdfFiller/fillPdf'
 import { PagerContext } from './pager'
 import Alert from '@material-ui/lab/Alert'
 import { makeStyles } from '@material-ui/core/styles'
 import log from '../log'
 import { useSelector } from 'react-redux'
-import { TaxesState } from '../redux/data'
+import { State, TaxesState } from '../redux/data'
+import { createPDFPopup } from '../irsForms'
+import { createStatePDF, createStateReturn, stateForm } from '../stateForms'
+import { create1040 } from '../irsForms/Main'
+import { isRight } from '../util'
+import { savePDF } from '../pdfFiller/pdfHandler'
+import { If } from 'react-if'
+import { Box, Button } from '@material-ui/core'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -20,43 +26,85 @@ export default function CreatePDF(): ReactElement {
   const [errors, updateErrors] = useState<string[]>([])
   const classes = useStyles()
 
-  const lastName = useSelector(
-    (state: TaxesState) =>
-      state.information.taxPayer.primaryPerson?.lastName ?? ''
-  )
+  const info = useSelector((state: TaxesState) => state.information)
+  const lastName = info.taxPayer.primaryPerson?.lastName
+  const residency: State | undefined = info.stateResidencies[0]?.state
 
-  const onSubmit = async (e: FormEvent<any>): Promise<void> => {
+  const federalFileName = `${lastName}-1040.pdf`
+  const stateFileName = `${lastName}-${residency}.pdf`
+
+  const federalReturn = async (e: FormEvent<any>): Promise<void> => {
     e.preventDefault()
-    return await createPDFPopup(`${lastName}-1040.pdf`).catch(
-      (errors: string[]) => {
-        if (errors.length !== undefined && errors.length > 0) {
-          updateErrors(errors)
-        } else {
-          log.error('unhandled exception')
-          log.error(errors)
-          return Promise.reject(errors)
-        }
+    return await createPDFPopup(federalFileName).catch((errors: string[]) => {
+      if (errors.length !== undefined && errors.length > 0) {
+        updateErrors(errors)
+      } else {
+        log.error('unhandled exception')
+        log.error(errors)
+        return Promise.reject(errors)
       }
-    )
+    })
+  }
+
+  const stateReturn = async (): Promise<void> => {
+    const f1040Result = create1040(info)
+    if (isRight(f1040Result)) {
+      const stateReturn = await createStateReturn(info, f1040Result.right[0])
+      if (stateReturn !== undefined) {
+        const pdfBytes = await createStatePDF(stateReturn)
+        savePDF(pdfBytes, stateFileName)
+      }
+    }
   }
 
   return (
-    <PagerContext.Consumer>
-      {({ navButtons }) => (
-        <form onSubmit={onSubmit}>
-          <div>
-            <h2>Print Copy to File</h2>
-          </div>
-          <div className={classes.root}>
-            {errors.map((error, i) => (
-              <Alert key={i} severity="warning">
-                {error}
-              </Alert>
-            ))}
-          </div>
-          {navButtons}
-        </form>
-      )}
-    </PagerContext.Consumer>
+    <form>
+      <div>
+        <h2>Print Copy to File</h2>
+      </div>
+      <div className={classes.root}>
+        {errors.map((error, i) => (
+          <Alert key={i} severity="warning">
+            {error}
+          </Alert>
+        ))}
+      </div>
+      <Box
+        display="flex"
+        justifyContent="flex-start"
+        paddingTop={2}
+        paddingBottom={1}
+      >
+        <Button
+          type="button"
+          onClick={federalReturn}
+          variant="contained"
+          color="primary"
+        >
+          Create Federal 1040
+        </Button>
+      </Box>
+      <If
+        condition={
+          residency !== undefined && stateForm[residency] !== undefined
+        }
+      >
+        <Box
+          display="flex"
+          justifyContent="flex-start"
+          paddingTop={2}
+          paddingBottom={1}
+        >
+          <Button
+            type="button"
+            onClick={stateReturn}
+            variant="contained"
+            color="primary"
+          >
+            Create {residency} Return
+          </Button>
+        </Box>
+      </If>
+    </form>
   )
 }

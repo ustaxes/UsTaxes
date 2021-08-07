@@ -1,16 +1,21 @@
 import React, { ReactElement } from 'react'
-import { FormProvider, useForm } from 'react-hook-form'
+import { FormProvider, useForm, useFormContext } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
-import { savePrimaryPersonInfo } from '../../redux/actions'
+import {
+  savePrimaryPersonInfo,
+  saveStateResidencyInfo
+} from '../../redux/actions'
 import {
   Address,
   PersonRole,
   PrimaryPerson,
+  State,
+  StateResidency,
   TaxesState,
   TaxPayer
 } from '../../redux/data'
 import { PersonFields } from './PersonFields'
-import { LabeledCheckbox } from '../input'
+import { LabeledCheckbox, USStateDropDown } from '../input'
 import { PagerContext } from '../pager'
 import AddressFields from './Address'
 
@@ -22,6 +27,7 @@ interface TaxPayerUserForm {
   address: Address
   isForeignCountry: boolean
   isTaxpayerDependent: boolean
+  stateResidency?: State
 }
 
 const asPrimaryPerson = (formData: TaxPayerUserForm): PrimaryPerson => ({
@@ -50,24 +56,34 @@ export default function PrimaryTaxpayer(): ReactElement {
     return state.information.taxPayer
   })
 
+  const stateResidency: StateResidency[] = useSelector(
+    (state: TaxesState) => state.information.stateResidencies
+  )
+
   const methods = useForm<TaxPayerUserForm>({
     defaultValues:
       taxPayer.primaryPerson !== undefined
-        ? asTaxPayerUserForm(taxPayer.primaryPerson)
+        ? {
+            ...asTaxPayerUserForm(taxPayer.primaryPerson),
+            stateResidency:
+              stateResidency[0]?.state ?? taxPayer.primaryPerson.address.state
+          }
         : undefined
   })
+
   const { handleSubmit } = methods
 
   const onSubmit =
     (onAdvance: () => void) =>
     (form: TaxPayerUserForm): void => {
       dispatch(savePrimaryPersonInfo(asPrimaryPerson(form)))
+      dispatch(saveStateResidencyInfo({ state: form.stateResidency as State }))
       onAdvance()
     }
 
   const page = (
     <PagerContext.Consumer>
-      {({ navButtons, onAdvance }) => (
+      {({ navButtons, onAdvance = () => {} }) => (
         <form onSubmit={handleSubmit(onSubmit(onAdvance))}>
           <h2>Primary Taxpayer Information</h2>
           <PersonFields />
@@ -76,6 +92,7 @@ export default function PrimaryTaxpayer(): ReactElement {
             name="isTaxpayerDependent"
           />
           <AddressFields checkboxText="Do you have a foreign address?" />
+          <USStateDropDown label="Residency State" name="stateResidency" />
           {navButtons}
         </form>
       )}
