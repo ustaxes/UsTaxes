@@ -64,7 +64,7 @@ export interface Information {
 
 ### PDF Export
 
-Supported tax forms are included in the source control of this repository. [src/irsForms/](../src/irsForms/) includes all schedules that can be filled by this project. Each of these schedule definitions implements this interface:
+Supported federal and state forms are included in the source control of this repository. [src/irsForms/](../src/irsForms/) includes all federal forms that can be filled by this project. Each of these schedule definitions implements this interface:
 
 ```ts
 export default interface Form {

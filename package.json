@@ -38,7 +38,8 @@
     "schema-generate": "node ./setup.js",
     "lint": "eslint ./src --ext .ts --ext .js --ext .tsx --ext .jsx && prettier -c .",
     "lint:fix": "eslint ./src --fix --ext .ts --ext .js --ext .tsx --ext .jsx && prettier --write .",
-    "prettier": "prettier --write ."
+    "prettier": "prettier --write .",
+    "formgen": "ts-node ./scripts/formgen.ts"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -81,6 +82,7 @@
     "husky": "^7.0.1",
     "lint-staged": "^11.1.1",
     "prettier": "2.3.2",
+    "ts-node": "^10.2.0",
     "typescript-eslint": "0.0.1-alpha.0"
   },
   "husky": {

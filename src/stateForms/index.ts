@@ -3,12 +3,12 @@ import { fillPDF } from '../pdfFiller/fillPdf'
 import { downloadPDF } from '../pdfFiller/pdfHandler'
 import { State, Information } from '../redux/data'
 import Form from './Form'
-import ilf1040 from './IL/F1040'
+import il1040 from './IL/IL1040'
 
 export const stateForm: {
   [K in State]?: (info: Information, f1040: F1040) => Form
 } = {
-  IL: ilf1040
+  IL: il1040
 }
 
 export const createStateReturn = (
