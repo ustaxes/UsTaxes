@@ -64,15 +64,22 @@ export interface Information {
 
 ### PDF Export
 
-Supported federal and state forms are included in the source control of this repository. [src/irsForms/](../src/irsForms/) includes all federal forms that can be filled by this project. Each of these schedule definitions implements this interface:
+Supported federal and state forms are included in the source control of this repository.
+
+- [src/irsForms/](../src/irsForms/) includes ts models for all federal forms that can be filled by this project. The PDFs are also included in this project at [pubilc/forms](../public/forms). Each of these form definitions implements this interface:
 
 ```ts
-export default interface Form {
-  fields: () => Array<string | number | boolean | undefined>
+type Field = string | number | boolean | undefined
+export default interface Fill {
+  fields: () => Field[]
 }
 ```
 
 This array of `fields` must line up exactly with the fields expected by the PDF that the data will be filled into. Getting this data to line up exactly is error prone and tedious. The only type checking we can do between the PDF and our data is to verify if a field expects a boolean value (checkbox), or a text + numeric value.
+
+In order to help this error prone process, there's also a script that should be used to add a new form. See the guide for contributing a new form below.
+
+- [src/stateForms](../src/stateForms) includes ts models for all state forms that can be filled. They also implement the same interface.
 
 ## Guide for contributing a new form implementation
 
@@ -81,8 +88,15 @@ This array of `fields` must line up exactly with the fields expected by the PDF 
 - For a new UI form that needs its own page, add to routes in [Main.tsx](../src/components/Main.tsx)
 - A UI form can push new data into the state using Redux actions. Define your new action in [src/redux/actions.ts](../src/redux/actions.ts), and add your state updates to [src/redux/reducer.ts](../src/redux/reducer.ts)
 - If there is a new attachment to the 1040:
-  - The blank PDF goes in `public/forms/`. The locations of all supported attachments and logic about what attachments are required, is in [fillPdf.ts](../src/pdfFiller/fillPdf.ts)
-  - The data model for the PDF goes in [irsForms](../src/irsForms), and implements the `Form` interface as above
+
+  - The blank form goes in `public/forms/`. The locations of all supported attachments and logic about what attachments are required, is in [fillPdf.ts](../src/pdfFiller/fillPdf.ts).
+  - The data model for the PDF goes in [irsForms](../src/irsForms), and implements the `Form` interface as above. There is a script we use to generate a base implementation of the form. To generate this base implementation, run
+
+  ```
+  npm run formgen ./public/forms/<name-of-form>.pdf > ./src/irsForms/<name-of-form>.ts
+  ```
+
+  This will provide a function for each field in the PDF. At this point you should have a compilable file that needs the implementations for all those functions filled in.
 
 [npm-install]: https://www.npmjs.com/get-npm
 [tauri-root]: https://tauri.studio/
