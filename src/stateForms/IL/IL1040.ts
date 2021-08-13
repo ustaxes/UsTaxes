@@ -479,7 +479,7 @@ export class IL1040 implements Form {
    * Index 62: 28
    * Earned income credit from Schedule IL-E/EIC, Step 4, line 8
    */
-  l28 = (): number | undefined => undefined
+  l28 = (): number | undefined => this.scheduleEIC.earnedIncomeCredit()
 
   /**
    * Index 63: 29
