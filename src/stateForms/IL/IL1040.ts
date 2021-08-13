@@ -4,18 +4,38 @@ import { Field } from '../../pdfFiller'
 import { displayNumber, sumFields } from '../../irsForms/util'
 import { AccountType, FilingStatus, Information, State } from '../../redux/data'
 import parameters from './Parameters'
+import { il1040scheduleileeic } from './IL1040ScheduleILEIC'
+import IL1040V from './IL1040V'
 
 export class IL1040 implements Form {
   info: Information
   f1040: F1040
   formName: string
   state: State
+  scheduleEIC: il1040scheduleileeic
+  il1040V: IL1040V
+  formOrder = 0
 
   constructor(info: Information, f1040: F1040) {
     this.info = info
     this.f1040 = f1040
     this.formName = 'IL-1040'
     this.state = 'IL'
+    this.scheduleEIC = new il1040scheduleileeic(info, f1040)
+    this.il1040V = new IL1040V(info, f1040, this)
+  }
+
+  attachments = (): Form[] => {
+    const pmt = this.payment()
+    let result: Form[] = []
+    if ((pmt ?? 0) > 0) {
+      result.push(this.il1040V)
+    }
+    if (this.scheduleEIC.isRequired()) {
+      result.push(this.scheduleEIC)
+    }
+
+    return result.sort((l, r) => l.formOrder - r.formOrder)
   }
 
   /**
@@ -599,6 +619,7 @@ export class IL1040 implements Form {
     if (l31 > 0) return l31 + l34
     if (l30 > 0 && l30 < l34) return l34 - l30
   }
+  payment = (): number | undefined => this.l39()
 
   /**
    * Index 81: YourSignatureDate

@@ -51,8 +51,8 @@ export default function CreatePDF(): ReactElement {
     if (isRight(f1040Result)) {
       const stateReturn = await createStateReturn(info, f1040Result.right[0])
       if (stateReturn !== undefined) {
-        const pdfBytes = await createStatePDF(stateReturn)
-        savePDF(pdfBytes, stateFileName)
+        const pdfBytes = (await createStatePDF(stateReturn)).save()
+        savePDF(await pdfBytes, stateFileName)
       }
     }
   }

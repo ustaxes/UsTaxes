@@ -1,7 +1,9 @@
+import { PDFDocument } from 'pdf-lib'
 import F1040 from '../irsForms/F1040'
 import { fillPDF } from '../pdfFiller/fillPdf'
-import { downloadPDF } from '../pdfFiller/pdfHandler'
+import { combinePdfs, downloadPDF } from '../pdfFiller/pdfHandler'
 import { State, Information } from '../redux/data'
+import { zip } from '../util'
 import Form from './Form'
 import il1040 from './IL/IL1040'
 
@@ -14,17 +16,29 @@ export const stateForm: {
 export const createStateReturn = (
   info: Information,
   f1040: F1040
-): Form | undefined => {
+): Form[] | undefined => {
   const residency = info.stateResidencies[0]
   if (residency !== undefined) {
-    return stateForm[residency.state]?.call(undefined, info, f1040)
+    const form = stateForm[residency.state]?.call(undefined, info, f1040)
+    if (form !== undefined) {
+      return [form, ...form?.attachments()]
+    }
   }
 }
 
-export const createStatePDF = async (form: Form): Promise<Uint8Array> => {
-  const filename = `/states/${form.state}/${form.formName}.pdf`
+export const createStatePDF = async (forms: Form[]): Promise<PDFDocument> => {
+  const filenames = forms.map(
+    (form) => `/states/${form.state}/${form.formName}.pdf`
+  )
 
-  const pdf = await downloadPDF(filename)
-  fillPDF(pdf, form.fields())
-  return pdf.save()
+  const pdfs = filenames.map((filename) => downloadPDF(filename))
+
+  const filled: Array<Promise<PDFDocument>> = zip(pdfs, forms).map(
+    async ([pdf, form]) => {
+      fillPDF(await pdf, form.fields())
+      return pdf
+    }
+  )
+
+  return combinePdfs(filled)
 }

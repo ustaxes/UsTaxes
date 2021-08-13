@@ -15,7 +15,9 @@ const parameters = {
   },
   taxRate: 0.0495,
   seniorExemption: 1000,
-  blindExemption: 1000
+  blindExemption: 1000,
+  earnedIncomeCreditFactor: 0.18,
+  eicDependentCredit: 2325
 }
 
 export default parameters

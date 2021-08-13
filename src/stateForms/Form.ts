@@ -1,8 +1,12 @@
-import { Field } from '../pdfFiller'
+import { Field, Fill } from '../pdfFiller'
 import { State } from '../redux/data'
 
-export default interface Form {
+/**
+ * Represents a state's income tax form, or schedule
+ */
+export default interface Form extends Fill {
   state: State
   formName: string
-  fields: () => Field[]
+  formOrder: number
+  attachments: () => Form[]
 }

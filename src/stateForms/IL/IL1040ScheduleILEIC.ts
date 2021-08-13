@@ -2,20 +2,34 @@ import Form from '../Form'
 import F1040 from '../../irsForms/F1040'
 import { Field } from '../../pdfFiller'
 import { displayNumber, sumFields } from '../../irsForms/util'
-import { AccountType, FilingStatus, Information, State } from '../../redux/data'
+import {
+  AccountType,
+  Dependent,
+  FilingStatus,
+  Information,
+  State
+} from '../../redux/data'
+import parameters from './Parameters'
 
 export class il1040scheduleileeic implements Form {
   info: Information
   f1040: F1040
   formName: string
   state: State
+  formOrder: number = 1
+  attachments: () => Form[] = () => []
+  qualifyingDependents: Dependent[]
 
   constructor(info: Information, f1040: F1040) {
     this.info = info
     this.f1040 = f1040
     this.formName = 'il-1040-schedule-il-e-eic'
     this.state = 'IL'
+    this.qualifyingDependents =
+      this.f1040.scheduleEIC?.qualifyingDependents() ?? []
   }
+
+  isRequired = (): boolean => (this.earnedIncomeCredit() ?? 0) > 0
 
   /**
    * Index 0: Help
@@ -64,261 +78,232 @@ export class il1040scheduleileeic implements Form {
   /**
    * Index 5: Dependents first name - 2
    */
-  Dependentsfirstname2 = (): string | undefined => {
-    return undefined
-  }
+  Dependentsfirstname2 = (): string | undefined =>
+    this.info.taxPayer.dependents[1]?.firstName
 
   f5 = (): string | undefined => this.Dependentsfirstname2()
 
   /**
    * Index 6: Dependent's first name - 1
    */
-  Dependentsfirstname1 = (): string | undefined => {
-    return undefined
-  }
+  Dependentsfirstname1 = (): string | undefined =>
+    this.info.taxPayer.dependents[0]?.firstName
 
   f6 = (): string | undefined => this.Dependentsfirstname1()
 
   /**
    * Index 7: Dependent's first name - 3
    */
-  Dependentsfirstname3 = (): string | undefined => {
-    return undefined
-  }
+  Dependentsfirstname3 = (): string | undefined =>
+    this.info.taxPayer.dependents[2]?.firstName
 
   f7 = (): string | undefined => this.Dependentsfirstname3()
 
   /**
    * Index 8: Dependent's first name - 4
    */
-  Dependentsfirstname4 = (): string | undefined => {
-    return undefined
-  }
+  Dependentsfirstname4 = (): string | undefined =>
+    this.info.taxPayer.dependents[3]?.firstName
 
   f8 = (): string | undefined => this.Dependentsfirstname4()
 
   /**
    * Index 9: Dependent's first name - 5
    */
-  Dependentsfirstname5 = (): string | undefined => {
-    return undefined
-  }
+  Dependentsfirstname5 = (): string | undefined =>
+    this.info.taxPayer.dependents[4]?.firstName
 
   f9 = (): string | undefined => this.Dependentsfirstname5()
 
   /**
    * Index 10: Dependent's first name - 6
    */
-  Dependentsfirstname6 = (): string | undefined => {
-    return undefined
-  }
+  Dependentsfirstname6 = (): string | undefined =>
+    this.info.taxPayer.dependents[5]?.firstName
 
   f10 = (): string | undefined => this.Dependentsfirstname6()
 
   /**
    * Index 11: Dependent's first name - 7
    */
-  Dependentsfirstname7 = (): string | undefined => {
-    return undefined
-  }
+  Dependentsfirstname7 = (): string | undefined =>
+    this.info.taxPayer.dependents[6]?.firstName
 
   f11 = (): string | undefined => this.Dependentsfirstname7()
 
   /**
    * Index 12: Dependent's first name - 8
    */
-  Dependentsfirstname8 = (): string | undefined => {
-    return undefined
-  }
+  Dependentsfirstname8 = (): string | undefined =>
+    this.info.taxPayer.dependents[7]?.firstName
 
   f12 = (): string | undefined => this.Dependentsfirstname8()
 
   /**
    * Index 13: Dependent's first name - 9
    */
-  Dependentsfirstname9 = (): string | undefined => {
-    return undefined
-  }
+  Dependentsfirstname9 = (): string | undefined =>
+    this.info.taxPayer.dependents[8]?.firstName
 
   f13 = (): string | undefined => this.Dependentsfirstname9()
 
   /**
    * Index 14: Dependent's first name - 10
    */
-  Dependentsfirstname10 = (): string | undefined => {
-    return undefined
-  }
+  Dependentsfirstname10 = (): string | undefined =>
+    this.info.taxPayer.dependents[9]?.firstName
 
   f14 = (): string | undefined => this.Dependentsfirstname10()
 
   /**
    * Index 15: Dependent's last name - 2
    */
-  Dependentslastname2 = (): string | undefined => {
-    return undefined
-  }
+  Dependentslastname2 = (): string | undefined =>
+    this.info.taxPayer.dependents[1]?.lastName
 
   f15 = (): string | undefined => this.Dependentslastname2()
 
   /**
    * Index 16: Dependent's last name - 1
    */
-  Dependentslastname1 = (): string | undefined => {
-    return undefined
-  }
+  Dependentslastname1 = (): string | undefined =>
+    this.info.taxPayer.dependents[0]?.lastName
 
   f16 = (): string | undefined => this.Dependentslastname1()
 
   /**
    * Index 17: Dependent's last name - 3
    */
-  Dependentslastname3 = (): string | undefined => {
-    return undefined
-  }
+  Dependentslastname3 = (): string | undefined =>
+    this.info.taxPayer.dependents[2]?.lastName
 
   f17 = (): string | undefined => this.Dependentslastname3()
 
   /**
    * Index 18: Dependent's last name - 4
    */
-  Dependentslastname4 = (): string | undefined => {
-    return undefined
-  }
+  Dependentslastname4 = (): string | undefined =>
+    this.info.taxPayer.dependents[3]?.lastName
 
   f18 = (): string | undefined => this.Dependentslastname4()
 
   /**
    * Index 19: Dependent's last name - 5
    */
-  Dependentslastname5 = (): string | undefined => {
-    return undefined
-  }
+  Dependentslastname5 = (): string | undefined =>
+    this.info.taxPayer.dependents[4]?.lastName
 
   f19 = (): string | undefined => this.Dependentslastname5()
 
   /**
    * Index 20: Dependent's last name - 6
    */
-  Dependentslastname6 = (): string | undefined => {
-    return undefined
-  }
+  Dependentslastname6 = (): string | undefined =>
+    this.info.taxPayer.dependents[5]?.lastName
 
   f20 = (): string | undefined => this.Dependentslastname6()
 
   /**
    * Index 21: Dependent's last name - 7
    */
-  Dependentslastname7 = (): string | undefined => {
-    return undefined
-  }
+  Dependentslastname7 = (): string | undefined =>
+    this.info.taxPayer.dependents[6]?.lastName
 
   f21 = (): string | undefined => this.Dependentslastname7()
 
   /**
    * Index 22: Dependent's last name - 8
    */
-  Dependentslastname8 = (): string | undefined => {
-    return undefined
-  }
+  Dependentslastname8 = (): string | undefined =>
+    this.info.taxPayer.dependents[7]?.lastName
 
   f22 = (): string | undefined => this.Dependentslastname8()
 
   /**
    * Index 23: Dependent's last name - 9
    */
-  Dependentslastname9 = (): string | undefined => {
-    return undefined
-  }
+  Dependentslastname9 = (): string | undefined =>
+    this.info.taxPayer.dependents[8]?.lastName
 
   f23 = (): string | undefined => this.Dependentslastname9()
 
   /**
    * Index 24: Dependent's last name - 10
    */
-  Dependentslastname10 = (): string | undefined => {
-    return undefined
-  }
+  Dependentslastname10 = (): string | undefined =>
+    this.info.taxPayer.dependents[9]?.lastName
 
   f24 = (): string | undefined => this.Dependentslastname10()
 
   /**
    * Index 25: Social Security number - 2
    */
-  SocialSecuritynumber2 = (): string | undefined => {
-    return undefined
-  }
+  SocialSecuritynumber2 = (): string | undefined =>
+    this.info.taxPayer.dependents[1]?.ssid
 
   f25 = (): string | undefined => this.SocialSecuritynumber2()
 
   /**
    * Index 26: Social Security number - 3
    */
-  SocialSecuritynumber3 = (): string | undefined => {
-    return undefined
-  }
+  SocialSecuritynumber3 = (): string | undefined =>
+    this.info.taxPayer.dependents[2]?.ssid
 
   f26 = (): string | undefined => this.SocialSecuritynumber3()
 
   /**
    * Index 27: Social Security number - 4
    */
-  SocialSecuritynumber4 = (): string | undefined => {
-    return undefined
-  }
+  SocialSecuritynumber4 = (): string | undefined =>
+    this.info.taxPayer.dependents[3]?.ssid
 
   f27 = (): string | undefined => this.SocialSecuritynumber4()
 
   /**
    * Index 28: Social Security number - 5
    */
-  SocialSecuritynumber5 = (): string | undefined => {
-    return undefined
-  }
+  SocialSecuritynumber5 = (): string | undefined =>
+    this.info.taxPayer.dependents[4]?.ssid
 
   f28 = (): string | undefined => this.SocialSecuritynumber5()
 
   /**
    * Index 29: Social Security number - 6
    */
-  SocialSecuritynumber6 = (): string | undefined => {
-    return undefined
-  }
+  SocialSecuritynumber6 = (): string | undefined =>
+    this.info.taxPayer.dependents[5]?.ssid
 
   f29 = (): string | undefined => this.SocialSecuritynumber6()
 
   /**
    * Index 30: Social Security number - 7
    */
-  SocialSecuritynumber7 = (): string | undefined => {
-    return undefined
-  }
+  SocialSecuritynumber7 = (): string | undefined =>
+    this.info.taxPayer.dependents[6]?.ssid
 
   f30 = (): string | undefined => this.SocialSecuritynumber7()
 
   /**
    * Index 31: Social Security number - 8
    */
-  SocialSecuritynumber8 = (): string | undefined => {
-    return undefined
-  }
+  SocialSecuritynumber8 = (): string | undefined =>
+    this.info.taxPayer.dependents[7]?.ssid
 
   f31 = (): string | undefined => this.SocialSecuritynumber8()
 
   /**
    * Index 32: Social Security number - 9
    */
-  SocialSecuritynumber9 = (): string | undefined => {
-    return undefined
-  }
+  SocialSecuritynumber9 = (): string | undefined =>
+    this.info.taxPayer.dependents[8]?.ssid
 
   f32 = (): string | undefined => this.SocialSecuritynumber9()
 
   /**
    * Index 33: Social Security number - 10
    */
-  SocialSecuritynumber10 = (): string | undefined => {
-    return undefined
-  }
+  SocialSecuritynumber10 = (): string | undefined =>
+    this.info.taxPayer.dependents[9]?.ssid
 
   f33 = (): string | undefined => this.SocialSecuritynumber10()
 
@@ -505,374 +490,344 @@ export class il1040scheduleileeic implements Form {
   /**
    * Index 54: Full Time Student - 1
    */
-  FullTimeStudent1 = (): boolean | undefined => {
-    return undefined
-  }
+  FullTimeStudent1 = (): boolean | undefined =>
+    this.info.taxPayer.dependents[0]?.qualifyingInfo?.isStudent
 
   f54 = (): boolean | undefined => this.FullTimeStudent1()
 
   /**
    * Index 55: Full Time Student - 2
    */
-  FullTimeStudent2 = (): boolean | undefined => {
-    return undefined
-  }
+  FullTimeStudent2 = (): boolean | undefined =>
+    this.info.taxPayer.dependents[1]?.qualifyingInfo?.isStudent
 
   f55 = (): boolean | undefined => this.FullTimeStudent2()
 
   /**
    * Index 56: Full Time Student - 3
    */
-  FullTimeStudent3 = (): boolean | undefined => {
-    return undefined
-  }
+  FullTimeStudent3 = (): boolean | undefined =>
+    this.info.taxPayer.dependents[2]?.qualifyingInfo?.isStudent
 
   f56 = (): boolean | undefined => this.FullTimeStudent3()
 
   /**
    * Index 57: Full Time Student - 4
    */
-  FullTimeStudent4 = (): boolean | undefined => {
-    return undefined
-  }
+  FullTimeStudent4 = (): boolean | undefined =>
+    this.info.taxPayer.dependents[3]?.qualifyingInfo?.isStudent
 
   f57 = (): boolean | undefined => this.FullTimeStudent4()
 
   /**
    * Index 58: Full Time Student - 5
    */
-  FullTimeStudent5 = (): boolean | undefined => {
-    return undefined
-  }
+  FullTimeStudent5 = (): boolean | undefined =>
+    this.info.taxPayer.dependents[4]?.qualifyingInfo?.isStudent
 
   f58 = (): boolean | undefined => this.FullTimeStudent5()
 
   /**
    * Index 59: Full Time Student - 6
    */
-  FullTimeStudent6 = (): boolean | undefined => {
-    return undefined
-  }
+  FullTimeStudent6 = (): boolean | undefined =>
+    this.info.taxPayer.dependents[5]?.qualifyingInfo?.isStudent
 
   f59 = (): boolean | undefined => this.FullTimeStudent6()
 
   /**
    * Index 60: Full Time Student - 7
    */
-  FullTimeStudent7 = (): boolean | undefined => {
-    return undefined
-  }
+  FullTimeStudent7 = (): boolean | undefined =>
+    this.info.taxPayer.dependents[6]?.qualifyingInfo?.isStudent
 
   f60 = (): boolean | undefined => this.FullTimeStudent7()
 
   /**
    * Index 61: Full Time Student - 8
    */
-  FullTimeStudent8 = (): boolean | undefined => {
-    return undefined
-  }
+  FullTimeStudent8 = (): boolean | undefined =>
+    this.info.taxPayer.dependents[7]?.qualifyingInfo?.isStudent
 
   f61 = (): boolean | undefined => this.FullTimeStudent8()
 
   /**
    * Index 62: Full Time Student - 9
    */
-  FullTimeStudent9 = (): boolean | undefined => {
-    return undefined
-  }
+  FullTimeStudent9 = (): boolean | undefined =>
+    this.info.taxPayer.dependents[8]?.qualifyingInfo?.isStudent
 
   f62 = (): boolean | undefined => this.FullTimeStudent9()
 
   /**
    * Index 63: Full Time Student - 10
    */
-  FullTimeStudent10 = (): boolean | undefined => {
-    return undefined
-  }
+  FullTimeStudent10 = (): boolean | undefined =>
+    this.info.taxPayer.dependents[9]?.qualifyingInfo?.isStudent
 
   f63 = (): boolean | undefined => this.FullTimeStudent10()
 
   /**
    * Index 64: Person with disability - 1
+   * TODO: Handle disabilities
    */
-  Personwithdisability1 = (): boolean | undefined => {
-    return undefined
-  }
+  Personwithdisability1 = (): boolean | undefined => undefined
 
   f64 = (): boolean | undefined => this.Personwithdisability1()
 
   /**
    * Index 65: Person with disability - 2
+   * TODO: Handle disabilities
    */
-  Personwithdisability2 = (): boolean | undefined => {
-    return undefined
-  }
+  Personwithdisability2 = (): boolean | undefined => undefined
 
   f65 = (): boolean | undefined => this.Personwithdisability2()
 
   /**
    * Index 66: Person with disability - 3
+   * TODO: Handle disabilities
    */
-  Personwithdisability3 = (): boolean | undefined => {
-    return undefined
-  }
+  Personwithdisability3 = (): boolean | undefined => undefined
 
   f66 = (): boolean | undefined => this.Personwithdisability3()
 
   /**
    * Index 67: Person with disability - 4
+   * TODO: Handle disabilities
    */
-  Personwithdisability4 = (): boolean | undefined => {
-    return undefined
-  }
+  Personwithdisability4 = (): boolean | undefined => undefined
 
   f67 = (): boolean | undefined => this.Personwithdisability4()
 
   /**
    * Index 68: Person with disability - 5
+   * TODO: Handle disabilities
    */
-  Personwithdisability5 = (): boolean | undefined => {
-    return undefined
-  }
+  Personwithdisability5 = (): boolean | undefined => undefined
 
   f68 = (): boolean | undefined => this.Personwithdisability5()
 
   /**
    * Index 69: Person with disability - 6
+   * TODO: Handle disabilities
    */
-  Personwithdisability6 = (): boolean | undefined => {
-    return undefined
-  }
+  Personwithdisability6 = (): boolean | undefined => undefined
 
   f69 = (): boolean | undefined => this.Personwithdisability6()
 
   /**
    * Index 70: Person with disability - 7
+   * TODO: Handle disabilities
    */
-  Personwithdisability7 = (): boolean | undefined => {
-    return undefined
-  }
+  Personwithdisability7 = (): boolean | undefined => undefined
 
   f70 = (): boolean | undefined => this.Personwithdisability7()
 
   /**
    * Index 71: Person with disability - 8
+   * TODO: Handle disabilities
    */
-  Personwithdisability8 = (): boolean | undefined => {
-    return undefined
-  }
+  Personwithdisability8 = (): boolean | undefined => undefined
 
   f71 = (): boolean | undefined => this.Personwithdisability8()
 
   /**
    * Index 72: Person with disability - 9
+   * TODO: Handle disabilities
    */
-  Personwithdisability9 = (): boolean | undefined => {
-    return undefined
-  }
+  Personwithdisability9 = (): boolean | undefined => undefined
 
   f72 = (): boolean | undefined => this.Personwithdisability9()
 
   /**
    * Index 73: Person with disability - 10
+   * TODO: Handle disabilities
    */
-  Personwithdisability10 = (): boolean | undefined => {
-    return undefined
-  }
+  Personwithdisability10 = (): boolean | undefined => undefined
 
   f73 = (): boolean | undefined => this.Personwithdisability10()
 
   /**
    * Index 74: Number of months living with you - 1
    */
-  Numberofmonthslivingwithyou1 = (): string | undefined => {
-    return undefined
-  }
+  Numberofmonthslivingwithyou1 = (): number | undefined =>
+    this.info.taxPayer.dependents[0]?.qualifyingInfo?.numberOfMonths
 
-  f74 = (): string | undefined => this.Numberofmonthslivingwithyou1()
+  f74 = (): number | undefined => this.Numberofmonthslivingwithyou1()
 
   /**
    * Index 75: Number of months living with you - 2
    */
-  Numberofmonthslivingwithyou2 = (): string | undefined => {
-    return undefined
-  }
+  Numberofmonthslivingwithyou2 = (): number | undefined =>
+    this.info.taxPayer.dependents[1]?.qualifyingInfo?.numberOfMonths
 
-  f75 = (): string | undefined => this.Numberofmonthslivingwithyou2()
+  f75 = (): number | undefined => this.Numberofmonthslivingwithyou2()
 
   /**
    * Index 76: Number of months living with you - 3
    */
-  Numberofmonthslivingwithyou3 = (): string | undefined => {
-    return undefined
-  }
+  Numberofmonthslivingwithyou3 = (): number | undefined =>
+    this.info.taxPayer.dependents[2]?.qualifyingInfo?.numberOfMonths
 
-  f76 = (): string | undefined => this.Numberofmonthslivingwithyou3()
+  f76 = (): number | undefined => this.Numberofmonthslivingwithyou3()
 
   /**
    * Index 77: Number of months living with you - 4
    */
-  Numberofmonthslivingwithyou4 = (): string | undefined => {
-    return undefined
-  }
+  Numberofmonthslivingwithyou4 = (): number | undefined =>
+    this.info.taxPayer.dependents[3]?.qualifyingInfo?.numberOfMonths
 
-  f77 = (): string | undefined => this.Numberofmonthslivingwithyou4()
+  f77 = (): number | undefined => this.Numberofmonthslivingwithyou4()
 
   /**
    * Index 78: Number of months living with you - 5
    */
-  Numberofmonthslivingwithyou5 = (): string | undefined => {
-    return undefined
-  }
+  Numberofmonthslivingwithyou5 = (): number | undefined =>
+    this.info.taxPayer.dependents[4]?.qualifyingInfo?.numberOfMonths
 
-  f78 = (): string | undefined => this.Numberofmonthslivingwithyou5()
+  f78 = (): number | undefined => this.Numberofmonthslivingwithyou5()
 
   /**
    * Index 79: Number of months living with you - 6
    */
-  Numberofmonthslivingwithyou6 = (): string | undefined => {
-    return undefined
-  }
+  Numberofmonthslivingwithyou6 = (): number | undefined =>
+    this.info.taxPayer.dependents[5]?.qualifyingInfo?.numberOfMonths
 
-  f79 = (): string | undefined => this.Numberofmonthslivingwithyou6()
+  f79 = (): number | undefined => this.Numberofmonthslivingwithyou6()
 
   /**
    * Index 80: Number of months living with you - 7
    */
-  Numberofmonthslivingwithyou7 = (): string | undefined => {
-    return undefined
-  }
+  Numberofmonthslivingwithyou7 = (): number | undefined =>
+    this.info.taxPayer.dependents[6]?.qualifyingInfo?.numberOfMonths
 
-  f80 = (): string | undefined => this.Numberofmonthslivingwithyou7()
+  f80 = (): number | undefined => this.Numberofmonthslivingwithyou7()
 
   /**
    * Index 81: Number of months living with you - 8
    */
-  Numberofmonthslivingwithyou8 = (): string | undefined => {
-    return undefined
-  }
+  Numberofmonthslivingwithyou8 = (): number | undefined =>
+    this.info.taxPayer.dependents[7]?.qualifyingInfo?.numberOfMonths
 
-  f81 = (): string | undefined => this.Numberofmonthslivingwithyou8()
+  f81 = (): number | undefined => this.Numberofmonthslivingwithyou8()
 
   /**
    * Index 82: Number of months living with you - 9
    */
-  Numberofmonthslivingwithyou9 = (): string | undefined => {
-    return undefined
-  }
+  Numberofmonthslivingwithyou9 = (): number | undefined =>
+    this.info.taxPayer.dependents[8]?.qualifyingInfo?.numberOfMonths
 
-  f82 = (): string | undefined => this.Numberofmonthslivingwithyou9()
+  f82 = (): number | undefined => this.Numberofmonthslivingwithyou9()
 
   /**
    * Index 83: Number of months living with you - 10
    */
-  Numberofmonthslivingwithyou10 = (): string | undefined => {
-    return undefined
-  }
+  Numberofmonthslivingwithyou10 = (): number | undefined =>
+    this.info.taxPayer.dependents[9]?.qualifyingInfo?.numberOfMonths
 
-  f83 = (): string | undefined => this.Numberofmonthslivingwithyou10()
+  f83 = (): number | undefined => this.Numberofmonthslivingwithyou10()
 
   /**
    * Index 84: Eligible for Earned Income Credit - 1
+   * TODO: Confirm this checkbox
    */
-  EligibleforEarnedIncomeCredit1 = (): boolean | undefined => {
-    return undefined
-  }
+  EligibleforEarnedIncomeCredit1 = (): boolean | undefined =>
+    this.info.taxPayer.dependents[0] !== undefined
 
   f84 = (): boolean | undefined => this.EligibleforEarnedIncomeCredit1()
 
   /**
    * Index 85: Eligible for Earned Income Credit - 2
+   * TODO: Confirm this checkbox
    */
-  EligibleforEarnedIncomeCredit2 = (): boolean | undefined => {
-    return undefined
-  }
+  EligibleforEarnedIncomeCredit2 = (): boolean | undefined =>
+    this.info.taxPayer.dependents[1] !== undefined
 
   f85 = (): boolean | undefined => this.EligibleforEarnedIncomeCredit2()
 
   /**
    * Index 86: Eligible for Earned Income Credit - 3
+   * TODO: Confirm this checkbox
    */
-  EligibleforEarnedIncomeCredit3 = (): boolean | undefined => {
-    return undefined
-  }
+  EligibleforEarnedIncomeCredit3 = (): boolean | undefined =>
+    this.info.taxPayer.dependents[2] !== undefined
 
   f86 = (): boolean | undefined => this.EligibleforEarnedIncomeCredit3()
 
   /**
    * Index 87: Eligible for Earned Income Credit - 4
+   * TODO: Confirm this checkbox
    */
-  EligibleforEarnedIncomeCredit4 = (): boolean | undefined => {
-    return undefined
-  }
+  EligibleforEarnedIncomeCredit4 = (): boolean | undefined =>
+    this.info.taxPayer.dependents[3] !== undefined
 
   f87 = (): boolean | undefined => this.EligibleforEarnedIncomeCredit4()
 
   /**
    * Index 88: Eligible for Earned Income Credit - 5
+   * TODO: Confirm this checkbox
    */
-  EligibleforEarnedIncomeCredit5 = (): boolean | undefined => {
-    return undefined
-  }
+  EligibleforEarnedIncomeCredit5 = (): boolean | undefined =>
+    this.info.taxPayer.dependents[4] !== undefined
 
   f88 = (): boolean | undefined => this.EligibleforEarnedIncomeCredit5()
 
   /**
    * Index 89: Eligible for Earned Income Credit - 6
+   * TODO: Confirm this checkbox
    */
-  EligibleforEarnedIncomeCredit6 = (): boolean | undefined => {
-    return undefined
-  }
+  EligibleforEarnedIncomeCredit6 = (): boolean | undefined =>
+    this.info.taxPayer.dependents[5] !== undefined
 
   f89 = (): boolean | undefined => this.EligibleforEarnedIncomeCredit6()
 
   /**
    * Index 90: Eligible for Earned Income Credit - 7
+   * TODO: Confirm this checkbox
    */
-  EligibleforEarnedIncomeCredit7 = (): boolean | undefined => {
-    return undefined
-  }
+  EligibleforEarnedIncomeCredit7 = (): boolean | undefined =>
+    this.info.taxPayer.dependents[6] !== undefined
 
   f90 = (): boolean | undefined => this.EligibleforEarnedIncomeCredit7()
 
   /**
    * Index 91: Eligible for Earned Income Credit - 8
+   * TODO: Confirm this checkbox
    */
-  EligibleforEarnedIncomeCredit8 = (): boolean | undefined => {
-    return undefined
-  }
+  EligibleforEarnedIncomeCredit8 = (): boolean | undefined =>
+    this.info.taxPayer.dependents[7] !== undefined
 
   f91 = (): boolean | undefined => this.EligibleforEarnedIncomeCredit8()
 
   /**
    * Index 92: Eligible for Earned Income Credit - 9
+   * TODO: Confirm this checkbox
    */
-  EligibleforEarnedIncomeCredit9 = (): boolean | undefined => {
-    return undefined
-  }
+  EligibleforEarnedIncomeCredit9 = (): boolean | undefined =>
+    this.info.taxPayer.dependents[8] !== undefined
 
   f92 = (): boolean | undefined => this.EligibleforEarnedIncomeCredit9()
 
   /**
    * Index 93: Eligible for Earned Income Credit - 10
+   * TODO: Confirm this checkbox
    */
-  EligibleforEarnedIncomeCredit10 = (): boolean | undefined => {
-    return undefined
-  }
+  EligibleforEarnedIncomeCredit10 = (): boolean | undefined =>
+    this.info.taxPayer.dependents[9] !== undefined
 
   f93 = (): boolean | undefined => this.EligibleforEarnedIncomeCredit10()
 
   /**
    * Index 94: Mutiplied total number of dependents
    */
-  Mutipliedtotalnumberofdependents = (): string | undefined => {
-    return undefined
-  }
+  Mutipliedtotalnumberofdependents = (): number | undefined =>
+    this.qualifyingDependents.length * parameters.eicDependentCredit
 
-  f94 = (): string | undefined => this.Mutipliedtotalnumberofdependents()
+  f94 = (): number | undefined => this.Mutipliedtotalnumberofdependents()
 
   /**
    * Index 95: Child's first name -1
+   * TODO: non-dependent children not handled.
    */
   Childsfirstname1 = (): string | undefined => {
     return undefined
@@ -882,6 +837,7 @@ export class il1040scheduleileeic implements Form {
 
   /**
    * Index 96: Child's first name -2
+   * TODO: non-dependent children not handled.
    */
   Childsfirstname2 = (): string | undefined => {
     return undefined
@@ -891,6 +847,7 @@ export class il1040scheduleileeic implements Form {
 
   /**
    * Index 97: Child's first name -3
+   * TODO: non-dependent children not handled.
    */
   Childsfirstname3 = (): string | undefined => {
     return undefined
@@ -900,6 +857,7 @@ export class il1040scheduleileeic implements Form {
 
   /**
    * Index 98: Child's first name - 4
+   * TODO: non-dependent children not handled.
    */
   Childsfirstname4 = (): string | undefined => {
     return undefined
@@ -909,6 +867,7 @@ export class il1040scheduleileeic implements Form {
 
   /**
    * Index 99: Child's first name - 5
+   * TODO: non-dependent children not handled.
    */
   Childsfirstname5 = (): string | undefined => {
     return undefined
@@ -918,6 +877,7 @@ export class il1040scheduleileeic implements Form {
 
   /**
    * Index 100: Child's first name - 6
+   * TODO: non-dependent children not handled.
    */
   Childsfirstname6 = (): string | undefined => {
     return undefined
@@ -927,6 +887,7 @@ export class il1040scheduleileeic implements Form {
 
   /**
    * Index 101: Child's first name - 7
+   * TODO: non-dependent children not handled.
    */
   Childsfirstname7 = (): string | undefined => {
     return undefined
@@ -936,6 +897,7 @@ export class il1040scheduleileeic implements Form {
 
   /**
    * Index 102: Child's first name - 8
+   * TODO: non-dependent children not handled.
    */
   Childsfirstname8 = (): string | undefined => {
     return undefined
@@ -945,6 +907,7 @@ export class il1040scheduleileeic implements Form {
 
   /**
    * Index 103: Child's last name - 1
+   * TODO: non-dependent children not handled.
    */
   Childslastname1 = (): string | undefined => {
     return undefined
@@ -954,6 +917,7 @@ export class il1040scheduleileeic implements Form {
 
   /**
    * Index 104: Child's last name - 2
+   * TODO: non-dependent children not handled.
    */
   Childslastname2 = (): string | undefined => {
     return undefined
@@ -963,6 +927,7 @@ export class il1040scheduleileeic implements Form {
 
   /**
    * Index 105: Child's last name - 3
+   * TODO: non-dependent children not handled.
    */
   Childslastname3 = (): string | undefined => {
     return undefined
@@ -972,6 +937,7 @@ export class il1040scheduleileeic implements Form {
 
   /**
    * Index 106: Child's last name - 4
+   * TODO: non-dependent children not handled.
    */
   Childslastname4 = (): string | undefined => {
     return undefined
@@ -981,6 +947,7 @@ export class il1040scheduleileeic implements Form {
 
   /**
    * Index 107: Child's last name - 5
+   * TODO: non-dependent children not handled.
    */
   Childslastname5 = (): string | undefined => {
     return undefined
@@ -990,6 +957,7 @@ export class il1040scheduleileeic implements Form {
 
   /**
    * Index 108: Child's last name - 6
+   * TODO: non-dependent children not handled.
    */
   Childslastname6 = (): string | undefined => {
     return undefined
@@ -999,6 +967,7 @@ export class il1040scheduleileeic implements Form {
 
   /**
    * Index 109: Child's last name - 7
+   * TODO: non-dependent children not handled.
    */
   Childslastname7 = (): string | undefined => {
     return undefined
@@ -1008,6 +977,7 @@ export class il1040scheduleileeic implements Form {
 
   /**
    * Index 110: Child's last name - 8
+   * TODO: non-dependent children not handled.
    */
   Childslastname8 = (): string | undefined => {
     return undefined
@@ -1018,14 +988,14 @@ export class il1040scheduleileeic implements Form {
   /**
    * Index 111: Social Security number - 1
    */
-  SocialSecuritynumber1 = (): string | undefined => {
-    return undefined
-  }
+  SocialSecuritynumber1 = (): string | undefined =>
+    this.info.taxPayer.dependents[0]?.ssid
 
   f111 = (): string | undefined => this.SocialSecuritynumber1()
 
   /**
    * Index 112: Child's Social Security number - 1
+   * TODO: non-dependent children not handled.
    */
   ChildsSocialSecuritynumber1 = (): string | undefined => {
     return undefined
@@ -1035,6 +1005,7 @@ export class il1040scheduleileeic implements Form {
 
   /**
    * Index 113: Child's Social Security number - 2
+   * TODO: non-dependent children not handled.
    */
   ChildsSocialSecuritynumber2 = (): string | undefined => {
     return undefined
@@ -1044,6 +1015,7 @@ export class il1040scheduleileeic implements Form {
 
   /**
    * Index 114: Child's Social Security number - 3
+   * TODO: non-dependent children not handled.
    */
   ChildsSocialSecuritynumber3 = (): string | undefined => {
     return undefined
@@ -1053,6 +1025,7 @@ export class il1040scheduleileeic implements Form {
 
   /**
    * Index 115: Child's Social Security number - 4
+   * TODO: non-dependent children not handled.
    */
   ChildsSocialSecuritynumber4 = (): string | undefined => {
     return undefined
@@ -1062,6 +1035,7 @@ export class il1040scheduleileeic implements Form {
 
   /**
    * Index 116: Child's Social Security number - 5
+   * TODO: non-dependent children not handled.
    */
   ChildsSocialSecuritynumber5 = (): string | undefined => {
     return undefined
@@ -1071,6 +1045,7 @@ export class il1040scheduleileeic implements Form {
 
   /**
    * Index 117: Child's Social Security number - 6
+   * TODO: non-dependent children not handled.
    */
   ChildsSocialSecuritynumber6 = (): string | undefined => {
     return undefined
@@ -1080,6 +1055,7 @@ export class il1040scheduleileeic implements Form {
 
   /**
    * Index 118: Child's Social Security number - 7
+   * TODO: non-dependent children not handled.
    */
   ChildsSocialSecuritynumber7 = (): string | undefined => {
     return undefined
@@ -1089,6 +1065,7 @@ export class il1040scheduleileeic implements Form {
 
   /**
    * Index 119: Child's Social Security number - 8
+   * TODO: non-dependent children not handled.
    */
   ChildsSocialSecuritynumber8 = (): string | undefined => {
     return undefined
@@ -1098,6 +1075,7 @@ export class il1040scheduleileeic implements Form {
 
   /**
    * Index 120: Child's relationship to you - 1
+   * TODO: non-dependent children not handled.
    */
   Childsrelationshiptoyou1 = (): string | undefined => {
     return undefined
@@ -1107,6 +1085,7 @@ export class il1040scheduleileeic implements Form {
 
   /**
    * Index 121: Child's relationship to you - 2
+   * TODO: non-dependent children not handled.
    */
   Childsrelationshiptoyou2 = (): string | undefined => {
     return undefined
@@ -1116,6 +1095,7 @@ export class il1040scheduleileeic implements Form {
 
   /**
    * Index 122: Child's relationship to you - 3
+   * TODO: non-dependent children not handled.
    */
   Childsrelationshiptoyou3 = (): string | undefined => {
     return undefined
@@ -1125,6 +1105,7 @@ export class il1040scheduleileeic implements Form {
 
   /**
    * Index 123: Child's relationship to you - 4
+   * TODO: non-dependent children not handled.
    */
   Childsrelationshiptoyou4 = (): string | undefined => {
     return undefined
@@ -1134,6 +1115,7 @@ export class il1040scheduleileeic implements Form {
 
   /**
    * Index 124: Child's relationship to you - 5
+   * TODO: non-dependent children not handled.
    */
   Childsrelationshiptoyou5 = (): string | undefined => {
     return undefined
@@ -1143,6 +1125,7 @@ export class il1040scheduleileeic implements Form {
 
   /**
    * Index 125: Child's relationship to you - 6
+   * TODO: non-dependent children not handled.
    */
   Childsrelationshiptoyou6 = (): string | undefined => {
     return undefined
@@ -1152,6 +1135,7 @@ export class il1040scheduleileeic implements Form {
 
   /**
    * Index 126: Child's relationship to you - 7
+   * TODO: non-dependent children not handled.
    */
   Childsrelationshiptoyou7 = (): string | undefined => {
     return undefined
@@ -1161,6 +1145,7 @@ export class il1040scheduleileeic implements Form {
 
   /**
    * Index 127: Child's relationship to you - 8
+   * TODO: non-dependent children not handled.
    */
   Childsrelationshiptoyou8 = (): string | undefined => {
     return undefined
@@ -1170,6 +1155,7 @@ export class il1040scheduleileeic implements Form {
 
   /**
    * Index 128: Child's date of birth (mm/dd/yyyy) - 1
+   * TODO: non-dependent children not handled.
    */
   Childsdateofbirthmmddyyyy1 = (): string | undefined => {
     return undefined
@@ -1179,6 +1165,7 @@ export class il1040scheduleileeic implements Form {
 
   /**
    * Index 129: Child's date of birth (mm/dd/yyyy) - 2
+   * TODO: non-dependent children not handled.
    */
   Childsdateofbirthmmddyyyy2 = (): string | undefined => {
     return undefined
@@ -1188,6 +1175,7 @@ export class il1040scheduleileeic implements Form {
 
   /**
    * Index 130: Child's date of birth (mm/dd/yyyy) - 3
+   * TODO: non-dependent children not handled.
    */
   Childsdateofbirthmmddyyyy3 = (): string | undefined => {
     return undefined
@@ -1197,6 +1185,7 @@ export class il1040scheduleileeic implements Form {
 
   /**
    * Index 131: Child's date of birth (mm/dd/yyyy) - 4
+   * TODO: non-dependent children not handled.
    */
   Childsdateofbirthmmddyyyy4 = (): string | undefined => {
     return undefined
@@ -1206,6 +1195,7 @@ export class il1040scheduleileeic implements Form {
 
   /**
    * Index 132: Child's date of birth (mm/dd/yyyy) - 5
+   * TODO: non-dependent children not handled.
    */
   Childsdateofbirthmmddyyyy5 = (): string | undefined => {
     return undefined
@@ -1215,6 +1205,7 @@ export class il1040scheduleileeic implements Form {
 
   /**
    * Index 133: Child's date of birth (mm/dd/yyyy) - 6
+   * TODO: non-dependent children not handled.
    */
   Childsdateofbirthmmddyyyy6 = (): string | undefined => {
     return undefined
@@ -1224,6 +1215,7 @@ export class il1040scheduleileeic implements Form {
 
   /**
    * Index 134: Child's date of birth (mm/dd/yyyy) - 7
+   * TODO: non-dependent children not handled.
    */
   Childsdateofbirthmmddyyyy7 = (): string | undefined => {
     return undefined
@@ -1233,6 +1225,7 @@ export class il1040scheduleileeic implements Form {
 
   /**
    * Index 135: Child's date of birth (mm/dd/yyyy) - 8
+   * TODO: non-dependent children not handled.
    */
   Childsdateofbirthmmddyyyy8 = (): string | undefined => {
     return undefined
@@ -1459,122 +1452,98 @@ export class il1040scheduleileeic implements Form {
   /**
    * Index 160: Wages - Salaries - Tips
    */
-  WagesSalariesTips = (): string | undefined => {
-    return undefined
-  }
+  WagesSalariesTips = (): number | undefined => this.f1040.l1()
 
-  f160 = (): string | undefined => this.WagesSalariesTips()
+  f160 = (): number | undefined => this.WagesSalariesTips()
 
   /**
    * Index 161: Business income/loss
    */
-  Businessincomeloss = (): string | undefined => {
-    return undefined
-  }
+  Businessincomeloss = (): number | undefined => this.f1040.schedule1?.l3()
 
-  f161 = (): string | undefined => this.Businessincomeloss()
+  f161 = (): number | undefined => this.Businessincomeloss()
 
   /**
    * Index 162: Occupation requirement
+   * TODO: jurisdictional license question
    */
-  Occupationrequirement = (): boolean | undefined => {
-    return undefined
-  }
+  Occupationrequirement = (): boolean | undefined => undefined
 
   f162 = (): boolean | undefined => this.Occupationrequirement()
 
   /**
    * Index 163: Issuing agency - 1
    */
-  Issuingagency1 = (): string | undefined => {
-    return undefined
-  }
+  Issuingagency1 = (): string | undefined => undefined
 
   f163 = (): string | undefined => this.Issuingagency1()
 
   /**
    * Index 164: Issuing agency - 2
    */
-  Issuingagency2 = (): string | undefined => {
-    return undefined
-  }
+  Issuingagency2 = (): string | undefined => undefined
 
   f164 = (): string | undefined => this.Issuingagency2()
 
   /**
    * Index 165: Issuing agency - 3
    */
-  Issuingagency3 = (): string | undefined => {
-    return undefined
-  }
+  Issuingagency3 = (): string | undefined => undefined
 
   f165 = (): string | undefined => this.Issuingagency3()
 
   /**
    * Index 166: Issuing agency - 5
    */
-  Issuingagency5 = (): string | undefined => {
-    return undefined
-  }
+  Issuingagency5 = (): string | undefined => undefined
 
   f166 = (): string | undefined => this.Issuingagency5()
 
   /**
    * Index 167: Issuing agency - 4
    */
-  Issuingagency4 = (): string | undefined => {
-    return undefined
-  }
+  Issuingagency4 = (): string | undefined => undefined
 
   f167 = (): string | undefined => this.Issuingagency4()
 
   /**
    * Index 168: License/Registration/Certification - 1
    */
-  LicenseRegistrationCertification1 = (): string | undefined => {
-    return undefined
-  }
+  LicenseRegistrationCertification1 = (): string | undefined => undefined
 
   f168 = (): string | undefined => this.LicenseRegistrationCertification1()
 
   /**
    * Index 169: License/Registration/Certification - 2
    */
-  LicenseRegistrationCertification2 = (): string | undefined => {
-    return undefined
-  }
+  LicenseRegistrationCertification2 = (): string | undefined => undefined
 
   f169 = (): string | undefined => this.LicenseRegistrationCertification2()
 
   /**
    * Index 170: License/Registration/Certification - 3
    */
-  LicenseRegistrationCertification3 = (): string | undefined => {
-    return undefined
-  }
+  LicenseRegistrationCertification3 = (): string | undefined => undefined
 
   f170 = (): string | undefined => this.LicenseRegistrationCertification3()
 
   /**
    * Index 171: License/Registration/Certification - 4
    */
-  LicenseRegistrationCertification4 = (): string | undefined => {
-    return undefined
-  }
+  LicenseRegistrationCertification4 = (): string | undefined => undefined
 
   f171 = (): string | undefined => this.LicenseRegistrationCertification4()
 
   /**
    * Index 172: License/Registration/Certification - 5
    */
-  LicenseRegistrationCertification5 = (): string | undefined => {
-    return undefined
-  }
+  LicenseRegistrationCertification5 = (): string | undefined => undefined
 
   f172 = (): string | undefined => this.LicenseRegistrationCertification5()
 
   /**
    * Index 173: Filing - married filing jointly
+   * TODO: Handle MFJ federal / MFS state issue.
    */
   Filingmarriedfilingjointly = (): string | undefined => {
     return undefined
@@ -1584,28 +1553,23 @@ export class il1040scheduleileeic implements Form {
 
   /**
    * Index 174: Spouse' s SSN3-2
+   * TODO - only applicable for MFS state and MFJ federal return
    */
-  SpousesSSN32 = (): string | undefined => {
-    return undefined
-  }
+  SpousesSSN32 = (): string | undefined => undefined
 
   f174 = (): string | undefined => this.SpousesSSN32()
 
   /**
    * Index 175: Spouse's SSN2-2
    */
-  SpousesSSN22 = (): string | undefined => {
-    return undefined
-  }
+  SpousesSSN22 = (): string | undefined => undefined
 
   f175 = (): string | undefined => this.SpousesSSN22()
 
   /**
    * Index 176: Spouse's SSN4-2
    */
-  SpousesSSN42 = (): string | undefined => {
-    return undefined
-  }
+  SpousesSSN42 = (): string | undefined => undefined
 
   f176 = (): string | undefined => this.SpousesSSN42()
 
@@ -1621,53 +1585,53 @@ export class il1040scheduleileeic implements Form {
   /**
    * Index 178: Federal Earned Income Credit amount
    */
-  FederalEarnedIncomeCreditamount = (): string | undefined => {
-    return undefined
-  }
+  FederalEarnedIncomeCreditamount = (): number | undefined => this.f1040.l27()
 
-  f178 = (): string | undefined => this.FederalEarnedIncomeCreditamount()
+  f178 = (): number | undefined => this.FederalEarnedIncomeCreditamount()
 
   /**
    * Index 179: Multiply L5
    */
-  MultiplyL5 = (): string | undefined => {
-    return undefined
-  }
+  MultiplyL5 = (): number =>
+    (this.FederalEarnedIncomeCreditamount() ?? 0) *
+    parameters.earnedIncomeCreditFactor
 
-  f179 = (): string | undefined => this.MultiplyL5()
+  f179 = (): number => Math.round(this.MultiplyL5())
 
   /**
    * Index 180: Residents / Non-Residents rate - 1
+   * TODO: Handle non-residents rate
    */
-  ResidentsNonResidentsrate1 = (): string | undefined => {
-    return undefined
-  }
+  ResidentsNonResidentsrate1 = (): number => 1
 
-  f180 = (): string | undefined => this.ResidentsNonResidentsrate1()
+  f180 = (): number => this.ResidentsNonResidentsrate1()
 
   /**
    * Index 181: Residents / Non-Residents rate - 2
+   * TODO: Handle non-residents rate and Schedule NR
    */
-  ResidentsNonResidentsrate2 = (): string | undefined => {
-    return undefined
-  }
+  ResidentsNonResidentsrate2 = (): number => 0
 
-  f181 = (): string | undefined => this.ResidentsNonResidentsrate2()
+  f181 = (): number => this.ResidentsNonResidentsrate2()
 
   /**
    * Index 182: Multiply L6 - L7
    */
-  MultiplyL6L7 = (): string | undefined => {
-    return undefined
-  }
+  MultiplyL6L7 = (): number | undefined =>
+    this.MultiplyL5() *
+    (this.ResidentsNonResidentsrate1() +
+      this.ResidentsNonResidentsrate2() / 100)
 
-  f182 = (): string | undefined => this.MultiplyL6L7()
+  earnedIncomeCredit = (): number | undefined => this.MultiplyL6L7()
+
+  f182 = (): number | undefined =>
+    displayNumber(Math.round(this.MultiplyL6L7() ?? 0))
 
   /**
    * Index 183: Your SSN3
    */
   YourSSN3 = (): string | undefined =>
-    this.info.taxPayer.primaryPerson?.ssid.slice(3, 5)
+    this.info.taxPayer.primaryPerson?.ssid.slice(0, 3)
 
   f183 = (): string | undefined => this.YourSSN3()
 
@@ -1675,7 +1639,7 @@ export class il1040scheduleileeic implements Form {
    * Index 184: Your SSN2
    */
   YourSSN2 = (): string | undefined =>
-    this.info.taxPayer.primaryPerson?.ssid.slice(0, 3)
+    this.info.taxPayer.primaryPerson?.ssid.slice(3, 5)
 
   f184 = (): string | undefined => this.YourSSN2()
 

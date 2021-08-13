@@ -11,6 +11,8 @@ export default class IL1040V implements Form {
   formName: string
   state: State
   il1040: IL1040
+  formOrder: number = -1
+  attachments: () => Form[] = () => []
 
   constructor(info: Information, f1040: F1040, il1040: IL1040) {
     this.info = info
