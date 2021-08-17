@@ -1,6 +1,6 @@
 {
   "name": "ustaxes",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "private": true,
   "dependencies": {
     "@material-ui/core": "^4.12.1",
