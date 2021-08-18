@@ -1,9 +1,9 @@
-import { Information } from '../redux/data'
-import TaxPayer from '../redux/TaxPayer'
+import { Information } from 'usTaxes/redux/data'
+import TaxPayer from 'usTaxes/redux/TaxPayer'
 import Form, { FormTag } from './Form'
 import ScheduleE from './ScheduleE'
 import { sumFields } from './util'
-import log from '../log'
+import log from 'usTaxes/log'
 import F1040 from './F1040'
 
 const unimplemented = (message: string): void =>

@@ -1,4 +1,4 @@
-import { TaxPayer } from '../redux/data'
+import { TaxPayer } from 'usTaxes/redux/data'
 import ScheduleE from './ScheduleE'
 
 /**

@@ -1,5 +1,5 @@
-import { TaxesState } from '../redux/data'
-import { Either, isLeft, isRight, left, right } from '../util'
+import { TaxesState } from 'usTaxes/redux/data'
+import { Either, isLeft, isRight, left, right } from 'usTaxes/util'
 
 // Defines usable tag names for each question later defined,
 // and maps to a type which is the expected response type.

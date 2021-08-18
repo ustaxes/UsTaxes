@@ -1,7 +1,7 @@
-import React, { Fragment, ReactElement, ReactNode, useState } from 'react'
+import { Fragment, ReactElement, ReactNode, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { FormProvider, useForm } from 'react-hook-form'
-import { PagerContext } from '../pager'
+import { PagerContext } from 'usTaxes/components/pager'
 import {
   TaxesState,
   IncomeW2,
@@ -11,18 +11,18 @@ import {
   Spouse,
   PrimaryPerson,
   FilingStatus
-} from '../../redux/data'
+} from 'usTaxes/redux/data'
 import {
   Currency,
   formatSSID,
   GenericLabeledDropdown,
   LabeledInput
-} from '../input'
-import { Patterns } from '../Patterns'
-import { FormListContainer } from '../FormContainer'
+} from 'usTaxes/components/input'
+import { Patterns } from 'usTaxes/components/Patterns'
+import { FormListContainer } from 'usTaxes/components/FormContainer'
 import { Box } from '@material-ui/core'
 import { Work } from '@material-ui/icons'
-import { addW2, editW2, removeW2 } from '../../redux/actions'
+import { addW2, editW2, removeW2 } from 'usTaxes/redux/actions'
 import { If } from 'react-if'
 import { Alert } from '@material-ui/lab'
 

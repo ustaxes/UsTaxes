@@ -4,14 +4,14 @@ import {
   Property,
   PropertyType,
   PropertyExpenseTypeName
-} from '../redux/data'
+} from 'usTaxes/redux/data'
 import Form, { FormTag } from './Form'
-import TaxPayer from '../redux/TaxPayer'
-import { anArrayOf, unzip3, zip, zip3 } from '../util'
+import TaxPayer from 'usTaxes/redux/TaxPayer'
+import { anArrayOf, unzip3, zip, zip3 } from 'usTaxes/util'
 import F6168 from './F6168'
 import F8582 from './F8582'
 import { displayNegPos, displayNumber, sumFields } from './util'
-import log from '../log'
+import log from 'usTaxes/log'
 
 type Cell = number | undefined
 export type MatrixRow = [Cell, Cell, Cell]

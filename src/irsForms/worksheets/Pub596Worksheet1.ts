@@ -1,9 +1,9 @@
-import { EIC } from '../../data/federal'
-import { TaxPayer } from '../../redux/data'
-import { ifNegative, ifPositive } from '../../util'
-import F1040 from '../F1040'
-import { sumFields } from '../util'
-import log from '../../log'
+import { EIC } from 'usTaxes/data/federal'
+import { TaxPayer } from 'usTaxes/redux/data'
+import { ifNegative, ifPositive } from 'usTaxes/util'
+import F1040 from 'usTaxes/irsForms/F1040'
+import { sumFields } from 'usTaxes/irsForms/util'
+import log from 'usTaxes/log'
 
 const unimplemented = (message: string): void =>
   log.warn(`[Pub 596 Worksheet 1] unimplemented ${message}`)

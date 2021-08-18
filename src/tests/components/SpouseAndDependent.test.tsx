@@ -1,4 +1,3 @@
-import React from 'react'
 import {
   render,
   screen,
@@ -11,8 +10,8 @@ import userEvent from '@testing-library/user-event'
 
 import SpouseAndDependent, {
   SpouseInfo
-} from '../../components/TaxPayer/SpouseAndDependent'
-import { store } from '../../redux/store'
+} from 'usTaxes/components/TaxPayer/SpouseAndDependent'
+import { store } from 'usTaxes/redux/store'
 
 afterEach(async () => {
   await waitFor(() => localStorage.clear())

@@ -1,15 +1,15 @@
-import { Dependent, FilingStatus, TaxPayer as TP } from '../redux/data'
-import TaxPayer from '../redux/TaxPayer'
+import { Dependent, FilingStatus, TaxPayer as TP } from 'usTaxes/redux/data'
+import TaxPayer from 'usTaxes/redux/TaxPayer'
 import F1040 from './F1040'
 import { sumFields } from './util'
-import * as federal from '../data/federal'
+import * as federal from 'usTaxes/data/federal'
 import F2555 from './F2555'
 import F4797 from './F4797'
 import F8814 from './F8814'
 import Pub596Worksheet1 from './worksheets/Pub596Worksheet1'
 import Form, { FormTag } from './Form'
-import { anArrayOf, evaluatePiecewise, Piecewise } from '../util'
-import log from '../log'
+import { anArrayOf, evaluatePiecewise, Piecewise } from 'usTaxes/util'
+import log from 'usTaxes/log'
 
 type PrecludesEIC<F> = (f: F) => boolean
 

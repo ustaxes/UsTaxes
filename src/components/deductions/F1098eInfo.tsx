@@ -2,12 +2,12 @@ import React, { ReactElement, useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import SchoolIcon from '@material-ui/icons/School'
 import { useDispatch, useSelector } from 'react-redux'
-import { add1098e, edit1098e, remove1098e } from '../../redux/actions'
-import { PagerContext } from '../pager'
-import { Currency, LabeledInput } from '../input'
-import { TaxesState, F1098e } from '../../redux/data'
-import { Patterns } from '../Patterns'
-import { FormListContainer } from '../FormContainer'
+import { add1098e, edit1098e, remove1098e } from 'usTaxes/redux/actions'
+import { PagerContext } from 'usTaxes/components/pager'
+import { Currency, LabeledInput } from 'usTaxes/components/input'
+import { TaxesState, F1098e } from 'usTaxes/redux/data'
+import { Patterns } from 'usTaxes/components/Patterns'
+import { FormListContainer } from 'usTaxes/components/FormContainer'
 
 const showInterest = (a: F1098e): ReactElement => {
   return <Currency value={a.interest} />

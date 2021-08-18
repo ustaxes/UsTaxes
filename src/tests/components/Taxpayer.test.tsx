@@ -2,11 +2,11 @@ import React, { ReactElement } from 'react'
 import { render, waitFor } from '@testing-library/react'
 import { Provider } from 'react-redux'
 
-import { createStoreUnpersisted } from '../../redux/store'
-import { PagerButtons, PagerContext } from '../../components/pager'
-import { Information } from '../../redux/data'
-import { blankState } from '../../redux/reducer'
-import TaxPayer from '../../components/TaxPayer'
+import { createStoreUnpersisted } from 'usTaxes/redux/store'
+import { PagerButtons, PagerContext } from 'usTaxes/components/pager'
+import { Information } from 'usTaxes/redux/data'
+import { blankState } from 'usTaxes/redux/reducer'
+import TaxPayer from 'usTaxes/components/TaxPayer'
 import userEvent from '@testing-library/user-event'
 
 jest.setTimeout(1000 * 60 * 10)

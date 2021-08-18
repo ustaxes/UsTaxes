@@ -1,5 +1,5 @@
-import { TaxPayer } from '../redux/data'
-import log from '../log'
+import { TaxPayer } from 'usTaxes/redux/data'
+import log from 'usTaxes/log'
 
 const unimplemented = (message: string): void =>
   log.warn(`[Form 8814] unimplemented ${message}`)

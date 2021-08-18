@@ -1,4 +1,4 @@
-import { Information } from '../redux/data'
+import { Information } from 'usTaxes/redux/data'
 import F1040 from './F1040'
 import Form, { FormTag } from './Form'
 

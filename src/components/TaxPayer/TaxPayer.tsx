@@ -1,17 +1,17 @@
 import React, { ReactElement } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
-import { savePrimaryPersonInfo } from '../../redux/actions'
+import { savePrimaryPersonInfo } from 'usTaxes/redux/actions'
 import {
   Address,
   PersonRole,
   PrimaryPerson,
   TaxesState,
   TaxPayer
-} from '../../redux/data'
+} from 'usTaxes/redux/data'
 import { PersonFields } from './PersonFields'
-import { LabeledCheckbox } from '../input'
-import { PagerContext } from '../pager'
+import { LabeledCheckbox } from 'usTaxes/components/input'
+import { PagerContext } from 'usTaxes/components/pager'
 import AddressFields from './Address'
 
 interface TaxPayerUserForm {

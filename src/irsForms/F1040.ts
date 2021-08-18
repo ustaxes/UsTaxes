@@ -8,8 +8,8 @@ import {
   Refund,
   TaxPayer,
   PlanType1099
-} from '../redux/data'
-import federalBrackets from '../data/federal'
+} from 'usTaxes/redux/data'
+import federalBrackets from 'usTaxes/data/federal'
 import F4972 from './F4972'
 import F5695 from './F5695'
 import F8814 from './F8814'
@@ -36,7 +36,7 @@ import { computeOrdinaryTax } from './TaxTable'
 import SDQualifiedAndCapGains from './worksheets/SDQualifiedAndCapGains'
 import ChildTaxCreditWorksheet from './worksheets/ChildTaxCreditWorksheet'
 import F4797 from './F4797'
-import { Responses } from '../data/questions'
+import { Responses } from 'usTaxes/data/questions'
 import StudentLoanInterestWorksheet from './worksheets/StudentLoanInterestWorksheet'
 
 export enum F1040Error {

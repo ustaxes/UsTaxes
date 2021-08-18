@@ -1,7 +1,7 @@
-import F1040 from '../F1040'
-import { Dependent, FilingStatus } from '../../redux/data'
-import { computeField, sumFields } from '../util'
-import { CURRENT_YEAR, QualifyingDependents } from '../../data/federal'
+import F1040 from 'usTaxes/irsForms/F1040'
+import { Dependent, FilingStatus } from 'usTaxes/redux/data'
+import { computeField, sumFields } from 'usTaxes/irsForms/util'
+import { CURRENT_YEAR, QualifyingDependents } from 'usTaxes/data/federal'
 
 export default class ChildTaxCreditWorksheet {
   f1040: F1040

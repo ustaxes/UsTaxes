@@ -1,9 +1,13 @@
 import React, { Fragment, ReactElement } from 'react'
 import { useFormContext, useWatch } from 'react-hook-form'
 import { If } from 'react-if'
-import { LabeledCheckbox, LabeledInput, USStateDropDown } from '../input'
-import { CountryDropDown } from '../input/LabeledDropdown'
-import { Patterns } from '../Patterns'
+import {
+  LabeledCheckbox,
+  LabeledInput,
+  USStateDropDown
+} from 'usTaxes/components/input'
+import { CountryDropDown } from 'usTaxes/components/input/LabeledDropdown'
+import { Patterns } from 'usTaxes/components/Patterns'
 
 interface AddressProps {
   checkboxText: string

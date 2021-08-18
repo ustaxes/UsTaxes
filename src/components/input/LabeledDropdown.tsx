@@ -1,10 +1,10 @@
 import React, { ReactElement } from 'react'
 import { Box, TextField } from '@material-ui/core'
 import { Controller, useFormContext } from 'react-hook-form'
-import locationPostalCodes from '../../data/locationPostalCodes'
+import locationPostalCodes from 'usTaxes/data/locationPostalCodes'
 import { BaseDropdownProps, LabeledDropdownProps } from './types'
 import _ from 'lodash'
-import countries from '../../data/countries'
+import countries from 'usTaxes/data/countries'
 
 export function GenericLabeledDropdown<A>(
   props: LabeledDropdownProps<A>

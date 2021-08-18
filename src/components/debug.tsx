@@ -1,11 +1,11 @@
+import { ReactElement } from 'react'
 import { IconButton, makeStyles, Theme } from '@material-ui/core'
 import { Star } from '@material-ui/icons'
 import fc from 'fast-check'
-import React, { ReactElement } from 'react'
 import { useDispatch } from 'react-redux'
-import { setEntireState } from '../redux/actions'
-import { TaxesState } from '../redux/data'
-import { taxesState } from '../tests/arbitraries'
+import { setEntireState } from 'usTaxes/redux/actions'
+import { TaxesState } from 'usTaxes/redux/data'
+import { taxesState } from 'usTaxes/tests/arbitraries'
 import * as prand from 'pure-rand'
 
 const useStyles = makeStyles((theme: Theme) => ({
