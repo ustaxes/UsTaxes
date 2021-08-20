@@ -99,9 +99,9 @@ export interface F1099DivData {
  that should go in box 4a and 5a. Will need to implement
  form 8606 and Schedule 1 line 19.
  */
- export enum PlanType1099 {
-  /* IRA includes a traditional IRA, Roth IRA, 
-   * simplified employee pension (SEP) IRA, 
+export enum PlanType1099 {
+  /* IRA includes a traditional IRA, Roth IRA,
+   * simplified employee pension (SEP) IRA,
    * and a savings incentive match plan for employees (SIMPLE) IRA
    */
   IRA = 'IRA',
@@ -111,9 +111,9 @@ export interface F1099DivData {
 }
 
 export const PlanType1099Texts = {
-  [PlanType1099.IRA]: 'traditional IRA, Roth IRA, simplified employee pension (SEP) IRA, or savings incentive match plan for employees (SIMPLE) IRA',
-  [PlanType1099.Pension]: '401(k), 403(b), or 457(b) plan',
-
+  [PlanType1099.IRA]:
+    'traditional IRA, Roth IRA, simplified employee pension (SEP) IRA, or savings incentive match plan for employees (SIMPLE) IRA',
+  [PlanType1099.Pension]: '401(k), 403(b), or 457(b) plan'
 }
 
 export interface F1099RData {

@@ -51,7 +51,8 @@ const showIncome = (a: Supported1099): ReactElement => {
           <br />
           Taxable Amount: <Currency value={a.form.taxableAmount} />
           <br />
-          Federal Income Tax Withweld: <Currency value={a.form.federalIncomeTaxWithheld} />
+          Federal Income Tax Withweld:{' '}
+          <Currency value={a.form.federalIncomeTaxWithheld} />
         </span>
       )
     }
@@ -170,7 +171,8 @@ const toF1099 = (input: F1099UserInput): Supported1099 | undefined => {
           grossDistribution: Number(input.grossDistribution),
           taxableAmount: Number(input.taxableAmount),
           federalIncomeTaxWithheld: Number(input.federalIncomeTaxWithheld),
-          planType: input.RPlanType == 'IRA' ? PlanType1099.IRA : PlanType1099.Pension
+          planType:
+            input.RPlanType == 'IRA' ? PlanType1099.IRA : PlanType1099.Pension
         }
       }
     }
@@ -271,13 +273,12 @@ export default function F1099Info(): ReactElement {
   )
 
   const rFields = (
-    
     <div>
       <LabeledInput
-      label="Box 1 - Gross Distribution"
-      patternConfig={Patterns.currency}
-      name="grossDistribution"
-    />
+        label="Box 1 - Gross Distribution"
+        patternConfig={Patterns.currency}
+        name="grossDistribution"
+      />
       <LabeledInput
         label="Box 2a - Taxable Amount"
         patternConfig={Patterns.currency}
@@ -289,14 +290,14 @@ export default function F1099Info(): ReactElement {
         name="federalIncomeTaxWithheld"
       />
       <GenericLabeledDropdown<PlanType1099>
-            label=""
-            strongLabel="Type of 1099-R"
-            dropDownData={Object.values(PlanType1099)}
-            valueMapping={(x, i) => x}
-            keyMapping={(x, i) => i}
-            textMapping={(status) => PlanType1099Texts[status]}
-            name="RPlanType"
-          />
+        label=""
+        strongLabel="Type of 1099-R"
+        dropDownData={Object.values(PlanType1099)}
+        valueMapping={(x, i) => x}
+        keyMapping={(x, i) => i}
+        textMapping={(status) => PlanType1099Texts[status]}
+        name="RPlanType"
+      />
     </div>
   )
 
