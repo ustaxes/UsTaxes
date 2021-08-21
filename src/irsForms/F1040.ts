@@ -7,7 +7,8 @@ import {
   PersonRole,
   Refund,
   TaxPayer,
-  PlanType1099
+  PlanType1099,
+  Income1099SSA
 } from '../redux/data'
 import federalBrackets from '../data/federal'
 import F4972 from './F4972'
@@ -73,6 +74,7 @@ export default class F1040 implements Form {
 
   _w2s: IncomeW2[]
   _f1099rs: Income1099R[]
+  _fSSA1099s: Income1099SSA[]
 
   schedule1?: Schedule1
   schedule2?: Schedule2
@@ -120,6 +122,7 @@ export default class F1040 implements Form {
     this.dependents = tp.dependents
     this._w2s = []
     this._f1099rs = []
+    this._fSSA1099s = []
     this.contactPhoneNumber = tp.contactPhoneNumber
     this.contactEmail = tp.contactEmail
   }
@@ -130,6 +133,10 @@ export default class F1040 implements Form {
 
   add1099R(f1099r: Income1099R): void {
     this._f1099rs.push(f1099r)
+  }
+
+  add1099SSA(f1099SSA: Income1099SSA): void {
+    this._fSSA1099s.push(f1099SSA)
   }
 
   addQuestions(questions: Responses): void {
