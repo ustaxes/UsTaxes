@@ -44,13 +44,7 @@ export default function GettingStarted(): ReactElement {
         <li>1099-DIV</li>
         <li>1099-B</li>
         <li>1098-E</li>
-      </ul>
-
-      <p>Partially Supported Income Forms</p>
-      <ul>
-        <li>
-          1099-R: Only normal distributions from IRAs are currently supported.
-        </li>
+        <li>1099-R: support for normal distributions from IRA and pension accounts.</li>
       </ul>
 
       <p>Supported Attachments to Form 1040</p>
