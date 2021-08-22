@@ -201,18 +201,18 @@ export default function F1099Info(): ReactElement {
 
   const onAdd1099 =
     (onSuccess: () => void) =>
-    (formData: F1099UserInput): void => {
-      const payload = toF1099(formData)
-      if (payload !== undefined) {
-        if (editing === undefined) {
-          dispatch(add1099(payload))
-        } else {
-          dispatch(edit1099({ index: editing, value: payload }))
+      (formData: F1099UserInput): void => {
+        const payload = toF1099(formData)
+        if (payload !== undefined) {
+          if (editing === undefined) {
+            dispatch(add1099(payload))
+          } else {
+            dispatch(edit1099({ index: editing, value: payload }))
+          }
+          clear()
+          onSuccess()
         }
-        clear()
-        onSuccess()
       }
-    }
 
   const people: Person[] = useSelector((state: TaxesState) => [
     state.information.taxPayer?.primaryPerson,
