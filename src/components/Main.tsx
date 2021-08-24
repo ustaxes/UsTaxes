@@ -19,7 +19,7 @@ import ResponsiveDrawer, {
   Section,
   SectionItem
 } from './ResponsiveDrawer'
-import { PagerButtons, PagerContext, usePager } from 'usTaxes/components/pager'
+import { PagerButtons, PagerContext, usePager } from './pager'
 import PrimaryTaxpayer from './TaxPayer'
 import RefundBankAccount from './RefundBankAccount'
 import SpouseAndDependent from './TaxPayer/SpouseAndDependent'

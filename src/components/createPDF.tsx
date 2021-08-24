@@ -1,6 +1,6 @@
 import React, { FormEvent, ReactElement, useState } from 'react'
 import { createPDFPopup } from 'usTaxes/pdfFiller/fillPdf'
-import { PagerContext } from 'usTaxes/components/pager'
+import { PagerContext } from './pager'
 import Alert from '@material-ui/lab/Alert'
 import { makeStyles } from '@material-ui/core/styles'
 import log from 'usTaxes/log'

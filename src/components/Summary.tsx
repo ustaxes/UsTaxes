@@ -8,13 +8,13 @@ import {
   makeStyles,
   Typography
 } from '@material-ui/core'
-import { PagerContext } from 'usTaxes/components/pager'
+import { PagerContext } from './pager'
 import { create1040 } from 'usTaxes/irsForms/Main'
 import { useSelector } from 'react-redux'
 import { Information, TaxesState } from 'usTaxes/redux/data'
 import { Check, Close } from '@material-ui/icons'
 import F1040 from 'usTaxes/irsForms/F1040'
-import { Currency } from 'usTaxes/components/input'
+import { Currency } from './input'
 import Alert from '@material-ui/lab/Alert'
 import { isLeft } from 'usTaxes/util'
 

@@ -1,5 +1,5 @@
 import React, { ReactElement } from 'react'
-import { SingleButtons } from 'usTaxes/components/pager'
+import { SingleButtons } from './pager'
 
 export default function NoMatchPage(): ReactElement {
   return (

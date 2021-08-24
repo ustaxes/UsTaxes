@@ -1,12 +1,12 @@
 import React, { ReactElement } from 'react'
 import { useForm, FormProvider } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
-import { LabeledInput, LabeledRadio } from 'usTaxes/components/input'
+import { LabeledInput, LabeledRadio } from './input'
 import { Patterns } from './Patterns'
 import { saveRefundInfo } from 'usTaxes/redux/actions'
 
 import { AccountType, Refund, TaxesState } from 'usTaxes/redux/data'
-import { PagerContext } from 'usTaxes/components/pager'
+import { PagerContext } from './pager'
 
 interface UserRefundForm {
   routingNumber: string

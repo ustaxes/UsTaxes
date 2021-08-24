@@ -1,5 +1,5 @@
 import React, { ReactElement } from 'react'
-import { StartButtons, SingleButtons } from 'usTaxes/components/pager'
+import { StartButtons, SingleButtons } from './pager'
 
 const repoUrl: string = 'https://github.com/ustaxes/UsTaxes'
 const codeOfConductUrl: string =
