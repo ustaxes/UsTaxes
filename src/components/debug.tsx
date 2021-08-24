@@ -1,4 +1,4 @@
-import { ReactElement } from 'react'
+import React, { ReactElement } from 'react'
 import { IconButton, makeStyles, Theme } from '@material-ui/core'
 import { Star } from '@material-ui/icons'
 import fc from 'fast-check'
