@@ -1,52 +1,89 @@
-import { FilingStatus, TaxPayer } from '../../redux/data'
-import { ifNegative, ifPositive } from '../../util'
+import {
+  FilingStatus,
+  TaxPayer,
+  Information,
+  Income1099SSA,
+  Income1099Type
+} from '../../redux/data'
 import F1040 from '../F1040'
 import log from '../../log'
 import { sumFields } from '../util'
-import { min } from 'lodash'
 
 const unimplemented = (message: string): void =>
   log.warn(`[Social Security Benefits Worksheet] unimplemented ${message}`)
 
 export default class SocialSecurityBenefitsWorksheet {
+  state: Information
   tp: TaxPayer
   f1040: F1040
 
-  constructor(tp: TaxPayer, f1040: F1040) {
-    this.tp = tp
+  constructor(state: Information, f1040: F1040) {
+    this.state = state
     this.f1040 = f1040
+    this.tp = state.taxPayer
   }
+
+  totalNetBenefits = (): number =>
+    (
+      this.state.f1099s
+        .filter((f) => f.type === Income1099Type.SSA)
+        .map((f) => f as Income1099SSA) ?? []
+    )
+      .map((f) => f.form.netBenefits)
+      .reduce((l, r) => l + r, 0)
 
   /* Enter the total amount from box 5 of all your Forms SSA-1099 and RRB-1099. 
      Also enter this amount on Form 1040 or 1040-SR, line 6a
    */
-  l1 = (): number | undefined => this.f1040.l2b()
+  l1 = (): number => this.totalNetBenefits()
   // Multiply line 1 by 50% (0.50)
-  l2 = (): number | undefined => this.l1() / 2
+  l2 = (): number => this.l1() / 2
   /* If you are not excluding unemployment compensation from income, 
      combine the amounts from Form 1040 or 1040-SR, lines 1, 2b, 3b, 4b, 5b, 7, and 8.
      If you are excluding unemployment compensation from income, 
      combine the amounts from Form 1040 or 1040-SR , lines 1, 2b, 3b, 4b, 5b, 7, 
      Schedule 1, lines 1 through 7, and line 3 of the Unemployment Compensation Exclusion Worksheet
     */
-  l3 = (): number | undefined => sumFields([this.f1040.l1(), this.f1040.l2b(), this.f1040.l3b(), this.f1040.l4b(), this.f1040.l5b(), this.f1040.l7(), this.f1040.l8()])
+  l3 = (): number =>
+    sumFields([
+      this.f1040.l1(),
+      this.f1040.l2b(),
+      this.f1040.l3b(),
+      this.f1040.l4b(),
+      this.f1040.l5b(),
+      this.f1040.l7(),
+      this.f1040.l8()
+    ])
   // Enter the amount, if any, from Form 1040 or 1040-SR, line 2a
   l4 = (): number | undefined => this.f1040.l2a()
   // Combine lines 2, 3, and 4
-  l5 = (): number | undefined => sumFields([this.l2(), this.l3(), this.l4()])
+  l5 = (): number => sumFields([this.l2(), this.l3(), this.l4()])
   /* Enter the total of the amounts from Form 1040 or 1040-SR, line 10b, 
       Schedule 1, lines 10 through 19, 
       plus any write-in adjustments you entered on the dotted line next to Schedule 1, line 22
    */
-  l6 = (): number | undefined => sumFields([this.f1040.l10b(), this.f1040.schedule1?.l10(), this.f1040.schedule1?.l11(), this.f1040.schedule1?.l12(), this.f1040.schedule1?.l13(), this.f1040.schedule1?.l14(), this.f1040.schedule1?.l15(), this.f1040.schedule1?.l16(), this.f1040.schedule1?.l17(), this.f1040.schedule1?.l18(), this.f1040.schedule1?.l19(), this.f1040.schedule1?.l22writeIn()])
-  
+  l6 = (): number =>
+    sumFields([
+      this.f1040.l10b(),
+      this.f1040.schedule1?.l10(),
+      this.f1040.schedule1?.l11(),
+      this.f1040.schedule1?.l12(),
+      this.f1040.schedule1?.l13(),
+      this.f1040.schedule1?.l14(),
+      this.f1040.schedule1?.l15(),
+      this.f1040.schedule1?.l16(),
+      this.f1040.schedule1?.l17(),
+      this.f1040.schedule1?.l18(),
+      this.f1040.schedule1?.l19(),
+      this.f1040.schedule1?.l22writeIn()
+    ])
 
   /* Line 7: Is the amount on line 6 less than the amount on line 5?
     If No, None of your social security benefits are taxable. Enter -0- on Form 1040 or 1040-SR, line 6b.
     If Yes, Subtract line 6 from line 5
   */
 
-  l7 = (): number | undefined => {
+  l7 = (): number => {
     if (this.l6() < this.l5()) {
       return this.l5() - this.l6()
     } else {
@@ -65,13 +102,26 @@ export default class SocialSecurityBenefitsWorksheet {
     enter the result on line 16. Then, go to line 17
   */
   l8 = (): number => {
-    switch(this.tp.filingStatus) {
-      case FilingStatus.MFJ: return 32000
-      case FilingStatus.S: return 25000
-      case FilingStatus.HOH: return 25000
-      case FilingStatus.W: return 25000
-      // TODO: There is no option here for married-filing-separately and not living with your spouse
+    switch (this.tp.filingStatus) {
+      case FilingStatus.MFJ:
+        return 32000
+      case FilingStatus.S:
+        return 25000
+      case FilingStatus.HOH:
+        return 25000
+      case FilingStatus.W:
+        return 25000
+      case FilingStatus.MFS:
+        if (this.state.questions.LIVE_APART_FROM_SPOUSE) {
+          return 25000
+        } else {
+          // Note that this value won't be taken into account. Instead,
+          // the line 16 function will also check for this and perform
+          // the right math.
+          return 0
+        }
     }
+    return 0
   }
   /*
   Is the amount on line 8 less than the amount on line 7?
@@ -83,7 +133,7 @@ export default class SocialSecurityBenefitsWorksheet {
 
   If Yes, Subtract line 8 from line 7.
   */
-  l9 = (): number | undefined => {
+  l9 = (): number => {
     if (this.l8() < this.l7()) {
       return this.l7() - this.l8()
     } else {
@@ -96,18 +146,26 @@ export default class SocialSecurityBenefitsWorksheet {
   $9,000 if single, head of household, qualifying widow(er), or married filing separately 
   and you lived apart from your spouse for all of 2020
   */
-  l10 = (): number | undefined => {
-    switch(this.tp.filingStatus) {
-      case FilingStatus.MFJ: return 12000
-      case FilingStatus.S: return 9000
-      case FilingStatus.HOH: return 9000
-      case FilingStatus.W: return 9000
-      // TODO: There is no option here for married-filing-separately and not living with your spouse
+  l10 = (): number => {
+    switch (this.tp.filingStatus) {
+      case FilingStatus.MFJ:
+        return 12000
+      case FilingStatus.S:
+        return 9000
+      case FilingStatus.HOH:
+        return 9000
+      case FilingStatus.W:
+        return 9000
+      // Note that we will only hit this line if the user is MFS and living apart from
+      // their spouse, so no need to check for that additional question.
+      case FilingStatus.MFS:
+        return 9000
     }
+    return 0
   }
 
   // Subtract line 10 from line 9. If zero or less, enter -0-
-  l11 = (): number | undefined => {
+  l11 = (): number => {
     let tmp = this.l9() - this.l10()
     if (tmp < 0) {
       return 0
@@ -117,16 +175,16 @@ export default class SocialSecurityBenefitsWorksheet {
   }
 
   // Enter the smaller of line 9 or line 10
-  l12 = (): number | undefined => min([this.l9(), this.l10()])
+  l12 = (): number => Math.min(this.l9(), this.l10())
 
   // Enter one-half of line 12
-  l13 = (): number | undefined => this.l12() / 2
+  l13 = (): number => this.l12() / 2
 
   // Enter the smaller of line 2 or line 13
-  l14 = (): number | undefined => min([this.l13(), this.l2()])
+  l14 = (): number => Math.min(this.l13(), this.l2())
 
   // Multiply line 11 by 85% (0.85). If line 11 is zero, enter -0-
-  l15 = (): number | undefined => {
+  l15 = (): number => {
     if (this.l11() == 0) {
       return 0
     } else {
@@ -135,28 +193,42 @@ export default class SocialSecurityBenefitsWorksheet {
   }
 
   // Add lines 14 and 15
-  l16 = (): number | undefined => sumFields([this.l14(), this.l15()])
+  l16 = (): number => {
+    // From line 7 instructions:
+    // Married filing separately and you lived with your spouse at any time
+    // in 2020, skip lines 8 through 15; multiply line 7 by 85% (0.85) and
+    // enter the result on line 16. Then, go to line 17
+    if (
+      this.tp.filingStatus == FilingStatus.MFS &&
+      !this.state.questions.LIVE_APART_FROM_SPOUSE
+    ) {
+      return this.l7() * 0.85
+    } else {
+      return sumFields([this.l14(), this.l15()])
+    }
+  }
 
   // Multiply line 1 by 85% (0.85)
-  l17 = (): number | undefined => this.l1() * 0.85
+  l17 = (): number => this.l1() * 0.85
 
+  // Taxable social security benefits. Enter the smaller of line 16 or line 17.
+  // Also enter this amount on Form 1040 or 1040-SR, line 6b
+  l18 = (): number => Math.min(this.l16(), this.l17())
 
-  tax = (): number | undefined => {
+  // This is the function used to return the taxable amount of the social security
+  // benefits to be entered in line 6b of 1040. It takes into account the various
+  // stopping points in the worksheet.
+  taxableAmount = (): number => {
     let line7 = this.l7()
     if (line7 == 0) {
       return line7
     }
 
-    let line9 = this.l9() 
-    if ( line9 == 0) {
+    let line9 = this.l9()
+    if (line9 == 0) {
       return line9
     }
 
-    return min([this.l16(), this.l17()])
-    
+    return this.l18()
   }
-  
-  // Taxable social security benefits. Enter the smaller of line 16 or line 17. 
-  // Also enter this amount on Form 1040 or 1040-SR, line 6b
-  l18 = (): number | undefined => this.tax()
 }

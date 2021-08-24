@@ -36,6 +36,7 @@ import ScheduleB from './ScheduleB'
 import { computeOrdinaryTax } from './TaxTable'
 import SDQualifiedAndCapGains from './worksheets/SDQualifiedAndCapGains'
 import ChildTaxCreditWorksheet from './worksheets/ChildTaxCreditWorksheet'
+import SocialSecurityBenefitsWorksheet from './worksheets/SocialSecurityBenefits'
 import F4797 from './F4797'
 import { Responses } from '../data/questions'
 import StudentLoanInterestWorksheet from './worksheets/StudentLoanInterestWorksheet'
@@ -97,6 +98,7 @@ export default class F1040 implements Form {
   f8959?: F8959
   f8995?: F8995 | F8995A
   studentLoanInterestWorksheet?: StudentLoanInterestWorksheet
+  socialSecurityBenefitsWorksheet?: SocialSecurityBenefitsWorksheet
 
   childTaxCreditWorksheet?: ChildTaxCreditWorksheet
 
@@ -207,6 +209,10 @@ export default class F1040 implements Form {
     this.studentLoanInterestWorksheet = s
   }
 
+  addSocialSecurityWorksheet(s: SocialSecurityBenefitsWorksheet): void {
+    this.socialSecurityBenefitsWorksheet = s
+  }
+
   addRefund(r: Refund): void {
     this.refund = r
   }
@@ -288,8 +294,11 @@ export default class F1040 implements Form {
   // this is the value of box 2a in 1099-R forms coming from pensions/annuities
   l5b = (): number | undefined =>
     this.totalTaxableFrom1099R(PlanType1099.Pension)
-  l6a = (): number | undefined => undefined
-  l6b = (): number | undefined => undefined
+  // The sum of box 5 from SSA-1099
+  l6a = (): number | undefined => this.socialSecurityBenefitsWorksheet?.l1()
+  // calculation of the taxable amount of line 6a based on other income
+  l6b = (): number | undefined =>
+    this.socialSecurityBenefitsWorksheet?.taxableAmount()
   l7 = (): number | undefined => this.scheduleD?.l16()
   l8 = (): number | undefined => this.schedule1?.l9()
   l9 = (): number | undefined =>
@@ -300,6 +309,7 @@ export default class F1040 implements Form {
         this.l3b(),
         this.l4b(),
         this.l5b(),
+        this.l6b(),
         this.l7(),
         this.l8()
       ])
@@ -379,7 +389,11 @@ export default class F1040 implements Form {
       this._f1099rs.reduce(
         (res, f1099) => res + f1099.form.federalIncomeTaxWithheld,
         0
-      )
+      ) +
+        this._fSSA1099s.reduce(
+          (res, f1099) => res + f1099.form.federalIncomeTaxWithheld,
+          0
+        )
     )
 
   // TODO: form(s) W-2G box 4, schedule K-1, form 1042-S, form 8805, form 8288-A
