@@ -2,8 +2,8 @@ import React, { ReactElement, useState } from 'react'
 import { useForm, FormProvider } from 'react-hook-form'
 import { Icon } from '@material-ui/core'
 import { useDispatch, useSelector } from 'react-redux'
-import { add1099, edit1099, remove1099 } from 'usTaxes/redux/actions'
-import { PagerContext } from 'usTaxes/components/pager'
+import { add1099, edit1099, remove1099 } from 'ustaxes/redux/actions'
+import { PagerContext } from 'ustaxes/components/pager'
 import {
   TaxesState,
   Person,
@@ -12,15 +12,15 @@ import {
   Income1099Type,
   PlanType1099,
   PlanType1099Texts
-} from 'usTaxes/redux/data'
+} from 'ustaxes/redux/data'
 import {
   Currency,
   formatSSID,
   GenericLabeledDropdown,
   LabeledInput
-} from 'usTaxes/components/input'
-import { Patterns } from 'usTaxes/components/Patterns'
-import { FormListContainer } from 'usTaxes/components/FormContainer'
+} from 'ustaxes/components/input'
+import { Patterns } from 'ustaxes/components/Patterns'
+import { FormListContainer } from 'ustaxes/components/FormContainer'
 
 const showIncome = (a: Supported1099): ReactElement => {
   switch (a.type) {

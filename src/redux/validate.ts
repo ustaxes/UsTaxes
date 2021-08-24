@@ -1,6 +1,6 @@
 import Ajv, { DefinedError, ValidateFunction } from 'ajv'
 import schema from './validation.json'
-import log from 'usTaxes/log'
+import log from 'ustaxes/log'
 
 // We will simply throw a runtime error if the data does not
 // validate against the schema.definitions.

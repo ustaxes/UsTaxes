@@ -3,7 +3,7 @@ import { TextField } from '@material-ui/core'
 import { LabeledInputProps } from './types'
 import NumberFormat from 'react-number-format'
 import { Controller, useFormContext } from 'react-hook-form'
-import { isNumeric, Patterns } from 'usTaxes/components/Patterns'
+import { isNumeric, Patterns } from 'ustaxes/components/Patterns'
 import _ from 'lodash'
 
 export function LabeledInput(props: LabeledInputProps): ReactElement {

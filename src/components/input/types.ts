@@ -1,5 +1,5 @@
 import { RegisterOptions } from 'react-hook-form'
-import { PatternConfig } from 'usTaxes/components/Patterns'
+import { PatternConfig } from 'ustaxes/components/Patterns'
 
 export interface BaseDropdownProps {
   label: string

@@ -3,9 +3,9 @@ import { useForm, FormProvider } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { LabeledInput, LabeledRadio } from './input'
 import { Patterns } from './Patterns'
-import { saveRefundInfo } from 'usTaxes/redux/actions'
+import { saveRefundInfo } from 'ustaxes/redux/actions'
 
-import { AccountType, Refund, TaxesState } from 'usTaxes/redux/data'
+import { AccountType, Refund, TaxesState } from 'ustaxes/redux/data'
 import { PagerContext } from './pager'
 
 interface UserRefundForm {

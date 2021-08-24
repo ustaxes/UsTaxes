@@ -1,15 +1,15 @@
 import fc, { Arbitrary } from 'fast-check'
-import { CURRENT_YEAR } from 'usTaxes/data/federal'
-import locationPostalCodes from 'usTaxes/data/locationPostalCodes'
+import { CURRENT_YEAR } from 'ustaxes/data/federal'
+import locationPostalCodes from 'ustaxes/data/locationPostalCodes'
 import {
   QuestionTagName,
   questionTagNames,
   Responses
-} from 'usTaxes/data/questions'
-import F1040 from 'usTaxes/irsForms/F1040'
-import Form from 'usTaxes/irsForms/Form'
-import { create1040 } from 'usTaxes/irsForms/Main'
-import * as types from 'usTaxes/redux/data'
+} from 'ustaxes/data/questions'
+import F1040 from 'ustaxes/irsForms/F1040'
+import Form from 'ustaxes/irsForms/Form'
+import { create1040 } from 'ustaxes/irsForms/Main'
+import * as types from 'ustaxes/redux/data'
 import * as util from '../util'
 
 const lower: Arbitrary<string> = fc

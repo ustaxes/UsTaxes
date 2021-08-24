@@ -1,4 +1,4 @@
-import { Responses } from 'usTaxes/data/questions'
+import { Responses } from 'ustaxes/data/questions'
 
 export enum PersonRole {
   PRIMARY = 'PRIMARY',

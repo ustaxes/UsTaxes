@@ -1,4 +1,4 @@
-import { TaxPayer } from 'usTaxes/redux/data'
+import { TaxPayer } from 'ustaxes/redux/data'
 
 export default class Schedule8863 {
   tp: TaxPayer

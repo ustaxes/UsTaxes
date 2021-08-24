@@ -1,11 +1,11 @@
-import { Information } from 'usTaxes/redux/data'
+import { Information } from 'ustaxes/redux/data'
 import { displayNumber, computeField, sumFields } from './util'
-import TaxPayer from 'usTaxes/redux/TaxPayer'
+import TaxPayer from 'ustaxes/redux/TaxPayer'
 import Form, { FormTag } from './Form'
 import F4137 from './F4137'
 import F8919 from './F8919'
 import ScheduleSE from './ScheduleSE'
-import { fica } from 'usTaxes/data/federal'
+import { fica } from 'ustaxes/data/federal'
 
 export const needsF8959 = (state: Information): boolean => {
   const filingStatus = state.taxPayer.filingStatus

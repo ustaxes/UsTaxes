@@ -1,5 +1,5 @@
-import { CURRENT_YEAR } from 'usTaxes/data/federal'
-import { daysInYear } from 'usTaxes/util'
+import { CURRENT_YEAR } from 'ustaxes/data/federal'
+import { daysInYear } from 'ustaxes/util'
 
 export interface BasePattern {
   regexp?: RegExp

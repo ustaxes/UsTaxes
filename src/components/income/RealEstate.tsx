@@ -5,8 +5,8 @@ import {
   addProperty,
   editProperty,
   removeProperty
-} from 'usTaxes/redux/actions'
-import { PagerContext } from 'usTaxes/components/pager'
+} from 'ustaxes/redux/actions'
+import { PagerContext } from 'ustaxes/components/pager'
 import {
   Property,
   Address,
@@ -15,20 +15,20 @@ import {
   TaxesState,
   PropertyType,
   PropertyTypeName
-} from 'usTaxes/redux/data'
-import AddressFields from 'usTaxes/components/TaxPayer/Address'
+} from 'ustaxes/redux/data'
+import AddressFields from 'ustaxes/components/TaxPayer/Address'
 import {
   Currency,
   GenericLabeledDropdown,
   LabeledCheckbox,
   LabeledInput
-} from 'usTaxes/components/input'
-import { Patterns } from 'usTaxes/components/Patterns'
+} from 'ustaxes/components/input'
+import { Patterns } from 'ustaxes/components/Patterns'
 import { daysInYear, enumKeys, segments } from '../../util'
 import { HouseOutlined } from '@material-ui/icons'
-import { FormListContainer } from 'usTaxes/components/FormContainer'
+import { FormListContainer } from 'ustaxes/components/FormContainer'
 import { Grid } from '@material-ui/core'
-import { CURRENT_YEAR } from 'usTaxes/data/federal'
+import { CURRENT_YEAR } from 'ustaxes/data/federal'
 import { If } from 'react-if'
 
 interface PropertyAddForm {

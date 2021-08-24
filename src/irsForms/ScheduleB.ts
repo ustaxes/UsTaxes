@@ -3,11 +3,11 @@ import {
   Information,
   Income1099Int,
   Income1099Div
-} from 'usTaxes/redux/data'
-import TaxPayer from 'usTaxes/redux/TaxPayer'
+} from 'ustaxes/redux/data'
+import TaxPayer from 'ustaxes/redux/TaxPayer'
 import Form, { FormTag } from './Form'
 import { computeField, displayNumber, sumFields } from './util'
-import { anArrayOf } from 'usTaxes/util'
+import { anArrayOf } from 'ustaxes/util'
 
 interface PayerAmount {
   payer?: string

@@ -1,6 +1,6 @@
-import { TaxPayer } from 'usTaxes/redux/data'
+import { TaxPayer } from 'ustaxes/redux/data'
 import ScheduleE, { MatrixRow } from './ScheduleE'
-import log from 'usTaxes/log'
+import log from 'ustaxes/log'
 
 const unimplemented = (message: string): void => {
   log.warn(`[Form 8582]: ${message}`)

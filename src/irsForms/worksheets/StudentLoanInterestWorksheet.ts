@@ -1,6 +1,6 @@
-import { F1098e, FilingStatus, TaxPayer as TP } from 'usTaxes/redux/data'
-import TaxPayer from 'usTaxes/redux/TaxPayer'
-import F1040 from 'usTaxes/irsForms/F1040'
+import { F1098e, FilingStatus, TaxPayer as TP } from 'ustaxes/redux/data'
+import TaxPayer from 'ustaxes/redux/TaxPayer'
+import F1040 from 'ustaxes/irsForms/F1040'
 import { computeField, displayNumber, sumFields } from '../util'
 
 export default class StudentLoanInterestWorksheet {

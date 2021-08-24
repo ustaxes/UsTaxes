@@ -1,5 +1,5 @@
-import { Income1099Type, Income1099R, Information } from 'usTaxes/redux/data'
-import { Either, left, right } from 'usTaxes/util'
+import { Income1099Type, Income1099R, Information } from 'ustaxes/redux/data'
+import { Either, left, right } from 'ustaxes/util'
 import F1040, { F1040Error } from './F1040'
 import F1040V from './F1040v'
 import F8959, { needsF8959 } from './F8959'

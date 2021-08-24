@@ -1,6 +1,6 @@
-import federalBrackets from 'usTaxes/data/federal'
-import { FilingStatus } from 'usTaxes/redux/data'
-import { zip3 } from 'usTaxes/util'
+import federalBrackets from 'ustaxes/data/federal'
+import { FilingStatus } from 'ustaxes/redux/data'
+import { zip3 } from 'ustaxes/util'
 
 const computeTax =
   (brackets: (status: FilingStatus) => number[], rates: number[]) =>

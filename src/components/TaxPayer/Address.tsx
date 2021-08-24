@@ -5,9 +5,9 @@ import {
   LabeledCheckbox,
   LabeledInput,
   USStateDropDown
-} from 'usTaxes/components/input'
-import { CountryDropDown } from 'usTaxes/components/input/LabeledDropdown'
-import { Patterns } from 'usTaxes/components/Patterns'
+} from 'ustaxes/components/input'
+import { CountryDropDown } from 'ustaxes/components/input/LabeledDropdown'
+import { Patterns } from 'ustaxes/components/Patterns'
 
 interface AddressProps {
   checkboxText: string

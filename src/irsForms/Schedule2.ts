@@ -1,7 +1,7 @@
-import { TaxPayer as TP } from 'usTaxes/redux/data'
+import { TaxPayer as TP } from 'ustaxes/redux/data'
 import Form, { FormTag } from './Form'
 import { computeField, displayNumber, sumFields } from './util'
-import TaxPayer from 'usTaxes/redux/TaxPayer'
+import TaxPayer from 'ustaxes/redux/TaxPayer'
 import F8959 from './F8959'
 
 export default class Schedule2 implements Form {

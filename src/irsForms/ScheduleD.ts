@@ -5,9 +5,9 @@ import {
   F1099DivData,
   F1099BData,
   FilingStatus
-} from 'usTaxes/redux/data'
+} from 'ustaxes/redux/data'
 import Form, { FormTag } from './Form'
-import TaxPayer from 'usTaxes/redux/TaxPayer'
+import TaxPayer from 'ustaxes/redux/TaxPayer'
 import { computeField, displayNumber, sumFields } from './util'
 import SDRateGainWorksheet from './worksheets/SDRateGainWorksheet'
 import SDUnrecaptured1250 from './worksheets/SDUnrecaptured1250'

@@ -1,7 +1,7 @@
 import fc from 'fast-check'
 import { waitFor } from '@testing-library/react'
 import * as arbitraries from './arbitraries'
-import * as federal from 'usTaxes/data/federal'
+import * as federal from 'ustaxes/data/federal'
 
 afterEach(async () => {
   await waitFor(() => localStorage.clear())
