@@ -59,10 +59,12 @@ const showIncome = (a: Supported1099): ReactElement => {
     case Income1099Type.SSA: {
       return (
         <span>
-          Benefits paid: <Currency value={a.form.benefitsPaid} />
-          <br/>
-          Benefits repaid: <Currency value={a.form.benefitsRepaid} />
-          <br/>
+          Benefits Paid: <Currency value={a.form.benefitsPaid} />
+          <br />
+          Benefits Repaid: <Currency value={a.form.benefitsRepaid} />
+          <br />
+          Net Benefits: <Currency value={a.form.netBenefits} />
+          <br />
           Federal Income Tax Withweld:{' '}
           <Currency value={a.form.federalIncomeTaxWithheld} />
         </span>
@@ -93,6 +95,7 @@ interface F1099UserInput {
   // SSA fields
   benefitsPaid: string | number
   benefitsRepaid: string | number
+  netBenefits: string | number
 }
 
 const blankUserInput: F1099UserInput = {
@@ -115,7 +118,8 @@ const blankUserInput: F1099UserInput = {
   RPlanType: PlanType1099.IRA,
   // SSA fields
   benefitsPaid: '',
-  benefitsRepaid: ''
+  benefitsRepaid: '',
+  netBenefits: ''
 }
 
 const toUserInput = (f: Supported1099): F1099UserInput => ({
@@ -202,6 +206,7 @@ const toF1099 = (input: F1099UserInput): Supported1099 | undefined => {
         form: {
           benefitsPaid: Number(input.benefitsPaid),
           benefitsRepaid: Number(input.benefitsRepaid),
+          netBenefits: Number(input.netBenefits),
           federalIncomeTaxWithheld: Number(input.federalIncomeTaxWithheld)
         }
       }
@@ -342,6 +347,11 @@ export default function F1099Info(): ReactElement {
         label="Box 4 - Benefits Repaid"
         patternConfig={Patterns.currency}
         name="benefitsRepaid"
+      />
+      <LabeledInput
+        label="Box 5 - Net Benefits"
+        patternConfig={Patterns.currency}
+        name="netBenefits"
       />
       <LabeledInput
         label="Box 6 - Voluntary Federal Income Tax Withheld"
