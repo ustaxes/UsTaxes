@@ -92,5 +92,10 @@
   },
   "lint-staged": {
     "**/*": "prettier --write --ignore-unknown"
+  },
+  "jest": {
+    "moduleNameMapper": {
+      "^ustaxes/(.*)": "<rootDir>/src/$1"
+    }
   }
 }
