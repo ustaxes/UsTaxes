@@ -26,17 +26,15 @@ jest.mock('redux-persist', () => {
 })
 
 describe('Questions', () => {
-  const navButtons = (
-    <PagerButtons
-      submitText="Save"
-    />
-  )
+  const navButtons = <PagerButtons submitText="Save" />
 
-  const testComponent = (info: Information | undefined = blankState): [InfoStore, ReactElement] => {
+  const testComponent = (
+    info: Information | undefined = blankState
+  ): [InfoStore, ReactElement] => {
     const store = createStoreUnpersisted(info)
     const component = (
       <Provider store={store}>
-        <PagerContext.Provider value={{ onAdvance: () => { }, navButtons }}>
+        <PagerContext.Provider value={{ onAdvance: () => {}, navButtons }}>
           <Questions />
         </PagerContext.Provider>
       </Provider>
@@ -66,7 +64,7 @@ describe('Questions', () => {
     checkBoxes.forEach((b) => fireEvent.click(b))
     fireEvent.click(save)
 
-    await waitFor(() => { })
+    await waitFor(() => {})
     expect(store.getState().information.questions.CRYPTO).toBeTruthy()
   })
 
@@ -76,7 +74,9 @@ describe('Questions', () => {
         const f1040 = create1040(info)
 
         if (isRight(f1040)) {
-          expect(f1040.right[0].virtualCurrency).toEqual(info.questions.CRYPTO ?? false)
+          expect(f1040.right[0].virtualCurrency).toEqual(
+            info.questions.CRYPTO ?? false
+          )
         } else {
           expect(f1040.left).toEqual([])
         }

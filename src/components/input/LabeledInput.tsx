@@ -6,12 +6,22 @@ import { Controller, useFormContext } from 'react-hook-form'
 import { isNumeric, Patterns } from '../Patterns'
 import _ from 'lodash'
 
-export function LabeledInput (props: LabeledInputProps): ReactElement {
-  const { strongLabel, label, patternConfig: patternConfigDefined, name, rules = {} } = props
+export function LabeledInput(props: LabeledInputProps): ReactElement {
+  const {
+    strongLabel,
+    label,
+    patternConfig: patternConfigDefined,
+    name,
+    rules = {}
+  } = props
   const { required = patternConfigDefined !== undefined } = props
   const { patternConfig = Patterns.plain } = props
 
-  const { control, register, formState: { errors } } = useFormContext()
+  const {
+    control,
+    register,
+    formState: { errors }
+  } = useFormContext()
   const error = _.get(errors, name)
 
   const errorMessage: string | undefined = (() => {
@@ -32,7 +42,7 @@ export function LabeledInput (props: LabeledInputProps): ReactElement {
     if (isNumeric(patternConfig)) {
       return (
         <Controller
-          render={({ field: { onChange, value } }) =>
+          render={({ field: { onChange, value } }) => (
             <NumberFormat
               name={name}
               mask={patternConfig.mask}
@@ -48,7 +58,7 @@ export function LabeledInput (props: LabeledInputProps): ReactElement {
               helperText={errorMessage}
               variant="filled"
             />
-          }
+          )}
           name={name}
           control={control}
           rules={{
@@ -58,7 +68,9 @@ export function LabeledInput (props: LabeledInputProps): ReactElement {
             required: required ? 'Input is required' : undefined,
             pattern: {
               value: patternConfig.regexp ?? (required ? /.+/ : /.*/),
-              message: patternConfig.description ?? (required ? 'Input is required' : '')
+              message:
+                patternConfig.description ??
+                (required ? 'Input is required' : '')
             }
           }}
         />
@@ -69,14 +81,16 @@ export function LabeledInput (props: LabeledInputProps): ReactElement {
       <Controller
         control={control}
         name={name}
-        render={({ field: { onChange, value } }) =>
+        render={({ field: { onChange, value } }) => (
           <TextField
             {...register(name, {
               ...rules,
               required: required ? 'Input is required' : undefined,
               pattern: {
                 value: patternConfig?.regexp ?? (required ? /.+/ : /.*/),
-                message: patternConfig?.description ?? (required ? 'Input is required' : '')
+                message:
+                  patternConfig?.description ??
+                  (required ? 'Input is required' : '')
               }
             })}
             value={value ?? ''}
@@ -86,14 +100,17 @@ export function LabeledInput (props: LabeledInputProps): ReactElement {
             error={error !== undefined}
             variant="filled"
           />
-        }
+        )}
       />
     )
   })()
 
   return (
     <div>
-      <p><strong>{strongLabel}</strong>{label}</p>
+      <p>
+        <strong>{strongLabel}</strong>
+        {label}
+      </p>
       {input}
     </div>
   )

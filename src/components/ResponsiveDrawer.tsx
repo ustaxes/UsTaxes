@@ -6,10 +6,7 @@ import List from '@material-ui/core/List'
 import ListItem from '@material-ui/core/ListItem'
 import ListItemText from '@material-ui/core/ListItemText'
 import { makeStyles, useTheme } from '@material-ui/core/styles'
-import {
-  NavLink,
-  useLocation
-} from 'react-router-dom'
+import { NavLink, useLocation } from 'react-router-dom'
 
 const drawerWidth = 240
 
@@ -42,7 +39,11 @@ export interface SectionItem {
   element: ReactElement
 }
 
-export const item = (title: string, url: string, element: ReactElement): SectionItem => ({
+export const item = (
+  title: string,
+  url: string,
+  element: ReactElement
+): SectionItem => ({
   title,
   url,
   element
@@ -59,7 +60,7 @@ export interface DrawerItemsProps {
   onClose: () => void
 }
 
-function ResponsiveDrawer (props: DrawerItemsProps): ReactElement {
+function ResponsiveDrawer(props: DrawerItemsProps): ReactElement {
   const location = useLocation()
   const classes = useStyles()
   const theme = useTheme()
@@ -68,30 +69,28 @@ function ResponsiveDrawer (props: DrawerItemsProps): ReactElement {
 
   const drawer = (
     <Fragment>
-      {
-        sections.map(({ title, items }, sectionIdx) => (
-          <div key={sectionIdx}>
-            <List className={classes.list}>
-              <h2 className={classes.sectionHeader}>{title}</h2>
-              {items.map((item, itemIdx) =>
-                <ListItem
-                  className={classes.listItem}
-                  button
-                  key={itemIdx}
-                  component={NavLink}
-                  exact
-                  activeClassName="current"
-                  to={item.url}
-                  selected={location.pathname === item.url}
-                >
-                  <ListItemText primary={item.title} />
-                </ListItem>
-              )}
-            </List>
-            <Divider />
-          </div>
-        ))
-      }
+      {sections.map(({ title, items }, sectionIdx) => (
+        <div key={sectionIdx}>
+          <List className={classes.list}>
+            <h2 className={classes.sectionHeader}>{title}</h2>
+            {items.map((item, itemIdx) => (
+              <ListItem
+                className={classes.listItem}
+                button
+                key={itemIdx}
+                component={NavLink}
+                exact
+                activeClassName="current"
+                to={item.url}
+                selected={location.pathname === item.url}
+              >
+                <ListItemText primary={item.title} />
+              </ListItem>
+            ))}
+          </List>
+          <Divider />
+        </div>
+      ))}
     </Fragment>
   )
 

@@ -10,13 +10,13 @@ interface AddressProps {
   allowForeignCountry?: boolean
 }
 
-export default function AddressFields (props: AddressProps): ReactElement {
+export default function AddressFields(props: AddressProps): ReactElement {
   const {
     checkboxText = 'Check if you have a foreign address',
     allowForeignCountry = true
   } = props
 
-  const { control } = useFormContext<{isForeignCountry: boolean }>()
+  const { control } = useFormContext<{ isForeignCountry: boolean }>()
 
   const isForeignCountry = useWatch({
     name: 'isForeignCountry',
@@ -64,16 +64,8 @@ export default function AddressFields (props: AddressProps): ReactElement {
 
   return (
     <Fragment>
-      <LabeledInput
-        label="Address"
-        name="address.address"
-        required={true}
-      />
-      <LabeledInput
-        label="Unit No"
-        name="address.aptNo"
-        required={false}
-      />
+      <LabeledInput label="Address" name="address.address" required={true} />
+      <LabeledInput label="Unit No" name="address.aptNo" required={false} />
       <LabeledInput
         label="City"
         name="address.city"

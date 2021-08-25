@@ -1,6 +1,6 @@
 {
   "name": "ustaxes",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "private": true,
   "dependencies": {
     "@material-ui/core": "^4.12.3",
@@ -36,8 +36,9 @@
     "desktop": "node ./notice.js && node ./setup.js && tauri dev",
     "tauri": "tauri",
     "schema-generate": "node ./setup.js",
-    "lint": "eslint ./src --ext .ts --ext .js --ext .tsx --ext .jsx",
-    "lint:fix": "eslint ./src --fix --ext .ts --ext .js --ext .tsx --ext .jsx"
+    "lint": "eslint ./src --ext .ts --ext .js --ext .tsx --ext .jsx && prettier -c .",
+    "lint:fix": "eslint ./src --fix --ext .ts --ext .js --ext .tsx --ext .jsx && prettier --write .",
+    "prettier": "prettier --write ."
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -73,11 +74,13 @@
     "eslint-config-standard-with-typescript": "^20.0.0",
     "eslint-plugin-import": "^2.24.2",
     "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-prettier": "^3.4.0",
     "eslint-plugin-promise": "^5.1.0",
     "eslint-plugin-react": "^7.24.0",
-    "eslint-plugin-standard": "^5.0.0",
-    "husky": "^7.0.1",
     "fast-check": "^2.17.0",
+    "husky": "^7.0.1",
+    "lint-staged": "^11.1.1",
+    "prettier": "2.3.2",
     "typescript-eslint": "0.0.1-alpha.0"
   },
   "husky": {
@@ -85,5 +88,8 @@
       "pre-push": "eslint ./src --ext .ts --ext .js --ext .tsx --ext .jsx",
       "post-merge": "node ./setup.js"
     }
+  },
+  "lint-staged": {
+    "**/*": "prettier --write --ignore-unknown"
   }
 }

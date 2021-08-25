@@ -4,8 +4,22 @@ import { Icon } from '@material-ui/core'
 import { useDispatch, useSelector } from 'react-redux'
 import { add1099, edit1099, remove1099 } from '../../redux/actions'
 import { PagerContext } from '../pager'
-import { TaxesState, Person, PersonRole, Supported1099, Income1099Type } from '../../redux/data'
-import { Currency, formatSSID, GenericLabeledDropdown, LabeledInput } from '../input'
+import {
+  TaxesState,
+  Person,
+  PersonRole,
+  Supported1099,
+  Income1099Type,
+  PlanType1099,
+  PlanType1099Texts
+} from '../../redux/data'
+import {
+  Currency,
+  formatSSID,
+  GenericLabeledDropdown,
+  LabeledInput,
+  LabeledDropdown
+} from '../input'
 import { Patterns } from '../Patterns'
 import { FormListContainer } from '../FormContainer'
 
@@ -19,13 +33,28 @@ const showIncome = (a: Supported1099): ReactElement => {
       const stg = a.form.shortTermProceeds - a.form.shortTermCostBasis
       return (
         <span>
-        Long term: <Currency value={ltg} /><br />
-        Short term: <Currency value={stg} />
+          Long term: <Currency value={ltg} />
+          <br />
+          Short term: <Currency value={stg} />
         </span>
       )
     }
     case Income1099Type.DIV: {
       return <Currency value={a.form.dividends} />
+    }
+    case Income1099Type.R: {
+      return (
+        <span>
+          Plan Type: {a.form.planType}
+          <br />
+          Gross Distribution: <Currency value={a.form.grossDistribution} />
+          <br />
+          Taxable Amount: <Currency value={a.form.taxableAmount} />
+          <br />
+          Federal Income Tax Withweld:{' '}
+          <Currency value={a.form.federalIncomeTaxWithheld} />
+        </span>
+      )
     }
   }
 }
@@ -44,6 +73,11 @@ interface F1099UserInput {
   dividends: string | number
   qualifiedDividends: string | number
   personRole: PersonRole.PRIMARY | PersonRole.SPOUSE
+  // R fields
+  grossDistribution: string | number
+  taxableAmount: string | number
+  federalIncomeTaxWithheld: string | number
+  RPlanType: PlanType1099
 }
 
 const blankUserInput: F1099UserInput = {
@@ -58,7 +92,12 @@ const blankUserInput: F1099UserInput = {
   longTermCostBasis: '',
   // Div fields
   dividends: '',
-  qualifiedDividends: ''
+  qualifiedDividends: '',
+  // R fields
+  grossDistribution: '',
+  taxableAmount: '',
+  federalIncomeTaxWithheld: '',
+  RPlanType: PlanType1099.IRA
 }
 
 const toUserInput = (f: Supported1099): F1099UserInput => ({
@@ -67,7 +106,7 @@ const toUserInput = (f: Supported1099): F1099UserInput => ({
   payer: f.payer,
   personRole: f.personRole,
 
-  ...((() => {
+  ...(() => {
     switch (f.type) {
       case Income1099Type.INT: {
         return {
@@ -80,8 +119,11 @@ const toUserInput = (f: Supported1099): F1099UserInput => ({
       case Income1099Type.DIV: {
         return f.form
       }
+      case Income1099Type.R: {
+        return f.form
+      }
     }
-  })())
+  })()
 })
 
 const toF1099 = (input: F1099UserInput): Supported1099 | undefined => {
@@ -120,13 +162,25 @@ const toF1099 = (input: F1099UserInput): Supported1099 | undefined => {
         }
       }
     }
+    case Income1099Type.R: {
+      return {
+        payer: input.payer,
+        personRole: input.personRole,
+        type: input.formType,
+        form: {
+          grossDistribution: Number(input.grossDistribution),
+          taxableAmount: Number(input.taxableAmount),
+          federalIncomeTaxWithheld: Number(input.federalIncomeTaxWithheld),
+          planType:
+            input.RPlanType == 'IRA' ? PlanType1099.IRA : PlanType1099.Pension
+        }
+      }
+    }
   }
 }
 
-export default function F1099Info (): ReactElement {
-  const f1099s = useSelector((state: TaxesState) =>
-    state.information.f1099s
-  )
+export default function F1099Info(): ReactElement {
+  const f1099s = useSelector((state: TaxesState) => state.information.f1099s)
   const [editing, doSetEditing] = useState<number | undefined>(undefined)
 
   const methods = useForm<F1099UserInput>()
@@ -146,27 +200,27 @@ export default function F1099Info (): ReactElement {
     doSetEditing(undefined)
   }
 
-  const onAdd1099 = (onSuccess: () => void) => (formData: F1099UserInput): void => {
-    const payload = toF1099(formData)
-    if (payload !== undefined) {
-      if (editing === undefined) {
-        dispatch(add1099(payload))
-      } else {
-        dispatch(edit1099({ index: editing, value: payload }))
+  const onAdd1099 =
+    (onSuccess: () => void) =>
+    (formData: F1099UserInput): void => {
+      const payload = toF1099(formData)
+      if (payload !== undefined) {
+        if (editing === undefined) {
+          dispatch(add1099(payload))
+        } else {
+          dispatch(edit1099({ index: editing, value: payload }))
+        }
+        clear()
+        onSuccess()
       }
-      clear()
-      onSuccess()
     }
-  }
 
-  const people: Person[] = (
-    useSelector((state: TaxesState) => ([
-      state.information.taxPayer?.primaryPerson,
-      state.information.taxPayer?.spouse
-    ]))
-      .filter((p) => p !== undefined)
-      .map((p) => p as Person)
-  )
+  const people: Person[] = useSelector((state: TaxesState) => [
+    state.information.taxPayer?.primaryPerson,
+    state.information.taxPayer?.spouse
+  ])
+    .filter((p) => p !== undefined)
+    .map((p) => p as Person)
 
   const intFields = (
     <LabeledInput
@@ -218,16 +272,47 @@ export default function F1099Info (): ReactElement {
     </div>
   )
 
+  const rFields = (
+    <div>
+      <LabeledInput
+        label="Box 1 - Gross Distribution"
+        patternConfig={Patterns.currency}
+        name="grossDistribution"
+      />
+      <LabeledInput
+        label="Box 2a - Taxable Amount"
+        patternConfig={Patterns.currency}
+        name="taxableAmount"
+      />
+      <LabeledInput
+        label="Box 4 - Federal Income Tax Withheld"
+        patternConfig={Patterns.currency}
+        name="federalIncomeTaxWithheld"
+      />
+      <GenericLabeledDropdown<PlanType1099>
+        label=""
+        strongLabel="Type of 1099-R"
+        dropDownData={Object.values(PlanType1099)}
+        valueMapping={(x, i) => x}
+        keyMapping={(x, i) => i}
+        textMapping={(status) => PlanType1099Texts[status]}
+        name="RPlanType"
+      />
+    </div>
+  )
+
   const specificFields = {
     [Income1099Type.INT]: intFields,
     [Income1099Type.B]: bFields,
-    [Income1099Type.DIV]: divFields
+    [Income1099Type.DIV]: divFields,
+    [Income1099Type.R]: rFields
   }
 
   const titles = {
     [Income1099Type.INT]: '1099-INT',
     [Income1099Type.B]: '1099-B',
-    [Income1099Type.DIV]: '1099-DIV'
+    [Income1099Type.DIV]: '1099-DIV',
+    [Income1099Type.R]: '1099-R'
   }
 
   const form: ReactElement | undefined = (
@@ -259,30 +344,32 @@ export default function F1099Info (): ReactElement {
         name="payer"
       />
 
-      {selectedType !== undefined ? specificFields[selectedType] : undefined }
+      {selectedType !== undefined ? specificFields[selectedType] : undefined}
 
       <GenericLabeledDropdown
         dropDownData={people}
         label="Recipient"
-        valueMapping={(p: Person, i: number) => [PersonRole.PRIMARY, PersonRole.SPOUSE][i]}
+        valueMapping={(p: Person, i: number) =>
+          [PersonRole.PRIMARY, PersonRole.SPOUSE][i]
+        }
         name="personRole"
         keyMapping={(p: Person, i: number) => i}
-        textMapping={(p: Person) => `${p.firstName} ${p.lastName} (${formatSSID(p.ssid)})`}
+        textMapping={(p: Person) =>
+          `${p.firstName} ${p.lastName} (${formatSSID(p.ssid)})`
+        }
       />
     </FormListContainer>
   )
 
   return (
     <PagerContext.Consumer>
-      { ({ onAdvance, navButtons }) =>
+      {({ onAdvance, navButtons }) => (
         <form onSubmit={onAdvance}>
           <h2>1099 Information</h2>
-          <FormProvider {...methods}>
-            {form}
-          </FormProvider>
-          { navButtons }
+          <FormProvider {...methods}>{form}</FormProvider>
+          {navButtons}
         </form>
-      }
+      )}
     </PagerContext.Consumer>
   )
 }

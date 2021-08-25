@@ -28,15 +28,15 @@ export const StateLoader = (): ReactElement => {
 
   const gen = new fc.Random(prand.mersenne(new Date().getMilliseconds()))
 
-  const generator = (): TaxesState =>
-    taxesState.noShrink().generate(gen).value
+  const generator = (): TaxesState => taxesState.noShrink().generate(gen).value
 
   return (
     <IconButton
       className={classes.root}
       onClick={() => dispatch(setEntireState(generator()))}
     >
-      <Star />Seed random state
+      <Star />
+      Seed random state
     </IconButton>
   )
 }

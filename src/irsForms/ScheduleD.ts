@@ -14,6 +14,7 @@ import SDUnrecaptured1250 from './worksheets/SDUnrecaptured1250'
 
 export default class ScheduleD implements Form {
   tag: FormTag = 'f1040sd'
+  sequenceIndex: number = 12
   state: Information
   aggregated: F1099BData
   rateGainWorksheet: SDRateGainWorksheet
@@ -22,19 +23,26 @@ export default class ScheduleD implements Form {
   readonly l21MinMFS = 1500
   readonly l21MinDefault = 3000
 
-  constructor (info: Information) {
+  constructor(info: Information) {
     this.state = info
 
-    const bs: F1099BData[] =
-      this.state.f1099s
-        .filter((v) => v.type === Income1099Type.B)
-        .map((v) => (v as Income1099B).form)
+    const bs: F1099BData[] = this.state.f1099s
+      .filter((v) => v.type === Income1099Type.B)
+      .map((v) => (v as Income1099B).form)
 
     this.aggregated = {
-      shortTermProceeds: bs.map((v) => v.shortTermProceeds).reduce((l, r) => l + r, 0),
-      shortTermCostBasis: bs.map((v) => v.shortTermCostBasis).reduce((l, r) => l + r, 0),
-      longTermProceeds: bs.map((v) => v.longTermProceeds).reduce((l, r) => l + r, 0),
-      longTermCostBasis: bs.map((v) => v.longTermCostBasis).reduce((l, r) => l + r, 0)
+      shortTermProceeds: bs
+        .map((v) => v.shortTermProceeds)
+        .reduce((l, r) => l + r, 0),
+      shortTermCostBasis: bs
+        .map((v) => v.shortTermCostBasis)
+        .reduce((l, r) => l + r, 0),
+      longTermProceeds: bs
+        .map((v) => v.longTermProceeds)
+        .reduce((l, r) => l + r, 0),
+      longTermCostBasis: bs
+        .map((v) => v.longTermCostBasis)
+        .reduce((l, r) => l + r, 0)
     }
 
     this.rateGainWorksheet = new SDRateGainWorksheet()
@@ -53,9 +61,8 @@ export default class ScheduleD implements Form {
   l1ae = (): number | undefined => this.aggregated.shortTermCostBasis
   // This field is greyed out, but fillable
   l1ag = (): number | undefined => undefined
-  l1ah = (): number | undefined => displayNumber(sumFields(
-    [this.l1ad(), -computeField(this.l1ae())]
-  ))
+  l1ah = (): number | undefined =>
+    displayNumber(sumFields([this.l1ad(), -computeField(this.l1ae())]))
 
   l1bd = (): number | undefined => undefined
   l1be = (): number | undefined => undefined
@@ -76,25 +83,25 @@ export default class ScheduleD implements Form {
 
   l6 = (): number | undefined => undefined
 
-  l7 = (): number | undefined => displayNumber(
-    sumFields([
-      this.l1ah(),
-      this.l1bh(),
-      this.l2h(),
-      this.l3h(),
-      this.l4(),
-      this.l5(),
-      this.l6()
-    ])
-  )
+  l7 = (): number | undefined =>
+    displayNumber(
+      sumFields([
+        this.l1ah(),
+        this.l1bh(),
+        this.l2h(),
+        this.l3h(),
+        this.l4(),
+        this.l5(),
+        this.l6()
+      ])
+    )
 
   l8ad = (): number | undefined => this.aggregated.longTermProceeds
   l8ae = (): number | undefined => this.aggregated.longTermCostBasis
   // This field is greyed out, but fillable
   l8ag = (): number | undefined => undefined
-  l8ah = (): number | undefined => displayNumber(sumFields(
-    [this.l8ad(), -computeField(this.l8ae())]
-  ))
+  l8ah = (): number | undefined =>
+    displayNumber(sumFields([this.l8ad(), -computeField(this.l8ae())]))
 
   l8bd = (): number | undefined => undefined
   l8be = (): number | undefined => undefined
@@ -117,27 +124,25 @@ export default class ScheduleD implements Form {
 
   l14 = (): number | undefined => undefined
 
-  l15 = (): number | undefined => displayNumber(
-    sumFields([
-      this.l8ah(),
-      this.l8bh(),
-      this.l9h(),
-      this.l10h(),
-      this.l11(),
-      this.l12(),
-      this.l13(),
-      this.l14()
-    ])
-  )
+  l15 = (): number | undefined =>
+    displayNumber(
+      sumFields([
+        this.l8ah(),
+        this.l8bh(),
+        this.l9h(),
+        this.l10h(),
+        this.l11(),
+        this.l12(),
+        this.l13(),
+        this.l14()
+      ])
+    )
 
-  l16 = (): number | undefined => displayNumber(
-    sumFields([
-      this.l7(),
-      this.l15()
-    ])
-  )
+  l16 = (): number | undefined =>
+    displayNumber(sumFields([this.l7(), this.l15()]))
 
-  l17 = (): boolean => (computeField(this.l15()) > 0) && (computeField(this.l16()) > 0)
+  l17 = (): boolean =>
+    computeField(this.l15()) > 0 && computeField(this.l16()) > 0
 
   l18 = (): number | undefined => {
     if (!this.l17()) {
@@ -177,14 +182,16 @@ export default class ScheduleD implements Form {
       return undefined
     }
 
-    return undefined !== (
+    return (
+      undefined !==
       this.state.f1099s
         .filter((f) => f.type === Income1099Type.DIV)
         .find((f) => ((f.form as F1099DivData).qualifiedDividends ?? 0) > 0)
     )
   }
 
-  computeTaxOnQDWorksheet = (): boolean => (this.l20() ?? false) || (this.l22() ?? false)
+  computeTaxOnQDWorksheet = (): boolean =>
+    (this.l20() ?? false) || (this.l22() ?? false)
 
   fields = (): Array<string | number | boolean | undefined> => {
     const tp = new TaxPayer(this.state.taxPayer)

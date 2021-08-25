@@ -1,10 +1,7 @@
 /* eslint-disable indent */
 import { combineReducers } from 'redux'
 import { FilingStatus, Information } from './data'
-import {
-  ActionName,
-  Actions
-} from './actions'
+import { ActionName, Actions } from './actions'
 
 export const blankState: Information = {
   f1099s: [],
@@ -15,7 +12,10 @@ export const blankState: Information = {
   f1098es: []
 }
 
-function formReducer (state: Information | undefined, action: Actions): Information {
+function formReducer(
+  state: Information | undefined,
+  action: Actions
+): Information {
   const newState: Information = state ?? blankState
 
   switch (action.type) {
@@ -78,7 +78,10 @@ function formReducer (state: Information | undefined, action: Actions): Informat
       newDependents.splice(action.formData, 1)
 
       const filingStatus = (() => {
-        if (newDependents.length === 0 && newState.taxPayer.filingStatus === FilingStatus.HOH) {
+        if (
+          newDependents.length === 0 &&
+          newState.taxPayer.filingStatus === FilingStatus.HOH
+        ) {
           return undefined
         }
         return newState.taxPayer.filingStatus
@@ -102,10 +105,7 @@ function formReducer (state: Information | undefined, action: Actions): Informat
     case ActionName.ADD_W2: {
       return {
         ...newState,
-        w2s: [
-          ...newState.w2s,
-          action.formData
-        ]
+        w2s: [...newState.w2s, action.formData]
       }
     }
     case ActionName.EDIT_W2: {
@@ -127,10 +127,7 @@ function formReducer (state: Information | undefined, action: Actions): Informat
     case ActionName.ADD_1099: {
       return {
         ...newState,
-        f1099s: [
-          ...newState.f1099s,
-          action.formData
-        ]
+        f1099s: [...newState.f1099s, action.formData]
       }
     }
     case ActionName.EDIT_1099: {
@@ -179,10 +176,7 @@ function formReducer (state: Information | undefined, action: Actions): Informat
     case ActionName.ADD_PROPERTY: {
       return {
         ...newState,
-        realEstate: [
-          ...newState.realEstate,
-          action.formData
-        ]
+        realEstate: [...newState.realEstate, action.formData]
       }
     }
     case ActionName.EDIT_PROPERTY: {
@@ -211,10 +205,7 @@ function formReducer (state: Information | undefined, action: Actions): Informat
     case ActionName.ADD_1098e: {
       return {
         ...newState,
-        f1098es: [
-          ...newState.f1098es,
-          action.formData
-        ]
+        f1098es: [...newState.f1098es, action.formData]
       }
     }
     case ActionName.EDIT_1098e: {

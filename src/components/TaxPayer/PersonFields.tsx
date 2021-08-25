@@ -1,5 +1,11 @@
 import React, { Fragment, PropsWithChildren, ReactElement } from 'react'
-import { IconButton, List, ListItem, ListItemIcon, ListItemSecondaryAction } from '@material-ui/core'
+import {
+  IconButton,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemSecondaryAction
+} from '@material-ui/core'
 import { useDispatch, useSelector } from 'react-redux'
 import { formatSSID, LabeledInput } from '../input'
 import { Patterns } from '../Patterns'
@@ -11,7 +17,9 @@ import ListItemText from '@material-ui/core/ListItemText'
 import PersonIcon from '@material-ui/icons/Person'
 import { If } from 'react-if'
 
-export const PersonFields = ({ children }: PropsWithChildren<{}>): ReactElement => (
+export const PersonFields = ({
+  children
+}: PropsWithChildren<{}>): ReactElement => (
   <Fragment>
     <LabeledInput
       label="First Name and Initial"
@@ -23,11 +31,7 @@ export const PersonFields = ({ children }: PropsWithChildren<{}>): ReactElement 
       name="lastName"
       patternConfig={Patterns.name}
     />
-    <LabeledInput
-      label="SSN / TIN"
-      name="ssid"
-      patternConfig={Patterns.ssn}
-    />
+    <LabeledInput label="SSN / TIN" name="ssid" patternConfig={Patterns.ssn} />
     {children}
   </Fragment>
 )
@@ -39,7 +43,12 @@ interface PersonListItemProps {
   editing?: boolean
 }
 
-export const PersonListItem = ({ person, remove, onEdit, editing = false }: PersonListItemProps): ReactElement => (
+export const PersonListItem = ({
+  person,
+  remove,
+  onEdit,
+  editing = false
+}: PersonListItemProps): ReactElement => (
   <ListItem className={editing ? 'active' : ''}>
     <ListItemIcon>
       <PersonIcon />
@@ -68,9 +77,12 @@ interface ListDependentsProps {
   editing?: number
 }
 
-export function ListDependents ({ onEdit, editing }: ListDependentsProps): ReactElement {
-  const dependents = useSelector((state: TaxesState) =>
-    state.information.taxPayer?.dependents ?? []
+export function ListDependents({
+  onEdit,
+  editing
+}: ListDependentsProps): ReactElement {
+  const dependents = useSelector(
+    (state: TaxesState) => state.information.taxPayer?.dependents ?? []
   )
 
   const dispatch = useDispatch()
@@ -79,11 +91,15 @@ export function ListDependents ({ onEdit, editing }: ListDependentsProps): React
 
   return (
     <List dense={true}>
-      {
-        dependents.map((p, i) =>
-          <PersonListItem key={i} remove={() => drop(i)} person={p} editing={editing === i} onEdit={() => (onEdit ?? (() => { }))(i)} />
-        )
-      }
+      {dependents.map((p, i) => (
+        <PersonListItem
+          key={i}
+          remove={() => drop(i)}
+          person={p}
+          editing={editing === i}
+          onEdit={() => (onEdit ?? (() => {}))(i)}
+        />
+      ))}
     </List>
   )
 }
