@@ -30,6 +30,19 @@ interface TaxPayerUserForm {
   stateResidency?: State
 }
 
+const defaultTaxpayerUserForm: TaxPayerUserForm = {
+  firstName: '',
+  lastName: '',
+  ssid: '',
+  role: PersonRole.PRIMARY,
+  isForeignCountry: false,
+  address: {
+    address: '',
+    city: ''
+  },
+  isTaxpayerDependent: false
+}
+
 const asPrimaryPerson = (formData: TaxPayerUserForm): PrimaryPerson => ({
   address: formData.address,
   firstName: formData.firstName,
@@ -61,14 +74,16 @@ export default function PrimaryTaxpayer(): ReactElement {
   )
 
   const methods = useForm<TaxPayerUserForm>({
-    defaultValues:
-      taxPayer.primaryPerson !== undefined
+    defaultValues: {
+      ...defaultTaxpayerUserForm,
+      ...(taxPayer.primaryPerson !== undefined
         ? {
             ...asTaxPayerUserForm(taxPayer.primaryPerson),
             stateResidency:
               stateResidency[0]?.state ?? taxPayer.primaryPerson.address.state
           }
-        : undefined
+        : {})
+    }
   })
 
   const { handleSubmit } = methods

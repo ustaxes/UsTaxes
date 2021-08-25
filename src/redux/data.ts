@@ -75,7 +75,8 @@ export interface IncomeW2 {
 export enum Income1099Type {
   B = 'B',
   INT = 'INT',
-  DIV = 'DIV'
+  DIV = 'DIV',
+  R = 'R'
 }
 
 export interface F1099BData {
@@ -92,6 +93,34 @@ export interface F1099IntData {
 export interface F1099DivData {
   dividends: number
   qualifiedDividends: number
+}
+/*
+ TODO: Add in logic for various different distributions
+ that should go in box 4a and 5a. Will need to implement
+ form 8606 and Schedule 1 line 19.
+ */
+export enum PlanType1099 {
+  /* IRA includes a traditional IRA, Roth IRA,
+   * simplified employee pension (SEP) IRA,
+   * and a savings incentive match plan for employees (SIMPLE) IRA
+   */
+  IRA = 'IRA',
+  /* Pension and annuity payments include distributions from 401(k), 403(b), and governmental 457(b) plans.
+   */
+  Pension = 'Pension'
+}
+
+export const PlanType1099Texts = {
+  [PlanType1099.IRA]:
+    'traditional IRA, Roth IRA, simplified employee pension (SEP) IRA, or savings incentive match plan for employees (SIMPLE) IRA',
+  [PlanType1099.Pension]: '401(k), 403(b), or 457(b) plan'
+}
+
+export interface F1099RData {
+  grossDistribution: number
+  taxableAmount: number
+  federalIncomeTaxWithheld: number
+  planType: PlanType1099
 }
 
 export interface Income1099<T, D> {
@@ -151,8 +180,13 @@ export interface TaxPayer extends ContactInfo {
 export type Income1099Int = Income1099<Income1099Type.INT, F1099IntData>
 export type Income1099B = Income1099<Income1099Type.B, F1099BData>
 export type Income1099Div = Income1099<Income1099Type.DIV, F1099DivData>
+export type Income1099R = Income1099<Income1099Type.R, F1099RData>
 
-export type Supported1099 = Income1099Int | Income1099B | Income1099Div
+export type Supported1099 =
+  | Income1099Int
+  | Income1099B
+  | Income1099Div
+  | Income1099R
 
 export enum PropertyType {
   singleFamily,

@@ -1,9 +1,11 @@
 html {
   overflow-y: scroll;
+  height: 100vh;
 }
 
 body {
   background-color: whitesmoke;
+  height: 100vh;
 }
 
 /* Custom CSS */
