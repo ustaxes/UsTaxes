@@ -10,7 +10,7 @@ const loadFile = async (path: string): Promise<PDFDocument> => {
 }
 
 const normalizeName = (name: string): string =>
-  name.replaceAll(/[^a-zA-Z0-9]/g, '')
+  name.replace(/[^a-zA-Z0-9]/g, '')
 
 const fieldFunction = (field: PDFField, index: number): [string, string] => {
   const name = normalizeName(field.getName())
