@@ -63,7 +63,6 @@ export default function F1098eInfo(): ReactElement {
       const payload = toF1098e(formData)
       if (payload !== undefined) {
         if (editing === undefined) {
-          console.log(payload)
           dispatch(add1098e(payload))
         } else {
           dispatch(edit1098e({ index: editing, value: payload }))

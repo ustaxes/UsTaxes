@@ -12,10 +12,9 @@ const useStyles = makeStyles((theme: Theme) => ({
   root: {
     position: 'absolute',
     top: '0px',
-    right: '30px',
-    width: '30px',
-    height: '30px'
-  }
+    right: '30px'
+  },
+  button: {}
 }))
 
 export const StateLoader = (): ReactElement => {
@@ -31,12 +30,14 @@ export const StateLoader = (): ReactElement => {
   const generator = (): TaxesState => taxesState.noShrink().generate(gen).value
 
   return (
-    <IconButton
-      className={classes.root}
-      onClick={() => dispatch(setEntireState(generator()))}
-    >
-      <Star />
-      Seed random state
-    </IconButton>
+    <div className={classes.root}>
+      <IconButton
+        className={classes.button}
+        onClick={() => dispatch(setEntireState(generator()))}
+      >
+        <Star />
+        Seed random state
+      </IconButton>
+    </div>
   )
 }
