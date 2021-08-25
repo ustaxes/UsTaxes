@@ -466,8 +466,8 @@ export default class F1040 implements Form {
       this.filingStatus === FilingStatus.W,
       // TODO: implement non dependent child for HOH and QW
       this.spousesFirstNameAndInitial !== undefined &&
-        this.spousesLastName !== undefined &&
-        this.filingStatus === 'MFS'
+      this.spousesLastName !== undefined &&
+      this.filingStatus === 'MFS'
         ? this.spousesFirstNameAndInitial + ' ' + this.spousesLastName
         : '',
       this.firstNameAndInitial,
