@@ -122,12 +122,13 @@ const generate = async (
 const help = () => {
   console.log(`
     Usage:
-    npx ts-node ./scripts/formgen.ts <form-file>.pdf
+    npm run formgen <form-file>.pdf
   `)
 }
 
 const main = () => {
   const args = process.argv.slice(2)
+  process.argv.forEach((a) => console.log(a))
 
   if (args.length < 1) {
     help()
