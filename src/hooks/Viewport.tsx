@@ -1,24 +1,27 @@
-import React, { ReactElement } from 'react'
+import React, {
+  PropsWithChildren,
+  ReactElement,
+  createContext,
+  useState,
+  Context
+} from 'react'
 
-interface ViewportContextProps {
+interface Bounds {
   width: number
   height: number
 }
 
-const viewportContext = React.createContext(undefined as any)
+const getBounds = (): Bounds => ({
+  width: window.innerWidth,
+  height: window.innerHeight
+})
 
-interface ViewportProviderProps {
-  children: ReactElement
-}
+const viewportContext: Context<Bounds> = React.createContext(getBounds())
 
-export const ViewportProvider = ({ children }: ViewportProviderProps) => {
-  const [width, setWidth] = React.useState(window.innerWidth)
-  const [height, setHeight] = React.useState(window.innerHeight)
+export const ViewportProvider = ({ children }: PropsWithChildren<{}>) => {
+  const [bounds, setBounds] = React.useState(getBounds())
 
-  const handleWindowResize = () => {
-    setWidth(window.innerWidth)
-    setHeight(window.innerHeight)
-  }
+  const handleWindowResize = (): void => setBounds(getBounds())
 
   React.useEffect(() => {
     window.addEventListener('resize', handleWindowResize)
@@ -26,14 +29,10 @@ export const ViewportProvider = ({ children }: ViewportProviderProps) => {
   }, [])
 
   return (
-    <viewportContext.Provider value={{ width, height }}>
+    <viewportContext.Provider value={bounds}>
       {children}
     </viewportContext.Provider>
   )
 }
 
-export const useViewport = () => {
-  const { width, height } = React.useContext(viewportContext)
-
-  return { width, height }
-}
+export const useViewport = (): Bounds => React.useContext(viewportContext)
