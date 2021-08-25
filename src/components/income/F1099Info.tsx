@@ -3,7 +3,7 @@ import { useForm, FormProvider } from 'react-hook-form'
 import { Icon } from '@material-ui/core'
 import { useDispatch, useSelector } from 'react-redux'
 import { add1099, edit1099, remove1099 } from '../../redux/actions'
-import { PagerContext } from '../pager'
+import { usePager } from '../pager'
 import {
   TaxesState,
   Person,
@@ -189,6 +189,8 @@ export default function F1099Info(): ReactElement {
 
   const dispatch = useDispatch()
 
+  const { onAdvance, navButtons } = usePager()
+
   const setEditing = (idx: number): void => {
     reset(toUserInput(f1099s[idx]))
     doSetEditing(idx)
@@ -362,14 +364,10 @@ export default function F1099Info(): ReactElement {
   )
 
   return (
-    <PagerContext.Consumer>
-      {({ onAdvance, navButtons }) => (
-        <form onSubmit={onAdvance}>
-          <h2>1099 Information</h2>
-          <FormProvider {...methods}>{form}</FormProvider>
-          {navButtons}
-        </form>
-      )}
-    </PagerContext.Consumer>
+    <form onSubmit={onAdvance}>
+      <h2>1099 Information</h2>
+      <FormProvider {...methods}>{form}</FormProvider>
+      {navButtons}
+    </form>
   )
 }

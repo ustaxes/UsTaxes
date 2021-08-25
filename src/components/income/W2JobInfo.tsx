@@ -1,7 +1,7 @@
 import React, { Fragment, ReactElement, ReactNode, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { FormProvider, useForm } from 'react-hook-form'
-import { PagerContext } from '../pager'
+import { usePager } from '../pager'
 import {
   TaxesState,
   IncomeW2,
@@ -65,6 +65,8 @@ export default function W2JobInfo(): ReactElement {
   const spouse: Spouse | undefined = useSelector(
     (state: TaxesState) => state.information.taxPayer?.spouse
   )
+
+  const { navButtons, onAdvance } = usePager()
 
   const primary: PrimaryPerson | undefined = useSelector(
     (state: TaxesState) => state.information.taxPayer?.primaryPerson
@@ -241,14 +243,10 @@ export default function W2JobInfo(): ReactElement {
   )
 
   return (
-    <PagerContext.Consumer>
-      {({ navButtons, onAdvance }) => (
-        <form onSubmit={onAdvance}>
-          <h2>Job Information</h2>
-          <FormProvider {...methods}>{form}</FormProvider>
-          {navButtons}
-        </form>
-      )}
-    </PagerContext.Consumer>
+    <form onSubmit={onAdvance}>
+      <h2>Job Information</h2>
+      <FormProvider {...methods}>{form}</FormProvider>
+      {navButtons}
+    </form>
   )
 }
