@@ -3,7 +3,7 @@ import { FormProvider, useForm } from 'react-hook-form'
 import SchoolIcon from '@material-ui/icons/School'
 import { useDispatch, useSelector } from 'react-redux'
 import { add1098e, edit1098e, remove1098e } from 'ustaxes/redux/actions'
-import { PagerContext } from 'ustaxes/components/pager'
+import { usePager } from 'ustaxes/components/pager'
 import { Currency, LabeledInput } from 'ustaxes/components/input'
 import { TaxesState, F1098e } from 'ustaxes/redux/data'
 import { Patterns } from 'ustaxes/components/Patterns'
@@ -46,6 +46,8 @@ export default function F1098eInfo(): ReactElement {
     }
     return blankUserInput
   })()
+
+  const { onAdvance, navButtons } = usePager()
 
   const methods = useForm<F1098EUserInput>({ defaultValues })
   const { handleSubmit, reset } = methods
@@ -100,16 +102,12 @@ export default function F1098eInfo(): ReactElement {
   )
 
   return (
-    <PagerContext.Consumer>
-      {({ onAdvance, navButtons }) => (
-        <form onSubmit={onAdvance}>
-          <FormProvider {...methods}>
-            <h2>1098-E Information</h2>
-            {form}
-            {navButtons}
-          </FormProvider>
-        </form>
-      )}
-    </PagerContext.Consumer>
+    <form onSubmit={onAdvance}>
+      <FormProvider {...methods}>
+        <h2>1098-E Information</h2>
+        {form}
+        {navButtons}
+      </FormProvider>
+    </form>
   )
 }

@@ -6,7 +6,7 @@ import {
   editProperty,
   removeProperty
 } from 'ustaxes/redux/actions'
-import { PagerContext } from 'ustaxes/components/pager'
+import { usePager } from 'ustaxes/components/pager'
 import {
   Property,
   Address,
@@ -138,6 +138,8 @@ export default function RealEstate(): ReactElement {
   const methods = useForm<PropertyAddForm>()
   const { control, getValues, handleSubmit, reset } = methods
   const dispatch = useDispatch()
+
+  const { onAdvance, navButtons } = usePager()
 
   const properties: Property[] = useSelector(
     (state: TaxesState) => state.information.realEstate
@@ -304,14 +306,10 @@ export default function RealEstate(): ReactElement {
   )
 
   return (
-    <PagerContext.Consumer>
-      {({ navButtons, onAdvance }) => (
-        <form onSubmit={onAdvance}>
-          <h2>Properties</h2>
-          <FormProvider {...methods}>{form}</FormProvider>
-          {navButtons}
-        </form>
-      )}
-    </PagerContext.Consumer>
+    <form onSubmit={onAdvance}>
+      <h2>Properties</h2>
+      <FormProvider {...methods}>{form}</FormProvider>
+      {navButtons}
+    </form>
   )
 }

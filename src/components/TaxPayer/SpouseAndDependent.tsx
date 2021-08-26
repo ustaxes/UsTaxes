@@ -29,7 +29,7 @@ import {
 } from 'ustaxes/redux/actions'
 import { PersonFields } from './PersonFields'
 import { FormListContainer } from 'ustaxes/components/FormContainer'
-import { PagerContext } from 'ustaxes/components/pager'
+import { usePager } from 'ustaxes/components/pager'
 import { Person } from '@material-ui/icons'
 
 interface UserPersonForm {
@@ -214,6 +214,8 @@ const SpouseAndDependent = (): ReactElement => {
     return state.information.taxPayer
   })
 
+  const { onAdvance, navButtons } = usePager()
+
   const methods = useForm<{ filingStatus: FilingStatus }>({
     defaultValues: { filingStatus: taxPayer.filingStatus }
   })
@@ -229,34 +231,30 @@ const SpouseAndDependent = (): ReactElement => {
     }
 
   const page = (
-    <PagerContext.Consumer>
-      {({ onAdvance, navButtons }) => (
-        <form onSubmit={handleSubmit(onSubmit(onAdvance))}>
-          <h2>Family Information</h2>
+    <form onSubmit={handleSubmit(onSubmit(onAdvance))}>
+      <h2>Family Information</h2>
 
-          <strong>
-            <p>Spouse Information</p>
-          </strong>
-          <SpouseInfo />
+      <strong>
+        <p>Spouse Information</p>
+      </strong>
+      <SpouseInfo />
 
-          <strong>
-            <p>Dependent Information</p>
-          </strong>
-          <AddDependentForm />
+      <strong>
+        <p>Dependent Information</p>
+      </strong>
+      <AddDependentForm />
 
-          <GenericLabeledDropdown<FilingStatus>
-            label=""
-            strongLabel="Filing Status"
-            dropDownData={filingStatuses(taxPayer)}
-            valueMapping={(x, i) => x}
-            keyMapping={(x, i) => i}
-            textMapping={(status) => FilingStatusTexts[status]}
-            name="filingStatus"
-          />
-          {navButtons}
-        </form>
-      )}
-    </PagerContext.Consumer>
+      <GenericLabeledDropdown<FilingStatus>
+        label=""
+        strongLabel="Filing Status"
+        dropDownData={filingStatuses(taxPayer)}
+        valueMapping={(x, i) => x}
+        keyMapping={(x, i) => i}
+        textMapping={(status) => FilingStatusTexts[status]}
+        name="filingStatus"
+      />
+      {navButtons}
+    </form>
   )
 
   return <FormProvider {...methods}>{page}</FormProvider>

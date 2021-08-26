@@ -6,7 +6,7 @@ import { Patterns } from './Patterns'
 import { saveRefundInfo } from 'ustaxes/redux/actions'
 
 import { AccountType, Refund, TaxesState } from 'ustaxes/redux/data'
-import { PagerContext } from './pager'
+import { usePager } from './pager'
 
 interface UserRefundForm {
   routingNumber: string
@@ -20,6 +20,8 @@ export default function RefundBankAccount(): ReactElement {
   const defaultValues: Refund | undefined = useSelector((state: TaxesState) => {
     return state.information.refund
   })
+
+  const { navButtons, onAdvance } = usePager()
 
   const methods = useForm<UserRefundForm>({ defaultValues })
   const { handleSubmit } = methods
@@ -35,35 +37,31 @@ export default function RefundBankAccount(): ReactElement {
     }
 
   return (
-    <PagerContext.Consumer>
-      {({ onAdvance, navButtons }) => (
-        <form onSubmit={handleSubmit(onSubmit(onAdvance))}>
-          <FormProvider {...methods}>
-            <h2>Refund Information</h2>
+    <form onSubmit={handleSubmit(onSubmit(onAdvance))}>
+      <FormProvider {...methods}>
+        <h2>Refund Information</h2>
 
-            <LabeledInput
-              label="Bank Routing number"
-              patternConfig={Patterns.bankRouting}
-              name="routingNumber"
-            />
+        <LabeledInput
+          label="Bank Routing number"
+          patternConfig={Patterns.bankRouting}
+          name="routingNumber"
+        />
 
-            <LabeledInput
-              label="Bank Account number"
-              patternConfig={Patterns.bankAccount}
-              name="accountNumber"
-            />
-            <LabeledRadio
-              label="Account Type"
-              name="accountType"
-              values={[
-                ['Checking', 'checking'],
-                ['Savings', 'savings']
-              ]}
-            />
-            {navButtons}
-          </FormProvider>
-        </form>
-      )}
-    </PagerContext.Consumer>
+        <LabeledInput
+          label="Bank Account number"
+          patternConfig={Patterns.bankAccount}
+          name="accountNumber"
+        />
+        <LabeledRadio
+          label="Account Type"
+          name="accountType"
+          values={[
+            ['Checking', 'checking'],
+            ['Savings', 'savings']
+          ]}
+        />
+        {navButtons}
+      </FormProvider>
+    </form>
   )
 }

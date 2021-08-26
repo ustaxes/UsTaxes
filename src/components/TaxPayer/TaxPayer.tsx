@@ -11,7 +11,7 @@ import {
 } from 'ustaxes/redux/data'
 import { PersonFields } from './PersonFields'
 import { LabeledCheckbox } from 'ustaxes/components/input'
-import { PagerContext } from 'ustaxes/components/pager'
+import { usePager } from 'ustaxes/components/pager'
 import AddressFields from './Address'
 
 interface TaxPayerUserForm {
@@ -61,6 +61,8 @@ export default function PrimaryTaxpayer(): ReactElement {
   // const variable dispatch to allow use inside function
   const dispatch = useDispatch()
 
+  const { onAdvance, navButtons } = usePager()
+
   const taxPayer: TaxPayer | undefined = useSelector((state: TaxesState) => {
     return state.information.taxPayer
   })
@@ -84,20 +86,16 @@ export default function PrimaryTaxpayer(): ReactElement {
     }
 
   const page = (
-    <PagerContext.Consumer>
-      {({ navButtons, onAdvance }) => (
-        <form onSubmit={handleSubmit(onSubmit(onAdvance))}>
-          <h2>Primary Taxpayer Information</h2>
-          <PersonFields />
-          <LabeledCheckbox
-            label="Check if you are a dependent"
-            name="isTaxpayerDependent"
-          />
-          <AddressFields checkboxText="Do you have a foreign address?" />
-          {navButtons}
-        </form>
-      )}
-    </PagerContext.Consumer>
+    <form onSubmit={handleSubmit(onSubmit(onAdvance))}>
+      <h2>Primary Taxpayer Information</h2>
+      <PersonFields />
+      <LabeledCheckbox
+        label="Check if you are a dependent"
+        name="isTaxpayerDependent"
+      />
+      <AddressFields checkboxText="Do you have a foreign address?" />
+      {navButtons}
+    </form>
   )
 
   return <FormProvider {...methods}>{page}</FormProvider>
