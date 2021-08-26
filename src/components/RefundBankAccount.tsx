@@ -3,10 +3,10 @@ import { useForm, FormProvider } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { LabeledInput, LabeledRadio } from './input'
 import { Patterns } from './Patterns'
-import { saveRefundInfo } from '../redux/actions'
+import { saveRefundInfo } from 'ustaxes/redux/actions'
 
-import { AccountType, Refund, TaxesState } from '../redux/data'
-import { PagerContext, usePager } from './pager'
+import { AccountType, Refund, TaxesState } from 'ustaxes/redux/data'
+import { usePager } from './pager'
 
 interface UserRefundForm {
   routingNumber: string

@@ -5,10 +5,10 @@ import {
   getRequiredQuestions,
   QuestionTagName,
   Responses
-} from '../data/questions'
-import { TaxesState } from '../redux/data'
-import { answerQuestion } from '../redux/actions'
+} from 'ustaxes/data/questions'
 import { LabeledCheckbox, LabeledInput } from './input'
+import { TaxesState } from 'ustaxes/redux/data'
+import { answerQuestion } from 'ustaxes/redux/actions'
 import { FormProvider, useForm } from 'react-hook-form'
 import { PagerContext, usePager } from './pager'
 import { Else, If, Then } from 'react-if'

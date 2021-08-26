@@ -2,13 +2,13 @@ import React, { ReactElement, useState } from 'react'
 
 import { useForm, FormProvider } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
-import { Patterns } from '../Patterns'
+import { Patterns } from 'ustaxes/components/Patterns'
 import {
   LabeledInput,
   LabeledCheckbox,
   formatSSID,
   GenericLabeledDropdown
-} from '../input'
+} from 'ustaxes/components/input'
 import {
   TaxesState,
   TaxPayer,
@@ -18,7 +18,7 @@ import {
   FilingStatus,
   FilingStatusTexts,
   filingStatuses
-} from '../../redux/data'
+} from 'ustaxes/redux/data'
 import {
   addDependent,
   addSpouse,
@@ -26,10 +26,10 @@ import {
   removeDependent,
   removeSpouse,
   saveFilingStatusInfo
-} from '../../redux/actions'
+} from 'ustaxes/redux/actions'
 import { PersonFields } from './PersonFields'
-import { FormListContainer } from '../FormContainer'
-import { usePager } from '../pager'
+import { FormListContainer } from 'ustaxes/components/FormContainer'
+import { usePager } from 'ustaxes/components/pager'
 import { Person } from '@material-ui/icons'
 
 interface UserPersonForm {

@@ -1,11 +1,11 @@
 import React, { FormEvent, ReactElement, useState } from 'react'
-import { createPDFPopup } from '../pdfFiller/fillPdf'
-import { PagerContext, usePager } from './pager'
+import { createPDFPopup } from 'ustaxes/pdfFiller/fillPdf'
+import { usePager } from './pager'
 import Alert from '@material-ui/lab/Alert'
 import { makeStyles } from '@material-ui/core/styles'
-import log from '../log'
+import log from 'ustaxes/log'
 import { useSelector } from 'react-redux'
-import { TaxesState } from '../redux/data'
+import { TaxesState } from 'ustaxes/redux/data'
 
 const useStyles = makeStyles((theme) => ({
   root: {

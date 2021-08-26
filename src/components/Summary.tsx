@@ -8,15 +8,15 @@ import {
   makeStyles,
   Typography
 } from '@material-ui/core'
-import { PagerContext, usePager } from './pager'
-import { create1040 } from '../irsForms/Main'
+import { usePager } from './pager'
+import { create1040 } from 'ustaxes/irsForms/Main'
 import { useSelector } from 'react-redux'
-import { Information, TaxesState } from '../redux/data'
+import { Information, TaxesState } from 'ustaxes/redux/data'
 import { Check, Close } from '@material-ui/icons'
-import F1040 from '../irsForms/F1040'
+import F1040 from 'ustaxes/irsForms/F1040'
 import { Currency } from './input'
 import Alert from '@material-ui/lab/Alert'
-import { isLeft } from '../util'
+import { isLeft } from 'ustaxes/util'
 
 interface BinaryStateListItemProps {
   active: boolean

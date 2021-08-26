@@ -1,8 +1,12 @@
 import React, { Fragment, ReactElement, useState } from 'react'
 import { Message, useForm, useWatch, FormProvider } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
-import { addProperty, editProperty, removeProperty } from '../../redux/actions'
-import { usePager } from '../pager'
+import {
+  addProperty,
+  editProperty,
+  removeProperty
+} from 'ustaxes/redux/actions'
+import { usePager } from 'ustaxes/components/pager'
 import {
   Property,
   Address,
@@ -11,20 +15,20 @@ import {
   TaxesState,
   PropertyType,
   PropertyTypeName
-} from '../../redux/data'
-import AddressFields from '../TaxPayer/Address'
+} from 'ustaxes/redux/data'
+import AddressFields from 'ustaxes/components/TaxPayer/Address'
 import {
   Currency,
   GenericLabeledDropdown,
   LabeledCheckbox,
   LabeledInput
-} from '../input'
-import { Patterns } from '../Patterns'
+} from 'ustaxes/components/input'
+import { Patterns } from 'ustaxes/components/Patterns'
 import { daysInYear, enumKeys, segments } from '../../util'
 import { HouseOutlined } from '@material-ui/icons'
-import { FormListContainer } from '../FormContainer'
+import { FormListContainer } from 'ustaxes/components/FormContainer'
 import { Grid } from '@material-ui/core'
-import { CURRENT_YEAR } from '../../data/federal'
+import { CURRENT_YEAR } from 'ustaxes/data/federal'
 import { If } from 'react-if'
 
 interface PropertyAddForm {

@@ -1,11 +1,15 @@
 import React, { ReactElement } from 'react'
 import { useForm, FormProvider } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
-import { LabeledInput } from '../input'
-import { Patterns } from '../Patterns'
-import { saveContactInfo } from '../../redux/actions'
-import { ContactInfo as Contact, TaxesState, TaxPayer } from '../../redux/data'
-import { usePager } from '../pager'
+import { LabeledInput } from 'ustaxes/components/input'
+import { Patterns } from 'ustaxes/components/Patterns'
+import { saveContactInfo } from 'ustaxes/redux/actions'
+import {
+  ContactInfo as Contact,
+  TaxesState,
+  TaxPayer
+} from 'ustaxes/redux/data'
+import { usePager } from 'ustaxes/components/pager'
 
 export default function ContactInfo(): ReactElement {
   // const variable dispatch to allow use inside function
