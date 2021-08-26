@@ -2,8 +2,8 @@ import React, { ReactElement, useState } from 'react'
 import { useForm, FormProvider } from 'react-hook-form'
 import { Icon } from '@material-ui/core'
 import { useDispatch, useSelector } from 'react-redux'
-import { add1099, edit1099, remove1099 } from '../../redux/actions'
-import { PagerContext } from '../pager'
+import { add1099, edit1099, remove1099 } from 'ustaxes/redux/actions'
+import { usePager } from 'ustaxes/components/pager'
 import {
   TaxesState,
   Person,
@@ -12,16 +12,15 @@ import {
   Income1099Type,
   PlanType1099,
   PlanType1099Texts
-} from '../../redux/data'
+} from 'ustaxes/redux/data'
 import {
   Currency,
   formatSSID,
   GenericLabeledDropdown,
-  LabeledInput,
-  LabeledDropdown
-} from '../input'
-import { Patterns } from '../Patterns'
-import { FormListContainer } from '../FormContainer'
+  LabeledInput
+} from 'ustaxes/components/input'
+import { Patterns } from 'ustaxes/components/Patterns'
+import { FormListContainer } from 'ustaxes/components/FormContainer'
 
 const showIncome = (a: Supported1099): ReactElement => {
   switch (a.type) {
@@ -188,6 +187,8 @@ export default function F1099Info(): ReactElement {
   const selectedType: Income1099Type | undefined = watch('formType')
 
   const dispatch = useDispatch()
+
+  const { onAdvance, navButtons } = usePager()
 
   const setEditing = (idx: number): void => {
     reset(toUserInput(f1099s[idx]))
@@ -362,14 +363,10 @@ export default function F1099Info(): ReactElement {
   )
 
   return (
-    <PagerContext.Consumer>
-      {({ onAdvance, navButtons }) => (
-        <form onSubmit={onAdvance}>
-          <h2>1099 Information</h2>
-          <FormProvider {...methods}>{form}</FormProvider>
-          {navButtons}
-        </form>
-      )}
-    </PagerContext.Consumer>
+    <form onSubmit={onAdvance}>
+      <h2>1099 Information</h2>
+      <FormProvider {...methods}>{form}</FormProvider>
+      {navButtons}
+    </form>
   )
 }

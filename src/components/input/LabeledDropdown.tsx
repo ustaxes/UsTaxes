@@ -1,11 +1,11 @@
 import React, { ReactElement } from 'react'
 import { Box, TextField } from '@material-ui/core'
 import { Controller, useFormContext } from 'react-hook-form'
-import locationPostalCodes from '../../data/locationPostalCodes'
+import locationPostalCodes from 'ustaxes/data/locationPostalCodes'
 import { BaseDropdownProps, LabeledDropdownProps } from './types'
 import _ from 'lodash'
-import countries from '../../data/countries'
-import { State } from '../../redux/data'
+import countries from 'ustaxes/data/countries'
+import { State } from 'ustaxes/redux/data'
 
 export function GenericLabeledDropdown<A>(
   props: LabeledDropdownProps<A>

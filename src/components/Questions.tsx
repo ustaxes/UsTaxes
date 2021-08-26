@@ -5,12 +5,12 @@ import {
   getRequiredQuestions,
   QuestionTagName,
   Responses
-} from '../data/questions'
-import { TaxesState } from '../redux/data'
-import { answerQuestion } from '../redux/actions'
+} from 'ustaxes/data/questions'
 import { LabeledCheckbox, LabeledInput } from './input'
+import { TaxesState } from 'ustaxes/redux/data'
+import { answerQuestion } from 'ustaxes/redux/actions'
 import { FormProvider, useForm } from 'react-hook-form'
-import { PagerContext } from './pager'
+import { usePager } from './pager'
 import { Else, If, Then } from 'react-if'
 
 const Questions = (): ReactElement => {
@@ -20,6 +20,8 @@ const Questions = (): ReactElement => {
   const { handleSubmit, watch } = methods
 
   const currentValues = watch()
+
+  const { navButtons, onAdvance } = usePager()
 
   const questions = getRequiredQuestions({
     information: {
@@ -53,32 +55,28 @@ const Questions = (): ReactElement => {
     }
 
   const page = (
-    <PagerContext.Consumer>
-      {({ onAdvance = () => {}, navButtons }) => (
-        <form onSubmit={handleSubmit(onSubmit(onAdvance))}>
-          <h2>Informational Questions</h2>
-          <p>
-            Based on your prior responses, reseponses to these questions are
-            required.
-          </p>
-          <List>
-            {questions.map((q, i) => (
-              <ListItem key={i}>
-                <If condition={q.valueTag === 'boolean'}>
-                  <Then>
-                    <LabeledCheckbox name={q.tag} label={q.text} />
-                  </Then>
-                  <Else>
-                    <LabeledInput name={q.tag} label={q.text} />
-                  </Else>
-                </If>
-              </ListItem>
-            ))}
-          </List>
-          {navButtons}
-        </form>
-      )}
-    </PagerContext.Consumer>
+    <form onSubmit={handleSubmit(onSubmit(onAdvance))}>
+      <h2>Informational Questions</h2>
+      <p>
+        Based on your prior responses, reseponses to these questions are
+        required.
+      </p>
+      <List>
+        {questions.map((q, i) => (
+          <ListItem key={i}>
+            <If condition={q.valueTag === 'boolean'}>
+              <Then>
+                <LabeledCheckbox name={q.tag} label={q.text} />
+              </Then>
+              <Else>
+                <LabeledInput name={q.tag} label={q.text} />
+              </Else>
+            </If>
+          </ListItem>
+        ))}
+      </List>
+      {navButtons}
+    </form>
   )
 
   return <FormProvider {...methods}>{page}</FormProvider>

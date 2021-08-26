@@ -1,6 +1,6 @@
 {
   "name": "ustaxes",
-  "version": "0.1.9",
+  "version": "0.1.10",
   "private": true,
   "dependencies": {
     "@material-ui/core": "^4.12.3",
@@ -28,10 +28,10 @@
     "typescript": "^4.3.5"
   },
   "scripts": {
-    "start": "node ./notice.js && node ./setup.js && react-scripts start",
-    "build": "node ./setup.js && react-scripts build",
-    "test": "node ./setup.js && react-scripts test",
-    "eject": "react-scripts eject",
+    "start": "node ./notice.js && node ./setup.js && craco start",
+    "build": "node ./setup.js && craco build",
+    "test": "node ./setup.js && craco test",
+    "eject": "craco eject",
     "desktop-release": "node ./setup.js && tauri build",
     "desktop": "node ./notice.js && node ./setup.js && tauri dev",
     "tauri": "tauri",
@@ -57,6 +57,7 @@
     ]
   },
   "devDependencies": {
+    "@craco/craco": "^6.2.0",
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^12.0.0",
     "@testing-library/user-event": "^13.2.1",
@@ -94,5 +95,10 @@
   },
   "lint-staged": {
     "**/*": "prettier --write --ignore-unknown"
+  },
+  "jest": {
+    "moduleNameMapper": {
+      "^ustaxes/(.*)": "<rootDir>/src/$1"
+    }
   }
 }

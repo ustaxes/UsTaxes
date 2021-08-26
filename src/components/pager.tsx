@@ -1,13 +1,34 @@
+import React, { ReactElement, useState, PropsWithChildren } from 'react'
 import { Box, Button } from '@material-ui/core'
-import React, { ReactElement, useState } from 'react'
+import { useContext } from 'react'
+import { Context } from 'react'
 import { Link, useHistory } from 'react-router-dom'
 
-const makePager = <A,>(
-  pages: A[],
-  url: (a: A) => string,
-  lookup: Map<string, number>
-): [A | undefined, (() => void) | undefined] => {
+interface PagerProps {
+  onAdvance: () => void
+  navButtons: ReactElement
+}
+
+export const PagerContext = React.createContext<PagerProps>({
+  onAdvance: () => {},
+  navButtons: <></>
+})
+
+interface PagerProviderProps<A> {
+  pages: A[]
+}
+
+interface Page {
+  url: string
+}
+
+export const PagerProvider = <A extends Page>({
+  children,
+  pages
+}: PropsWithChildren<PagerProviderProps<A>>): ReactElement => {
   const history = useHistory()
+
+  const lookup = new Map(pages.map((p, i) => [p.url, i]))
 
   const [curPage, update] = useState(lookup.get(history.location.pathname) ?? 0)
 
@@ -19,9 +40,9 @@ const makePager = <A,>(
     }
   })
 
-  const forward: (() => void) | undefined = (() => {
+  const onAdvance: (() => void) | undefined = (() => {
     if (curPage < pages.length - 1) {
-      return () => history.push(url(pages[curPage + 1]))
+      return () => history.push(pages[curPage + 1].url)
     }
     return undefined
   })()
@@ -32,7 +53,20 @@ const makePager = <A,>(
     }
   })()
 
-  return [prev, forward]
+  const navButtons: ReactElement = (
+    <PagerButtons
+      previousUrl={prev?.url}
+      submitText={onAdvance !== undefined ? 'Save and Continue' : 'Create PDF'}
+    />
+  )
+
+  return (
+    <PagerContext.Provider
+      value={{ onAdvance: onAdvance ?? (() => {}), navButtons }}
+    >
+      {children}
+    </PagerContext.Provider>
+  )
 }
 
 interface PagerButtonsProps {
@@ -134,29 +168,4 @@ export const SingleButtons = ({
   )
 }
 
-interface PagerProps {
-  onAdvance?: () => void
-  navButtons: ReactElement
-}
-
-export const PagerContext = React.createContext<PagerProps>({
-  onAdvance: () => {},
-  navButtons: <></>
-})
-
-/**
- * Create hook for a forward and back flow
- * This just keeps track of an array index based on a list of URLS
- * for pages a user would navigate through. This way the browser back
- * button can behave as expected based on the user's actual sequence of actions,
- * but a previous / next flow can be available as well for a sequence of screens.
- * @param pages a list of pages A
- * @param url gets a url out of a page A, starting with '/' (history.location.pathname)
- * @returns [previousPage, goToNextPage]
- */
-export const usePager = <A,>(
-  pages: A[],
-  url: (a: A) => string
-): [A | undefined, (() => void) | undefined] => {
-  return makePager(pages, url, new Map(pages.map((p, i) => [url(p), i])))
-}
+export const usePager = (): PagerProps => useContext(PagerContext)

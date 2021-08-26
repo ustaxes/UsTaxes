@@ -19,7 +19,7 @@ import ResponsiveDrawer, {
   Section,
   SectionItem
 } from './ResponsiveDrawer'
-import { PagerButtons, PagerContext, usePager } from './pager'
+import { PagerButtons, PagerContext, PagerProvider, usePager } from './pager'
 import PrimaryTaxpayer from './TaxPayer'
 import RefundBankAccount from './RefundBankAccount'
 import SpouseAndDependent from './TaxPayer/SpouseAndDependent'
@@ -32,6 +32,8 @@ import F1098eInfo from './deductions/F1098eInfo'
 import { StateLoader } from './debug'
 import NoMatchPage from './NoMatchPage'
 import Questions from './Questions'
+import { useViewport } from '../hooks/Viewport'
+import { useEffect } from 'react'
 
 const theme = createMuiTheme({
   palette: {
@@ -52,9 +54,6 @@ const theme = createMuiTheme({
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    root: {
-      display: 'flex'
-    },
     appBar: {
       width: '100%',
       [theme.breakpoints.up('sm')]: {
@@ -74,8 +73,10 @@ const useStyles = makeStyles((theme: Theme) =>
         display: 'none'
       }
     },
+    main: {
+      display: 'flex'
+    },
     content: {
-      flexGrow: 1,
       padding: theme.spacing(3)
     }
   })
@@ -154,74 +155,68 @@ const drawerSections: Section[] = [
 ]
 
 export default function Main(): ReactElement {
+  const classes = useStyles()
+  const { width } = useViewport()
+  const [isMobile, setIsMobile] = useState(theme.breakpoints.values.sm > width)
+
   const allItems: SectionItem[] = drawerSections.flatMap(
     (section: Section) => section.items
   )
-  const [prev, onAdvance] = usePager(allItems, (item) => item.url)
-  const [mobileOpen, setMobileOpen] = useState(false)
-  const classes = useStyles()
 
-  const navButtons: ReactElement = (
-    <PagerButtons
-      previousUrl={prev?.url}
-      submitText={onAdvance !== undefined ? 'Save and Continue' : 'Create PDF'}
-    />
-  )
-
-  const appBar = (
-    <AppBar position="fixed" className={classes.appBar}>
-      <Toolbar>
-        <IconButton
-          color="inherit"
-          aria-label="open drawer"
-          edge="start"
-          onClick={() => setMobileOpen(!mobileOpen)}
-          className={classes.menuButton}
-        >
-          <MenuIcon />
-        </IconButton>
-      </Toolbar>
-    </AppBar>
-  )
+  useEffect(() => {
+    setIsMobile(theme.breakpoints.values.sm > width)
+  }, [width])
 
   return (
     <ThemeProvider theme={theme}>
-      <div className={classes.root}>
-        {appBar}
-        <main className={classes.content}>
-          <StateLoader />
-          <div className={classes.toolbar} />
-          <Grid container spacing={2}>
-            <Grid item sm />
-            <Grid item sm={10} lg={6}>
-              <PagerContext.Provider
-                value={{ onAdvance: onAdvance ?? (() => {}), navButtons }}
-              >
-                <Switch>
-                  <Redirect path="/" to={Urls.default} exact />
-                  {allItems.map((item, index) => (
-                    <Route key={index} exact path={item.url}>
-                      {item.element}
-                    </Route>
-                  ))}
-                  <Route>
-                    <NoMatchPage />
-                  </Route>
-                </Switch>
-                {useLocation().pathname !== '/start' ? (
-                  <ResponsiveDrawer
-                    sections={drawerSections}
-                    isOpen={mobileOpen}
-                    onClose={() => setMobileOpen(false)}
-                  />
-                ) : null}
-              </PagerContext.Provider>
-            </Grid>
-            <Grid item sm />
-          </Grid>
-        </main>
-        {appBar}
-      </div>
+      <div className={classes.toolbar} />
+      <main className={classes.main}>
+        <StateLoader />
+        <PagerProvider pages={allItems}>
+          <Switch>
+            <Redirect path="/" to={Urls.default} exact />
+            {allItems.map((item, index) => (
+              <Route key={index} exact path={item.url}>
+                {useLocation().pathname !== '/start' && (
+                  <>
+                    <AppBar position="fixed" className={classes.appBar}>
+                      <Toolbar>
+                        <IconButton
+                          color="inherit"
+                          aria-label="open drawer"
+                          edge="start"
+                          onClick={() => setIsMobile((isMobile) => !isMobile)}
+                          className={classes.menuButton}
+                        >
+                          <MenuIcon />
+                        </IconButton>
+                      </Toolbar>
+                    </AppBar>
+                    <ResponsiveDrawer
+                      sections={drawerSections}
+                      isOpen={!isMobile}
+                      onClose={() => setIsMobile((isMobile) => !isMobile)}
+                    />
+                  </>
+                )}
+                <Grid
+                  className={classes.content}
+                  container
+                  justifyContent="center"
+                  direction="row"
+                >
+                  <Grid item xs={12} lg={6}>
+                    {item.element}
+                  </Grid>
+                </Grid>
+              </Route>
+            ))}
+            <Route>
+              <NoMatchPage />
+            </Route>
+          </Switch>
+        </PagerProvider>
+      </main>
     </ThemeProvider>
   )
 }

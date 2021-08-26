@@ -1,4 +1,4 @@
-import { TaxPayer } from '../redux/data'
+import { TaxPayer } from 'ustaxes/redux/data'
 
 export default class F5695 {
   tp: TaxPayer

@@ -2,12 +2,12 @@ import React, { ReactElement, useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import SchoolIcon from '@material-ui/icons/School'
 import { useDispatch, useSelector } from 'react-redux'
-import { add1098e, edit1098e, remove1098e } from '../../redux/actions'
-import { PagerContext } from '../pager'
-import { Currency, LabeledInput } from '../input'
-import { TaxesState, F1098e } from '../../redux/data'
-import { Patterns } from '../Patterns'
-import { FormListContainer } from '../FormContainer'
+import { add1098e, edit1098e, remove1098e } from 'ustaxes/redux/actions'
+import { usePager } from 'ustaxes/components/pager'
+import { Currency, LabeledInput } from 'ustaxes/components/input'
+import { TaxesState, F1098e } from 'ustaxes/redux/data'
+import { Patterns } from 'ustaxes/components/Patterns'
+import { FormListContainer } from 'ustaxes/components/FormContainer'
 
 const showInterest = (a: F1098e): ReactElement => {
   return <Currency value={a.interest} />
@@ -47,6 +47,8 @@ export default function F1098eInfo(): ReactElement {
     return blankUserInput
   })()
 
+  const { onAdvance, navButtons } = usePager()
+
   const methods = useForm<F1098EUserInput>({ defaultValues })
   const { handleSubmit, reset } = methods
 
@@ -63,7 +65,6 @@ export default function F1098eInfo(): ReactElement {
       const payload = toF1098e(formData)
       if (payload !== undefined) {
         if (editing === undefined) {
-          console.log(payload)
           dispatch(add1098e(payload))
         } else {
           dispatch(edit1098e({ index: editing, value: payload }))
@@ -100,16 +101,12 @@ export default function F1098eInfo(): ReactElement {
   )
 
   return (
-    <PagerContext.Consumer>
-      {({ onAdvance, navButtons }) => (
-        <form onSubmit={onAdvance}>
-          <FormProvider {...methods}>
-            <h2>1098-E Information</h2>
-            {form}
-            {navButtons}
-          </FormProvider>
-        </form>
-      )}
-    </PagerContext.Consumer>
+    <form onSubmit={onAdvance}>
+      <FormProvider {...methods}>
+        <h2>1098-E Information</h2>
+        {form}
+        {navButtons}
+      </FormProvider>
+    </form>
   )
 }

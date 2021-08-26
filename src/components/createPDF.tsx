@@ -1,15 +1,15 @@
 import React, { FormEvent, ReactElement, useState } from 'react'
-import { PagerContext } from './pager'
+import { usePager } from './pager'
 import Alert from '@material-ui/lab/Alert'
 import { makeStyles } from '@material-ui/core/styles'
-import log from '../log'
+import log from 'ustaxes/log'
 import { useSelector } from 'react-redux'
-import { State, TaxesState } from '../redux/data'
-import { createPDFPopup } from '../irsForms'
+import { State, TaxesState } from 'ustaxes/redux/data'
+import { createPDFPopup } from 'ustaxes/irsForms'
 import { createStatePDF, createStateReturn, stateForm } from '../stateForms'
-import { create1040 } from '../irsForms/Main'
-import { isRight } from '../util'
-import { savePDF } from '../pdfFiller/pdfHandler'
+import { create1040 } from 'ustaxes/irsForms/Main'
+import { isRight } from 'ustaxes/util'
+import { savePDF } from 'ustaxes/pdfFiller/pdfHandler'
 import { If } from 'react-if'
 import { Box, Button } from '@material-ui/core'
 
@@ -32,6 +32,8 @@ export default function CreatePDF(): ReactElement {
 
   const federalFileName = `${lastName}-1040.pdf`
   const stateFileName = `${lastName}-${residency}.pdf`
+
+  const { navButtons } = usePager()
 
   const federalReturn = async (e: FormEvent<any>): Promise<void> => {
     e.preventDefault()
@@ -105,6 +107,7 @@ export default function CreatePDF(): ReactElement {
           </Button>
         </Box>
       </If>
+      {navButtons}
     </form>
   )
 }

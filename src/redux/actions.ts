@@ -21,7 +21,7 @@ import {
 } from './data'
 import { ValidateFunction } from 'ajv'
 import ajv, { checkType } from './validate'
-import { Responses } from '../data/questions'
+import { Responses } from 'ustaxes/data/questions'
 
 export enum ActionName {
   SAVE_REFUND_INFO = 'SAVE_REFUND_INFO',

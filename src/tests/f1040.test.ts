@@ -1,5 +1,5 @@
 import fc from 'fast-check'
-import { create1040 } from '../irsForms/Main'
+import { create1040 } from 'ustaxes/irsForms/Main'
 import { isRight } from '../util'
 import * as arbitraries from './arbitraries'
 
