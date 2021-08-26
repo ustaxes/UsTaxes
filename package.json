@@ -1,6 +1,6 @@
 {
   "name": "ustaxes",
-  "version": "0.1.9",
+  "version": "0.1.10",
   "private": true,
   "dependencies": {
     "@craco/craco": "^6.2.0",
