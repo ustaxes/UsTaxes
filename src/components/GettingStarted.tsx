@@ -44,6 +44,10 @@ export default function GettingStarted(): ReactElement {
         <li>1099-DIV</li>
         <li>1099-B</li>
         <li>1098-E</li>
+        <li>
+          1099-R: support for normal distributions from IRA and pension
+          accounts.
+        </li>
       </ul>
 
       <p>Supported Attachments to Form 1040</p>

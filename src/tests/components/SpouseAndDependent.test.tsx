@@ -9,7 +9,9 @@ import {
 import { Provider } from 'react-redux'
 import userEvent from '@testing-library/user-event'
 
-import SpouseAndDependent, { SpouseInfo } from './SpouseAndDependent'
+import SpouseAndDependent, {
+  SpouseInfo
+} from '../../components/TaxPayer/SpouseAndDependent'
 import { store } from '../../redux/store'
 
 afterEach(async () => {

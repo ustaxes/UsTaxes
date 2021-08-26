@@ -19,7 +19,7 @@ import ResponsiveDrawer, {
   Section,
   SectionItem
 } from './ResponsiveDrawer'
-import { PagerButtons, PagerContext, usePager } from './pager'
+import { PagerButtons, PagerContext, PagerProvider, usePager } from './pager'
 import PrimaryTaxpayer from './TaxPayer'
 import RefundBankAccount from './RefundBankAccount'
 import SpouseAndDependent from './TaxPayer/SpouseAndDependent'
@@ -162,14 +162,6 @@ export default function Main(): ReactElement {
   const allItems: SectionItem[] = drawerSections.flatMap(
     (section: Section) => section.items
   )
-  const [prev, onAdvance] = usePager(allItems, (item) => item.url)
-
-  const navButtons: ReactElement = (
-    <PagerButtons
-      previousUrl={prev?.url}
-      submitText={onAdvance !== undefined ? 'Save and Continue' : 'Create PDF'}
-    />
-  )
 
   useEffect(() => {
     setIsMobile(theme.breakpoints.values.sm > width)
@@ -180,9 +172,7 @@ export default function Main(): ReactElement {
       <div className={classes.toolbar} />
       <main className={classes.main}>
         <StateLoader />
-        <PagerContext.Provider
-          value={{ onAdvance: onAdvance ?? (() => {}), navButtons }}
-        >
+        <PagerProvider pages={allItems}>
           <Switch>
             <Redirect path="/" to={Urls.default} exact />
             {allItems.map((item, index) => (
@@ -225,7 +215,7 @@ export default function Main(): ReactElement {
               <NoMatchPage />
             </Route>
           </Switch>
-        </PagerContext.Provider>
+        </PagerProvider>
       </main>
     </ThemeProvider>
   )

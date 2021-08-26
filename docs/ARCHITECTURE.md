@@ -4,7 +4,7 @@ Thank you for your interest in this project. The below should summarize the gene
 
 ## Stack and developer requirements
 
-This project uses typescript and is built with [NPM 6][npm-install].
+This project uses TypeScript and is built with [NPM 6][npm-install].
 
 ## Desktop application requirements
 
@@ -31,7 +31,7 @@ libwebkit2gtk-4.0-dev
 
 ## Project design
 
-There are four main concerns separated in this project.
+There are four main concerns separated in this project:
 
 1. Data must be collected from users (react forms)
 2. Collected data must be stored in a data model (via redux dispatched actions only)
@@ -57,10 +57,10 @@ export interface Information {
 }
 ```
 
-- **f1099s**: An array of all 1099s that have been added. Note this includes 1099B which goes to Schedule D, 1099-Int which goes to Schedule B, and 1099-DIV which provides data that goes to both Schedule B and Schedule D. This confusion is not needed at this level of the data model. Later when PDFs are created, the correct data can be accessed by the code managing those schedules.
-- **w2s**: All W2s that have been added for both primary taxpayer and spouse
+- **f1099s**: An array of all 1099s that have been added. Note this includes 1099-B which goes to Schedule D, 1099-INT which goes to Schedule B, and 1099-DIV which provides data that goes to both Schedule B and Schedule D. This confusion is not needed at this level of the data model. Later when PDFs are created, the correct data can be accessed by the code managing those schedules.
+- **w2s**: All W-2s that have been added for both primary taxpayer and spouse
 - **refund**: Direct deposit information
-- **taxPayer**: Basic information about user's name, ssn, dependents, spouse
+- **taxPayer**: Basic information about user's name, SSN, dependents, spouse
 
 ### PDF Export
 
@@ -87,3 +87,4 @@ This array of `fields` must line up exactly with the fields expected by the PDF 
 [npm-install]: https://www.npmjs.com/get-npm
 [tauri-root]: https://tauri.studio/
 [rust-root]: https://www.rust-lang.org/
+[webview2]: https://developer.microsoft.com/en-us/microsoft-edge/webview2/

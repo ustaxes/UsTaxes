@@ -3,9 +3,11 @@ import {
   Dependent,
   FilingStatus,
   IncomeW2,
+  Income1099R,
   PersonRole,
   Refund,
-  TaxPayer
+  TaxPayer,
+  PlanType1099
 } from '../redux/data'
 import federalBrackets from '../data/federal'
 import F4972 from './F4972'
@@ -70,6 +72,7 @@ export default class F1040 implements Form {
   contactEmail?: string
 
   _w2s: IncomeW2[]
+  _f1099rs: Income1099R[]
 
   schedule1?: Schedule1
   schedule2?: Schedule2
@@ -116,12 +119,17 @@ export default class F1040 implements Form {
     this.isSpouseDependent = Boolean(tp.spouse?.isTaxpayerDependent)
     this.dependents = tp.dependents
     this._w2s = []
+    this._f1099rs = []
     this.contactPhoneNumber = tp.contactPhoneNumber
     this.contactEmail = tp.contactEmail
   }
 
   addW2(w2: IncomeW2): void {
     this._w2s.push(w2)
+  }
+
+  add1099R(f1099r: Income1099R): void {
+    this._f1099rs.push(f1099r)
   }
 
   addQuestions(questions: Responses): void {
@@ -241,15 +249,38 @@ export default class F1040 implements Form {
         .reduce((l, r) => l + r, 0)
     )
 
+  totalGrossDistributionsFrom1099R = (
+    planType: PlanType1099
+  ): number | undefined =>
+    displayNumber(
+      this._f1099rs
+        .filter((element) => element.form.planType == planType)
+        .reduce((res, f1099) => res + f1099.form.grossDistribution, 0)
+    )
+
+  totalTaxableFrom1099R = (planType: PlanType1099): number | undefined =>
+    displayNumber(
+      this._f1099rs
+        .filter((element) => element.form.planType == planType)
+        .reduce((res, f1099) => res + f1099.form.taxableAmount, 0)
+    )
+
   l1 = (): number | undefined => displayNumber(this.wages())
   l2a = (): number | undefined => this.scheduleB?.l3()
   l2b = (): number | undefined => this.scheduleB?.l4()
   l3a = (): number | undefined => this.totalQualifiedDividends()
   l3b = (): number | undefined => this.scheduleB?.l6()
-  l4a = (): number | undefined => undefined
-  l4b = (): number | undefined => undefined
-  l5a = (): number | undefined => undefined
-  l5b = (): number | undefined => undefined
+  // This is the value of box 1 in 1099-R forms coming from IRAs
+  l4a = (): number | undefined =>
+    this.totalGrossDistributionsFrom1099R(PlanType1099.IRA)
+  // This should be the value of box 2a in 1099-R coming from IRAs
+  l4b = (): number | undefined => this.totalTaxableFrom1099R(PlanType1099.IRA)
+  // This is the value of box 1 in 1099-R forms coming from pensions/annuities
+  l5a = (): number | undefined =>
+    this.totalGrossDistributionsFrom1099R(PlanType1099.Pension)
+  // this is the value of box 2a in 1099-R forms coming from pensions/annuities
+  l5b = (): number | undefined =>
+    this.totalTaxableFrom1099R(PlanType1099.Pension)
   l6a = (): number | undefined => undefined
   l6b = (): number | undefined => undefined
   l7 = (): number | undefined => this.scheduleD?.l16()
@@ -335,8 +366,14 @@ export default class F1040 implements Form {
       )
     )
 
-  // TODO: 1099s
-  l25b = (): number | undefined => undefined
+  // tax withheld from 1099s
+  l25b = (): number | undefined =>
+    displayNumber(
+      this._f1099rs.reduce(
+        (res, f1099) => res + f1099.form.federalIncomeTaxWithheld,
+        0
+      )
+    )
 
   // TODO: form(s) W-2G box 4, schedule K-1, form 1042-S, form 8805, form 8288-A
   l25c = (): number | undefined => this.f8959?.l24()
