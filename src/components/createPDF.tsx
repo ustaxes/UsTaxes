@@ -1,11 +1,11 @@
 import React, { FormEvent, ReactElement, useState } from 'react'
-import { createPDFPopup } from '../pdfFiller/fillPdf'
-import { PagerContext } from './pager'
+import { createPDFPopup } from 'ustaxes/pdfFiller/fillPdf'
+import { usePager } from './pager'
 import Alert from '@material-ui/lab/Alert'
 import { makeStyles } from '@material-ui/core/styles'
-import log from '../log'
+import log from 'ustaxes/log'
 import { useSelector } from 'react-redux'
-import { TaxesState } from '../redux/data'
+import { TaxesState } from 'ustaxes/redux/data'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -25,6 +25,8 @@ export default function CreatePDF(): ReactElement {
       state.information.taxPayer.primaryPerson?.lastName ?? ''
   )
 
+  const { navButtons } = usePager()
+
   const onSubmit = async (e: FormEvent<any>): Promise<void> => {
     e.preventDefault()
     return await createPDFPopup(`${lastName}-1040.pdf`).catch(
@@ -41,22 +43,18 @@ export default function CreatePDF(): ReactElement {
   }
 
   return (
-    <PagerContext.Consumer>
-      {({ navButtons }) => (
-        <form onSubmit={onSubmit}>
-          <div>
-            <h2>Print Copy to File</h2>
-          </div>
-          <div className={classes.root}>
-            {errors.map((error, i) => (
-              <Alert key={i} severity="warning">
-                {error}
-              </Alert>
-            ))}
-          </div>
-          {navButtons}
-        </form>
-      )}
-    </PagerContext.Consumer>
+    <form onSubmit={onSubmit}>
+      <div>
+        <h2>Print Copy to File</h2>
+      </div>
+      <div className={classes.root}>
+        {errors.map((error, i) => (
+          <Alert key={i} severity="warning">
+            {error}
+          </Alert>
+        ))}
+      </div>
+      {navButtons}
+    </form>
   )
 }

@@ -1,11 +1,11 @@
 import fetch from 'node-fetch'
 import { PDFDocument, PDFCheckBox, PDFTextField } from 'pdf-lib'
-import { store } from '../redux/store'
+import { store } from 'ustaxes/redux/store'
 import { savePdf } from './pdfHandler'
-import Form from '../irsForms/Form'
-import { create1040 } from '../irsForms/Main'
+import Form from 'ustaxes/irsForms/Form'
+import { create1040 } from 'ustaxes/irsForms/Main'
 import { isLeft, zip } from '../util'
-import log from '../log'
+import log from 'ustaxes/log'
 
 /**
  * Attempt to fill fields in a PDF from a Form,

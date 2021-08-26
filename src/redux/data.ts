@@ -1,4 +1,4 @@
-import { Responses } from '../data/questions'
+import { Responses } from 'ustaxes/data/questions'
 
 export enum PersonRole {
   PRIMARY = 'PRIMARY',

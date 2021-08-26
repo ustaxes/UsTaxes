@@ -1,6 +1,7 @@
-import { FilingStatus, Income1099Type, TaxesState } from '../redux/data'
-import { Either, isLeft, isRight, left, right } from '../util'
+import { FilingStatus, Income1099Type, TaxesState } from 'ustaxes/redux/data'
+import { Either, isLeft, isRight, left, right } from 'ustaxes/util'
 import { CURRENT_YEAR } from './federal'
+
 
 // Defines usable tag names for each question later defined,
 // and maps to a type which is the expected response type.

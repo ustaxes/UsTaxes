@@ -3,8 +3,8 @@ import {
   Income1099R,
   Information,
   Income1099SSA
-} from '../redux/data'
-import { Either, left, right } from '../util'
+} from 'ustaxes/redux/data'
+import { Either, left, right } from 'ustaxes/util'
 import F1040, { F1040Error } from './F1040'
 import F1040V from './F1040v'
 import F8959, { needsF8959 } from './F8959'

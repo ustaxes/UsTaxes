@@ -9,8 +9,8 @@ import {
   TaxPayer,
   PlanType1099,
   Income1099SSA
-} from '../redux/data'
-import federalBrackets from '../data/federal'
+} from 'ustaxes/redux/data'
+import federalBrackets from 'ustaxes/data/federal'
 import F4972 from './F4972'
 import F5695 from './F5695'
 import F8814 from './F8814'
@@ -38,7 +38,7 @@ import SDQualifiedAndCapGains from './worksheets/SDQualifiedAndCapGains'
 import ChildTaxCreditWorksheet from './worksheets/ChildTaxCreditWorksheet'
 import SocialSecurityBenefitsWorksheet from './worksheets/SocialSecurityBenefits'
 import F4797 from './F4797'
-import { Responses } from '../data/questions'
+import { Responses } from 'ustaxes/data/questions'
 import StudentLoanInterestWorksheet from './worksheets/StudentLoanInterestWorksheet'
 
 export enum F1040Error {

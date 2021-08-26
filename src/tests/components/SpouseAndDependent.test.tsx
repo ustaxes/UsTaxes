@@ -11,8 +11,8 @@ import userEvent from '@testing-library/user-event'
 
 import SpouseAndDependent, {
   SpouseInfo
-} from '../../components/TaxPayer/SpouseAndDependent'
-import { store } from '../../redux/store'
+} from 'ustaxes/components/TaxPayer/SpouseAndDependent'
+import { store } from 'ustaxes/redux/store'
 
 afterEach(async () => {
   await waitFor(() => localStorage.clear())

@@ -1,9 +1,9 @@
-import { Information, IncomeW2 } from '../redux/data'
+import { Information, IncomeW2 } from 'ustaxes/redux/data'
 import { displayNumber, sumFields } from './util'
 import Form, { FormTag } from './Form'
-import { anArrayOf } from '../util'
-import TaxPayer from '../redux/TaxPayer'
-import { fica } from '../data/federal'
+import { anArrayOf } from 'ustaxes/util'
+import TaxPayer from 'ustaxes/redux/TaxPayer'
+import { fica } from 'ustaxes/data/federal'
 import F1040 from './F1040'
 
 export const claimableExcessSSTaxWithholding = (w2s: IncomeW2[]): number => {

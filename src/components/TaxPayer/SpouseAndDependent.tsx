@@ -2,13 +2,13 @@ import React, { ReactElement, useState } from 'react'
 
 import { useForm, FormProvider } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
-import { Patterns } from '../Patterns'
+import { Patterns } from 'ustaxes/components/Patterns'
 import {
   LabeledInput,
   LabeledCheckbox,
   formatSSID,
   GenericLabeledDropdown
-} from '../input'
+} from 'ustaxes/components/input'
 import {
   TaxesState,
   TaxPayer,
@@ -18,7 +18,7 @@ import {
   FilingStatus,
   FilingStatusTexts,
   filingStatuses
-} from '../../redux/data'
+} from 'ustaxes/redux/data'
 import {
   addDependent,
   addSpouse,
@@ -26,10 +26,10 @@ import {
   removeDependent,
   removeSpouse,
   saveFilingStatusInfo
-} from '../../redux/actions'
+} from 'ustaxes/redux/actions'
 import { PersonFields } from './PersonFields'
-import { FormListContainer } from '../FormContainer'
-import { PagerContext } from '../pager'
+import { FormListContainer } from 'ustaxes/components/FormContainer'
+import { usePager } from 'ustaxes/components/pager'
 import { Person } from '@material-ui/icons'
 
 interface UserPersonForm {
@@ -214,6 +214,8 @@ const SpouseAndDependent = (): ReactElement => {
     return state.information.taxPayer
   })
 
+  const { onAdvance, navButtons } = usePager()
+
   const methods = useForm<{ filingStatus: FilingStatus }>({
     defaultValues: { filingStatus: taxPayer.filingStatus }
   })
@@ -229,34 +231,30 @@ const SpouseAndDependent = (): ReactElement => {
     }
 
   const page = (
-    <PagerContext.Consumer>
-      {({ onAdvance, navButtons }) => (
-        <form onSubmit={handleSubmit(onSubmit(onAdvance))}>
-          <h2>Family Information</h2>
+    <form onSubmit={handleSubmit(onSubmit(onAdvance))}>
+      <h2>Family Information</h2>
 
-          <strong>
-            <p>Spouse Information</p>
-          </strong>
-          <SpouseInfo />
+      <strong>
+        <p>Spouse Information</p>
+      </strong>
+      <SpouseInfo />
 
-          <strong>
-            <p>Dependent Information</p>
-          </strong>
-          <AddDependentForm />
+      <strong>
+        <p>Dependent Information</p>
+      </strong>
+      <AddDependentForm />
 
-          <GenericLabeledDropdown<FilingStatus>
-            label=""
-            strongLabel="Filing Status"
-            dropDownData={filingStatuses(taxPayer)}
-            valueMapping={(x, i) => x}
-            keyMapping={(x, i) => i}
-            textMapping={(status) => FilingStatusTexts[status]}
-            name="filingStatus"
-          />
-          {navButtons}
-        </form>
-      )}
-    </PagerContext.Consumer>
+      <GenericLabeledDropdown<FilingStatus>
+        label=""
+        strongLabel="Filing Status"
+        dropDownData={filingStatuses(taxPayer)}
+        valueMapping={(x, i) => x}
+        keyMapping={(x, i) => i}
+        textMapping={(status) => FilingStatusTexts[status]}
+        name="filingStatus"
+      />
+      {navButtons}
+    </form>
   )
 
   return <FormProvider {...methods}>{page}</FormProvider>
