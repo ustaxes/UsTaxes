@@ -1,12 +1,12 @@
-import React, { Fragment, ReactElement } from 'react'
+import React, { ReactElement } from 'react'
 import Divider from '@material-ui/core/Divider'
 import Drawer from '@material-ui/core/Drawer'
-import Hidden from '@material-ui/core/Hidden'
 import List from '@material-ui/core/List'
 import ListItem from '@material-ui/core/ListItem'
 import ListItemText from '@material-ui/core/ListItemText'
 import { makeStyles, useTheme } from '@material-ui/core/styles'
 import { NavLink, useLocation } from 'react-router-dom'
+import { useViewport } from '../hooks/Viewport'
 
 const drawerWidth = 240
 
@@ -61,16 +61,18 @@ export interface DrawerItemsProps {
 }
 
 function ResponsiveDrawer(props: DrawerItemsProps): ReactElement {
+  const { width } = useViewport()
   const location = useLocation()
   const classes = useStyles()
   const theme = useTheme()
 
   const { sections, isOpen, onClose } = props
+  const isMobile = theme.breakpoints.values.sm > width
 
   const drawer = (
-    <Fragment>
-      {sections.map(({ title, items }, sectionIdx) => (
-        <div key={sectionIdx}>
+    <>
+      {sections.map(({ title, items }) => (
+        <div key={title}>
           <List className={classes.list}>
             <h2 className={classes.sectionHeader}>{title}</h2>
             {items.map((item, itemIdx) => (
@@ -91,39 +93,25 @@ function ResponsiveDrawer(props: DrawerItemsProps): ReactElement {
           <Divider />
         </div>
       ))}
-    </Fragment>
+    </>
   )
 
   return (
-    <nav className={classes.drawer} aria-label="mailbox folders">
-      {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
-      <Hidden smUp implementation="css">
-        <Drawer
-          variant="temporary"
-          anchor={theme.direction === 'rtl' ? 'right' : 'left'}
-          open={isOpen}
-          onClose={onClose}
-          classes={{
-            paper: classes.drawerPaper
-          }}
-          ModalProps={{
-            keepMounted: true // Better open performance on mobile.
-          }}
-        >
-          {drawer}
-        </Drawer>
-      </Hidden>
-      <Hidden xsDown implementation="css">
-        <Drawer
-          classes={{
-            paper: classes.drawerPaper
-          }}
-          variant="permanent"
-          open
-        >
-          {drawer}
-        </Drawer>
-      </Hidden>
+    <nav className={classes.drawer} aria-label="primary">
+      <Drawer
+        variant={isMobile ? 'temporary' : 'persistent'}
+        anchor={theme.direction === 'rtl' ? 'right' : 'left'}
+        open={isOpen}
+        onClose={onClose}
+        classes={{
+          paper: classes.drawerPaper
+        }}
+        ModalProps={{
+          keepMounted: isMobile ? true : false // Better open performance on mobile.
+        }}
+      >
+        {drawer}
+      </Drawer>
     </nav>
   )
 }
