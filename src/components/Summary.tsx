@@ -8,7 +8,7 @@ import {
   makeStyles,
   Typography
 } from '@material-ui/core'
-import { PagerContext } from './pager'
+import { PagerContext, usePager } from './pager'
 import { create1040 } from '../irsForms/Main'
 import { useSelector } from 'react-redux'
 import { Information, TaxesState } from '../redux/data'
@@ -66,6 +66,8 @@ interface F1040Props {
 
 const F1040Summary = ({ f1040 }: F1040Props): ReactElement => {
   const classes = useStyles()
+
+  const { navButtons, onAdvance } = usePager()
 
   const earnedIncomeTaxCredit = (
     <BinaryStateListItem active={f1040.scheduleEIC?.allowed(f1040) ?? false}>
@@ -137,6 +139,8 @@ const Summary = (): ReactElement => {
     (state: TaxesState) => state.information
   )
 
+  const { onAdvance, navButtons } = usePager()
+
   const summaryBody = (() => {
     if (information.taxPayer.primaryPerson === undefined) {
       return <h4>No data entered yet</h4>
@@ -163,15 +167,11 @@ const Summary = (): ReactElement => {
   })()
 
   return (
-    <PagerContext.Consumer>
-      {({ navButtons, onAdvance }) => (
-        <form onSubmit={onAdvance}>
-          <h2>Summary</h2>
-          {summaryBody}
-          {navButtons}
-        </form>
-      )}
-    </PagerContext.Consumer>
+    <form onSubmit={onAdvance}>
+      <h2>Summary</h2>
+      {summaryBody}
+      {navButtons}
+    </form>
   )
 }
 

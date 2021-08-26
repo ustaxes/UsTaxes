@@ -2,7 +2,7 @@ import React, { Fragment, ReactElement, useState } from 'react'
 import { Message, useForm, useWatch, FormProvider } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { addProperty, editProperty, removeProperty } from '../../redux/actions'
-import { PagerContext } from '../pager'
+import { usePager } from '../pager'
 import {
   Property,
   Address,
@@ -134,6 +134,8 @@ export default function RealEstate(): ReactElement {
   const methods = useForm<PropertyAddForm>()
   const { control, getValues, handleSubmit, reset } = methods
   const dispatch = useDispatch()
+
+  const { onAdvance, navButtons } = usePager()
 
   const properties: Property[] = useSelector(
     (state: TaxesState) => state.information.realEstate
@@ -300,14 +302,10 @@ export default function RealEstate(): ReactElement {
   )
 
   return (
-    <PagerContext.Consumer>
-      {({ navButtons, onAdvance }) => (
-        <form onSubmit={onAdvance}>
-          <h2>Properties</h2>
-          <FormProvider {...methods}>{form}</FormProvider>
-          {navButtons}
-        </form>
-      )}
-    </PagerContext.Consumer>
+    <form onSubmit={onAdvance}>
+      <h2>Properties</h2>
+      <FormProvider {...methods}>{form}</FormProvider>
+      {navButtons}
+    </form>
   )
 }

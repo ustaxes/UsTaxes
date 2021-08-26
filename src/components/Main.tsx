@@ -19,7 +19,7 @@ import ResponsiveDrawer, {
   Section,
   SectionItem
 } from './ResponsiveDrawer'
-import { PagerButtons, PagerContext, usePager } from './pager'
+import { PagerButtons, PagerContext, PagerProvider, usePager } from './pager'
 import PrimaryTaxpayer from './TaxPayer'
 import RefundBankAccount from './RefundBankAccount'
 import SpouseAndDependent from './TaxPayer/SpouseAndDependent'
@@ -157,16 +157,8 @@ export default function Main(): ReactElement {
   const allItems: SectionItem[] = drawerSections.flatMap(
     (section: Section) => section.items
   )
-  const [prev, onAdvance] = usePager(allItems, (item) => item.url)
   const [mobileOpen, setMobileOpen] = useState(false)
   const classes = useStyles()
-
-  const navButtons: ReactElement = (
-    <PagerButtons
-      previousUrl={prev?.url}
-      submitText={onAdvance !== undefined ? 'Save and Continue' : 'Create PDF'}
-    />
-  )
 
   const appBar = (
     <AppBar position="fixed" className={classes.appBar}>
@@ -194,9 +186,7 @@ export default function Main(): ReactElement {
           <Grid container spacing={2}>
             <Grid item sm />
             <Grid item sm={10} lg={6}>
-              <PagerContext.Provider
-                value={{ onAdvance: onAdvance ?? (() => {}), navButtons }}
-              >
+              <PagerProvider pages={allItems}>
                 <Switch>
                   <Redirect path="/" to={Urls.default} exact />
                   {allItems.map((item, index) => (
@@ -215,7 +205,7 @@ export default function Main(): ReactElement {
                     onClose={() => setMobileOpen(false)}
                   />
                 ) : null}
-              </PagerContext.Provider>
+              </PagerProvider>
             </Grid>
             <Grid item sm />
           </Grid>
