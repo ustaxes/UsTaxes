@@ -1,5 +1,11 @@
 import React, { ReactElement } from 'react'
-import { Box, TextField } from '@material-ui/core'
+import {
+  createStyles,
+  makeStyles,
+  Box,
+  TextField,
+  Theme
+} from '@material-ui/core'
 import { Controller, useFormContext } from 'react-hook-form'
 import locationPostalCodes from 'ustaxes/data/locationPostalCodes'
 import { BaseDropdownProps, LabeledDropdownProps } from './types'
@@ -7,9 +13,19 @@ import _ from 'lodash'
 import countries from 'ustaxes/data/countries'
 import { State } from 'ustaxes/redux/data'
 
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    label: {
+      display: 'block',
+      margin: `${theme.spacing(2)}px 0`
+    }
+  })
+)
+
 export function GenericLabeledDropdown<A>(
   props: LabeledDropdownProps<A>
 ): ReactElement {
+  const classes = useStyles()
   const {
     control,
     formState: { errors }
@@ -27,17 +43,18 @@ export function GenericLabeledDropdown<A>(
   const error = _.get(errors, name)
 
   return (
-    <div>
+    <>
       <Box display="flex" justifyContent="flex-start">
-        <p>
+        <label id={`${name}-label`} className={classes.label}>
           <strong>{strongLabel}</strong>
           {label}
-        </p>
+        </label>
       </Box>
       <Box display="flex" justifyContent="flex-start">
         <Controller
-          render={({ field: { value, onChange } }) => (
+          render={({ field: { value, onChange, ref } }) => (
             <TextField
+              inputRef={ref}
               select
               fullWidth
               variant="filled"
@@ -49,6 +66,7 @@ export function GenericLabeledDropdown<A>(
                 value,
                 onChange
               }}
+              inputProps={{ 'aria-labelledby': `${name}-label` }}
             >
               <option value={''} />
               {dropDownData.map((dropDownItem: A, i: number) => (
@@ -66,7 +84,7 @@ export function GenericLabeledDropdown<A>(
           control={control}
         />
       </Box>
-    </div>
+    </>
   )
 }
 

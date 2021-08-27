@@ -1,12 +1,22 @@
 import React, { ReactElement } from 'react'
-import { TextField } from '@material-ui/core'
+import { makeStyles, createStyles, TextField, Theme } from '@material-ui/core'
 import { LabeledInputProps } from './types'
 import NumberFormat from 'react-number-format'
 import { Controller, useFormContext } from 'react-hook-form'
 import { isNumeric, Patterns } from 'ustaxes/components/Patterns'
 import _ from 'lodash'
 
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    label: {
+      display: 'block',
+      margin: `${theme.spacing(2)}px 0`
+    }
+  })
+)
+
 export function LabeledInput(props: LabeledInputProps): ReactElement {
+  const classes = useStyles()
   const {
     strongLabel,
     label,
@@ -42,15 +52,18 @@ export function LabeledInput(props: LabeledInputProps): ReactElement {
     if (isNumeric(patternConfig)) {
       return (
         <Controller
-          render={({ field: { onChange, value } }) => (
+          name={name}
+          control={control}
+          render={({ field: { onChange, value, ref } }) => (
             <NumberFormat
+              customInput={TextField}
+              inputRef={ref}
               name={name}
               mask={patternConfig.mask}
               thousandSeparator={patternConfig.thousandSeparator}
               prefix={patternConfig.prefix}
               allowEmptyFormatting={true}
               format={patternConfig.format}
-              customInput={TextField}
               isNumericString={false}
               onValueChange={(v) => onChange(v.value)}
               value={value ?? ''}
@@ -59,8 +72,6 @@ export function LabeledInput(props: LabeledInputProps): ReactElement {
               variant="filled"
             />
           )}
-          name={name}
-          control={control}
           rules={{
             ...rules,
             min: patternConfig.min,
@@ -99,6 +110,7 @@ export function LabeledInput(props: LabeledInputProps): ReactElement {
             helperText={error?.message}
             error={error !== undefined}
             variant="filled"
+            inputProps={{ 'aria-labelledby': `${name}-label` }}
           />
         )}
       />
@@ -106,13 +118,13 @@ export function LabeledInput(props: LabeledInputProps): ReactElement {
   })()
 
   return (
-    <div>
-      <p>
+    <>
+      <label id={`${name}-label`} className={classes.label}>
         <strong>{strongLabel}</strong>
         {label}
-      </p>
+      </label>
       {input}
-    </div>
+    </>
   )
 }
 
