@@ -1,10 +1,4 @@
-import React, {
-  PropsWithChildren,
-  ReactElement,
-  createContext,
-  useState,
-  Context
-} from 'react'
+import React, { PropsWithChildren, Context } from 'react'
 
 interface Bounds {
   width: number
