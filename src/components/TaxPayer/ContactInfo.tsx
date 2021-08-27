@@ -10,6 +10,7 @@ import {
   TaxPayer
 } from 'ustaxes/redux/data'
 import { usePager } from 'ustaxes/components/pager'
+import { Grid } from '@material-ui/core'
 
 export default function ContactInfo(): ReactElement {
   // const variable dispatch to allow use inside function
@@ -36,16 +37,18 @@ export default function ContactInfo(): ReactElement {
   const page = (
     <form onSubmit={handleSubmit(onSubmit(onAdvance))}>
       <h2>Family Contact Information</h2>
-      <LabeledInput
-        label="Contact phone number"
-        patternConfig={Patterns.usPhoneNumber}
-        name="contactPhoneNumber"
-      />
-      <LabeledInput
-        label="Contact email address"
-        required={true}
-        name="contactEmail"
-      />
+      <Grid container spacing={2}>
+        <LabeledInput
+          label="Contact phone number"
+          patternConfig={Patterns.usPhoneNumber}
+          name="contactPhoneNumber"
+        />
+        <LabeledInput
+          label="Contact email address"
+          required={true}
+          name="contactEmail"
+        />
+      </Grid>
       {navButtons}
     </form>
   )

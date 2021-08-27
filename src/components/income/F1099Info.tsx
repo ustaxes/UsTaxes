@@ -291,8 +291,7 @@ export default function F1099Info(): ReactElement {
         name="federalIncomeTaxWithheld"
       />
       <GenericLabeledDropdown<PlanType1099>
-        label=""
-        strongLabel="Type of 1099-R"
+        label="Type of 1099-R"
         dropDownData={Object.values(PlanType1099)}
         valueMapping={(x, i) => x}
         keyMapping={(x, i) => i}
