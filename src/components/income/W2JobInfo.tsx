@@ -20,7 +20,7 @@ import {
 } from 'ustaxes/components/input'
 import { Patterns } from 'ustaxes/components/Patterns'
 import { FormListContainer } from 'ustaxes/components/FormContainer'
-import { Box, Grid } from '@material-ui/core'
+import { Grid } from '@material-ui/core'
 import { Work } from '@material-ui/icons'
 import { addW2, editW2, removeW2 } from 'ustaxes/redux/actions'
 import { If } from 'react-if'
@@ -158,7 +158,7 @@ export default function W2JobInfo(): ReactElement {
             </>
           }
           patternConfig={Patterns.currency}
-          sizes={{ xs: 6 }}
+          sizes={{ xs: 12, lg: 6 }}
         />
         <LabeledInput
           name="fedWithholding"
@@ -168,7 +168,7 @@ export default function W2JobInfo(): ReactElement {
             </>
           }
           patternConfig={Patterns.currency}
-          sizes={{ xs: 6 }}
+          sizes={{ xs: 12, lg: 6 }}
         />
         <LabeledInput
           name="ssWithholding"
@@ -178,7 +178,7 @@ export default function W2JobInfo(): ReactElement {
             </>
           }
           patternConfig={Patterns.currency}
-          sizes={{ xs: 6 }}
+          sizes={{ xs: 12, lg: 6 }}
         />
         <LabeledInput
           name="medicareWithholding"
@@ -188,7 +188,7 @@ export default function W2JobInfo(): ReactElement {
             </>
           }
           patternConfig={Patterns.currency}
-          sizes={{ xs: 6 }}
+          sizes={{ xs: 12, lg: 6 }}
         />
         <GenericLabeledDropdown
           dropDownData={people}
@@ -211,13 +211,13 @@ export default function W2JobInfo(): ReactElement {
     if (primary !== undefined && primaryW2s.length > 0) {
       if (spouse !== undefined) {
         return (
-          <Box className="inner">
+          <>
             <h3>
               {primary.firstName ?? 'Primary'} {primary.lastName ?? 'Taxpayer'}
               &apos;s W2s
             </h3>
             {showW2s(primaryW2s, true)}
-          </Box>
+          </>
         )
       } else {
         return showW2s(primaryW2s, true)
@@ -229,7 +229,7 @@ export default function W2JobInfo(): ReactElement {
     if (spouse !== undefined && spouseW2s.length > 0) {
       const name = `${spouse.firstName} ${spouse.lastName}`
       return (
-        <Box className="inner">
+        <>
           <h3>{name}&apos;s W2s</h3>
           {showW2s(spouseW2s, true)}
           <If condition={filingStatus === FilingStatus.MFS}>
@@ -239,7 +239,7 @@ export default function W2JobInfo(): ReactElement {
               &apos;s W2s will not be added to the return.
             </Alert>
           </If>
-        </Box>
+        </>
       )
     }
   })()
@@ -251,7 +251,7 @@ export default function W2JobInfo(): ReactElement {
       <If condition={editing === undefined}>
         {
           // just for Add button:
-          <Box className="inner">{showW2s([])}</Box>
+          showW2s([])
         }
       </If>
     </Fragment>

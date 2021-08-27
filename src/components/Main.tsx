@@ -34,12 +34,16 @@ export const theme = createMuiTheme({
   }
 })
 
-const useStyles = makeStyles((theme: Theme) =>
+type Props = {
+  isMobile: boolean
+}
+
+const useStyles = makeStyles<Theme, Props>((theme: Theme) =>
   createStyles({
     main: {
       display: 'flex'
     },
-    content: {
+    content: ({ isMobile }) => ({
       padding: '1em 2em',
       backgroundColor: 'white',
       [theme.breakpoints.up('sm')]: {
@@ -47,8 +51,9 @@ const useStyles = makeStyles((theme: Theme) =>
         boxShadow: 'rgba(0, 0, 0, 0.2) 0px 20px 30px',
         margin: theme.spacing(3),
         padding: '1em 2em'
-      }
-    },
+      },
+      width: isMobile ? '100%' : undefined
+    }),
     // necessary for content to be below app bar
     toolbar: {
       ...theme.mixins.toolbar,
