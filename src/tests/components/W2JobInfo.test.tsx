@@ -109,7 +109,7 @@ describe('W2Info', () => {
 
     // W-2 labels should now be present
     for (const label of w2FormLabels) {
-      screen.getByText(label)
+      expect(screen.getByText(label))
     }
   })
 })
