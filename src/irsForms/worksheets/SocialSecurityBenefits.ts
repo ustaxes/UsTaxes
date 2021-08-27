@@ -8,6 +8,7 @@ import {
 import F1040 from '../F1040'
 import log from '../../log'
 import { sumFields } from '../util'
+import { SSBenefits } from 'ustaxes/data/federal'
 
 const unimplemented = (message: string): void =>
   log.warn(`[Social Security Benefits Worksheet] unimplemented ${message}`)
@@ -102,26 +103,22 @@ export default class SocialSecurityBenefitsWorksheet {
     enter the result on line 16. Then, go to line 17
   */
   l8 = (): number => {
-    switch (this.tp.filingStatus) {
-      case FilingStatus.MFJ:
-        return 32000
-      case FilingStatus.S:
-        return 25000
-      case FilingStatus.HOH:
-        return 25000
-      case FilingStatus.W:
-        return 25000
-      case FilingStatus.MFS:
-        if (this.state.questions.LIVE_APART_FROM_SPOUSE) {
-          return 25000
-        } else {
-          // Note that this value won't be taken into account. Instead,
-          // the line 16 function will also check for this and perform
-          // the right math.
-          return 0
-        }
+    if (this.tp.filingStatus == undefined) {
+      return 0
+    } else if (this.tp.filingStatus == FilingStatus.MFS) {
+      // treat Married filing separately specially due to the extra question below
+      // and resulting logic in the worksheet
+      if (this.state.questions.LIVE_APART_FROM_SPOUSE) {
+        return SSBenefits.caps[this.tp.filingStatus].l8
+      } else {
+        // Note that this value won't be taken into account. Instead,
+        // the line 16 function will also check for this and perform
+        // the right math.
+        return 0
+      }
+    } else {
+      return SSBenefits.caps[this.tp.filingStatus].l8
     }
-    return 0
   }
   /*
   Is the amount on line 8 less than the amount on line 7?
@@ -147,21 +144,10 @@ export default class SocialSecurityBenefitsWorksheet {
   and you lived apart from your spouse for all of 2020
   */
   l10 = (): number => {
-    switch (this.tp.filingStatus) {
-      case FilingStatus.MFJ:
-        return 12000
-      case FilingStatus.S:
-        return 9000
-      case FilingStatus.HOH:
-        return 9000
-      case FilingStatus.W:
-        return 9000
-      // Note that we will only hit this line if the user is MFS and living apart from
-      // their spouse, so no need to check for that additional question.
-      case FilingStatus.MFS:
-        return 9000
+    if (this.tp.filingStatus == undefined) {
+      return 0
     }
-    return 0
+    return SSBenefits.caps[this.tp.filingStatus].l10
   }
 
   // Subtract line 10 from line 9. If zero or less, enter -0-
