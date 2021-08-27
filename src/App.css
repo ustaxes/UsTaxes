@@ -1,24 +1,4 @@
-html {
-  overflow-y: scroll;
-  height: 100vh;
-}
-
 body {
   background-color: whitesmoke;
   height: 100vh;
-}
-
-/* Custom CSS */
-form {
-  border-radius: 5px;
-  box-shadow: rgba(0, 0, 0, 0.2) 0px 20px 30px;
-  background-color: white;
-  padding: 1em;
-  padding-left: 2em;
-  padding-right: 2em;
-}
-
-.inner {
-  margin-top: 1em;
-  padding: 1em, 2em, 0em, 2em;
 }

@@ -2,7 +2,6 @@ import React, { ReactElement } from 'react'
 import {
   createStyles,
   makeStyles,
-  Input,
   InputAdornment,
   Grid,
   TextField,

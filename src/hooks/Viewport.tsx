@@ -10,7 +10,7 @@ const getBounds = (): Bounds => ({
   height: window.innerHeight
 })
 
-const viewportContext: Context<Bounds> = React.createContext(getBounds())
+export const viewportContext: Context<Bounds> = React.createContext(getBounds())
 
 export const ViewportProvider = ({ children }: PropsWithChildren<{}>) => {
   const [bounds, setBounds] = React.useState(getBounds())

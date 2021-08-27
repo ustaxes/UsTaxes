@@ -9,7 +9,6 @@ import {
 import { Controller, useFormContext } from 'react-hook-form'
 import { LabeledCheckboxProps } from './types'
 import ConditionallyWrap from 'ustaxes/components/ConditionallyWrap'
-import useStyles from './styles'
 
 export function LabeledCheckbox(props: LabeledCheckboxProps): ReactElement {
   const { label, name, useGrid = true, sizes = { xs: 12 } } = props
