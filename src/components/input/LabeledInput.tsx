@@ -2,6 +2,8 @@ import React, { ReactElement } from 'react'
 import {
   createStyles,
   makeStyles,
+  Input,
+  InputAdornment,
   Grid,
   TextField,
   Theme
@@ -70,7 +72,7 @@ export function LabeledInput(props: LabeledInputProps): ReactElement {
               label={label}
               mask={patternConfig.mask}
               thousandSeparator={patternConfig.thousandSeparator}
-              prefix={patternConfig.prefix}
+              // prefix={patternConfig.prefix}
               allowEmptyFormatting={true}
               format={patternConfig.format}
               isNumericString={false}
@@ -82,6 +84,13 @@ export function LabeledInput(props: LabeledInputProps): ReactElement {
               variant="filled"
               InputLabelProps={{
                 shrink: true
+              }}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    {patternConfig.prefix}
+                  </InputAdornment>
+                )
               }}
             />
           )}

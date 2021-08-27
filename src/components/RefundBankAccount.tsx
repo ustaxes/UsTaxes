@@ -7,6 +7,7 @@ import { saveRefundInfo } from 'ustaxes/redux/actions'
 
 import { AccountType, Refund, TaxesState } from 'ustaxes/redux/data'
 import { usePager } from './pager'
+import { Grid } from '@material-ui/core'
 
 interface UserRefundForm {
   routingNumber: string
@@ -40,26 +41,27 @@ export default function RefundBankAccount(): ReactElement {
     <form onSubmit={handleSubmit(onSubmit(onAdvance))}>
       <FormProvider {...methods}>
         <h2>Refund Information</h2>
+        <Grid container spacing={2}>
+          <LabeledInput
+            label="Bank Routing number"
+            patternConfig={Patterns.bankRouting}
+            name="routingNumber"
+          />
 
-        <LabeledInput
-          label="Bank Routing number"
-          patternConfig={Patterns.bankRouting}
-          name="routingNumber"
-        />
-
-        <LabeledInput
-          label="Bank Account number"
-          patternConfig={Patterns.bankAccount}
-          name="accountNumber"
-        />
-        <LabeledRadio
-          label="Account Type"
-          name="accountType"
-          values={[
-            ['Checking', 'checking'],
-            ['Savings', 'savings']
-          ]}
-        />
+          <LabeledInput
+            label="Bank Account number"
+            patternConfig={Patterns.bankAccount}
+            name="accountNumber"
+          />
+          <LabeledRadio
+            label="Account Type"
+            name="accountType"
+            values={[
+              ['Checking', 'checking'],
+              ['Savings', 'savings']
+            ]}
+          />
+        </Grid>
         {navButtons}
       </FormProvider>
     </form>

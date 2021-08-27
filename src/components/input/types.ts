@@ -47,6 +47,8 @@ export interface LabeledInputProps {
 export interface LabeledFormProps {
   name: string
   label: string
+  useGrid?: boolean
+  sizes?: SizeList
 }
 
 export type LabeledCheckboxProps = LabeledFormProps

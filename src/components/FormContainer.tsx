@@ -39,10 +39,10 @@ const FormContainer = ({
     <Box
       display="flex"
       justifyContent="flex-start"
-      paddingTop={2}
-      paddingBottom={1}
+      marginTop={2}
+      marginBottom={3}
     >
-      <Box paddingRight={2}>
+      <Box marginRight={2}>
         <Button
           type="button"
           onClick={onDone}
@@ -216,7 +216,7 @@ const FormListContainer = <A extends object>(
   })()
 
   return (
-    <div>
+    <>
       {itemDisplay}
       <If condition={formState !== FormState.Closed}>
         <Then>
@@ -239,7 +239,7 @@ const FormListContainer = <A extends object>(
           </If>
         </Else>
       </If>
-    </div>
+    </>
   )
 }
 

@@ -1,6 +1,6 @@
 import React, { ReactElement, useState } from 'react'
 import { useForm, FormProvider } from 'react-hook-form'
-import { Icon } from '@material-ui/core'
+import { Icon, Grid } from '@material-ui/core'
 import { useDispatch, useSelector } from 'react-redux'
 import { add1099, edit1099, remove1099 } from 'ustaxes/redux/actions'
 import { usePager } from 'ustaxes/components/pager'
@@ -327,37 +327,38 @@ export default function F1099Info(): ReactElement {
       secondary={(f) => showIncome(f)}
       icon={(f) => <Icon title={titles[f.type]}>{f.type}</Icon>}
     >
-      <strong>Input data from 1099</strong>
+      <p>Input data from 1099</p>
+      <Grid container spacing={2}>
+        <GenericLabeledDropdown
+          dropDownData={Object.values(Income1099Type)}
+          label="Form Type"
+          valueMapping={(v: Income1099Type) => v}
+          name="formType"
+          keyMapping={(_, i: number) => i}
+          textMapping={(name: string) => `1099-${name}`}
+        />
 
-      <GenericLabeledDropdown
-        dropDownData={Object.values(Income1099Type)}
-        label="Form Type"
-        valueMapping={(v: Income1099Type) => v}
-        name="formType"
-        keyMapping={(_, i: number) => i}
-        textMapping={(name: string) => `1099-${name}`}
-      />
+        <LabeledInput
+          label="Enter name of bank, broker firm, or other payer"
+          patternConfig={Patterns.name}
+          name="payer"
+        />
 
-      <LabeledInput
-        label="Enter name of bank, broker firm, or other payer"
-        patternConfig={Patterns.name}
-        name="payer"
-      />
+        {selectedType !== undefined ? specificFields[selectedType] : undefined}
 
-      {selectedType !== undefined ? specificFields[selectedType] : undefined}
-
-      <GenericLabeledDropdown
-        dropDownData={people}
-        label="Recipient"
-        valueMapping={(p: Person, i: number) =>
-          [PersonRole.PRIMARY, PersonRole.SPOUSE][i]
-        }
-        name="personRole"
-        keyMapping={(p: Person, i: number) => i}
-        textMapping={(p: Person) =>
-          `${p.firstName} ${p.lastName} (${formatSSID(p.ssid)})`
-        }
-      />
+        <GenericLabeledDropdown
+          dropDownData={people}
+          label="Recipient"
+          valueMapping={(p: Person, i: number) =>
+            [PersonRole.PRIMARY, PersonRole.SPOUSE][i]
+          }
+          name="personRole"
+          keyMapping={(p: Person, i: number) => i}
+          textMapping={(p: Person) =>
+            `${p.firstName} ${p.lastName} (${formatSSID(p.ssid)})`
+          }
+        />
+      </Grid>
     </FormListContainer>
   )
 
