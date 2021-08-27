@@ -1,31 +1,37 @@
 import React, { ReactElement } from 'react'
-import { makeStyles, createStyles, TextField, Theme } from '@material-ui/core'
+import {
+  createStyles,
+  makeStyles,
+  Grid,
+  TextField,
+  Theme
+} from '@material-ui/core'
 import { LabeledInputProps } from './types'
 import NumberFormat from 'react-number-format'
 import { Controller, useFormContext } from 'react-hook-form'
 import { isNumeric, Patterns } from 'ustaxes/components/Patterns'
+import ConditionallyWrap from 'ustaxes/components/ConditionallyWrap'
 import _ from 'lodash'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    label: {
-      display: 'block',
-      margin: `${theme.spacing(2)}px 0`
+    root: {
+      '& .MuiFormLabel-root': {
+        color: 'rgba(0, 0, 0, 0.54)'
+      }
     }
   })
 )
 
 export function LabeledInput(props: LabeledInputProps): ReactElement {
-  const classes = useStyles()
-  const {
-    strongLabel,
-    label,
-    patternConfig: patternConfigDefined,
-    name,
-    rules = {}
-  } = props
+  const { label, patternConfig: patternConfigDefined, name, rules = {} } = props
   const { required = patternConfigDefined !== undefined } = props
-  const { patternConfig = Patterns.plain } = props
+  const {
+    patternConfig = Patterns.plain,
+    useGrid = true,
+    sizes = { xs: 12 }
+  } = props
+  const classes = useStyles()
 
   const {
     control,
@@ -54,11 +60,14 @@ export function LabeledInput(props: LabeledInputProps): ReactElement {
         <Controller
           name={name}
           control={control}
-          render={({ field: { onChange, value, ref } }) => (
+          render={({ field: { name, onChange, ref, value } }) => (
             <NumberFormat
               customInput={TextField}
               inputRef={ref}
+              id={name}
               name={name}
+              className={classes.root}
+              label={label}
               mask={patternConfig.mask}
               thousandSeparator={patternConfig.thousandSeparator}
               prefix={patternConfig.prefix}
@@ -68,8 +77,12 @@ export function LabeledInput(props: LabeledInputProps): ReactElement {
               onValueChange={(v) => onChange(v.value)}
               value={value ?? ''}
               error={error !== undefined}
+              fullWidth
               helperText={errorMessage}
               variant="filled"
+              InputLabelProps={{
+                shrink: true
+              }}
             />
           )}
           rules={{
@@ -92,7 +105,7 @@ export function LabeledInput(props: LabeledInputProps): ReactElement {
       <Controller
         control={control}
         name={name}
-        render={({ field: { onChange, value } }) => (
+        render={({ field: { onChange, value, name } }) => (
           <TextField
             {...register(name, {
               ...rules,
@@ -104,13 +117,19 @@ export function LabeledInput(props: LabeledInputProps): ReactElement {
                   (required ? 'Input is required' : '')
               }
             })}
+            id={name}
+            name={name}
+            className={classes.root}
+            label={label}
             value={value ?? ''}
             onChange={onChange}
-            fullWidth={patternConfig?.format === undefined}
+            fullWidth
             helperText={error?.message}
             error={error !== undefined}
             variant="filled"
-            inputProps={{ 'aria-labelledby': `${name}-label` }}
+            InputLabelProps={{
+              shrink: true
+            }}
           />
         )}
       />
@@ -118,13 +137,16 @@ export function LabeledInput(props: LabeledInputProps): ReactElement {
   })()
 
   return (
-    <>
-      <label id={`${name}-label`} className={classes.label}>
-        <strong>{strongLabel}</strong>
-        {label}
-      </label>
+    <ConditionallyWrap
+      condition={useGrid}
+      wrapper={(children) => (
+        <Grid item {...sizes}>
+          {children}
+        </Grid>
+      )}
+    >
       {input}
-    </>
+    </ConditionallyWrap>
   )
 }
 

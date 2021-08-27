@@ -2,7 +2,7 @@ import React, { ReactElement } from 'react'
 import {
   createStyles,
   makeStyles,
-  Box,
+  Grid,
   TextField,
   Theme
 } from '@material-ui/core'
@@ -12,12 +12,14 @@ import { BaseDropdownProps, LabeledDropdownProps } from './types'
 import _ from 'lodash'
 import countries from 'ustaxes/data/countries'
 import { State } from 'ustaxes/redux/data'
+import ConditionallyWrap from 'ustaxes/components/ConditionallyWrap'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    label: {
-      display: 'block',
-      margin: `${theme.spacing(2)}px 0`
+    root: {
+      '& .MuiFormLabel-root': {
+        color: 'rgba(0, 0, 0, 0.54)'
+      }
     }
   })
 )
@@ -31,60 +33,65 @@ export function GenericLabeledDropdown<A>(
     formState: { errors }
   } = useFormContext()
   const {
-    strongLabel,
     label,
     dropDownData,
     valueMapping,
     keyMapping,
     textMapping,
     required = true,
-    name
+    name,
+    useGrid = true,
+    sizes = { xs: 12 }
   } = props
   const error = _.get(errors, name)
 
   return (
-    <>
-      <Box display="flex" justifyContent="flex-start">
-        <label id={`${name}-label`} className={classes.label}>
-          <strong>{strongLabel}</strong>
-          {label}
-        </label>
-      </Box>
-      <Box display="flex" justifyContent="flex-start">
-        <Controller
-          render={({ field: { value, onChange, ref } }) => (
-            <TextField
-              inputRef={ref}
-              select
-              fullWidth
-              variant="filled"
-              name={name}
-              helperText={error !== undefined ? 'Make a selection' : undefined}
-              error={error !== undefined}
-              SelectProps={{
-                native: true,
-                value,
-                onChange
-              }}
-              inputProps={{ 'aria-labelledby': `${name}-label` }}
-            >
-              <option value={''} />
-              {dropDownData.map((dropDownItem: A, i: number) => (
-                <option
-                  value={valueMapping(dropDownItem, i)}
-                  key={keyMapping(dropDownItem, i)}
-                >
-                  {textMapping(dropDownItem, i)}
-                </option>
-              ))}
-            </TextField>
-          )}
-          name={name}
-          rules={{ required: required }}
-          control={control}
-        />
-      </Box>
-    </>
+    <ConditionallyWrap
+      condition={useGrid}
+      wrapper={(children) => (
+        <Grid item {...sizes}>
+          {children}
+        </Grid>
+      )}
+    >
+      <Controller
+        render={({ field: { name, onChange, ref, value } }) => (
+          <TextField
+            inputRef={ref}
+            id={name}
+            name={name}
+            className={classes.root}
+            label={label}
+            select
+            fullWidth
+            variant="filled"
+            helperText={error !== undefined ? 'Make a selection' : undefined}
+            error={error !== undefined}
+            SelectProps={{
+              native: true,
+              value,
+              onChange
+            }}
+            InputLabelProps={{
+              shrink: true
+            }}
+          >
+            <option value={''} />
+            {dropDownData.map((dropDownItem: A, i: number) => (
+              <option
+                value={valueMapping(dropDownItem, i)}
+                key={keyMapping(dropDownItem, i)}
+              >
+                {textMapping(dropDownItem, i)}
+              </option>
+            ))}
+          </TextField>
+        )}
+        name={name}
+        rules={{ required: required }}
+        control={control}
+      />
+    </ConditionallyWrap>
   )
 }
 
