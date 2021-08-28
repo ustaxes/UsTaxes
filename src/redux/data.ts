@@ -29,7 +29,7 @@ export interface Address {
   address: string
   aptNo?: string
   city: string
-  state?: string
+  state?: State
   zip?: string
   foreignCountry?: string
   province?: string
@@ -237,6 +237,65 @@ export interface F1098e {
   interest: number
 }
 
+export type State =
+  | 'AL'
+  | 'AK'
+  | 'AZ'
+  | 'CO'
+  | 'DC'
+  | 'FL'
+  | 'HI'
+  | 'ID'
+  | 'IN'
+  | 'KY'
+  | 'MA'
+  | 'ME'
+  | 'MN'
+  | 'MS'
+  | 'NC'
+  | 'NE'
+  | 'NJ'
+  | 'NV'
+  | 'OH'
+  | 'OR'
+  | 'RI'
+  | 'SD'
+  | 'TX'
+  | 'VA'
+  | 'WA'
+  | 'WV'
+  | 'AR'
+  | 'CA'
+  | 'CT'
+  | 'DE'
+  | 'GA'
+  | 'IA'
+  | 'IL'
+  | 'KS'
+  | 'LA'
+  | 'MD'
+  | 'MI'
+  | 'MO'
+  | 'MT'
+  | 'ND'
+  | 'NH'
+  | 'NM'
+  | 'NY'
+  | 'OK'
+  | 'PA'
+  | 'SC'
+  | 'TN'
+  | 'UT'
+  | 'VT'
+  | 'WI'
+  | 'WY'
+
+// Hold information about state residency
+// TODO: Support part-year state residency
+export interface StateResidency {
+  state: State
+}
+
 export interface Information {
   f1099s: Supported1099[]
   w2s: IncomeW2[]
@@ -245,6 +304,7 @@ export interface Information {
   refund?: Refund
   taxPayer: TaxPayer
   questions: Responses
+  stateResidencies: StateResidency[]
 }
 
 export interface TaxesState {

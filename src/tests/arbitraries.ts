@@ -329,17 +329,30 @@ export const information: Arbitrary<types.Information> = fc
     fc.array(f1098e),
     refund,
     taxPayer,
-    questions
+    questions,
+    state
   )
-  .map(([f1099s, w2s, realEstate, f1098es, refund, taxPayer, questions]) => ({
-    f1099s,
-    w2s,
-    realEstate,
-    f1098es,
-    refund,
-    taxPayer,
-    questions
-  }))
+  .map(
+    ([
+      f1099s,
+      w2s,
+      realEstate,
+      f1098es,
+      refund,
+      taxPayer,
+      questions,
+      state
+    ]) => ({
+      f1099s,
+      w2s,
+      realEstate,
+      f1098es,
+      refund,
+      taxPayer,
+      questions,
+      stateResidencies: [{ state }]
+    })
+  )
 
 export const taxesState: Arbitrary<types.TaxesState> = information.map(
   (information) => ({

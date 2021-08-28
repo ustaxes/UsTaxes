@@ -5,6 +5,7 @@ import locationPostalCodes from 'ustaxes/data/locationPostalCodes'
 import { BaseDropdownProps, LabeledDropdownProps } from './types'
 import _ from 'lodash'
 import countries from 'ustaxes/data/countries'
+import { State } from 'ustaxes/redux/data'
 
 export function GenericLabeledDropdown<A>(
   props: LabeledDropdownProps<A>
@@ -86,7 +87,7 @@ export const LabeledDropdown = (
 )
 
 export const USStateDropDown = (props: BaseDropdownProps): ReactElement => (
-  <GenericLabeledDropdown<[string, string]>
+  <GenericLabeledDropdown<[string, State]>
     {...props}
     dropDownData={locationPostalCodes}
     valueMapping={([, code], n) => code}

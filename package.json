@@ -3,7 +3,6 @@
   "version": "0.1.10",
   "private": true,
   "dependencies": {
-    "@craco/craco": "^6.2.0",
     "@material-ui/core": "^4.12.3",
     "@material-ui/icons": "^4.11.2",
     "@material-ui/lab": "^4.0.0-alpha.60",
@@ -39,7 +38,8 @@
     "schema-generate": "node ./setup.js",
     "lint": "eslint ./src --ext .ts --ext .js --ext .tsx --ext .jsx && prettier -c .",
     "lint:fix": "eslint ./src --fix --ext .ts --ext .js --ext .tsx --ext .jsx && prettier --write .",
-    "prettier": "prettier --write ."
+    "prettier": "prettier --write .",
+    "formgen": "ts-node ./scripts/formgen.ts"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -57,6 +57,7 @@
     ]
   },
   "devDependencies": {
+    "@craco/craco": "^6.2.0",
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^12.0.0",
     "@testing-library/user-event": "^13.2.1",
@@ -83,6 +84,7 @@
     "husky": "^7.0.1",
     "lint-staged": "^11.1.1",
     "prettier": "2.3.2",
+    "ts-node": "^10.2.0",
     "typescript-eslint": "0.0.1-alpha.0"
   },
   "husky": {

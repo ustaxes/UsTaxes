@@ -1,17 +1,22 @@
 import React, { ReactElement } from 'react'
-import { FormProvider, useForm } from 'react-hook-form'
+import { FormProvider, useForm, useFormContext } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
-import { savePrimaryPersonInfo } from 'ustaxes/redux/actions'
+import {
+  savePrimaryPersonInfo,
+  saveStateResidencyInfo
+} from 'ustaxes/redux/actions'
 import {
   Address,
   PersonRole,
   PrimaryPerson,
+  State,
+  StateResidency,
   TaxesState,
   TaxPayer
 } from 'ustaxes/redux/data'
 import { PersonFields } from './PersonFields'
-import { LabeledCheckbox } from 'ustaxes/components/input'
 import { usePager } from 'ustaxes/components/pager'
+import { LabeledCheckbox, USStateDropDown } from 'ustaxes/components/input'
 import AddressFields from './Address'
 
 interface TaxPayerUserForm {
@@ -22,6 +27,7 @@ interface TaxPayerUserForm {
   address: Address
   isForeignCountry: boolean
   isTaxpayerDependent: boolean
+  stateResidency?: State
 }
 
 const defaultTaxpayerUserForm: TaxPayerUserForm = {
@@ -32,9 +38,7 @@ const defaultTaxpayerUserForm: TaxPayerUserForm = {
   isForeignCountry: false,
   address: {
     address: '',
-    city: '',
-    state: '',
-    zip: ''
+    city: ''
   },
   isTaxpayerDependent: false
 }
@@ -67,11 +71,19 @@ export default function PrimaryTaxpayer(): ReactElement {
     return state.information.taxPayer
   })
 
+  const stateResidency: StateResidency[] = useSelector(
+    (state: TaxesState) => state.information.stateResidencies
+  )
+
   const methods = useForm<TaxPayerUserForm>({
     defaultValues: {
       ...defaultTaxpayerUserForm,
       ...(taxPayer.primaryPerson !== undefined
-        ? asTaxPayerUserForm(taxPayer.primaryPerson)
+        ? {
+            ...asTaxPayerUserForm(taxPayer.primaryPerson),
+            stateResidency:
+              stateResidency[0]?.state ?? taxPayer.primaryPerson.address.state
+          }
         : {})
     }
   })
@@ -82,6 +94,7 @@ export default function PrimaryTaxpayer(): ReactElement {
     (onAdvance: () => void) =>
     (form: TaxPayerUserForm): void => {
       dispatch(savePrimaryPersonInfo(asPrimaryPerson(form)))
+      dispatch(saveStateResidencyInfo({ state: form.stateResidency as State }))
       onAdvance()
     }
 
@@ -94,6 +107,7 @@ export default function PrimaryTaxpayer(): ReactElement {
         name="isTaxpayerDependent"
       />
       <AddressFields checkboxText="Do you have a foreign address?" />
+      <USStateDropDown label="Residency State" name="stateResidency" />
       {navButtons}
     </form>
   )
