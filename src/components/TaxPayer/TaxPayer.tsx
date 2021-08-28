@@ -18,6 +18,7 @@ import { PersonFields } from './PersonFields'
 import { usePager } from 'ustaxes/components/pager'
 import { LabeledCheckbox, USStateDropDown } from 'ustaxes/components/input'
 import AddressFields from './Address'
+import { Grid } from '@material-ui/core'
 
 interface TaxPayerUserForm {
   firstName: string
@@ -101,13 +102,15 @@ export default function PrimaryTaxpayer(): ReactElement {
   const page = (
     <form onSubmit={handleSubmit(onSubmit(onAdvance))}>
       <h2>Primary Taxpayer Information</h2>
-      <PersonFields />
-      <LabeledCheckbox
-        label="Check if you are a dependent"
-        name="isTaxpayerDependent"
-      />
-      <AddressFields checkboxText="Do you have a foreign address?" />
-      <USStateDropDown label="Residency State" name="stateResidency" />
+      <Grid container spacing={2}>
+        <PersonFields />
+        <LabeledCheckbox
+          label="Check if you are a dependent"
+          name="isTaxpayerDependent"
+        />
+        <AddressFields checkboxText="Do you have a foreign address?" />
+        <USStateDropDown label="Residency State" name="stateResidency" />
+      </Grid>
       {navButtons}
     </form>
   )

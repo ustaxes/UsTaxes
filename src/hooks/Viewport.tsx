@@ -1,10 +1,4 @@
-import React, {
-  PropsWithChildren,
-  ReactElement,
-  createContext,
-  useState,
-  Context
-} from 'react'
+import React, { PropsWithChildren, Context } from 'react'
 
 interface Bounds {
   width: number
@@ -16,7 +10,7 @@ const getBounds = (): Bounds => ({
   height: window.innerHeight
 })
 
-const viewportContext: Context<Bounds> = React.createContext(getBounds())
+export const viewportContext: Context<Bounds> = React.createContext(getBounds())
 
 export const ViewportProvider = ({ children }: PropsWithChildren<{}>) => {
   const [bounds, setBounds] = React.useState(getBounds())

@@ -1,7 +1,6 @@
 import React, { ReactElement, useState, PropsWithChildren } from 'react'
 import { Box, Button } from '@material-ui/core'
 import { useContext } from 'react'
-import { Context } from 'react'
 import { Link, useHistory } from 'react-router-dom'
 
 interface PagerProps {
@@ -81,7 +80,7 @@ export const PagerButtons = ({
   const backButton = (() => {
     if (previousUrl !== undefined) {
       return (
-        <Box display="flex" justifyContent="flex-start" paddingRight={2}>
+        <Box display="flex" justifyContent="flex-start" marginRight={2}>
           <Button
             component={Link}
             to={previousUrl}
@@ -99,8 +98,8 @@ export const PagerButtons = ({
     <Box
       display="flex"
       justifyContent="flex-start"
-      paddingTop={2}
-      paddingBottom={1}
+      marginTop={2}
+      marginBottom={1}
     >
       {backButton}
       <Button type="submit" name="submit" variant="contained" color="primary">
@@ -127,8 +126,8 @@ export const StartButtons = ({
     <Box
       display="flex"
       justifyContent="space-evenly"
-      paddingTop={3}
-      paddingBottom={6}
+      marginTop={3}
+      marginBottom={6}
     >
       <Button
         component={Link}
@@ -158,8 +157,8 @@ export const SingleButtons = ({
     <Box
       display="flex"
       justifyContent="space-evenly"
-      paddingTop={3}
-      paddingBottom={6}
+      marginTop={3}
+      marginBottom={6}
     >
       <Button component={Link} to={url} variant="contained" color="primary">
         {text}

@@ -1,4 +1,4 @@
-import React, { Fragment, ReactElement, useState } from 'react'
+import React, { ReactElement, useState } from 'react'
 import { Message, useForm, useWatch, FormProvider } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import {
@@ -239,66 +239,71 @@ export default function RealEstate(): ReactElement {
       removeItem={(i) => deleteProperty(i)}
       onCancel={clear}
     >
-      <h4>Property location</h4>
-      <AddressFields
-        checkboxText="Does the property have a foreign address"
-        allowForeignCountry={false}
-      />
-      <GenericLabeledDropdown
-        dropDownData={enumKeys(PropertyType)}
-        label="Property type"
-        textMapping={(t) => displayPropertyType(PropertyType[t])}
-        keyMapping={(_, n) => n}
-        name="propertyType"
-        valueMapping={(n) => n}
-      />
-      <If
-        condition={[propertyType, defaultValues?.propertyType].includes(
-          'other'
-        )}
-      >
-        <LabeledInput
-          name="otherPropertyType"
-          label="Short property type description"
-          required={true}
+      <h3>Property Location</h3>
+      <Grid container spacing={2}>
+        <AddressFields
+          checkboxText="Does the property have a foreign address"
+          allowForeignCountry={false}
         />
-      </If>
-      <h4>Use</h4>
-      <LabeledInput
-        name="rentalDays"
-        rules={{ validate: (n: String) => validateRental(Number(n)) }}
-        label="Number of days in the year used for rental"
-        patternConfig={Patterns.numDays}
-      />
-      <LabeledInput
-        name="personalUseDays"
-        rules={{ validate: (n: String) => validatePersonal(Number(n)) }}
-        label="Number of days in the year for personal use"
-        patternConfig={Patterns.numDays}
-      />
-      <LabeledCheckbox
-        name="qualifiedJointVenture"
-        label="Is this a qualified joint venture"
-      />
-      <h4>Property Financials</h4>
-      <h5>Income</h5>
-      <LabeledInput
-        name="rentReceived"
-        label="Rent received"
-        patternConfig={Patterns.currency}
-      />
-      <h5>Expenses</h5>
-      <Grid container spacing={3} direction="row" justify="flex-start">
+        <GenericLabeledDropdown
+          dropDownData={enumKeys(PropertyType)}
+          label="Property type"
+          textMapping={(t) => displayPropertyType(PropertyType[t])}
+          keyMapping={(_, n) => n}
+          name="propertyType"
+          valueMapping={(n) => n}
+        />
+        <If
+          condition={[propertyType, defaultValues?.propertyType].includes(
+            'other'
+          )}
+        >
+          <LabeledInput
+            name="otherPropertyType"
+            label="Short property type description"
+            required={true}
+          />
+        </If>
+      </Grid>
+      <h3>Use</h3>
+      <Grid container spacing={2}>
+        <LabeledInput
+          name="rentalDays"
+          rules={{ validate: (n: String) => validateRental(Number(n)) }}
+          label="Number of days in the year used for rental"
+          patternConfig={Patterns.numDays}
+        />
+        <LabeledInput
+          name="personalUseDays"
+          rules={{ validate: (n: String) => validatePersonal(Number(n)) }}
+          label="Number of days in the year for personal use"
+          patternConfig={Patterns.numDays}
+        />
+        <LabeledCheckbox
+          name="qualifiedJointVenture"
+          label="Is this a qualified joint venture"
+        />
+      </Grid>
+      <h3>Property Financials</h3>
+      <h4>Income</h4>
+      <Grid container spacing={2}>
+        <LabeledInput
+          name="rentReceived"
+          label="Rent received"
+          patternConfig={Patterns.currency}
+        />
+      </Grid>
+      <h4>Expenses</h4>
+      <Grid container spacing={2}>
         {
           // Layout expense fields in two columns
           segments(2, [...expenseFields, otherExpenseDescription]).map(
-            (segment, i) => (
-              <Grid item key={i} lg={6}>
-                {segment.map((item, k) => (
-                  <Fragment key={`${i}-${k}`}>{item}</Fragment>
-                ))}
-              </Grid>
-            )
+            (segment, i) =>
+              segment.map((item, k) => (
+                <Grid item key={`${i}-${k}`} xs={12} sm={6}>
+                  {item}
+                </Grid>
+              ))
           )
         }
       </Grid>

@@ -30,6 +30,7 @@ import {
 import { PersonFields } from './PersonFields'
 import { FormListContainer } from 'ustaxes/components/FormContainer'
 import { usePager } from 'ustaxes/components/pager'
+import { Grid } from '@material-ui/core'
 import { Person } from '@material-ui/icons'
 
 interface UserPersonForm {
@@ -130,26 +131,28 @@ export const AddDependentForm = (): ReactElement => {
       icon={() => <Person />}
       removeItem={(i) => dispatch(removeDependent(i))}
     >
-      <PersonFields />
-      <LabeledInput
-        label="Relationship to Taxpayer"
-        name="relationship"
-        patternConfig={Patterns.name}
-      />
-      <LabeledInput
-        label="Birth Year"
-        patternConfig={Patterns.year}
-        name="birthYear"
-      />
-      <LabeledInput
-        label="How many months did you live together this year?"
-        patternConfig={Patterns.numMonths}
-        name="numberOfMonths"
-      />
-      <LabeledCheckbox
-        label="Is this person a full-time student?"
-        name="isStudent"
-      />
+      <Grid container spacing={2}>
+        <PersonFields />
+        <LabeledInput
+          label="Relationship to Taxpayer"
+          name="relationship"
+          patternConfig={Patterns.name}
+        />
+        <LabeledInput
+          label="Birth Year"
+          patternConfig={Patterns.year}
+          name="birthYear"
+        />
+        <LabeledInput
+          label="How many months did you live together this year?"
+          patternConfig={Patterns.numMonths}
+          name="numberOfMonths"
+        />
+        <LabeledCheckbox
+          label="Is this person a full-time student?"
+          name="isStudent"
+        />
+      </Grid>
     </FormListContainer>
   )
 
@@ -197,12 +200,14 @@ export const SpouseInfo = (): ReactElement => {
       editing={editing ? 0 : undefined}
       removeItem={() => dispatch(removeSpouse)}
     >
-      <PersonFields>
-        <LabeledCheckbox
-          label="Check if your spouse is a dependent"
-          name="isTaxpayerDependent"
-        />
-      </PersonFields>
+      <Grid container spacing={2}>
+        <PersonFields>
+          <LabeledCheckbox
+            label="Check if your spouse is a dependent"
+            name="isTaxpayerDependent"
+          />
+        </PersonFields>
+      </Grid>
     </FormListContainer>
   )
 
@@ -233,26 +238,22 @@ const SpouseAndDependent = (): ReactElement => {
   const page = (
     <form onSubmit={handleSubmit(onSubmit(onAdvance))}>
       <h2>Family Information</h2>
-
-      <strong>
-        <p>Spouse Information</p>
-      </strong>
+      <h3>Spouse Information</h3>
       <SpouseInfo />
 
-      <strong>
-        <p>Dependent Information</p>
-      </strong>
+      <h3>Dependent Information</h3>
       <AddDependentForm />
 
-      <GenericLabeledDropdown<FilingStatus>
-        label=""
-        strongLabel="Filing Status"
-        dropDownData={filingStatuses(taxPayer)}
-        valueMapping={(x, i) => x}
-        keyMapping={(x, i) => i}
-        textMapping={(status) => FilingStatusTexts[status]}
-        name="filingStatus"
-      />
+      <Grid container spacing={2}>
+        <GenericLabeledDropdown<FilingStatus>
+          label="Filing Status"
+          dropDownData={filingStatuses(taxPayer)}
+          valueMapping={(x, i) => x}
+          keyMapping={(x, i) => i}
+          textMapping={(status) => FilingStatusTexts[status]}
+          name="filingStatus"
+        />
+      </Grid>
       {navButtons}
     </form>
   )

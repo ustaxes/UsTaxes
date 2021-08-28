@@ -8,6 +8,7 @@ import { Currency, LabeledInput } from 'ustaxes/components/input'
 import { TaxesState, F1098e } from 'ustaxes/redux/data'
 import { Patterns } from 'ustaxes/components/Patterns'
 import { FormListContainer } from 'ustaxes/components/FormContainer'
+import { Grid } from '@material-ui/core'
 
 const showInterest = (a: F1098e): ReactElement => {
   return <Currency value={a.interest} />
@@ -86,17 +87,21 @@ export default function F1098eInfo(): ReactElement {
       secondary={(f) => showInterest(f)}
       icon={(f) => <SchoolIcon />}
     >
-      <strong>Input data from 1098-E</strong>
-      <LabeledInput
-        label="Enter name of Lender"
-        patternConfig={Patterns.name}
-        name="lender"
-      />
-      <LabeledInput
-        label="Student Interest Paid"
-        patternConfig={Patterns.currency}
-        name="interest"
-      />
+      <p>
+        <strong>Input data from 1098-E</strong>
+      </p>
+      <Grid container spacing={2}>
+        <LabeledInput
+          label="Enter name of Lender"
+          patternConfig={Patterns.name}
+          name="lender"
+        />
+        <LabeledInput
+          label="Student Interest Paid"
+          patternConfig={Patterns.currency}
+          name="interest"
+        />
+      </Grid>
     </FormListContainer>
   )
 

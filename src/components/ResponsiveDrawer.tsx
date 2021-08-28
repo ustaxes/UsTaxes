@@ -4,34 +4,36 @@ import Drawer from '@material-ui/core/Drawer'
 import List from '@material-ui/core/List'
 import ListItem from '@material-ui/core/ListItem'
 import ListItemText from '@material-ui/core/ListItemText'
-import { makeStyles, useTheme } from '@material-ui/core/styles'
+import { createStyles, makeStyles, useTheme } from '@material-ui/core/styles'
 import { NavLink, useLocation } from 'react-router-dom'
-import { useViewport } from '../hooks/Viewport'
+import { useDevice } from 'ustaxes/hooks/Device'
 
 const drawerWidth = 240
 
-const useStyles = makeStyles((theme) => ({
-  drawer: {
-    [theme.breakpoints.up('sm')]: {
-      width: drawerWidth,
-      flexShrink: 0
+const useStyles = makeStyles((theme) =>
+  createStyles({
+    drawer: {
+      [theme.breakpoints.up('sm')]: {
+        width: drawerWidth,
+        flexShrink: 0
+      }
+    },
+    drawerPaper: {
+      width: drawerWidth
+    },
+    list: {
+      marginLeft: theme.spacing(0),
+      paddingLeft: theme.spacing(0)
+    },
+    listItem: {
+      marginLeft: theme.spacing(0),
+      paddingLeft: theme.spacing(2)
+    },
+    sectionHeader: {
+      marginLeft: theme.spacing(2)
     }
-  },
-  drawerPaper: {
-    width: drawerWidth
-  },
-  list: {
-    marginLeft: theme.spacing(0),
-    paddingLeft: theme.spacing(0)
-  },
-  listItem: {
-    marginLeft: theme.spacing(0),
-    paddingLeft: theme.spacing(2)
-  },
-  sectionHeader: {
-    marginLeft: theme.spacing(2)
-  }
-}))
+  })
+)
 
 export interface SectionItem {
   title: string
@@ -61,13 +63,12 @@ export interface DrawerItemsProps {
 }
 
 function ResponsiveDrawer(props: DrawerItemsProps): ReactElement {
-  const { width } = useViewport()
+  const { isMobile } = useDevice()
   const location = useLocation()
   const classes = useStyles()
   const theme = useTheme()
 
   const { sections, isOpen, onClose } = props
-  const isMobile = theme.breakpoints.values.sm > width
 
   const drawer = (
     <>

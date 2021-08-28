@@ -1,6 +1,6 @@
 import React, { ReactElement, useState } from 'react'
 import { useForm, FormProvider } from 'react-hook-form'
-import { Icon } from '@material-ui/core'
+import { Icon, Grid } from '@material-ui/core'
 import { useDispatch, useSelector } from 'react-redux'
 import { add1099, edit1099, remove1099 } from 'ustaxes/redux/actions'
 import { usePager } from 'ustaxes/components/pager'
@@ -224,42 +224,56 @@ export default function F1099Info(): ReactElement {
     .map((p) => p as Person)
 
   const intFields = (
-    <LabeledInput
-      label="Box 1 - Interest Income"
-      patternConfig={Patterns.currency}
-      name="interest"
-    />
+    <Grid container spacing={2}>
+      <LabeledInput
+        label={
+          <>
+            <strong>Box 1</strong> - Interest Income
+          </>
+        }
+        patternConfig={Patterns.currency}
+        name="interest"
+      />
+    </Grid>
   )
 
   const bFields = (
-    <div>
-      <h4>Long Term Covered Transactions</h4>
-      <LabeledInput
-        label="Proceeds"
-        patternConfig={Patterns.currency}
-        name="longTermProceeds"
-      />
-      <LabeledInput
-        label="Cost basis"
-        patternConfig={Patterns.currency}
-        name="longTermCostBasis"
-      />
-      <h4>Short Term Covered Transactions</h4>
-      <LabeledInput
-        label="Proceeds"
-        patternConfig={Patterns.currency}
-        name="shortTermProceeds"
-      />
-      <LabeledInput
-        label="Cost basis"
-        patternConfig={Patterns.currency}
-        name="shortTermCostBasis"
-      />
-    </div>
+    <>
+      <h3>Long Term Covered Transactions</h3>
+      <Grid container spacing={2}>
+        <LabeledInput
+          label="Proceeds"
+          patternConfig={Patterns.currency}
+          name="longTermProceeds"
+          sizes={{ xs: 6 }}
+        />
+        <LabeledInput
+          label="Cost basis"
+          patternConfig={Patterns.currency}
+          name="longTermCostBasis"
+          sizes={{ xs: 6 }}
+        />
+      </Grid>
+      <h3>Short Term Covered Transactions</h3>
+      <Grid container spacing={2}>
+        <LabeledInput
+          label="Proceeds"
+          patternConfig={Patterns.currency}
+          name="shortTermProceeds"
+          sizes={{ xs: 6 }}
+        />
+        <LabeledInput
+          label="Cost basis"
+          patternConfig={Patterns.currency}
+          name="shortTermCostBasis"
+          sizes={{ xs: 6 }}
+        />
+      </Grid>
+    </>
   )
 
   const divFields = (
-    <div>
+    <Grid container spacing={2}>
       <LabeledInput
         label="Total Dividends"
         patternConfig={Patterns.currency}
@@ -270,36 +284,47 @@ export default function F1099Info(): ReactElement {
         patternConfig={Patterns.currency}
         name="qualifiedDividends"
       />
-    </div>
+    </Grid>
   )
 
   const rFields = (
-    <div>
+    <Grid container spacing={2}>
       <LabeledInput
-        label="Box 1 - Gross Distribution"
+        label={
+          <>
+            <strong>Box 1</strong> - Gross Distribution
+          </>
+        }
         patternConfig={Patterns.currency}
         name="grossDistribution"
       />
       <LabeledInput
-        label="Box 2a - Taxable Amount"
+        label={
+          <>
+            <strong>Box 2a</strong> - Taxable Amount
+          </>
+        }
         patternConfig={Patterns.currency}
         name="taxableAmount"
       />
       <LabeledInput
-        label="Box 4 - Federal Income Tax Withheld"
+        label={
+          <>
+            <strong>Box 4</strong> - Federal Income Tax Withheld
+          </>
+        }
         patternConfig={Patterns.currency}
         name="federalIncomeTaxWithheld"
       />
       <GenericLabeledDropdown<PlanType1099>
-        label=""
-        strongLabel="Type of 1099-R"
+        label="Type of 1099-R"
         dropDownData={Object.values(PlanType1099)}
         valueMapping={(x, i) => x}
         keyMapping={(x, i) => i}
         textMapping={(status) => PlanType1099Texts[status]}
         name="RPlanType"
       />
-    </div>
+    </Grid>
   )
 
   const specificFields = {
@@ -326,39 +351,44 @@ export default function F1099Info(): ReactElement {
       editItem={setEditing}
       primary={(f) => f.payer}
       secondary={(f) => showIncome(f)}
-      icon={(f) => <Icon title={titles[f.type]}>{f.type}</Icon>}
+      icon={(f) => (
+        <Icon style={{ lineHeight: 1 }} title={titles[f.type]}>
+          {f.type}
+        </Icon>
+      )}
     >
-      <strong>Input data from 1099</strong>
+      <p>Input data from 1099</p>
+      <Grid container spacing={2}>
+        <GenericLabeledDropdown
+          dropDownData={Object.values(Income1099Type)}
+          label="Form Type"
+          valueMapping={(v: Income1099Type) => v}
+          name="formType"
+          keyMapping={(_, i: number) => i}
+          textMapping={(name: string) => `1099-${name}`}
+        />
 
-      <GenericLabeledDropdown
-        dropDownData={Object.values(Income1099Type)}
-        label="Form Type"
-        valueMapping={(v: Income1099Type) => v}
-        name="formType"
-        keyMapping={(_, i: number) => i}
-        textMapping={(name: string) => `1099-${name}`}
-      />
-
-      <LabeledInput
-        label="Enter name of bank, broker firm, or other payer"
-        patternConfig={Patterns.name}
-        name="payer"
-      />
-
+        <LabeledInput
+          label="Enter name of bank, broker firm, or other payer"
+          patternConfig={Patterns.name}
+          name="payer"
+        />
+      </Grid>
       {selectedType !== undefined ? specificFields[selectedType] : undefined}
-
-      <GenericLabeledDropdown
-        dropDownData={people}
-        label="Recipient"
-        valueMapping={(p: Person, i: number) =>
-          [PersonRole.PRIMARY, PersonRole.SPOUSE][i]
-        }
-        name="personRole"
-        keyMapping={(p: Person, i: number) => i}
-        textMapping={(p: Person) =>
-          `${p.firstName} ${p.lastName} (${formatSSID(p.ssid)})`
-        }
-      />
+      <Grid container spacing={2}>
+        <GenericLabeledDropdown
+          dropDownData={people}
+          label="Recipient"
+          valueMapping={(p: Person, i: number) =>
+            [PersonRole.PRIMARY, PersonRole.SPOUSE][i]
+          }
+          name="personRole"
+          keyMapping={(p: Person, i: number) => i}
+          textMapping={(p: Person) =>
+            `${p.firstName} ${p.lastName} (${formatSSID(p.ssid)})`
+          }
+        />
+      </Grid>
     </FormListContainer>
   )
 

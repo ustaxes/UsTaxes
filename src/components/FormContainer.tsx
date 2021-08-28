@@ -1,5 +1,7 @@
 import React, { PropsWithChildren, ReactElement, useState } from 'react'
 import {
+  createStyles,
+  makeStyles,
   IconButton,
   List,
   ListItem,
@@ -9,6 +11,7 @@ import {
   Box,
   Button,
   unstable_createMuiStrictModeTheme as createMuiTheme,
+  Theme,
   ThemeProvider
 } from '@material-ui/core'
 import { red } from '@material-ui/core/colors'
@@ -36,10 +39,10 @@ const FormContainer = ({
     <Box
       display="flex"
       justifyContent="flex-start"
-      paddingTop={2}
-      paddingBottom={1}
+      marginTop={2}
+      marginBottom={3}
     >
-      <Box paddingRight={2}>
+      <Box marginRight={2}>
         <Button
           type="button"
           onClick={onDone}
@@ -137,9 +140,18 @@ enum FormState {
   Closed
 }
 
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    buttonList: {
+      margin: `${theme.spacing(2)}px 0 ${theme.spacing(3)}px`
+    }
+  })
+)
+
 const FormListContainer = <A extends object>(
   props: PropsWithChildren<FormListContainerProps<A>>
 ): ReactElement => {
+  const classes = useStyles()
   const {
     children,
     items,
@@ -204,7 +216,7 @@ const FormListContainer = <A extends object>(
   })()
 
   return (
-    <div>
+    <>
       {itemDisplay}
       <If condition={formState !== FormState.Closed}>
         <Then>
@@ -214,18 +226,20 @@ const FormListContainer = <A extends object>(
         </Then>
         <Else>
           <If condition={max === undefined || items.length < max}>
-            <Button
-              type="button"
-              onClick={() => setFormState(FormState.Adding)}
-              variant="contained"
-              color="secondary"
-            >
-              Add
-            </Button>
+            <div className={classes.buttonList}>
+              <Button
+                type="button"
+                onClick={() => setFormState(FormState.Adding)}
+                variant="contained"
+                color="secondary"
+              >
+                Add
+              </Button>
+            </div>
           </If>
         </Else>
       </If>
-    </div>
+    </>
   )
 }
 
