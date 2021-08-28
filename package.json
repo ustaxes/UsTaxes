@@ -32,6 +32,7 @@
     "build": "node ./setup.js && craco build",
     "test": "node ./setup.js && craco test",
     "eject": "craco eject",
+    "test:report": "node ./setup.js && craco test -- --coverage",
     "desktop-release": "node ./setup.js && tauri build",
     "desktop": "node ./notice.js && node ./setup.js && tauri dev",
     "tauri": "tauri",
@@ -99,6 +100,12 @@
   "jest": {
     "moduleNameMapper": {
       "^ustaxes/(.*)": "<rootDir>/src/$1"
-    }
+    },
+    "transformIgnorePatterns": [
+      "/node_modules/(?!@tauri-apps)"
+    ]
+  },
+  "engines": {
+    "yarn": "please-use-npm"
   }
 }
