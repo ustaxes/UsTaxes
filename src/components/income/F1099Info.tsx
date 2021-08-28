@@ -58,10 +58,10 @@ const showIncome = (a: Supported1099): ReactElement => {
     case Income1099Type.SSA: {
       return (
         <span>
-          Benefits Paid: <Currency value={a.form.benefitsPaid} />
+          {/* Benefits Paid: <Currency value={a.form.benefitsPaid} />
           <br />
           Benefits Repaid: <Currency value={a.form.benefitsRepaid} />
-          <br />
+          <br /> */}
           Net Benefits: <Currency value={a.form.netBenefits} />
           <br />
           Federal Income Tax Withweld:{' '}
@@ -92,8 +92,8 @@ interface F1099UserInput {
   federalIncomeTaxWithheld: string | number
   RPlanType: PlanType1099
   // SSA fields
-  benefitsPaid: string | number
-  benefitsRepaid: string | number
+  // benefitsPaid: string | number
+  // benefitsRepaid: string | number
   netBenefits: string | number
 }
 
@@ -116,8 +116,8 @@ const blankUserInput: F1099UserInput = {
   federalIncomeTaxWithheld: '',
   RPlanType: PlanType1099.IRA,
   // SSA fields
-  benefitsPaid: '',
-  benefitsRepaid: '',
+  // benefitsPaid: '',
+  // benefitsRepaid: '',
   netBenefits: ''
 }
 
@@ -203,8 +203,8 @@ const toF1099 = (input: F1099UserInput): Supported1099 | undefined => {
         personRole: input.personRole,
         type: input.formType,
         form: {
-          benefitsPaid: Number(input.benefitsPaid),
-          benefitsRepaid: Number(input.benefitsRepaid),
+          // benefitsPaid: Number(input.benefitsPaid),
+          // benefitsRepaid: Number(input.benefitsRepaid),
           netBenefits: Number(input.netBenefits),
           federalIncomeTaxWithheld: Number(input.federalIncomeTaxWithheld)
         }
@@ -339,7 +339,7 @@ export default function F1099Info(): ReactElement {
 
   const ssaFields = (
     <div>
-      <LabeledInput
+      {/* <LabeledInput
         label="Box 3 - Benefits Paid"
         patternConfig={Patterns.currency}
         name="benefitsPaid"
@@ -348,7 +348,7 @@ export default function F1099Info(): ReactElement {
         label="Box 4 - Benefits Repaid"
         patternConfig={Patterns.currency}
         name="benefitsRepaid"
-      />
+      /> */}
       <LabeledInput
         label="Box 5 - Net Benefits"
         patternConfig={Patterns.currency}

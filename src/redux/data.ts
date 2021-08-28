@@ -125,8 +125,8 @@ export interface F1099RData {
 }
 
 export interface F1099SSAData {
-  benefitsPaid: number
-  benefitsRepaid: number
+  // benefitsPaid: number
+  // benefitsRepaid: number
   netBenefits: number
   federalIncomeTaxWithheld: number
 }
