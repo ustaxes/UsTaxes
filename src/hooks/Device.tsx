@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { viewportContext } from './Viewport'
+import { useViewport } from './Viewport'
 import { useTheme } from '@material-ui/core/styles'
 
 interface DeviceProps {
@@ -7,7 +7,7 @@ interface DeviceProps {
 }
 
 export const useDevice = (): DeviceProps => {
-  const { width } = React.useContext(viewportContext)
+  const { width } = useViewport()
   const theme = useTheme()
   const [isMobile, setIsMobile] = useState(theme.breakpoints.values.sm > width)
 
