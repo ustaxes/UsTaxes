@@ -1,5 +1,5 @@
-import { FilingStatus } from '../redux/data'
-import { linear, Piecewise } from '../util'
+import { FilingStatus } from 'ustaxes/redux/data'
+import { linear, Piecewise } from 'ustaxes/util'
 
 export const CURRENT_YEAR = 2020
 

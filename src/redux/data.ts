@@ -1,4 +1,4 @@
-import { Responses } from '../data/questions'
+import { Responses } from 'ustaxes/data/questions'
 
 export enum PersonRole {
   PRIMARY = 'PRIMARY',
@@ -29,7 +29,7 @@ export interface Address {
   address: string
   aptNo?: string
   city: string
-  state?: string
+  state?: State
   zip?: string
   foreignCountry?: string
   province?: string
@@ -95,16 +95,32 @@ export interface F1099DivData {
   qualifiedDividends: number
 }
 /*
- Currently only the simplest form of 1099-R is implemented where
- users are taking a normal distribution from an IRA. Corresponding
- to distribution code 7 in 1099-R box 7.
- TODO: Separate out IRA from 401k
  TODO: Add in logic for various different distributions
  that should go in box 4a and 5a. Will need to implement
  form 8606 and Schedule 1 line 19.
  */
+export enum PlanType1099 {
+  /* IRA includes a traditional IRA, Roth IRA,
+   * simplified employee pension (SEP) IRA,
+   * and a savings incentive match plan for employees (SIMPLE) IRA
+   */
+  IRA = 'IRA',
+  /* Pension and annuity payments include distributions from 401(k), 403(b), and governmental 457(b) plans.
+   */
+  Pension = 'Pension'
+}
+
+export const PlanType1099Texts = {
+  [PlanType1099.IRA]:
+    'traditional IRA, Roth IRA, simplified employee pension (SEP) IRA, or savings incentive match plan for employees (SIMPLE) IRA',
+  [PlanType1099.Pension]: '401(k), 403(b), or 457(b) plan'
+}
+
 export interface F1099RData {
   grossDistribution: number
+  taxableAmount: number
+  federalIncomeTaxWithheld: number
+  planType: PlanType1099
 }
 
 export interface Income1099<T, D> {
@@ -221,6 +237,65 @@ export interface F1098e {
   interest: number
 }
 
+export type State =
+  | 'AL'
+  | 'AK'
+  | 'AZ'
+  | 'CO'
+  | 'DC'
+  | 'FL'
+  | 'HI'
+  | 'ID'
+  | 'IN'
+  | 'KY'
+  | 'MA'
+  | 'ME'
+  | 'MN'
+  | 'MS'
+  | 'NC'
+  | 'NE'
+  | 'NJ'
+  | 'NV'
+  | 'OH'
+  | 'OR'
+  | 'RI'
+  | 'SD'
+  | 'TX'
+  | 'VA'
+  | 'WA'
+  | 'WV'
+  | 'AR'
+  | 'CA'
+  | 'CT'
+  | 'DE'
+  | 'GA'
+  | 'IA'
+  | 'IL'
+  | 'KS'
+  | 'LA'
+  | 'MD'
+  | 'MI'
+  | 'MO'
+  | 'MT'
+  | 'ND'
+  | 'NH'
+  | 'NM'
+  | 'NY'
+  | 'OK'
+  | 'PA'
+  | 'SC'
+  | 'TN'
+  | 'UT'
+  | 'VT'
+  | 'WI'
+  | 'WY'
+
+// Hold information about state residency
+// TODO: Support part-year state residency
+export interface StateResidency {
+  state: State
+}
+
 export interface Information {
   f1099s: Supported1099[]
   w2s: IncomeW2[]
@@ -229,6 +304,7 @@ export interface Information {
   refund?: Refund
   taxPayer: TaxPayer
   questions: Responses
+  stateResidencies: StateResidency[]
 }
 
 export interface TaxesState {

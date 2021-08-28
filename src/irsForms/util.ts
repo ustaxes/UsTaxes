@@ -1,16 +1,13 @@
-export const displayNumber = (n: number): number | undefined => {
-  if (n <= 0) {
+export const displayNumber = (n: number | undefined): number | undefined => {
+  if (n === undefined || n <= 0) {
     return undefined
   }
   return Math.round(n)
 }
 
-export const displayNegPos = (n: number): string => {
-  if (n < 0) {
-    return `(${Math.abs(n)})`
-  } else if (n === 0) {
-    return ''
-  }
+export const displayNegPos = (n: number | undefined): string => {
+  if (n === undefined || n === 0) return ''
+  if (n < 0) return `(${Math.abs(n)})`
   return n.toString()
 }
 

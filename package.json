@@ -1,13 +1,13 @@
 {
   "name": "ustaxes",
-  "version": "0.1.9",
+  "version": "0.1.10",
   "private": true,
   "dependencies": {
-    "@material-ui/core": "^4.12.1",
+    "@material-ui/core": "^4.12.3",
     "@material-ui/icons": "^4.11.2",
     "@material-ui/lab": "^4.0.0-alpha.60",
     "@tauri-apps/api": "^1.0.0-beta.5",
-    "@tauri-apps/cli": "^1.0.0-beta.6",
+    "@tauri-apps/cli": "^1.0.0-beta.10",
     "ajv": "^8.6.2",
     "lodash.get": "^4.4.2",
     "loglevel": "^1.7.1",
@@ -15,30 +15,32 @@
     "pdf-lib": "^1.16.0",
     "react": "^17.0.1",
     "react-dom": "^17.0.2",
-    "react-hook-form": "^7.9.0",
+    "react-hook-form": "^7.13.0",
     "react-if": "^4.0.1",
-    "react-number-format": "^4.6.4",
+    "react-number-format": "^4.7.3",
     "react-redux": "^7.2.4",
     "react-router-dom": "^5.2.0",
     "react-scripts": "^4.0.3",
-    "redux": "^4.1.0",
+    "redux": "^4.1.1",
     "redux-logger": "^3.0.6",
     "redux-persist": "^6.0.0",
-    "ts-json-schema-generator": "^0.94.1",
+    "ts-json-schema-generator": "^0.95.0",
     "typescript": "^4.3.5"
   },
   "scripts": {
-    "start": "node ./notice.js && node ./setup.js && react-scripts start",
-    "build": "node ./setup.js && react-scripts build",
-    "test": "node ./setup.js && react-scripts test",
-    "eject": "react-scripts eject",
+    "start": "node ./notice.js && node ./setup.js && craco start",
+    "build": "node ./setup.js && craco build",
+    "test": "node ./setup.js && craco test",
+    "eject": "craco eject",
+    "test:report": "node ./setup.js && craco test -- --coverage",
     "desktop-release": "node ./setup.js && tauri build",
     "desktop": "node ./notice.js && node ./setup.js && tauri dev",
     "tauri": "tauri",
     "schema-generate": "node ./setup.js",
     "lint": "eslint ./src --ext .ts --ext .js --ext .tsx --ext .jsx && prettier -c .",
     "lint:fix": "eslint ./src --fix --ext .ts --ext .js --ext .tsx --ext .jsx && prettier --write .",
-    "prettier": "prettier --write ."
+    "prettier": "prettier --write .",
+    "formgen": "ts-node ./scripts/formgen.ts"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -56,23 +58,25 @@
     ]
   },
   "devDependencies": {
+    "@craco/craco": "^6.2.0",
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^12.0.0",
-    "@testing-library/user-event": "^13.2.0",
-    "@types/jest": "^26.0.24",
+    "@testing-library/user-event": "^13.2.1",
+    "@types/jest": "^27.0.1",
     "@types/lodash.get": "^4.4.6",
-    "@types/node": "^16.3.3",
-    "@types/node-fetch": "^2.5.11",
-    "@types/react": "^17.0.14",
+    "@types/node": "^16.7.1",
+    "@types/node-fetch": "^2.5.12",
+    "@types/react": "^17.0.19",
     "@types/react-dom": "^17.0.9",
     "@types/react-redux": "^7.1.18",
     "@types/react-router-dom": "^5.1.8",
     "@types/redux-logger": "^3.0.9",
-    "@typescript-eslint/eslint-plugin": "^4.28.5",
-    "@typescript-eslint/parser": "^4.28.5",
-    "eslint": "^7.31.0",
+    "@typescript-eslint/eslint-plugin": "^4.29.3",
+    "@typescript-eslint/parser": "^4.29.3",
+    "eslint": "^7.32.0",
     "eslint-config-prettier": "^8.3.0",
-    "eslint-plugin-import": "^2.23.4",
+    "eslint-config-standard-with-typescript": "^20.0.0",
+    "eslint-plugin-import": "^2.24.2",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-prettier": "^3.4.0",
     "eslint-plugin-promise": "^5.1.0",
@@ -81,6 +85,7 @@
     "husky": "^7.0.1",
     "lint-staged": "^11.1.1",
     "prettier": "2.3.2",
+    "ts-node": "^10.2.0",
     "typescript-eslint": "0.0.1-alpha.0"
   },
   "husky": {
@@ -91,5 +96,16 @@
   },
   "lint-staged": {
     "**/*": "prettier --write --ignore-unknown"
+  },
+  "jest": {
+    "moduleNameMapper": {
+      "^ustaxes/(.*)": "<rootDir>/src/$1"
+    },
+    "transformIgnorePatterns": [
+      "/node_modules/(?!@tauri-apps)"
+    ]
+  },
+  "engines": {
+    "yarn": "please-use-npm"
   }
 }

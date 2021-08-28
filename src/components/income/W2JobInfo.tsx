@@ -1,7 +1,7 @@
 import React, { Fragment, ReactElement, ReactNode, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { FormProvider, useForm } from 'react-hook-form'
-import { PagerContext } from '../pager'
+import { usePager } from 'ustaxes/components/pager'
 import {
   TaxesState,
   IncomeW2,
@@ -11,18 +11,18 @@ import {
   Spouse,
   PrimaryPerson,
   FilingStatus
-} from '../../redux/data'
+} from 'ustaxes/redux/data'
 import {
   Currency,
   formatSSID,
   GenericLabeledDropdown,
   LabeledInput
-} from '../input'
-import { Patterns } from '../Patterns'
-import { FormListContainer } from '../FormContainer'
-import { Box } from '@material-ui/core'
+} from 'ustaxes/components/input'
+import { Patterns } from 'ustaxes/components/Patterns'
+import { FormListContainer } from 'ustaxes/components/FormContainer'
+import { Grid } from '@material-ui/core'
 import { Work } from '@material-ui/icons'
-import { addW2, editW2, removeW2 } from '../../redux/actions'
+import { addW2, editW2, removeW2 } from 'ustaxes/redux/actions'
 import { If } from 'react-if'
 import { Alert } from '@material-ui/lab'
 
@@ -65,6 +65,8 @@ export default function W2JobInfo(): ReactElement {
   const spouse: Spouse | undefined = useSelector(
     (state: TaxesState) => state.information.taxPayer?.spouse
   )
+
+  const { navButtons, onAdvance } = usePager()
 
   const primary: PrimaryPerson | undefined = useSelector(
     (state: TaxesState) => state.information.taxPayer?.primaryPerson
@@ -134,59 +136,74 @@ export default function W2JobInfo(): ReactElement {
       onCancel={clear}
       max={omitAdd ? 0 : undefined}
     >
-      <strong>Input data from W-2</strong>
-      <LabeledInput
-        label="Employer name"
-        patternConfig={Patterns.name}
-        name="employer.employerName"
-      />
-      <LabeledInput
-        label="Occupation"
-        patternConfig={Patterns.name}
-        name="occupation"
-      />
-
-      <LabeledInput
-        strongLabel="Box 1 - "
-        label="Wages, tips, other compensation"
-        patternConfig={Patterns.currency}
-        name="income"
-      />
-
-      <LabeledInput
-        strongLabel="Box 2 - "
-        label="Federal income tax withheld"
-        name="fedWithholding"
-        patternConfig={Patterns.currency}
-      />
-
-      <LabeledInput
-        strongLabel="Box 4 - "
-        label="Social security tax withheld"
-        name="ssWithholding"
-        patternConfig={Patterns.currency}
-      />
-
-      <LabeledInput
-        strongLabel="Box 6 - "
-        label="Medicare tax withheld"
-        name="medicareWithholding"
-        patternConfig={Patterns.currency}
-      />
-
-      <GenericLabeledDropdown
-        dropDownData={people}
-        label="Employee"
-        required={true}
-        valueMapping={(p: Person, i: number) =>
-          [PersonRole.PRIMARY, PersonRole.SPOUSE][i]
-        }
-        name="personRole"
-        keyMapping={(p: Person, i: number) => i}
-        textMapping={(p) =>
-          `${p.firstName} ${p.lastName} (${formatSSID(p.ssid)})`
-        }
-      />
+      <p>Input data from W-2</p>
+      <Grid container spacing={2}>
+        <LabeledInput
+          label="Employer name"
+          patternConfig={Patterns.name}
+          name="employer.employerName"
+          sizes={{ xs: 12 }}
+        />
+        <LabeledInput
+          label="Occupation"
+          patternConfig={Patterns.name}
+          name="occupation"
+          sizes={{ xs: 12 }}
+        />
+        <LabeledInput
+          name="income"
+          label={
+            <>
+              <strong>Box 1</strong> - Wages, tips, other compensation
+            </>
+          }
+          patternConfig={Patterns.currency}
+          sizes={{ xs: 12, lg: 6 }}
+        />
+        <LabeledInput
+          name="fedWithholding"
+          label={
+            <>
+              <strong>Box 2</strong> - Federal income tax withheld
+            </>
+          }
+          patternConfig={Patterns.currency}
+          sizes={{ xs: 12, lg: 6 }}
+        />
+        <LabeledInput
+          name="ssWithholding"
+          label={
+            <>
+              <strong>Box 4</strong> - Social security tax withheld
+            </>
+          }
+          patternConfig={Patterns.currency}
+          sizes={{ xs: 12, lg: 6 }}
+        />
+        <LabeledInput
+          name="medicareWithholding"
+          label={
+            <>
+              <strong>Box 6</strong> - Medicare tax withheld
+            </>
+          }
+          patternConfig={Patterns.currency}
+          sizes={{ xs: 12, lg: 6 }}
+        />
+        <GenericLabeledDropdown
+          dropDownData={people}
+          label="Employee"
+          required={true}
+          valueMapping={(p: Person, i: number) =>
+            [PersonRole.PRIMARY, PersonRole.SPOUSE][i]
+          }
+          name="personRole"
+          keyMapping={(p: Person, i: number) => i}
+          textMapping={(p) =>
+            `${p.firstName} ${p.lastName} (${formatSSID(p.ssid)})`
+          }
+        />
+      </Grid>
     </FormListContainer>
   )
 
@@ -194,13 +211,13 @@ export default function W2JobInfo(): ReactElement {
     if (primary !== undefined && primaryW2s.length > 0) {
       if (spouse !== undefined) {
         return (
-          <Box className="inner">
+          <>
             <h3>
               {primary.firstName ?? 'Primary'} {primary.lastName ?? 'Taxpayer'}
               &apos;s W2s
             </h3>
             {showW2s(primaryW2s, true)}
-          </Box>
+          </>
         )
       } else {
         return showW2s(primaryW2s, true)
@@ -212,7 +229,7 @@ export default function W2JobInfo(): ReactElement {
     if (spouse !== undefined && spouseW2s.length > 0) {
       const name = `${spouse.firstName} ${spouse.lastName}`
       return (
-        <Box className="inner">
+        <>
           <h3>{name}&apos;s W2s</h3>
           {showW2s(spouseW2s, true)}
           <If condition={filingStatus === FilingStatus.MFS}>
@@ -222,7 +239,7 @@ export default function W2JobInfo(): ReactElement {
               &apos;s W2s will not be added to the return.
             </Alert>
           </If>
-        </Box>
+        </>
       )
     }
   })()
@@ -234,21 +251,17 @@ export default function W2JobInfo(): ReactElement {
       <If condition={editing === undefined}>
         {
           // just for Add button:
-          <Box className="inner">{showW2s([])}</Box>
+          showW2s([])
         }
       </If>
     </Fragment>
   )
 
   return (
-    <PagerContext.Consumer>
-      {({ navButtons, onAdvance }) => (
-        <form onSubmit={onAdvance}>
-          <h2>Job Information</h2>
-          <FormProvider {...methods}>{form}</FormProvider>
-          {navButtons}
-        </form>
-      )}
-    </PagerContext.Consumer>
+    <form onSubmit={onAdvance}>
+      <h2>Job Information</h2>
+      <FormProvider {...methods}>{form}</FormProvider>
+      {navButtons}
+    </form>
   )
 }

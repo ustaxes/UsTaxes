@@ -13,7 +13,7 @@ Most income and deduction information from the following forms are supported:
 - 1099-DIV
 - 1099-B
 - 1098-E
-- 1099-R: partial support for normal distributions from IRA accounts.
+- 1099-R: support for normal distributions from IRA and pension accounts.
 
 So far, this project can attach the following schedules to form 1040:
 
@@ -30,6 +30,14 @@ So far, this project can attach the following schedules to form 1040:
 - Earned income credit
 
 ## Supported states
+
+### Implemented State returns
+
+The states below have been implemented partially. See the `/src/stateForms/<state>/<relevant form>` file for details on unimplemented portions.
+
+- Illinois
+
+### Non-filing states
 
 Users who only have wage income and live in the states below should be able to file taxes using this site, since they do not have state level income tax.
 

@@ -1,5 +1,5 @@
-import { CURRENT_YEAR } from '../data/federal'
-import { daysInYear } from '../util'
+import { CURRENT_YEAR } from 'ustaxes/data/federal'
+import { daysInYear } from 'ustaxes/util'
 
 export interface BasePattern {
   regexp?: RegExp
@@ -133,7 +133,7 @@ export const Patterns = {
     'Input should be 10 digits, not starting with 0 or 1',
     undefined,
     undefined,
-    '(###)-###-####'
+    '(###) ###-####'
   ),
   plain: text(/.*/, '')
 }

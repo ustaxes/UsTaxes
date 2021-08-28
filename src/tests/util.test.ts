@@ -1,7 +1,7 @@
 import * as fc from 'fast-check'
 import { Arbitrary } from 'fast-check'
 
-import { segments } from '../util'
+import { segments } from 'ustaxes/util'
 
 const segmentsArbitrary: Arbitrary<[string[], number]> = fc
   .array(fc.char(), { minLength: 1 })

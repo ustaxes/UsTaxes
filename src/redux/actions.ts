@@ -15,16 +15,19 @@ import {
   Edit1099Action,
   EditW2Action,
   Edit1098eAction,
-  TaxesState
+  TaxesState,
+  State,
+  StateResidency
 } from './data'
 import { ValidateFunction } from 'ajv'
 import ajv, { checkType } from './validate'
-import { Responses } from '../data/questions'
+import { Responses } from 'ustaxes/data/questions'
 
 export enum ActionName {
   SAVE_REFUND_INFO = 'SAVE_REFUND_INFO',
   SAVE_PRIMARY_PERSON_INFO = 'SAVE_TAXPAYER_INFO',
   SAVE_CONTACT_INFO = 'SAVE_CONTACT_INFO',
+  SAVE_STATE_RESIDENCY = 'SAVE_STATE_RESIDENCY',
   SAVE_FILING_STATUS_INFO = 'SAFE_FILING_STATUS_INFO',
   ADD_DEPENDENT = 'TAXPAYER/ADD_DEPENDENT',
   EDIT_DEPENDENT = 'TAXPAYER/EDIT_DEPENDENT',
@@ -62,6 +65,10 @@ type SaveFilingStatusInfo = Save<
   FilingStatus
 >
 type SaveContactInfo = Save<typeof ActionName.SAVE_CONTACT_INFO, ContactInfo>
+type SaveStateResidencyInfo = Save<
+  typeof ActionName.SAVE_STATE_RESIDENCY,
+  StateResidency
+>
 type AddDependent = Save<typeof ActionName.ADD_DEPENDENT, Dependent>
 type EditDependent = Save<typeof ActionName.EDIT_DEPENDENT, EditDependentAction>
 type RemoveDependent = Save<typeof ActionName.REMOVE_DEPENDENT, number>
@@ -87,6 +94,7 @@ export type Actions =
   | SavePrimaryPersonInfo
   | SaveFilingStatusInfo
   | SaveContactInfo
+  | SaveStateResidencyInfo
   | AddDependent
   | EditDependent
   | RemoveDependent
@@ -164,6 +172,14 @@ export const savePrimaryPersonInfo: ActionCreator<PrimaryPerson> =
       '#/definitions/PrimaryPerson'
     ) as ValidateFunction<PrimaryPerson>,
     cleanPerson
+  )
+
+export const saveStateResidencyInfo: ActionCreator<StateResidency> =
+  makeActionCreator(
+    ActionName.SAVE_STATE_RESIDENCY,
+    ajv.getSchema(
+      '#/definitions/StateResidency'
+    ) as ValidateFunction<StateResidency>
   )
 
 export const saveFilingStatusInfo: ActionCreator<FilingStatus> =

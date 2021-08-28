@@ -4,6 +4,7 @@
  * @param a Enumerator name
  * @returns tyepsafe array of keys
  */
+
 export const enumKeys = <A extends Object>(a: A): Array<keyof typeof a> =>
   Object.keys(a).filter((k) => isNaN(Number(k))) as Array<keyof typeof a>
 
