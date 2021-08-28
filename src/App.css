@@ -2,3 +2,7 @@ body {
   background-color: whitesmoke;
   height: 100vh;
 }
+
+.MuiGrid-container ~ .MuiGrid-container {
+  margin-top: 8px;
+}

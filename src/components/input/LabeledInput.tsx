@@ -85,11 +85,11 @@ export function LabeledInput(props: LabeledInputProps): ReactElement {
                 shrink: true
               }}
               InputProps={{
-                startAdornment: (
+                startAdornment: patternConfig.prefix ? (
                   <InputAdornment position="start">
                     {patternConfig.prefix}
                   </InputAdornment>
-                )
+                ) : undefined
               }}
             />
           )}

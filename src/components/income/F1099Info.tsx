@@ -224,42 +224,56 @@ export default function F1099Info(): ReactElement {
     .map((p) => p as Person)
 
   const intFields = (
-    <LabeledInput
-      label="Box 1 - Interest Income"
-      patternConfig={Patterns.currency}
-      name="interest"
-    />
+    <Grid container spacing={2}>
+      <LabeledInput
+        label={
+          <>
+            <strong>Box 1</strong> - Interest Income
+          </>
+        }
+        patternConfig={Patterns.currency}
+        name="interest"
+      />
+    </Grid>
   )
 
   const bFields = (
-    <div>
-      <h4>Long Term Covered Transactions</h4>
-      <LabeledInput
-        label="Proceeds"
-        patternConfig={Patterns.currency}
-        name="longTermProceeds"
-      />
-      <LabeledInput
-        label="Cost basis"
-        patternConfig={Patterns.currency}
-        name="longTermCostBasis"
-      />
-      <h4>Short Term Covered Transactions</h4>
-      <LabeledInput
-        label="Proceeds"
-        patternConfig={Patterns.currency}
-        name="shortTermProceeds"
-      />
-      <LabeledInput
-        label="Cost basis"
-        patternConfig={Patterns.currency}
-        name="shortTermCostBasis"
-      />
-    </div>
+    <>
+      <h3>Long Term Covered Transactions</h3>
+      <Grid container spacing={2}>
+        <LabeledInput
+          label="Proceeds"
+          patternConfig={Patterns.currency}
+          name="longTermProceeds"
+          sizes={{ xs: 6 }}
+        />
+        <LabeledInput
+          label="Cost basis"
+          patternConfig={Patterns.currency}
+          name="longTermCostBasis"
+          sizes={{ xs: 6 }}
+        />
+      </Grid>
+      <h3>Short Term Covered Transactions</h3>
+      <Grid container spacing={2}>
+        <LabeledInput
+          label="Proceeds"
+          patternConfig={Patterns.currency}
+          name="shortTermProceeds"
+          sizes={{ xs: 6 }}
+        />
+        <LabeledInput
+          label="Cost basis"
+          patternConfig={Patterns.currency}
+          name="shortTermCostBasis"
+          sizes={{ xs: 6 }}
+        />
+      </Grid>
+    </>
   )
 
   const divFields = (
-    <div>
+    <Grid container spacing={2}>
       <LabeledInput
         label="Total Dividends"
         patternConfig={Patterns.currency}
@@ -270,23 +284,35 @@ export default function F1099Info(): ReactElement {
         patternConfig={Patterns.currency}
         name="qualifiedDividends"
       />
-    </div>
+    </Grid>
   )
 
   const rFields = (
-    <div>
+    <Grid container spacing={2}>
       <LabeledInput
-        label="Box 1 - Gross Distribution"
+        label={
+          <>
+            <strong>Box 1</strong> - Gross Distribution
+          </>
+        }
         patternConfig={Patterns.currency}
         name="grossDistribution"
       />
       <LabeledInput
-        label="Box 2a - Taxable Amount"
+        label={
+          <>
+            <strong>Box 2a</strong> - Taxable Amount
+          </>
+        }
         patternConfig={Patterns.currency}
         name="taxableAmount"
       />
       <LabeledInput
-        label="Box 4 - Federal Income Tax Withheld"
+        label={
+          <>
+            <strong>Box 4</strong> - Federal Income Tax Withheld
+          </>
+        }
         patternConfig={Patterns.currency}
         name="federalIncomeTaxWithheld"
       />
@@ -298,7 +324,7 @@ export default function F1099Info(): ReactElement {
         textMapping={(status) => PlanType1099Texts[status]}
         name="RPlanType"
       />
-    </div>
+    </Grid>
   )
 
   const specificFields = {
@@ -325,7 +351,11 @@ export default function F1099Info(): ReactElement {
       editItem={setEditing}
       primary={(f) => f.payer}
       secondary={(f) => showIncome(f)}
-      icon={(f) => <Icon title={titles[f.type]}>{f.type}</Icon>}
+      icon={(f) => (
+        <Icon style={{ lineHeight: 1 }} title={titles[f.type]}>
+          {f.type}
+        </Icon>
+      )}
     >
       <p>Input data from 1099</p>
       <Grid container spacing={2}>
@@ -343,9 +373,9 @@ export default function F1099Info(): ReactElement {
           patternConfig={Patterns.name}
           name="payer"
         />
-
-        {selectedType !== undefined ? specificFields[selectedType] : undefined}
-
+      </Grid>
+      {selectedType !== undefined ? specificFields[selectedType] : undefined}
+      <Grid container spacing={2}>
         <GenericLabeledDropdown
           dropDownData={people}
           label="Recipient"
