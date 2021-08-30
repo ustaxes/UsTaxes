@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react'
+import { ReactElement } from 'react'
 import { createStyles, makeStyles, Grid, TextField } from '@material-ui/core'
 import { Controller, useFormContext } from 'react-hook-form'
 import locationPostalCodes from 'ustaxes/data/locationPostalCodes'

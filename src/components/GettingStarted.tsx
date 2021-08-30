@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react'
+import { ReactElement } from 'react'
 import { StartButtons, SingleButtons } from './pager'
 import { isWeb } from 'ustaxes/util'
 

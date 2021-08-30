@@ -1,4 +1,4 @@
-import React from 'react'
+import { StrictMode } from 'react'
 import ReactDOM from 'react-dom'
 import { Provider } from 'react-redux'
 import './index.css'
@@ -11,7 +11,7 @@ import { PersistGate } from 'redux-persist/integration/react'
 import { ViewportProvider } from './hooks/Viewport'
 
 ReactDOM.render(
-  <React.StrictMode>
+  <StrictMode>
     <ViewportProvider>
       <Provider store={store}>
         <PersistGate
@@ -24,7 +24,7 @@ ReactDOM.render(
         </PersistGate>
       </Provider>
     </ViewportProvider>
-  </React.StrictMode>,
+  </StrictMode>,
   document.getElementById('root')
 )
 

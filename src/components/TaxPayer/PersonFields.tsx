@@ -1,4 +1,4 @@
-import React, { Fragment, PropsWithChildren, ReactElement } from 'react'
+import { Fragment, PropsWithChildren, ReactElement } from 'react'
 import {
   IconButton,
   List,

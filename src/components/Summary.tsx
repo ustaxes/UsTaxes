@@ -1,4 +1,4 @@
-import React, { Fragment, ReactElement } from 'react'
+import { Fragment, ReactElement } from 'react'
 import {
   List,
   ListItem,
@@ -72,7 +72,7 @@ const F1040Summary = ({ f1040 }: F1040Props): ReactElement => {
       <ListItemText
         primary="Earned Income Tax Credit"
         secondary={
-          <React.Fragment>
+          <>
             <Typography
               component="span"
               variant="body2"
@@ -95,7 +95,7 @@ const F1040Summary = ({ f1040 }: F1040Props): ReactElement => {
                 value={Math.round(f1040.scheduleEIC?.credit(f1040) ?? 0)}
               />
             </Typography>
-          </React.Fragment>
+          </>
         }
       />
     </BinaryStateListItem>
@@ -108,14 +108,12 @@ const F1040Summary = ({ f1040 }: F1040Props): ReactElement => {
       <ListItemText
         primary="Credit for children and other dependents"
         secondary={
-          <React.Fragment>
-            <Typography component="span" variant="body2" color="textPrimary">
-              Credit:{' '}
-              <Currency
-                value={Math.round(f1040.childTaxCreditWorksheet?.credit() ?? 0)}
-              />
-            </Typography>
-          </React.Fragment>
+          <Typography component="span" variant="body2" color="textPrimary">
+            Credit:{' '}
+            <Currency
+              value={Math.round(f1040.childTaxCreditWorksheet?.credit() ?? 0)}
+            />
+          </Typography>
         }
       />
     </BinaryStateListItem>

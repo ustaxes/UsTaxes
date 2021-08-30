@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react'
+import { ReactElement } from 'react'
 import { render, waitFor } from '@testing-library/react'
 import { Provider } from 'react-redux'
 
