@@ -1,4 +1,4 @@
-import { Fragment, ReactElement, ReactNode, useState } from 'react'
+import { ReactElement, ReactNode, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { FormProvider, useForm } from 'react-hook-form'
 import { usePager } from 'ustaxes/components/pager'
@@ -245,7 +245,7 @@ export default function W2JobInfo(): ReactElement {
   })()
 
   const form: ReactElement = (
-    <Fragment>
+    <>
       {primaryW2sBlock}
       {spouseW2sBlock}
       <If condition={editing === undefined}>
@@ -254,7 +254,7 @@ export default function W2JobInfo(): ReactElement {
           showW2s([])
         }
       </If>
-    </Fragment>
+    </>
   )
 
   return (

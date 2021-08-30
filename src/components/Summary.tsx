@@ -1,4 +1,4 @@
-import { Fragment, ReactElement } from 'react'
+import { ReactElement } from 'react'
 import {
   List,
   ListItem,
@@ -120,13 +120,13 @@ const F1040Summary = ({ f1040 }: F1040Props): ReactElement => {
   )
 
   return (
-    <Fragment>
+    <>
       <h4>Credits</h4>
       <List>
         {earnedIncomeTaxCredit}
         {creditForChildrenAndOtherDependents}
       </List>
-    </Fragment>
+    </>
   )
 }
 
@@ -147,13 +147,13 @@ const Summary = (): ReactElement => {
         const errors = f1040Result.left
 
         return (
-          <Fragment>
+          <>
             {errors.map((error, i) => (
               <Alert key={i} severity="warning">
                 {error}
               </Alert>
             ))}
-          </Fragment>
+          </>
         )
       } else {
         const [f1040] = f1040Result.right

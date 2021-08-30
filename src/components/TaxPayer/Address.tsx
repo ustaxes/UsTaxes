@@ -1,4 +1,4 @@
-import { Fragment, ReactElement } from 'react'
+import { ReactElement } from 'react'
 import { useFormContext, useWatch } from 'react-hook-form'
 import { If } from 'react-if'
 import {
@@ -30,7 +30,7 @@ export default function AddressFields(props: AddressProps): ReactElement {
   const csz: ReactElement = (() => {
     if (!allowForeignCountry || !isForeignCountry) {
       return (
-        <Fragment>
+        <>
           <USStateDropDown
             label="State"
             name="address.state"
@@ -42,11 +42,11 @@ export default function AddressFields(props: AddressProps): ReactElement {
             patternConfig={Patterns.zip}
             required={!isForeignCountry}
           />
-        </Fragment>
+        </>
       )
     }
     return (
-      <Fragment>
+      <>
         <LabeledInput
           label="Province"
           name="address.province"
@@ -62,12 +62,12 @@ export default function AddressFields(props: AddressProps): ReactElement {
           label="Country"
           required={isForeignCountry}
         />
-      </Fragment>
+      </>
     )
   })()
 
   return (
-    <Fragment>
+    <>
       <LabeledInput label="Address" name="address.address" required={true} />
       <LabeledInput label="Unit No" name="address.aptNo" required={false} />
       <LabeledInput
@@ -79,6 +79,6 @@ export default function AddressFields(props: AddressProps): ReactElement {
         <LabeledCheckbox label={checkboxText} name="isForeignCountry" />
       </If>
       {csz}
-    </Fragment>
+    </>
   )
 }

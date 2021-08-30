@@ -1,4 +1,4 @@
-import { Fragment, PropsWithChildren, ReactElement } from 'react'
+import { PropsWithChildren, ReactElement } from 'react'
 import {
   IconButton,
   List,
@@ -20,7 +20,7 @@ import { If } from 'react-if'
 export const PersonFields = ({
   children
 }: PropsWithChildren<Record<never, never>>): ReactElement => (
-  <Fragment>
+  <>
     <LabeledInput
       label="First Name and Initial"
       name="firstName"
@@ -33,7 +33,7 @@ export const PersonFields = ({
     />
     <LabeledInput label="SSN / TIN" name="ssid" patternConfig={Patterns.ssn} />
     {children}
-  </Fragment>
+  </>
 )
 
 interface PersonListItemProps {
