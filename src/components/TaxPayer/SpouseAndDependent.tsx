@@ -248,7 +248,7 @@ const SpouseAndDependent = (): ReactElement => {
         <GenericLabeledDropdown<FilingStatus>
           label="Filing Status"
           dropDownData={filingStatuses(taxPayer)}
-          valueMapping={(x, i) => x}
+          valueMapping={(x) => x}
           keyMapping={(x, i) => i}
           textMapping={(status) => FilingStatusTexts[status]}
           name="filingStatus"

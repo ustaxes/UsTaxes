@@ -1,6 +1,6 @@
 import React from 'react'
 import userEvent from '@testing-library/user-event'
-import { render, screen, waitFor } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import Menu, { drawerSections } from 'ustaxes/components/Menu'
 import { resizeWindow, renderWithProviders } from 'ustaxes/testUtil'
 

@@ -3,7 +3,7 @@ import { CurrencyProps } from './types'
 import NumberFormat from 'react-number-format'
 import { makeStyles } from '@material-ui/core/styles'
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   positive: {
     color: 'green'
   },

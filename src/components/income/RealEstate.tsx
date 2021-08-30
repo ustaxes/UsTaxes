@@ -269,13 +269,13 @@ export default function RealEstate(): ReactElement {
       <Grid container spacing={2}>
         <LabeledInput
           name="rentalDays"
-          rules={{ validate: (n: String) => validateRental(Number(n)) }}
+          rules={{ validate: (n: string) => validateRental(Number(n)) }}
           label="Number of days in the year used for rental"
           patternConfig={Patterns.numDays}
         />
         <LabeledInput
           name="personalUseDays"
-          rules={{ validate: (n: String) => validatePersonal(Number(n)) }}
+          rules={{ validate: (n: string) => validatePersonal(Number(n)) }}
           label="Number of days in the year for personal use"
           patternConfig={Patterns.numDays}
         />

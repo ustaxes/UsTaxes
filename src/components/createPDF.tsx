@@ -35,7 +35,7 @@ export default function CreatePDF(): ReactElement {
 
   const { navButtons } = usePager()
 
-  const federalReturn = async (e: FormEvent<any>): Promise<void> => {
+  const federalReturn = async (e: FormEvent<Element>): Promise<void> => {
     e.preventDefault()
     return await createPDFPopup(federalFileName).catch((errors: string[]) => {
       if (errors.length !== undefined && errors.length > 0) {

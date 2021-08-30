@@ -27,7 +27,7 @@ export class IL1040 implements Form {
 
   attachments = (): Form[] => {
     const pmt = this.payment()
-    let result: Form[] = []
+    const result: Form[] = []
     if ((pmt ?? 0) > 0) {
       result.push(this.il1040V)
     }

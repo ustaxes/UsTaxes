@@ -148,7 +148,7 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 )
 
-const FormListContainer = <A extends object>(
+const FormListContainer = <A,>(
   props: PropsWithChildren<FormListContainerProps<A>>
 ): ReactElement => {
   const classes = useStyles()

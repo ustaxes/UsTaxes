@@ -45,7 +45,7 @@ export enum F1040Error {
 
 export default class F1040 implements Form {
   tag: FormTag = 'f1040'
-  sequenceIndex: number = 0
+  sequenceIndex = 0
   // intentionally mirroring many fields from the state,
   // trying to represent the fields that the 1040 requires
   filingStatus?: FilingStatus

@@ -85,7 +85,7 @@ export default function F1098eInfo(): ReactElement {
       editItem={setEditing}
       primary={(f) => f.lender}
       secondary={(f) => showInterest(f)}
-      icon={(f) => <SchoolIcon />}
+      icon={() => <SchoolIcon />}
     >
       <p>
         <strong>Input data from 1098-E</strong>

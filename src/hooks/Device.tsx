@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useViewport } from './Viewport'
 import { useTheme } from '@material-ui/core/styles'
 

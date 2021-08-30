@@ -1,4 +1,4 @@
-import { Field, Fill } from '../pdfFiller'
+import { Fill } from '../pdfFiller'
 import { State } from '../redux/data'
 
 /**

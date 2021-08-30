@@ -115,12 +115,12 @@ export default function W2JobInfo(): ReactElement {
 
   const showW2s = (
     _w2s: Array<[IncomeW2, number]>,
-    omitAdd: boolean = false
+    omitAdd = false
   ): ReactElement => (
     <FormListContainer<[IncomeW2, number]>
       items={_w2s}
       onDone={(onSuccess) => handleSubmit(onAddW2(onSuccess))}
-      editing={_w2s.findIndex(([_, idx]) => idx === editing)}
+      editing={_w2s.findIndex(([, idx]) => idx === editing)}
       disableEditing={editing !== undefined}
       editItem={(idx) => setEditing(_w2s[idx][1])}
       removeItem={(i) => dispatch(removeW2(i))}

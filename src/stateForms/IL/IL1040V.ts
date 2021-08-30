@@ -2,8 +2,7 @@ import Form from '../Form'
 import F1040 from '../../irsForms/F1040'
 import { IL1040 } from './IL1040'
 import { Field } from '../../pdfFiller'
-import { displayNumber, sumFields } from '../../irsForms/util'
-import { AccountType, FilingStatus, Information, State } from '../../redux/data'
+import { Information, State } from '../../redux/data'
 
 export default class IL1040V implements Form {
   info: Information
@@ -11,7 +10,7 @@ export default class IL1040V implements Form {
   formName: string
   state: State
   il1040: IL1040
-  formOrder: number = -1
+  formOrder = -1
   attachments: () => Form[] = () => []
 
   constructor(info: Information, f1040: F1040, il1040: IL1040) {

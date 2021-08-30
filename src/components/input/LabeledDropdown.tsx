@@ -1,11 +1,5 @@
 import React, { ReactElement } from 'react'
-import {
-  createStyles,
-  makeStyles,
-  Grid,
-  TextField,
-  Theme
-} from '@material-ui/core'
+import { createStyles, makeStyles, Grid, TextField } from '@material-ui/core'
 import { Controller, useFormContext } from 'react-hook-form'
 import locationPostalCodes from 'ustaxes/data/locationPostalCodes'
 import { BaseDropdownProps, LabeledDropdownProps } from './types'
@@ -14,7 +8,7 @@ import countries from 'ustaxes/data/countries'
 import { State } from 'ustaxes/redux/data'
 import ConditionallyWrap from 'ustaxes/components/ConditionallyWrap'
 
-const useStyles = makeStyles((theme: Theme) =>
+const useStyles = makeStyles(() =>
   createStyles({
     root: {
       '& .MuiFormLabel-root': {
@@ -115,9 +109,9 @@ export const USStateDropDown = (props: BaseDropdownProps): ReactElement => (
   <GenericLabeledDropdown<[string, State]>
     {...props}
     dropDownData={locationPostalCodes}
-    valueMapping={([, code], n) => code}
-    keyMapping={([, code], n) => code}
-    textMapping={([name, code], n) => `${code} - ${name}`}
+    valueMapping={([, code]) => code}
+    keyMapping={([, code]) => code}
+    textMapping={([name, code]) => `${code} - ${name}`}
   />
 )
 
@@ -125,9 +119,9 @@ export const CountryDropDown = (props: BaseDropdownProps): ReactElement => (
   <GenericLabeledDropdown<string>
     {...props}
     dropDownData={countries}
-    valueMapping={(name, _) => name}
+    valueMapping={(name) => name}
     keyMapping={(_, idx) => idx}
-    textMapping={(name, _) => name}
+    textMapping={(name) => name}
   />
 )
 

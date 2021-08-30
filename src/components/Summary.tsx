@@ -67,8 +67,6 @@ interface F1040Props {
 const F1040Summary = ({ f1040 }: F1040Props): ReactElement => {
   const classes = useStyles()
 
-  const { navButtons, onAdvance } = usePager()
-
   const earnedIncomeTaxCredit = (
     <BinaryStateListItem active={f1040.scheduleEIC?.allowed(f1040) ?? false}>
       <ListItemText

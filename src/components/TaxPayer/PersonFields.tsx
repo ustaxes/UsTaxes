@@ -19,7 +19,7 @@ import { If } from 'react-if'
 
 export const PersonFields = ({
   children
-}: PropsWithChildren<{}>): ReactElement => (
+}: PropsWithChildren<Record<never, never>>): ReactElement => (
   <Fragment>
     <LabeledInput
       label="First Name and Initial"
@@ -78,7 +78,9 @@ interface ListDependentsProps {
 }
 
 export function ListDependents({
-  onEdit,
+  onEdit = () => {
+    /* default do nothing */
+  },
   editing
 }: ListDependentsProps): ReactElement {
   const dependents = useSelector(
@@ -97,7 +99,7 @@ export function ListDependents({
           remove={() => drop(i)}
           person={p}
           editing={editing === i}
-          onEdit={() => (onEdit ?? (() => {}))(i)}
+          onEdit={() => onEdit(i)}
         />
       ))}
     </List>

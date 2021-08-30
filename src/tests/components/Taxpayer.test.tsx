@@ -33,7 +33,14 @@ describe('Taxpayer', () => {
     const store = createStoreUnpersisted(info)
     const component = (
       <Provider store={store}>
-        <PagerContext.Provider value={{ onAdvance: () => {}, navButtons }}>
+        <PagerContext.Provider
+          value={{
+            onAdvance: () => {
+              /* do nothing */
+            },
+            navButtons
+          }}
+        >
           <TaxPayer />
         </PagerContext.Provider>
       </Provider>

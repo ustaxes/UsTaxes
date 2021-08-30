@@ -319,8 +319,8 @@ export default function F1099Info(): ReactElement {
       <GenericLabeledDropdown<PlanType1099>
         label="Type of 1099-R"
         dropDownData={Object.values(PlanType1099)}
-        valueMapping={(x, i) => x}
-        keyMapping={(x, i) => i}
+        valueMapping={(x) => x}
+        keyMapping={(_, i) => i}
         textMapping={(status) => PlanType1099Texts[status]}
         name="RPlanType"
       />

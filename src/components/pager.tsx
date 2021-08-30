@@ -9,7 +9,9 @@ interface PagerProps {
 }
 
 export const PagerContext = React.createContext<PagerProps>({
-  onAdvance: () => {},
+  onAdvance: () => {
+    /* just a placeholder */
+  },
   navButtons: <></>
 })
 
@@ -61,7 +63,14 @@ export const PagerProvider = <A extends Page>({
 
   return (
     <PagerContext.Provider
-      value={{ onAdvance: onAdvance ?? (() => {}), navButtons }}
+      value={{
+        onAdvance:
+          onAdvance ??
+          (() => {
+            // end of pages
+          }),
+        navButtons
+      }}
     >
       {children}
     </PagerContext.Provider>

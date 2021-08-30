@@ -1,5 +1,5 @@
 import React, { ReactElement } from 'react'
-import { IconButton, makeStyles, Theme } from '@material-ui/core'
+import { IconButton, makeStyles } from '@material-ui/core'
 import { Star } from '@material-ui/icons'
 import fc from 'fast-check'
 import { useDispatch } from 'react-redux'
@@ -8,7 +8,7 @@ import { TaxesState } from 'ustaxes/redux/data'
 import { taxesState } from 'ustaxes/tests/arbitraries'
 import * as prand from 'pure-rand'
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles(() => ({
   root: {
     position: 'absolute',
     top: '0px',

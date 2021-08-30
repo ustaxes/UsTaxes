@@ -25,6 +25,7 @@ import F1098eInfo from './deductions/F1098eInfo'
 import Questions from './Questions'
 import Urls from 'ustaxes/data/urls'
 import { useDevice } from 'ustaxes/hooks/Device'
+import { ReactElement } from 'react'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -85,7 +86,7 @@ export const drawerSections: Section[] = [
   }
 ]
 
-const Menu = () => {
+const Menu = (): ReactElement => {
   const classes = useStyles()
   const { isMobile } = useDevice()
   const [isOpen, setOpen] = useState(!isMobile)

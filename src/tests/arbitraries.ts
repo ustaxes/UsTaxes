@@ -45,7 +45,7 @@ const state = fc.constantFrom(...locationPostalCodes.map(([, code]) => code))
 const concat = (
   as: Arbitrary<string>,
   bs: Arbitrary<string>,
-  sep: string = ' '
+  sep = ' '
 ): Arbitrary<string> => as.chain((a) => bs.map((b) => `${a}${sep}${b}`))
 
 // Ideally these would be normally distributed...

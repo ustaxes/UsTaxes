@@ -47,6 +47,7 @@ export async function savePDF(
   contents: Uint8Array,
   defaultFilename: string
 ): Promise<void> {
+  /* eslint-disable @typescript-eslint/no-explicit-any */
   if ((window as any).__TAURI__ === undefined) {
     // To set the download file name, we create a temporary link element,
     // use download property of an anchor tag, supported for most people
@@ -61,6 +62,7 @@ export async function savePDF(
     a.remove()
     return await Promise.resolve()
   } else {
+    /* eslint-disable @typescript-eslint/no-explicit-any */
     const defaultPath = await (window as any).__TAURI__.path.documentDir()
     const path = await save({
       filters: [{ name: 'PDF Documents (.pdf)', extensions: ['pdf'] }],
