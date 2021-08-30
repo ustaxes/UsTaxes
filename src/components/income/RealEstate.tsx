@@ -136,7 +136,7 @@ const toUserInput = (property: Property): PropertyAddForm => {
 
 export default function RealEstate(): ReactElement {
   const methods = useForm<PropertyAddForm>()
-  const { control, getValues, handleSubmit, reset } = methods
+  const { control, getValues } = methods
   const dispatch = useDispatch()
 
   const { onAdvance, navButtons } = usePager()
@@ -144,24 +144,15 @@ export default function RealEstate(): ReactElement {
   const properties: Property[] = useSelector(
     (state: TaxesState) => state.information.realEstate
   )
-  const [editing, setEditing] = useState<number | undefined>(undefined)
-
-  const defaultValues: PropertyAddForm | undefined = (() => {
-    if (editing !== undefined) {
-      return toUserInput(properties[editing])
-    }
-  })()
 
   const propertyType = useWatch({
     control,
-    name: 'propertyType',
-    defaultValue: defaultValues?.propertyType
+    name: 'propertyType'
   })
 
-  const otherExpensesEntered = useWatch({
+  const otherExpensesEntered: number | undefined = useWatch({
     control,
-    name: 'expenses.other',
-    defaultValue: defaultValues?.expenses.other
+    name: 'expenses.other'
   })
 
   const validateDays = (n: number, other: number): Message | true => {
@@ -175,30 +166,18 @@ export default function RealEstate(): ReactElement {
   const validateRental = (n: number): Message | true =>
     validateDays(n, Number(getValues().personalUseDays ?? 0))
 
-  const clear = (): void => {
-    reset()
-    setEditing(undefined)
-  }
-
   const deleteProperty = (n: number): void => {
     dispatch(removeProperty(n))
-    clear()
   }
 
-  const onAddProperty =
-    (onSuccess: () => void) =>
+  const onAddProperty = (formData: PropertyAddForm): void => {
+    dispatch(addProperty(toProperty(formData)))
+  }
+
+  const onEditProperty =
+    (index: number) =>
     (formData: PropertyAddForm): void => {
-      dispatch(
-        (() => {
-          if (editing !== undefined) {
-            return editProperty({ value: toProperty(formData), index: editing })
-          } else {
-            return addProperty(toProperty(formData))
-          }
-        })()
-      )
-      clear()
-      onSuccess()
+      dispatch(editProperty({ value: toProperty(formData), index }))
     }
 
   const expenseFields: ReactElement[] = enumKeys(PropertyExpenseType).map(
@@ -213,10 +192,7 @@ export default function RealEstate(): ReactElement {
   )
 
   const otherExpenseDescription = (() => {
-    if (
-      defaultValues?.expenses.other !== undefined ||
-      otherExpensesEntered !== 0
-    ) {
+    if (otherExpensesEntered !== 0) {
       return (
         <LabeledInput
           key={enumKeys(PropertyExpenseType).length}
@@ -234,10 +210,9 @@ export default function RealEstate(): ReactElement {
       icon={() => <HouseOutlined />}
       primary={(p) => p.address.address}
       secondary={(p) => <Currency value={p.rentReceived} />}
-      editItem={(i) => setEditing(i)}
-      onDone={(onSuccess) => handleSubmit(onAddProperty(onSuccess))}
+      onSubmitAdd={onAddProperty}
+      onSubmitEdit={onEditProperty}
       removeItem={(i) => deleteProperty(i)}
-      onCancel={clear}
     >
       <h3>Property Location</h3>
       <Grid container spacing={2}>
@@ -253,11 +228,7 @@ export default function RealEstate(): ReactElement {
           name="propertyType"
           valueMapping={(n) => n}
         />
-        <If
-          condition={[propertyType, defaultValues?.propertyType].includes(
-            'other'
-          )}
-        >
+        <If condition={propertyType === 'other'}>
           <LabeledInput
             name="otherPropertyType"
             label="Short property type description"
