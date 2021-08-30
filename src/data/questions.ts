@@ -1,5 +1,6 @@
-import { TaxesState } from 'ustaxes/redux/data'
+import { FilingStatus, Income1099Type, TaxesState } from 'ustaxes/redux/data'
 import { Either, isLeft, isRight, left, right } from 'ustaxes/util'
+import { CURRENT_YEAR } from './federal'
 
 // Defines usable tag names for each question later defined,
 // and maps to a type which is the expected response type.
@@ -9,6 +10,7 @@ export interface QuestionTag {
   FINCEN_114: boolean
   FINCEN_114_ACCOUNT_COUNTRY: string
   FOREIGN_TRUST_RELATIONSHIP: boolean
+  LIVE_APART_FROM_SPOUSE: boolean
 }
 
 export type QuestionTagName = keyof QuestionTag
@@ -20,7 +22,8 @@ export const questionTagNames: QuestionTagName[] = [
   'FOREIGN_ACCOUNT_EXISTS',
   'FINCEN_114',
   'FINCEN_114_ACCOUNT_COUNTRY',
-  'FOREIGN_TRUST_RELATIONSHIP'
+  'FOREIGN_TRUST_RELATIONSHIP',
+  'LIVE_APART_FROM_SPOUSE'
 ]
 
 type ValueTag = 'string' | 'boolean'
@@ -73,6 +76,14 @@ export const questions: Question[] = [
   qr(
     'FOREIGN_TRUST_RELATIONSHIP',
     'During this tax year, did you receive a distribution from, or were you the grantor of, or a transferor to, a foreign trust?'
+  ),
+  q(
+    'LIVE_APART_FROM_SPOUSE',
+    `Did you lived apart from your spouse for all of ${CURRENT_YEAR}?`,
+    'boolean',
+    (s: TaxesState) =>
+      s.information.taxPayer.filingStatus == FilingStatus.MFS &&
+      s.information.f1099s.some((i) => i.type == Income1099Type.SSA)
   )
 ]
 

@@ -48,6 +48,7 @@ export default function GettingStarted(): ReactElement {
           1099-R: support for normal distributions from IRA and pension
           accounts.
         </li>
+        <li>SSA-1099</li>
       </ul>
 
       <p>Supported Attachments to Form 1040</p>
