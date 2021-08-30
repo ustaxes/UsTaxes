@@ -55,6 +55,20 @@ const showIncome = (a: Supported1099): ReactElement => {
         </span>
       )
     }
+    case Income1099Type.SSA: {
+      return (
+        <span>
+          {/* Benefits Paid: <Currency value={a.form.benefitsPaid} />
+          <br />
+          Benefits Repaid: <Currency value={a.form.benefitsRepaid} />
+          <br /> */}
+          Net Benefits: <Currency value={a.form.netBenefits} />
+          <br />
+          Federal Income Tax Withweld:{' '}
+          <Currency value={a.form.federalIncomeTaxWithheld} />
+        </span>
+      )
+    }
   }
 }
 
@@ -77,6 +91,10 @@ interface F1099UserInput {
   taxableAmount: string | number
   federalIncomeTaxWithheld: string | number
   RPlanType: PlanType1099
+  // SSA fields
+  // benefitsPaid: string | number
+  // benefitsRepaid: string | number
+  netBenefits: string | number
 }
 
 const blankUserInput: F1099UserInput = {
@@ -96,7 +114,11 @@ const blankUserInput: F1099UserInput = {
   grossDistribution: '',
   taxableAmount: '',
   federalIncomeTaxWithheld: '',
-  RPlanType: PlanType1099.IRA
+  RPlanType: PlanType1099.IRA,
+  // SSA fields
+  // benefitsPaid: '',
+  // benefitsRepaid: '',
+  netBenefits: ''
 }
 
 const toUserInput = (f: Supported1099): F1099UserInput => ({
@@ -172,6 +194,19 @@ const toF1099 = (input: F1099UserInput): Supported1099 | undefined => {
           federalIncomeTaxWithheld: Number(input.federalIncomeTaxWithheld),
           planType:
             input.RPlanType == 'IRA' ? PlanType1099.IRA : PlanType1099.Pension
+        }
+      }
+    }
+    case Income1099Type.SSA: {
+      return {
+        payer: input.payer,
+        personRole: input.personRole,
+        type: input.formType,
+        form: {
+          // benefitsPaid: Number(input.benefitsPaid),
+          // benefitsRepaid: Number(input.benefitsRepaid),
+          netBenefits: Number(input.netBenefits),
+          federalIncomeTaxWithheld: Number(input.federalIncomeTaxWithheld)
         }
       }
     }
@@ -327,18 +362,45 @@ export default function F1099Info(): ReactElement {
     </Grid>
   )
 
+  const ssaFields = (
+    <div>
+      {/* <LabeledInput
+        label="Box 3 - Benefits Paid"
+        patternConfig={Patterns.currency}
+        name="benefitsPaid"
+      />
+      <LabeledInput
+        label="Box 4 - Benefits Repaid"
+        patternConfig={Patterns.currency}
+        name="benefitsRepaid"
+      /> */}
+      <LabeledInput
+        label="Box 5 - Net Benefits"
+        patternConfig={Patterns.currency}
+        name="netBenefits"
+      />
+      <LabeledInput
+        label="Box 6 - Voluntary Federal Income Tax Withheld"
+        patternConfig={Patterns.currency}
+        name="federalIncomeTaxWithheld"
+      />
+    </div>
+  )
+
   const specificFields = {
     [Income1099Type.INT]: intFields,
     [Income1099Type.B]: bFields,
     [Income1099Type.DIV]: divFields,
-    [Income1099Type.R]: rFields
+    [Income1099Type.R]: rFields,
+    [Income1099Type.SSA]: ssaFields
   }
 
   const titles = {
     [Income1099Type.INT]: '1099-INT',
     [Income1099Type.B]: '1099-B',
     [Income1099Type.DIV]: '1099-DIV',
-    [Income1099Type.R]: '1099-R'
+    [Income1099Type.R]: '1099-R',
+    [Income1099Type.SSA]: 'SSA-1099'
   }
 
   const form: ReactElement | undefined = (

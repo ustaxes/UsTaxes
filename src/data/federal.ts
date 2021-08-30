@@ -264,3 +264,18 @@ export const EIC: EICDef = {
 }
 
 export default federalBrackets
+
+// Constants used in the social security benefits worksheet
+interface SocialSecurityBenefitsDef {
+  caps: { [k in FilingStatus]: { l8: number; l10: number } }
+}
+
+export const SSBenefits: SocialSecurityBenefitsDef = {
+  caps: {
+    [FilingStatus.S]: { l8: 25000, l10: 9000 },
+    [FilingStatus.W]: { l8: 25000, l10: 9000 },
+    [FilingStatus.HOH]: { l8: 25000, l10: 9000 },
+    [FilingStatus.MFS]: { l8: 25000, l10: 9000 },
+    [FilingStatus.MFJ]: { l8: 32000, l10: 12000 }
+  }
+}
