@@ -14,6 +14,7 @@ Most income and deduction information from the following forms are supported:
 - 1099-B
 - 1098-E
 - 1099-R: support for normal distributions from IRA and pension accounts.
+- SSA-1099
 
 So far, this project can attach the following schedules to form 1040:
 
