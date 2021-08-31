@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react'
+import { ReactElement } from 'react'
 import { Grid, List, ListItem } from '@material-ui/core'
 import { useDispatch, useSelector } from 'react-redux'
 import {

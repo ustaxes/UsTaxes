@@ -1,14 +1,8 @@
 import Form from '../Form'
 import F1040 from '../../irsForms/F1040'
 import { Field } from '../../pdfFiller'
-import { displayNumber, sumFields } from '../../irsForms/util'
-import {
-  AccountType,
-  Dependent,
-  FilingStatus,
-  Information,
-  State
-} from '../../redux/data'
+import { displayNumber } from '../../irsForms/util'
+import { Dependent, Information, State } from '../../redux/data'
 import parameters from './Parameters'
 
 export class il1040scheduleileeic implements Form {
@@ -16,7 +10,7 @@ export class il1040scheduleileeic implements Form {
   f1040: F1040
   formName: string
   state: State
-  formOrder: number = 1
+  formOrder = 1
   attachments: () => Form[] = () => []
   qualifyingDependents: Dependent[]
 

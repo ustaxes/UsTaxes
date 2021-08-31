@@ -1,5 +1,5 @@
-import React, { ReactElement } from 'react'
-import { FormProvider, useForm, useFormContext } from 'react-hook-form'
+import { ReactElement } from 'react'
+import { FormProvider, useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import {
   savePrimaryPersonInfo,
@@ -53,14 +53,11 @@ const asPrimaryPerson = (formData: TaxPayerUserForm): PrimaryPerson => ({
   role: PersonRole.PRIMARY
 })
 
-const asTaxPayerUserForm = (person: PrimaryPerson): TaxPayerUserForm => {
-  const { role, ...rest } = person
-  return {
-    ...rest,
-    isForeignCountry: person.address.foreignCountry !== undefined,
-    role: PersonRole.PRIMARY
-  }
-}
+const asTaxPayerUserForm = (person: PrimaryPerson): TaxPayerUserForm => ({
+  ...person,
+  isForeignCountry: person.address.foreignCountry !== undefined,
+  role: PersonRole.PRIMARY
+})
 
 export default function PrimaryTaxpayer(): ReactElement {
   // const variable dispatch to allow use inside function

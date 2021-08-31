@@ -6,12 +6,8 @@ import {
   Income1099Type
 } from '../../redux/data'
 import F1040 from '../F1040'
-import log from '../../log'
 import { sumFields } from '../util'
 import { SSBenefits } from 'ustaxes/data/federal'
-
-const unimplemented = (message: string): void =>
-  log.warn(`[Social Security Benefits Worksheet] unimplemented ${message}`)
 
 export default class SocialSecurityBenefitsWorksheet {
   state: Information
@@ -152,7 +148,7 @@ export default class SocialSecurityBenefitsWorksheet {
 
   // Subtract line 10 from line 9. If zero or less, enter -0-
   l11 = (): number => {
-    let tmp = this.l9() - this.l10()
+    const tmp = this.l9() - this.l10()
     if (tmp < 0) {
       return 0
     } else {
@@ -205,12 +201,12 @@ export default class SocialSecurityBenefitsWorksheet {
   // benefits to be entered in line 6b of 1040. It takes into account the various
   // stopping points in the worksheet.
   taxableAmount = (): number => {
-    let line7 = this.l7()
+    const line7 = this.l7()
     if (line7 == 0) {
       return line7
     }
 
-    let line9 = this.l9()
+    const line9 = this.l9()
     if (line9 == 0) {
       return line9
     }

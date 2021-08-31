@@ -1,11 +1,10 @@
-import React, { ReactElement } from 'react'
+import { ReactElement } from 'react'
 import {
   createStyles,
   makeStyles,
   InputAdornment,
   Grid,
-  TextField,
-  Theme
+  TextField
 } from '@material-ui/core'
 import { LabeledInputProps } from './types'
 import NumberFormat from 'react-number-format'
@@ -14,7 +13,7 @@ import { isNumeric, Patterns } from 'ustaxes/components/Patterns'
 import ConditionallyWrap from 'ustaxes/components/ConditionallyWrap'
 import _ from 'lodash'
 
-const useStyles = makeStyles((theme: Theme) =>
+const useStyles = makeStyles(() =>
   createStyles({
     root: {
       '& .MuiFormLabel-root': {

@@ -10,12 +10,12 @@ import { PersistPartial } from 'redux-persist/es/persistReducer'
 
 const baseTransform = createTransform(
   // transform state on its way to being serialized and persisted.
-  (inboundState: Information, key) => {
+  (inboundState: Information) => {
     return inboundState
   },
   // transform state being rehydrated
   // Just ensure the state has all requisite root members
-  (outboundState: Information, key: keyof Information): Information => {
+  (outboundState: Information): Information => {
     return {
       ...blankState,
       ...outboundState
@@ -35,12 +35,14 @@ const persistedReducer = persistReducer<{ information: Information }, Actions>(
   rootReducer
 )
 
-export type InfoStore = Store<{ information: Information }> & { dispatch: {} }
+export type InfoStore = Store<{ information: Information }> & {
+  dispatch: unknown
+}
 export type PersistedStore = Store<
   { information: Information } & PersistPartial,
   Actions
 > & {
-  dispatch: {}
+  dispatch: unknown
 }
 
 export const createStoreUnpersisted = (information: Information): InfoStore =>

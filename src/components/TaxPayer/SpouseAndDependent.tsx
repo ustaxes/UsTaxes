@@ -1,4 +1,4 @@
-import React, { ReactElement, useState } from 'react'
+import { ReactElement } from 'react'
 
 import { useForm, FormProvider } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
@@ -177,11 +177,11 @@ export const SpouseInfo = (): ReactElement => {
     dispatch(addSpouse(toSpouse(getValues())))
   }
 
-  const onSubmitEdit = (_: number): (() => void) => onSubmit
+  const onSubmitEdit = (): (() => void) => onSubmit
 
   const page = (
     <FormListContainer
-      items={spouse !== undefined ? [spouse] : []}
+      items={spouse !== undefined ? [toSpouseForm(spouse)] : []}
       primary={(s) => `${s.firstName} ${s.lastName}`}
       secondary={(s) => formatSSID(s.ssid)}
       icon={() => <Person />}
@@ -240,7 +240,7 @@ const SpouseAndDependent = (): ReactElement => {
         <GenericLabeledDropdown<FilingStatus>
           label="Filing Status"
           dropDownData={filingStatuses(taxPayer)}
-          valueMapping={(x, i) => x}
+          valueMapping={(x) => x}
           keyMapping={(x, i) => i}
           textMapping={(status) => FilingStatusTexts[status]}
           name="filingStatus"

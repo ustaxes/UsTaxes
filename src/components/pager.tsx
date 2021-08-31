@@ -1,4 +1,4 @@
-import React, { ReactElement, useState, PropsWithChildren } from 'react'
+import { createContext, ReactElement, useState, PropsWithChildren } from 'react'
 import { Box, Button } from '@material-ui/core'
 import { useContext } from 'react'
 import { Link, useHistory } from 'react-router-dom'
@@ -8,8 +8,10 @@ interface PagerProps {
   navButtons: ReactElement
 }
 
-export const PagerContext = React.createContext<PagerProps>({
-  onAdvance: () => {},
+export const PagerContext = createContext<PagerProps>({
+  onAdvance: () => {
+    /* just a placeholder */
+  },
   navButtons: <></>
 })
 
@@ -61,7 +63,14 @@ export const PagerProvider = <A extends Page>({
 
   return (
     <PagerContext.Provider
-      value={{ onAdvance: onAdvance ?? (() => {}), navButtons }}
+      value={{
+        onAdvance:
+          onAdvance ??
+          (() => {
+            // end of pages
+          }),
+        navButtons
+      }}
     >
       {children}
     </PagerContext.Provider>

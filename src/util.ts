@@ -5,7 +5,7 @@
  * @returns tyepsafe array of keys
  */
 
-export const enumKeys = <A extends Object>(a: A): Array<keyof typeof a> =>
+export const enumKeys = <A>(a: A): Array<keyof typeof a> =>
   Object.keys(a).filter((k) => isNaN(Number(k))) as Array<keyof typeof a>
 
 export const anArrayOf = <A>(n: number, a: A): A[] =>
@@ -138,3 +138,8 @@ export const right = <E = never, A = never>(right: A): Either<E, A> => ({
 export const isLeft = <E, A>(e: Either<E, A>): e is Left<E> => e._tag === 'left'
 export const isRight = <E, A>(e: Either<E, A>): e is Right<A> =>
   e._tag === 'right'
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const isDesktop = (): boolean => (window as any).__TAURI__ !== undefined
+
+export const isWeb = (): boolean => !isDesktop()

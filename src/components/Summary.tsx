@@ -1,4 +1,4 @@
-import React, { Fragment, ReactElement } from 'react'
+import { ReactElement } from 'react'
 import {
   List,
   ListItem,
@@ -67,14 +67,12 @@ interface F1040Props {
 const F1040Summary = ({ f1040 }: F1040Props): ReactElement => {
   const classes = useStyles()
 
-  const { navButtons, onAdvance } = usePager()
-
   const earnedIncomeTaxCredit = (
     <BinaryStateListItem active={f1040.scheduleEIC?.allowed(f1040) ?? false}>
       <ListItemText
         primary="Earned Income Tax Credit"
         secondary={
-          <React.Fragment>
+          <>
             <Typography
               component="span"
               variant="body2"
@@ -97,7 +95,7 @@ const F1040Summary = ({ f1040 }: F1040Props): ReactElement => {
                 value={Math.round(f1040.scheduleEIC?.credit(f1040) ?? 0)}
               />
             </Typography>
-          </React.Fragment>
+          </>
         }
       />
     </BinaryStateListItem>
@@ -110,27 +108,25 @@ const F1040Summary = ({ f1040 }: F1040Props): ReactElement => {
       <ListItemText
         primary="Credit for children and other dependents"
         secondary={
-          <React.Fragment>
-            <Typography component="span" variant="body2" color="textPrimary">
-              Credit:{' '}
-              <Currency
-                value={Math.round(f1040.childTaxCreditWorksheet?.credit() ?? 0)}
-              />
-            </Typography>
-          </React.Fragment>
+          <Typography component="span" variant="body2" color="textPrimary">
+            Credit:{' '}
+            <Currency
+              value={Math.round(f1040.childTaxCreditWorksheet?.credit() ?? 0)}
+            />
+          </Typography>
         }
       />
     </BinaryStateListItem>
   )
 
   return (
-    <Fragment>
+    <>
       <h4>Credits</h4>
       <List>
         {earnedIncomeTaxCredit}
         {creditForChildrenAndOtherDependents}
       </List>
-    </Fragment>
+    </>
   )
 }
 
@@ -151,13 +147,13 @@ const Summary = (): ReactElement => {
         const errors = f1040Result.left
 
         return (
-          <Fragment>
+          <>
             {errors.map((error, i) => (
               <Alert key={i} severity="warning">
                 {error}
               </Alert>
             ))}
-          </Fragment>
+          </>
         )
       } else {
         const [f1040] = f1040Result.right
