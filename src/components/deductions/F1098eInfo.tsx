@@ -44,8 +44,6 @@ export default function F1098eInfo(): ReactElement {
 
   const { onAdvance, navButtons } = usePager()
 
-  const { onAdvance, navButtons } = usePager()
-
   const methods = useForm<F1098EUserInput>({ defaultValues })
 
   const dispatch = useDispatch()

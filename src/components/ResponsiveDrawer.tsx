@@ -69,7 +69,6 @@ function ResponsiveDrawer(props: DrawerItemsProps): ReactElement {
   const theme = useTheme()
 
   const { sections, isOpen, onClose } = props
-  const isMobile = theme.breakpoints.values.sm > width
 
   const drawer = (
     <>
