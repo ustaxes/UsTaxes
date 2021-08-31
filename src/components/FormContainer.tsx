@@ -269,12 +269,7 @@ const FormListContainer = <A,>(
         <Else>
           <If condition={max === undefined || items.length < max}>
             <div className={classes.buttonList}>
-              <Button
-                type="button"
-                onClick={openAddForm}
-                variant="contained"
-                color="secondary"
-              >
+              <Button type="button" onClick={openAddForm} variant="contained">
                 Add
               </Button>
             </div>

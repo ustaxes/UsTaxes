@@ -1,4 +1,4 @@
-import { useMemo, ReactElement } from 'react'
+import { useMemo, ReactElement, ReactNode, PropsWithChildren } from 'react'
 import {
   unstable_createMuiStrictModeTheme as createMuiTheme,
   useMediaQuery,
@@ -57,7 +57,7 @@ export default function Main(): ReactElement {
           type: prefersDarkMode ? 'dark' : 'light',
           secondary: {
             light: '#4f5b62',
-            main: '#263238',
+            main: '#BCD2EE',
             dark: '#000a12',
             contrastText: '#ffffff'
           },
@@ -79,6 +79,14 @@ export default function Main(): ReactElement {
     (section: Section) => section.items
   )
 
+  const Layout = ({ children }: PropsWithChildren<{ children: ReactNode }>) => (
+    <Grid container justifyContent="center" direction="row">
+      <Grid item sm={12} md={8} lg={6} className={classes.content}>
+        {children}
+      </Grid>
+    </Grid>
+  )
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
@@ -91,15 +99,13 @@ export default function Main(): ReactElement {
             {allItems.map((item, index) => (
               <Route key={index} exact path={item.url}>
                 {useLocation().pathname !== '/start' && <Menu />}
-                <Grid container justifyContent="center" direction="row">
-                  <Grid item sm={12} md={8} lg={6} className={classes.content}>
-                    {item.element}
-                  </Grid>
-                </Grid>
+                <Layout>{item.element}</Layout>
               </Route>
             ))}
             <Route>
-              <NoMatchPage />
+              <Layout>
+                <NoMatchPage />
+              </Layout>
             </Route>
           </Switch>
         </PagerProvider>
