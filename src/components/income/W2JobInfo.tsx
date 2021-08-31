@@ -1,4 +1,4 @@
-import React, { Fragment, ReactElement, ReactNode, useState } from 'react'
+import { ReactElement, ReactNode } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { FormProvider, useForm } from 'react-hook-form'
 import { usePager } from 'ustaxes/components/pager'
@@ -96,10 +96,7 @@ export default function W2JobInfo(): ReactElement {
       dispatch(editW2({ index, value: toIncomeW2(formData) }))
     }
 
-  const showW2s = (
-    _w2s: IncomeW2[],
-    omitAdd: boolean = false
-  ): ReactElement => (
+  const showW2s = (_w2s: IncomeW2[], omitAdd = false): ReactElement => (
     <FormListContainer<IncomeW2UserInput>
       items={_w2s.map((a) => toIncomeW2UserInput(a))}
       onSubmitAdd={onSubmitAdd}
@@ -225,11 +222,11 @@ export default function W2JobInfo(): ReactElement {
   })()
 
   const form: ReactElement = (
-    <Fragment>
+    <>
       {primaryW2sBlock}
       {spouseW2sBlock}
       {showW2s([])}
-    </Fragment>
+    </>
   )
 
   return (

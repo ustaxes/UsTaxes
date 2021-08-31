@@ -21,6 +21,7 @@ function hasAdditionalMedicareTax(f1040: F1040): boolean {
   return l8 !== undefined && l8 > 0
 }
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 type Constructor<T> = new (...args: any[]) => T
 function hasAttachment<FormType>(
   attachments: Form[],
@@ -69,7 +70,7 @@ describe('fica', () => {
 
   it('should give SS refund based on filing status', () => {
     fc.assert(
-      fc.property(arbitraries.f1040, ([f1040, forms]) => {
+      fc.property(arbitraries.f1040, ([f1040]) => {
         if (hasSSRefund(f1040)) {
           const s3l10 = f1040.schedule3?.l10()
           expect(s3l10).not.toBeUndefined()
@@ -109,7 +110,7 @@ describe('fica', () => {
 
   it('should add Additional Medicare Tax based on filing status', () => {
     fc.assert(
-      fc.property(arbitraries.f1040, ([f1040, forms]) => {
+      fc.property(arbitraries.f1040, ([f1040]) => {
         if (f1040.filingStatus === undefined) {
           return
         }

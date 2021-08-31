@@ -1,4 +1,4 @@
-import React, { ReactElement, useState } from 'react'
+import { ReactElement } from 'react'
 import { useForm, FormProvider } from 'react-hook-form'
 import { Icon, Grid } from '@material-ui/core'
 import { useDispatch, useSelector } from 'react-redux'
@@ -215,10 +215,9 @@ const toF1099 = (input: F1099UserInput): Supported1099 | undefined => {
 
 export default function F1099Info(): ReactElement {
   const f1099s = useSelector((state: TaxesState) => state.information.f1099s)
-  const [editing, doSetEditing] = useState<number | undefined>(undefined)
 
   const methods = useForm<F1099UserInput>()
-  const { reset, watch, setValue } = methods
+  const { watch } = methods
   const selectedType: Income1099Type | undefined = watch('formType')
 
   const dispatch = useDispatch()
@@ -344,8 +343,8 @@ export default function F1099Info(): ReactElement {
       <GenericLabeledDropdown<PlanType1099>
         label="Type of 1099-R"
         dropDownData={Object.values(PlanType1099)}
-        valueMapping={(x, i) => x}
-        keyMapping={(x, i) => i}
+        valueMapping={(x) => x}
+        keyMapping={(_, i) => i}
         textMapping={(status) => PlanType1099Texts[status]}
         name="RPlanType"
       />

@@ -135,7 +135,7 @@ export const fica = {
 
   regularMedicareTaxRate: 1.45 / 100,
   additionalMedicareTaxRate: 0.9 / 100,
-  additionalMedicareTaxThreshold: (filingStatus: FilingStatus) => {
+  additionalMedicareTaxThreshold: (filingStatus: FilingStatus): number => {
     switch (filingStatus) {
       case FilingStatus.MFJ: {
         return 250000

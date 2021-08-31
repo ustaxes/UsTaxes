@@ -1,4 +1,6 @@
-import React, { ReactElement } from 'react'
+/* eslint @typescript-eslint/no-empty-function: "off" */
+
+import { ReactElement } from 'react'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { Provider } from 'react-redux'
 import Questions from 'ustaxes/components/Questions'

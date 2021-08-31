@@ -1,4 +1,4 @@
-import React, { ReactElement, useState } from 'react'
+import { ReactElement } from 'react'
 import { Message, useForm, useWatch, FormProvider } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import {
@@ -205,11 +205,11 @@ export default function RealEstate(): ReactElement {
   })()
 
   const form = (
-    <FormListContainer<Property>
-      items={properties}
+    <FormListContainer
+      items={properties.map((a) => toUserInput(a))}
       icon={() => <HouseOutlined />}
-      primary={(p) => p.address.address}
-      secondary={(p) => <Currency value={p.rentReceived} />}
+      primary={(p) => toProperty(p).address.address}
+      secondary={(p) => <Currency value={toProperty(p).rentReceived} />}
       onSubmitAdd={onAddProperty}
       onSubmitEdit={onEditProperty}
       removeItem={(i) => deleteProperty(i)}
@@ -240,13 +240,13 @@ export default function RealEstate(): ReactElement {
       <Grid container spacing={2}>
         <LabeledInput
           name="rentalDays"
-          rules={{ validate: (n: String) => validateRental(Number(n)) }}
+          rules={{ validate: (n: string) => validateRental(Number(n)) }}
           label="Number of days in the year used for rental"
           patternConfig={Patterns.numDays}
         />
         <LabeledInput
           name="personalUseDays"
-          rules={{ validate: (n: String) => validatePersonal(Number(n)) }}
+          rules={{ validate: (n: string) => validatePersonal(Number(n)) }}
           label="Number of days in the year for personal use"
           patternConfig={Patterns.numDays}
         />

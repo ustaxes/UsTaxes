@@ -31,9 +31,9 @@ const numeric = (
   min: number | undefined = undefined,
   max: number | undefined = undefined,
   format: string | undefined = undefined,
-  mask: string = '_',
-  thousandSeparator: boolean = false,
-  prefix: string = '',
+  mask = '_',
+  thousandSeparator = false,
+  prefix = '',
   decimalScale: number | undefined = 0
 ): NumericPattern => ({
   inputType: 'numeric',

@@ -1,17 +1,15 @@
-import React, {
-  PropsWithChildren,
-  FunctionComponent,
-  ReactElement
-} from 'react'
+import { PropsWithChildren, ReactNode, ReactElement } from 'react'
+
+type ConditionallyWrapProps = PropsWithChildren<{
+  condition: boolean
+  wrapper: (children: ReactNode) => ReactElement
+}>
 
 const ConditionallyWrap = ({
   condition,
   wrapper,
   children
-}: PropsWithChildren<{
-  condition: boolean
-  wrapper: FunctionComponent<any>
-  children: ReactElement
-}>) => (condition ? wrapper(children) : children)
+}: ConditionallyWrapProps): ReactElement =>
+  condition ? wrapper(children) : <>{children}</>
 
 export default ConditionallyWrap

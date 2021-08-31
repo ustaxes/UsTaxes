@@ -1,4 +1,4 @@
-import React, { PropsWithChildren, ReactElement, useState } from 'react'
+import { PropsWithChildren, ReactElement, useState } from 'react'
 import {
   createStyles,
   makeStyles,
@@ -17,11 +17,7 @@ import {
 import { red } from '@material-ui/core/colors'
 import { Delete, Edit } from '@material-ui/icons'
 import { Else, If, Then } from 'react-if'
-import {
-  SubmitHandler,
-  UnpackNestedValue,
-  useFormContext
-} from 'react-hook-form'
+import { SubmitHandler, useFormContext } from 'react-hook-form'
 
 interface FormContainerProps {
   onDone: () => void
@@ -152,7 +148,7 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 )
 
-const FormListContainer = <A extends Record<string, any>>(
+const FormListContainer = <A,>(
   props: PropsWithChildren<FormListContainerProps<A>>
 ): ReactElement => {
   const classes = useStyles()
@@ -167,7 +163,9 @@ const FormListContainer = <A extends Record<string, any>>(
     removeItem,
     onSubmitAdd,
     onSubmitEdit,
-    onCancel = () => {}
+    onCancel = () => {
+      // default do nothing
+    }
   } = props
   const [formState, setFormState] = useState(FormState.Closed)
 

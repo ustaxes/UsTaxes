@@ -20,7 +20,7 @@ export const needsF8959 = (state: Information): boolean => {
 
 export default class F8959 implements Form {
   tag: FormTag = 'f8959'
-  sequenceIndex: number = 71
+  sequenceIndex = 71
   state: Information
   f4137?: F4137
   f8919?: F8919

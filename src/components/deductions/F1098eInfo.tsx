@@ -1,4 +1,4 @@
-import React, { ReactElement, useState } from 'react'
+import { ReactElement } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import SchoolIcon from '@material-ui/icons/School'
 import { useDispatch, useSelector } from 'react-redux'
@@ -66,7 +66,7 @@ export default function F1098eInfo(): ReactElement {
       removeItem={(i) => dispatch(remove1098e(i))}
       primary={(f) => f.lender}
       secondary={(f) => showInterest(toF1098e(f))}
-      icon={(f) => <SchoolIcon />}
+      icon={() => <SchoolIcon />}
     >
       <p>
         <strong>Input data from 1098-E</strong>

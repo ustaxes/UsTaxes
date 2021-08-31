@@ -1,14 +1,15 @@
-import React, { ReactElement } from 'react'
+import { ReactElement } from 'react'
 import { StartButtons, SingleButtons } from './pager'
+import { isWeb } from 'ustaxes/util'
 
-const repoUrl: string = 'https://github.com/ustaxes/UsTaxes'
-const codeOfConductUrl: string =
+const repoUrl = 'https://github.com/ustaxes/UsTaxes'
+const codeOfConductUrl =
   'https://github.com/ustaxes/UsTaxes/blob/master/docs/CODE_OF_CONDUCT.md'
-const contributingUrl: string =
+const contributingUrl =
   'https://github.com/ustaxes/UsTaxes/blob/master/docs/CONTRIBUTING.md'
-const architecture: string =
+const architecture =
   'https://github.com/ustaxes/UsTaxes/blob/master/docs/ARCHITECTURE.md'
-const releases: string = 'https://github.com/ustaxes/UsTaxes/releases'
+const releases = 'https://github.com/ustaxes/UsTaxes/releases'
 
 const doubleButtons: ReactElement = (
   <StartButtons
@@ -85,7 +86,7 @@ export default function GettingStarted(): ReactElement {
         able to use UsTaxes to paper file your return!
       </p>
 
-      {(window as any).__TAURI__ === undefined ? doubleButtons : singleButtons}
+      {isWeb() ? doubleButtons : singleButtons}
 
       <h2>About This Project</h2>
       <p>

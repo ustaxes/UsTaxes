@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react'
+import { ReactElement } from 'react'
 import { render, waitFor } from '@testing-library/react'
 import { Provider } from 'react-redux'
 
@@ -33,7 +33,14 @@ describe('Taxpayer', () => {
     const store = createStoreUnpersisted(info)
     const component = (
       <Provider store={store}>
-        <PagerContext.Provider value={{ onAdvance: () => {}, navButtons }}>
+        <PagerContext.Provider
+          value={{
+            onAdvance: () => {
+              /* do nothing */
+            },
+            navButtons
+          }}
+        >
           <TaxPayer />
         </PagerContext.Provider>
       </Provider>
