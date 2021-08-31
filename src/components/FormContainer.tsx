@@ -17,6 +17,7 @@ import {
 import { red } from '@material-ui/core/colors'
 import { Delete, Edit } from '@material-ui/icons'
 import { Else, If, Then } from 'react-if'
+import { SubmitHandler, useFormContext } from 'react-hook-form'
 
 interface FormContainerProps {
   onDone: () => void
@@ -121,11 +122,10 @@ export const MutableListItem = ({
 }
 
 interface FormListContainerProps<A> {
-  onDone: (f: () => void) => () => void
-  onCancel: () => void
+  onSubmitAdd: SubmitHandler<A>
+  onSubmitEdit: (index: number) => SubmitHandler<A>
+  onCancel?: () => void
   items: A[]
-  editItem?: (v: number) => void
-  editing?: number
   disableEditing?: boolean
   removeItem?: (v: number) => void
   primary: (a: A) => string
@@ -159,35 +159,48 @@ const FormListContainer = <A,>(
     max,
     primary,
     secondary,
-    editItem,
-    editing,
     disableEditing = false,
     removeItem,
-    onDone,
-    onCancel
+    onSubmitAdd,
+    onSubmitEdit,
+    onCancel = () => {
+      // default do nothing
+    }
   } = props
   const [formState, setFormState] = useState(FormState.Closed)
 
+  const [editing, setEditing] = useState<number | undefined>(undefined)
+
   const close = (): void => {
     setFormState(FormState.Closed)
+    reset({ values: undefined })
+    setEditing(undefined)
   }
 
-  const _onCancel = (): void => {
+  // Note useFormContext here instead of useForm reuses the
+  // existing form context from the parent.
+  const { reset, handleSubmit } = useFormContext()
+
+  const onClose = (): void => {
     onCancel()
     close()
   }
 
-  const _onDone: () => void = onDone(close)
+  const onSave: SubmitHandler<A> = (formData): void => {
+    if (editing !== undefined) {
+      onSubmitEdit(editing)(formData)
+    } else {
+      onSubmitAdd(formData)
+    }
+    close()
+  }
 
-  const editAction = (() => {
-    if (
-      editItem !== undefined &&
-      !disableEditing &&
-      formState === FormState.Closed
-    ) {
+  const openEditForm = (() => {
+    if (!disableEditing && formState === FormState.Closed) {
       return (n: number) => () => {
         setFormState(FormState.Editing)
-        editItem(n)
+        setEditing(n)
+        reset(items[n])
       }
     }
     return () => undefined
@@ -202,7 +215,7 @@ const FormListContainer = <A,>(
               key={i}
               primary={primary(item)}
               secondary={secondary !== undefined ? secondary(item) : undefined}
-              onEdit={editAction(i)}
+              onEdit={openEditForm(i)}
               editing={editing === i}
               remove={
                 removeItem !== undefined ? () => removeItem(i) : undefined
@@ -220,7 +233,7 @@ const FormListContainer = <A,>(
       {itemDisplay}
       <If condition={formState !== FormState.Closed}>
         <Then>
-          <FormContainer onDone={_onDone} onCancel={_onCancel}>
+          <FormContainer onDone={handleSubmit(onSave)} onCancel={onClose}>
             {children}
           </FormContainer>
         </Then>
