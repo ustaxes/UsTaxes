@@ -50,7 +50,7 @@ const showIncome = (a: Supported1099): ReactElement => {
           <br />
           Taxable Amount: <Currency value={a.form.taxableAmount} />
           <br />
-          Federal Income Tax Withweld:{' '}
+          Federal Income Tax Withheld:{' '}
           <Currency value={a.form.federalIncomeTaxWithheld} />
         </span>
       )
@@ -218,36 +218,26 @@ export default function F1099Info(): ReactElement {
   const [editing, doSetEditing] = useState<number | undefined>(undefined)
 
   const methods = useForm<F1099UserInput>()
-  const { handleSubmit, reset, watch, setValue } = methods
+  const { reset, watch, setValue } = methods
   const selectedType: Income1099Type | undefined = watch('formType')
 
   const dispatch = useDispatch()
 
   const { onAdvance, navButtons } = usePager()
 
-  const setEditing = (idx: number): void => {
-    reset(toUserInput(f1099s[idx]))
-    doSetEditing(idx)
+  const onSubmitAdd = (formData: F1099UserInput): void => {
+    const payload = toF1099(formData)
+    if (payload !== undefined) {
+      dispatch(add1099(payload))
+    }
   }
 
-  const clear = (): void => {
-    reset()
-    setValue('formType', undefined)
-    doSetEditing(undefined)
-  }
-
-  const onAdd1099 =
-    (onSuccess: () => void) =>
+  const onSubmitEdit =
+    (index: number) =>
     (formData: F1099UserInput): void => {
       const payload = toF1099(formData)
       if (payload !== undefined) {
-        if (editing === undefined) {
-          dispatch(add1099(payload))
-        } else {
-          dispatch(edit1099({ index: editing, value: payload }))
-        }
-        clear()
-        onSuccess()
+        dispatch(edit1099({ value: payload, index }))
       }
     }
 
@@ -405,17 +395,24 @@ export default function F1099Info(): ReactElement {
 
   const form: ReactElement | undefined = (
     <FormListContainer
-      onDone={(onSuccess) => handleSubmit(onAdd1099(onSuccess))}
-      onCancel={clear}
-      items={f1099s}
+      onSubmitAdd={onSubmitAdd}
+      onSubmitEdit={onSubmitEdit}
+      items={f1099s.map((a) => toUserInput(a))}
       removeItem={(i) => dispatch(remove1099(i))}
-      editing={editing}
-      editItem={setEditing}
       primary={(f) => f.payer}
-      secondary={(f) => showIncome(f)}
+      secondary={(f) => {
+        const form = toF1099(f)
+        if (form !== undefined) {
+          return showIncome(form)
+        }
+        return ''
+      }}
       icon={(f) => (
-        <Icon style={{ lineHeight: 1 }} title={titles[f.type]}>
-          {f.type}
+        <Icon
+          style={{ lineHeight: 1 }}
+          title={f.formType !== undefined ? titles[f.formType] : undefined}
+        >
+          {f.formType}
         </Icon>
       )}
     >

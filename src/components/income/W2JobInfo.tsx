@@ -57,10 +57,8 @@ const toIncomeW2UserInput = (data: IncomeW2): IncomeW2UserInput => ({
 
 export default function W2JobInfo(): ReactElement {
   const dispatch = useDispatch()
-  const [editing, doSetEditing] = useState<number | undefined>(undefined)
 
   const methods = useForm<IncomeW2UserInput>()
-  const { handleSubmit, reset } = methods
 
   const spouse: Spouse | undefined = useSelector(
     (state: TaxesState) => state.information.taxPayer?.spouse
@@ -81,59 +79,41 @@ export default function W2JobInfo(): ReactElement {
     p !== undefined ? [p as Person] : []
   )
 
-  const w2s: Array<[IncomeW2, number]> = useSelector((state: TaxesState) =>
-    state.information.w2s.map((w2, i) => [w2, i])
+  const w2s: IncomeW2[] = useSelector(
+    (state: TaxesState) => state.information.w2s
   )
 
-  const primaryW2s = w2s.filter(([w2]) => w2.personRole === PersonRole.PRIMARY)
-  const spouseW2s = w2s.filter(([w2]) => w2.personRole === PersonRole.SPOUSE)
+  const primaryW2s = w2s.filter((w2) => w2.personRole === PersonRole.PRIMARY)
+  const spouseW2s = w2s.filter((w2) => w2.personRole === PersonRole.SPOUSE)
 
-  const setEditing = (idx: number): void => {
-    reset(toIncomeW2UserInput(w2s[idx][0]))
-    doSetEditing(idx)
+  const onSubmitAdd = (formData: IncomeW2UserInput): void => {
+    dispatch(addW2(toIncomeW2(formData)))
   }
 
-  const clear = (): void => {
-    reset()
-    doSetEditing(undefined)
-  }
-
-  const onAddW2 =
-    (onSuccess: () => void) =>
+  const onSubmitEdit =
+    (index: number) =>
     (formData: IncomeW2UserInput): void => {
-      dispatch(
-        (() => {
-          if (editing !== undefined) {
-            return editW2({ index: editing, value: toIncomeW2(formData) })
-          }
-          return addW2(toIncomeW2(formData))
-        })()
-      )
-      clear()
-      onSuccess()
+      dispatch(editW2({ index, value: toIncomeW2(formData) }))
     }
 
   const showW2s = (
-    _w2s: Array<[IncomeW2, number]>,
+    _w2s: IncomeW2[],
     omitAdd: boolean = false
   ): ReactElement => (
-    <FormListContainer<[IncomeW2, number]>
-      items={_w2s}
-      onDone={(onSuccess) => handleSubmit(onAddW2(onSuccess))}
-      editing={_w2s.findIndex(([_, idx]) => idx === editing)}
-      disableEditing={editing !== undefined}
-      editItem={(idx) => setEditing(_w2s[idx][1])}
+    <FormListContainer<IncomeW2UserInput>
+      items={_w2s.map((a) => toIncomeW2UserInput(a))}
+      onSubmitAdd={onSubmitAdd}
+      onSubmitEdit={onSubmitEdit}
       removeItem={(i) => dispatch(removeW2(i))}
       icon={() => <Work />}
-      primary={(w2: [IncomeW2, number]) =>
-        w2[0].employer?.employerName ?? w2[0].occupation
+      primary={(w2: IncomeW2UserInput) =>
+        w2.employer?.employerName ?? w2.occupation
       }
-      secondary={(w2: [IncomeW2, number]) => (
+      secondary={(w2: IncomeW2UserInput) => (
         <span>
-          Income: <Currency value={w2[0].income} />
+          Income: <Currency value={toIncomeW2(w2).income} />
         </span>
       )}
-      onCancel={clear}
       max={omitAdd ? 0 : undefined}
     >
       <p>Input data from W-2</p>
@@ -248,12 +228,7 @@ export default function W2JobInfo(): ReactElement {
     <Fragment>
       {primaryW2sBlock}
       {spouseW2sBlock}
-      <If condition={editing === undefined}>
-        {
-          // just for Add button:
-          showW2s([])
-        }
-      </If>
+      {showW2s([])}
     </Fragment>
   )
 

@@ -39,11 +39,25 @@ interface UserPersonForm {
   ssid: string
 }
 
+const blankUserPersonForm: UserPersonForm = {
+  firstName: '',
+  lastName: '',
+  ssid: ''
+}
+
 interface UserDependentForm extends UserPersonForm {
   relationship: string
   birthYear: string
   isStudent: boolean
   numberOfMonths: string
+}
+
+const blankUserDependentForm: UserDependentForm = {
+  ...blankUserPersonForm,
+  relationship: '',
+  birthYear: '',
+  isStudent: false,
+  numberOfMonths: ''
 }
 
 const toDependent = (formData: UserDependentForm): Dependent => {
@@ -75,6 +89,11 @@ interface UserSpouseForm extends UserPersonForm {
   isTaxpayerDependent: boolean
 }
 
+const blankUserSpouseForm = {
+  ...blankUserPersonForm,
+  isTaxpayerDependent: false
+}
+
 const toSpouse = (formData: UserSpouseForm): Spouse => ({
   ...formData,
   role: PersonRole.SPOUSE
@@ -89,45 +108,29 @@ export const AddDependentForm = (): ReactElement => {
     (state: TaxesState) => state.information.taxPayer?.dependents ?? []
   )
 
-  const [editing, doSetEditing] = useState<number | undefined>(undefined)
   const dispatch = useDispatch()
 
-  const methods = useForm<UserDependentForm>()
-  const { handleSubmit, reset } = methods
+  const methods = useForm<UserDependentForm>({
+    defaultValues: blankUserDependentForm
+  })
 
-  const setEditing = (idx: number): void => {
-    reset(toDependentForm(dependents[idx]))
-    doSetEditing(idx)
+  const onSubmitAdd = (formData: UserDependentForm): void => {
+    dispatch(addDependent(toDependent(formData)))
   }
 
-  const clear = (): void => {
-    doSetEditing(undefined)
-  }
-
-  const _onSubmit =
-    (onSuccess: () => void) =>
-    (dependent: UserDependentForm): void => {
-      if (editing !== undefined) {
-        dispatch(
-          editDependent({ index: editing, value: toDependent(dependent) })
-        )
-        clear()
-      } else {
-        dispatch(addDependent(toDependent(dependent)))
-      }
-      onSuccess()
-      reset()
+  const onSubmitEdit =
+    (index: number) =>
+    (formData: UserDependentForm): void => {
+      dispatch(editDependent({ index, value: toDependent(formData) }))
     }
 
   const page = (
-    <FormListContainer
-      onDone={(onSuccess) => handleSubmit(_onSubmit(onSuccess))}
-      onCancel={clear}
-      items={dependents}
+    <FormListContainer<UserDependentForm>
+      onSubmitAdd={onSubmitAdd}
+      onSubmitEdit={onSubmitEdit}
+      items={dependents.map((a) => toDependentForm(a))}
       primary={(a) => `${a.firstName} ${a.lastName}`}
       secondary={(a) => formatSSID(a.ssid)}
-      editItem={setEditing}
-      editing={editing}
       icon={() => <Person />}
       removeItem={(i) => dispatch(removeDependent(i))}
     >
@@ -160,32 +163,21 @@ export const AddDependentForm = (): ReactElement => {
 }
 
 export const SpouseInfo = (): ReactElement => {
-  const methods = useForm<UserSpouseForm>()
-  const { handleSubmit, getValues, reset } = methods
-  const [editing, doSetEditing] = useState<boolean>(false)
+  const methods = useForm<UserSpouseForm>({
+    defaultValues: blankUserSpouseForm
+  })
+  const { getValues } = methods
   const dispatch = useDispatch()
 
   const spouse: Spouse | undefined = useSelector((state: TaxesState) => {
     return state.information.taxPayer?.spouse
   })
 
-  const clear = (): void => {
-    reset()
-    doSetEditing(false)
-  }
-
-  const setEditing = (): void => {
-    if (spouse !== undefined) {
-      reset(toSpouseForm(spouse))
-    }
-    doSetEditing(true)
-  }
-
-  const onSubmit = (onSuccess: () => void) => (): void => {
+  const onSubmit = (): void => {
     dispatch(addSpouse(toSpouse(getValues())))
-    doSetEditing(false)
-    onSuccess()
   }
+
+  const onSubmitEdit = (_: number): (() => void) => onSubmit
 
   const page = (
     <FormListContainer
@@ -193,11 +185,9 @@ export const SpouseInfo = (): ReactElement => {
       primary={(s) => `${s.firstName} ${s.lastName}`}
       secondary={(s) => formatSSID(s.ssid)}
       icon={() => <Person />}
-      onDone={(onSuccess) => handleSubmit(onSubmit(onSuccess))}
-      onCancel={clear}
+      onSubmitAdd={onSubmit}
+      onSubmitEdit={onSubmitEdit}
       max={1}
-      editItem={() => setEditing()}
-      editing={editing ? 0 : undefined}
       removeItem={() => dispatch(removeSpouse)}
     >
       <Grid container spacing={2}>
@@ -224,7 +214,9 @@ const SpouseAndDependent = (): ReactElement => {
   const methods = useForm<{ filingStatus: FilingStatus }>({
     defaultValues: { filingStatus: taxPayer.filingStatus }
   })
+
   const { handleSubmit } = methods
+
   // const variable dispatch to allow use inside function
   const dispatch = useDispatch()
 
