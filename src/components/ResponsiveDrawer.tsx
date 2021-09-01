@@ -4,13 +4,22 @@ import Drawer from '@material-ui/core/Drawer'
 import List from '@material-ui/core/List'
 import ListItem from '@material-ui/core/ListItem'
 import ListItemText from '@material-ui/core/ListItemText'
-import { createStyles, makeStyles, useTheme } from '@material-ui/core/styles'
+import {
+  createStyles,
+  makeStyles,
+  useTheme,
+  Theme,
+  Toolbar,
+  IconButton
+} from '@material-ui/core'
+import GitHubIcon from '@material-ui/icons/GitHub'
+import TwitterIcon from '@material-ui/icons/Twitter'
 import { NavLink, useLocation } from 'react-router-dom'
 import { useDevice } from 'ustaxes/hooks/Device'
 
 const drawerWidth = 240
 
-const useStyles = makeStyles((theme) =>
+const useStyles = makeStyles<Theme, { isMobile: boolean }>((theme) =>
   createStyles({
     drawer: {
       [theme.breakpoints.up('sm')]: {
@@ -18,8 +27,17 @@ const useStyles = makeStyles((theme) =>
         flexShrink: 0
       }
     },
-    drawerPaper: {
-      width: drawerWidth
+    drawerPaper: ({ isMobile }) => ({
+      width: isMobile ? '100%' : drawerWidth
+    }),
+    listSocial: {
+      display: 'flex',
+      justifyContent: 'flex-end',
+      marginRight: theme.spacing(2)
+    },
+    listItemSocial: {
+      flex: 0,
+      padding: 0
     },
     list: {
       marginLeft: theme.spacing(0),
@@ -34,6 +52,11 @@ const useStyles = makeStyles((theme) =>
     }
   })
 )
+
+export interface Section {
+  title: string
+  items: SectionItem[]
+}
 
 export interface SectionItem {
   title: string
@@ -51,11 +74,6 @@ export const item = (
   element
 })
 
-export interface Section {
-  title: string
-  items: SectionItem[]
-}
-
 export interface DrawerItemsProps {
   sections: Section[]
   isOpen: boolean
@@ -65,13 +83,14 @@ export interface DrawerItemsProps {
 function ResponsiveDrawer(props: DrawerItemsProps): ReactElement {
   const { isMobile } = useDevice()
   const location = useLocation()
-  const classes = useStyles()
+  const classes = useStyles({ isMobile })
   const theme = useTheme()
 
   const { sections, isOpen, onClose } = props
 
   const drawer = (
     <>
+      {isMobile && <Toolbar />}
       {sections.map(({ title, items }) => (
         <div key={title}>
           <List className={classes.list}>
@@ -94,13 +113,41 @@ function ResponsiveDrawer(props: DrawerItemsProps): ReactElement {
           <Divider />
         </div>
       ))}
+      <div>
+        <List className={classes.listSocial}>
+          <ListItem className={classes.listItemSocial}>
+            <IconButton
+              color="inherit"
+              aria-label="github, opens in new tab"
+              component="a"
+              href={`https://github.com/ustaxes/UsTaxes`}
+              target="_blank"
+              rel="noreferrer noopener"
+            >
+              <GitHubIcon />
+            </IconButton>
+          </ListItem>
+          <ListItem className={classes.listItemSocial}>
+            <IconButton
+              color="inherit"
+              aria-label="twitter, opens in new tab"
+              component="a"
+              href={`https://www.twitter.com/ustaxesorg`}
+              target="_blank"
+              rel="noreferrer noopener"
+            >
+              <TwitterIcon />
+            </IconButton>
+          </ListItem>
+        </List>
+      </div>
     </>
   )
 
   return (
     <nav className={classes.drawer} aria-label="primary">
       <Drawer
-        variant={isMobile ? 'temporary' : 'persistent'}
+        variant="persistent"
         anchor={theme.direction === 'rtl' ? 'right' : 'left'}
         open={isOpen}
         onClose={onClose}

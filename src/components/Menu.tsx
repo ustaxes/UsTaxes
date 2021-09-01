@@ -1,15 +1,23 @@
-import { useEffect, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
+import { useLocation } from 'react-router-dom'
+
 import {
   createStyles,
   makeStyles,
   AppBar,
   IconButton,
   Theme,
-  Toolbar
+  Toolbar,
+  Typography
 } from '@material-ui/core'
 import MenuIcon from '@material-ui/icons/Menu'
+import ChevronLeftIcon from '@material-ui/icons/ChevronLeft'
 
-import ResponsiveDrawer, { item, Section } from './ResponsiveDrawer'
+import ResponsiveDrawer, {
+  item,
+  Section,
+  SectionItem
+} from './ResponsiveDrawer'
 
 import W2JobInfo from './income/W2JobInfo'
 import CreatePDF from './createPDF'
@@ -25,15 +33,18 @@ import F1098eInfo from './deductions/F1098eInfo'
 import Questions from './Questions'
 import Urls from 'ustaxes/data/urls'
 import { useDevice } from 'ustaxes/hooks/Device'
-import { ReactElement } from 'react'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    appBar: {
-      width: '100%',
+    root: {
+      flexGrow: 1,
+      zIndex: theme.zIndex.drawer + 1,
       [theme.breakpoints.up('sm')]: {
         display: 'none'
       }
+    },
+    title: {
+      flexGrow: 1
     },
     menuButton: {
       marginRight: theme.spacing(2),
@@ -43,6 +54,26 @@ const useStyles = makeStyles((theme: Theme) =>
     }
   })
 )
+
+const getTitleAndPage = (sections: Section[], currentUrl: string): string => {
+  let currentSection
+  let currentPage
+
+  sections.forEach(({ title, items }: Section) => {
+    if (
+      items.find(({ url, title }: SectionItem) => {
+        if (url === currentUrl) {
+          currentPage = title
+          return true
+        }
+        return false
+      })
+    ) {
+      currentSection = title
+    }
+  })
+  return `${currentSection} - ${currentPage}`
+}
 
 export const drawerSections: Section[] = [
   {
@@ -101,17 +132,32 @@ const Menu = (): ReactElement => {
 
   return (
     <>
-      <AppBar position="fixed" className={classes.appBar}>
+      <AppBar position="fixed" className={classes.root}>
         <Toolbar>
           <IconButton
             color="inherit"
-            aria-label="open drawer"
+            aria-label={`${isOpen ? 'close' : 'open'} drawer`}
             edge="start"
             onClick={() => setOpen((isOpen) => !isOpen)}
             className={classes.menuButton}
           >
             <MenuIcon />
           </IconButton>
+          <Typography className={classes.title}>
+            {isOpen
+              ? 'Menu'
+              : getTitleAndPage(drawerSections, useLocation().pathname)}
+          </Typography>
+          {isOpen && (
+            <IconButton
+              color="inherit"
+              aria-label={`github`}
+              edge="end"
+              onClick={() => setOpen(false)}
+            >
+              <ChevronLeftIcon />
+            </IconButton>
+          )}
         </Toolbar>
       </AppBar>
       <ResponsiveDrawer

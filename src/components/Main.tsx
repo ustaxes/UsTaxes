@@ -13,6 +13,7 @@ import { Switch, Route, Redirect, useLocation } from 'react-router-dom'
 import { PagerProvider } from './pager'
 import { StateLoader } from './debug'
 import NoMatchPage from './NoMatchPage'
+import ScrollTop from './ScreenTop'
 import Menu, { drawerSections } from './Menu'
 import { Section, SectionItem } from './ResponsiveDrawer'
 
@@ -109,6 +110,7 @@ export default function Main(): ReactElement {
             </Route>
           </Switch>
         </PagerProvider>
+        {!isMobile && <ScrollTop />}
       </main>
     </ThemeProvider>
   )
