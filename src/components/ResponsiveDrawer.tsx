@@ -1,20 +1,21 @@
-import { ReactElement } from 'react'
-import Divider from '@material-ui/core/Divider'
-import Drawer from '@material-ui/core/Drawer'
-import List from '@material-ui/core/List'
-import ListItem from '@material-ui/core/ListItem'
-import ListItemText from '@material-ui/core/ListItemText'
+import { Dispatch, ReactElement, SetStateAction } from 'react'
+import { useLocation, NavLink } from 'react-router-dom'
 import {
   createStyles,
   makeStyles,
   useTheme,
+  Divider,
+  Drawer,
+  IconButton,
+  List,
+  ListItem,
+  ListItemText,
+  ListSubheader,
   Theme,
-  Toolbar,
-  IconButton
+  Toolbar
 } from '@material-ui/core'
 import GitHubIcon from '@material-ui/icons/GitHub'
 import TwitterIcon from '@material-ui/icons/Twitter'
-import { NavLink, useLocation } from 'react-router-dom'
 import { useDevice } from 'ustaxes/hooks/Device'
 
 const drawerWidth = 240
@@ -77,7 +78,7 @@ export const item = (
 export interface DrawerItemsProps {
   sections: Section[]
   isOpen: boolean
-  onClose: () => void
+  setOpen: Dispatch<SetStateAction<boolean>>
 }
 
 function ResponsiveDrawer(props: DrawerItemsProps): ReactElement {
@@ -86,61 +87,62 @@ function ResponsiveDrawer(props: DrawerItemsProps): ReactElement {
   const classes = useStyles({ isMobile })
   const theme = useTheme()
 
-  const { sections, isOpen, onClose } = props
+  const { sections, isOpen, setOpen } = props
 
   const drawer = (
     <>
       {isMobile && <Toolbar />}
       {sections.map(({ title, items }) => (
-        <div key={title}>
-          <List className={classes.list}>
-            <h2 className={classes.sectionHeader}>{title}</h2>
-            {items.map((item, itemIdx) => (
+        <>
+          <List
+            subheader={<ListSubheader>{title}</ListSubheader>}
+            className={classes.list}
+          >
+            {items.map((item) => (
               <ListItem
+                key={item.title}
                 className={classes.listItem}
                 button
-                key={itemIdx}
                 component={NavLink}
                 exact
                 activeClassName="current"
                 to={item.url}
                 selected={location.pathname === item.url}
+                disabled={location.pathname === item.url}
               >
-                <ListItemText primary={item.title} />
+                <ListItemText primary={`${item.title}`} />
               </ListItem>
             ))}
           </List>
           <Divider />
-        </div>
+        </>
       ))}
-      <div>
-        <List className={classes.listSocial}>
-          <ListItem className={classes.listItemSocial}>
-            <IconButton
-              color="inherit"
-              aria-label="github, opens in new tab"
-              component="a"
-              href={`https://github.com/ustaxes/UsTaxes`}
-              target="_blank"
-              rel="noreferrer noopener"
-            >
-              <GitHubIcon />
-            </IconButton>
-          </ListItem>
-          <ListItem className={classes.listItemSocial}>
-            <IconButton
-              color="inherit"
-              aria-label="twitter, opens in new tab"
-              component="a"
-              href={`https://www.twitter.com/ustaxesorg`}
-              target="_blank"
-              rel="noreferrer noopener"
-            >
-              <TwitterIcon />
-            </IconButton>
-          </ListItem>
-        </List>
-      </div>
+      <List className={classes.listSocial}>
+        <ListItem className={classes.listItemSocial}>
+          <IconButton
+            color="inherit"
+            aria-label="github, opens in new tab"
+            component="a"
+            href={`https://github.com/ustaxes/UsTaxes`}
+            target="_blank"
+            rel="noreferrer noopener"
+          >
+            <GitHubIcon />
+          </IconButton>
+        </ListItem>
+        <ListItem className={classes.listItemSocial}>
+          <IconButton
+            color="inherit"
+            aria-label="twitter, opens in new tab"
+            component="a"
+            href={`https://www.twitter.com/ustaxesorg`}
+            target="_blank"
+            rel="noreferrer noopener"
+          >
+            <TwitterIcon />
+          </IconButton>
+        </ListItem>
+      </List>
     </>
   )
 
@@ -150,11 +152,13 @@ function ResponsiveDrawer(props: DrawerItemsProps): ReactElement {
         variant="persistent"
         anchor={theme.direction === 'rtl' ? 'right' : 'left'}
         open={isOpen}
-        onClose={onClose}
+        onClose={() => setOpen(false)}
         classes={{
           paper: classes.drawerPaper
         }}
         ModalProps={{
+          disableAutoFocus: false,
+          disableEnforceFocus: true,
           keepMounted: isMobile ? true : false // Better open performance on mobile.
         }}
       >

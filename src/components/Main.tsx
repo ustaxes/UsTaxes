@@ -1,9 +1,9 @@
-import { useMemo, ReactElement, ReactNode, PropsWithChildren } from 'react'
+import { useMemo, PropsWithChildren, ReactElement, ReactNode } from 'react'
 import {
+  createStyles,
+  makeStyles,
   unstable_createMuiStrictModeTheme as createMuiTheme,
   useMediaQuery,
-  makeStyles,
-  createStyles,
   CssBaseline,
   Grid,
   Theme,
@@ -51,6 +51,8 @@ const useStyles = makeStyles<Theme, Props>((theme: Theme) =>
 
 export default function Main(): ReactElement {
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)')
+  const isStartPage = useLocation().pathname === '/start'
+
   const theme = useMemo(
     () =>
       createMuiTheme({
@@ -91,15 +93,15 @@ export default function Main(): ReactElement {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <div className={classes.toolbar} />
+      {isMobile && !isStartPage && <div className={classes.toolbar} />}
       <main className={classes.main}>
         <StateLoader />
         <PagerProvider pages={allItems}>
           <Switch>
             <Redirect path="/" to={Urls.default} exact />
-            {allItems.map((item, index) => (
-              <Route key={index} exact path={item.url}>
-                {useLocation().pathname !== '/start' && <Menu />}
+            {allItems.map((item) => (
+              <Route key={item.title} exact path={item.url}>
+                {!isStartPage && <Menu />}
                 <Layout>{item.element}</Layout>
               </Route>
             ))}

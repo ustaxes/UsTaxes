@@ -6,12 +6,13 @@ import {
   makeStyles,
   AppBar,
   IconButton,
+  Slide,
   Theme,
   Toolbar,
   Typography
 } from '@material-ui/core'
+import CloseIcon from '@material-ui/icons/Close'
 import MenuIcon from '@material-ui/icons/Menu'
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft'
 
 import ResponsiveDrawer, {
   item,
@@ -33,6 +34,7 @@ import F1098eInfo from './deductions/F1098eInfo'
 import Questions from './Questions'
 import Urls from 'ustaxes/data/urls'
 import { useDevice } from 'ustaxes/hooks/Device'
+import FocusTrap from 'focus-trap-react'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -43,14 +45,24 @@ const useStyles = makeStyles((theme: Theme) =>
         display: 'none'
       }
     },
+    toolbar: {
+      alignItems: 'center'
+    },
     title: {
-      flexGrow: 1
+      position: 'absolute',
+      width: '100%',
+      textAlign: 'center',
+      pointerEvents: 'none'
     },
     menuButton: {
       marginRight: theme.spacing(2),
       [theme.breakpoints.up('sm')]: {
         display: 'none'
       }
+    },
+    gutters: {
+      margin: '0 12px',
+      padding: 0
     }
   })
 )
@@ -131,41 +143,39 @@ const Menu = (): ReactElement => {
   }, [isMobile])
 
   return (
-    <>
-      <AppBar position="fixed" className={classes.root}>
-        <Toolbar>
-          <IconButton
-            color="inherit"
-            aria-label={`${isOpen ? 'close' : 'open'} drawer`}
-            edge="start"
-            onClick={() => setOpen((isOpen) => !isOpen)}
-            className={classes.menuButton}
+    <FocusTrap active={isMobile && isOpen}>
+      <div>
+        <AppBar position="fixed" className={classes.root}>
+          <Toolbar
+            className={classes.toolbar}
+            classes={{ gutters: classes.gutters }}
           >
-            <MenuIcon />
-          </IconButton>
-          <Typography className={classes.title}>
-            {isOpen
-              ? 'Menu'
-              : getTitleAndPage(drawerSections, useLocation().pathname)}
-          </Typography>
-          {isOpen && (
             <IconButton
               color="inherit"
-              aria-label={`github`}
-              edge="end"
-              onClick={() => setOpen(false)}
+              aria-label={`${isOpen ? 'close' : 'open'} drawer`}
+              edge="start"
+              onClick={() => setOpen((isOpen) => !isOpen)}
+              className={classes.menuButton}
             >
-              <ChevronLeftIcon />
+              {isOpen ? <CloseIcon /> : <MenuIcon />}
             </IconButton>
-          )}
-        </Toolbar>
-      </AppBar>
-      <ResponsiveDrawer
-        sections={drawerSections}
-        isOpen={isOpen}
-        onClose={() => setOpen(false)}
-      />
-    </>
+            <Slide in={isOpen} direction={'right'}>
+              <Typography className={classes.title}>Menu</Typography>
+            </Slide>
+            <Slide in={!isOpen} direction={'left'}>
+              <Typography className={classes.title}>
+                {getTitleAndPage(drawerSections, useLocation().pathname)}
+              </Typography>
+            </Slide>
+          </Toolbar>
+        </AppBar>
+        <ResponsiveDrawer
+          sections={drawerSections}
+          isOpen={isOpen}
+          setOpen={setOpen}
+        />
+      </div>
+    </FocusTrap>
   )
 }
 
