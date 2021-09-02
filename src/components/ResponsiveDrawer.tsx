@@ -95,7 +95,7 @@ function ResponsiveDrawer(props: DrawerItemsProps): ReactElement {
       {sections.map(({ title, items }) => (
         <>
           <List
-            subheader={<ListSubheader>{title}</ListSubheader>}
+            subheader={<ListSubheader disableSticky>{title}</ListSubheader>}
             className={classes.list}
           >
             {items.map((item) => (
