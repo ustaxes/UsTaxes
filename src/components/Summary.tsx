@@ -163,7 +163,7 @@ const Summary = (): ReactElement => {
   })()
 
   return (
-    <form onSubmit={onAdvance}>
+    <form tabIndex={-1} onSubmit={onAdvance}>
       <h2>Summary</h2>
       {summaryBody}
       {navButtons}

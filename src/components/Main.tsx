@@ -13,7 +13,8 @@ import { Switch, Route, Redirect, useLocation } from 'react-router-dom'
 import { PagerProvider } from './pager'
 import { StateLoader } from './debug'
 import NoMatchPage from './NoMatchPage'
-import ScrollTop from './ScreenTop'
+import SkipToLinks from './SkipToLinks'
+import ScrollTop from './ScrollTop'
 import Menu, { drawerSections } from './Menu'
 import { Section, SectionItem } from './ResponsiveDrawer'
 
@@ -93,6 +94,7 @@ export default function Main(): ReactElement {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
+      <SkipToLinks />
       {isMobile && !isStartPage && <div className={classes.toolbar} />}
       <main className={classes.main}>
         <StateLoader />

@@ -38,7 +38,7 @@ export default function RefundBankAccount(): ReactElement {
     }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit(onAdvance))}>
+    <form tabIndex={-1} onSubmit={handleSubmit(onSubmit(onAdvance))}>
       <FormProvider {...methods}>
         <h2>Refund Information</h2>
         <Grid container spacing={2}>

@@ -60,10 +60,8 @@ export default function CreatePDF(): ReactElement {
   }
 
   return (
-    <form>
-      <div>
-        <h2>Print Copy to File</h2>
-      </div>
+    <form tabIndex={-1}>
+      <h2>Print Copy to File</h2>
       <div className={classes.root}>
         {errors.map((error, i) => (
           <Alert key={i} severity="warning">

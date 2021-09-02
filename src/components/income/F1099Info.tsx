@@ -451,7 +451,7 @@ export default function F1099Info(): ReactElement {
   )
 
   return (
-    <form onSubmit={onAdvance}>
+    <form tabIndex={-1} onSubmit={onAdvance}>
       <h2>1099 Information</h2>
       <FormProvider {...methods}>{form}</FormProvider>
       {navButtons}
