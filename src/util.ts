@@ -8,29 +8,6 @@
 export const enumKeys = <A>(a: A): Array<keyof typeof a> =>
   Object.keys(a).filter((k) => isNaN(Number(k))) as Array<keyof typeof a>
 
-export const anArrayOf = <A>(n: number, a: A): A[] =>
-  Array.from(Array(n)).map(() => a)
-
-export const range = (from: number, to: number): number[] =>
-  anArrayOf(to - from, undefined).map((_, i) => from + i)
-
-/**
- * Given two arrays [a1, a2, ...], [b1, b2, ...] make an array
- * [[a1, b1], [a2, b2], ...]
- * Throws an error if bs is shorter than as, truncates if bs is larger.
- */
-export const zip = <A, B>(as: A[], bs: B[]): Array<[A, B]> =>
-  as.map((a, i) => [a, bs[i]])
-
-/**
- * Given three arrays [a1, a2, ...], [b1, b2, ...],
- * [c1, c2, ...] make an array
- * [[a1, b1, c1], [a2, b2, c2], ...]
- * Throws an error if bs is shorter than as, or cs is shorter than bs
- */
-export const zip3 = <A, B, C>(as: A[], bs: B[], cs: C[]): Array<[A, B, C]> =>
-  zip(as, zip(bs, cs)).map(([a, [b, c]]) => [a, b, c])
-
 export const linear =
   (m: number, b: number) =>
   (x: number): number =>
@@ -54,46 +31,6 @@ export const evaluatePiecewise = (f: Piecewise, x: number): number => {
     return idx - 1
   })()
   return f[selection].f(x)
-}
-
-export const unzip = <A, B>(xs: Array<[A, B]>): [A[], B[]] =>
-  xs.reduce<[A[], B[]]>(
-    ([as, bs], [a, b]) => [
-      [...as, a],
-      [...bs, b]
-    ],
-    [[], []]
-  )
-
-export const unzip3 = <A, B, C>(xs: Array<[A, B, C]>): [A[], B[], C[]] =>
-  xs.reduce<[A[], B[], C[]]>(
-    ([as, bs, cs], [a, b, c]) => [
-      [...as, a],
-      [...bs, b],
-      [...cs, c]
-    ],
-    [[], [], []]
-  )
-
-/**
- * Split an array of elements into an array of n arrays.
- * @param n number of segments to produce
- * @param xs array of items
- * @returns array of n arrays of items
- */
-export const segments = <A>(n: number, xs: A[]): A[][] => {
-  if (n <= 1 || xs.length === 0) {
-    return [xs]
-  } else if (n >= xs.length) {
-    return xs.map((x) => [x])
-  }
-  const size: number = Math.floor(xs.length / n)
-  return anArrayOf(n, undefined).map((_, i) => {
-    if (i === n - 1) {
-      return xs.slice(i * size, xs.length)
-    }
-    return xs.slice(i * size, (i + 1) * size)
-  })
 }
 
 export const isLeapYear = (year: number): boolean => {

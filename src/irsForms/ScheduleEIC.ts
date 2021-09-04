@@ -8,8 +8,9 @@ import F4797 from './F4797'
 import F8814 from './F8814'
 import Pub596Worksheet1 from './worksheets/Pub596Worksheet1'
 import Form, { FormTag } from './Form'
-import { anArrayOf, evaluatePiecewise, Piecewise } from 'ustaxes/util'
+import { evaluatePiecewise, Piecewise } from 'ustaxes/util'
 import log from 'ustaxes/log'
+import _ from 'lodash'
 
 type PrecludesEIC<F> = (f: F) => boolean
 
@@ -343,7 +344,7 @@ export default class ScheduleEIC implements Form {
 
   qualifyingDependentsFilled = (): Array<Dependent | undefined> => {
     const res = this.qualifyingDependents()
-    return [...res, ...anArrayOf(3 - res.length, undefined)]
+    return _.fill([...res], undefined, res.length, 3)
   }
 
   // EIC line 1
