@@ -11,8 +11,7 @@ import {
   ListItem,
   ListItemText,
   ListSubheader,
-  Theme,
-  Toolbar
+  Theme
 } from '@material-ui/core'
 import GitHubIcon from '@material-ui/icons/GitHub'
 import TwitterIcon from '@material-ui/icons/Twitter'
@@ -22,13 +21,9 @@ const drawerWidth = 240
 
 const useStyles = makeStyles<Theme, { isMobile: boolean }>((theme) =>
   createStyles({
-    drawer: {
-      [theme.breakpoints.up('sm')]: {
-        width: drawerWidth,
-        flexShrink: 0
-      }
-    },
+    drawerContainer: { top: '56px !important' },
     drawerPaper: ({ isMobile }) => ({
+      top: '56px !important',
       width: isMobile ? '100%' : drawerWidth
     }),
     listSocial: {
@@ -91,7 +86,7 @@ function ResponsiveDrawer(props: DrawerItemsProps): ReactElement {
 
   const drawer = (
     <>
-      {isMobile && <Toolbar />}
+      {/* {isMobile && <Toolbar />} */}
       {sections.map(({ title, items }) => (
         <>
           <List
@@ -149,16 +144,17 @@ function ResponsiveDrawer(props: DrawerItemsProps): ReactElement {
   return (
     <nav className={classes.drawer} aria-label="primary">
       <Drawer
-        variant="persistent"
+        className={classes.drawerContainer}
+        variant={!isMobile ? 'persistent' : undefined}
         anchor={theme.direction === 'rtl' ? 'right' : 'left'}
         open={isOpen}
         onClose={() => setOpen(false)}
         classes={{
+          root: classes.drawerContainer,
           paper: classes.drawerPaper
         }}
         ModalProps={{
-          disableAutoFocus: false,
-          disableEnforceFocus: true,
+          hideBackdrop: true,
           keepMounted: isMobile ? true : false // Better open performance on mobile.
         }}
       >

@@ -34,7 +34,6 @@ import F1098eInfo from './deductions/F1098eInfo'
 import Questions from './Questions'
 import Urls from 'ustaxes/data/urls'
 import { useDevice } from 'ustaxes/hooks/Device'
-import FocusTrap from 'focus-trap-react'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -143,39 +142,37 @@ const Menu = (): ReactElement => {
   }, [isMobile])
 
   return (
-    <FocusTrap active={isMobile && isOpen}>
-      <div>
-        <AppBar position="fixed" className={classes.root}>
-          <Toolbar
-            className={classes.toolbar}
-            classes={{ gutters: classes.gutters }}
+    <>
+      <AppBar position="fixed" className={classes.root}>
+        <Toolbar
+          className={classes.toolbar}
+          classes={{ gutters: classes.gutters }}
+        >
+          <IconButton
+            color="inherit"
+            aria-label={`${isOpen ? 'close' : 'open'} drawer`}
+            edge="start"
+            onClick={() => setOpen((isOpen) => !isOpen)}
+            className={classes.menuButton}
           >
-            <IconButton
-              color="inherit"
-              aria-label={`${isOpen ? 'close' : 'open'} drawer`}
-              edge="start"
-              onClick={() => setOpen((isOpen) => !isOpen)}
-              className={classes.menuButton}
-            >
-              {isOpen ? <CloseIcon /> : <MenuIcon />}
-            </IconButton>
-            <Slide in={isOpen} direction={'right'}>
-              <Typography className={classes.title}>Menu</Typography>
-            </Slide>
-            <Slide in={!isOpen} direction={'left'}>
-              <Typography className={classes.title}>
-                {getTitleAndPage(drawerSections, useLocation().pathname)}
-              </Typography>
-            </Slide>
-          </Toolbar>
-        </AppBar>
-        <ResponsiveDrawer
-          sections={drawerSections}
-          isOpen={isOpen}
-          setOpen={setOpen}
-        />
-      </div>
-    </FocusTrap>
+            {isOpen ? <CloseIcon /> : <MenuIcon />}
+          </IconButton>
+          <Slide in={isOpen} direction={'right'}>
+            <Typography className={classes.title}>Menu</Typography>
+          </Slide>
+          <Slide in={!isOpen} direction={'left'}>
+            <Typography className={classes.title}>
+              {getTitleAndPage(drawerSections, useLocation().pathname)}
+            </Typography>
+          </Slide>
+        </Toolbar>
+      </AppBar>
+      <ResponsiveDrawer
+        sections={drawerSections}
+        isOpen={isOpen}
+        setOpen={setOpen}
+      />
+    </>
   )
 }
 

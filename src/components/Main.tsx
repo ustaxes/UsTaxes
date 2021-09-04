@@ -27,7 +27,7 @@ type Props = {
 
 const useStyles = makeStyles<Theme, Props>((theme: Theme) =>
   createStyles({
-    main: {
+    container: {
       display: 'flex'
     },
     content: ({ isMobile }) => ({
@@ -84,7 +84,13 @@ export default function Main(): ReactElement {
   )
 
   const Layout = ({ children }: PropsWithChildren<{ children: ReactNode }>) => (
-    <Grid container justifyContent="center" direction="row">
+    <Grid
+      component="main"
+      tabIndex={-1}
+      container
+      justifyContent="center"
+      direction="row"
+    >
       <Grid item sm={12} md={8} lg={6} className={classes.content}>
         {children}
       </Grid>
@@ -96,7 +102,7 @@ export default function Main(): ReactElement {
       <CssBaseline />
       <SkipToLinks />
       {isMobile && !isStartPage && <div className={classes.toolbar} />}
-      <main className={classes.main}>
+      <div className={classes.container}>
         <StateLoader />
         <PagerProvider pages={allItems}>
           <Switch>
@@ -115,7 +121,7 @@ export default function Main(): ReactElement {
           </Switch>
         </PagerProvider>
         {!isMobile && <ScrollTop />}
-      </main>
+      </div>
     </ThemeProvider>
   )
 }
