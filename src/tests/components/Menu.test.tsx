@@ -6,9 +6,11 @@ import { resizeWindow, renderWithProviders } from 'ustaxes/testUtil'
 const heading = drawerSections[0].title
 
 describe('Menu', () => {
-  it('renders', () => {
-    renderWithProviders(<Menu />)
-    expect(screen.getByText(heading)).toBeInTheDocument()
+  describe('desktop view', () => {
+    it('renders', () => {
+      renderWithProviders(<Menu />)
+      expect(screen.getByText(heading)).toBeInTheDocument()
+    })
   })
   describe('mobile view', () => {
     beforeEach(async () => {
@@ -29,8 +31,12 @@ describe('Menu', () => {
     })
     it('closes with menu', async () => {
       userEvent.click(screen.getByRole('button', { name: /open drawer/i }))
-      const menuButton = screen.getByRole('button', { name: /close drawer/i })
-      userEvent.click(menuButton)
+      userEvent.click(
+        screen.getByRole('button', {
+          name: /close drawer/i,
+          hidden: true
+        })
+      )
 
       expect(
         screen.queryByRole('button', { name: /close drawer/i })

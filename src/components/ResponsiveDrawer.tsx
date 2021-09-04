@@ -5,7 +5,7 @@ import {
   makeStyles,
   useTheme,
   Divider,
-  Drawer,
+  SwipeableDrawer,
   IconButton,
   List,
   ListItem,
@@ -21,10 +21,22 @@ const drawerWidth = 240
 
 const useStyles = makeStyles<Theme, { isMobile: boolean }>((theme) =>
   createStyles({
-    drawerContainer: { top: '56px !important' },
+    drawer: {
+      [theme.breakpoints.up('sm')]: {
+        width: drawerWidth,
+        flexShrink: 0
+      }
+    },
+    drawerBackdrop: ({ isMobile }) => ({
+      top: isMobile ? '56px !important' : 0
+    }),
+    drawerContainer: ({ isMobile }) => ({
+      top: isMobile ? '56px !important' : 0
+    }),
     drawerPaper: ({ isMobile }) => ({
-      top: '56px !important',
-      width: isMobile ? '100%' : drawerWidth
+      top: isMobile ? '56px !important' : 0,
+      width: isMobile ? '100%' : drawerWidth,
+      height: isMobile ? 'calc(100% - 56px)' : undefined
     }),
     listSocial: {
       display: 'flex',
@@ -143,23 +155,26 @@ function ResponsiveDrawer(props: DrawerItemsProps): ReactElement {
 
   return (
     <nav className={classes.drawer} aria-label="primary">
-      <Drawer
-        className={classes.drawerContainer}
+      <SwipeableDrawer
         variant={!isMobile ? 'persistent' : undefined}
         anchor={theme.direction === 'rtl' ? 'right' : 'left'}
         open={isOpen}
+        onOpen={() => setOpen(true)}
         onClose={() => setOpen(false)}
         classes={{
           root: classes.drawerContainer,
           paper: classes.drawerPaper
         }}
         ModalProps={{
-          hideBackdrop: true,
-          keepMounted: isMobile ? true : false // Better open performance on mobile.
+          BackdropProps: {
+            classes: { root: classes.drawerBackdrop }
+          }
+          // Disabling for the time being due to scroll position persisting
+          // keepMounted: isMobile ? true : false // Better open performance on mobile.
         }}
       >
         {drawer}
-      </Drawer>
+      </SwipeableDrawer>
     </nav>
   )
 }
