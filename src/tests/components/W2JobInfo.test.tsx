@@ -39,7 +39,7 @@ const w2FormLabels: string[] = [
 ]
 
 describe('W2Info', () => {
-  it('renders an `Add` button when no W-2s have been added', () => {
+  it('renders an `Add` button when no W-2s have been added', async () => {
     render(
       <Provider store={store}>
         <W2JobInfo />
@@ -90,26 +90,34 @@ describe('W2Info', () => {
     userEvent.click(addButton)
     const employeeButton = screen.getByRole('combobox')
     userEvent.click(employeeButton)
-    const sallyDisplayName =
-      sallyPersonInfo.firstName +
-      ' ' +
-      sallyPersonInfo.lastName +
-      ' (' +
-      sallyPersonInfo.ssid +
-      ')'
-    const tamDisplayName =
-      tamPersonInfo.firstName +
-      ' ' +
-      tamPersonInfo.lastName +
-      ' (' +
-      tamPersonInfo.ssid +
-      ')'
-    screen.getByText(sallyDisplayName)
-    screen.getByText(tamDisplayName)
+    const sallyDisplayName = sallyPersonInfo.firstName + ' ' + sallyPersonInfo.lastName + ' (' + sallyPersonInfo.ssid + ')'
+    const tamDisplayName = tamPersonInfo.firstName + ' ' + tamPersonInfo.lastName + ' (' + tamPersonInfo.ssid + ')'
+    screen.queryByText(sallyDisplayName)
+    screen.queryByText(tamDisplayName)
 
     // W-2 labels should now be present
     for (const label of w2FormLabels) {
-      expect(screen.getByText(label))
+      screen.queryByText(label)
     }
+
+    const inputs = screen.getAllByRole('textbox')
+    const [employerInput, occupationInput, incomeInput, fedInput, ssInput, medicareInput] = inputs
+
+    userEvent.type(employerInput, '42')
+
+    const firstNameErrors = await screen.findAllByText(
+      'Input should only include letters and spaces'
+    )
+    expect(firstNameErrors).toHaveLength(1)
+    expect(screen.getAllByText('Input is required')).toHaveLength(5)
+
+    const saveButton = screen.getByRole('button', {
+      name: /Save/
+    })
+
+
+
+    screen.getByRole('NotAvailable')
+
   })
 })
