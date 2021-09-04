@@ -19,6 +19,7 @@ import Menu, { drawerSections } from './Menu'
 import { Section, SectionItem } from './ResponsiveDrawer'
 
 import { useDevice } from 'ustaxes/hooks/Device'
+import { useFocus } from 'ustaxes/hooks/Focus'
 import Urls from 'ustaxes/data/urls'
 
 type Props = {
@@ -51,6 +52,7 @@ const useStyles = makeStyles<Theme, Props>((theme: Theme) =>
 )
 
 export default function Main(): ReactElement {
+  const [ref] = useFocus()
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)')
   const isStartPage = useLocation().pathname === '/start'
 
@@ -85,6 +87,7 @@ export default function Main(): ReactElement {
 
   const Layout = ({ children }: PropsWithChildren<{ children: ReactNode }>) => (
     <Grid
+      ref={ref}
       component="main"
       tabIndex={-1}
       container

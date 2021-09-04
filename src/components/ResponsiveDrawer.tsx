@@ -28,13 +28,14 @@ const useStyles = makeStyles<Theme, { isMobile: boolean }>((theme) =>
       }
     },
     drawerBackdrop: ({ isMobile }) => ({
-      top: isMobile ? '56px !important' : 0
+      top: isMobile ? '56px !important' : undefined,
+      height: isMobile ? 'calc(100% - 56px)' : undefined
     }),
     drawerContainer: ({ isMobile }) => ({
       top: isMobile ? '56px !important' : 0
     }),
     drawerPaper: ({ isMobile }) => ({
-      top: isMobile ? '56px !important' : 0,
+      top: isMobile ? '56px !important' : undefined,
       width: isMobile ? '100%' : drawerWidth,
       height: isMobile ? 'calc(100% - 56px)' : undefined
     }),
