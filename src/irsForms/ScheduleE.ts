@@ -4,14 +4,14 @@ import {
   Property,
   PropertyType,
   PropertyExpenseTypeName
-} from '../redux/data'
+} from 'ustaxes/redux/data'
 import Form, { FormTag } from './Form'
-import TaxPayer from '../redux/TaxPayer'
-import { anArrayOf, unzip3, zip, zip3 } from '../util'
+import TaxPayer from 'ustaxes/redux/TaxPayer'
+import { anArrayOf, unzip3, zip, zip3 } from 'ustaxes/util'
 import F6168 from './F6168'
 import F8582 from './F8582'
 import { displayNegPos, displayNumber, sumFields } from './util'
-import log from '../log'
+import log from 'ustaxes/log'
 
 type Cell = number | undefined
 export type MatrixRow = [Cell, Cell, Cell]
@@ -44,7 +44,7 @@ const propTypeIndex = {
 
 export default class ScheduleE implements Form {
   tag: FormTag = 'f1040se'
-  sequenceIndex: number = 13
+  sequenceIndex = 13
   state: Information
   f6168: F6168
   f8582: F8582

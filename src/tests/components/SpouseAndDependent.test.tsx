@@ -1,4 +1,3 @@
-import React from 'react'
 import {
   render,
   screen,
@@ -11,8 +10,8 @@ import userEvent from '@testing-library/user-event'
 
 import SpouseAndDependent, {
   SpouseInfo
-} from '../../components/TaxPayer/SpouseAndDependent'
-import { store } from '../../redux/store'
+} from 'ustaxes/components/TaxPayer/SpouseAndDependent'
+import { store } from 'ustaxes/redux/store'
 
 afterEach(async () => {
   await waitFor(() => localStorage.clear())
@@ -136,8 +135,9 @@ describe('SpouseInfo', () => {
     userEvent.type(filledLastName, '{selectall}{del}McGee')
     fireEvent.change(filledSsn, { target: { value: '987-65-4321' } })
 
-    // wait for redux-persist to do some async stuff
-    await waitFor(() => {})
+    await waitFor(() => {
+      // wait for redux-persist to do some async stuff
+    })
 
     // click the save button to save the new values
     fireEvent.click(
@@ -201,8 +201,10 @@ describe('SpouseInfo', () => {
     userEvent.type(firstNameInput, 'F$LF(#)& ##3')
     fireEvent.click(saveButton)
 
-    // expect two input errors and an error about restricted characters
-    await waitFor(() => {})
+    await waitFor(() => {
+      // expect two input errors and an error about restricted characters
+    })
+
     const nameErrorsAfterBadFirstName = await screen.findAllByText(
       'Input is required'
     )
@@ -213,8 +215,9 @@ describe('SpouseInfo', () => {
     userEvent.type(firstNameInput, '{selectall}{del}Sally K')
     fireEvent.click(saveButton)
 
-    // expect two name errors
-    await waitFor(() => {})
+    await waitFor(() => {
+      // expect two name errors
+    })
     const nameErrorsAfterAddingFirstName = await screen.findAllByText(
       'Input is required'
     )
@@ -224,8 +227,9 @@ describe('SpouseInfo', () => {
     userEvent.type(lastNameInput, 'R5$%84')
     fireEvent.click(saveButton)
 
-    // expect an error about restricted characters, and one name error
-    await waitFor(() => {})
+    await waitFor(() => {
+      // expect an error about restricted characters, and one name error
+    })
     const nameErrorsAfterBadLastName = await screen.findAllByText(
       'Input is required'
     )
@@ -243,8 +247,9 @@ describe('SpouseInfo', () => {
     fireEvent.change(ssnInput, { target: { value: '123sc' } })
     fireEvent.click(saveButton)
 
-    // expect ssn error to remain
-    await waitFor(() => {})
+    await waitFor(() => {
+      // expect ssn error to remain
+    })
     await screen.findByText('Input should be filled with 9 digits')
 
     // clear ssn and add a valid value

@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 /**
  * Provides type override for persistStore so that
  * custom state and action types can be easily used.

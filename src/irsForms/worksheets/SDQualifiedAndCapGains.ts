@@ -1,5 +1,8 @@
-import F1040 from '../F1040'
-import { computeLongTermCapGainsTax, computeOrdinaryTax } from '../TaxTable'
+import F1040 from 'ustaxes/irsForms/F1040'
+import {
+  computeLongTermCapGainsTax,
+  computeOrdinaryTax
+} from 'ustaxes/irsForms/TaxTable'
 
 export default class SDQualifiedAndCapGains {
   f1040: F1040

@@ -1,18 +1,24 @@
-import React, { ReactElement } from 'react'
+import { ReactElement } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
-import { savePrimaryPersonInfo } from '../../redux/actions'
+import {
+  savePrimaryPersonInfo,
+  saveStateResidencyInfo
+} from 'ustaxes/redux/actions'
 import {
   Address,
   PersonRole,
   PrimaryPerson,
+  State,
+  StateResidency,
   TaxesState,
   TaxPayer
-} from '../../redux/data'
+} from 'ustaxes/redux/data'
 import { PersonFields } from './PersonFields'
-import { LabeledCheckbox } from '../input'
-import { PagerContext } from '../pager'
+import { usePager } from 'ustaxes/components/pager'
+import { LabeledCheckbox, USStateDropDown } from 'ustaxes/components/input'
 import AddressFields from './Address'
+import { Grid } from '@material-ui/core'
 
 interface TaxPayerUserForm {
   firstName: string
@@ -22,6 +28,20 @@ interface TaxPayerUserForm {
   address: Address
   isForeignCountry: boolean
   isTaxpayerDependent: boolean
+  stateResidency?: State
+}
+
+const defaultTaxpayerUserForm: TaxPayerUserForm = {
+  firstName: '',
+  lastName: '',
+  ssid: '',
+  role: PersonRole.PRIMARY,
+  isForeignCountry: false,
+  address: {
+    address: '',
+    city: ''
+  },
+  isTaxpayerDependent: false
 }
 
 const asPrimaryPerson = (formData: TaxPayerUserForm): PrimaryPerson => ({
@@ -33,53 +53,63 @@ const asPrimaryPerson = (formData: TaxPayerUserForm): PrimaryPerson => ({
   role: PersonRole.PRIMARY
 })
 
-const asTaxPayerUserForm = (person: PrimaryPerson): TaxPayerUserForm => {
-  const { role, ...rest } = person
-  return {
-    ...rest,
-    isForeignCountry: person.address.foreignCountry !== undefined,
-    role: PersonRole.PRIMARY
-  }
-}
+const asTaxPayerUserForm = (person: PrimaryPerson): TaxPayerUserForm => ({
+  ...person,
+  isForeignCountry: person.address.foreignCountry !== undefined,
+  role: PersonRole.PRIMARY
+})
 
 export default function PrimaryTaxpayer(): ReactElement {
   // const variable dispatch to allow use inside function
   const dispatch = useDispatch()
 
+  const { onAdvance, navButtons } = usePager()
+
   const taxPayer: TaxPayer | undefined = useSelector((state: TaxesState) => {
     return state.information.taxPayer
   })
 
+  const stateResidency: StateResidency[] = useSelector(
+    (state: TaxesState) => state.information.stateResidencies
+  )
+
   const methods = useForm<TaxPayerUserForm>({
-    defaultValues:
-      taxPayer.primaryPerson !== undefined
-        ? asTaxPayerUserForm(taxPayer.primaryPerson)
-        : undefined
+    defaultValues: {
+      ...defaultTaxpayerUserForm,
+      ...(taxPayer.primaryPerson !== undefined
+        ? {
+            ...asTaxPayerUserForm(taxPayer.primaryPerson),
+            stateResidency:
+              stateResidency[0]?.state ?? taxPayer.primaryPerson.address.state
+          }
+        : {})
+    }
   })
+
   const { handleSubmit } = methods
 
   const onSubmit =
     (onAdvance: () => void) =>
     (form: TaxPayerUserForm): void => {
       dispatch(savePrimaryPersonInfo(asPrimaryPerson(form)))
+      dispatch(saveStateResidencyInfo({ state: form.stateResidency as State }))
       onAdvance()
     }
 
   const page = (
-    <PagerContext.Consumer>
-      {({ navButtons, onAdvance }) => (
-        <form onSubmit={handleSubmit(onSubmit(onAdvance))}>
-          <h2>Primary Taxpayer Information</h2>
-          <PersonFields />
-          <LabeledCheckbox
-            label="Check if you are a dependent"
-            name="isTaxpayerDependent"
-          />
-          <AddressFields checkboxText="Do you have a foreign address?" />
-          {navButtons}
-        </form>
-      )}
-    </PagerContext.Consumer>
+    <form onSubmit={handleSubmit(onSubmit(onAdvance))}>
+      <h2>Primary Taxpayer Information</h2>
+      <Grid container spacing={2}>
+        <PersonFields />
+        <LabeledCheckbox
+          label="Check if you are a dependent"
+          name="isTaxpayerDependent"
+        />
+        <AddressFields checkboxText="Do you have a foreign address?" />
+        <USStateDropDown label="Residency State" name="stateResidency" />
+      </Grid>
+      {navButtons}
+    </form>
   )
 
   return <FormProvider {...methods}>{page}</FormProvider>

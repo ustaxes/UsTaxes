@@ -1,4 +1,4 @@
-import React, { Fragment, ReactElement } from 'react'
+import { ReactElement } from 'react'
 import {
   List,
   ListItem,
@@ -8,15 +8,15 @@ import {
   makeStyles,
   Typography
 } from '@material-ui/core'
-import { PagerContext } from './pager'
-import { create1040 } from '../irsForms/Main'
+import { usePager } from './pager'
+import { create1040 } from 'ustaxes/irsForms/Main'
 import { useSelector } from 'react-redux'
-import { Information, TaxesState } from '../redux/data'
+import { Information, TaxesState } from 'ustaxes/redux/data'
 import { Check, Close } from '@material-ui/icons'
-import F1040 from '../irsForms/F1040'
+import F1040 from 'ustaxes/irsForms/F1040'
 import { Currency } from './input'
 import Alert from '@material-ui/lab/Alert'
-import { isLeft } from '../util'
+import { isLeft } from 'ustaxes/util'
 
 interface BinaryStateListItemProps {
   active: boolean
@@ -72,7 +72,7 @@ const F1040Summary = ({ f1040 }: F1040Props): ReactElement => {
       <ListItemText
         primary="Earned Income Tax Credit"
         secondary={
-          <React.Fragment>
+          <>
             <Typography
               component="span"
               variant="body2"
@@ -95,7 +95,7 @@ const F1040Summary = ({ f1040 }: F1040Props): ReactElement => {
                 value={Math.round(f1040.scheduleEIC?.credit(f1040) ?? 0)}
               />
             </Typography>
-          </React.Fragment>
+          </>
         }
       />
     </BinaryStateListItem>
@@ -108,27 +108,25 @@ const F1040Summary = ({ f1040 }: F1040Props): ReactElement => {
       <ListItemText
         primary="Credit for children and other dependents"
         secondary={
-          <React.Fragment>
-            <Typography component="span" variant="body2" color="textPrimary">
-              Credit:{' '}
-              <Currency
-                value={Math.round(f1040.childTaxCreditWorksheet?.credit() ?? 0)}
-              />
-            </Typography>
-          </React.Fragment>
+          <Typography component="span" variant="body2" color="textPrimary">
+            Credit:{' '}
+            <Currency
+              value={Math.round(f1040.childTaxCreditWorksheet?.credit() ?? 0)}
+            />
+          </Typography>
         }
       />
     </BinaryStateListItem>
   )
 
   return (
-    <Fragment>
+    <>
       <h4>Credits</h4>
       <List>
         {earnedIncomeTaxCredit}
         {creditForChildrenAndOtherDependents}
       </List>
-    </Fragment>
+    </>
   )
 }
 
@@ -136,6 +134,8 @@ const Summary = (): ReactElement => {
   const information: Information = useSelector(
     (state: TaxesState) => state.information
   )
+
+  const { onAdvance, navButtons } = usePager()
 
   const summaryBody = (() => {
     if (information.taxPayer.primaryPerson === undefined) {
@@ -147,13 +147,13 @@ const Summary = (): ReactElement => {
         const errors = f1040Result.left
 
         return (
-          <Fragment>
+          <>
             {errors.map((error, i) => (
               <Alert key={i} severity="warning">
                 {error}
               </Alert>
             ))}
-          </Fragment>
+          </>
         )
       } else {
         const [f1040] = f1040Result.right
@@ -163,15 +163,11 @@ const Summary = (): ReactElement => {
   })()
 
   return (
-    <PagerContext.Consumer>
-      {({ navButtons, onAdvance }) => (
-        <form onSubmit={onAdvance}>
-          <h2>Summary</h2>
-          {summaryBody}
-          {navButtons}
-        </form>
-      )}
-    </PagerContext.Consumer>
+    <form onSubmit={onAdvance}>
+      <h2>Summary</h2>
+      {summaryBody}
+      {navButtons}
+    </form>
   )
 }
 

@@ -1,5 +1,5 @@
-import { CURRENT_YEAR } from '../data/federal'
-import { daysInYear } from '../util'
+import { CURRENT_YEAR } from 'ustaxes/data/federal'
+import { daysInYear } from 'ustaxes/util'
 
 export interface BasePattern {
   regexp?: RegExp
@@ -31,9 +31,9 @@ const numeric = (
   min: number | undefined = undefined,
   max: number | undefined = undefined,
   format: string | undefined = undefined,
-  mask: string = '_',
-  thousandSeparator: boolean = false,
-  prefix: string = '',
+  mask = '_',
+  thousandSeparator = false,
+  prefix = '',
   decimalScale: number | undefined = 0
 ): NumericPattern => ({
   inputType: 'numeric',
@@ -133,7 +133,7 @@ export const Patterns = {
     'Input should be 10 digits, not starting with 0 or 1',
     undefined,
     undefined,
-    '(###)-###-####'
+    '(###) ###-####'
   ),
   plain: text(/.*/, '')
 }

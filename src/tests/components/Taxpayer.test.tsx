@@ -1,12 +1,12 @@
-import React, { ReactElement } from 'react'
+import { ReactElement } from 'react'
 import { render, waitFor } from '@testing-library/react'
 import { Provider } from 'react-redux'
 
-import { createStoreUnpersisted } from '../../redux/store'
-import { PagerButtons, PagerContext } from '../../components/pager'
-import { Information } from '../../redux/data'
-import { blankState } from '../../redux/reducer'
-import TaxPayer from '../../components/TaxPayer'
+import { createStoreUnpersisted } from 'ustaxes/redux/store'
+import { PagerButtons, PagerContext } from 'ustaxes/components/pager'
+import { Information } from 'ustaxes/redux/data'
+import { blankState } from 'ustaxes/redux/reducer'
+import TaxPayer from 'ustaxes/components/TaxPayer'
 import userEvent from '@testing-library/user-event'
 
 jest.setTimeout(1000 * 60 * 10)
@@ -33,7 +33,14 @@ describe('Taxpayer', () => {
     const store = createStoreUnpersisted(info)
     const component = (
       <Provider store={store}>
-        <PagerContext.Provider value={{ onAdvance: () => {}, navButtons }}>
+        <PagerContext.Provider
+          value={{
+            onAdvance: () => {
+              /* do nothing */
+            },
+            navButtons
+          }}
+        >
           <TaxPayer />
         </PagerContext.Provider>
       </Provider>

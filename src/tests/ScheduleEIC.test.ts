@@ -1,7 +1,9 @@
+/* eslint @typescript-eslint/no-empty-function: "off" */
+
 import fc from 'fast-check'
 import { waitFor } from '@testing-library/react'
 import * as arbitraries from './arbitraries'
-import * as federal from '../data/federal'
+import * as federal from 'ustaxes/data/federal'
 
 afterEach(async () => {
   await waitFor(() => localStorage.clear())
@@ -21,7 +23,7 @@ beforeAll(async () => jest.spyOn(console, 'warn').mockImplementation(() => {}))
 describe('ScheduleEIC', () => {
   it('should disallow EIC for income below threshold', () => {
     fc.assert(
-      fc.property(arbitraries.f1040, ([f1040, forms]) => {
+      fc.property(arbitraries.f1040, ([f1040]) => {
         if (f1040.filingStatus !== undefined) {
           const formula = federal.EIC.formulas[f1040.filingStatus]
           if (

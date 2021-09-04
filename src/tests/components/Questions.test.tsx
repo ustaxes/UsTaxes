@@ -1,16 +1,18 @@
-import React, { ReactElement } from 'react'
+/* eslint @typescript-eslint/no-empty-function: "off" */
+
+import { ReactElement } from 'react'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { Provider } from 'react-redux'
-import Questions from '../../components/Questions'
-import { InfoStore, createStoreUnpersisted } from '../../redux/store'
-import { questions } from '../../data/questions'
-import { create1040 } from '../../irsForms/Main'
+import Questions from 'ustaxes/components/Questions'
+import { InfoStore, createStoreUnpersisted } from 'ustaxes/redux/store'
+import { questions } from 'ustaxes/data/questions'
+import { create1040 } from 'ustaxes/irsForms/Main'
 import { isRight } from '../../util'
 import * as fc from 'fast-check'
-import * as arbitraries from '../arbitraries'
-import { PagerButtons, PagerContext } from '../../components/pager'
-import { Information } from '../../redux/data'
-import { blankState } from '../../redux/reducer'
+import * as arbitraries from 'ustaxes/tests/arbitraries'
+import { PagerButtons, PagerContext } from 'ustaxes/components/pager'
+import { Information } from 'ustaxes/redux/data'
+import { blankState } from 'ustaxes/redux/reducer'
 
 afterEach(async () => {
   await waitFor(() => localStorage.clear())

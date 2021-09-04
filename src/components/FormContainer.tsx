@@ -1,5 +1,7 @@
-import React, { PropsWithChildren, ReactElement, useState } from 'react'
+import { PropsWithChildren, ReactElement, useState } from 'react'
 import {
+  createStyles,
+  makeStyles,
   IconButton,
   List,
   ListItem,
@@ -9,11 +11,13 @@ import {
   Box,
   Button,
   unstable_createMuiStrictModeTheme as createMuiTheme,
+  Theme,
   ThemeProvider
 } from '@material-ui/core'
 import { red } from '@material-ui/core/colors'
 import { Delete, Edit } from '@material-ui/icons'
 import { Else, If, Then } from 'react-if'
+import { SubmitHandler, useFormContext } from 'react-hook-form'
 
 interface FormContainerProps {
   onDone: () => void
@@ -36,10 +40,10 @@ const FormContainer = ({
     <Box
       display="flex"
       justifyContent="flex-start"
-      paddingTop={2}
-      paddingBottom={1}
+      marginTop={2}
+      marginBottom={3}
     >
-      <Box paddingRight={2}>
+      <Box marginRight={2}>
         <Button
           type="button"
           onClick={onDone}
@@ -118,11 +122,10 @@ export const MutableListItem = ({
 }
 
 interface FormListContainerProps<A> {
-  onDone: (f: () => void) => () => void
-  onCancel: () => void
+  onSubmitAdd: SubmitHandler<A>
+  onSubmitEdit: (index: number) => SubmitHandler<A>
+  onCancel?: () => void
   items: A[]
-  editItem?: (v: number) => void
-  editing?: number
   disableEditing?: boolean
   removeItem?: (v: number) => void
   primary: (a: A) => string
@@ -137,9 +140,18 @@ enum FormState {
   Closed
 }
 
-const FormListContainer = <A extends object>(
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    buttonList: {
+      margin: `${theme.spacing(2)}px 0 ${theme.spacing(3)}px`
+    }
+  })
+)
+
+const FormListContainer = <A,>(
   props: PropsWithChildren<FormListContainerProps<A>>
 ): ReactElement => {
+  const classes = useStyles()
   const {
     children,
     items,
@@ -147,35 +159,48 @@ const FormListContainer = <A extends object>(
     max,
     primary,
     secondary,
-    editItem,
-    editing,
     disableEditing = false,
     removeItem,
-    onDone,
-    onCancel
+    onSubmitAdd,
+    onSubmitEdit,
+    onCancel = () => {
+      // default do nothing
+    }
   } = props
   const [formState, setFormState] = useState(FormState.Closed)
 
+  const [editing, setEditing] = useState<number | undefined>(undefined)
+
   const close = (): void => {
     setFormState(FormState.Closed)
+    reset({ values: undefined })
+    setEditing(undefined)
   }
 
-  const _onCancel = (): void => {
+  // Note useFormContext here instead of useForm reuses the
+  // existing form context from the parent.
+  const { reset, handleSubmit } = useFormContext()
+
+  const onClose = (): void => {
     onCancel()
     close()
   }
 
-  const _onDone: () => void = onDone(close)
+  const onSave: SubmitHandler<A> = (formData): void => {
+    if (editing !== undefined) {
+      onSubmitEdit(editing)(formData)
+    } else {
+      onSubmitAdd(formData)
+    }
+    close()
+  }
 
-  const editAction = (() => {
-    if (
-      editItem !== undefined &&
-      !disableEditing &&
-      formState === FormState.Closed
-    ) {
+  const openEditForm = (() => {
+    if (!disableEditing && formState === FormState.Closed) {
       return (n: number) => () => {
         setFormState(FormState.Editing)
-        editItem(n)
+        setEditing(n)
+        reset(items[n])
       }
     }
     return () => undefined
@@ -190,7 +215,7 @@ const FormListContainer = <A extends object>(
               key={i}
               primary={primary(item)}
               secondary={secondary !== undefined ? secondary(item) : undefined}
-              onEdit={editAction(i)}
+              onEdit={openEditForm(i)}
               editing={editing === i}
               remove={
                 removeItem !== undefined ? () => removeItem(i) : undefined
@@ -204,28 +229,30 @@ const FormListContainer = <A extends object>(
   })()
 
   return (
-    <div>
+    <>
       {itemDisplay}
       <If condition={formState !== FormState.Closed}>
         <Then>
-          <FormContainer onDone={_onDone} onCancel={_onCancel}>
+          <FormContainer onDone={handleSubmit(onSave)} onCancel={onClose}>
             {children}
           </FormContainer>
         </Then>
         <Else>
           <If condition={max === undefined || items.length < max}>
-            <Button
-              type="button"
-              onClick={() => setFormState(FormState.Adding)}
-              variant="contained"
-              color="secondary"
-            >
-              Add
-            </Button>
+            <div className={classes.buttonList}>
+              <Button
+                type="button"
+                onClick={() => setFormState(FormState.Adding)}
+                variant="contained"
+                color="secondary"
+              >
+                Add
+              </Button>
+            </div>
           </If>
         </Else>
       </If>
-    </div>
+    </>
   )
 }
 

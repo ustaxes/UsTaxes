@@ -1,59 +1,61 @@
-import React, { ReactElement } from 'react'
+import { ReactElement } from 'react'
 import { StartButtons, SingleButtons } from './pager'
+import { isWeb } from 'ustaxes/util'
 
-const repoUrl: string = 'https://github.com/ustaxes/UsTaxes'
-const codeOfConductUrl: string =
-  'https://github.com/ustaxes/UsTaxes/blob/master/docs/CODE_OF_CONDUCT.md'
-const contributingUrl: string =
-  'https://github.com/ustaxes/UsTaxes/blob/master/docs/CONTRIBUTING.md'
-const architecture: string =
-  'https://github.com/ustaxes/UsTaxes/blob/master/docs/ARCHITECTURE.md'
-const releases: string = 'https://github.com/ustaxes/UsTaxes/releases'
+const urls = {
+  repo: 'https://github.com/ustaxes/UsTaxes',
+  releases: 'https://github.com/ustaxes/UsTaxes/releases',
+  issues: 'https://github.com/ustaxes/ustaxes/issues',
+  twitter: 'https://twitter.com/ustaxesorg',
+  discord: 'https://discord.gg/xm5HmqX6',
+  aidan: 'https://github.com/aidangrimshaw',
+  zak: 'https://github.com/zakpatterson',
+  startPage: '/info'
+}
 
 const doubleButtons: ReactElement = (
   <StartButtons
     firstText={'Start Return In Browser'}
-    firstUrl={'/info'}
+    firstUrl={urls.startPage}
     secondText={'Download Desktop Version'}
-    secondUrl={releases}
+    secondUrl={urls.releases}
   />
 )
 const singleButtons: ReactElement = (
-  <SingleButtons text={'Start Return'} url={'/info'} />
+  <SingleButtons text={'Start Return'} url={urls.startPage} />
 )
 
 export default function GettingStarted(): ReactElement {
   return (
-    <form>
+    <>
       <h1>UsTaxes.org</h1>
       <p>
         UsTaxes is an open source tax filing application that can be used to
-        file the Form 1040 United States individual income tax return. Unlike
-        paid tax preparation software, UsTaxes both protects user privacy and is
-        provided free of charge.
+        file the Form 1040 United States individual income tax return and some
+        state individual income tax returns. UsTaxes is provided free of charge
+        and requires no sharing of personal data.
       </p>
       <p>
         Interested in using UsTaxes? The income forms, return attachments,
         credits, and states of residency are provided below.
       </p>
-
-      <p>Supported Income Forms</p>
+      <h2>Federal Filing Support</h2>
+      <h3>Supported Income Forms</h3>
+      The following income forms are (mostly) supported:
       <ul>
         <li>W2</li>
         <li>1099-INT</li>
         <li>1099-DIV</li>
         <li>1099-B</li>
         <li>1098-E</li>
-      </ul>
-
-      <p>Partially Supported Income Forms</p>
-      <ul>
         <li>
-          1099-R: Only normal distributions from IRAs are currently supported.
+          1099-R: support for normal distributions from IRA and pension
+          accounts.
         </li>
+        <li>SSA-1099</li>
       </ul>
-
-      <p>Supported Attachments to Form 1040</p>
+      <h3>Supported Attachments to Form 1040</h3>
+      USTaxes can attach the following to your 1040:
       <ul>
         <li>Schedule 1 (as related to Schedule E only)</li>
         <li>Schedule 3 (as related to excess FICA only)</li>
@@ -61,15 +63,21 @@ export default function GettingStarted(): ReactElement {
         <li>Schedule B</li>
         <li>Schedule D</li>
         <li>Schedule E</li>
+        <li>F1040-V</li>
       </ul>
-
-      <p>Supported Credits</p>
+      <h3>Supported Credits</h3>
+      These federal income tax credits are supported:
       <ul>
-        <li>Credit for children and other dependents</li>
+        <li>Credit for Children and Other Dependents</li>
         <li>Earned Income Tax Credit</li>
       </ul>
-
-      <p>Supported States</p>
+      <h2>State Income Tax</h2>
+      <p>State tax returns are now in development.</p>
+      <p>The following states are currently implemented:</p>
+      <ul>
+        <li>Illinois</li>
+      </ul>
+      Note the following states have no income tax filing:
       <ul>
         <li>Alaska</li>
         <li>Tennessee</li>
@@ -81,26 +89,38 @@ export default function GettingStarted(): ReactElement {
         <li>Washington</li>
         <li>Nevada</li>
       </ul>
-
       <p>
-        If your types of income and state residency are supported, you should be
-        able to use UsTaxes to paper file your return!
+        <strong>10</strong>/51 states are supported. If your types of income and
+        state residency are supported, you should be able to use UsTaxes to
+        paper file your return!
       </p>
-
-      {(window as any).__TAURI__ === undefined ? doubleButtons : singleButtons}
-
+      <p>
+        The success of this project depends on user feedback. If you notice any
+        issues at all with the project, please reach out to us!
+      </p>
+      <ul>
+        <li>
+          File an issue: <a href={urls.issues}>GitHub Issues</a>
+        </li>
+        <li>
+          Message us on <a href={urls.twitter}>Twitter</a>
+        </li>
+        <li>
+          Think you have something to contribute? Come to our{' '}
+          <a href={urls.discord}>Discord channel</a>.
+        </li>
+      </ul>
+      {isWeb() ? doubleButtons : singleButtons}
       <h2>About This Project</h2>
       <p>
-        UsTaxes is an open source project maintained by Aidan Grimshaw and Zak
-        Patterson, and outside contributions to the <a href={repoUrl}>GitHub</a>{' '}
-        repository are welcome. Please review the{' '}
-        <a href={codeOfConductUrl}>Code of Conduct</a>,{' '}
-        <a href={contributingUrl}>Contributing Guide</a>, and{' '}
-        <a href={architecture}>Project Architecture</a> documents before making
-        any contributions. For those that would like to financially support the
-        project we unfortunately do not have a mechanism to receive donations at
-        this time.
+        UsTaxes is an open source project maintained by{' '}
+        <a href={urls.aidan}>Aidan Grimshaw</a> and{' '}
+        <a href={urls.zak}>Zak Patterson</a>.
       </p>
-    </form>
+      <p>
+        Contributions to the <a href={urls.repo}>GitHub</a> repository are
+        welcome.
+      </p>
+    </>
   )
 }
