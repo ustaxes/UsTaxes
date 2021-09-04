@@ -10,7 +10,8 @@ import {
   Employer,
   Spouse,
   PrimaryPerson,
-  FilingStatus
+  FilingStatus,
+  Information
 } from 'ustaxes/redux/data'
 import {
   Currency,
@@ -60,30 +61,25 @@ export default function W2JobInfo(): ReactElement {
 
   const methods = useForm<IncomeW2UserInput>()
 
-  const spouse: Spouse | undefined = useSelector(
-    (state: TaxesState) => state.information.taxPayer?.spouse
-  )
-
   const { navButtons, onAdvance } = usePager()
 
-  const primary: PrimaryPerson | undefined = useSelector(
-    (state: TaxesState) => state.information.taxPayer?.primaryPerson
+  const information: Information = useSelector(
+    (state: TaxesState) => state.information
   )
 
-  const filingStatus: FilingStatus | undefined = useSelector(
-    (state: TaxesState) => state.information.taxPayer.filingStatus
-  )
+  const spouse: Spouse | undefined = information.taxPayer?.spouse
+
+  const primary: PrimaryPerson | undefined = information.taxPayer?.primaryPerson
+
+  const filingStatus: FilingStatus | undefined =
+    information.taxPayer.filingStatus
 
   // People for employee selector
   const people: Person[] = [primary, spouse].flatMap((p) =>
     p !== undefined ? [p as Person] : []
   )
 
-  const w2s: IncomeW2[] = useSelector(
-    (state: TaxesState) => state.information.w2s
-  )
-
-  const primaryW2s = w2s.filter((w2) => w2.personRole === PersonRole.PRIMARY)
+  const w2s: IncomeW2[] = information.w2s
   const spouseW2s = w2s.filter((w2) => w2.personRole === PersonRole.SPOUSE)
 
   const onSubmitAdd = (formData: IncomeW2UserInput): void => {
@@ -96,9 +92,9 @@ export default function W2JobInfo(): ReactElement {
       dispatch(editW2({ index, value: toIncomeW2(formData) }))
     }
 
-  const showW2s = (_w2s: IncomeW2[], omitAdd = false): ReactElement => (
+  const w2sBlock = (
     <FormListContainer<IncomeW2UserInput>
-      items={_w2s.map((a) => toIncomeW2UserInput(a))}
+      items={w2s.map((a) => toIncomeW2UserInput(a))}
       onSubmitAdd={onSubmitAdd}
       onSubmitEdit={onSubmitEdit}
       removeItem={(i) => dispatch(removeW2(i))}
@@ -111,7 +107,10 @@ export default function W2JobInfo(): ReactElement {
           Income: <Currency value={toIncomeW2(w2).income} />
         </span>
       )}
-      max={omitAdd ? 0 : undefined}
+      grouping={(w2) => (w2.personRole === PersonRole.PRIMARY ? 0 : 1)}
+      groupHeaders={[primary?.firstName, spouse?.firstName].map((x) =>
+        x !== undefined ? <span>{x}&apos; W2s</span> : undefined
+      )}
     >
       <p>Input data from W-2</p>
       <Grid container spacing={2}>
@@ -184,48 +183,24 @@ export default function W2JobInfo(): ReactElement {
     </FormListContainer>
   )
 
-  const primaryW2sBlock: ReactNode = (() => {
-    if (primary !== undefined && primaryW2s.length > 0) {
-      if (spouse !== undefined) {
-        return (
-          <>
-            <h3>
-              {primary.firstName ?? 'Primary'} {primary.lastName ?? 'Taxpayer'}
-              &apos;s W2s
-            </h3>
-            {showW2s(primaryW2s, true)}
-          </>
-        )
-      } else {
-        return showW2s(primaryW2s, true)
-      }
-    }
-  })()
-
-  const spouseW2sBlock: ReactNode = (() => {
+  const spouseW2Message: ReactNode = (() => {
     if (spouse !== undefined && spouseW2s.length > 0) {
-      const name = `${spouse.firstName} ${spouse.lastName}`
       return (
-        <>
-          <h3>{name}&apos;s W2s</h3>
-          {showW2s(spouseW2s, true)}
-          <If condition={filingStatus === FilingStatus.MFS}>
-            <Alert className="inner" severity="warning">
-              Filing status is set to Married Filing Separately.{' '}
-              <strong>{name}</strong>
-              &apos;s W2s will not be added to the return.
-            </Alert>
-          </If>
-        </>
+        <If condition={filingStatus === FilingStatus.MFS}>
+          <Alert className="inner" severity="warning">
+            Filing status is set to Married Filing Separately.{' '}
+            <strong>{spouse.firstName}</strong>
+            &apos;s W2s will not be added to the return.
+          </Alert>
+        </If>
       )
     }
   })()
 
   const form: ReactElement = (
     <>
-      {primaryW2sBlock}
-      {spouseW2sBlock}
-      {showW2s([])}
+      {w2sBlock}
+      {spouseW2Message}
     </>
   )
 
