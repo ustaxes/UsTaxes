@@ -181,11 +181,16 @@ const FormListContainer = <A,>(
   }
 
   // Use the provided grouping function to split the input
-  // array into an array of groups, maintaining the original indices
-  const groups: [A, number][][] = _.chain(items)
+  // array into an array of groups. Each group has a title
+  // and a list of items, along with their original index.
+  const groups: [ReactNode, [A, number][]][] = _.chain(items)
     .map<[A, number]>((x, n) => [x, n])
     .groupBy(([x]) => grouping(x))
-    .values()
+    .toPairs()
+    .map<[ReactNode, [A, number][]]>(([k, xs]) => [
+      groupHeaders[parseInt(k)],
+      xs
+    ])
     .value()
 
   // Note useFormContext here instead of useForm reuses the
@@ -224,9 +229,9 @@ const FormListContainer = <A,>(
     if (items.length > 0) {
       return (
         <List dense={true}>
-          {groups.map((group, i) => (
+          {groups.map(([title, group], i) => (
             <div key={`group-${i}`}>
-              <h2>{groupHeaders[i]}</h2>
+              {title}
               {group.map(([item, originalIndex], k) => (
                 <MutableListItem
                   key={k}
