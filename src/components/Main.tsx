@@ -55,18 +55,24 @@ export default function Main(): ReactElement {
   const [ref] = useFocus()
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)')
   const isStartPage = useLocation().pathname === '/start'
-
   const theme = useMemo(
     () =>
       createMuiTheme({
         palette: {
           type: prefersDarkMode ? 'dark' : 'light',
-          secondary: {
-            light: '#4f5b62',
-            main: '#BCD2EE',
-            dark: '#000a12',
-            contrastText: '#ffffff'
-          },
+          secondary: prefersDarkMode
+            ? {
+                light: '#4f5b62',
+                main: '#d5d5d5',
+                dark: '#000a12',
+                contrastText: '#ffffff'
+              }
+            : {
+                light: '#4f5b62',
+                main: '#263238',
+                dark: '#000a12',
+                contrastText: '#ffffff'
+              },
           primary: {
             light: '#66ffa6',
             main: '#00e676',

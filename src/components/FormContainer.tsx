@@ -2,6 +2,7 @@ import { PropsWithChildren, ReactElement, useState } from 'react'
 import {
   createStyles,
   makeStyles,
+  useMediaQuery,
   IconButton,
   List,
   ListItem,
@@ -27,36 +28,39 @@ const FormContainer = ({
   onDone,
   onCancel,
   children
-}: PropsWithChildren<FormContainerProps>): ReactElement => (
-  <div>
-    {children}
-    <Box
-      display="flex"
-      justifyContent="flex-start"
-      marginTop={2}
-      marginBottom={3}
-    >
-      <Box marginRight={2}>
+}: PropsWithChildren<FormContainerProps>): ReactElement => {
+  const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)')
+  return (
+    <div>
+      {children}
+      <Box
+        display="flex"
+        justifyContent="flex-start"
+        marginTop={2}
+        marginBottom={3}
+      >
+        <Box marginRight={2}>
+          <Button
+            type="button"
+            onClick={onDone}
+            variant="contained"
+            color="primary"
+          >
+            Save
+          </Button>
+        </Box>
         <Button
           type="button"
-          onClick={onDone}
+          onClick={onCancel}
+          color={prefersDarkMode ? 'default' : 'secondary'}
           variant="contained"
-          color="primary"
         >
-          Save
+          Discard
         </Button>
       </Box>
-      <Button
-        type="button"
-        onClick={onCancel}
-        variant="contained"
-        color="secondary"
-      >
-        Close
-      </Button>
-    </Box>
-  </div>
-)
+    </div>
+  )
+}
 
 interface MutableListItemProps {
   remove?: () => void
@@ -152,6 +156,7 @@ const useStyles = makeStyles((theme: Theme) =>
 const FormListContainer = <A,>(
   props: PropsWithChildren<FormListContainerProps<A>>
 ): ReactElement => {
+  const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)')
   const classes = useStyles()
   const {
     children,
@@ -269,7 +274,12 @@ const FormListContainer = <A,>(
         <Else>
           <If condition={max === undefined || items.length < max}>
             <div className={classes.buttonList}>
-              <Button type="button" onClick={openAddForm} variant="contained">
+              <Button
+                type="button"
+                onClick={openAddForm}
+                color={prefersDarkMode ? 'default' : 'secondary'}
+                variant="contained"
+              >
                 Add
               </Button>
             </div>

@@ -1,5 +1,5 @@
 import { createContext, useState, PropsWithChildren, ReactElement } from 'react'
-import { Button, Grid } from '@material-ui/core'
+import { useMediaQuery, Button, Grid } from '@material-ui/core'
 import { useContext } from 'react'
 import { Link, useHistory } from 'react-router-dom'
 import { useDevice } from 'ustaxes/hooks/Device'
@@ -87,6 +87,7 @@ export const PagerButtons = ({
   submitText,
   previousUrl
 }: PagerButtonsProps): ReactElement => {
+  const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)')
   const { isMobile } = useDevice()
   const backButton = (() => {
     if (previousUrl !== undefined && previousUrl !== '/start') {
@@ -96,6 +97,7 @@ export const PagerButtons = ({
             component={Link}
             to={previousUrl}
             variant="contained"
+            color={prefersDarkMode ? 'default' : 'secondary'}
             fullWidth
           >
             Previous
@@ -141,6 +143,8 @@ export const StartButtons = ({
   secondUrl,
   secondText
 }: StartButtonsProps): ReactElement => {
+  const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)')
+
   return (
     <Grid container spacing={2}>
       <Grid item xs={12} sm={6}>
@@ -155,7 +159,12 @@ export const StartButtons = ({
         </Button>
       </Grid>
       <Grid item xs={12} sm={6}>
-        <Button href={secondUrl} variant="contained" fullWidth>
+        <Button
+          href={secondUrl}
+          variant="contained"
+          fullWidth
+          color={prefersDarkMode ? 'default' : 'secondary'}
+        >
           {secondText}
         </Button>
       </Grid>
