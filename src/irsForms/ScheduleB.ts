@@ -7,7 +7,6 @@ import {
 import TaxPayer from 'ustaxes/redux/TaxPayer'
 import Form, { FormTag } from './Form'
 import { computeField, displayNumber, sumFields } from './util'
-import { anArrayOf } from 'ustaxes/util'
 
 interface PayerAmount {
   payer?: string
@@ -47,7 +46,7 @@ export default class ScheduleB implements Form {
     // ensure we return an array of length interestPayersLimit * 2.
     return payerValues
       .flatMap(({ payer, amount }) => [payer, amount?.toString()])
-      .concat(anArrayOf(rightPad, undefined))
+      .concat(Array(rightPad).fill(undefined))
   }
 
   l2 = (): number | undefined =>
@@ -69,7 +68,7 @@ export default class ScheduleB implements Form {
     const rightPad = 2 * (this.dividendPayersLimit - payerValues.length)
     return payerValues
       .flatMap(({ payer, amount }) => [payer, amount])
-      .concat(anArrayOf(rightPad, undefined))
+      .concat(Array(rightPad).fill(undefined))
   }
 
   l6 = (): number | undefined =>
