@@ -1,7 +1,8 @@
 import { PDFDocument } from 'pdf-lib'
 import { store } from '../redux/store'
 import { create1040 } from '../irsForms/Main'
-import { isLeft, zip } from '../util'
+import { isLeft } from '../util'
+import _ from 'lodash'
 import log from '../log'
 import { buildPdf, downloadPDF, savePDF } from '../pdfFiller/pdfHandler'
 import { Information } from '../redux/data'
@@ -21,7 +22,7 @@ export async function create1040PDF(state: Information): Promise<Uint8Array> {
       forms.map(async (f) => await downloadPDF(`/forms/${f.tag}.pdf`))
     )
 
-    return buildPdf(zip(forms, pdfs))
+    return buildPdf(_.zipWith(forms, pdfs, (a, b) => [a, b]))
   }
 
   log.error('Attempt to create pdf with no data, will be empty')

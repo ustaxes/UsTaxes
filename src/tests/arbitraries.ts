@@ -11,6 +11,7 @@ import Form from 'ustaxes/irsForms/Form'
 import { create1040 } from 'ustaxes/irsForms/Main'
 import * as types from 'ustaxes/redux/data'
 import * as util from '../util'
+import _ from 'lodash'
 
 const lower: Arbitrary<string> = fc
   .integer({ min: 0x61, max: 0x7a })
@@ -183,13 +184,16 @@ const propertyType: Arbitrary<types.PropertyTypeName> = fc.constantFrom(
 
 const propertyExpenses: Arbitrary<
   Partial<{ [K in types.PropertyExpenseTypeName]: number }>
-> = fc
-  .set(fc.array(propExpenseTypeName))
-  .chain((es) =>
-    fc
-      .array(expense, { minLength: es.length, maxLength: es.length })
-      .map((nums) => Object.fromEntries(util.zip(es, nums)))
-  )
+> = fc.set(fc.array(propExpenseTypeName)).chain((es) =>
+  fc
+    .array(expense, { minLength: es.length, maxLength: es.length })
+    .map((nums) =>
+      _.chain(es)
+        .zipWith(nums, (e, num) => [e, num])
+        .fromPairs()
+        .value()
+    )
+)
 
 export const property: Arbitrary<types.Property> = fc
   .tuple(
