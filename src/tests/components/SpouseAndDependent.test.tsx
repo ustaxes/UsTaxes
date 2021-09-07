@@ -71,7 +71,7 @@ describe('SpouseInfo', () => {
     })
 
     screen.getByRole('button', {
-      name: /Close/
+      name: /Discard/i
     })
   })
   it('saves and edits a spouse', async () => {
@@ -92,7 +92,7 @@ describe('SpouseInfo', () => {
     })
 
     screen.getByRole('button', {
-      name: /Close/
+      name: /Discard/i
     })
 
     // get all three text inputs
@@ -183,7 +183,7 @@ describe('SpouseInfo', () => {
     })
 
     screen.getByRole('button', {
-      name: /Close/
+      name: /Discard/i
     })
 
     // get all inputs
@@ -338,11 +338,11 @@ describe('Dependents', () => {
       screen.getByText(label)
     }
 
-    const closeButton = screen.getByRole('button', {
-      name: /Close/
+    const DiscardButton = screen.getByRole('button', {
+      name: /Discard/i
     })
 
-    fireEvent.click(closeButton)
+    fireEvent.click(DiscardButton)
 
     // assert all the labels are now gone
     for (const label of dependentFormLabels) {
