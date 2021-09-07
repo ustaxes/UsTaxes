@@ -21,14 +21,8 @@ export const PersonFields = ({
   children
 }: PropsWithChildren<Record<never, never>>): ReactElement => (
   <>
-    <LabeledInput
-      label="First Name and Initial"
-      name="firstName"
-    />
-    <LabeledInput
-      label="Last Name"
-      name="lastName"
-    />
+    <LabeledInput label="First Name and Initial" name="firstName" />
+    <LabeledInput label="Last Name" name="lastName" />
     <LabeledInput label="SSN / TIN" name="ssid" patternConfig={Patterns.ssn} />
     {children}
   </>
