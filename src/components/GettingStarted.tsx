@@ -1,5 +1,5 @@
 import { ReactElement } from 'react'
-import { Link } from '@material-ui/core'
+import { Link, useMediaQuery } from '@material-ui/core'
 import { StartButtons, SingleButtons } from './pager'
 import { isWeb } from 'ustaxes/util'
 
@@ -27,6 +27,8 @@ const singleButtons: ReactElement = (
 )
 
 export default function GettingStarted(): ReactElement {
+  const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)')
+
   return (
     <>
       <h1>UsTaxes.org</h1>
@@ -122,6 +124,14 @@ export default function GettingStarted(): ReactElement {
         Contributions to the <Link href={urls.repo}>GitHub</Link> repository are
         welcome.
       </p>
+      {prefersDarkMode ?
+        <a href="https://www.netlify.com">
+          <img src="https://www.netlify.com/img/global/badges/netlify-dark.svg" alt="Deploys by Netlify" />
+        </a> :
+        <a href="https://www.netlify.com">
+          <img src="https://www.netlify.com/img/global/badges/netlify-light.svg" alt="Deploys by Netlify" />
+        </a>
+      }
     </>
   )
 }
