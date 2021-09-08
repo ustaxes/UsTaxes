@@ -55,37 +55,37 @@ const Questions = (): ReactElement => {
       onAdvance()
     }
 
-  const page = (
-    <form tabIndex={-1} onSubmit={handleSubmit(onSubmit(onAdvance))}>
-      <Helmet>
-        <title>Informational Questions | Results | UsTaxes.org</title>
-      </Helmet>
-      <h2>Informational Questions</h2>
-      <p>
-        Based on your prior responses, reseponses to these questions are
-        required.
-      </p>
-      <Grid container spacing={2}>
-        <List>
-          {questions.map((q, i) => (
-            <ListItem key={i}>
-              <If condition={q.valueTag === 'boolean'}>
-                <Then>
-                  <LabeledCheckbox name={q.tag} label={q.text} />
-                </Then>
-                <Else>
-                  <LabeledInput name={q.tag} label={q.text} />
-                </Else>
-              </If>
-            </ListItem>
-          ))}
-        </List>
-      </Grid>
-      {navButtons}
-    </form>
+  return (
+    <FormProvider {...methods}>
+      <form tabIndex={-1} onSubmit={handleSubmit(onSubmit(onAdvance))}>
+        <Helmet>
+          <title>Informational Questions | Results | UsTaxes.org</title>
+        </Helmet>
+        <h2>Informational Questions</h2>
+        <p>
+          Based on your prior responses, reseponses to these questions are
+          required.
+        </p>
+        <Grid container spacing={2}>
+          <List>
+            {questions.map((q, i) => (
+              <ListItem key={i}>
+                <If condition={q.valueTag === 'boolean'}>
+                  <Then>
+                    <LabeledCheckbox name={q.tag} label={q.text} />
+                  </Then>
+                  <Else>
+                    <LabeledInput name={q.tag} label={q.text} />
+                  </Else>
+                </If>
+              </ListItem>
+            ))}
+          </List>
+        </Grid>
+        {navButtons}
+      </form>
+    </FormProvider>
   )
-
-  return <FormProvider {...methods}>{page}</FormProvider>
 }
 
 export default Questions

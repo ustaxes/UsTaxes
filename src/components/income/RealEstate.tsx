@@ -138,7 +138,7 @@ const toUserInput = (property: Property): PropertyAddForm => {
 
 export default function RealEstate(): ReactElement {
   const methods = useForm<PropertyAddForm>()
-  const { control, getValues } = methods
+  const { handleSubmit, control, getValues } = methods
   const dispatch = useDispatch()
 
   const { onAdvance, navButtons } = usePager()
@@ -284,13 +284,15 @@ export default function RealEstate(): ReactElement {
   )
 
   return (
-    <form tabIndex={-1} onSubmit={onAdvance}>
-      <Helmet>
-        <title>Real Estate | Income | UsTaxes.org</title>
-      </Helmet>
-      <h2>Properties</h2>
-      <FormProvider {...methods}>{form}</FormProvider>
-      {navButtons}
-    </form>
+    <FormProvider {...methods}>
+      <form tabIndex={-1} onSubmit={handleSubmit(onAdvance)}>
+        <Helmet>
+          <title>Real Estate | Income | UsTaxes.org</title>
+        </Helmet>
+        <h2>Properties</h2>
+        {form}
+        {navButtons}
+      </form>
+    </FormProvider>
   )
 }

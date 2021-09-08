@@ -218,7 +218,7 @@ export default function F1099Info(): ReactElement {
   const f1099s = useSelector((state: TaxesState) => state.information.f1099s)
 
   const methods = useForm<F1099UserInput>()
-  const { watch } = methods
+  const { handleSubmit, watch } = methods
   const selectedType: Income1099Type | undefined = watch('formType')
 
   const dispatch = useDispatch()
@@ -461,13 +461,15 @@ export default function F1099Info(): ReactElement {
   )
 
   return (
-    <form tabIndex={-1} onSubmit={onAdvance}>
-      <Helmet>
-        <title>1099 Information | Income | UsTaxes.org</title>
-      </Helmet>
-      <h2>1099 Information</h2>
-      <FormProvider {...methods}>{form}</FormProvider>
-      {navButtons}
-    </form>
+    <FormProvider {...methods}>
+      <form tabIndex={-1} onSubmit={handleSubmit(onAdvance)}>
+        <Helmet>
+          <title>1099 Information | Income | UsTaxes.org</title>
+        </Helmet>
+        <h2>1099 Information</h2>
+        {form}
+        {navButtons}
+      </form>
+    </FormProvider>
   )
 }

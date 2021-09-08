@@ -18,6 +18,8 @@ import { Else, If, Then } from 'react-if'
 import { SubmitHandler, useFormContext } from 'react-hook-form'
 import _ from 'lodash'
 import { ReactNode } from 'react'
+import { FormContainerProvider } from './FormContainer/Context'
+import { Prompt } from 'ustaxes/components/Prompt'
 
 interface FormContainerProps {
   onDone: () => void
@@ -32,7 +34,9 @@ const FormContainer = ({
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)')
   return (
     <div>
-      {children}
+      <FormContainerProvider onSubmit={onDone}>
+        {children}
+      </FormContainerProvider>
       <Box
         display="flex"
         justifyContent="flex-start"
@@ -176,7 +180,6 @@ const FormListContainer = <A,>(
     groupHeaders = []
   } = props
   const [formState, setFormState] = useState(FormState.Closed)
-
   const [editing, setEditing] = useState<number | undefined>(undefined)
 
   const close = (): void => {
@@ -200,7 +203,11 @@ const FormListContainer = <A,>(
 
   // Note useFormContext here instead of useForm reuses the
   // existing form context from the parent.
-  const { reset, handleSubmit } = useFormContext()
+  const {
+    reset,
+    handleSubmit,
+    formState: { isValid }
+  } = useFormContext()
 
   const onClose = (): void => {
     onCancel()
@@ -264,6 +271,7 @@ const FormListContainer = <A,>(
 
   return (
     <>
+      <Prompt when={!isValid} />
       {itemDisplay}
       <If condition={formState !== FormState.Closed}>
         <Then>

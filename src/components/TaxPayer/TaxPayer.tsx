@@ -1,4 +1,5 @@
 import { ReactElement } from 'react'
+import { Prompt } from 'react-router'
 import { Helmet } from 'react-helmet'
 import { FormProvider, useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
@@ -87,7 +88,10 @@ export default function PrimaryTaxpayer(): ReactElement {
     }
   })
 
-  const { handleSubmit } = methods
+  const {
+    handleSubmit,
+    formState: { isValid }
+  } = methods
 
   const onSubmit =
     (onAdvance: () => void) =>
@@ -97,24 +101,29 @@ export default function PrimaryTaxpayer(): ReactElement {
       onAdvance()
     }
 
-  const page = (
-    <form tabIndex={-1} onSubmit={handleSubmit(onSubmit(onAdvance))}>
-      <Helmet>
-        <title>Primary Taxpayer Information | Personal | UsTaxes.org</title>
-      </Helmet>
-      <h2>Primary Taxpayer Information</h2>
-      <Grid container spacing={2}>
-        <PersonFields />
-        <LabeledCheckbox
-          label="Check if you are a dependent"
-          name="isTaxpayerDependent"
-        />
-        <AddressFields checkboxText="Do you have a foreign address?" />
-        <USStateDropDown label="Residency State" name="stateResidency" />
-      </Grid>
-      {navButtons}
-    </form>
+  const Prevent = () => (
+    <Prompt when={!isValid} message="Are you sure you want to leave?" />
   )
 
-  return <FormProvider {...methods}>{page}</FormProvider>
+  return (
+    <FormProvider {...methods}>
+      <form tabIndex={-1} onSubmit={handleSubmit(onSubmit(onAdvance))}>
+        <Prevent />
+        <Helmet>
+          <title>Primary Taxpayer Information | Personal | UsTaxes.org</title>
+        </Helmet>
+        <h2>Primary Taxpayer Information</h2>
+        <Grid container spacing={2}>
+          <PersonFields />
+          <LabeledCheckbox
+            label="Check if you are a dependent"
+            name="isTaxpayerDependent"
+          />
+          <AddressFields checkboxText="Do you have a foreign address?" />
+          <USStateDropDown label="Residency State" name="stateResidency" />
+        </Grid>
+        {navButtons}
+      </form>
+    </FormProvider>
+  )
 }

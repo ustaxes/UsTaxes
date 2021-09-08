@@ -61,6 +61,7 @@ export default function W2JobInfo(): ReactElement {
   const dispatch = useDispatch()
 
   const methods = useForm<IncomeW2UserInput>()
+  const { handleSubmit } = methods
 
   const { navButtons, onAdvance } = usePager()
 
@@ -207,13 +208,15 @@ export default function W2JobInfo(): ReactElement {
   )
 
   return (
-    <form tabIndex={-1} onSubmit={onAdvance}>
-      <Helmet>
-        <title>Job Information | Income | UsTaxes.org</title>
-      </Helmet>
-      <h2>Job Information</h2>
-      <FormProvider {...methods}>{form}</FormProvider>
-      {navButtons}
-    </form>
+    <FormProvider {...methods}>
+      <form tabIndex={-1} onSubmit={handleSubmit(onAdvance)}>
+        <Helmet>
+          <title>Job Information | Income | UsTaxes.org</title>
+        </Helmet>
+        <h2>Job Information</h2>
+        {form}
+        {navButtons}
+      </form>
+    </FormProvider>
   )
 }

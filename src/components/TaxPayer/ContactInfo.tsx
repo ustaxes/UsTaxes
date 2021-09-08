@@ -35,27 +35,27 @@ export default function ContactInfo(): ReactElement {
       onAdvance()
     }
 
-  const page = (
-    <form tabIndex={-1} onSubmit={handleSubmit(onSubmit(onAdvance))}>
-      <Helmet>
-        <title>Contact Information | Personal | UsTaxes.org</title>
-      </Helmet>
-      <h2>Family Contact Information</h2>
-      <Grid container spacing={2}>
-        <LabeledInput
-          label="Contact phone number"
-          patternConfig={Patterns.usPhoneNumber}
-          name="contactPhoneNumber"
-        />
-        <LabeledInput
-          label="Contact email address"
-          required={true}
-          name="contactEmail"
-        />
-      </Grid>
-      {navButtons}
-    </form>
+  return (
+    <FormProvider {...methods}>
+      <form tabIndex={-1} onSubmit={handleSubmit(onSubmit(onAdvance))}>
+        <Helmet>
+          <title>Contact Information | Personal | UsTaxes.org</title>
+        </Helmet>
+        <h2>Family Contact Information</h2>
+        <Grid container spacing={2}>
+          <LabeledInput
+            label="Contact phone number"
+            patternConfig={Patterns.usPhoneNumber}
+            name="contactPhoneNumber"
+          />
+          <LabeledInput
+            label="Contact email address"
+            required={true}
+            name="contactEmail"
+          />
+        </Grid>
+        {navButtons}
+      </form>
+    </FormProvider>
   )
-
-  return <FormProvider {...methods}>{page}</FormProvider>
 }

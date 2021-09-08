@@ -1,4 +1,4 @@
-import { useEffect, useRef, ReactElement } from 'react'
+import { useEffect, useRef, KeyboardEvent, ReactElement } from 'react'
 import { useForkRef } from 'rooks'
 import { InputAdornment, Grid, TextField } from '@material-ui/core'
 import { LabeledInputProps } from './types'
@@ -8,8 +8,10 @@ import { isNumeric, Patterns } from 'ustaxes/components/Patterns'
 import ConditionallyWrap from 'ustaxes/components/ConditionallyWrap'
 import useStyles from './styles'
 import _ from 'lodash'
+import { useFormContainer } from 'ustaxes/components/FormContainer/Context'
 
 export function LabeledInput(props: LabeledInputProps): ReactElement {
+  const { onSubmit } = useFormContainer()
   const { label, patternConfig: patternConfigDefined, name, rules = {} } = props
   const { required = patternConfigDefined !== undefined } = props
   const {
@@ -30,6 +32,7 @@ export function LabeledInput(props: LabeledInputProps): ReactElement {
   const {
     control,
     register,
+    handleSubmit,
     formState: { errors }
   } = useFormContext()
   const error = _.get(errors, name)
@@ -82,7 +85,14 @@ export function LabeledInput(props: LabeledInputProps): ReactElement {
                   <InputAdornment position="start">
                     {patternConfig.prefix}
                   </InputAdornment>
-                ) : undefined
+                ) : undefined,
+                onKeyDown: (e: KeyboardEvent) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault()
+                    handleSubmit(_.noop)()
+                    onSubmit?.()
+                  }
+                }
               }}
             />
           )}
@@ -125,6 +135,13 @@ export function LabeledInput(props: LabeledInputProps): ReactElement {
             label={label}
             value={value ?? ''}
             onChange={onChange}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault()
+                handleSubmit(_.noop)()
+                onSubmit?.()
+              }
+            }}
             fullWidth
             helperText={error?.message}
             error={error !== undefined}

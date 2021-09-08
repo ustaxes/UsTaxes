@@ -46,6 +46,7 @@ export default function F1098eInfo(): ReactElement {
   const { onAdvance, navButtons } = usePager()
 
   const methods = useForm<F1098EUserInput>({ defaultValues })
+  const { handleSubmit } = methods
 
   const dispatch = useDispatch()
 
@@ -87,15 +88,15 @@ export default function F1098eInfo(): ReactElement {
   )
 
   return (
-    <form tabIndex={-1} onSubmit={onAdvance}>
-      <FormProvider {...methods}>
+    <FormProvider {...methods}>
+      <form tabIndex={-1} onSubmit={handleSubmit(onAdvance)}>
         <Helmet>
           <title>1098-E Information | Deductions | UsTaxes.org</title>
         </Helmet>
         <h2>1098-E Information</h2>
         {form}
         {navButtons}
-      </FormProvider>
-    </form>
+      </form>
+    </FormProvider>
   )
 }
