@@ -272,8 +272,6 @@ const FormListContainer = <A,>(
   return (
     <>
       <Prompt when={!_.isEmpty(errors) || isDirty} />
-      {!_.isEmpty(errors) && 'errors'}
-      {isDirty && 'dirty'}
       {itemDisplay}
       <If condition={formState !== FormState.Closed}>
         <Then>

@@ -88,9 +88,8 @@ export function LabeledInput(props: LabeledInputProps): ReactElement {
                 ) : undefined,
                 onKeyDown: (e: KeyboardEvent) => {
                   if (e.key === 'Enter') {
-                    e.preventDefault()
-                    handleSubmit(_.noop)()
                     onSubmit?.()
+                    handleSubmit(_.noop)()
                   }
                 }
               }}
@@ -137,7 +136,6 @@ export function LabeledInput(props: LabeledInputProps): ReactElement {
             onChange={onChange}
             onKeyDown={(e) => {
               if (e.key === 'Enter') {
-                e.preventDefault()
                 handleSubmit(_.noop)()
                 onSubmit?.()
               }
