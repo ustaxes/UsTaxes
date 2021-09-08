@@ -124,14 +124,21 @@ export default function GettingStarted(): ReactElement {
         Contributions to the <Link href={urls.repo}>GitHub</Link> repository are
         welcome.
       </p>
-      {prefersDarkMode ?
+      {prefersDarkMode ? (
         <a href="https://www.netlify.com">
-          <img src="https://www.netlify.com/img/global/badges/netlify-dark.svg" alt="Deploys by Netlify" />
-        </a> :
-        <a href="https://www.netlify.com">
-          <img src="https://www.netlify.com/img/global/badges/netlify-light.svg" alt="Deploys by Netlify" />
+          <img
+            src="https://www.netlify.com/img/global/badges/netlify-dark.svg"
+            alt="Deploys by Netlify"
+          />
         </a>
-      }
+      ) : (
+        <a href="https://www.netlify.com">
+          <img
+            src="https://www.netlify.com/img/global/badges/netlify-light.svg"
+            alt="Deploys by Netlify"
+          />
+        </a>
+      )}
     </>
   )
 }
