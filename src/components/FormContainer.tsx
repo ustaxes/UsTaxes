@@ -206,7 +206,7 @@ const FormListContainer = <A,>(
   const {
     reset,
     handleSubmit,
-    formState: { isValid }
+    formState: { isDirty, errors }
   } = useFormContext()
 
   const onClose = (): void => {
@@ -271,7 +271,9 @@ const FormListContainer = <A,>(
 
   return (
     <>
-      <Prompt when={!isValid} />
+      <Prompt when={!_.isEmpty(errors) || isDirty} />
+      {!_.isEmpty(errors) && 'errors'}
+      {isDirty && 'dirty'}
       {itemDisplay}
       <If condition={formState !== FormState.Closed}>
         <Then>

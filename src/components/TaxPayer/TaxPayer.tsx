@@ -1,5 +1,4 @@
 import { ReactElement } from 'react'
-import { Prompt } from 'react-router'
 import { Helmet } from 'react-helmet'
 import { FormProvider, useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
@@ -19,8 +18,10 @@ import {
 import { PersonFields } from './PersonFields'
 import { usePager } from 'ustaxes/components/pager'
 import { LabeledCheckbox, USStateDropDown } from 'ustaxes/components/input'
+import { Prompt } from 'ustaxes/components/Prompt'
 import AddressFields from './Address'
 import { Grid } from '@material-ui/core'
+import _ from 'lodash'
 
 interface TaxPayerUserForm {
   firstName: string
@@ -90,7 +91,7 @@ export default function PrimaryTaxpayer(): ReactElement {
 
   const {
     handleSubmit,
-    formState: { isValid }
+    formState: { errors }
   } = methods
 
   const onSubmit =
@@ -101,14 +102,10 @@ export default function PrimaryTaxpayer(): ReactElement {
       onAdvance()
     }
 
-  const Prevent = () => (
-    <Prompt when={!isValid} message="Are you sure you want to leave?" />
-  )
-
   return (
     <FormProvider {...methods}>
       <form tabIndex={-1} onSubmit={handleSubmit(onSubmit(onAdvance))}>
-        <Prevent />
+        <Prompt when={!_.isEmpty(errors)} />
         <Helmet>
           <title>Primary Taxpayer Information | Personal | UsTaxes.org</title>
         </Helmet>
