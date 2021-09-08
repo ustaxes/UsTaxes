@@ -127,14 +127,14 @@ export default function GettingStarted(): ReactElement {
       {prefersDarkMode ? (
         <a href="https://www.netlify.com">
           <img
-            src="https://www.netlify.com/img/global/badges/netlify-dark.svg"
+            src="netlify-dark.svg"
             alt="Deploys by Netlify"
           />
         </a>
       ) : (
         <a href="https://www.netlify.com">
           <img
-            src="https://www.netlify.com/img/global/badges/netlify-light.svg"
+            src="netlify-light.svg"
             alt="Deploys by Netlify"
           />
         </a>
