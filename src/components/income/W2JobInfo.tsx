@@ -205,7 +205,7 @@ export default function W2JobInfo(): ReactElement {
   )
 
   return (
-    <form onSubmit={onAdvance}>
+    <form tabIndex={-1} onSubmit={onAdvance}>
       <h2>Job Information</h2>
       <FormProvider {...methods}>{form}</FormProvider>
       {navButtons}

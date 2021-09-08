@@ -87,7 +87,7 @@ export default function F1098eInfo(): ReactElement {
   )
 
   return (
-    <form onSubmit={onAdvance}>
+    <form tabIndex={-1} onSubmit={onAdvance}>
       <FormProvider {...methods}>
         <h2>1098-E Information</h2>
         {form}

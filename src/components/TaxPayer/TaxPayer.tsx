@@ -97,7 +97,7 @@ export default function PrimaryTaxpayer(): ReactElement {
     }
 
   const page = (
-    <form onSubmit={handleSubmit(onSubmit(onAdvance))}>
+    <form tabIndex={-1} onSubmit={handleSubmit(onSubmit(onAdvance))}>
       <h2>Primary Taxpayer Information</h2>
       <Grid container spacing={2}>
         <PersonFields />

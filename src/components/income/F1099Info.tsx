@@ -352,7 +352,7 @@ export default function F1099Info(): ReactElement {
   )
 
   const ssaFields = (
-    <div>
+    <Grid container spacing={2}>
       {/* <LabeledInput
         label="Box 3 - Benefits Paid"
         patternConfig={Patterns.currency}
@@ -364,16 +364,24 @@ export default function F1099Info(): ReactElement {
         name="benefitsRepaid"
       /> */}
       <LabeledInput
-        label="Box 5 - Net Benefits"
+        label={
+          <>
+            <strong>Box 5</strong> - Net Benefits
+          </>
+        }
         patternConfig={Patterns.currency}
         name="netBenefits"
       />
       <LabeledInput
-        label="Box 6 - Voluntary Federal Income Tax Withheld"
+        label={
+          <>
+            <strong>Box 6</strong> - Voluntary Federal Income Tax Withheld
+          </>
+        }
         patternConfig={Patterns.currency}
         name="federalIncomeTaxWithheld"
       />
-    </div>
+    </Grid>
   )
 
   const specificFields = {
@@ -451,7 +459,7 @@ export default function F1099Info(): ReactElement {
   )
 
   return (
-    <form onSubmit={onAdvance}>
+    <form tabIndex={-1} onSubmit={onAdvance}>
       <h2>1099 Information</h2>
       <FormProvider {...methods}>{form}</FormProvider>
       {navButtons}

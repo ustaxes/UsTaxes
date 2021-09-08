@@ -1,22 +1,13 @@
 import { ReactElement } from 'react'
-import { createStyles, makeStyles, Grid, TextField } from '@material-ui/core'
+import { Grid, TextField } from '@material-ui/core'
 import { Controller, useFormContext } from 'react-hook-form'
 import locationPostalCodes from 'ustaxes/data/locationPostalCodes'
+import useStyles from './styles'
 import { BaseDropdownProps, LabeledDropdownProps } from './types'
 import _ from 'lodash'
 import countries from 'ustaxes/data/countries'
 import { State } from 'ustaxes/redux/data'
 import ConditionallyWrap from 'ustaxes/components/ConditionallyWrap'
-
-const useStyles = makeStyles(() =>
-  createStyles({
-    root: {
-      '& .MuiFormLabel-root': {
-        color: 'rgba(0, 0, 0, 0.54)'
-      }
-    }
-  })
-)
 
 export function GenericLabeledDropdown<A>(
   props: LabeledDropdownProps<A>

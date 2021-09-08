@@ -282,7 +282,7 @@ export default function RealEstate(): ReactElement {
   )
 
   return (
-    <form onSubmit={onAdvance}>
+    <form tabIndex={-1} onSubmit={onAdvance}>
       <h2>Properties</h2>
       <FormProvider {...methods}>{form}</FormProvider>
       {navButtons}
