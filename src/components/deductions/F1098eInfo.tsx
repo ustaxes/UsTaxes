@@ -1,4 +1,5 @@
 import { ReactElement } from 'react'
+import { Helmet } from 'react-helmet'
 import { FormProvider, useForm } from 'react-hook-form'
 import SchoolIcon from '@material-ui/icons/School'
 import { useDispatch, useSelector } from 'react-redux'
@@ -89,6 +90,9 @@ export default function F1098eInfo(): ReactElement {
   return (
     <form tabIndex={-1} onSubmit={onAdvance}>
       <FormProvider {...methods}>
+        <Helmet>
+          <title>1098-E Information | Deductions | UsTaxes.org</title>
+        </Helmet>
         <h2>1098-E Information</h2>
         {form}
         {navButtons}

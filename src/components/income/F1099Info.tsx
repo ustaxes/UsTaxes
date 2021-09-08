@@ -1,4 +1,5 @@
 import { ReactElement } from 'react'
+import { Helmet } from 'react-helmet'
 import { useForm, FormProvider } from 'react-hook-form'
 import { Icon, Grid } from '@material-ui/core'
 import { useDispatch, useSelector } from 'react-redux'
@@ -460,6 +461,9 @@ export default function F1099Info(): ReactElement {
 
   return (
     <form tabIndex={-1} onSubmit={onAdvance}>
+      <Helmet>
+        <title>1099 Information | Income | UsTaxes.org</title>
+      </Helmet>
       <h2>1099 Information</h2>
       <FormProvider {...methods}>{form}</FormProvider>
       {navButtons}

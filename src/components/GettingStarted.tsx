@@ -1,4 +1,5 @@
 import { ReactElement } from 'react'
+import { Helmet } from 'react-helmet'
 import { Link } from '@material-ui/core'
 import { StartButtons, SingleButtons } from './pager'
 import { isWeb } from 'ustaxes/util'
@@ -29,6 +30,9 @@ const singleButtons: ReactElement = (
 export default function GettingStarted(): ReactElement {
   return (
     <>
+      <Helmet>
+        <title>Getting Started | UsTaxes.org</title>
+      </Helmet>
       <h1>UsTaxes.org</h1>
       <p>
         UsTaxes is an open source tax filing application that can be used to

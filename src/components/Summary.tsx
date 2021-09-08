@@ -1,4 +1,5 @@
 import { ReactElement } from 'react'
+import { Helmet } from 'react-helmet'
 import { Avatar, Grid, List, Typography } from '@material-ui/core'
 import { usePager } from './pager'
 import { create1040 } from 'ustaxes/irsForms/Main'
@@ -133,6 +134,9 @@ const Summary = (): ReactElement => {
 
   return (
     <form tabIndex={-1} onSubmit={onAdvance}>
+      <Helmet>
+        <title>Summary | Results | UsTaxes.org</title>
+      </Helmet>
       <h2>Summary</h2>
       {summaryBody}
       {navButtons}

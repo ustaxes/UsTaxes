@@ -1,5 +1,6 @@
 import { ReactElement, ReactNode } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { Helmet } from 'react-helmet'
 import { FormProvider, useForm } from 'react-hook-form'
 import { usePager } from 'ustaxes/components/pager'
 import {
@@ -206,6 +207,9 @@ export default function W2JobInfo(): ReactElement {
 
   return (
     <form tabIndex={-1} onSubmit={onAdvance}>
+      <Helmet>
+        <title>Job Information | Income | UsTaxes.org</title>
+      </Helmet>
       <h2>Job Information</h2>
       <FormProvider {...methods}>{form}</FormProvider>
       {navButtons}

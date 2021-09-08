@@ -1,6 +1,7 @@
 import { ReactElement } from 'react'
-import { Message, useForm, useWatch, FormProvider } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
+import { Helmet } from 'react-helmet'
+import { Message, useForm, useWatch, FormProvider } from 'react-hook-form'
 import {
   addProperty,
   editProperty,
@@ -283,6 +284,9 @@ export default function RealEstate(): ReactElement {
 
   return (
     <form tabIndex={-1} onSubmit={onAdvance}>
+      <Helmet>
+        <title>Real Estate | Income | UsTaxes.org</title>
+      </Helmet>
       <h2>Properties</h2>
       <FormProvider {...methods}>{form}</FormProvider>
       {navButtons}

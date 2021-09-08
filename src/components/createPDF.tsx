@@ -1,4 +1,5 @@
 import { FormEvent, ReactElement, useState } from 'react'
+import { Helmet } from 'react-helmet'
 import { usePager } from './pager'
 import Alert from '@material-ui/lab/Alert'
 import { makeStyles } from '@material-ui/core/styles'
@@ -61,6 +62,9 @@ export default function CreatePDF(): ReactElement {
 
   return (
     <form tabIndex={-1}>
+      <Helmet>
+        <title>Print Copy to File | Results | UsTaxes.org</title>
+      </Helmet>
       <h2>Print Copy to File</h2>
       <div className={classes.root}>
         {errors.map((error, i) => (

@@ -1,4 +1,5 @@
 import { ReactElement } from 'react'
+import { Helmet } from 'react-helmet'
 import { useForm, FormProvider } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { LabeledInput } from 'ustaxes/components/input'
@@ -36,6 +37,9 @@ export default function ContactInfo(): ReactElement {
 
   const page = (
     <form tabIndex={-1} onSubmit={handleSubmit(onSubmit(onAdvance))}>
+      <Helmet>
+        <title>Contact Information | Personal | UsTaxes.org</title>
+      </Helmet>
       <h2>Family Contact Information</h2>
       <Grid container spacing={2}>
         <LabeledInput

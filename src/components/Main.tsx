@@ -1,4 +1,6 @@
 import { useMemo, PropsWithChildren, ReactElement, ReactNode } from 'react'
+import { Switch, Route, Redirect, useLocation } from 'react-router-dom'
+
 import {
   createStyles,
   makeStyles,
@@ -9,7 +11,6 @@ import {
   Theme,
   ThemeProvider
 } from '@material-ui/core'
-import { Switch, Route, Redirect, useLocation } from 'react-router-dom'
 import { PagerProvider } from './pager'
 import { StateLoader } from './debug'
 import NoMatchPage from './NoMatchPage'

@@ -1,4 +1,5 @@
 import { ReactElement } from 'react'
+import { Helmet } from 'react-helmet'
 
 import { useForm, FormProvider } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
@@ -229,6 +230,9 @@ const SpouseAndDependent = (): ReactElement => {
 
   const page = (
     <form tabIndex={-1} onSubmit={handleSubmit(onSubmit(onAdvance))}>
+      <Helmet>
+        <title>Family Information | Personal | UsTaxes.org</title>
+      </Helmet>
       <h2>Family Information</h2>
       <h3>Spouse Information</h3>
       <SpouseInfo />

@@ -1,4 +1,5 @@
 import { ReactElement } from 'react'
+import { Helmet } from 'react-helmet'
 import { FormProvider, useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import {
@@ -98,6 +99,9 @@ export default function PrimaryTaxpayer(): ReactElement {
 
   const page = (
     <form tabIndex={-1} onSubmit={handleSubmit(onSubmit(onAdvance))}>
+      <Helmet>
+        <title>Primary Taxpayer Information | Personal | UsTaxes.org</title>
+      </Helmet>
       <h2>Primary Taxpayer Information</h2>
       <Grid container spacing={2}>
         <PersonFields />
