@@ -1,4 +1,5 @@
-import { ReactElement } from 'react'
+import { useEffect, useRef, ReactElement } from 'react'
+import { useForkRef } from 'rooks'
 import { InputAdornment, Grid, TextField } from '@material-ui/core'
 import { LabeledInputProps } from './types'
 import NumberFormat from 'react-number-format'
@@ -12,11 +13,19 @@ export function LabeledInput(props: LabeledInputProps): ReactElement {
   const { label, patternConfig: patternConfigDefined, name, rules = {} } = props
   const { required = patternConfigDefined !== undefined } = props
   const {
+    autofocus,
     patternConfig = Patterns.plain,
     useGrid = true,
     sizes = { xs: 12 }
   } = props
   const classes = useStyles()
+  const inputRef = useRef<HTMLElement | null>(null)
+
+  useEffect(() => {
+    if (autofocus && inputRef.current) {
+      inputRef.current.focus()
+    }
+  }, [inputRef.current])
 
   const {
     control,
@@ -48,7 +57,7 @@ export function LabeledInput(props: LabeledInputProps): ReactElement {
           render={({ field: { name, onChange, ref, value } }) => (
             <NumberFormat
               customInput={TextField}
-              inputRef={ref}
+              inputRef={autofocus ? useForkRef(ref, inputRef) : ref}
               id={name}
               name={name}
               className={classes.root}
@@ -97,7 +106,7 @@ export function LabeledInput(props: LabeledInputProps): ReactElement {
       <Controller
         control={control}
         name={name}
-        render={({ field: { onChange, value, name } }) => (
+        render={({ field: { name, onChange, ref, value } }) => (
           <TextField
             {...register(name, {
               ...rules,
@@ -109,6 +118,7 @@ export function LabeledInput(props: LabeledInputProps): ReactElement {
                   (required ? 'Input is required' : '')
               }
             })}
+            inputRef={autofocus ? useForkRef(ref, inputRef) : ref}
             id={name}
             name={name}
             className={classes.root}

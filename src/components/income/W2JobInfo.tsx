@@ -116,6 +116,7 @@ export default function W2JobInfo(): ReactElement {
       <p>Input data from W-2</p>
       <Grid container spacing={2}>
         <LabeledInput
+          autofocus={true}
           label="Employer name"
           patternConfig={Patterns.name}
           name="employer.employerName"

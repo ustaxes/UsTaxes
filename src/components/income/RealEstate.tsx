@@ -219,6 +219,7 @@ export default function RealEstate(): ReactElement {
       <h3>Property Location</h3>
       <Grid container spacing={2}>
         <AddressFields
+          autofocus={true}
           checkboxText="Does the property have a foreign address"
           allowForeignCountry={false}
         />

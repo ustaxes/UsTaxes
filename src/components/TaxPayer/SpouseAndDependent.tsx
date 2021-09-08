@@ -136,7 +136,7 @@ export const AddDependentForm = (): ReactElement => {
       removeItem={(i) => dispatch(removeDependent(i))}
     >
       <Grid container spacing={2}>
-        <PersonFields />
+        <PersonFields autofocus={true} />
         <LabeledInput
           label="Relationship to Taxpayer"
           name="relationship"
@@ -192,7 +192,7 @@ export const SpouseInfo = (): ReactElement => {
       removeItem={() => dispatch(removeSpouse)}
     >
       <Grid container spacing={2}>
-        <PersonFields>
+        <PersonFields autofocus={true}>
           <LabeledCheckbox
             label="Check if your spouse is a dependent"
             name="isTaxpayerDependent"

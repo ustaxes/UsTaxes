@@ -69,11 +69,10 @@ export default function F1098eInfo(): ReactElement {
       secondary={(f) => showInterest(toF1098e(f))}
       icon={() => <SchoolIcon />}
     >
-      <p>
-        <strong>Input data from 1098-E</strong>
-      </p>
+      <p>Input data from 1098-E</p>
       <Grid container spacing={2}>
         <LabeledInput
+          autofocus={true}
           label="Enter name of Lender"
           patternConfig={Patterns.name}
           name="lender"

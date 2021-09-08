@@ -427,6 +427,7 @@ export default function F1099Info(): ReactElement {
       <p>Input data from 1099</p>
       <Grid container spacing={2}>
         <GenericLabeledDropdown
+          autofocus={true}
           dropDownData={Object.values(Income1099Type)}
           label="Form Type"
           valueMapping={(v: Income1099Type) => v}
