@@ -24,13 +24,9 @@ export const PersonFields = ({
     <LabeledInput
       label="First Name and Initial"
       name="firstName"
-      patternConfig={Patterns.name}
+      required={true}
     />
-    <LabeledInput
-      label="Last Name"
-      name="lastName"
-      patternConfig={Patterns.name}
-    />
+    <LabeledInput label="Last Name" name="lastName" required={true} />
     <LabeledInput label="SSN / TIN" name="ssid" patternConfig={Patterns.ssn} />
     {children}
   </>
