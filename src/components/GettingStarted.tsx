@@ -125,7 +125,10 @@ export default function GettingStarted(): ReactElement {
         welcome.
       </p>
       <a href="https://www.netlify.com">
-          <img src={prefersDarkMode ? 'netlify-dark.svg' : 'netlify-light.svg'} alt="Deploys by Netlify" />
+        <img
+          src={prefersDarkMode ? 'netlify-dark.svg' : 'netlify-light.svg'}
+          alt="Deploys by Netlify"
+        />
       </a>
     </>
   )
