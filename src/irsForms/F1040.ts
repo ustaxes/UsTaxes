@@ -278,29 +278,100 @@ export default class F1040 implements Form {
         .reduce((res, f1099) => res + f1099.form.taxableAmount, 0)
     )
 
+  /**
+   * Line 1: Wages, salaries, tips, etc
+   * @returns Total wages
+   */
   l1 = (): number | undefined => displayNumber(this.wages())
+
+  /**
+   * Line 2:
+   * @returns tax-exempt interest
+   */
   l2a = (): number | undefined => this.scheduleB?.l3()
+
+  /**
+   * Line 2b
+   * @returns Taxable interest
+   */
   l2b = (): number | undefined => this.scheduleB?.l4()
+
+  /**
+   * Qualified dividends
+   * @returns qualified dividends
+   */
   l3a = (): number | undefined => this.totalQualifiedDividends()
+
+  /**
+   * Line 3b
+   * @returns Total qualified dividends
+   */
   l3b = (): number | undefined => this.scheduleB?.l6()
-  // This is the value of box 1 in 1099-R forms coming from IRAs
+
+  /**
+   * Line 4a: The value of box 1 in 1099-R forms coming from IRAs
+   * @returns IRA distributions
+   */
   l4a = (): number | undefined =>
     this.totalGrossDistributionsFrom1099R(PlanType1099.IRA)
-  // This should be the value of box 2a in 1099-R coming from IRAs
+
+  /**
+   * Line 4b
+   * The value of box 2a in 1099-R coming from IRAs
+   * @returns Taxable amount of IRA distributions
+   */
   l4b = (): number | undefined => this.totalTaxableFrom1099R(PlanType1099.IRA)
-  // This is the value of box 1 in 1099-R forms coming from pensions/annuities
+
+  /**
+   * Line 5a
+   * The value of box 1 in 1099-R forms coming from pensions/annuities
+   * @returns Pensions and annuities
+   */
   l5a = (): number | undefined =>
     this.totalGrossDistributionsFrom1099R(PlanType1099.Pension)
-  // this is the value of box 2a in 1099-R forms coming from pensions/annuities
+
+  /**
+   * Line 5b
+   * The value of box 2a in 1099-R forms coming from pensions/annuities
+   * @returns Taxable amount of pensions and annuities
+   */
   l5b = (): number | undefined =>
     this.totalTaxableFrom1099R(PlanType1099.Pension)
-  // The sum of box 5 from SSA-1099
+
+  /**
+   * Line 6a
+   * Sum of Box 5 from SSA-1099
+   * @returns total social security benefits
+   */
   l6a = (): number | undefined => this.socialSecurityBenefitsWorksheet?.l1()
-  // calculation of the taxable amount of line 6a based on other income
+
+  /**
+   * Line 6b
+   * Taxable amount of line 6a based on other income
+   * @returns taxbale amount of social security benefits
+   */
   l6b = (): number | undefined =>
     this.socialSecurityBenefitsWorksheet?.taxableAmount()
+
+  /**
+   * Line 7
+   * Capital gain or (loss). Attach schedule D if required
+   * @returns
+   */
   l7 = (): number | undefined => this.scheduleD?.l16()
+
+  /**
+   * Line 8
+   * Other income from Schedule 1, Line 9
+   * @returns other income
+   */
   l8 = (): number | undefined => this.schedule1?.l9()
+
+  /**
+   * Line 9
+   * Total income
+   * @returns total income
+   */
   l9 = (): number | undefined =>
     displayNumber(
       sumFields([
@@ -315,14 +386,38 @@ export default class F1040 implements Form {
       ])
     )
 
+  /**
+   * Line 10a
+   * Adjustments to income from schedule 1, line 22
+   * @returns
+   */
   l10a = (): number | undefined => this.schedule1?.l22()
+
+  /**
+   * Line 10b
+   * Charitable contributions if you take the standard deduction
+   * @returns charitable contributions
+   */
   l10b = (): number | undefined => undefined
+
+  /**
+   * Line 10c
+   * @returns Total adjustments to income
+   */
   l10c = (): number | undefined =>
     displayNumber(sumFields([this.l10a(), this.l10b()]))
 
+  /**
+   * Line 11
+   * @returns Adjusted gross income
+   */
   l11 = (): number | undefined =>
     displayNumber(computeField(this.l9()) - computeField(this.l10c()))
 
+  /**
+   * Line 12
+   * @returns Standard deduction or itemized deductions (from Schedule A)
+   */
   l12 = (): number | undefined => {
     if (this.scheduleA !== undefined) {
       return this.scheduleA.deductions()
@@ -330,10 +425,24 @@ export default class F1040 implements Form {
     return this.standardDeduction()
   }
 
+  /**
+   * Line 13
+   * Qualified busines income deduction Attach F8995 or F8995-A
+   * @returns Qualified business income deduction
+   */
   l13 = (): number | undefined => this.f8995?.deductions()
+
+  /**
+   * Line 14
+   * @returns L12 + L13
+   */
   l14 = (): number | undefined =>
     displayNumber(sumFields([this.l12(), this.l13()]))
 
+  /**
+   * Line 15
+   * @returns Taxable income
+   */
   l15 = (): number | undefined =>
     displayNumber(computeField(this.l11()) - computeField(this.l14()))
 
@@ -350,6 +459,10 @@ export default class F1040 implements Form {
     return undefined
   }
 
+  /**
+   * Line 16
+   * @returns Tax
+   */
   l16 = (): number | undefined =>
     displayNumber(
       Math.round(
@@ -357,24 +470,64 @@ export default class F1040 implements Form {
       )
     )
 
+  /**
+   * Line 17
+   * @returns Schedule 2, Line 3
+   */
   l17 = (): number | undefined => this.schedule2?.l3()
+
+  /**
+   * Line 18
+   * @returns L16 + L17
+   */
   l18 = (): number | undefined =>
     displayNumber(sumFields([this.l16(), this.l17()]))
 
-  // TODO
+  /**
+   * Line 19
+   * @returns Child tax credit or credit for other dependents
+   */
   l19 = (): number | undefined =>
     computeField(this.childTaxCreditWorksheet?.l12())
+
+  /**
+   * Line 20
+   * @returns Schedule 3, line 7
+   */
   l20 = (): number | undefined => this.schedule3?.l7()
+
+  /**
+   * Line 21
+   * @returns L19 + L20
+   */
   l21 = (): number | undefined =>
     displayNumber(sumFields([this.l19(), this.l20()]))
 
+  /**
+   * Line 22
+   * @returns L18 - L21
+   */
   l22 = (): number | undefined =>
     displayNumber(computeField(this.l18()) - computeField(this.l21()))
 
+  /**
+   * Line 23
+   * @returns other taxes, including SE tax
+   */
   l23 = (): number | undefined => this.schedule2?.l10()
+
+  /**
+   * Line 24
+   * Total tax (L22 + L23)
+   * @returns Total tax
+   */
   l24 = (): number | undefined =>
     displayNumber(sumFields([this.l22(), this.l23()]))
 
+  /**
+   * Line 25a
+   * @returns Federal income tax withheld from W-2
+   */
   l25a = (): number | undefined =>
     displayNumber(
       this.validW2s().reduce(
@@ -383,7 +536,10 @@ export default class F1040 implements Form {
       )
     )
 
-  // tax withheld from 1099s
+  /**
+   * Line 25b
+   * @returns Federal income tax withheld from 1099
+   */
   l25b = (): number | undefined =>
     displayNumber(
       this._f1099rs.reduce(
@@ -396,48 +552,117 @@ export default class F1040 implements Form {
         )
     )
 
-  // TODO: form(s) W-2G box 4, schedule K-1, form 1042-S, form 8805, form 8288-A
+  /**
+   * Line 25c
+   * W-2G box 4, schedule K-1, form 1042-S, form 8805, form 8288-A
+   * @returns Federal income tax withheld from other forms
+   */
   l25c = (): number | undefined => this.f8959?.l24()
 
+  /**
+   * Line 25d
+   * Sum of 25 a - d, total tax withheld
+   * @returns Federal income tax withheld
+   */
   l25d = (): number | undefined =>
     displayNumber(sumFields([this.l25a(), this.l25b(), this.l25c()]))
 
-  // TODO: handle estimated tax payments
+  /**
+   * Line 26
+   * TODO: handle estimated tax payments
+   * @returns  Estimated tax payment and prior year overpayment
+   */
   l26 = (): number | undefined => undefined
 
+  /**
+   * Line 27
+   * @returns Earned income credit (EIC)
+   */
   l27 = (): number | undefined =>
     displayNumber(this.scheduleEIC?.credit(this) ?? 0)
 
+  /**
+   * Line 28
+   * Additional child tax credit Schedule 8812
+   * @returns Additional child tax credit
+   */
   l28 = (): number | undefined => this.schedule8812?.l15()
 
+  /**
+   * Line 29
+   * American opportunity credit
+   * Form 8863, line 8
+   * @returns American opportunity credit
+   */
   l29 = (): number | undefined => this.schedule8863?.l8()
 
-  // TODO: recovery rebate credit?
+  /**
+   * Recovery rebate credit
+   * @returns TODO: recovery rebate credit?
+   */
   l30 = (): number | undefined => undefined
 
+  /**
+   * Line 31
+   * Amount from Schedule 3, line 13
+   * @returns Schedule 3, line 13
+   */
   l31 = (): number | undefined => this.schedule3?.l13()
 
+  /**
+   * Line 32
+   * Sum 27 - 31
+   * @returns Total other payments and refundable credits
+   */
   l32 = (): number | undefined =>
     displayNumber(
       sumFields([this.l27(), this.l28(), this.l29(), this.l30(), this.l31()])
     )
 
+  /**
+   * Line 33
+   * @returns Total payments
+   */
   l33 = (): number | undefined =>
     displayNumber(sumFields([this.l25d(), this.l26(), this.l32()]))
 
+  /**
+   * Line 34
+   * @returns Overpayment
+   */
   l34 = (): number | undefined =>
     displayNumber(computeField(this.l33()) - computeField(this.l24()))
 
-  // TODO: assuming user wants amount refunded
-  // rather than applied to estimated tax
+  /**
+   * Line 35a
+   * Amount you want refunded to you
+   * TODO: assuming user wants amount refunded
+   * rather than applied to estimated tax
+   * @returns amount refunded
+   */
   l35a = (): number | undefined => this.l34()
+
+  /**
+   * Line 36
+   * Amount of overpayment you want applied to next year estimated tax
+   * Assuming this is zero
+   * @returns amount applied to next years tax
+   */
   l36 = (): number | undefined =>
     displayNumber(computeField(this.l34()) - computeField(this.l35a()))
 
+  /**
+   * Line 37
+   * @returns Amount owed
+   */
   l37 = (): number | undefined =>
     displayNumber(computeField(this.l24()) - computeField(this.l33()))
 
-  // TODO - estimated tax penalty
+  /**
+   * Line 38
+   * TODO - estimated tax penalty
+   * @returns estimate tax penalty
+   */
   l38 = (): number | undefined => displayNumber(0)
 
   _depField = (idx: number): string | boolean => {
