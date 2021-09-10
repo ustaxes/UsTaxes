@@ -16,3 +16,9 @@ export const computeField = (f: number | undefined): number =>
 
 export const sumFields = (fs: Array<number | undefined>): number =>
   fs.map((f) => computeField(f)).reduce((l, r) => l + r, 0)
+
+export const positiveOnly = (v: number | undefined): number | undefined =>
+  (v ?? 0) > 0 ? v : undefined
+
+export const negativeOnly = (v: number | undefined): number | undefined =>
+  (v ?? 0) < 0 ? v : undefined

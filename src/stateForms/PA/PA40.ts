@@ -1,14 +1,20 @@
 import Form from '../Form'
 import F1040 from '../../irsForms/F1040'
 import { Field } from '../../pdfFiller'
-import { displayNumber, sumFields } from '../../irsForms/util'
-import { AccountType, FilingStatus, Information, State } from '../../redux/data'
+import { Information, State } from '../../redux/data'
+import {
+  computeField,
+  displayNumber,
+  positiveOnly,
+  sumFields
+} from 'ustaxes/irsForms/util'
+import parameters from './Parameters'
 
 export class Pa40 implements Form {
   info: Information
   f1040: F1040
   formName = 'pa-40'
-  state: State = 'AK' // <-- fill here
+  state: State = 'PA'
   formOrder = 0
 
   constructor(info: Information, f1040: F1040) {
@@ -89,10 +95,10 @@ export class Pa40 implements Form {
   /**
    * Index 7: Use all caps to enter First Line of Address
    */
-  useAllCapsToEnterFirstLineOfAddress = (): string =>
+  useAllCapsToEnterFirstLineOfAddress = (): string | undefined =>
     this.info.taxPayer.primaryPerson?.address.address.toUpperCase()
 
-  f7 = (): string => this.useAllCapsToEnterFirstLineOfAddress()
+  f7 = (): string | undefined => this.useAllCapsToEnterFirstLineOfAddress()
 
   /**
    * Index 8: Use all caps to enter Second Line of Address
@@ -108,18 +114,18 @@ export class Pa40 implements Form {
   /**
    * Index 9: Use all caps to enter City or Post Office
    */
-  useAllCapsToEnterCityOrPostOffice = (): string =>
+  useAllCapsToEnterCityOrPostOffice = (): string | undefined =>
     this.info.taxPayer.primaryPerson?.address.city.toUpperCase()
 
-  f9 = (): string => this.useAllCapsToEnterCityOrPostOffice()
+  f9 = (): string | undefined => this.useAllCapsToEnterCityOrPostOffice()
 
   /**
    * Index 10: Enter five digit Zip Code
    */
-  enterFiveDigitZipCode = (): string =>
+  enterFiveDigitZipCode = (): string | undefined =>
     this.info.taxPayer.primaryPerson?.address.zip?.substr(0, 5)
 
-  f10 = (): string => this.enterFiveDigitZipCode()
+  f10 = (): string | undefined => this.enterFiveDigitZipCode()
 
   /**
    * Index 11: Enter Daytime Telephone Number without parenthesis, dashes or spaces
@@ -249,133 +255,140 @@ export class Pa40 implements Form {
   /**
    * Index 24: 1a. Gross Compensation
    */
-  l1aGrossCompensation = (): string => {
-    return ''
-  }
+  l1aGrossCompensation = (): number | undefined => this.f1040.l1()
 
-  f24 = (): string => this.l1aGrossCompensation()
+  f24 = (): number | undefined => displayNumber(this.l1aGrossCompensation())
 
   /**
+   * TODO
    * Index 25: 1b. Unreimbursed Employee Business Expenses
    */
-  l1bUnreimbursedEmployeeBusinessExpenses = (): string | undefined => {
+  l1bUnreimbursedEmployeeBusinessExpenses = (): number | undefined => {
     return undefined
   }
 
-  f25 = (): string | undefined => this.l1bUnreimbursedEmployeeBusinessExpenses()
+  f25 = (): number | undefined =>
+    displayNumber(this.l1bUnreimbursedEmployeeBusinessExpenses())
 
   /**
    * Index 26: 1c. Net Compensation
    */
-  l1cNetCompensation = (): string => {
-    return ''
-  }
+  l1cNetCompensation = (): number | undefined =>
+    displayNumber(
+      computeField(this.l1aGrossCompensation()) -
+        computeField(this.l1bUnreimbursedEmployeeBusinessExpenses())
+    )
 
-  f26 = (): string => this.l1cNetCompensation()
+  f26 = (): number | undefined => displayNumber(this.l1cNetCompensation())
 
   /**
    * Index 27: 2. Interest Income
+   * Attach PA Schedule A
    */
-  l2InterestIncome = (): string | undefined => {
-    return undefined
-  }
+  l2InterestIncome = (): number | undefined => this.f1040.l2b()
 
-  f27 = (): string | undefined => this.l2InterestIncome()
+  f27 = (): number | undefined => displayNumber(this.l2InterestIncome())
 
   /**
    * Index 28: 3. Dividend  and Capital Gains Distributions Income
+   * Attach Schedule B
    */
-  l3DividendAndCapitalGainsDistributionsIncome = (): string | undefined => {
-    return undefined
-  }
+  l3DividendAndCapitalGainsDistributionsIncome = (): number | undefined =>
+    this.f1040.l7()
 
-  f28 = (): string | undefined =>
-    this.l3DividendAndCapitalGainsDistributionsIncome()
+  f28 = (): number | undefined =>
+    displayNumber(this.l3DividendAndCapitalGainsDistributionsIncome())
 
   /**
    * Index 29: 4. Loss
    */
-  l4Loss = (): boolean | undefined => {
-    return undefined
-  }
+  l4Loss = (): boolean =>
+    (this.l4NetIncomeOrLossFromTheOperationOfABusinessEtc() ?? 0) < 0
 
   f29 = (): boolean | undefined => this.l4Loss()
 
   /**
    * Index 30: 4. Net Income or Loss from the Operation of a Business, etc
    */
-  l4NetIncomeOrLossFromTheOperationOfABusinessEtc = (): string | undefined => {
+  l4NetIncomeOrLossFromTheOperationOfABusinessEtc = (): number | undefined => {
     return undefined
   }
 
-  f30 = (): string | undefined =>
-    this.l4NetIncomeOrLossFromTheOperationOfABusinessEtc()
+  f30 = (): number | undefined =>
+    displayNumber(this.l4NetIncomeOrLossFromTheOperationOfABusinessEtc())
 
   /**
    * Index 31: 5. Loss
    */
-  l5Loss = (): boolean | undefined => {
-    return undefined
-  }
+  l5Loss = (): boolean => (this.l5NetGainOrLossFromSaleEtcOfProperty() ?? 0) < 0
 
   f31 = (): boolean | undefined => this.l5Loss()
 
   /**
    * Index 32: 5. Net Gain or Loss from Sale, etc. of Property
    */
-  l5NetGainOrLossFromSaleEtcOfProperty = (): string | undefined => {
-    return undefined
-  }
+  l5NetGainOrLossFromSaleEtcOfProperty = (): number | undefined =>
+    this.f1040.scheduleE?.l26()
 
-  f32 = (): string | undefined => this.l5NetGainOrLossFromSaleEtcOfProperty()
+  f32 = (): number | undefined =>
+    displayNumber(this.l5NetGainOrLossFromSaleEtcOfProperty())
 
   /**
    * Index 33: 6. Loss
    */
-  l6Loss = (): boolean | undefined => {
-    return undefined
-  }
+  l6Loss = (): boolean => (this.l6NetIncomeOrLossFromRentsEtc() ?? 0) < 0
 
   f33 = (): boolean | undefined => this.l6Loss()
 
   /**
    * Index 34: 6. Net Income or Loss from Rents, etc
    */
-  l6NetIncomeOrLossFromRentsEtc = (): string | undefined => {
+  l6NetIncomeOrLossFromRentsEtc = (): number | undefined => {
     return undefined
   }
 
-  f34 = (): string | undefined => this.l6NetIncomeOrLossFromRentsEtc()
+  f34 = (): number | undefined =>
+    displayNumber(this.l6NetIncomeOrLossFromRentsEtc())
 
   /**
    * Index 35: 7. Estate or Trust income
+   * TODO
+   * Attach schedule J
    */
-  l7EstateOrTrustIncome = (): string | undefined => {
-    return undefined
-  }
+  l7EstateOrTrustIncome = (): number | undefined => undefined
 
-  f35 = (): string | undefined => this.l7EstateOrTrustIncome()
+  f35 = (): number | undefined => displayNumber(this.l7EstateOrTrustIncome())
 
   /**
    * Index 36: 8. Gambling and Lottery Winnings
+   * TODO
+   * Attach schedule T
    */
-  l8GamblingAndLotteryWinnings = (): string | undefined => {
-    return undefined
-  }
+  l8GamblingAndLotteryWinnings = (): number | undefined => undefined
 
-  f36 = (): string | undefined => this.l8GamblingAndLotteryWinnings()
+  f36 = (): number | undefined =>
+    displayNumber(this.l8GamblingAndLotteryWinnings())
 
   /**
    * Index 37: 9. Total PA Taxable Income
    */
-  l9TotalPATaxableIncome = (): string => {
-    return ''
-  }
+  l9TotalPATaxableIncome = (): number | undefined =>
+    sumFields([
+      this.l1cNetCompensation(),
+      this.l2InterestIncome(),
+      this.l3DividendAndCapitalGainsDistributionsIncome(),
+      positiveOnly(this.l4NetIncomeOrLossFromTheOperationOfABusinessEtc()),
+      positiveOnly(this.l5NetGainOrLossFromSaleEtcOfProperty()),
+      positiveOnly(this.l6NetIncomeOrLossFromRentsEtc()),
+      this.l7EstateOrTrustIncome(),
+      this.l8GamblingAndLotteryWinnings()
+    ])
 
-  f37 = (): string => this.l9TotalPATaxableIncome()
+  f37 = (): number | undefined => displayNumber(this.l9TotalPATaxableIncome())
 
   /**
    * Index 38: Code
+   * Line 10 other deductions, enter the appropriate code for the type of deduction
    */
   code = (): string => {
     return ''
@@ -385,21 +398,26 @@ export class Pa40 implements Form {
 
   /**
    * Index 39: 10.  Other Deductions
+   * TODO
    */
-  l10OtherDeductions = (): string | undefined => {
+  l10OtherDeductions = (): number | undefined => {
     return undefined
   }
 
-  f39 = (): string | undefined => this.l10OtherDeductions()
+  f39 = (): number | undefined => displayNumber(this.l10OtherDeductions())
 
   /**
    * Index 40: 11. Adjusted PA Taxable Income
    */
-  l11AdjustedPATaxableIncome = (): string | undefined => {
-    return undefined
+  l11AdjustedPATaxableIncome = (): number | undefined => {
+    return sumFields([
+      this.l9TotalPATaxableIncome(),
+      -computeField(this.l10OtherDeductions())
+    ])
   }
 
-  f40 = (): string | undefined => this.l11AdjustedPATaxableIncome()
+  f40 = (): number | undefined =>
+    displayNumber(this.l11AdjustedPATaxableIncome())
 
   /**
    * Index 41: Official Use Only
@@ -431,11 +449,11 @@ export class Pa40 implements Form {
   /**
    * Index 44: Enter SSN shown first without dashes or spaces
    */
-  enterSSNShownFirstWithoutDashesOrSpaces = (): string => {
-    return ''
+  enterSSNShownFirstWithoutDashesOrSpaces = (): string | undefined => {
+    return this.info.taxPayer.primaryPerson?.ssid
   }
 
-  f44 = (): string => this.enterSSNShownFirstWithoutDashesOrSpaces()
+  f44 = (): string | undefined => this.enterSSNShownFirstWithoutDashesOrSpaces()
 
   /**
    * Index 45: Name(s)
@@ -447,70 +465,85 @@ export class Pa40 implements Form {
   f45 = (): string => this.names()
 
   /**
-   * Index 46: 12. PA Tax Liability. Multiply Line 11 by 3.07%
+   * Index 46: 12. PA Tax Liability. Multiply Line 11 by tax rate
    */
-  l12PATaxLiabilityMultiplyLine11By307 = (): string | undefined => {
-    return undefined
+  l12PATaxLiability = (): number | undefined => {
+    return computeField(
+      computeField(this.l11AdjustedPATaxableIncome()) * parameters.stateTaxRate
+    )
   }
 
-  f46 = (): string | undefined => this.l12PATaxLiabilityMultiplyLine11By307()
+  f46 = (): number | undefined => displayNumber(this.l12PATaxLiability())
 
   /**
    * Index 47: 13. Total PA Tax Withheld
    */
-  l13TotalPATaxWithheld = (): string | undefined => {
+  l13TotalPATaxWithheld = (): number | undefined => {
     return undefined
   }
 
-  f47 = (): string | undefined => this.l13TotalPATaxWithheld()
+  f47 = (): number | undefined => displayNumber(this.l13TotalPATaxWithheld())
 
   /**
    * Index 48: 14. Credit from your PA Income Tax Return
+   * TODO
    */
-  l14CreditFromYourPAIncomeTaxReturn = (): string | undefined => {
+  l14CreditFromYourPAIncomeTaxReturn = (): number | undefined => {
     return undefined
   }
 
-  f48 = (): string | undefined => this.l14CreditFromYourPAIncomeTaxReturn()
+  f48 = (): number | undefined =>
+    displayNumber(this.l14CreditFromYourPAIncomeTaxReturn())
 
   /**
    * Index 49: 15. Estimated Installment Payments
+   * TODO
    */
-  l15EstimatedInstallmentPayments = (): string | undefined => {
+  l15EstimatedInstallmentPayments = (): number | undefined => {
     return undefined
   }
 
-  f49 = (): string | undefined => this.l15EstimatedInstallmentPayments()
+  f49 = (): number | undefined =>
+    displayNumber(this.l15EstimatedInstallmentPayments())
 
   /**
    * Index 50: 16. Extension Payment
+   * TODO
    */
-  l16ExtensionPayment = (): string | undefined => {
+  l16ExtensionPayment = (): number | undefined => {
     return undefined
   }
 
-  f50 = (): string | undefined => this.l16ExtensionPayment()
+  f50 = (): number | undefined => displayNumber(this.l16ExtensionPayment())
 
   /**
    * Index 51: 17. Nonredsident Tax Withheld
+   * TODO
    */
-  l17NonredsidentTaxWithheld = (): string | undefined => {
+  l17NonredsidentTaxWithheld = (): number | undefined => {
     return undefined
   }
 
-  f51 = (): string | undefined => this.l17NonredsidentTaxWithheld()
+  f51 = (): number | undefined =>
+    displayNumber(this.l17NonredsidentTaxWithheld())
 
   /**
    * Index 52: 18.Total Estimated Payments and Credits
    */
-  l18TotalEstimatedPaymentsAndCredits = (): string | undefined => {
-    return undefined
-  }
+  l18TotalEstimatedPaymentsAndCredits = (): number | undefined =>
+    sumFields([
+      this.l14CreditFromYourPAIncomeTaxReturn(),
+      this.l15EstimatedInstallmentPayments(),
+      this.l16ExtensionPayment(),
+      this.l17NonredsidentTaxWithheld()
+    ])
 
-  f52 = (): string | undefined => this.l18TotalEstimatedPaymentsAndCredits()
+  f52 = (): number | undefined =>
+    displayNumber(this.l18TotalEstimatedPaymentsAndCredits())
 
   /**
    * Index 53: Tax Forgiveness
+   * TODO - Schedule SP
    */
   taxForgiveness = (): boolean | undefined => {
     return undefined
@@ -520,6 +553,7 @@ export class Pa40 implements Form {
 
   /**
    * Index 54: Dependents
+   * TODO - Schedule SP
    */
   dependents = (): string | undefined => {
     return undefined
@@ -529,51 +563,63 @@ export class Pa40 implements Form {
 
   /**
    * Index 55: 20. Total Eligibility Income
+   * Section III, line 11, PA Schedule SP
    */
-  l20TotalEligibilityIncome = (): string | undefined => {
+  l20TotalEligibilityIncome = (): number | undefined => {
     return undefined
   }
 
-  f55 = (): string | undefined => this.l20TotalEligibilityIncome()
+  f55 = (): number | undefined =>
+    displayNumber(this.l20TotalEligibilityIncome())
 
   /**
    * Index 56: 21. Tax Forgiveness Credit
+   * TODO
+   * From section IV, Line 16, PA Schedule SP
    */
-  l21TaxForgivenessCredit = (): string | undefined => {
+  l21TaxForgivenessCredit = (): number | undefined => {
     return undefined
   }
 
-  f56 = (): string | undefined => this.l21TaxForgivenessCredit()
+  f56 = (): number | undefined => displayNumber(this.l21TaxForgivenessCredit())
 
   /**
    * Index 57: 22. Resident Credit
+   * PA Schedule G-L and/or RK-1
    */
-  l22ResidentCredit = (): string | undefined => {
+  l22ResidentCredit = (): number | undefined => {
     return undefined
   }
 
-  f57 = (): string | undefined => this.l22ResidentCredit()
+  f57 = (): number | undefined => displayNumber(this.l22ResidentCredit())
 
   /**
    * Index 58: 23.Total Other Credits
+   * PA Schedule OC
    */
-  l23TotalOtherCredits = (): string | undefined => {
-    return undefined
-  }
+  l23TotalOtherCredits = (): number | undefined => undefined
 
-  f58 = (): string | undefined => this.l23TotalOtherCredits()
+  f58 = (): number | undefined => displayNumber(this.l23TotalOtherCredits())
 
   /**
    * Index 59: 24. Total Payments and Credits
    */
-  l24TotalPaymentsAndCredits = (): string => {
-    return ''
-  }
+  l24TotalPaymentsAndCredits = (): number | undefined =>
+    sumFields([
+      this.l13TotalPATaxWithheld(),
+      this.l18TotalEstimatedPaymentsAndCredits(),
+      this.l21TaxForgivenessCredit(),
+      this.l22ResidentCredit(),
+      this.l23TotalOtherCredits()
+    ])
 
-  f59 = (): string => this.l24TotalPaymentsAndCredits()
+  f59 = (): number | undefined =>
+    displayNumber(this.l24TotalPaymentsAndCredits())
 
   /**
    * Index 60: 27. REV-1630
+   * TODO
+   * True if including Rev-1630, Rev 1630-A
    */
   l27REV1630 = (): boolean | undefined => {
     return undefined
@@ -583,12 +629,13 @@ export class Pa40 implements Form {
 
   /**
    * Index 61: 27.Penalties and Interest
+   * TODO
    */
-  l27PenaltiesAndInterest = (): string | undefined => {
+  l27PenaltiesAndInterest = (): number | undefined => {
     return undefined
   }
 
-  f61 = (): string | undefined => this.l27PenaltiesAndInterest()
+  f61 = (): number | undefined => displayNumber(this.l27PenaltiesAndInterest())
 
   /**
    * Index 62: 27. Code
@@ -600,40 +647,47 @@ export class Pa40 implements Form {
   f62 = (): string => this.l27Code()
 
   /**
-   * Index 63: 28. TOTAL PAYMENT
+   * Index 63: 28. TOTAL PAYMENT DUE
    */
-  l28TOTALPAYMENT = (): string | undefined => {
-    return undefined
-  }
+  l28TOTALPAYMENT = (): number | undefined =>
+    sumFields([this.l26TAXDUE(), this.l27PenaltiesAndInterest()])
 
-  f63 = (): string | undefined => this.l28TOTALPAYMENT()
+  f63 = (): number | undefined => displayNumber(this.l28TOTALPAYMENT())
 
   /**
    * Index 64: 29. OVERPAYMENT
    */
-  l29OVERPAYMENT = (): string | undefined => {
-    return undefined
-  }
+  l29OVERPAYMENT = (): number | undefined =>
+    positiveOnly(
+      computeField(this.l24TotalPaymentsAndCredits()) -
+        computeField(
+          sumFields([
+            this.l12PATaxLiability(),
+            this.l25USETAX(),
+            this.l27PenaltiesAndInterest()
+          ])
+        )
+    )
 
-  f64 = (): string | undefined => this.l29OVERPAYMENT()
+  f64 = (): number | undefined => displayNumber(this.l29OVERPAYMENT())
 
   /**
    * Index 65: 30. Refund
+   * TODO - not supporting PA return's donations
    */
-  l30Refund = (): string | undefined => {
-    return undefined
-  }
+  l30Refund = (): number | undefined => this.l29OVERPAYMENT()
 
-  f65 = (): string | undefined => this.l30Refund()
+  f65 = (): number | undefined => displayNumber(this.l30Refund())
 
   /**
    * Index 66: 31. Credit
+   * TODO - assuming user wants a refund.
    */
-  l31Credit = (): string | undefined => {
+  l31Credit = (): number | undefined => {
     return undefined
   }
 
-  f66 = (): string | undefined => this.l31Credit()
+  f66 = (): number | undefined => displayNumber(this.l31Credit())
 
   /**
    * Index 67: Signature
@@ -719,32 +773,35 @@ export class Pa40 implements Form {
   /**
    * Index 76: 26. TAX DUE
    */
-  l26TAXDUE = (): string | undefined => {
-    return undefined
+  l26TAXDUE = (): number | undefined => {
+    return positiveOnly(
+      computeField(this.l24TotalPaymentsAndCredits()) -
+        sumFields([this.l12PATaxLiability(), this.l25USETAX()])
+    )
   }
 
-  f76 = (): string | undefined => this.l26TAXDUE()
+  f76 = (): number | undefined => this.l26TAXDUE()
 
   /**
    * Index 77: 25. USE TAX
+   * TODO
+   * Due on internet, mail order or out of state purchases, see the instructions
    */
-  l25USETAX = (): string | undefined => {
-    return undefined
-  }
+  l25USETAX = (): number | undefined => undefined
 
-  f77 = (): string | undefined => this.l25USETAX()
+  f77 = (): number | undefined => displayNumber(this.l25USETAX())
 
   /**
    * Index 78: Taxpayer
+   * TODO - what is this?
    */
-  taxpayer = (): boolean | undefined => {
-    return undefined
-  }
+  taxpayer = (): boolean | undefined => undefined
 
   f78 = (): boolean | undefined => this.taxpayer()
 
   /**
    * Index 79: Spouse
+   * TODO
    */
   spouse = (): boolean | undefined => {
     return undefined
@@ -754,6 +811,7 @@ export class Pa40 implements Form {
 
   /**
    * Index 80: Taxpayer Date of Death
+   * TODO
    */
   taxpayerDateOfDeath = (): string | undefined => {
     return undefined
@@ -1086,7 +1144,6 @@ export class Pa40 implements Form {
   ]
 }
 
-const makePa40 = (info: Information, f1040: F1040): Pa40 =>
-  new Pa40(info, f1040)
+const pa40 = (info: Information, f1040: F1040): Pa40 => new Pa40(info, f1040)
 
-export default makePa40
+export default pa40

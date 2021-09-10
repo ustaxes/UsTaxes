@@ -6,11 +6,13 @@ import { combinePdfs, downloadPDF } from '../pdfFiller/pdfHandler'
 import { State, Information } from '../redux/data'
 import Form from './Form'
 import il1040 from './IL/IL1040'
+import pa40 from './PA/PA40'
 
 export const stateForm: {
   [K in State]?: (info: Information, f1040: F1040) => Form
 } = {
-  IL: il1040
+  IL: il1040,
+  PA: pa40
 }
 
 export const createStateReturn = (
