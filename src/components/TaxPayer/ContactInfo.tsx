@@ -35,7 +35,7 @@ export default function ContactInfo(): ReactElement {
     }
 
   const page = (
-    <form onSubmit={handleSubmit(onSubmit(onAdvance))}>
+    <form tabIndex={-1} onSubmit={handleSubmit(onSubmit(onAdvance))}>
       <h2>Family Contact Information</h2>
       <Grid container spacing={2}>
         <LabeledInput

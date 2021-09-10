@@ -55,7 +55,7 @@ const Questions = (): ReactElement => {
     }
 
   const page = (
-    <form onSubmit={handleSubmit(onSubmit(onAdvance))}>
+    <form tabIndex={-1} onSubmit={handleSubmit(onSubmit(onAdvance))}>
       <h2>Informational Questions</h2>
       <p>
         Based on your prior responses, reseponses to these questions are

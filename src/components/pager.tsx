@@ -1,7 +1,8 @@
-import { createContext, ReactElement, useState, PropsWithChildren } from 'react'
-import { Box, Button } from '@material-ui/core'
+import { createContext, useState, PropsWithChildren, ReactElement } from 'react'
+import { useMediaQuery, Button, Grid } from '@material-ui/core'
 import { useContext } from 'react'
 import { Link, useHistory } from 'react-router-dom'
+import { useDevice } from 'ustaxes/hooks/Device'
 
 interface PagerProps {
   onAdvance: () => void
@@ -86,35 +87,46 @@ export const PagerButtons = ({
   submitText,
   previousUrl
 }: PagerButtonsProps): ReactElement => {
+  const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)')
+  const { isMobile } = useDevice()
   const backButton = (() => {
-    if (previousUrl !== undefined) {
+    if (previousUrl !== undefined && previousUrl !== '/start') {
       return (
-        <Box display="flex" justifyContent="flex-start" marginRight={2}>
+        <Grid item xs={isMobile && 12}>
           <Button
             component={Link}
             to={previousUrl}
             variant="contained"
-            color="secondary"
+            color={prefersDarkMode ? 'default' : 'secondary'}
+            fullWidth
           >
             Previous
           </Button>
-        </Box>
+        </Grid>
       )
     }
   })()
 
-  return (
-    <Box
-      display="flex"
-      justifyContent="flex-start"
-      marginTop={2}
-      marginBottom={1}
-    >
-      {backButton}
-      <Button type="submit" name="submit" variant="contained" color="primary">
+  const submitButton = (() => (
+    <Grid item xs={isMobile && 12}>
+      <Button
+        type="submit"
+        name="submit"
+        variant="contained"
+        color="primary"
+        fullWidth
+      >
         {submitText}
       </Button>
-    </Box>
+    </Grid>
+  ))()
+  const buttonList = [backButton, submitButton]
+  isMobile && buttonList.reverse()
+
+  return (
+    <Grid container spacing={2}>
+      {buttonList.map((x) => x)}
+    </Grid>
   )
 }
 
@@ -131,25 +143,32 @@ export const StartButtons = ({
   secondUrl,
   secondText
 }: StartButtonsProps): ReactElement => {
+  const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)')
+
   return (
-    <Box
-      display="flex"
-      justifyContent="space-evenly"
-      marginTop={3}
-      marginBottom={6}
-    >
-      <Button
-        component={Link}
-        to={firstUrl}
-        variant="contained"
-        color="primary"
-      >
-        {firstText}
-      </Button>
-      <Button href={secondUrl} variant="contained" color="secondary">
-        {secondText}
-      </Button>
-    </Box>
+    <Grid container spacing={2}>
+      <Grid item xs={12} sm={6}>
+        <Button
+          component={Link}
+          to={firstUrl}
+          variant="contained"
+          color="primary"
+          fullWidth
+        >
+          {firstText}
+        </Button>
+      </Grid>
+      <Grid item xs={12} sm={6}>
+        <Button
+          href={secondUrl}
+          variant="contained"
+          fullWidth
+          color={prefersDarkMode ? 'default' : 'secondary'}
+        >
+          {secondText}
+        </Button>
+      </Grid>
+    </Grid>
   )
 }
 
@@ -163,16 +182,19 @@ export const SingleButtons = ({
   text
 }: SingleButtonsProps): ReactElement => {
   return (
-    <Box
-      display="flex"
-      justifyContent="space-evenly"
-      marginTop={3}
-      marginBottom={6}
-    >
-      <Button component={Link} to={url} variant="contained" color="primary">
-        {text}
-      </Button>
-    </Box>
+    <Grid container spacing={2}>
+      <Grid item xs={12}>
+        <Button
+          component={Link}
+          to={url}
+          variant="contained"
+          color="primary"
+          fullWidth
+        >
+          {text}
+        </Button>
+      </Grid>
+    </Grid>
   )
 }
 

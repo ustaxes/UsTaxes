@@ -24,12 +24,13 @@ import {
   LabeledInput
 } from 'ustaxes/components/input'
 import { Patterns } from 'ustaxes/components/Patterns'
-import { daysInYear, enumKeys, segments } from '../../util'
+import { daysInYear, enumKeys } from '../../util'
 import { HouseOutlined } from '@material-ui/icons'
 import { FormListContainer } from 'ustaxes/components/FormContainer'
 import { Grid } from '@material-ui/core'
 import { CURRENT_YEAR } from 'ustaxes/data/federal'
 import { If } from 'react-if'
+import _ from 'lodash'
 
 interface PropertyAddForm {
   address?: Address
@@ -266,23 +267,22 @@ export default function RealEstate(): ReactElement {
       </Grid>
       <h4>Expenses</h4>
       <Grid container spacing={2}>
-        {
-          // Layout expense fields in two columns
-          segments(2, [...expenseFields, otherExpenseDescription]).map(
-            (segment, i) =>
-              segment.map((item, k) => (
-                <Grid item key={`${i}-${k}`} xs={12} sm={6}>
-                  {item}
-                </Grid>
-              ))
+        {_.chain([...expenseFields, otherExpenseDescription])
+          .chunk(2)
+          .map((segment, i) =>
+            segment.map((item, k) => (
+              <Grid item key={`${i}-${k}`} xs={12} sm={6}>
+                {item}
+              </Grid>
+            ))
           )
-        }
+          .value()}
       </Grid>
     </FormListContainer>
   )
 
   return (
-    <form onSubmit={onAdvance}>
+    <form tabIndex={-1} onSubmit={onAdvance}>
       <h2>Properties</h2>
       <FormProvider {...methods}>{form}</FormProvider>
       {navButtons}

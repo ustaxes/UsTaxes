@@ -1,13 +1,5 @@
 import { ReactElement } from 'react'
-import {
-  List,
-  ListItem,
-  ListItemAvatar,
-  ListItemIcon,
-  ListItemText,
-  makeStyles,
-  Typography
-} from '@material-ui/core'
+import { Avatar, Grid, List, Typography } from '@material-ui/core'
 import { usePager } from './pager'
 import { create1040 } from 'ustaxes/irsForms/Main'
 import { useSelector } from 'react-redux'
@@ -23,40 +15,25 @@ interface BinaryStateListItemProps {
   children: string | ReactElement | ReactElement[]
 }
 
-const useStyles = makeStyles((theme) => ({
-  active: {
-    backgroundColor: 'white',
-    borderStyle: '2px solid green'
-  },
-  inactive: {
-    backgroundColor: 'light-grey'
-  },
-  root: {
-    width: '100%',
-    maxWidth: '36ch',
-    backgroundColor: theme.palette.background.paper
-  },
-  inline: {
-    display: 'inline'
-  },
-  block: {
-    display: 'block'
-  }
-}))
-
 const BinaryStateListItem = ({
   active,
   children
 }: BinaryStateListItemProps): ReactElement => {
-  const classes = useStyles()
-
   return (
-    <ListItem className={active ? classes.active : classes.inactive}>
-      <ListItemAvatar>
-        <ListItemIcon>{active ? <Check /> : <Close />}</ListItemIcon>
-      </ListItemAvatar>
-      {children}
-    </ListItem>
+    <Grid container spacing={3}>
+      <Grid item style={{ margin: 'auto' }}>
+        <Avatar>
+          {active ? (
+            <Check titleAccess="Eligible" />
+          ) : (
+            <Close titleAccess="Ineligible" />
+          )}
+        </Avatar>
+      </Grid>
+      <Grid item xs zeroMinWidth>
+        {children}
+      </Grid>
+    </Grid>
   )
 }
 
@@ -65,39 +42,29 @@ interface F1040Props {
 }
 
 const F1040Summary = ({ f1040 }: F1040Props): ReactElement => {
-  const classes = useStyles()
-
+  const qualifyingDependents = f1040.scheduleEIC?.qualifyingDependents()
   const earnedIncomeTaxCredit = (
     <BinaryStateListItem active={f1040.scheduleEIC?.allowed(f1040) ?? false}>
-      <ListItemText
-        primary="Earned Income Tax Credit"
-        secondary={
+      <>
+        <Typography color="textPrimary">Earned Income Tax Credit</Typography>
+        {qualifyingDependents && (
           <>
-            <Typography
-              component="span"
-              variant="body2"
-              color="textPrimary"
-              className={classes.block}
-            >
+            <Typography variant="body2" color="textPrimary">
               Qualifying Dependents:
             </Typography>
-            <Typography component="span" variant="body2" color="textSecondary">
-              {f1040.scheduleEIC?.qualifyingDependents().map((d, i) => (
-                <span key={i}>{`${d?.firstName ?? ''} ${
-                  d?.lastName ?? ''
-                }`}</span>
-              ))}
-            </Typography>
-            <br />
-            <Typography component="span" variant="body2" color="textPrimary">
-              Credit:{' '}
-              <Currency
-                value={Math.round(f1040.scheduleEIC?.credit(f1040) ?? 0)}
-              />
+            <Typography variant="body2" color="textSecondary">
+              {f1040.scheduleEIC
+                ?.qualifyingDependents()
+                .map((d) => `${d?.firstName ?? ''} ${d?.lastName ?? ''}`)
+                .join(', ')}
             </Typography>
           </>
-        }
-      />
+        )}
+        <Typography variant="body2" color="textPrimary">
+          Credit:{' '}
+          <Currency value={Math.round(f1040.scheduleEIC?.credit(f1040) ?? 0)} />
+        </Typography>
+      </>
     </BinaryStateListItem>
   )
 
@@ -105,27 +72,29 @@ const F1040Summary = ({ f1040 }: F1040Props): ReactElement => {
     <BinaryStateListItem
       active={f1040.childTaxCreditWorksheet?.isAllowed() ?? false}
     >
-      <ListItemText
-        primary="Credit for children and other dependents"
-        secondary={
-          <Typography component="span" variant="body2" color="textPrimary">
-            Credit:{' '}
-            <Currency
-              value={Math.round(f1040.childTaxCreditWorksheet?.credit() ?? 0)}
-            />
-          </Typography>
-        }
-      />
+      <Typography color="textPrimary">
+        Credit for children and other dependents
+      </Typography>
+      <Typography variant="body2" color="textPrimary">
+        Credit:{' '}
+        <Currency
+          value={Math.round(f1040.childTaxCreditWorksheet?.credit() ?? 0)}
+        />
+      </Typography>
     </BinaryStateListItem>
   )
 
   return (
     <>
-      <h4>Credits</h4>
-      <List>
-        {earnedIncomeTaxCredit}
-        {creditForChildrenAndOtherDependents}
-      </List>
+      <h3>Credits</h3>
+      <Grid container>
+        <Grid item zeroMinWidth>
+          <List>
+            <li>{earnedIncomeTaxCredit}</li>
+            <li>{creditForChildrenAndOtherDependents}</li>
+          </List>
+        </Grid>
+      </Grid>
     </>
   )
 }
@@ -139,7 +108,7 @@ const Summary = (): ReactElement => {
 
   const summaryBody = (() => {
     if (information.taxPayer.primaryPerson === undefined) {
-      return <h4>No data entered yet</h4>
+      return <p>No data entered yet</p>
     } else {
       const f1040Result = create1040(information)
 
@@ -163,7 +132,7 @@ const Summary = (): ReactElement => {
   })()
 
   return (
-    <form onSubmit={onAdvance}>
+    <form tabIndex={-1} onSubmit={onAdvance}>
       <h2>Summary</h2>
       {summaryBody}
       {navButtons}
