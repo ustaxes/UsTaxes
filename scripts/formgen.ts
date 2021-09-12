@@ -1,7 +1,7 @@
 import { PDFDocument, PDFField, PDFCheckBox } from 'pdf-lib'
 import { readFile } from 'fs/promises'
 import * as path from 'path'
-import { unzip } from '../src/util'
+import _ from 'lodash'
 
 const loadFile = async (path: string): Promise<PDFDocument> => {
   const file = await readFile(path)
@@ -65,7 +65,7 @@ const fieldFunction = (field: PDFField, index: number): [string, string] => {
 
 const buildSource = (doc: PDFDocument, formName: string): string => {
   const functions = doc.getForm().getFields().map(fieldFunction)
-  const [impls, functionNames] = unzip(functions)
+  const [impls, functionNames] = _.unzip(functions)
   const className = normalizeName(formName)
 
   return `import Form from '../Form'
