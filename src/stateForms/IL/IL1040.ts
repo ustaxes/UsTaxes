@@ -38,7 +38,9 @@ export class IL1040 implements Form {
       result.push(this.scheduleEIC)
     }
     if (this.methods.stateWithholding() > 0) {
-      result.push(new ILWIT(this.info, this.f1040))
+      const ilwit = new ILWIT(this.info, this.f1040)
+      result.push(ilwit)
+      ilwit.attachments().forEach((f) => result.push(f))
     }
 
     return result

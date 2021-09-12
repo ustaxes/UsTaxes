@@ -2,6 +2,7 @@ import Form, { FormMethods } from '../Form'
 import F1040 from '../../irsForms/F1040'
 import { Field } from '../../pdfFiller'
 import { IncomeW2, Information, PersonRole, State } from '../../redux/data'
+import _ from 'lodash'
 
 type FormType =
   | 'W' // W-2
@@ -19,6 +20,7 @@ type FormType =
 
 interface WithholdingForm {
   formType: FormType
+  role: PersonRole
   ein: string
   federalWages: number
   ilWages: number
@@ -36,7 +38,8 @@ const toWithholdingForm = (w2: IncomeW2): WithholdingForm | undefined => {
       ein: w2.employer?.EIN ?? '',
       federalWages: w2.income,
       ilWages: w2.stateWages,
-      ilTax: w2.stateWithholding
+      ilTax: w2.stateWithholding,
+      role: w2.personRole
     }
   }
 }
@@ -53,16 +56,38 @@ export class ILWIT implements Form {
   state: State
   formOrder = 31
   methods: FormMethods
+  formIndex: number
 
-  constructor(info: Information, f1040: F1040) {
+  constructor(info: Information, f1040: F1040, subFormIndex = 0) {
     this.info = info
     this.f1040 = f1040
     this.formName = 'IL-WIT'
-    this.state = 'IL' // <-- Fill here
+    this.state = 'IL'
     this.methods = new FormMethods(this)
+    this.formIndex = subFormIndex
   }
 
-  attachments = (): Form[] => []
+  attachments = (): Form[] => {
+    // If this is the head form, see if we need
+    // more copies. For example if the SSIDs have 4 and 11 forms,
+    // we will need 2 extra copies. this one will have 4 + 5,
+    // next will have 0 + 5, last will have 0 + 1
+    if (this.formIndex === 0) {
+      const copiesNeeded =
+        Math.max(
+          ...[PersonRole.PRIMARY, PersonRole.SPOUSE].map(
+            (r) =>
+              this.methods.stateW2s().filter((w2) => w2.personRole === r).length
+          )
+        ) / 5
+
+      return Array(Math.floor(copiesNeeded))
+        .fill(undefined)
+        .map((x, i) => new ILWIT(this.info, this.f1040, i + 1))
+    }
+
+    return []
+  }
 
   /**
    * Index 0: Help
@@ -125,16 +150,26 @@ export class ILWIT implements Form {
 
   f6 = (): string | undefined => this.YourSSN4()
 
-  formsByRole = (role: PersonRole): WithholdingForm[] =>
+  allWithholdingForms = (): WithholdingForm[] =>
     this.methods
       .stateW2s()
-      .filter((w2) => w2.personRole === role)
       .map((w2) => toWithholdingForm(w2))
       .filter((x) => x !== undefined) as WithholdingForm[]
 
-  primaryForms = (): WithholdingForm[] => this.formsByRole(PersonRole.PRIMARY)
+  formsByRole = (role: PersonRole): WithholdingForm[] =>
+    this.allWithholdingForms().filter((w2) => w2.role === role)
 
-  spouseForms = (): WithholdingForm[] => this.formsByRole(PersonRole.SPOUSE)
+  primaryForms = (): WithholdingForm[] =>
+    _.chain(this.formsByRole(PersonRole.PRIMARY))
+      .drop(this.formIndex * 5)
+      .take(5)
+      .value()
+
+  spouseForms = (): WithholdingForm[] =>
+    _.chain(this.formsByRole(PersonRole.SPOUSE))
+      .drop(this.formIndex * 5)
+      .take(5)
+      .value()
 
   /**
    * 4 x 5 grid for primary taxpayer, columnwise
@@ -198,11 +233,11 @@ export class ILWIT implements Form {
   /**
    * Index 51: Total amount
    */
-  Totalamount = (): number | undefined =>
-    this.primaryForms()
-      .map((f) => f.ilTax)
-      .concat(this.spouseForms().map((f) => f.ilTax))
-      .reduce((s, a) => s + a, 0)
+  Totalamount = (): number | undefined => {
+    if (this.formIndex === 0) {
+      return this.allWithholdingForms().reduce((s, f) => s + f.ilTax, 0)
+    }
+  }
 
   f51 = (): number | undefined => this.Totalamount()
 
