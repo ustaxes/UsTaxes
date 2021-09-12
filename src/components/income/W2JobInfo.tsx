@@ -115,7 +115,6 @@ export default function W2JobInfo(): ReactElement {
         x !== undefined ? <h2>{x}&apos; W2s</h2> : undefined
       )}
     >
-
       <p>Input data from W-2</p>
       <Grid container spacing={2}>
         <LabeledInput
@@ -160,7 +159,7 @@ export default function W2JobInfo(): ReactElement {
           patternConfig={Patterns.currency}
           sizes={{ xs: 12, lg: 6 }}
         />
-        
+
         <LabeledInput
           name="medicareIncome"
           label={
@@ -171,7 +170,7 @@ export default function W2JobInfo(): ReactElement {
           patternConfig={Patterns.currency}
           sizes={{ xs: 12, lg: 6 }}
         />
-        
+
         <LabeledInput
           name="medicareWithholding"
           label={
