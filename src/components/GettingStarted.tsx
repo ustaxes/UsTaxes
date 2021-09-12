@@ -78,6 +78,7 @@ export default function GettingStarted(): ReactElement {
       <p>State tax returns are now in development.</p>
       <p>The following states are currently implemented:</p>
       <ul>
+        <li>Pennsylvania</li>
         <li>Illinois</li>
       </ul>
       Note the following states have no income tax filing:
@@ -93,7 +94,7 @@ export default function GettingStarted(): ReactElement {
         <li>Nevada</li>
       </ul>
       <p>
-        <strong>10</strong>/51 states are supported. If your types of income and
+        <strong>11</strong>/51 states are supported. If your types of income and
         state residency are supported, you should be able to use UsTaxes to
         paper file your return!
       </p>
