@@ -11,13 +11,15 @@ import {
   Spouse,
   PrimaryPerson,
   FilingStatus,
-  Information
+  Information,
+  State
 } from 'ustaxes/redux/data'
 import {
   Currency,
   formatSSID,
   GenericLabeledDropdown,
-  LabeledInput
+  LabeledInput,
+  USStateDropDown
 } from 'ustaxes/components/input'
 import { Patterns } from 'ustaxes/components/Patterns'
 import { FormListContainer } from 'ustaxes/components/FormContainer'
@@ -35,6 +37,23 @@ interface IncomeW2UserInput {
   ssWithholding: string
   medicareWithholding: string
   personRole: PersonRole.PRIMARY | PersonRole.SPOUSE
+  state?: State
+  stateWages: string
+  stateWithholding: string
+}
+
+const blankW2UserInput: IncomeW2UserInput = {
+  employer: {
+    EIN: ''
+  },
+  occupation: '',
+  income: '',
+  fedWithholding: '',
+  ssWithholding: '',
+  medicareWithholding: '',
+  personRole: PersonRole.PRIMARY,
+  stateWages: '',
+  stateWithholding: ''
 }
 
 const toIncomeW2 = (formData: IncomeW2UserInput): IncomeW2 => ({
@@ -45,16 +64,29 @@ const toIncomeW2 = (formData: IncomeW2UserInput): IncomeW2 => ({
   income: parseInt(formData.income),
   fedWithholding: parseInt(formData.fedWithholding),
   ssWithholding: parseInt(formData.ssWithholding),
-  medicareWithholding: parseInt(formData.medicareWithholding)
+  medicareWithholding: parseInt(formData.medicareWithholding),
+  state: formData.state,
+  stateWages: parseInt(formData.stateWages),
+  stateWithholding: parseInt(formData.stateWithholding)
 })
 
 const toIncomeW2UserInput = (data: IncomeW2): IncomeW2UserInput => ({
+  ...blankW2UserInput,
   ...data,
   income: data.income.toString(),
   fedWithholding: data.fedWithholding.toString(),
   ssWithholding: data.ssWithholding.toString(),
-  medicareWithholding: data.medicareWithholding.toString()
+  medicareWithholding: data.medicareWithholding.toString(),
+  state: data.state,
+  stateWages: data.stateWages?.toString() ?? '',
+  stateWithholding: data.stateWithholding?.toString() ?? ''
 })
+
+const boxLabel = (box: string, description: string): ReactElement => (
+  <>
+    <strong>Box {box}</strong> - {description}
+  </>
+)
 
 export default function W2JobInfo(): ReactElement {
   const dispatch = useDispatch()
@@ -121,6 +153,12 @@ export default function W2JobInfo(): ReactElement {
           sizes={{ xs: 12 }}
         />
         <LabeledInput
+          label={boxLabel('b', "Employer's Identification Number")}
+          patternConfig={Patterns.ein}
+          name="employer.EIN"
+          sizes={{ xs: 12 }}
+        />
+        <LabeledInput
           label="Occupation"
           patternConfig={Patterns.name}
           name="occupation"
@@ -128,42 +166,41 @@ export default function W2JobInfo(): ReactElement {
         />
         <LabeledInput
           name="income"
-          label={
-            <>
-              <strong>Box 1</strong> - Wages, tips, other compensation
-            </>
-          }
+          label={boxLabel('1', ' Wages, tips, other compensation')}
           patternConfig={Patterns.currency}
           sizes={{ xs: 12, lg: 6 }}
         />
         <LabeledInput
           name="fedWithholding"
-          label={
-            <>
-              <strong>Box 2</strong> - Federal income tax withheld
-            </>
-          }
+          label={boxLabel('2', 'Federal income tax withheld')}
           patternConfig={Patterns.currency}
           sizes={{ xs: 12, lg: 6 }}
         />
         <LabeledInput
           name="ssWithholding"
-          label={
-            <>
-              <strong>Box 4</strong> - Social security tax withheld
-            </>
-          }
+          label={boxLabel('4', 'Social security tax withheld')}
           patternConfig={Patterns.currency}
           sizes={{ xs: 12, lg: 6 }}
         />
         <LabeledInput
           name="medicareWithholding"
-          label={
-            <>
-              <strong>Box 6</strong> - Medicare tax withheld
-            </>
-          }
+          label={boxLabel('6', 'Medicare tax withheld')}
           patternConfig={Patterns.currency}
+          sizes={{ xs: 12, lg: 6 }}
+        />
+        <USStateDropDown name="state" label={<strong>Box 15 - State</strong>} />
+        <LabeledInput
+          name="stateWages"
+          label={boxLabel('16', 'State wages, tips, etc')}
+          patternConfig={Patterns.currency}
+          required={false}
+          sizes={{ xs: 12, lg: 6 }}
+        />
+        <LabeledInput
+          name="stateWithholding"
+          label={boxLabel('17', 'State income tax')}
+          patternConfig={Patterns.currency}
+          required={false}
           sizes={{ xs: 12, lg: 6 }}
         />
         <GenericLabeledDropdown

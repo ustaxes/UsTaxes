@@ -70,6 +70,9 @@ export interface IncomeW2 {
   medicareWithholding: number
   employer?: Employer
   personRole: PersonRole.PRIMARY | PersonRole.SPOUSE
+  state?: State
+  stateWages?: number
+  stateWithholding?: number
 }
 
 export enum Income1099Type {
