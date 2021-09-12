@@ -1,4 +1,4 @@
-import React, { Fragment, PropsWithChildren, ReactElement } from 'react'
+import { PropsWithChildren, ReactElement } from 'react'
 import {
   IconButton,
   List,
@@ -19,21 +19,17 @@ import { If } from 'react-if'
 
 export const PersonFields = ({
   children
-}: PropsWithChildren<{}>): ReactElement => (
-  <Fragment>
+}: PropsWithChildren<Record<never, never>>): ReactElement => (
+  <>
     <LabeledInput
       label="First Name and Initial"
       name="firstName"
-      patternConfig={Patterns.name}
+      required={true}
     />
-    <LabeledInput
-      label="Last Name"
-      name="lastName"
-      patternConfig={Patterns.name}
-    />
+    <LabeledInput label="Last Name" name="lastName" required={true} />
     <LabeledInput label="SSN / TIN" name="ssid" patternConfig={Patterns.ssn} />
     {children}
-  </Fragment>
+  </>
 )
 
 interface PersonListItemProps {
@@ -78,7 +74,9 @@ interface ListDependentsProps {
 }
 
 export function ListDependents({
-  onEdit,
+  onEdit = () => {
+    /* default do nothing */
+  },
   editing
 }: ListDependentsProps): ReactElement {
   const dependents = useSelector(
@@ -97,7 +95,7 @@ export function ListDependents({
           remove={() => drop(i)}
           person={p}
           editing={editing === i}
-          onEdit={() => (onEdit ?? (() => {}))(i)}
+          onEdit={() => onEdit(i)}
         />
       ))}
     </List>

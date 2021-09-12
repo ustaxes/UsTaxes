@@ -8,25 +8,26 @@ import F4797 from './F4797'
 import F8814 from './F8814'
 import Pub596Worksheet1 from './worksheets/Pub596Worksheet1'
 import Form, { FormTag } from './Form'
-import { anArrayOf, evaluatePiecewise, Piecewise } from 'ustaxes/util'
+import { evaluatePiecewise, Piecewise } from 'ustaxes/util'
 import log from 'ustaxes/log'
+import _ from 'lodash'
 
 type PrecludesEIC<F> = (f: F) => boolean
 
 const unimplemented = (message: string): void =>
   log.warn(`[Schedule EIC] unimplemented ${message}`)
 
-const checks2555: PrecludesEIC<F2555> = (f): boolean => {
+const checks2555: PrecludesEIC<F2555> = (): boolean => {
   unimplemented('check F2555')
   return false
 }
 
-const checks4797: PrecludesEIC<F4797> = (f): boolean => {
+const checks4797: PrecludesEIC<F4797> = (): boolean => {
   unimplemented('check F4797')
   return false
 }
 
-const checks8814: PrecludesEIC<F8814> = (f): boolean => {
+const checks8814: PrecludesEIC<F8814> = (): boolean => {
   unimplemented('check F8814')
   return false
 }
@@ -45,15 +46,15 @@ const precludesEIC =
 
 export default class ScheduleEIC implements Form {
   tag: FormTag = 'f1040sei'
-  sequenceIndex: number = 43
+  sequenceIndex = 43
   tp: TaxPayer
   f2555?: F2555
   f4797?: F4797
   f8814?: F8814
   pub596Worksheet1: Pub596Worksheet1
-  qualifyingStudentCutoffYear: number = 1996
-  qualifyingCutoffYear: number = 2001
-  investmentIncomeLimit: number = 3650
+  qualifyingStudentCutoffYear = 1996
+  qualifyingCutoffYear = 2001
+  investmentIncomeLimit = 3650
   f1040: F1040
 
   constructor(tp: TP, f1040: F1040) {
@@ -343,7 +344,7 @@ export default class ScheduleEIC implements Form {
 
   qualifyingDependentsFilled = (): Array<Dependent | undefined> => {
     const res = this.qualifyingDependents()
-    return [...res, ...anArrayOf(3 - res.length, undefined)]
+    return _.fill([...res], undefined, res.length, 3)
   }
 
   // EIC line 1

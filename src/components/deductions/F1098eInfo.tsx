@@ -1,4 +1,4 @@
-import React, { ReactElement, useState } from 'react'
+import { ReactElement } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import SchoolIcon from '@material-ui/icons/School'
 import { useDispatch, useSelector } from 'react-redux'
@@ -8,6 +8,7 @@ import { Currency, LabeledInput } from 'ustaxes/components/input'
 import { TaxesState, F1098e } from 'ustaxes/redux/data'
 import { Patterns } from 'ustaxes/components/Patterns'
 import { FormListContainer } from 'ustaxes/components/FormContainer'
+import { Grid } from '@material-ui/core'
 
 const showInterest = (a: F1098e): ReactElement => {
   return <Currency value={a.interest} />
@@ -38,70 +39,55 @@ const toF1098e = (f: F1098EUserInput): F1098e => {
 
 export default function F1098eInfo(): ReactElement {
   const f1098es = useSelector((state: TaxesState) => state.information.f1098es)
-  const [editing, setEditing] = useState<number | undefined>(undefined)
 
-  const defaultValues: F1098EUserInput = (() => {
-    if (editing !== undefined) {
-      return toUserInput(f1098es[editing])
-    }
-    return blankUserInput
-  })()
+  const defaultValues: F1098EUserInput = blankUserInput
 
   const { onAdvance, navButtons } = usePager()
 
   const methods = useForm<F1098EUserInput>({ defaultValues })
-  const { handleSubmit, reset } = methods
 
   const dispatch = useDispatch()
 
-  const clear = (): void => {
-    reset()
-    setEditing(undefined)
+  const onAdd1098e = (formData: F1098EUserInput): void => {
+    dispatch(add1098e(toF1098e(formData)))
   }
 
-  const onAdd1098e =
-    (onSuccess: () => void) =>
+  const onEdit1098e =
+    (index: number) =>
     (formData: F1098EUserInput): void => {
-      const payload = toF1098e(formData)
-      if (payload !== undefined) {
-        if (editing === undefined) {
-          dispatch(add1098e(payload))
-        } else {
-          dispatch(edit1098e({ index: editing, value: payload }))
-        }
-        clear()
-        onSuccess()
-      }
+      dispatch(edit1098e({ value: toF1098e(formData), index }))
     }
 
   const form: ReactElement | undefined = (
     <FormListContainer
-      onDone={(onSuccess) => handleSubmit(onAdd1098e(onSuccess))}
-      onCancel={clear}
-      items={f1098es}
+      onSubmitAdd={onAdd1098e}
+      onSubmitEdit={onEdit1098e}
+      items={f1098es.map((a) => toUserInput(a))}
       removeItem={(i) => dispatch(remove1098e(i))}
-      editing={editing}
-      editItem={setEditing}
       primary={(f) => f.lender}
-      secondary={(f) => showInterest(f)}
-      icon={(f) => <SchoolIcon />}
+      secondary={(f) => showInterest(toF1098e(f))}
+      icon={() => <SchoolIcon />}
     >
-      <strong>Input data from 1098-E</strong>
-      <LabeledInput
-        label="Enter name of Lender"
-        patternConfig={Patterns.name}
-        name="lender"
-      />
-      <LabeledInput
-        label="Student Interest Paid"
-        patternConfig={Patterns.currency}
-        name="interest"
-      />
+      <p>
+        <strong>Input data from 1098-E</strong>
+      </p>
+      <Grid container spacing={2}>
+        <LabeledInput
+          label="Enter name of Lender"
+          patternConfig={Patterns.name}
+          name="lender"
+        />
+        <LabeledInput
+          label="Student Interest Paid"
+          patternConfig={Patterns.currency}
+          name="interest"
+        />
+      </Grid>
     </FormListContainer>
   )
 
   return (
-    <form onSubmit={onAdvance}>
+    <form tabIndex={-1} onSubmit={onAdvance}>
       <FormProvider {...methods}>
         <h2>1098-E Information</h2>
         {form}

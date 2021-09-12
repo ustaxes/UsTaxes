@@ -16,7 +16,6 @@ import {
   EditW2Action,
   Edit1098eAction,
   TaxesState,
-  State,
   StateResidency
 } from './data'
 import { ValidateFunction } from 'ajv'
@@ -73,7 +72,7 @@ type AddDependent = Save<typeof ActionName.ADD_DEPENDENT, Dependent>
 type EditDependent = Save<typeof ActionName.EDIT_DEPENDENT, EditDependentAction>
 type RemoveDependent = Save<typeof ActionName.REMOVE_DEPENDENT, number>
 type AddSpouse = Save<typeof ActionName.ADD_SPOUSE, Spouse>
-type RemoveSpouse = Save<typeof ActionName.REMOVE_SPOUSE, {}>
+type RemoveSpouse = Save<typeof ActionName.REMOVE_SPOUSE, Record<string, never>>
 type AddW2 = Save<typeof ActionName.ADD_W2, IncomeW2>
 type EditW2 = Save<typeof ActionName.EDIT_W2, EditW2Action>
 type RemoveW2 = Save<typeof ActionName.REMOVE_W2, number>
@@ -117,7 +116,9 @@ export type Actions =
 
 export type ActionCreator<A> = (formData: A) => Actions
 
-function signalAction<T extends ActionName>(t: T): Save<T, {}> {
+function signalAction<T extends ActionName>(
+  t: T
+): Save<T, Record<string, never>> {
   return {
     type: t,
     formData: {}
@@ -130,7 +131,7 @@ function signalAction<T extends ActionName>(t: T): Save<T, {}> {
  *  the schema at runtime so we can see errors if data of the wrong types
  *  about to be inserted into the model
  */
-function makeActionCreator<A extends Object, T extends ActionName>(
+function makeActionCreator<A, T extends ActionName>(
   t: T,
   validate: ValidateFunction<A>
 ): (formData: A) => Save<T, A> {
@@ -144,7 +145,7 @@ function makeActionCreator<A extends Object, T extends ActionName>(
  * This variant includes a preprocessor function that can be used to
  * apply formatting changes to provided data, for example.
  */
-function makePreprocessActionCreator<A extends Object, T extends ActionName>(
+function makePreprocessActionCreator<A, T extends ActionName>(
   t: T,
   validate: ValidateFunction<A>,
   clean: (d: A) => Partial<A>

@@ -1,6 +1,6 @@
-import React, { ReactElement, useState } from 'react'
+import { ReactElement } from 'react'
 import { useForm, FormProvider } from 'react-hook-form'
-import { Icon } from '@material-ui/core'
+import { Icon, Grid } from '@material-ui/core'
 import { useDispatch, useSelector } from 'react-redux'
 import { add1099, edit1099, remove1099 } from 'ustaxes/redux/actions'
 import { usePager } from 'ustaxes/components/pager'
@@ -50,6 +50,20 @@ const showIncome = (a: Supported1099): ReactElement => {
           <br />
           Taxable Amount: <Currency value={a.form.taxableAmount} />
           <br />
+          Federal Income Tax Withheld:{' '}
+          <Currency value={a.form.federalIncomeTaxWithheld} />
+        </span>
+      )
+    }
+    case Income1099Type.SSA: {
+      return (
+        <span>
+          {/* Benefits Paid: <Currency value={a.form.benefitsPaid} />
+          <br />
+          Benefits Repaid: <Currency value={a.form.benefitsRepaid} />
+          <br /> */}
+          Net Benefits: <Currency value={a.form.netBenefits} />
+          <br />
           Federal Income Tax Withweld:{' '}
           <Currency value={a.form.federalIncomeTaxWithheld} />
         </span>
@@ -77,6 +91,10 @@ interface F1099UserInput {
   taxableAmount: string | number
   federalIncomeTaxWithheld: string | number
   RPlanType: PlanType1099
+  // SSA fields
+  // benefitsPaid: string | number
+  // benefitsRepaid: string | number
+  netBenefits: string | number
 }
 
 const blankUserInput: F1099UserInput = {
@@ -96,7 +114,11 @@ const blankUserInput: F1099UserInput = {
   grossDistribution: '',
   taxableAmount: '',
   federalIncomeTaxWithheld: '',
-  RPlanType: PlanType1099.IRA
+  RPlanType: PlanType1099.IRA,
+  // SSA fields
+  // benefitsPaid: '',
+  // benefitsRepaid: '',
+  netBenefits: ''
 }
 
 const toUserInput = (f: Supported1099): F1099UserInput => ({
@@ -175,44 +197,46 @@ const toF1099 = (input: F1099UserInput): Supported1099 | undefined => {
         }
       }
     }
+    case Income1099Type.SSA: {
+      return {
+        payer: input.payer,
+        personRole: input.personRole,
+        type: input.formType,
+        form: {
+          // benefitsPaid: Number(input.benefitsPaid),
+          // benefitsRepaid: Number(input.benefitsRepaid),
+          netBenefits: Number(input.netBenefits),
+          federalIncomeTaxWithheld: Number(input.federalIncomeTaxWithheld)
+        }
+      }
+    }
   }
 }
 
 export default function F1099Info(): ReactElement {
   const f1099s = useSelector((state: TaxesState) => state.information.f1099s)
-  const [editing, doSetEditing] = useState<number | undefined>(undefined)
 
   const methods = useForm<F1099UserInput>()
-  const { handleSubmit, reset, watch, setValue } = methods
+  const { watch } = methods
   const selectedType: Income1099Type | undefined = watch('formType')
 
   const dispatch = useDispatch()
 
   const { onAdvance, navButtons } = usePager()
 
-  const setEditing = (idx: number): void => {
-    reset(toUserInput(f1099s[idx]))
-    doSetEditing(idx)
+  const onSubmitAdd = (formData: F1099UserInput): void => {
+    const payload = toF1099(formData)
+    if (payload !== undefined) {
+      dispatch(add1099(payload))
+    }
   }
 
-  const clear = (): void => {
-    reset()
-    setValue('formType', undefined)
-    doSetEditing(undefined)
-  }
-
-  const onAdd1099 =
-    (onSuccess: () => void) =>
+  const onSubmitEdit =
+    (index: number) =>
     (formData: F1099UserInput): void => {
       const payload = toF1099(formData)
       if (payload !== undefined) {
-        if (editing === undefined) {
-          dispatch(add1099(payload))
-        } else {
-          dispatch(edit1099({ index: editing, value: payload }))
-        }
-        clear()
-        onSuccess()
+        dispatch(edit1099({ value: payload, index }))
       }
     }
 
@@ -224,42 +248,56 @@ export default function F1099Info(): ReactElement {
     .map((p) => p as Person)
 
   const intFields = (
-    <LabeledInput
-      label="Box 1 - Interest Income"
-      patternConfig={Patterns.currency}
-      name="interest"
-    />
+    <Grid container spacing={2}>
+      <LabeledInput
+        label={
+          <>
+            <strong>Box 1</strong> - Interest Income
+          </>
+        }
+        patternConfig={Patterns.currency}
+        name="interest"
+      />
+    </Grid>
   )
 
   const bFields = (
-    <div>
-      <h4>Long Term Covered Transactions</h4>
-      <LabeledInput
-        label="Proceeds"
-        patternConfig={Patterns.currency}
-        name="longTermProceeds"
-      />
-      <LabeledInput
-        label="Cost basis"
-        patternConfig={Patterns.currency}
-        name="longTermCostBasis"
-      />
-      <h4>Short Term Covered Transactions</h4>
-      <LabeledInput
-        label="Proceeds"
-        patternConfig={Patterns.currency}
-        name="shortTermProceeds"
-      />
-      <LabeledInput
-        label="Cost basis"
-        patternConfig={Patterns.currency}
-        name="shortTermCostBasis"
-      />
-    </div>
+    <>
+      <h3>Long Term Covered Transactions</h3>
+      <Grid container spacing={2}>
+        <LabeledInput
+          label="Proceeds"
+          patternConfig={Patterns.currency}
+          name="longTermProceeds"
+          sizes={{ xs: 6 }}
+        />
+        <LabeledInput
+          label="Cost basis"
+          patternConfig={Patterns.currency}
+          name="longTermCostBasis"
+          sizes={{ xs: 6 }}
+        />
+      </Grid>
+      <h3>Short Term Covered Transactions</h3>
+      <Grid container spacing={2}>
+        <LabeledInput
+          label="Proceeds"
+          patternConfig={Patterns.currency}
+          name="shortTermProceeds"
+          sizes={{ xs: 6 }}
+        />
+        <LabeledInput
+          label="Cost basis"
+          patternConfig={Patterns.currency}
+          name="shortTermCostBasis"
+          sizes={{ xs: 6 }}
+        />
+      </Grid>
+    </>
   )
 
   const divFields = (
-    <div>
+    <Grid container spacing={2}>
       <LabeledInput
         label="Total Dividends"
         patternConfig={Patterns.currency}
@@ -270,100 +308,158 @@ export default function F1099Info(): ReactElement {
         patternConfig={Patterns.currency}
         name="qualifiedDividends"
       />
-    </div>
+    </Grid>
   )
 
   const rFields = (
-    <div>
+    <Grid container spacing={2}>
       <LabeledInput
-        label="Box 1 - Gross Distribution"
+        label={
+          <>
+            <strong>Box 1</strong> - Gross Distribution
+          </>
+        }
         patternConfig={Patterns.currency}
         name="grossDistribution"
       />
       <LabeledInput
-        label="Box 2a - Taxable Amount"
+        label={
+          <>
+            <strong>Box 2a</strong> - Taxable Amount
+          </>
+        }
         patternConfig={Patterns.currency}
         name="taxableAmount"
       />
       <LabeledInput
-        label="Box 4 - Federal Income Tax Withheld"
+        label={
+          <>
+            <strong>Box 4</strong> - Federal Income Tax Withheld
+          </>
+        }
         patternConfig={Patterns.currency}
         name="federalIncomeTaxWithheld"
       />
       <GenericLabeledDropdown<PlanType1099>
-        label=""
-        strongLabel="Type of 1099-R"
+        label="Type of 1099-R"
         dropDownData={Object.values(PlanType1099)}
-        valueMapping={(x, i) => x}
-        keyMapping={(x, i) => i}
+        valueMapping={(x) => x}
+        keyMapping={(_, i) => i}
         textMapping={(status) => PlanType1099Texts[status]}
         name="RPlanType"
       />
-    </div>
+    </Grid>
+  )
+
+  const ssaFields = (
+    <Grid container spacing={2}>
+      {/* <LabeledInput
+        label="Box 3 - Benefits Paid"
+        patternConfig={Patterns.currency}
+        name="benefitsPaid"
+      />
+      <LabeledInput
+        label="Box 4 - Benefits Repaid"
+        patternConfig={Patterns.currency}
+        name="benefitsRepaid"
+      /> */}
+      <LabeledInput
+        label={
+          <>
+            <strong>Box 5</strong> - Net Benefits
+          </>
+        }
+        patternConfig={Patterns.currency}
+        name="netBenefits"
+      />
+      <LabeledInput
+        label={
+          <>
+            <strong>Box 6</strong> - Voluntary Federal Income Tax Withheld
+          </>
+        }
+        patternConfig={Patterns.currency}
+        name="federalIncomeTaxWithheld"
+      />
+    </Grid>
   )
 
   const specificFields = {
     [Income1099Type.INT]: intFields,
     [Income1099Type.B]: bFields,
     [Income1099Type.DIV]: divFields,
-    [Income1099Type.R]: rFields
+    [Income1099Type.R]: rFields,
+    [Income1099Type.SSA]: ssaFields
   }
 
   const titles = {
     [Income1099Type.INT]: '1099-INT',
     [Income1099Type.B]: '1099-B',
     [Income1099Type.DIV]: '1099-DIV',
-    [Income1099Type.R]: '1099-R'
+    [Income1099Type.R]: '1099-R',
+    [Income1099Type.SSA]: 'SSA-1099'
   }
 
   const form: ReactElement | undefined = (
     <FormListContainer
-      onDone={(onSuccess) => handleSubmit(onAdd1099(onSuccess))}
-      onCancel={clear}
-      items={f1099s}
+      onSubmitAdd={onSubmitAdd}
+      onSubmitEdit={onSubmitEdit}
+      items={f1099s.map((a) => toUserInput(a))}
       removeItem={(i) => dispatch(remove1099(i))}
-      editing={editing}
-      editItem={setEditing}
       primary={(f) => f.payer}
-      secondary={(f) => showIncome(f)}
-      icon={(f) => <Icon title={titles[f.type]}>{f.type}</Icon>}
+      secondary={(f) => {
+        const form = toF1099(f)
+        if (form !== undefined) {
+          return showIncome(form)
+        }
+        return ''
+      }}
+      icon={(f) => (
+        <Icon
+          style={{ lineHeight: 1 }}
+          title={f.formType !== undefined ? titles[f.formType] : undefined}
+        >
+          {f.formType}
+        </Icon>
+      )}
     >
-      <strong>Input data from 1099</strong>
+      <p>Input data from 1099</p>
+      <Grid container spacing={2}>
+        <GenericLabeledDropdown
+          dropDownData={Object.values(Income1099Type)}
+          label="Form Type"
+          valueMapping={(v: Income1099Type) => v}
+          name="formType"
+          keyMapping={(_, i: number) => i}
+          textMapping={(name: string) => `1099-${name}`}
+        />
 
-      <GenericLabeledDropdown
-        dropDownData={Object.values(Income1099Type)}
-        label="Form Type"
-        valueMapping={(v: Income1099Type) => v}
-        name="formType"
-        keyMapping={(_, i: number) => i}
-        textMapping={(name: string) => `1099-${name}`}
-      />
-
-      <LabeledInput
-        label="Enter name of bank, broker firm, or other payer"
-        patternConfig={Patterns.name}
-        name="payer"
-      />
-
+        <LabeledInput
+          label="Enter name of bank, broker firm, or other payer"
+          patternConfig={Patterns.name}
+          name="payer"
+        />
+      </Grid>
       {selectedType !== undefined ? specificFields[selectedType] : undefined}
-
-      <GenericLabeledDropdown
-        dropDownData={people}
-        label="Recipient"
-        valueMapping={(p: Person, i: number) =>
-          [PersonRole.PRIMARY, PersonRole.SPOUSE][i]
-        }
-        name="personRole"
-        keyMapping={(p: Person, i: number) => i}
-        textMapping={(p: Person) =>
-          `${p.firstName} ${p.lastName} (${formatSSID(p.ssid)})`
-        }
-      />
+      <Grid container spacing={2}>
+        <GenericLabeledDropdown
+          dropDownData={people}
+          label="Recipient"
+          valueMapping={(p: Person, i: number) =>
+            [PersonRole.PRIMARY, PersonRole.SPOUSE][i]
+          }
+          name="personRole"
+          keyMapping={(p: Person, i: number) => i}
+          textMapping={(p: Person) =>
+            `${p.firstName} ${p.lastName} (${formatSSID(p.ssid)})`
+          }
+        />
+      </Grid>
     </FormListContainer>
   )
 
   return (
-    <form onSubmit={onAdvance}>
+    <form tabIndex={-1} onSubmit={onAdvance}>
       <h2>1099 Information</h2>
       <FormProvider {...methods}>{form}</FormProvider>
       {navButtons}

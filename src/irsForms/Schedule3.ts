@@ -1,7 +1,6 @@
 import { Information, IncomeW2 } from 'ustaxes/redux/data'
 import { displayNumber, sumFields } from './util'
 import Form, { FormTag } from './Form'
-import { anArrayOf } from 'ustaxes/util'
 import TaxPayer from 'ustaxes/redux/TaxPayer'
 import { fica } from 'ustaxes/data/federal'
 import F1040 from './F1040'
@@ -30,7 +29,7 @@ export const claimableExcessSSTaxWithholding = (w2s: IncomeW2[]): number => {
 
 export default class Schedule3 implements Form {
   tag: FormTag = 'f1040s3'
-  sequenceIndex: number = 3
+  sequenceIndex = 3
   state: Information
   f1040: F1040
 
@@ -80,7 +79,7 @@ export default class Schedule3 implements Form {
       this.l4(),
       this.l5(),
 
-      ...anArrayOf(4, undefined), // TODO: checkboxes
+      ...Array(4).fill(undefined), // TODO: checkboxes
       this.l6(),
 
       this.l7(),

@@ -1,25 +1,31 @@
-import React, { ReactElement } from 'react'
+import { ReactElement } from 'react'
 import {
   Checkbox,
   FormControl,
   FormControlLabel,
-  FormGroup
+  FormGroup,
+  Grid
 } from '@material-ui/core'
 import { Controller, useFormContext } from 'react-hook-form'
 import { LabeledCheckboxProps } from './types'
-import useStyles from './styles'
+import ConditionallyWrap from 'ustaxes/components/ConditionallyWrap'
 
 export function LabeledCheckbox(props: LabeledCheckboxProps): ReactElement {
-  const { label, name } = props
+  const { label, name, useGrid = true, sizes = { xs: 12 } } = props
   const { control } = useFormContext()
 
-  const classes = useStyles()
-
   return (
-    <Controller
-      name={name}
-      render={({ field: { value, onChange } }) => (
-        <div className={classes.root}>
+    <ConditionallyWrap
+      condition={useGrid}
+      wrapper={(children) => (
+        <Grid item {...sizes}>
+          {children}
+        </Grid>
+      )}
+    >
+      <Controller
+        name={name}
+        render={({ field: { value, onChange } }) => (
           <FormControl component="fieldset">
             <FormGroup>
               <FormControlLabel
@@ -36,10 +42,10 @@ export function LabeledCheckbox(props: LabeledCheckboxProps): ReactElement {
               />
             </FormGroup>
           </FormControl>
-        </div>
-      )}
-      control={control}
-    />
+        )}
+        control={control}
+      />
+    </ConditionallyWrap>
   )
 }
 

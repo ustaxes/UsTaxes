@@ -1,4 +1,4 @@
-import { PDFDocument, PDFCheckBox, PDFTextField, PDFRadioGroup } from 'pdf-lib'
+import { PDFDocument, PDFCheckBox, PDFTextField } from 'pdf-lib'
 import { Field } from '.'
 
 /**

@@ -4,7 +4,7 @@ import Form, { FormTag } from './Form'
 
 export default class F1040V implements Form {
   tag: FormTag = 'f1040v'
-  sequenceIndex: number = -1
+  sequenceIndex = -1
   state: Information
   f1040: F1040
 

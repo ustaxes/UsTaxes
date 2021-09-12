@@ -1,5 +1,5 @@
-import React, { ReactElement } from 'react'
-import { FormProvider, useForm, useFormContext } from 'react-hook-form'
+import { ReactElement } from 'react'
+import { FormProvider, useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import {
   savePrimaryPersonInfo,
@@ -18,6 +18,7 @@ import { PersonFields } from './PersonFields'
 import { usePager } from 'ustaxes/components/pager'
 import { LabeledCheckbox, USStateDropDown } from 'ustaxes/components/input'
 import AddressFields from './Address'
+import { Grid } from '@material-ui/core'
 
 interface TaxPayerUserForm {
   firstName: string
@@ -52,14 +53,11 @@ const asPrimaryPerson = (formData: TaxPayerUserForm): PrimaryPerson => ({
   role: PersonRole.PRIMARY
 })
 
-const asTaxPayerUserForm = (person: PrimaryPerson): TaxPayerUserForm => {
-  const { role, ...rest } = person
-  return {
-    ...rest,
-    isForeignCountry: person.address.foreignCountry !== undefined,
-    role: PersonRole.PRIMARY
-  }
-}
+const asTaxPayerUserForm = (person: PrimaryPerson): TaxPayerUserForm => ({
+  ...person,
+  isForeignCountry: person.address.foreignCountry !== undefined,
+  role: PersonRole.PRIMARY
+})
 
 export default function PrimaryTaxpayer(): ReactElement {
   // const variable dispatch to allow use inside function
@@ -99,15 +97,17 @@ export default function PrimaryTaxpayer(): ReactElement {
     }
 
   const page = (
-    <form onSubmit={handleSubmit(onSubmit(onAdvance))}>
+    <form tabIndex={-1} onSubmit={handleSubmit(onSubmit(onAdvance))}>
       <h2>Primary Taxpayer Information</h2>
-      <PersonFields />
-      <LabeledCheckbox
-        label="Check if you are a dependent"
-        name="isTaxpayerDependent"
-      />
-      <AddressFields checkboxText="Do you have a foreign address?" />
-      <USStateDropDown label="Residency State" name="stateResidency" />
+      <Grid container spacing={2}>
+        <PersonFields />
+        <LabeledCheckbox
+          label="Check if you are a dependent"
+          name="isTaxpayerDependent"
+        />
+        <AddressFields checkboxText="Do you have a foreign address?" />
+        <USStateDropDown label="Residency State" name="stateResidency" />
+      </Grid>
       {navButtons}
     </form>
   )

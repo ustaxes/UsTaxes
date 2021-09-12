@@ -1,4 +1,4 @@
-import { Field, Fill } from '../pdfFiller'
+import { Fill } from '../pdfFiller'
 
 export type FormTag =
   | 'f1040'

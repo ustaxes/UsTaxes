@@ -1,5 +1,5 @@
-import React, { ReactElement } from 'react'
-import { List, ListItem } from '@material-ui/core'
+import { ReactElement } from 'react'
+import { Grid, List, ListItem } from '@material-ui/core'
 import { useDispatch, useSelector } from 'react-redux'
 import {
   getRequiredQuestions,
@@ -55,26 +55,28 @@ const Questions = (): ReactElement => {
     }
 
   const page = (
-    <form onSubmit={handleSubmit(onSubmit(onAdvance))}>
+    <form tabIndex={-1} onSubmit={handleSubmit(onSubmit(onAdvance))}>
       <h2>Informational Questions</h2>
       <p>
         Based on your prior responses, reseponses to these questions are
         required.
       </p>
-      <List>
-        {questions.map((q, i) => (
-          <ListItem key={i}>
-            <If condition={q.valueTag === 'boolean'}>
-              <Then>
-                <LabeledCheckbox name={q.tag} label={q.text} />
-              </Then>
-              <Else>
-                <LabeledInput name={q.tag} label={q.text} />
-              </Else>
-            </If>
-          </ListItem>
-        ))}
-      </List>
+      <Grid container spacing={2}>
+        <List>
+          {questions.map((q, i) => (
+            <ListItem key={i}>
+              <If condition={q.valueTag === 'boolean'}>
+                <Then>
+                  <LabeledCheckbox name={q.tag} label={q.text} />
+                </Then>
+                <Else>
+                  <LabeledInput name={q.tag} label={q.text} />
+                </Else>
+              </If>
+            </ListItem>
+          ))}
+        </List>
+      </Grid>
       {navButtons}
     </form>
   )

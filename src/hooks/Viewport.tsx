@@ -1,9 +1,11 @@
-import React, {
-  PropsWithChildren,
-  ReactElement,
+import {
   createContext,
+  useContext,
   useState,
-  Context
+  useEffect,
+  PropsWithChildren,
+  Context,
+  ReactElement
 } from 'react'
 
 interface Bounds {
@@ -16,14 +18,16 @@ const getBounds = (): Bounds => ({
   height: window.innerHeight
 })
 
-const viewportContext: Context<Bounds> = React.createContext(getBounds())
+export const viewportContext: Context<Bounds> = createContext(getBounds())
 
-export const ViewportProvider = ({ children }: PropsWithChildren<{}>) => {
-  const [bounds, setBounds] = React.useState(getBounds())
+export const ViewportProvider = ({
+  children
+}: PropsWithChildren<Record<never, never>>): ReactElement => {
+  const [bounds, setBounds] = useState(getBounds())
 
   const handleWindowResize = (): void => setBounds(getBounds())
 
-  React.useEffect(() => {
+  useEffect(() => {
     window.addEventListener('resize', handleWindowResize)
     return () => window.removeEventListener('resize', handleWindowResize)
   }, [])
@@ -35,4 +39,4 @@ export const ViewportProvider = ({ children }: PropsWithChildren<{}>) => {
   )
 }
 
-export const useViewport = (): Bounds => React.useContext(viewportContext)
+export const useViewport = (): Bounds => useContext(viewportContext)

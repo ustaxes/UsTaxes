@@ -1,5 +1,8 @@
-import React, { PropsWithChildren, ReactElement, useState } from 'react'
+import { PropsWithChildren, ReactElement, useState } from 'react'
 import {
+  createStyles,
+  makeStyles,
+  useMediaQuery,
   IconButton,
   List,
   ListItem,
@@ -8,60 +11,56 @@ import {
   ListItemText,
   Box,
   Button,
-  unstable_createMuiStrictModeTheme as createMuiTheme,
-  ThemeProvider
+  Theme
 } from '@material-ui/core'
-import { red } from '@material-ui/core/colors'
 import { Delete, Edit } from '@material-ui/icons'
 import { Else, If, Then } from 'react-if'
+import { SubmitHandler, useFormContext } from 'react-hook-form'
+import _ from 'lodash'
+import { ReactNode } from 'react'
 
 interface FormContainerProps {
   onDone: () => void
   onCancel: () => void
 }
 
-const theme = createMuiTheme({
-  palette: {
-    primary: red
-  }
-})
-
 const FormContainer = ({
   onDone,
   onCancel,
   children
-}: PropsWithChildren<FormContainerProps>): ReactElement => (
-  <div>
-    {children}
-    <Box
-      display="flex"
-      justifyContent="flex-start"
-      paddingTop={2}
-      paddingBottom={1}
-    >
-      <Box paddingRight={2}>
-        <Button
-          type="button"
-          onClick={onDone}
-          variant="contained"
-          color="primary"
-        >
-          Save
-        </Button>
-      </Box>
-      <ThemeProvider theme={theme}>
+}: PropsWithChildren<FormContainerProps>): ReactElement => {
+  const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)')
+  return (
+    <div>
+      {children}
+      <Box
+        display="flex"
+        justifyContent="flex-start"
+        marginTop={2}
+        marginBottom={3}
+      >
+        <Box marginRight={2}>
+          <Button
+            type="button"
+            onClick={onDone}
+            variant="contained"
+            color="primary"
+          >
+            Save
+          </Button>
+        </Box>
         <Button
           type="button"
           onClick={onCancel}
+          color={prefersDarkMode ? 'default' : 'secondary'}
           variant="contained"
-          color="secondary"
         >
-          Close
+          Discard
         </Button>
-      </ThemeProvider>
-    </Box>
-  </div>
-)
+      </Box>
+    </div>
+  )
+}
 
 interface MutableListItemProps {
   remove?: () => void
@@ -70,6 +69,7 @@ interface MutableListItemProps {
   secondary?: string | ReactElement
   editing?: boolean
   icon?: ReactElement
+  disableEdit?: boolean
 }
 
 export const MutableListItem = ({
@@ -78,10 +78,14 @@ export const MutableListItem = ({
   secondary,
   remove,
   onEdit,
-  editing = false
+  editing = false,
+  disableEdit = false
 }: MutableListItemProps): ReactElement => {
+  const canEdit = !editing && !disableEdit && onEdit !== undefined
+  const canDelete = remove !== undefined && !editing
+
   const editAction = (() => {
-    if (onEdit !== undefined && !editing) {
+    if (canEdit) {
       return (
         <ListItemIcon>
           <IconButton onClick={onEdit} edge="end" aria-label="edit">
@@ -93,7 +97,7 @@ export const MutableListItem = ({
   })()
 
   const deleteAction = (() => {
-    if (remove !== undefined && !editing) {
+    if (canDelete) {
       return (
         <ListItemSecondaryAction>
           <IconButton onClick={remove} edge="end" aria-label="delete">
@@ -104,8 +108,10 @@ export const MutableListItem = ({
     }
   })()
 
+  const status = editing ? 'editing' : undefined
+
   return (
-    <ListItem className={editing ? 'active' : ''}>
+    <ListItem>
       <ListItemIcon>{icon}</ListItemIcon>
       <ListItemText
         primary={<strong>{primary}</strong>}
@@ -113,22 +119,24 @@ export const MutableListItem = ({
       />
       {editAction}
       {deleteAction}
+      {status}
     </ListItem>
   )
 }
 
 interface FormListContainerProps<A> {
-  onDone: (f: () => void) => () => void
-  onCancel: () => void
+  onSubmitAdd: SubmitHandler<A>
+  onSubmitEdit: (index: number) => SubmitHandler<A>
+  onCancel?: () => void
   items: A[]
-  editItem?: (v: number) => void
-  editing?: number
   disableEditing?: boolean
   removeItem?: (v: number) => void
   primary: (a: A) => string
   secondary?: (a: A) => string | ReactElement
   max?: number
   icon?: (a: A) => ReactElement
+  grouping?: (a: A) => number
+  groupHeaders?: (ReactNode | undefined)[]
 }
 
 enum FormState {
@@ -137,9 +145,19 @@ enum FormState {
   Closed
 }
 
-const FormListContainer = <A extends object>(
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    buttonList: {
+      margin: `${theme.spacing(2)}px 0 ${theme.spacing(3)}px`
+    }
+  })
+)
+
+const FormListContainer = <A,>(
   props: PropsWithChildren<FormListContainerProps<A>>
 ): ReactElement => {
+  const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)')
+  const classes = useStyles()
   const {
     children,
     items,
@@ -147,56 +165,97 @@ const FormListContainer = <A extends object>(
     max,
     primary,
     secondary,
-    editItem,
-    editing,
     disableEditing = false,
     removeItem,
-    onDone,
-    onCancel
+    onSubmitAdd,
+    onSubmitEdit,
+    onCancel = () => {
+      // default do nothing
+    },
+    grouping = () => 0,
+    groupHeaders = []
   } = props
   const [formState, setFormState] = useState(FormState.Closed)
 
+  const [editing, setEditing] = useState<number | undefined>(undefined)
+
   const close = (): void => {
     setFormState(FormState.Closed)
+    reset({ values: undefined })
+    setEditing(undefined)
   }
 
-  const _onCancel = (): void => {
+  // Use the provided grouping function to split the input
+  // array into an array of groups. Each group has a title
+  // and a list of items, along with their original index.
+  const groups: [ReactNode, [A, number][]][] = _.chain(items)
+    .map<[A, number]>((x, n) => [x, n])
+    .groupBy(([x]) => grouping(x))
+    .toPairs()
+    .map<[ReactNode, [A, number][]]>(([k, xs]) => [
+      groupHeaders[parseInt(k)],
+      xs
+    ])
+    .value()
+
+  // Note useFormContext here instead of useForm reuses the
+  // existing form context from the parent.
+  const { reset, handleSubmit } = useFormContext()
+
+  const onClose = (): void => {
     onCancel()
     close()
   }
 
-  const _onDone: () => void = onDone(close)
+  const onSave: SubmitHandler<A> = (formData): void => {
+    if (editing !== undefined) {
+      onSubmitEdit(editing)(formData)
+    } else {
+      onSubmitAdd(formData)
+    }
+    close()
+  }
 
-  const editAction = (() => {
-    if (
-      editItem !== undefined &&
-      !disableEditing &&
-      formState === FormState.Closed
-    ) {
-      return (n: number) => () => {
+  const openEditForm = (n: number): (() => void) | undefined => {
+    if (!disableEditing && formState === FormState.Closed) {
+      return () => {
         setFormState(FormState.Editing)
-        editItem(n)
+        setEditing(n)
+        reset(items[n])
       }
     }
-    return () => undefined
-  })()
+  }
+
+  const openAddForm = () => {
+    setFormState(FormState.Adding)
+  }
 
   const itemDisplay = (() => {
-    if (items !== undefined && items.length > 0) {
+    if (items.length > 0) {
       return (
         <List dense={true}>
-          {items.map((item, i) => (
-            <MutableListItem
-              key={i}
-              primary={primary(item)}
-              secondary={secondary !== undefined ? secondary(item) : undefined}
-              onEdit={editAction(i)}
-              editing={editing === i}
-              remove={
-                removeItem !== undefined ? () => removeItem(i) : undefined
-              }
-              icon={icon !== undefined ? icon(item) : undefined}
-            />
+          {groups.map(([title, group], i) => (
+            <div key={`group-${i}`}>
+              {title}
+              {group.map(([item, originalIndex], k) => (
+                <MutableListItem
+                  key={k}
+                  primary={primary(item)}
+                  secondary={
+                    secondary !== undefined ? secondary(item) : undefined
+                  }
+                  onEdit={openEditForm(originalIndex)}
+                  disableEdit={formState !== FormState.Closed}
+                  editing={editing === originalIndex}
+                  remove={
+                    removeItem !== undefined
+                      ? () => removeItem(originalIndex)
+                      : undefined
+                  }
+                  icon={icon !== undefined ? icon(item) : undefined}
+                />
+              ))}
+            </div>
           ))}
         </List>
       )
@@ -204,28 +263,30 @@ const FormListContainer = <A extends object>(
   })()
 
   return (
-    <div>
+    <>
       {itemDisplay}
       <If condition={formState !== FormState.Closed}>
         <Then>
-          <FormContainer onDone={_onDone} onCancel={_onCancel}>
+          <FormContainer onDone={handleSubmit(onSave)} onCancel={onClose}>
             {children}
           </FormContainer>
         </Then>
         <Else>
           <If condition={max === undefined || items.length < max}>
-            <Button
-              type="button"
-              onClick={() => setFormState(FormState.Adding)}
-              variant="contained"
-              color="secondary"
-            >
-              Add
-            </Button>
+            <div className={classes.buttonList}>
+              <Button
+                type="button"
+                onClick={openAddForm}
+                color={prefersDarkMode ? 'default' : 'secondary'}
+                variant="contained"
+              >
+                Add
+              </Button>
+            </div>
           </If>
         </Else>
       </If>
-    </div>
+    </>
   )
 }
 

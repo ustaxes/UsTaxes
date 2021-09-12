@@ -1,13 +1,11 @@
 import { PDFDocument } from 'pdf-lib'
 import { store } from '../redux/store'
-import Form from '../irsForms/Form'
 import { create1040 } from '../irsForms/Main'
-import { isLeft, zip } from '../util'
+import { isLeft } from '../util'
+import _ from 'lodash'
 import log from '../log'
-import { fillPDF } from '../pdfFiller/fillPdf'
 import { buildPdf, downloadPDF, savePDF } from '../pdfFiller/pdfHandler'
 import { Information } from '../redux/data'
-import { Fill } from '../pdfFiller'
 
 // opens new with filled information in the window of the component it is called from
 export async function create1040PDF(state: Information): Promise<Uint8Array> {
@@ -24,7 +22,7 @@ export async function create1040PDF(state: Information): Promise<Uint8Array> {
       forms.map(async (f) => await downloadPDF(`/forms/${f.tag}.pdf`))
     )
 
-    return buildPdf(zip(forms, pdfs))
+    return buildPdf(_.zipWith(forms, pdfs, (a, b) => [a, b]))
   }
 
   log.error('Attempt to create pdf with no data, will be empty')
