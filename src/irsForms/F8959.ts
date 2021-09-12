@@ -51,7 +51,7 @@ export default class F8959 implements Form {
 
   // Part I: Additional Medicare Tax on Medicare Wages
   l1 = (): number | undefined =>
-    this.state.w2s.map((w2) => w2.income).reduce((l, r) => l + r, 0)
+    this.state.w2s.map((w2) => w2.medicareIncome).reduce((l, r) => l + r, 0)
 
   l2 = (): number | undefined => this.f4137?.l6()
   l3 = (): number | undefined => this.f8919?.l6()

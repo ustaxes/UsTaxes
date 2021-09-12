@@ -65,6 +65,7 @@ export interface Refund {
 export interface IncomeW2 {
   occupation: string
   income: number
+  medicareIncome: number
   fedWithholding: number
   ssWithholding: number
   medicareWithholding: number
