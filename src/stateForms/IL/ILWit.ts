@@ -174,8 +174,6 @@ export class ILWIT implements Form {
   /**
    * 4 x 5 grid for primary taxpayer, columnwise
    * Note the form type column is indexed after all this.
-   *
-   * Index 7: EIN - 1
    */
   formGrid = (forms: WithholdingForm[]): (string | number | undefined)[] =>
     [
@@ -188,6 +186,9 @@ export class ILWIT implements Form {
       ...Array(5 - column.length).fill(undefined)
     ])
 
+  /**
+   * Primary ssid withholding, Column B -> Column E
+   */
   f7Tof26 = (): (string | number | undefined)[] =>
     this.formGrid(this.primaryForms())
 
@@ -227,6 +228,9 @@ export class ILWIT implements Form {
 
   f30 = (): string | undefined => this.SpousesSSN4()
 
+  /**
+   * Spouse ssid forms, Column B -> Column E
+   */
   f31tof50 = (): (string | number | undefined)[] =>
     this.formGrid(this.spouseForms())
 
