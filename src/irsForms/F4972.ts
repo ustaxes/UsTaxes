@@ -17,5 +17,5 @@ export default class F4972 extends Form {
 
   tax = (): number => 0
 
-  field = (): Field[] => []
+  fields = (): Field[] => []
 }
