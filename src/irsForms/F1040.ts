@@ -3,11 +3,14 @@ import {
   Dependent,
   FilingStatus,
   IncomeW2,
+  Income1099R,
   PersonRole,
   Refund,
-  TaxPayer
-} from '../redux/data'
-import federalBrackets from '../data/federal'
+  TaxPayer,
+  PlanType1099,
+  Income1099SSA
+} from 'ustaxes/redux/data'
+import federalBrackets from 'ustaxes/data/federal'
 import F4972 from './F4972'
 import F5695 from './F5695'
 import F8814 from './F8814'
@@ -33,8 +36,9 @@ import ScheduleB from './ScheduleB'
 import { computeOrdinaryTax } from './TaxTable'
 import SDQualifiedAndCapGains from './worksheets/SDQualifiedAndCapGains'
 import ChildTaxCreditWorksheet from './worksheets/ChildTaxCreditWorksheet'
+import SocialSecurityBenefitsWorksheet from './worksheets/SocialSecurityBenefits'
 import F4797 from './F4797'
-import { Responses } from '../data/questions'
+import { Responses } from 'ustaxes/data/questions'
 import StudentLoanInterestWorksheet from './worksheets/StudentLoanInterestWorksheet'
 
 export enum F1040Error {
@@ -43,7 +47,7 @@ export enum F1040Error {
 
 export default class F1040 implements Form {
   tag: FormTag = 'f1040'
-  sequenceIndex: number = 0
+  sequenceIndex = 0
   // intentionally mirroring many fields from the state,
   // trying to represent the fields that the 1040 requires
   filingStatus?: FilingStatus
@@ -70,6 +74,8 @@ export default class F1040 implements Form {
   contactEmail?: string
 
   _w2s: IncomeW2[]
+  _f1099rs: Income1099R[]
+  _fSSA1099s: Income1099SSA[]
 
   schedule1?: Schedule1
   schedule2?: Schedule2
@@ -92,6 +98,7 @@ export default class F1040 implements Form {
   f8959?: F8959
   f8995?: F8995 | F8995A
   studentLoanInterestWorksheet?: StudentLoanInterestWorksheet
+  socialSecurityBenefitsWorksheet?: SocialSecurityBenefitsWorksheet
 
   childTaxCreditWorksheet?: ChildTaxCreditWorksheet
 
@@ -116,12 +123,22 @@ export default class F1040 implements Form {
     this.isSpouseDependent = Boolean(tp.spouse?.isTaxpayerDependent)
     this.dependents = tp.dependents
     this._w2s = []
+    this._f1099rs = []
+    this._fSSA1099s = []
     this.contactPhoneNumber = tp.contactPhoneNumber
     this.contactEmail = tp.contactEmail
   }
 
   addW2(w2: IncomeW2): void {
     this._w2s.push(w2)
+  }
+
+  add1099R(f1099r: Income1099R): void {
+    this._f1099rs.push(f1099r)
+  }
+
+  add1099SSA(f1099SSA: Income1099SSA): void {
+    this._fSSA1099s.push(f1099SSA)
   }
 
   addQuestions(questions: Responses): void {
@@ -192,6 +209,10 @@ export default class F1040 implements Form {
     this.studentLoanInterestWorksheet = s
   }
 
+  addSocialSecurityWorksheet(s: SocialSecurityBenefitsWorksheet): void {
+    this.socialSecurityBenefitsWorksheet = s
+  }
+
   addRefund(r: Refund): void {
     this.refund = r
   }
@@ -216,6 +237,8 @@ export default class F1040 implements Form {
   }
 
   wages = (): number => this.validW2s().reduce((res, w2) => res + w2.income, 0)
+  medicareWages = (): number =>
+    this.validW2s().reduce((res, w2) => res + w2.medicareIncome, 0)
 
   occupation = (r: PersonRole): string | undefined =>
     this._w2s.find((w2) => w2.personRole === r && w2.occupation !== '')
@@ -241,17 +264,43 @@ export default class F1040 implements Form {
         .reduce((l, r) => l + r, 0)
     )
 
+  totalGrossDistributionsFrom1099R = (
+    planType: PlanType1099
+  ): number | undefined =>
+    displayNumber(
+      this._f1099rs
+        .filter((element) => element.form.planType == planType)
+        .reduce((res, f1099) => res + f1099.form.grossDistribution, 0)
+    )
+
+  totalTaxableFrom1099R = (planType: PlanType1099): number | undefined =>
+    displayNumber(
+      this._f1099rs
+        .filter((element) => element.form.planType == planType)
+        .reduce((res, f1099) => res + f1099.form.taxableAmount, 0)
+    )
+
   l1 = (): number | undefined => displayNumber(this.wages())
   l2a = (): number | undefined => this.scheduleB?.l3()
   l2b = (): number | undefined => this.scheduleB?.l4()
   l3a = (): number | undefined => this.totalQualifiedDividends()
   l3b = (): number | undefined => this.scheduleB?.l6()
-  l4a = (): number | undefined => undefined
-  l4b = (): number | undefined => undefined
-  l5a = (): number | undefined => undefined
-  l5b = (): number | undefined => undefined
-  l6a = (): number | undefined => undefined
-  l6b = (): number | undefined => undefined
+  // This is the value of box 1 in 1099-R forms coming from IRAs
+  l4a = (): number | undefined =>
+    this.totalGrossDistributionsFrom1099R(PlanType1099.IRA)
+  // This should be the value of box 2a in 1099-R coming from IRAs
+  l4b = (): number | undefined => this.totalTaxableFrom1099R(PlanType1099.IRA)
+  // This is the value of box 1 in 1099-R forms coming from pensions/annuities
+  l5a = (): number | undefined =>
+    this.totalGrossDistributionsFrom1099R(PlanType1099.Pension)
+  // this is the value of box 2a in 1099-R forms coming from pensions/annuities
+  l5b = (): number | undefined =>
+    this.totalTaxableFrom1099R(PlanType1099.Pension)
+  // The sum of box 5 from SSA-1099
+  l6a = (): number | undefined => this.socialSecurityBenefitsWorksheet?.l1()
+  // calculation of the taxable amount of line 6a based on other income
+  l6b = (): number | undefined =>
+    this.socialSecurityBenefitsWorksheet?.taxableAmount()
   l7 = (): number | undefined => this.scheduleD?.l16()
   l8 = (): number | undefined => this.schedule1?.l9()
   l9 = (): number | undefined =>
@@ -262,6 +311,7 @@ export default class F1040 implements Form {
         this.l3b(),
         this.l4b(),
         this.l5b(),
+        this.l6b(),
         this.l7(),
         this.l8()
       ])
@@ -335,8 +385,18 @@ export default class F1040 implements Form {
       )
     )
 
-  // TODO: 1099s
-  l25b = (): number | undefined => undefined
+  // tax withheld from 1099s
+  l25b = (): number | undefined =>
+    displayNumber(
+      this._f1099rs.reduce(
+        (res, f1099) => res + f1099.form.federalIncomeTaxWithheld,
+        0
+      ) +
+        this._fSSA1099s.reduce(
+          (res, f1099) => res + f1099.form.federalIncomeTaxWithheld,
+          0
+        )
+    )
 
   // TODO: form(s) W-2G box 4, schedule K-1, form 1042-S, form 8805, form 8288-A
   l25c = (): number | undefined => this.f8959?.l24()

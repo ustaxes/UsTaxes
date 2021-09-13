@@ -1,4 +1,5 @@
 {
+  "extends": "./tsconfig.path.json",
   "compilerOptions": {
     "target": "es5",
     "lib": ["dom", "dom.iterable", "esnext"],
@@ -18,6 +19,11 @@
     "strictNullChecks": true,
     "jsx": "react-jsx"
   },
-  "include": ["src"],
-  "exclude": ["**/node_modules", "**/.*/"]
+  "include": ["src", "scripts"],
+  "exclude": ["**/node_modules", "**/.*/"],
+  "ts-node": {
+    "compilerOptions": {
+      "module": "commonjs"
+    }
+  }
 }

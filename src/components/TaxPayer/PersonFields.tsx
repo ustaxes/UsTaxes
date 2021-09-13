@@ -1,4 +1,4 @@
-import React, { Fragment, PropsWithChildren, ReactElement } from 'react'
+import { PropsWithChildren, ReactElement } from 'react'
 import {
   IconButton,
   List,
@@ -7,10 +7,10 @@ import {
   ListItemSecondaryAction
 } from '@material-ui/core'
 import { useDispatch, useSelector } from 'react-redux'
-import { formatSSID, LabeledInput } from '../input'
-import { Patterns } from '../Patterns'
-import { Actions, removeDependent } from '../../redux/actions'
-import { TaxesState, Person } from '../../redux/data'
+import { formatSSID, LabeledInput } from 'ustaxes/components/input'
+import { Patterns } from 'ustaxes/components/Patterns'
+import { Actions, removeDependent } from 'ustaxes/redux/actions'
+import { TaxesState, Person } from 'ustaxes/redux/data'
 import DeleteIcon from '@material-ui/icons/Delete'
 import EditIcon from '@material-ui/icons/Edit'
 import ListItemText from '@material-ui/core/ListItemText'
@@ -19,21 +19,17 @@ import { If } from 'react-if'
 
 export const PersonFields = ({
   children
-}: PropsWithChildren<{}>): ReactElement => (
-  <Fragment>
+}: PropsWithChildren<Record<never, never>>): ReactElement => (
+  <>
     <LabeledInput
       label="First Name and Initial"
       name="firstName"
-      patternConfig={Patterns.name}
+      required={true}
     />
-    <LabeledInput
-      label="Last Name"
-      name="lastName"
-      patternConfig={Patterns.name}
-    />
+    <LabeledInput label="Last Name" name="lastName" required={true} />
     <LabeledInput label="SSN / TIN" name="ssid" patternConfig={Patterns.ssn} />
     {children}
-  </Fragment>
+  </>
 )
 
 interface PersonListItemProps {
@@ -78,7 +74,9 @@ interface ListDependentsProps {
 }
 
 export function ListDependents({
-  onEdit,
+  onEdit = () => {
+    /* default do nothing */
+  },
   editing
 }: ListDependentsProps): ReactElement {
   const dependents = useSelector(
@@ -97,7 +95,7 @@ export function ListDependents({
           remove={() => drop(i)}
           person={p}
           editing={editing === i}
-          onEdit={() => (onEdit ?? (() => {}))(i)}
+          onEdit={() => onEdit(i)}
         />
       ))}
     </List>

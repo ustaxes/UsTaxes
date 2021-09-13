@@ -1,37 +1,71 @@
-import React, { Fragment, ReactElement } from 'react'
-import Divider from '@material-ui/core/Divider'
-import Drawer from '@material-ui/core/Drawer'
-import Hidden from '@material-ui/core/Hidden'
-import List from '@material-ui/core/List'
-import ListItem from '@material-ui/core/ListItem'
-import ListItemText from '@material-ui/core/ListItemText'
-import { makeStyles, useTheme } from '@material-ui/core/styles'
-import { NavLink, useLocation } from 'react-router-dom'
+import { Dispatch, ReactElement, SetStateAction } from 'react'
+import { useLocation, NavLink } from 'react-router-dom'
+import {
+  createStyles,
+  makeStyles,
+  useTheme,
+  Divider,
+  SwipeableDrawer,
+  IconButton,
+  List,
+  ListItem,
+  ListItemText,
+  ListSubheader,
+  Theme
+} from '@material-ui/core'
+import GitHubIcon from '@material-ui/icons/GitHub'
+import TwitterIcon from '@material-ui/icons/Twitter'
+import { useDevice } from 'ustaxes/hooks/Device'
 
 const drawerWidth = 240
 
-const useStyles = makeStyles((theme) => ({
-  drawer: {
-    [theme.breakpoints.up('sm')]: {
-      width: drawerWidth,
-      flexShrink: 0
+const useStyles = makeStyles<Theme, { isMobile: boolean }>((theme) =>
+  createStyles({
+    drawer: {
+      [theme.breakpoints.up('sm')]: {
+        width: drawerWidth,
+        flexShrink: 0
+      }
+    },
+    drawerBackdrop: ({ isMobile }) => ({
+      top: isMobile ? '56px !important' : undefined,
+      height: isMobile ? 'calc(100% - 56px)' : undefined
+    }),
+    drawerContainer: ({ isMobile }) => ({
+      top: isMobile ? '56px !important' : 0
+    }),
+    drawerPaper: ({ isMobile }) => ({
+      top: isMobile ? '56px !important' : undefined,
+      width: isMobile ? '100%' : drawerWidth,
+      height: isMobile ? 'calc(100% - 56px)' : undefined
+    }),
+    listSocial: {
+      display: 'flex',
+      justifyContent: 'flex-end',
+      marginRight: theme.spacing(2)
+    },
+    listItemSocial: {
+      flex: 0,
+      padding: 0
+    },
+    list: {
+      marginLeft: theme.spacing(0),
+      paddingLeft: theme.spacing(0)
+    },
+    listItem: {
+      marginLeft: theme.spacing(0),
+      paddingLeft: theme.spacing(2)
+    },
+    sectionHeader: {
+      marginLeft: theme.spacing(2)
     }
-  },
-  drawerPaper: {
-    width: drawerWidth
-  },
-  list: {
-    marginLeft: theme.spacing(0),
-    paddingLeft: theme.spacing(0)
-  },
-  listItem: {
-    marginLeft: theme.spacing(0),
-    paddingLeft: theme.spacing(2)
-  },
-  sectionHeader: {
-    marginLeft: theme.spacing(2)
-  }
-}))
+  })
+)
+
+export interface Section {
+  title: string
+  items: SectionItem[]
+}
 
 export interface SectionItem {
   title: string
@@ -49,81 +83,99 @@ export const item = (
   element
 })
 
-export interface Section {
-  title: string
-  items: SectionItem[]
-}
-
 export interface DrawerItemsProps {
   sections: Section[]
   isOpen: boolean
-  onClose: () => void
+  setOpen: Dispatch<SetStateAction<boolean>>
 }
 
 function ResponsiveDrawer(props: DrawerItemsProps): ReactElement {
+  const { isMobile } = useDevice()
   const location = useLocation()
-  const classes = useStyles()
+  const classes = useStyles({ isMobile })
   const theme = useTheme()
 
-  const { sections, isOpen, onClose } = props
+  const { sections, isOpen, setOpen } = props
 
   const drawer = (
-    <Fragment>
-      {sections.map(({ title, items }, sectionIdx) => (
-        <div key={sectionIdx}>
-          <List className={classes.list}>
-            <h2 className={classes.sectionHeader}>{title}</h2>
-            {items.map((item, itemIdx) => (
+    <>
+      {/* {isMobile && <Toolbar />} */}
+      {sections.map(({ title, items }) => (
+        <>
+          <List
+            subheader={<ListSubheader disableSticky>{title}</ListSubheader>}
+            className={classes.list}
+          >
+            {items.map((item) => (
               <ListItem
+                key={item.title}
                 className={classes.listItem}
                 button
-                key={itemIdx}
                 component={NavLink}
                 exact
                 activeClassName="current"
                 to={item.url}
                 selected={location.pathname === item.url}
+                disabled={location.pathname === item.url}
               >
-                <ListItemText primary={item.title} />
+                <ListItemText primary={`${item.title}`} />
               </ListItem>
             ))}
           </List>
           <Divider />
-        </div>
+        </>
       ))}
-    </Fragment>
+      <List className={classes.listSocial}>
+        <ListItem className={classes.listItemSocial}>
+          <IconButton
+            color="inherit"
+            aria-label="github, opens in new tab"
+            component="a"
+            href={`https://github.com/ustaxes/UsTaxes`}
+            target="_blank"
+            rel="noreferrer noopener"
+          >
+            <GitHubIcon />
+          </IconButton>
+        </ListItem>
+        <ListItem className={classes.listItemSocial}>
+          <IconButton
+            color="inherit"
+            aria-label="twitter, opens in new tab"
+            component="a"
+            href={`https://www.twitter.com/ustaxesorg`}
+            target="_blank"
+            rel="noreferrer noopener"
+          >
+            <TwitterIcon />
+          </IconButton>
+        </ListItem>
+      </List>
+    </>
   )
 
   return (
-    <nav className={classes.drawer} aria-label="mailbox folders">
-      {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
-      <Hidden smUp implementation="css">
-        <Drawer
-          variant="temporary"
-          anchor={theme.direction === 'rtl' ? 'right' : 'left'}
-          open={isOpen}
-          onClose={onClose}
-          classes={{
-            paper: classes.drawerPaper
-          }}
-          ModalProps={{
-            keepMounted: true // Better open performance on mobile.
-          }}
-        >
-          {drawer}
-        </Drawer>
-      </Hidden>
-      <Hidden xsDown implementation="css">
-        <Drawer
-          classes={{
-            paper: classes.drawerPaper
-          }}
-          variant="permanent"
-          open
-        >
-          {drawer}
-        </Drawer>
-      </Hidden>
+    <nav className={classes.drawer} aria-label="primary">
+      <SwipeableDrawer
+        variant={!isMobile ? 'persistent' : undefined}
+        anchor={theme.direction === 'rtl' ? 'right' : 'left'}
+        open={isOpen}
+        onOpen={() => setOpen(true)}
+        onClose={() => setOpen(false)}
+        classes={{
+          root: classes.drawerContainer,
+          paper: classes.drawerPaper
+        }}
+        ModalProps={{
+          BackdropProps: {
+            classes: { root: classes.drawerBackdrop }
+          }
+          // Disabling for the time being due to scroll position persisting
+          // keepMounted: isMobile ? true : false // Better open performance on mobile.
+        }}
+      >
+        {drawer}
+      </SwipeableDrawer>
     </nav>
   )
 }

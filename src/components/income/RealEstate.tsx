@@ -1,8 +1,12 @@
-import React, { Fragment, ReactElement, useState } from 'react'
+import { ReactElement } from 'react'
 import { Message, useForm, useWatch, FormProvider } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
-import { addProperty, editProperty, removeProperty } from '../../redux/actions'
-import { PagerContext } from '../pager'
+import {
+  addProperty,
+  editProperty,
+  removeProperty
+} from 'ustaxes/redux/actions'
+import { usePager } from 'ustaxes/components/pager'
 import {
   Property,
   Address,
@@ -11,21 +15,22 @@ import {
   TaxesState,
   PropertyType,
   PropertyTypeName
-} from '../../redux/data'
-import AddressFields from '../TaxPayer/Address'
+} from 'ustaxes/redux/data'
+import AddressFields from 'ustaxes/components/TaxPayer/Address'
 import {
   Currency,
   GenericLabeledDropdown,
   LabeledCheckbox,
   LabeledInput
-} from '../input'
-import { Patterns } from '../Patterns'
-import { daysInYear, enumKeys, segments } from '../../util'
+} from 'ustaxes/components/input'
+import { Patterns } from 'ustaxes/components/Patterns'
+import { daysInYear, enumKeys } from '../../util'
 import { HouseOutlined } from '@material-ui/icons'
-import { FormListContainer } from '../FormContainer'
+import { FormListContainer } from 'ustaxes/components/FormContainer'
 import { Grid } from '@material-ui/core'
-import { CURRENT_YEAR } from '../../data/federal'
+import { CURRENT_YEAR } from 'ustaxes/data/federal'
 import { If } from 'react-if'
+import _ from 'lodash'
 
 interface PropertyAddForm {
   address?: Address
@@ -132,30 +137,23 @@ const toUserInput = (property: Property): PropertyAddForm => {
 
 export default function RealEstate(): ReactElement {
   const methods = useForm<PropertyAddForm>()
-  const { control, getValues, handleSubmit, reset } = methods
+  const { control, getValues } = methods
   const dispatch = useDispatch()
+
+  const { onAdvance, navButtons } = usePager()
 
   const properties: Property[] = useSelector(
     (state: TaxesState) => state.information.realEstate
   )
-  const [editing, setEditing] = useState<number | undefined>(undefined)
-
-  const defaultValues: PropertyAddForm | undefined = (() => {
-    if (editing !== undefined) {
-      return toUserInput(properties[editing])
-    }
-  })()
 
   const propertyType = useWatch({
     control,
-    name: 'propertyType',
-    defaultValue: defaultValues?.propertyType
+    name: 'propertyType'
   })
 
-  const otherExpensesEntered = useWatch({
+  const otherExpensesEntered: number | undefined = useWatch({
     control,
-    name: 'expenses.other',
-    defaultValue: defaultValues?.expenses.other
+    name: 'expenses.other'
   })
 
   const validateDays = (n: number, other: number): Message | true => {
@@ -169,30 +167,18 @@ export default function RealEstate(): ReactElement {
   const validateRental = (n: number): Message | true =>
     validateDays(n, Number(getValues().personalUseDays ?? 0))
 
-  const clear = (): void => {
-    reset()
-    setEditing(undefined)
-  }
-
   const deleteProperty = (n: number): void => {
     dispatch(removeProperty(n))
-    clear()
   }
 
-  const onAddProperty =
-    (onSuccess: () => void) =>
+  const onAddProperty = (formData: PropertyAddForm): void => {
+    dispatch(addProperty(toProperty(formData)))
+  }
+
+  const onEditProperty =
+    (index: number) =>
     (formData: PropertyAddForm): void => {
-      dispatch(
-        (() => {
-          if (editing !== undefined) {
-            return editProperty({ value: toProperty(formData), index: editing })
-          } else {
-            return addProperty(toProperty(formData))
-          }
-        })()
-      )
-      clear()
-      onSuccess()
+      dispatch(editProperty({ value: toProperty(formData), index }))
     }
 
   const expenseFields: ReactElement[] = enumKeys(PropertyExpenseType).map(
@@ -207,10 +193,7 @@ export default function RealEstate(): ReactElement {
   )
 
   const otherExpenseDescription = (() => {
-    if (
-      defaultValues?.expenses.other !== undefined ||
-      otherExpensesEntered !== 0
-    ) {
+    if (otherExpensesEntered !== 0) {
       return (
         <LabeledInput
           key={enumKeys(PropertyExpenseType).length}
@@ -223,91 +206,86 @@ export default function RealEstate(): ReactElement {
   })()
 
   const form = (
-    <FormListContainer<Property>
-      items={properties}
+    <FormListContainer
+      items={properties.map((a) => toUserInput(a))}
       icon={() => <HouseOutlined />}
-      primary={(p) => p.address.address}
-      secondary={(p) => <Currency value={p.rentReceived} />}
-      editItem={(i) => setEditing(i)}
-      onDone={(onSuccess) => handleSubmit(onAddProperty(onSuccess))}
+      primary={(p) => toProperty(p).address.address}
+      secondary={(p) => <Currency value={toProperty(p).rentReceived} />}
+      onSubmitAdd={onAddProperty}
+      onSubmitEdit={onEditProperty}
       removeItem={(i) => deleteProperty(i)}
-      onCancel={clear}
     >
-      <h4>Property location</h4>
-      <AddressFields
-        checkboxText="Does the property have a foreign address"
-        allowForeignCountry={false}
-      />
-      <GenericLabeledDropdown
-        dropDownData={enumKeys(PropertyType)}
-        label="Property type"
-        textMapping={(t) => displayPropertyType(PropertyType[t])}
-        keyMapping={(_, n) => n}
-        name="propertyType"
-        valueMapping={(n) => n}
-      />
-      <If
-        condition={[propertyType, defaultValues?.propertyType].includes(
-          'other'
-        )}
-      >
-        <LabeledInput
-          name="otherPropertyType"
-          label="Short property type description"
-          required={true}
+      <h3>Property Location</h3>
+      <Grid container spacing={2}>
+        <AddressFields
+          checkboxText="Does the property have a foreign address"
+          allowForeignCountry={false}
         />
-      </If>
-      <h4>Use</h4>
-      <LabeledInput
-        name="rentalDays"
-        rules={{ validate: (n: String) => validateRental(Number(n)) }}
-        label="Number of days in the year used for rental"
-        patternConfig={Patterns.numDays}
-      />
-      <LabeledInput
-        name="personalUseDays"
-        rules={{ validate: (n: String) => validatePersonal(Number(n)) }}
-        label="Number of days in the year for personal use"
-        patternConfig={Patterns.numDays}
-      />
-      <LabeledCheckbox
-        name="qualifiedJointVenture"
-        label="Is this a qualified joint venture"
-      />
-      <h4>Property Financials</h4>
-      <h5>Income</h5>
-      <LabeledInput
-        name="rentReceived"
-        label="Rent received"
-        patternConfig={Patterns.currency}
-      />
-      <h5>Expenses</h5>
-      <Grid container spacing={3} direction="row" justify="flex-start">
-        {
-          // Layout expense fields in two columns
-          segments(2, [...expenseFields, otherExpenseDescription]).map(
-            (segment, i) => (
-              <Grid item key={i} lg={6}>
-                {segment.map((item, k) => (
-                  <Fragment key={`${i}-${k}`}>{item}</Fragment>
-                ))}
+        <GenericLabeledDropdown
+          dropDownData={enumKeys(PropertyType)}
+          label="Property type"
+          textMapping={(t) => displayPropertyType(PropertyType[t])}
+          keyMapping={(_, n) => n}
+          name="propertyType"
+          valueMapping={(n) => n}
+        />
+        <If condition={propertyType === 'other'}>
+          <LabeledInput
+            name="otherPropertyType"
+            label="Short property type description"
+            required={true}
+          />
+        </If>
+      </Grid>
+      <h3>Use</h3>
+      <Grid container spacing={2}>
+        <LabeledInput
+          name="rentalDays"
+          rules={{ validate: (n: string) => validateRental(Number(n)) }}
+          label="Number of days in the year used for rental"
+          patternConfig={Patterns.numDays}
+        />
+        <LabeledInput
+          name="personalUseDays"
+          rules={{ validate: (n: string) => validatePersonal(Number(n)) }}
+          label="Number of days in the year for personal use"
+          patternConfig={Patterns.numDays}
+        />
+        <LabeledCheckbox
+          name="qualifiedJointVenture"
+          label="Is this a qualified joint venture"
+        />
+      </Grid>
+      <h3>Property Financials</h3>
+      <h4>Income</h4>
+      <Grid container spacing={2}>
+        <LabeledInput
+          name="rentReceived"
+          label="Rent received"
+          patternConfig={Patterns.currency}
+        />
+      </Grid>
+      <h4>Expenses</h4>
+      <Grid container spacing={2}>
+        {_.chain([...expenseFields, otherExpenseDescription])
+          .chunk(2)
+          .map((segment, i) =>
+            segment.map((item, k) => (
+              <Grid item key={`${i}-${k}`} xs={12} sm={6}>
+                {item}
               </Grid>
-            )
+            ))
           )
-        }
+          .value()}
       </Grid>
     </FormListContainer>
   )
 
   return (
-    <PagerContext.Consumer>
-      {({ navButtons, onAdvance }) => (
-        <form onSubmit={onAdvance}>
-          <h2>Properties</h2>
-          <FormProvider {...methods}>{form}</FormProvider>
-          {navButtons}
-        </form>
-      )}
-    </PagerContext.Consumer>
+    <form tabIndex={-1} onSubmit={onAdvance}>
+      <h2>Properties</h2>
+      <FormProvider {...methods}>{form}</FormProvider>
+      {navButtons}
+    </form>
   )
 }

@@ -4,7 +4,7 @@ Thank you for your interest in this project. The below should summarize the gene
 
 ## Stack and developer requirements
 
-This project uses typescript and is built with [NPM 6][npm-install].
+This project uses TypeScript and is built with [NPM 6][npm-install].
 
 ## Desktop application requirements
 
@@ -31,7 +31,7 @@ libwebkit2gtk-4.0-dev
 
 ## Project design
 
-There are four main concerns separated in this project.
+There are four main concerns separated in this project:
 
 1. Data must be collected from users (react forms)
 2. Collected data must be stored in a data model (via redux dispatched actions only)
@@ -57,22 +57,29 @@ export interface Information {
 }
 ```
 
-- **f1099s**: An array of all 1099s that have been added. Note this includes 1099B which goes to Schedule D, 1099-Int which goes to Schedule B, and 1099-DIV which provides data that goes to both Schedule B and Schedule D. This confusion is not needed at this level of the data model. Later when PDFs are created, the correct data can be accessed by the code managing those schedules.
-- **w2s**: All W2s that have been added for both primary taxpayer and spouse
+- **f1099s**: An array of all 1099s that have been added. Note this includes 1099-B which goes to Schedule D, 1099-INT which goes to Schedule B, and 1099-DIV which provides data that goes to both Schedule B and Schedule D. This confusion is not needed at this level of the data model. Later when PDFs are created, the correct data can be accessed by the code managing those schedules.
+- **w2s**: All W-2s that have been added for both primary taxpayer and spouse
 - **refund**: Direct deposit information
-- **taxPayer**: Basic information about user's name, ssn, dependents, spouse
+- **taxPayer**: Basic information about user's name, SSN, dependents, spouse
 
 ### PDF Export
 
-Supported tax forms are included in the source control of this repository. [src/irsForms/](../src/irsForms/) includes all schedules that can be filled by this project. Each of these schedule definitions implements this interface:
+Supported federal and state forms are included in the source control of this repository.
+
+- [src/irsForms/](../src/irsForms/) includes ts models for all federal forms that can be filled by this project. The PDFs are also included in this project at [pubilc/forms](../public/forms). Each of these form definitions implements this interface:
 
 ```ts
-export default interface Form {
-  fields: () => Array<string | number | boolean | undefined>
+type Field = string | number | boolean | undefined
+export default interface Fill {
+  fields: () => Field[]
 }
 ```
 
 This array of `fields` must line up exactly with the fields expected by the PDF that the data will be filled into. Getting this data to line up exactly is error prone and tedious. The only type checking we can do between the PDF and our data is to verify if a field expects a boolean value (checkbox), or a text + numeric value.
+
+In order to help this error prone process, there's also a script that should be used to add a new form. See the guide for contributing a new form below.
+
+- [src/stateForms](../src/stateForms) includes ts models for all state forms that can be filled. They also implement the same interface.
 
 ## Guide for contributing a new form implementation
 
@@ -81,9 +88,17 @@ This array of `fields` must line up exactly with the fields expected by the PDF 
 - For a new UI form that needs its own page, add to routes in [Main.tsx](../src/components/Main.tsx)
 - A UI form can push new data into the state using Redux actions. Define your new action in [src/redux/actions.ts](../src/redux/actions.ts), and add your state updates to [src/redux/reducer.ts](../src/redux/reducer.ts)
 - If there is a new attachment to the 1040:
-  - The blank PDF goes in `public/forms/`. The locations of all supported attachments and logic about what attachments are required, is in [fillPdf.ts](../src/pdfFiller/fillPdf.ts)
-  - The data model for the PDF goes in [irsForms](../src/irsForms), and implements the `Form` interface as above
+
+  - The blank form goes in `public/forms/`. The locations of all supported attachments and logic about what attachments are required, is in [fillPdf.ts](../src/pdfFiller/fillPdf.ts).
+  - The data model for the PDF goes in [irsForms](../src/irsForms), and implements the `Form` interface as above. There is a script we use to generate a base implementation of the form. To generate this base implementation, run
+
+  ```
+  npm run formgen ./public/forms/<name-of-form>.pdf > ./src/irsForms/<name-of-form>.ts
+  ```
+
+  This will provide a function for each field in the PDF. At this point you should have a compilable file that needs the implementations for all those functions filled in.
 
 [npm-install]: https://www.npmjs.com/get-npm
 [tauri-root]: https://tauri.studio/
 [rust-root]: https://www.rust-lang.org/
+[webview2]: https://developer.microsoft.com/en-us/microsoft-edge/webview2/

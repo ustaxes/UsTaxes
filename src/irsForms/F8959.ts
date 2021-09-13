@@ -1,16 +1,16 @@
-import { Information } from '../redux/data'
+import { Information } from 'ustaxes/redux/data'
 import { displayNumber, computeField, sumFields } from './util'
-import TaxPayer from '../redux/TaxPayer'
+import TaxPayer from 'ustaxes/redux/TaxPayer'
 import Form, { FormTag } from './Form'
 import F4137 from './F4137'
 import F8919 from './F8919'
 import ScheduleSE from './ScheduleSE'
-import { fica } from '../data/federal'
+import { fica } from 'ustaxes/data/federal'
 
 export const needsF8959 = (state: Information): boolean => {
   const filingStatus = state.taxPayer.filingStatus
   const totalW2Income = state.w2s
-    .map((w2) => w2.income)
+    .map((w2) => w2.medicareIncome)
     .reduce((l, r) => l + r, 0)
   return (
     filingStatus !== undefined &&
@@ -20,7 +20,7 @@ export const needsF8959 = (state: Information): boolean => {
 
 export default class F8959 implements Form {
   tag: FormTag = 'f8959'
-  sequenceIndex: number = 71
+  sequenceIndex = 71
   state: Information
   f4137?: F4137
   f8919?: F8919
@@ -51,7 +51,7 @@ export default class F8959 implements Form {
 
   // Part I: Additional Medicare Tax on Medicare Wages
   l1 = (): number | undefined =>
-    this.state.w2s.map((w2) => w2.income).reduce((l, r) => l + r, 0)
+    this.state.w2s.map((w2) => w2.medicareIncome).reduce((l, r) => l + r, 0)
 
   l2 = (): number | undefined => this.f4137?.l6()
   l3 = (): number | undefined => this.f8919?.l6()

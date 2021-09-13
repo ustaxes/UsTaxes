@@ -1,12 +1,14 @@
 import fc, { Arbitrary } from 'fast-check'
-import { CURRENT_YEAR } from '../data/federal'
-import locationPostalCodes from '../data/locationPostalCodes'
-import { QuestionTagName, questionTagNames, Responses } from '../data/questions'
-import F1040 from '../irsForms/F1040'
-import Form from '../irsForms/Form'
-import { create1040 } from '../irsForms/Main'
-import * as types from '../redux/data'
+import { CURRENT_YEAR } from 'ustaxes/data/federal'
+import locationPostalCodes from 'ustaxes/data/locationPostalCodes'
+import {
+  QuestionTagName,
+  questionTagNames,
+  Responses
+} from 'ustaxes/data/questions'
+import * as types from 'ustaxes/redux/data'
 import * as util from '../util'
+import _ from 'lodash'
 
 const lower: Arbitrary<string> = fc
   .integer({ min: 0x61, max: 0x7a })
@@ -41,7 +43,7 @@ const state = fc.constantFrom(...locationPostalCodes.map(([, code]) => code))
 const concat = (
   as: Arbitrary<string>,
   bs: Arbitrary<string>,
-  sep: string = ' '
+  sep = ' '
 ): Arbitrary<string> => as.chain((a) => bs.map((b) => `${a}${sep}${b}`))
 
 // Ideally these would be normally distributed...
@@ -93,11 +95,12 @@ const employer: Arbitrary<types.Employer> = fc
   }))
 
 const w2: Arbitrary<types.IncomeW2> = fc
-  .tuple(maxWords(2), wages, fc.nat(), fc.nat(), fc.nat(), employer)
+  .tuple(maxWords(2), wages, fc.nat(), fc.nat(), fc.nat(), fc.nat(), employer)
   .map(
     ([
       occupation,
       income,
+      medicareIncome,
       fedWithholding,
       ssWithholding,
       medicareWithholding,
@@ -105,6 +108,7 @@ const w2: Arbitrary<types.IncomeW2> = fc
     ]) => ({
       occupation,
       income,
+      medicareIncome,
       fedWithholding,
       employer,
       personRole: types.PersonRole.PRIMARY,
@@ -179,13 +183,16 @@ const propertyType: Arbitrary<types.PropertyTypeName> = fc.constantFrom(
 
 const propertyExpenses: Arbitrary<
   Partial<{ [K in types.PropertyExpenseTypeName]: number }>
-> = fc
-  .set(fc.array(propExpenseTypeName))
-  .chain((es) =>
-    fc
-      .array(expense, { minLength: es.length, maxLength: es.length })
-      .map((nums) => Object.fromEntries(util.zip(es, nums)))
-  )
+> = fc.set(fc.array(propExpenseTypeName)).chain((es) =>
+  fc
+    .array(expense, { minLength: es.length, maxLength: es.length })
+    .map((nums) =>
+      _.chain(es)
+        .zipWith(nums, (e, num) => [e, num])
+        .fromPairs()
+        .value()
+    )
+)
 
 export const property: Arbitrary<types.Property> = fc
   .tuple(
@@ -325,25 +332,33 @@ export const information: Arbitrary<types.Information> = fc
     fc.array(f1098e),
     refund,
     taxPayer,
-    questions
+    questions,
+    state
   )
-  .map(([f1099s, w2s, realEstate, f1098es, refund, taxPayer, questions]) => ({
-    f1099s,
-    w2s,
-    realEstate,
-    f1098es,
-    refund,
-    taxPayer,
-    questions
-  }))
+  .map(
+    ([
+      f1099s,
+      w2s,
+      realEstate,
+      f1098es,
+      refund,
+      taxPayer,
+      questions,
+      state
+    ]) => ({
+      f1099s,
+      w2s,
+      realEstate,
+      f1098es,
+      refund,
+      taxPayer,
+      questions,
+      stateResidencies: [{ state }]
+    })
+  )
 
 export const taxesState: Arbitrary<types.TaxesState> = information.map(
   (information) => ({
     information
   })
 )
-
-export const f1040: Arbitrary<[F1040, Form[]]> = information
-  .map((information) => create1040(information))
-  .filter((res) => util.isRight(res))
-  .map((res) => (res as util.Right<[F1040, Form[]]>).right)

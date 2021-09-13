@@ -1,5 +1,5 @@
-import { TaxPayer as TP } from '../redux/data'
-import TaxPayer from '../redux/TaxPayer'
+import { TaxPayer as TP } from 'ustaxes/redux/data'
+import TaxPayer from 'ustaxes/redux/TaxPayer'
 import F1040 from './F1040'
 import { computeField, sumFields } from './util'
 import Form, { FormTag } from './Form'
@@ -8,7 +8,7 @@ export default class Schedule8812 implements Form {
   tp: TaxPayer
   f1040: F1040
   tag: FormTag = 'f1040s8'
-  sequenceIndex: number = 47
+  sequenceIndex = 47
 
   constructor(tp: TP, f1040: F1040) {
     this.tp = new TaxPayer(tp)

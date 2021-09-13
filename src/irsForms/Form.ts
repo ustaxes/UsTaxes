@@ -1,3 +1,5 @@
+import { Fill } from '../pdfFiller'
+
 export type FormTag =
   | 'f1040'
   | 'f1040v'
@@ -16,10 +18,9 @@ export type FormTag =
  * Any PDF can be filled from an array of values.
  *
  */
-export default interface Form {
+export default interface Form extends Fill {
   // Match the filename without extension when downloaded from IRS
   tag: FormTag
   // Match the sequence number in the header of the PDF.
   sequenceIndex: number
-  fields: () => Array<string | number | boolean | undefined>
 }

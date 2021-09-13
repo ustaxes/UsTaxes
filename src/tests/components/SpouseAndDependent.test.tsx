@@ -1,4 +1,3 @@
-import React from 'react'
 import {
   render,
   screen,
@@ -9,8 +8,10 @@ import {
 import { Provider } from 'react-redux'
 import userEvent from '@testing-library/user-event'
 
-import SpouseAndDependent, { SpouseInfo } from './SpouseAndDependent'
-import { store } from '../../redux/store'
+import SpouseAndDependent, {
+  SpouseInfo
+} from 'ustaxes/components/TaxPayer/SpouseAndDependent'
+import { store } from 'ustaxes/redux/store'
 
 afterEach(async () => {
   await waitFor(() => localStorage.clear())
@@ -70,7 +71,7 @@ describe('SpouseInfo', () => {
     })
 
     screen.getByRole('button', {
-      name: /Close/
+      name: /Discard/i
     })
   })
   it('saves and edits a spouse', async () => {
@@ -91,7 +92,7 @@ describe('SpouseInfo', () => {
     })
 
     screen.getByRole('button', {
-      name: /Close/
+      name: /Discard/i
     })
 
     // get all three text inputs
@@ -134,8 +135,9 @@ describe('SpouseInfo', () => {
     userEvent.type(filledLastName, '{selectall}{del}McGee')
     fireEvent.change(filledSsn, { target: { value: '987-65-4321' } })
 
-    // wait for redux-persist to do some async stuff
-    await waitFor(() => {})
+    await waitFor(() => {
+      // wait for redux-persist to do some async stuff
+    })
 
     // click the save button to save the new values
     fireEvent.click(
@@ -181,7 +183,7 @@ describe('SpouseInfo', () => {
     })
 
     screen.getByRole('button', {
-      name: /Close/
+      name: /Discard/i
     })
 
     // get all inputs
@@ -199,20 +201,22 @@ describe('SpouseInfo', () => {
     userEvent.type(firstNameInput, 'F$LF(#)& ##3')
     fireEvent.click(saveButton)
 
-    // expect two input errors and an error about restricted characters
-    await waitFor(() => {})
+    await waitFor(() => {
+      // expect no errors about restricted characters
+    })
+
     const nameErrorsAfterBadFirstName = await screen.findAllByText(
       'Input is required'
     )
     expect(nameErrorsAfterBadFirstName).toHaveLength(2)
-    screen.getByText('Input should only include letters and spaces')
 
     // fill in the first name correctly
     userEvent.type(firstNameInput, '{selectall}{del}Sally K')
     fireEvent.click(saveButton)
 
-    // expect two name errors
-    await waitFor(() => {})
+    await waitFor(() => {
+      // expect two name errors
+    })
     const nameErrorsAfterAddingFirstName = await screen.findAllByText(
       'Input is required'
     )
@@ -222,13 +226,13 @@ describe('SpouseInfo', () => {
     userEvent.type(lastNameInput, 'R5$%84')
     fireEvent.click(saveButton)
 
-    // expect an error about restricted characters, and one name error
-    await waitFor(() => {})
+    await waitFor(() => {
+      // expect no error about restricted characters, and one name required error
+    })
     const nameErrorsAfterBadLastName = await screen.findAllByText(
       'Input is required'
     )
     expect(nameErrorsAfterBadLastName).toHaveLength(1)
-    screen.getByText('Input should only include letters and spaces')
 
     // correctly enter a last name
     userEvent.type(lastNameInput, '{selectall}{del}Ride')
@@ -241,8 +245,9 @@ describe('SpouseInfo', () => {
     fireEvent.change(ssnInput, { target: { value: '123sc' } })
     fireEvent.click(saveButton)
 
-    // expect ssn error to remain
-    await waitFor(() => {})
+    await waitFor(() => {
+      // expect ssn error to remain
+    })
     await screen.findByText('Input should be filled with 9 digits')
 
     // clear ssn and add a valid value
@@ -331,11 +336,11 @@ describe('Dependents', () => {
       screen.getByText(label)
     }
 
-    const closeButton = screen.getByRole('button', {
-      name: /Close/
+    const DiscardButton = screen.getByRole('button', {
+      name: /Discard/i
     })
 
-    fireEvent.click(closeButton)
+    fireEvent.click(DiscardButton)
 
     // assert all the labels are now gone
     for (const label of dependentFormLabels) {
@@ -634,10 +639,10 @@ describe('Dependents', () => {
     userEvent.type(firstNameInput, '8675309')
     fireEvent.click(saveButton)
 
-    const firstNameErrors = await screen.findAllByText(
-      'Input should only include letters and spaces'
-    )
-    expect(firstNameErrors).toHaveLength(1)
+    const firstNameErrors: HTMLElement[] = await screen
+      .findAllByText('Input should only include letters and spaces')
+      .catch(() => [])
+    expect(firstNameErrors).toHaveLength(0)
     expect(screen.getAllByText('Input is required')).toHaveLength(5)
 
     userEvent.type(firstNameInput, '{selectall}{del}Booker T')
@@ -653,10 +658,10 @@ describe('Dependents', () => {
     userEvent.type(lastNameInput, '666')
     fireEvent.click(saveButton)
 
-    const lastNameErrors = await screen.findAllByText(
-      'Input should only include letters and spaces'
-    )
-    expect(lastNameErrors).toHaveLength(1)
+    const lastNameErrors = await screen
+      .findAllByText('Input should only include letters and spaces')
+      .catch(() => [])
+    expect(lastNameErrors).toHaveLength(0)
     expect(screen.getAllByText('Input is required')).toHaveLength(4)
 
     userEvent.type(lastNameInput, '{selectall}{del}Washington')

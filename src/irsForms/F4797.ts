@@ -1,4 +1,4 @@
-import { TaxPayer } from '../redux/data'
+import { TaxPayer } from 'ustaxes/redux/data'
 
 /**
  * Impacts EIC, 1040 instructions L27 step 2 question 3

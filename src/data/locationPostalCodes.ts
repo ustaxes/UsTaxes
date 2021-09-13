@@ -1,4 +1,6 @@
-const locationPostalCodes: Array<[string, string]> = [
+import { State } from '../redux/data'
+
+const locationPostalCodes: Array<[string, State]> = [
   ['Alabama', 'AL'],
   ['Alaska', 'AK'],
   ['Arizona', 'AZ'],

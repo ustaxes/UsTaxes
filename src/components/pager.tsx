@@ -1,13 +1,36 @@
-import { Box, Button } from '@material-ui/core'
-import React, { ReactElement, useState } from 'react'
+import { createContext, useState, PropsWithChildren, ReactElement } from 'react'
+import { useMediaQuery, Button, Grid } from '@material-ui/core'
+import { useContext } from 'react'
 import { Link, useHistory } from 'react-router-dom'
+import { useDevice } from 'ustaxes/hooks/Device'
 
-const makePager = <A,>(
-  pages: A[],
-  url: (a: A) => string,
-  lookup: Map<string, number>
-): [A | undefined, (() => void) | undefined] => {
+interface PagerProps {
+  onAdvance: () => void
+  navButtons: ReactElement
+}
+
+export const PagerContext = createContext<PagerProps>({
+  onAdvance: () => {
+    /* just a placeholder */
+  },
+  navButtons: <></>
+})
+
+interface PagerProviderProps<A> {
+  pages: A[]
+}
+
+interface Page {
+  url: string
+}
+
+export const PagerProvider = <A extends Page>({
+  children,
+  pages
+}: PropsWithChildren<PagerProviderProps<A>>): ReactElement => {
   const history = useHistory()
+
+  const lookup = new Map(pages.map((p, i) => [p.url, i]))
 
   const [curPage, update] = useState(lookup.get(history.location.pathname) ?? 0)
 
@@ -19,9 +42,9 @@ const makePager = <A,>(
     }
   })
 
-  const forward: (() => void) | undefined = (() => {
+  const onAdvance: (() => void) | undefined = (() => {
     if (curPage < pages.length - 1) {
-      return () => history.push(url(pages[curPage + 1]))
+      return () => history.push(pages[curPage + 1].url)
     }
     return undefined
   })()
@@ -32,7 +55,27 @@ const makePager = <A,>(
     }
   })()
 
-  return [prev, forward]
+  const navButtons: ReactElement = (
+    <PagerButtons
+      previousUrl={prev?.url}
+      submitText={onAdvance !== undefined ? 'Save and Continue' : 'Create PDF'}
+    />
+  )
+
+  return (
+    <PagerContext.Provider
+      value={{
+        onAdvance:
+          onAdvance ??
+          (() => {
+            // end of pages
+          }),
+        navButtons
+      }}
+    >
+      {children}
+    </PagerContext.Provider>
+  )
 }
 
 interface PagerButtonsProps {
@@ -44,35 +87,46 @@ export const PagerButtons = ({
   submitText,
   previousUrl
 }: PagerButtonsProps): ReactElement => {
+  const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)')
+  const { isMobile } = useDevice()
   const backButton = (() => {
-    if (previousUrl !== undefined) {
+    if (previousUrl !== undefined && previousUrl !== '/start') {
       return (
-        <Box display="flex" justifyContent="flex-start" paddingRight={2}>
+        <Grid item xs={isMobile && 12}>
           <Button
             component={Link}
             to={previousUrl}
             variant="contained"
-            color="secondary"
+            color={prefersDarkMode ? 'default' : 'secondary'}
+            fullWidth
           >
             Previous
           </Button>
-        </Box>
+        </Grid>
       )
     }
   })()
 
-  return (
-    <Box
-      display="flex"
-      justifyContent="flex-start"
-      paddingTop={2}
-      paddingBottom={1}
-    >
-      {backButton}
-      <Button type="submit" name="submit" variant="contained" color="primary">
+  const submitButton = (() => (
+    <Grid item xs={isMobile && 12}>
+      <Button
+        type="submit"
+        name="submit"
+        variant="contained"
+        color="primary"
+        fullWidth
+      >
         {submitText}
       </Button>
-    </Box>
+    </Grid>
+  ))()
+  const buttonList = [backButton, submitButton]
+  isMobile && buttonList.reverse()
+
+  return (
+    <Grid container spacing={2}>
+      {buttonList.map((x) => x)}
+    </Grid>
   )
 }
 
@@ -89,25 +143,32 @@ export const StartButtons = ({
   secondUrl,
   secondText
 }: StartButtonsProps): ReactElement => {
+  const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)')
+
   return (
-    <Box
-      display="flex"
-      justifyContent="space-evenly"
-      paddingTop={3}
-      paddingBottom={6}
-    >
-      <Button
-        component={Link}
-        to={firstUrl}
-        variant="contained"
-        color="primary"
-      >
-        {firstText}
-      </Button>
-      <Button href={secondUrl} variant="contained" color="secondary">
-        {secondText}
-      </Button>
-    </Box>
+    <Grid container spacing={2}>
+      <Grid item xs={12} sm={6}>
+        <Button
+          component={Link}
+          to={firstUrl}
+          variant="contained"
+          color="primary"
+          fullWidth
+        >
+          {firstText}
+        </Button>
+      </Grid>
+      <Grid item xs={12} sm={6}>
+        <Button
+          href={secondUrl}
+          variant="contained"
+          fullWidth
+          color={prefersDarkMode ? 'default' : 'secondary'}
+        >
+          {secondText}
+        </Button>
+      </Grid>
+    </Grid>
   )
 }
 
@@ -121,42 +182,20 @@ export const SingleButtons = ({
   text
 }: SingleButtonsProps): ReactElement => {
   return (
-    <Box
-      display="flex"
-      justifyContent="space-evenly"
-      paddingTop={3}
-      paddingBottom={6}
-    >
-      <Button component={Link} to={url} variant="contained" color="primary">
-        {text}
-      </Button>
-    </Box>
+    <Grid container spacing={2}>
+      <Grid item xs={12}>
+        <Button
+          component={Link}
+          to={url}
+          variant="contained"
+          color="primary"
+          fullWidth
+        >
+          {text}
+        </Button>
+      </Grid>
+    </Grid>
   )
 }
 
-interface PagerProps {
-  onAdvance: () => void
-  navButtons: ReactElement
-}
-
-export const PagerContext = React.createContext<PagerProps>({
-  onAdvance: () => {},
-  navButtons: <></>
-})
-
-/**
- * Create hook for a forward and back flow
- * This just keeps track of an array index based on a list of URLS
- * for pages a user would navigate through. This way the browser back
- * button can behave as expected based on the user's actual sequence of actions,
- * but a previous / next flow can be available as well for a sequence of screens.
- * @param pages a list of pages A
- * @param url gets a url out of a page A, starting with '/' (history.location.pathname)
- * @returns [previousPage, goToNextPage]
- */
-export const usePager = <A,>(
-  pages: A[],
-  url: (a: A) => string
-): [A | undefined, (() => void) | undefined] => {
-  return makePager(pages, url, new Map(pages.map((p, i) => [url(p), i])))
-}
+export const usePager = (): PagerProps => useContext(PagerContext)

@@ -4,14 +4,14 @@ import {
   Property,
   PropertyType,
   PropertyExpenseTypeName
-} from '../redux/data'
+} from 'ustaxes/redux/data'
 import Form, { FormTag } from './Form'
-import TaxPayer from '../redux/TaxPayer'
-import { anArrayOf, unzip3, zip, zip3 } from '../util'
+import TaxPayer from 'ustaxes/redux/TaxPayer'
 import F6168 from './F6168'
 import F8582 from './F8582'
 import { displayNegPos, displayNumber, sumFields } from './util'
-import log from '../log'
+import log from 'ustaxes/log'
+import _ from 'lodash'
 
 type Cell = number | undefined
 export type MatrixRow = [Cell, Cell, Cell]
@@ -44,7 +44,7 @@ const propTypeIndex = {
 
 export default class ScheduleE implements Form {
   tag: FormTag = 'f1040se'
-  sequenceIndex: number = 13
+  sequenceIndex = 13
   state: Information
   f6168: F6168
   f8582: F8582
@@ -139,10 +139,10 @@ export default class ScheduleE implements Form {
   royaltyExpenses = (): number | undefined => undefined
 
   l20 = (): MatrixRow =>
-    fill(unzip3(this.allExpenses()).map((column) => sumFields(column)))
+    fill(_.unzip(this.allExpenses()).map((column) => sumFields(column)))
 
   l21 = (): MatrixRow =>
-    zip3(this.l3(), this.l4(), this.l20()).map(([x, y, z]) =>
+    _.zipWith(this.l3(), this.l4(), this.l20(), (x, y, z) =>
       displayNumber((x ?? 0) + (y ?? 0) - (z ?? 0))
     ) as MatrixRow
 
@@ -156,7 +156,7 @@ export default class ScheduleE implements Form {
   l23e = (): number => sumFields(this.l20())
 
   rentalNet = (): MatrixRow =>
-    zip(this.l3(), this.l20()).map(([x, y]) => (x ?? 0) - (y ?? 0)) as MatrixRow
+    _.zipWith(this.l3(), this.l20(), (x, y) => (x ?? 0) - (y ?? 0)) as MatrixRow
 
   l24 = (): number =>
     sumFields(this.l21().filter((x) => x !== undefined && x > 0))
@@ -257,7 +257,7 @@ export default class ScheduleE implements Form {
       tp.namesString(),
       tp.tp.primaryPerson?.ssid,
       ...[false, false], // l27
-      ...anArrayOf(6 * 4 + 5 * 4, undefined), // l28
+      ...Array(6 * 4 + 5 * 4).fill(undefined), // l28
       undefined, // grey
       this.l29ah(),
       undefined, // grey
@@ -271,12 +271,12 @@ export default class ScheduleE implements Form {
       undefined, // l30
       undefined, // l31
       this.l32(), // l32
-      ...anArrayOf(2 * 4, undefined), // l33
+      ...Array(2 * 4).fill(undefined), // l33
       undefined,
       this.l34ad(),
       undefined,
       this.l34af(),
-      ...anArrayOf(4, undefined),
+      ...Array(4).fill(undefined),
       this.l34bc(),
       undefined, // grey
       this.l34be(),
@@ -285,7 +285,7 @@ export default class ScheduleE implements Form {
       undefined, // l35
       undefined, // l36
       this.l37(), // l37
-      ...anArrayOf(5 + 4, undefined), // l38
+      ...Array(5 + 4).fill(undefined), // l38
       this.l39(), // l39
       this.l40(), // l40
       this.l41(), // l41

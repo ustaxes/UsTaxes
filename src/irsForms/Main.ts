@@ -1,5 +1,10 @@
-import { Income1099Type, Information } from '../redux/data'
-import { Either, left, right } from '../util'
+import {
+  Income1099Type,
+  Income1099R,
+  Information,
+  Income1099SSA
+} from 'ustaxes/redux/data'
+import { Either, left, right } from 'ustaxes/util'
 import F1040, { F1040Error } from './F1040'
 import F1040V from './F1040v'
 import F8959, { needsF8959 } from './F8959'
@@ -14,6 +19,7 @@ import Schedule8812 from './Schedule8812'
 import ChildTaxCreditWorksheet from './worksheets/ChildTaxCreditWorksheet'
 import StudentLoanInterestWorksheet from './worksheets/StudentLoanInterestWorksheet'
 import Schedule2 from './Schedule2'
+import SocialSecurityBenefitsWorksheet from './worksheets/SocialSecurityBenefits'
 
 export const getSchedules = (f1040: F1040, state: Information): Form[] => {
   const forms: Form[] = [f1040]
@@ -28,6 +34,11 @@ export const getSchedules = (f1040: F1040, state: Information): Form[] => {
     const schD = new ScheduleD(state)
     f1040.addScheduleD(schD)
     forms.push(schD)
+  }
+
+  if (state.f1099s.find((v) => v.type === Income1099Type.SSA) !== undefined) {
+    const ssws = new SocialSecurityBenefitsWorksheet(state, f1040)
+    f1040.addSocialSecurityWorksheet(ssws)
   }
 
   if (state.realEstate.length > 0) {
@@ -127,6 +138,20 @@ export function create1040(
   const f1040 = new F1040(state.taxPayer)
 
   state.w2s.forEach((w2) => f1040.addW2(w2))
+
+  state.f1099s
+    .filter((f) => f.type === Income1099Type.R)
+    .map((f) => f as Income1099R)
+    .forEach((element) => {
+      f1040.add1099R(element)
+    })
+
+  state.f1099s
+    .filter((f) => f.type === Income1099Type.SSA)
+    .map((f) => f as Income1099SSA)
+    .forEach((element) => {
+      f1040.add1099SSA(element)
+    })
 
   f1040.addQuestions(state.questions)
 
