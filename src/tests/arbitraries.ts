@@ -6,9 +6,6 @@ import {
   questionTagNames,
   Responses
 } from 'ustaxes/data/questions'
-import F1040 from 'ustaxes/irsForms/F1040'
-import Form from 'ustaxes/irsForms/Form'
-import { create1040 } from 'ustaxes/irsForms/Main'
 import * as types from 'ustaxes/redux/data'
 import * as util from '../util'
 import _ from 'lodash'
@@ -98,11 +95,12 @@ const employer: Arbitrary<types.Employer> = fc
   }))
 
 const w2: Arbitrary<types.IncomeW2> = fc
-  .tuple(maxWords(2), wages, fc.nat(), fc.nat(), fc.nat(), employer)
+  .tuple(maxWords(2), wages, fc.nat(), fc.nat(), fc.nat(), fc.nat(), employer)
   .map(
     ([
       occupation,
       income,
+      medicareIncome,
       fedWithholding,
       ssWithholding,
       medicareWithholding,
@@ -110,6 +108,7 @@ const w2: Arbitrary<types.IncomeW2> = fc
     ]) => ({
       occupation,
       income,
+      medicareIncome,
       fedWithholding,
       employer,
       personRole: types.PersonRole.PRIMARY,
@@ -363,8 +362,3 @@ export const taxesState: Arbitrary<types.TaxesState> = information.map(
     information
   })
 )
-
-export const f1040: Arbitrary<[F1040, Form[]]> = information
-  .map((information) => create1040(information))
-  .filter((res) => util.isRight(res))
-  .map((res) => (res as util.Right<[F1040, Form[]]>).right)

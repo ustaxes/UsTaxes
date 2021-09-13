@@ -237,6 +237,8 @@ export default class F1040 implements Form {
   }
 
   wages = (): number => this.validW2s().reduce((res, w2) => res + w2.income, 0)
+  medicareWages = (): number =>
+    this.validW2s().reduce((res, w2) => res + w2.medicareIncome, 0)
 
   occupation = (r: PersonRole): string | undefined =>
     this._w2s.find((w2) => w2.personRole === r && w2.occupation !== '')
