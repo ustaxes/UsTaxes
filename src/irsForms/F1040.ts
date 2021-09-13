@@ -144,18 +144,16 @@ export default class F1040 extends Form {
     }
 
     if (this.info.f1098es.length > 0) {
-      const studentLoanInterestWorksheet = new StudentLoanInterestWorksheet(
+      this.studentLoanInterestWorksheet = new StudentLoanInterestWorksheet(
         this,
-        this.info.taxPayer,
         this.info.f1098es
       )
-      this.studentLoanInterestWorksheet = studentLoanInterestWorksheet
       // Future proofing be checking if Schedule 1 exists before adding it
       // Don't add s1 if unable to take deduction
       if (
         this.schedule1 === undefined &&
-        studentLoanInterestWorksheet.notMFS() &&
-        studentLoanInterestWorksheet.isNotDependent()
+        this.studentLoanInterestWorksheet.notMFS() &&
+        this.studentLoanInterestWorksheet.isNotDependent()
       ) {
         this.schedule1 = new Schedule1(this.info, this)
       }

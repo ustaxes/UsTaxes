@@ -1,4 +1,4 @@
-import { F1098e, FilingStatus, TaxPayer as TP } from 'ustaxes/redux/data'
+import { F1098e, FilingStatus } from 'ustaxes/redux/data'
 import F1040 from 'ustaxes/irsForms/F1040'
 import { computeField, displayNumber, sumFields } from '../util'
 
@@ -6,7 +6,7 @@ export default class StudentLoanInterestWorksheet {
   f1040: F1040
   f1098es: F1098e[]
 
-  constructor(f1040: F1040, tp: TP, f1098es: F1098e[]) {
+  constructor(f1040: F1040, f1098es: F1098e[]) {
     this.f1040 = f1040
     this.f1098es = f1098es
   }
