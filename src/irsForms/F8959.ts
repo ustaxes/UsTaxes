@@ -18,7 +18,7 @@ export const needsF8959 = (state: Information): boolean => {
   )
 }
 
-export default class F8959 implements Form {
+export default class F8959 extends Form {
   tag: FormTag = 'f8959'
   sequenceIndex = 71
   state: Information
@@ -32,6 +32,7 @@ export default class F8959 implements Form {
     f8919?: F8919,
     scheduleSE?: ScheduleSE
   ) {
+    super()
     this.state = state
     this.f4137 = f4137
     this.f8919 = f8919

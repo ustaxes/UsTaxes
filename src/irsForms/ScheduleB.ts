@@ -1,9 +1,5 @@
-import {
-  Income1099Type,
-  Information,
-  Income1099Int,
-  Income1099Div
-} from 'ustaxes/redux/data'
+import { Information } from 'ustaxes/redux/data'
+import InformationMethods from 'ustaxes/redux/methods'
 import TaxPayer from 'ustaxes/redux/TaxPayer'
 import Form, { FormTag } from './Form'
 import { computeField, displayNumber, sumFields } from './util'
@@ -13,29 +9,20 @@ interface PayerAmount {
   amount?: number
 }
 
-export default class ScheduleB implements Form {
+export default class ScheduleB extends Form {
   tag: FormTag = 'f1040sb'
   sequenceIndex = 8
-  state: Information
+  state: InformationMethods
   readonly interestPayersLimit = 14
   readonly dividendPayersLimit = 16
 
   constructor(info: Information) {
-    this.state = info
+    super()
+    this.state = new InformationMethods(info)
   }
 
-  f1099ints = (): Income1099Int[] =>
-    this.state.f1099s
-      .filter((f) => f.type === Income1099Type.INT)
-      .map((f) => f as Income1099Int)
-
-  f1099divs = (): Income1099Div[] =>
-    this.state.f1099s
-      .filter((f) => f.type === Income1099Type.DIV)
-      .map((f) => f as Income1099Div)
-
   l1Fields = (): PayerAmount[] =>
-    this.f1099ints().map((v) => ({
+    this.state.f1099Ints().map((v) => ({
       payer: v.payer,
       amount: v.form.income
     }))
@@ -50,7 +37,7 @@ export default class ScheduleB implements Form {
   }
 
   l2 = (): number | undefined =>
-    sumFields(this.f1099ints().map((f) => f.form.income))
+    sumFields(this.state.f1099Ints().map((f) => f.form.income))
 
   l3 = (): number | undefined => undefined
 
@@ -58,7 +45,7 @@ export default class ScheduleB implements Form {
     displayNumber(computeField(this.l2()) - computeField(this.l3()))
 
   l5Fields = (): PayerAmount[] =>
-    this.f1099divs().map((v) => ({
+    this.state.f1099Divs().map((v) => ({
       payer: v.payer,
       amount: v.form.dividends
     }))

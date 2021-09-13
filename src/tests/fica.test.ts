@@ -89,10 +89,10 @@ describe('fica', () => {
   it('should add Additional Medicare Tax form 8959', () => {
     fc.assert(
       fc.property(arbitraries.f1040, ([f1040, forms]) => {
-        if (f1040.filingStatus === undefined) {
+        if (f1040.info.taxPayer.filingStatus === undefined) {
           return
         }
-        const filingStatus = f1040.filingStatus
+        const filingStatus = f1040.info.taxPayer.filingStatus
         // Should add Additional Medicare Tax iff wages over threshold
         if (f1040.wages() > fica.additionalMedicareTaxThreshold(filingStatus)) {
           expect(hasAdditionalMedicareTax(f1040)).toEqual(true)
@@ -111,11 +111,11 @@ describe('fica', () => {
   it('should add Additional Medicare Tax based on filing status', () => {
     fc.assert(
       fc.property(arbitraries.f1040, ([f1040]) => {
-        if (f1040.filingStatus === undefined) {
+        if (f1040.info.taxPayer.filingStatus === undefined) {
           return
         }
         if (hasAdditionalMedicareTax(f1040)) {
-          const filingStatus = f1040.filingStatus
+          const filingStatus = f1040.info.taxPayer.filingStatus
           const incomeOverThreshold =
             f1040.wages() - fica.additionalMedicareTaxThreshold(filingStatus)
           expect(incomeOverThreshold).toBeGreaterThan(0)

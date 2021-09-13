@@ -1,35 +1,33 @@
 import { F1098e, FilingStatus, TaxPayer as TP } from 'ustaxes/redux/data'
-import TaxPayer from 'ustaxes/redux/TaxPayer'
 import F1040 from 'ustaxes/irsForms/F1040'
 import { computeField, displayNumber, sumFields } from '../util'
 
 export default class StudentLoanInterestWorksheet {
   f1040: F1040
-  tp: TaxPayer
   f1098es: F1098e[]
 
   constructor(f1040: F1040, tp: TP, f1098es: F1098e[]) {
     this.f1040 = f1040
-    this.tp = new TaxPayer(tp)
     this.f1098es = f1098es
   }
 
   // Can't take deduction if filling Married Filling Seperate
-  notMFS = (): boolean => this.f1040.filingStatus !== FilingStatus.MFS
+  notMFS = (): boolean =>
+    this.f1040.info.taxPayer.filingStatus !== FilingStatus.MFS
 
   // Can't take deduction if MFJ and spouse is a dependent
   isNotDependentSpouse = (): boolean =>
-    this.f1040.filingStatus !== FilingStatus.MFJ
+    this.f1040.info.taxPayer.filingStatus !== FilingStatus.MFJ
       ? true
-      : this.tp.tp.spouse === undefined
+      : this.f1040.info.taxPayer.spouse === undefined
       ? true
-      : !this.tp.tp.spouse?.isTaxpayerDependent
+      : !this.f1040.info.taxPayer.spouse?.isTaxpayerDependent
 
   // Can't take deduction if someone else claims you as a dependent
   isNotDependentSelf = (): boolean =>
-    this.tp.tp.primaryPerson === undefined
+    this.f1040.info.taxPayer.primaryPerson === undefined
       ? true
-      : !this.tp.tp.primaryPerson?.isTaxpayerDependent
+      : !this.f1040.info.taxPayer.primaryPerson?.isTaxpayerDependent
 
   isNotDependent = (): boolean =>
     this.isNotDependentSpouse() && this.isNotDependentSelf()
@@ -65,7 +63,7 @@ export default class StudentLoanInterestWorksheet {
     computeField(this.l2()) - computeField(this.l3())
 
   l5 = (): number =>
-    this.f1040.filingStatus === FilingStatus.MFJ ? 140000 : 70000
+    this.f1040.info.taxPayer.filingStatus === FilingStatus.MFJ ? 140000 : 70000
 
   l6 = (): number | undefined =>
     computeField(this.l4()) > computeField(this.l5())
