@@ -1,3 +1,4 @@
+import { Field } from 'ustaxes/pdfFiller'
 import { TaxPayer } from 'ustaxes/redux/data'
 import Form, { FormTag } from './Form'
 
@@ -7,7 +8,7 @@ import Form, { FormTag } from './Form'
  */
 export default class F4797 extends Form {
   tp: TaxPayer
-  formTag: FormTag = 'f4797'
+  tag: FormTag = 'f4797'
   sequenceIndex = 999
 
   constructor(tp: TaxPayer) {
@@ -19,4 +20,6 @@ export default class F4797 extends Form {
   l7 = (): number | undefined => undefined
   l8 = (): number | undefined => undefined
   l9 = (): number | undefined => undefined
+
+  fields = (): Field[] => []
 }
