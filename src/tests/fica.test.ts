@@ -104,8 +104,8 @@ describe('fica', () => {
           return
         }
         const filingStatus = f1040.filingStatus
-        // Should add Additional Medicare Tax iff wages over threshold
-        if (f1040.wages() > fica.additionalMedicareTaxThreshold(filingStatus)) {
+        // Should add Additional Medicare Tax if medicare wages over threshold
+        if (f1040.medicareWages() > fica.additionalMedicareTaxThreshold(filingStatus)) {
           expect(hasAdditionalMedicareTax(f1040)).toEqual(true)
 
           // Should attach both S2 and F8959 to return
@@ -135,7 +135,7 @@ describe('fica', () => {
         if (hasAdditionalMedicareTax(f1040)) {
           const filingStatus = f1040.filingStatus
           const incomeOverThreshold =
-            f1040.wages() - fica.additionalMedicareTaxThreshold(filingStatus)
+            f1040.medicareWages() - fica.additionalMedicareTaxThreshold(filingStatus)
           expect(incomeOverThreshold).toBeGreaterThan(0)
 
           // Adds the right amount of additional tax
@@ -151,7 +151,7 @@ describe('fica', () => {
             .map((w2) => w2.medicareWithholding)
             .reduce((l, r) => l + r, 0)
           const regularWithholding = Math.round(
-            fica.regularMedicareTaxRate * f1040.wages()
+            fica.regularMedicareTaxRate * f1040.medicareWages()
           )
           if (medicareWithheld > regularWithholding) {
             const f1040l25c = f1040.l25c()
