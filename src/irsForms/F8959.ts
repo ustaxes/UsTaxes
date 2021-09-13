@@ -10,7 +10,7 @@ import { fica } from 'ustaxes/data/federal'
 export const needsF8959 = (state: Information): boolean => {
   const filingStatus = state.taxPayer.filingStatus
   const totalW2Income = state.w2s
-    .map((w2) => w2.income)
+    .map((w2) => w2.medicareIncome)
     .reduce((l, r) => l + r, 0)
   return (
     filingStatus !== undefined &&
@@ -52,7 +52,7 @@ export default class F8959 extends Form {
 
   // Part I: Additional Medicare Tax on Medicare Wages
   l1 = (): number | undefined =>
-    this.state.w2s.map((w2) => w2.income).reduce((l, r) => l + r, 0)
+    this.state.w2s.map((w2) => w2.medicareIncome).reduce((l, r) => l + r, 0)
 
   l2 = (): number | undefined => this.f4137?.l6()
   l3 = (): number | undefined => this.f8919?.l6()
