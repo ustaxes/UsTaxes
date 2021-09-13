@@ -6,7 +6,7 @@ import Form from 'ustaxes/irsForms/Form'
 import { create1040 } from 'ustaxes/irsForms/Main'
 import Schedule2 from 'ustaxes/irsForms/Schedule2'
 import Schedule3 from 'ustaxes/irsForms/Schedule3'
-import { isRight } from '../util'
+import { isLeft, isRight } from '../util'
 import * as arbitraries from './arbitraries'
 
 function hasSSRefund(f1040: F1040): boolean {
@@ -70,7 +70,13 @@ describe('fica', () => {
 
   it('should give SS refund based on filing status', () => {
     fc.assert(
-      fc.property(arbitraries.f1040, ([f1040]) => {
+      fc.property(arbitraries.information, (info) => {
+        const f1040Result = create1040(info)
+        if (isLeft(f1040Result)) {
+          return
+        }
+        const f1040 = f1040Result.right[0]
+
         if (hasSSRefund(f1040)) {
           const s3l10 = f1040.schedule3?.l10()
           expect(s3l10).not.toBeUndefined()
@@ -88,7 +94,12 @@ describe('fica', () => {
 
   it('should add Additional Medicare Tax form 8959', () => {
     fc.assert(
-      fc.property(arbitraries.f1040, ([f1040, forms]) => {
+      fc.property(arbitraries.information, (info) => {
+        const f1040Result = create1040(info)
+        if (isLeft(f1040Result)) {
+          return
+        }
+        const [f1040, forms] = f1040Result.right
         if (f1040.filingStatus === undefined) {
           return
         }
@@ -110,7 +121,14 @@ describe('fica', () => {
 
   it('should add Additional Medicare Tax based on filing status', () => {
     fc.assert(
-      fc.property(arbitraries.f1040, ([f1040]) => {
+      fc.property(arbitraries.information, (info) => {
+        const f1040Result = create1040(info)
+        if (isLeft(f1040Result)) {
+          return
+        }
+
+        const f1040 = f1040Result.right[0]
+
         if (f1040.filingStatus === undefined) {
           return
         }
