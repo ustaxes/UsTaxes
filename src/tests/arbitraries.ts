@@ -111,6 +111,7 @@ const w2: Arbitrary<types.IncomeW2> = fc
     ]) => ({
       occupation,
       income,
+      medicareIncome,
       fedWithholding,
       employer,
       personRole: types.PersonRole.PRIMARY,
