@@ -6,6 +6,9 @@ import {
   questionTagNames,
   Responses
 } from 'ustaxes/data/questions'
+import F1040 from 'ustaxes/irsForms/F1040'
+import Form from 'ustaxes/irsForms/Form'
+import { create1040 } from 'ustaxes/irsForms/Main'
 import * as types from 'ustaxes/redux/data'
 import * as util from '../util'
 import _ from 'lodash'
@@ -362,3 +365,8 @@ export const taxesState: Arbitrary<types.TaxesState> = information.map(
     information
   })
 )
+
+export const f1040: Arbitrary<[F1040, Form[]]> = information
+  .map((information) => create1040(information))
+  .filter((res) => util.isRight(res))
+  .map((res) => (res as util.Right<[F1040, Form[]]>).right)

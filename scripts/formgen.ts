@@ -74,7 +74,7 @@ import { Field } from '../../pdfFiller'
 import { displayNumber, sumFields } from '../../irsForms/util'
 import { AccountType, FilingStatus, Information, State } from '../../redux/data'
 
-export class ${className} implements Form {
+export class ${className} extends Form {
   info: Information
   f1040: F1040
   formName: string
