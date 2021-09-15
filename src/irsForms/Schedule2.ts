@@ -4,13 +4,14 @@ import { computeField, displayNumber, sumFields } from './util'
 import TaxPayer from 'ustaxes/redux/TaxPayer'
 import F8959 from './F8959'
 
-export default class Schedule2 implements Form {
+export default class Schedule2 extends Form {
   tag: FormTag = 'f1040s2'
   sequenceIndex = 2
   tp: TaxPayer
   f8959?: F8959
 
   constructor(tp: TP, f8959?: F8959) {
+    super()
     this.tp = new TaxPayer(tp)
     this.f8959 = f8959
   }

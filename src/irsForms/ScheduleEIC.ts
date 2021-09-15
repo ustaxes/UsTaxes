@@ -44,7 +44,7 @@ const precludesEIC =
     return p(f)
   }
 
-export default class ScheduleEIC implements Form {
+export default class ScheduleEIC extends Form {
   tag: FormTag = 'f1040sei'
   sequenceIndex = 43
   tp: TaxPayer
@@ -58,6 +58,7 @@ export default class ScheduleEIC implements Form {
   f1040: F1040
 
   constructor(tp: TP, f1040: F1040) {
+    super()
     this.tp = new TaxPayer(tp)
     this.f2555 = new F2555(tp)
     this.f4797 = new F4797(tp)

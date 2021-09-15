@@ -108,7 +108,7 @@ export const PagerButtons = ({
   })()
 
   const submitButton = (() => (
-    <Grid item xs={isMobile && 12}>
+    <Grid item xs={isMobile ? 12 : undefined}>
       <Button
         type="submit"
         name="submit"
@@ -120,12 +120,11 @@ export const PagerButtons = ({
       </Button>
     </Grid>
   ))()
-  const buttonList = [backButton, submitButton]
-  isMobile && buttonList.reverse()
 
   return (
-    <Grid container spacing={2}>
-      {buttonList.map((x) => x)}
+    <Grid container spacing={2} direction={isMobile ? 'row-reverse' : 'row'}>
+      {backButton}
+      {submitButton}
     </Grid>
   )
 }

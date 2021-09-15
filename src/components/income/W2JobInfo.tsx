@@ -33,6 +33,7 @@ interface IncomeW2UserInput {
   employer?: Employer
   occupation: string
   income: string
+  medicareIncome: string
   fedWithholding: string
   ssWithholding: string
   medicareWithholding: string
@@ -48,6 +49,7 @@ const blankW2UserInput: IncomeW2UserInput = {
   },
   occupation: '',
   income: '',
+  medicareIncome: '',
   fedWithholding: '',
   ssWithholding: '',
   medicareWithholding: '',
@@ -62,6 +64,7 @@ const toIncomeW2 = (formData: IncomeW2UserInput): IncomeW2 => ({
   // we are already in the input validated happy path
   // of handleSubmit.
   income: parseInt(formData.income),
+  medicareIncome: parseInt(formData.medicareIncome),
   fedWithholding: parseInt(formData.fedWithholding),
   ssWithholding: parseInt(formData.ssWithholding),
   medicareWithholding: parseInt(formData.medicareWithholding),
@@ -74,6 +77,7 @@ const toIncomeW2UserInput = (data: IncomeW2): IncomeW2UserInput => ({
   ...blankW2UserInput,
   ...data,
   income: data.income.toString(),
+  medicareIncome: data.medicareIncome.toString(),
   fedWithholding: data.fedWithholding.toString(),
   ssWithholding: data.ssWithholding.toString(),
   medicareWithholding: data.medicareWithholding.toString(),
@@ -182,6 +186,18 @@ export default function W2JobInfo(): ReactElement {
           patternConfig={Patterns.currency}
           sizes={{ xs: 12, lg: 6 }}
         />
+
+        <LabeledInput
+          name="medicareIncome"
+          label={
+            <>
+              <strong>Box 5</strong> - Medicare Income
+            </>
+          }
+          patternConfig={Patterns.currency}
+          sizes={{ xs: 12, lg: 6 }}
+        />
+
         <LabeledInput
           name="medicareWithholding"
           label={boxLabel('6', 'Medicare tax withheld')}

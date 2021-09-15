@@ -42,7 +42,7 @@ const propTypeIndex = {
   [PropertyType.other]: 8
 }
 
-export default class ScheduleE implements Form {
+export default class ScheduleE extends Form {
   tag: FormTag = 'f1040se'
   sequenceIndex = 13
   state: Information
@@ -50,6 +50,7 @@ export default class ScheduleE implements Form {
   f8582: F8582
 
   constructor(info: Information) {
+    super()
     this.state = info
     this.f6168 = new F6168(info.taxPayer, this)
     this.f8582 = new F8582(info.taxPayer, this)

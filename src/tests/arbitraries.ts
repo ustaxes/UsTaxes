@@ -104,6 +104,7 @@ const w2: Arbitrary<types.IncomeW2> = fc
     fc.nat(),
     fc.nat(),
     fc.nat(),
+    fc.nat(),
     employer,
     state,
     fc.nat(),
@@ -113,6 +114,7 @@ const w2: Arbitrary<types.IncomeW2> = fc
     ([
       occupation,
       income,
+      medicareIncome,
       fedWithholding,
       ssWithholding,
       medicareWithholding,
@@ -123,6 +125,7 @@ const w2: Arbitrary<types.IncomeW2> = fc
     ]) => ({
       occupation,
       income,
+      medicareIncome,
       fedWithholding,
       employer,
       personRole: types.PersonRole.PRIMARY,
