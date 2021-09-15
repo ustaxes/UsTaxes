@@ -100,7 +100,14 @@
     "**/*": "prettier --write --ignore-unknown"
   },
   "reactSnap": {
-    "inlineCss": true
+    "inlineCss": true,
+    "waitFor": 5000,
+    "include": [
+      "/",
+      "/info",
+      "/start",
+      "/spouseanddependent"
+    ]
   },
   "jest": {
     "moduleNameMapper": {
