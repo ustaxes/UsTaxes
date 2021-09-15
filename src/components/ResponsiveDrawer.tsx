@@ -1,4 +1,4 @@
-import { Dispatch, ReactElement, SetStateAction } from 'react'
+import { Dispatch, Fragment, ReactElement, SetStateAction } from 'react'
 import { useLocation, NavLink } from 'react-router-dom'
 import {
   createStyles,
@@ -101,7 +101,7 @@ function ResponsiveDrawer(props: DrawerItemsProps): ReactElement {
     <>
       {/* {isMobile && <Toolbar />} */}
       {sections.map(({ title, items }) => (
-        <>
+        <Fragment key={`section ${title}`}>
           <List
             subheader={<ListSubheader disableSticky>{title}</ListSubheader>}
             className={classes.list}
@@ -123,7 +123,7 @@ function ResponsiveDrawer(props: DrawerItemsProps): ReactElement {
             ))}
           </List>
           <Divider />
-        </>
+        </Fragment>
       ))}
       <List className={classes.listSocial}>
         <ListItem className={classes.listItemSocial}>
