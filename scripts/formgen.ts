@@ -9,11 +9,30 @@ const loadFile = async (path: string): Promise<PDFDocument> => {
   return await PDFDocument.load(bytearray)
 }
 
-const normalizeName = (name: string): string =>
-  name.replace(/[^a-zA-Z0-9]/g, '')
+const normalizeClass = (name: string): string => {
+  let text = name.replace(/[^a-zA-Z0-9]/g, '')
+
+  if (!isNaN(parseInt(text[0]))) {
+    text = `F${text}`
+  }
+
+  return text.substr(0, 1).toUpperCase() + text.substr(1)
+}
+
+const normalizeField = (name: string): string => {
+  let text = name
+    .replace(/[-_\s.]+(.)?/g, (_, c) => (c ? c.toUpperCase() : ''))
+    .replace(/[^a-zA-Z0-9]/g, '')
+
+  if (!isNaN(parseInt(text[0]))) {
+    text = `l${text}`
+  }
+
+  return text.substr(0, 1).toLowerCase() + text.substr(1)
+}
 
 const fieldFunction = (field: PDFField, index: number): [string, string] => {
-  const name = normalizeName(field.getName())
+  const name = normalizeField(field.getName())
   const isNumeric = name.match(/^[0-9]+[a-z]*$/)
   const functionName = isNumeric ? `l${name}` : `f${index}`
 
@@ -46,14 +65,14 @@ const fieldFunction = (field: PDFField, index: number): [string, string] => {
   const namedImplementation = `  /**
    * Index ${index}: ${field.getName()}
    */
-  const ${isNumeric ? functionName : name} = (): ${fullReturnType} => {
+  ${isNumeric ? functionName : name} = (): ${fullReturnType} => {
     return ${defaultValue}
   }
 `
 
   const alias = isNumeric
     ? undefined
-    : `  const ${functionName} = (): ${fullReturnType} => this.${name}()
+    : `  ${functionName} = (): ${fullReturnType} => this.${name}()
 `
 
   const code: string = [namedImplementation, alias]
@@ -66,7 +85,7 @@ const fieldFunction = (field: PDFField, index: number): [string, string] => {
 const buildSource = (doc: PDFDocument, formName: string): string => {
   const functions = doc.getForm().getFields().map(fieldFunction)
   const [impls, functionNames] = unzip(functions)
-  const className = normalizeName(formName)
+  const className = normalizeClass(formName)
 
   return `import Form from '../Form'
 import F1040 from '../../irsForms/F1040'
@@ -77,15 +96,16 @@ import { AccountType, FilingStatus, Information, State } from '../../redux/data'
 export class ${className} extends Form {
   info: Information
   f1040: F1040
-  formName: string
-  state: State
+  formName = '${formName}' 
+  state: State = 'AK' // <-- fill here
+  formOrder = 0
 
   constructor(info: Information, f1040: F1040) {
     this.info = info
     this.f1040 = f1040
-    this.formName = '${formName}'
-    this.state = 'AK' // <-- Fill here
   }
+
+  attachments = (): Form[] => []
 
 ${impls.join('\n')}
 
@@ -96,6 +116,7 @@ ${functionNames
       ? `    displayNumber(this.${name}())`
       : `    this.${name}()`
   )
+  .map((name) => (!isNaN(parseInt(name[0])) ? `l${name}` : name))
   .join(',\n')}
   ])
 }

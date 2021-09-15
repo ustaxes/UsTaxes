@@ -36,6 +36,7 @@ So far, this project can attach the following schedules to form 1040:
 
 The states below have been implemented partially. See the `/src/stateForms/<state>/<relevant form>` file for details on unimplemented portions.
 
+- Pennsylvania
 - Illinois
 
 ### Non-filing states
