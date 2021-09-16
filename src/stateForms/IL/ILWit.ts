@@ -52,17 +52,17 @@ const toWithholdingForm = (w2: IncomeW2): WithholdingForm | undefined => {
 export class ILWIT implements Form {
   info: Information
   f1040: F1040
-  formName: string
-  state: State
+  formName = 'IL-WIT'
+  state: State = 'IL'
   formOrder = 31
   methods: FormMethods
   formIndex: number
 
+  static WITHHOLDING_FORMS_PER_PAGE = 5
+
   constructor(info: Information, f1040: F1040, subFormIndex = 0) {
     this.info = info
     this.f1040 = f1040
-    this.formName = 'IL-WIT'
-    this.state = 'IL'
     this.methods = new FormMethods(this)
     this.formIndex = subFormIndex
   }
@@ -74,14 +74,19 @@ export class ILWIT implements Form {
     // next will have 0 + 5, last will have 0 + 1
     if (this.formIndex === 0) {
       const copiesNeeded =
-        Math.max(
-          ...[PersonRole.PRIMARY, PersonRole.SPOUSE].map(
-            (r) =>
-              this.methods.stateW2s().filter((w2) => w2.personRole === r).length
-          )
-        ) / 5
+        Math.ceil(
+          Math.max(
+            ...[PersonRole.PRIMARY, PersonRole.SPOUSE].map(
+              (r) =>
+                this.methods
+                  .stateW2s()
+                  .filter((w2) => (w2.stateWithholding ?? 0) > 0)
+                  .filter((w2) => w2.personRole === r).length
+            )
+          ) / ILWIT.WITHHOLDING_FORMS_PER_PAGE
+        ) - 1
 
-      return Array(Math.floor(copiesNeeded))
+      return Array(copiesNeeded)
         .fill(undefined)
         .map((x, i) => new ILWIT(this.info, this.f1040, i + 1))
     }
