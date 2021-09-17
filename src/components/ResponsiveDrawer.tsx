@@ -1,5 +1,5 @@
 import { Dispatch, Fragment, ReactElement, SetStateAction } from 'react'
-import { useLocation, NavLink } from 'react-router-dom'
+import { useLocation, NavLink, Link } from 'react-router-dom'
 import {
   createStyles,
   makeStyles,
@@ -16,6 +16,8 @@ import {
 import GitHubIcon from '@material-ui/icons/GitHub'
 import TwitterIcon from '@material-ui/icons/Twitter'
 import { useDevice } from 'ustaxes/hooks/Device'
+import Urls from 'ustaxes/data/urls'
+import { Settings } from '@material-ui/icons'
 
 const drawerWidth = 240
 
@@ -149,6 +151,11 @@ function ResponsiveDrawer(props: DrawerItemsProps): ReactElement {
           >
             <TwitterIcon />
           </IconButton>
+          <Link to={Urls.settings}>
+            <IconButton color="inherit" aria-label="site user settings">
+              <Settings />
+            </IconButton>
+          </Link>
         </ListItem>
       </List>
     </>
