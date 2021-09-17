@@ -1,14 +1,10 @@
 import { ReactElement } from 'react'
 import { useForm, FormProvider } from 'react-hook-form'
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch, useSelector, TaxesState } from 'ustaxes/redux'
 import { LabeledInput } from 'ustaxes/components/input'
 import { Patterns } from 'ustaxes/components/Patterns'
 import { saveContactInfo } from 'ustaxes/redux/actions'
-import {
-  ContactInfo as Contact,
-  TaxesState,
-  TaxPayer
-} from 'ustaxes/redux/data'
+import { ContactInfo as Contact, TaxPayer } from 'ustaxes/redux/data'
 import { usePager } from 'ustaxes/components/pager'
 import { Grid } from '@material-ui/core'
 

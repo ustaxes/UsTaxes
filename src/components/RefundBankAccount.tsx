@@ -1,11 +1,11 @@
 import { ReactElement } from 'react'
 import { useForm, FormProvider } from 'react-hook-form'
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch, useSelector, TaxesState } from 'ustaxes/redux'
 import { LabeledInput, LabeledRadio } from './input'
 import { Patterns } from './Patterns'
 import { saveRefundInfo } from 'ustaxes/redux/actions'
 
-import { AccountType, Refund, TaxesState } from 'ustaxes/redux/data'
+import { AccountType, Refund } from 'ustaxes/redux/data'
 import { usePager } from './pager'
 import { Grid } from '@material-ui/core'
 

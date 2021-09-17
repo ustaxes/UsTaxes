@@ -1,10 +1,15 @@
-import { createStore as reduxCreateStore, applyMiddleware, Store } from 'redux'
+import {
+  createStore as reduxCreateStore,
+  applyMiddleware,
+  Store,
+  CombinedState
+} from 'redux'
 import logger from 'redux-logger'
 import rootReducer, { blankState } from './reducer'
 
 import { persistStore, persistReducer, createTransform } from 'redux-persist'
 import storage from 'redux-persist/lib/storage' // defaults to localStorage for web
-import { Information } from './data'
+import { Information, TaxesState } from './data'
 import { Actions } from './actions'
 import { PersistPartial } from 'redux-persist/es/persistReducer'
 
@@ -30,23 +35,24 @@ const persistConfig = {
   transforms: [baseTransform]
 }
 
-const persistedReducer = persistReducer<{ information: Information }, Actions>(
+const persistedReducer = persistReducer<CombinedState<TaxesState>, Actions>(
   persistConfig,
   rootReducer
 )
 
-export type InfoStore = Store<{ information: Information }> & {
+export type InfoStore = Store<TaxesState> & {
   dispatch: unknown
 }
-export type PersistedStore = Store<
-  { information: Information } & PersistPartial,
-  Actions
-> & {
+export type PersistedStore = Store<TaxesState & PersistPartial, Actions> & {
   dispatch: unknown
 }
 
 export const createStoreUnpersisted = (information: Information): InfoStore =>
-  reduxCreateStore(rootReducer, { information }, undefined)
+  reduxCreateStore(
+    rootReducer,
+    { Y2020: information, activeYear: 'Y2020' },
+    undefined
+  )
 export const createStore = (): PersistedStore =>
   reduxCreateStore(persistedReducer, applyMiddleware(logger))
 export const store = createStore()

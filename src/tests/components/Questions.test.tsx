@@ -9,6 +9,7 @@ import { questions } from 'ustaxes/data/questions'
 import { PagerButtons, PagerContext } from 'ustaxes/components/pager'
 import { Information } from 'ustaxes/redux/data'
 import { blankState } from 'ustaxes/redux/reducer'
+import TaxesStateMethods from 'ustaxes/redux/TaxesState'
 
 afterEach(async () => {
   await waitFor(() => localStorage.clear())
@@ -63,6 +64,8 @@ describe('Questions', () => {
     fireEvent.click(save)
 
     await waitFor(() => {})
-    expect(store.getState().information.questions.CRYPTO).toBeTruthy()
+    expect(
+      new TaxesStateMethods(store.getState()).info()?.questions.CRYPTO
+    ).toEqual(true)
   })
 })

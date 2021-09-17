@@ -1,6 +1,6 @@
 import { ReactElement } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch, useSelector, TaxesState } from 'ustaxes/redux'
 import {
   savePrimaryPersonInfo,
   saveStateResidencyInfo
@@ -11,7 +11,6 @@ import {
   PrimaryPerson,
   State,
   StateResidency,
-  TaxesState,
   TaxPayer
 } from 'ustaxes/redux/data'
 import { PersonFields } from './PersonFields'

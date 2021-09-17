@@ -6,11 +6,11 @@ import {
   ListItemIcon,
   ListItemSecondaryAction
 } from '@material-ui/core'
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch, useSelector, TaxesState } from 'ustaxes/redux'
 import { formatSSID, LabeledInput } from 'ustaxes/components/input'
 import { Patterns } from 'ustaxes/components/Patterns'
-import { Actions, removeDependent } from 'ustaxes/redux/actions'
-import { TaxesState, Person } from 'ustaxes/redux/data'
+import { removeDependent } from 'ustaxes/redux/actions'
+import { Person } from 'ustaxes/redux/data'
 import DeleteIcon from '@material-ui/icons/Delete'
 import EditIcon from '@material-ui/icons/Edit'
 import ListItemText from '@material-ui/core/ListItemText'
@@ -85,7 +85,7 @@ export function ListDependents({
 
   const dispatch = useDispatch()
 
-  const drop = (i: number): Actions => dispatch(removeDependent(i))
+  const drop = (i: number): void => dispatch(removeDependent(i))
 
   return (
     <List dense={true}>
