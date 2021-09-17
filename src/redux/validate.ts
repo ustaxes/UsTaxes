@@ -58,5 +58,6 @@ ajv.getSchema('#/definitions/Edit1098eAction')
 ajv.getSchema('#/definitions/TaxesState')
 ajv.getSchema('#/definitions/Responses')
 ajv.getSchema('#/definitions/StateResidency')
+ajv.getSchema('#/definitions/TaxYear')
 
 export default ajv

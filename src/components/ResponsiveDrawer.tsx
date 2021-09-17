@@ -16,6 +16,7 @@ import {
 import GitHubIcon from '@material-ui/icons/GitHub'
 import TwitterIcon from '@material-ui/icons/Twitter'
 import { useDevice } from 'ustaxes/hooks/Device'
+import YearDropDown from './YearDropDown'
 
 const drawerWidth = 240
 
@@ -151,6 +152,7 @@ function ResponsiveDrawer(props: DrawerItemsProps): ReactElement {
           </IconButton>
         </ListItem>
       </List>
+      <YearDropDown />
     </>
   )
 

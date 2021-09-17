@@ -328,3 +328,8 @@ export const setEntireState: ActionCreator<Information> = makeActionCreator(
   ActionName.SET_ENTIRE_STATE,
   ajv.getSchema('#/definitions/Information') as ValidateFunction<Information>
 )
+
+export const setActiveYear: ActionCreator<TaxYear> = makeActionCreator(
+  ActionName.SET_ACTIVE_YEAR,
+  ajv.getSchema('#/definitions/TaxYear') as ValidateFunction<TaxYear>
+)

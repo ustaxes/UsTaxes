@@ -259,7 +259,7 @@ const activeYear = (state: TaxYear | undefined, action: Actions): TaxYear => {
 
   switch (action.type) {
     case ActionName.SET_ACTIVE_YEAR: {
-      return action.year
+      return action.formData
     }
     default: {
       return newState
