@@ -21,6 +21,7 @@ import { Section, SectionItem } from './ResponsiveDrawer'
 import { useDevice } from 'ustaxes/hooks/Device'
 import { useFocus } from 'ustaxes/hooks/Focus'
 import Urls from 'ustaxes/data/urls'
+import DataPropagator from './DataPropagator'
 
 type Props = {
   isMobile: boolean
@@ -119,7 +120,10 @@ export default function Main(): ReactElement {
             {allItems.map((item) => (
               <Route key={item.title} exact path={item.url}>
                 {!isStartPage && <Menu />}
-                <Layout>{item.element}</Layout>
+                <Layout>
+                  {!isStartPage && <DataPropagator />}
+                  {item.element}
+                </Layout>
               </Route>
             ))}
             <Route>
