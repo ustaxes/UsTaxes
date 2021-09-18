@@ -1,27 +1,46 @@
-import { ReactElement } from 'react'
+import { ReactElement, useEffect } from 'react'
 import { useForm, FormProvider } from 'react-hook-form'
 import { useDispatch, useSelector, TaxesState } from 'ustaxes/redux'
 import { LabeledInput } from 'ustaxes/components/input'
 import { Patterns } from 'ustaxes/components/Patterns'
 import { saveContactInfo } from 'ustaxes/redux/actions'
-import { ContactInfo as Contact, TaxPayer } from 'ustaxes/redux/data'
+import { ContactInfo as Contact } from 'ustaxes/redux/data'
 import { usePager } from 'ustaxes/components/pager'
 import { Grid } from '@material-ui/core'
+import _ from 'lodash'
+
+const blankContact: Contact = {
+  contactPhoneNumber: '',
+  contactEmail: ''
+}
 
 export default function ContactInfo(): ReactElement {
   // const variable dispatch to allow use inside function
   const dispatch = useDispatch()
 
-  const defaultValues: TaxPayer | undefined = useSelector(
+  const defaultValues: Contact | undefined = useSelector(
     (state: TaxesState) => {
-      return state.information.taxPayer
+      const tp = state.information.taxPayer
+      return {
+        contactPhoneNumber: tp.contactPhoneNumber ?? '',
+        contactEmail: tp.contactEmail ?? ''
+      }
     }
   )
 
   const { navButtons, onAdvance } = usePager()
 
   const methods = useForm<Contact>({ defaultValues })
-  const { handleSubmit } = methods
+  const { handleSubmit, reset, getValues } = methods
+  const currentValues = { ...blankContact, ...getValues() }
+
+  useEffect(() => {
+    if (!_.isEqual(currentValues, defaultValues)) {
+      console.log(getValues())
+      console.log(defaultValues)
+      return reset(defaultValues)
+    }
+  })
 
   const onSubmit =
     (onAdvance: () => void) =>

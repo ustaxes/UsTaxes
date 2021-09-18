@@ -1,4 +1,4 @@
-import { ReactElement } from 'react'
+import { ReactElement, useEffect } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { useDispatch, useSelector, TaxesState } from 'ustaxes/redux'
 import {
@@ -18,6 +18,7 @@ import { usePager } from 'ustaxes/components/pager'
 import { LabeledCheckbox, USStateDropDown } from 'ustaxes/components/input'
 import AddressFields from './Address'
 import { Grid } from '@material-ui/core'
+import _ from 'lodash'
 
 interface TaxPayerUserForm {
   firstName: string
@@ -72,31 +73,40 @@ export default function PrimaryTaxpayer(): ReactElement {
     (state: TaxesState) => state.information.stateResidencies
   )
 
+  const newTpForm: TaxPayerUserForm = {
+    ...defaultTaxpayerUserForm,
+    ...(taxPayer.primaryPerson !== undefined
+      ? {
+          stateResidency:
+            stateResidency[0]?.state ?? taxPayer.primaryPerson.address.state,
+          ...asTaxPayerUserForm(taxPayer.primaryPerson)
+        }
+      : {})
+  }
+
   const methods = useForm<TaxPayerUserForm>({
-    defaultValues: {
-      ...defaultTaxpayerUserForm,
-      ...(taxPayer.primaryPerson !== undefined
-        ? {
-            ...asTaxPayerUserForm(taxPayer.primaryPerson),
-            stateResidency:
-              stateResidency[0]?.state ?? taxPayer.primaryPerson.address.state
-          }
-        : {})
+    defaultValues: newTpForm
+  })
+
+  const { handleSubmit, getValues, reset } = methods
+
+  // Make sure form rerender is triggered
+  // if the state was updated outside of this form
+  const currentValues = { ...defaultTaxpayerUserForm, ...getValues() }
+  useEffect(() => {
+    if (!_.isEqual(currentValues, newTpForm)) {
+      return reset(newTpForm)
     }
   })
 
-  const { handleSubmit } = methods
-
-  const onSubmit =
-    (onAdvance: () => void) =>
-    (form: TaxPayerUserForm): void => {
-      dispatch(savePrimaryPersonInfo(asPrimaryPerson(form)))
-      dispatch(saveStateResidencyInfo({ state: form.stateResidency as State }))
-      onAdvance()
-    }
+  const onSubmit = (form: TaxPayerUserForm): void => {
+    dispatch(savePrimaryPersonInfo(asPrimaryPerson(form)))
+    dispatch(saveStateResidencyInfo({ state: form.stateResidency as State }))
+    onAdvance()
+  }
 
   const page = (
-    <form tabIndex={-1} onSubmit={handleSubmit(onSubmit(onAdvance))}>
+    <form tabIndex={-1} onSubmit={handleSubmit(onSubmit)}>
       <h2>Primary Taxpayer Information</h2>
       <Grid container spacing={2}>
         <PersonFields />
