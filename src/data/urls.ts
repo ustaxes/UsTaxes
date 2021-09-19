@@ -24,6 +24,7 @@ const Urls = {
   },
   createPdf: '/createpdf',
   summary: '/summary',
+  settings: '/settings',
   default: ''
 }
 

@@ -21,6 +21,7 @@ import { Section, SectionItem } from './ResponsiveDrawer'
 import { useDevice } from 'ustaxes/hooks/Device'
 import { useFocus } from 'ustaxes/hooks/Focus'
 import Urls from 'ustaxes/data/urls'
+import UserSettings from './UserSettings'
 
 type Props = {
   isMobile: boolean
@@ -87,9 +88,18 @@ export default function Main(): ReactElement {
   const { isMobile } = useDevice()
   const classes = useStyles({ isMobile })
 
-  const allItems: SectionItem[] = drawerSections.flatMap(
-    (section: Section) => section.items
-  )
+  const backPages: SectionItem[] = [
+    {
+      title: 'User settings',
+      url: Urls.settings,
+      element: <UserSettings />
+    }
+  ]
+
+  const allItems: SectionItem[] = [
+    ...drawerSections.flatMap((section: Section) => section.items),
+    ...backPages
+  ]
 
   const Layout = ({ children }: PropsWithChildren<{ children: ReactNode }>) => (
     <Grid
