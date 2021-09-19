@@ -68,10 +68,7 @@ const Exfiltrate = (props: PropsWithChildren<ButtonProps>): ReactElement => {
   const info = store.getState().information
 
   const onClick = () =>
-    download(
-      `ustaxes_return_data.json`,
-      JSON.stringify(info)
-    )
+    download(`ustaxes_return_data.json`, JSON.stringify(info))
 
   return (
     <Button {...rest} onClick={onClick}>
