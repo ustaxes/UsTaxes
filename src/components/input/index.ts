@@ -6,6 +6,7 @@ import LabeledDropdown, {
   GenericLabeledDropdown,
   USStateDropDown
 } from './LabeledDropdown'
+import boxLabel from './boxLabel'
 
 /**
  * Format a string like "123456789" as "123-45-6789". If the string is not
@@ -15,6 +16,7 @@ const formatSSID = (a: string): string =>
   (a.match(/^([0-9]{3})([0-9]{2})([0-9]{4}$)/) ?? []).slice(1).join('-')
 
 export {
+  boxLabel,
   Currency,
   formatSSID,
   LabeledInput,

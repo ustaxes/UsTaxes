@@ -15,6 +15,7 @@ import {
   State
 } from 'ustaxes/redux/data'
 import {
+  boxLabel,
   Currency,
   formatSSID,
   GenericLabeledDropdown,
@@ -85,12 +86,6 @@ const toIncomeW2UserInput = (data: IncomeW2): IncomeW2UserInput => ({
   stateWages: data.stateWages?.toString() ?? '',
   stateWithholding: data.stateWithholding?.toString() ?? ''
 })
-
-const boxLabel = (box: string, description: string): ReactElement => (
-  <>
-    <strong>Box {box}</strong> - {description}
-  </>
-)
 
 export default function W2JobInfo(): ReactElement {
   const dispatch = useDispatch()
@@ -186,25 +181,19 @@ export default function W2JobInfo(): ReactElement {
           patternConfig={Patterns.currency}
           sizes={{ xs: 12, lg: 6 }}
         />
-
         <LabeledInput
           name="medicareIncome"
-          label={
-            <>
-              <strong>Box 5</strong> - Medicare Income
-            </>
-          }
+          label={boxLabel('5', 'Medicare Income')}
           patternConfig={Patterns.currency}
           sizes={{ xs: 12, lg: 6 }}
         />
-
         <LabeledInput
           name="medicareWithholding"
           label={boxLabel('6', 'Medicare tax withheld')}
           patternConfig={Patterns.currency}
           sizes={{ xs: 12, lg: 6 }}
         />
-        <USStateDropDown name="state" label={<strong>Box 15 - State</strong>} />
+        <USStateDropDown name="state" label={boxLabel('15', 'State')} />
         <LabeledInput
           name="stateWages"
           label={boxLabel('16', 'State wages, tips, etc')}
