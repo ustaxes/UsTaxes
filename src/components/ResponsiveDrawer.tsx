@@ -130,7 +130,7 @@ function ResponsiveDrawer(props: DrawerItemsProps): ReactElement {
       <List className={classes.listSocial}>
         <ListItem className={classes.listItemSocial}>
           <IconButton
-            color="inherit"
+            color="secondary"
             aria-label="github, opens in new tab"
             component="a"
             href={`https://github.com/ustaxes/UsTaxes`}
@@ -142,7 +142,7 @@ function ResponsiveDrawer(props: DrawerItemsProps): ReactElement {
         </ListItem>
         <ListItem className={classes.listItemSocial}>
           <IconButton
-            color="inherit"
+            color="secondary"
             aria-label="twitter, opens in new tab"
             component="a"
             href={`https://www.twitter.com/ustaxesorg`}
@@ -151,8 +151,10 @@ function ResponsiveDrawer(props: DrawerItemsProps): ReactElement {
           >
             <TwitterIcon />
           </IconButton>
+        </ListItem>
+        <ListItem className={classes.listItemSocial}>
           <Link to={Urls.settings}>
-            <IconButton color="inherit" aria-label="site user settings">
+            <IconButton color="secondary" aria-label="site user settings">
               <Settings />
             </IconButton>
           </Link>
