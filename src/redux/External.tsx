@@ -69,7 +69,7 @@ const Exfiltrate = (props: PropsWithChildren<ButtonProps>): ReactElement => {
 
   const onClick = () =>
     download(
-      `${info.taxPayer.primaryPerson?.lastName ?? 'return_data'}.json`,
+      `ustaxes_return_data.json`,
       JSON.stringify(info)
     )
 
