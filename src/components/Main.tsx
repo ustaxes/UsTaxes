@@ -97,10 +97,11 @@ export default function Main(): ReactElement {
     }
   ]
 
-  const allItems: SectionItem[] = [
-    ...drawerSections.flatMap((section: Section) => section.items),
-    ...backPages
-  ]
+  const steps: SectionItem[] = drawerSections.flatMap(
+    (section: Section) => section.items
+  )
+
+  const allItems: SectionItem[] = [...steps, ...backPages]
 
   const Layout = ({ children }: PropsWithChildren<{ children: ReactNode }>) => (
     <Grid
@@ -124,7 +125,7 @@ export default function Main(): ReactElement {
       {isMobile && !isStartPage && <div className={classes.toolbar} />}
       <div className={classes.container}>
         <StateLoader />
-        <PagerProvider pages={allItems}>
+        <PagerProvider pages={steps}>
           <Switch>
             <Redirect path="/" to={Urls.default} exact />
             {allItems.map((item) => (
