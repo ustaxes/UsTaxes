@@ -12,6 +12,8 @@ import storage from 'redux-persist/lib/storage' // defaults to localStorage for 
 import { Information, TaxesState } from './data'
 import { Actions } from './actions'
 import { PersistPartial } from 'redux-persist/es/persistReducer'
+import { FSAction } from './fs/Actions'
+import fsReducer from './fs/FSReducer'
 
 const baseTransform = createTransform(
   // transform state on its way to being serialized and persisted.
@@ -35,15 +37,19 @@ const persistConfig = {
   transforms: [baseTransform]
 }
 
-const persistedReducer = persistReducer<CombinedState<TaxesState>, Actions>(
-  persistConfig,
-  rootReducer
+const persistedReducer = fsReducer(
+  'ustaxes_save.json',
+  persistReducer<CombinedState<TaxesState>, Actions>(persistConfig, rootReducer)
 )
 
-export type InfoStore = Store<TaxesState> & {
+export type InfoStore = Store<TaxesState, FSAction<TaxesState> & Actions> & {
   dispatch: unknown
 }
-export type PersistedStore = Store<TaxesState & PersistPartial, Actions> & {
+
+export type PersistedStore = Store<
+  TaxesState & PersistPartial,
+  FSAction<TaxesState> & Actions
+> & {
   dispatch: unknown
 }
 
@@ -53,8 +59,10 @@ export const createStoreUnpersisted = (information: Information): InfoStore =>
     { Y2020: information, activeYear: 'Y2020' },
     undefined
   )
+
 export const createStore = (): PersistedStore =>
   reduxCreateStore(persistedReducer, applyMiddleware(logger))
+
 export const store = createStore()
 
 export const persistor = persistStore(store)

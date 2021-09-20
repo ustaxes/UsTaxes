@@ -242,7 +242,7 @@ const formReducer =
           f1098es: new1098es
         }
       }
-      case ActionName.SET_ENTIRE_STATE: {
+      case ActionName.SET_INFO: {
         return {
           ...newState,
           ...action.formData

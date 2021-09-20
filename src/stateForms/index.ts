@@ -21,7 +21,9 @@ export const createStateReturn = (
   if (residency !== undefined) {
     const form = stateForm[residency.state]?.call(undefined, info, f1040)
     if (form !== undefined) {
-      return [form, ...form?.attachments()]
+      return [form, ...form?.attachments()].sort(
+        (a, b) => a.formOrder - b.formOrder
+      )
     }
   }
 }

@@ -3,7 +3,7 @@ import { IconButton, makeStyles } from '@material-ui/core'
 import { Star } from '@material-ui/icons'
 import fc from 'fast-check'
 import { useDispatch } from 'ustaxes/redux'
-import { setEntireState } from 'ustaxes/redux/actions'
+import { setInfo } from 'ustaxes/redux/actions'
 import { Information } from 'ustaxes/redux/data'
 import { information } from 'ustaxes/tests/arbitraries'
 import * as prand from 'pure-rand'
@@ -34,7 +34,7 @@ export const StateLoader = (): ReactElement => {
     <div className={classes.root}>
       <IconButton
         className={classes.button}
-        onClick={() => dispatch(setEntireState(generator()))}
+        onClick={() => dispatch(setInfo(generator()))}
       >
         <Star />
         Seed random state

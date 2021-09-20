@@ -4,7 +4,7 @@ import { Information, TaxesState, TaxYears } from 'ustaxes/redux/data'
 import _ from 'lodash'
 import { enumKeys } from 'ustaxes/util'
 import { useDispatch } from 'ustaxes/redux'
-import { setEntireState } from 'ustaxes/redux/actions'
+import { setInfo } from 'ustaxes/redux/actions'
 import { Button } from '@material-ui/core'
 import { Alert } from '@material-ui/lab'
 
@@ -24,7 +24,7 @@ const DataPropagator = (): ReactElement => {
 
   const onClick = () => {
     if (canPropagate) {
-      dispatch(setEntireState(priorYear))
+      dispatch(setInfo(priorYear))
     }
   }
 
