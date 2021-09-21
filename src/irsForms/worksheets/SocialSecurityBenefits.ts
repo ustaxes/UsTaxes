@@ -1,46 +1,38 @@
-import {
-  FilingStatus,
-  TaxPayer,
-  Information,
-  Income1099SSA,
-  Income1099Type
-} from '../../redux/data'
+import { FilingStatus, TaxPayer, Information } from '../../redux/data'
 import F1040 from '../F1040'
 import { sumFields } from '../util'
 import { SSBenefits } from 'ustaxes/data/federal'
+import InformationMethods from 'ustaxes/redux/methods'
 
 export default class SocialSecurityBenefitsWorksheet {
-  state: Information
+  state: InformationMethods
   tp: TaxPayer
   f1040: F1040
 
   constructor(state: Information, f1040: F1040) {
-    this.state = state
+    this.state = new InformationMethods(state)
     this.f1040 = f1040
     this.tp = state.taxPayer
   }
 
   totalNetBenefits = (): number =>
-    (
-      this.state.f1099s
-        .filter((f) => f.type === Income1099Type.SSA)
-        .map((f) => f as Income1099SSA) ?? []
-    )
+    this.state
+      .f1099ssas()
       .map((f) => f.form.netBenefits)
       .reduce((l, r) => l + r, 0)
 
-  /* Enter the total amount from box 5 of all your Forms SSA-1099 and RRB-1099. 
-     Also enter this amount on Form 1040 or 1040-SR, line 6a
+  /* Enter the total amount from box 5 of all your Forms SSA-1099 and RRB-1099.
+      Also enter this amount on Form 1040 or 1040-SR, line 6a
    */
   l1 = (): number => this.totalNetBenefits()
   // Multiply line 1 by 50% (0.50)
   l2 = (): number => this.l1() / 2
-  /* If you are not excluding unemployment compensation from income, 
-     combine the amounts from Form 1040 or 1040-SR, lines 1, 2b, 3b, 4b, 5b, 7, and 8.
-     If you are excluding unemployment compensation from income, 
-     combine the amounts from Form 1040 or 1040-SR , lines 1, 2b, 3b, 4b, 5b, 7, 
-     Schedule 1, lines 1 through 7, and line 3 of the Unemployment Compensation Exclusion Worksheet
-    */
+  /* If you are not excluding unemployment compensation from income,
+      combine the amounts from Form 1040 or 1040-SR, lines 1, 2b, 3b, 4b, 5b, 7, and 8.
+      If you are excluding unemployment compensation from income,
+      combine the amounts from Form 1040 or 1040-SR , lines 1, 2b, 3b, 4b, 5b, 7,
+      Schedule 1, lines 1 through 7, and line 3 of the Unemployment Compensation Exclusion Worksheet
+   */
   l3 = (): number =>
     sumFields([
       this.f1040.l1(),
@@ -93,7 +85,6 @@ export default class SocialSecurityBenefitsWorksheet {
     Single, head of household, qualifying widow(er), or married filing
     separately and you lived apart from your spouse for all of 2020,
     enter $25,000
- 	 	
     Married filing separately and you lived with your spouse at any time
     in 2020, skip lines 8 through 15; multiply line 7 by 85% (0.85) and
     enter the result on line 16. Then, go to line 17

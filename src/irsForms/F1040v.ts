@@ -2,13 +2,14 @@ import { Information } from 'ustaxes/redux/data'
 import F1040 from './F1040'
 import Form, { FormTag } from './Form'
 
-export default class F1040V implements Form {
+export default class F1040V extends Form {
   tag: FormTag = 'f1040v'
   sequenceIndex = -1
   state: Information
   f1040: F1040
 
   constructor(info: Information, f1040: F1040) {
+    super()
     this.state = info
     this.f1040 = f1040
   }

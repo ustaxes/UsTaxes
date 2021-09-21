@@ -6,10 +6,6 @@ import { Provider } from 'react-redux'
 import Questions from 'ustaxes/components/Questions'
 import { InfoStore, createStoreUnpersisted } from 'ustaxes/redux/store'
 import { questions } from 'ustaxes/data/questions'
-import { create1040 } from 'ustaxes/irsForms/Main'
-import { isRight } from '../../util'
-import * as fc from 'fast-check'
-import * as arbitraries from 'ustaxes/tests/arbitraries'
 import { PagerButtons, PagerContext } from 'ustaxes/components/pager'
 import { Information } from 'ustaxes/redux/data'
 import { blankState } from 'ustaxes/redux/reducer'
@@ -68,22 +64,5 @@ describe('Questions', () => {
 
     await waitFor(() => {})
     expect(store.getState().information.questions.CRYPTO).toBeTruthy()
-  })
-
-  it('should propagate to 1040', async () => {
-    return await fc.assert(
-      fc.asyncProperty(arbitraries.information, async (info) => {
-        const f1040 = create1040(info)
-
-        if (isRight(f1040)) {
-          expect(f1040.right[0].virtualCurrency).toEqual(
-            info.questions.CRYPTO ?? false
-          )
-        } else {
-          expect(f1040.left).toEqual([])
-        }
-        return await Promise.resolve(true)
-      })
-    )
   })
 })
