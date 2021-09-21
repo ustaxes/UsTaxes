@@ -63,7 +63,7 @@
     "@testing-library/react": "^12.1.0",
     "@testing-library/user-event": "^13.2.1",
     "@types/jest": "^27.0.2",
-    "@types/lodash": "^4.14.172",
+    "@types/lodash": "^4.14.173",
     "@types/node": "^16.9.4",
     "@types/node-fetch": "^2.5.12",
     "@types/react": "^17.0.22",
