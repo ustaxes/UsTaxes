@@ -1,5 +1,6 @@
 import { ReactElement, useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
+import { isMobile } from 'react-device-detect'
 
 import {
   createStyles,
@@ -13,7 +14,6 @@ import {
 } from '@material-ui/core'
 import CloseIcon from '@material-ui/icons/Close'
 import MenuIcon from '@material-ui/icons/Menu'
-
 import ResponsiveDrawer, {
   item,
   Section,
@@ -33,7 +33,6 @@ import GettingStarted from './GettingStarted'
 import F1098eInfo from './deductions/F1098eInfo'
 import Questions from './Questions'
 import Urls from 'ustaxes/data/urls'
-import { useDevice } from 'ustaxes/hooks/Device'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -135,14 +134,14 @@ export const drawerSections: Section[] = [
 
 const Menu = (): ReactElement => {
   const classes = useStyles()
-  const { isMobile } = useDevice()
   const [isOpen, setOpen] = useState(!isMobile)
 
   useEffect(() => {
-    if (!isMobile) {
-      setOpen(true)
-    } else {
+    console.log(isMobile)
+    if (isMobile) {
       setOpen(false)
+    } else {
+      setOpen(true)
     }
   }, [isMobile])
 

@@ -15,8 +15,6 @@ import {
 } from '@material-ui/core'
 import GitHubIcon from '@material-ui/icons/GitHub'
 import TwitterIcon from '@material-ui/icons/Twitter'
-import { useDevice } from 'ustaxes/hooks/Device'
-import Urls from 'ustaxes/data/urls'
 import { Settings } from '@material-ui/icons'
 
 const drawerWidth = 240
@@ -92,7 +90,6 @@ export interface DrawerItemsProps {
 }
 
 function ResponsiveDrawer(props: DrawerItemsProps): ReactElement {
-  const { isMobile } = useDevice()
   const location = useLocation()
   const classes = useStyles({ isMobile })
   const theme = useTheme()

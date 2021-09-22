@@ -1,8 +1,8 @@
 import { ReactElement } from 'react'
+import { Provider } from 'react-redux'
 import { render, RenderResult } from '@testing-library/react'
 
 import { BrowserRouter as Router } from 'react-router-dom'
-import { ViewportProvider } from 'ustaxes/hooks/Viewport'
 
 export const resizeWindow = (x: number, y: number): void => {
   global.innerWidth = x
