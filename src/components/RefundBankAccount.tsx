@@ -1,21 +1,14 @@
-import { ReactElement } from 'react'
+import { ReactElement, useEffect } from 'react'
 import { useForm, FormProvider } from 'react-hook-form'
 import { useDispatch, useSelector, TaxesState } from 'ustaxes/redux'
 import { LabeledInput, LabeledRadio } from './input'
 import { Patterns } from './Patterns'
 import { saveRefundInfo } from 'ustaxes/redux/actions'
+import _ from 'lodash'
 
-import { AccountType, Refund } from 'ustaxes/redux/data'
+import { Refund } from 'ustaxes/redux/data'
 import { usePager } from './pager'
 import { Grid } from '@material-ui/core'
-
-interface UserRefundForm {
-  routingNumber: string
-  accountNumber: string
-  accountType: AccountType
-}
-
-const toRefund = (formData: UserRefundForm): Refund => formData
 
 export default function RefundBankAccount(): ReactElement {
   const defaultValues: Refund | undefined = useSelector((state: TaxesState) => {
@@ -24,21 +17,33 @@ export default function RefundBankAccount(): ReactElement {
 
   const { navButtons, onAdvance } = usePager()
 
-  const methods = useForm<UserRefundForm>({ defaultValues })
-  const { handleSubmit } = methods
+  const methods = useForm<Refund>({ defaultValues })
+  const {
+    handleSubmit,
+    reset,
+    formState: { isDirty },
+    getValues
+  } = methods
   // const variable dispatch to allow use inside function
   const dispatch = useDispatch()
 
-  // component functions
-  const onSubmit =
-    (onAdvance: () => void) =>
-    (formData: UserRefundForm): void => {
-      dispatch(saveRefundInfo(toRefund(formData)))
-      onAdvance()
+  // Form rerenders happen either because the user is editing the form
+  // or because the global state has been updated by another control.
+  // We have to reset the form only in the second case here:
+  useEffect(() => {
+    if (!isDirty && !_.isEqual(getValues(), defaultValues)) {
+      return reset(defaultValues)
     }
+  })
+
+  // component functions
+  const onSubmit = (formData: Refund): void => {
+    dispatch(saveRefundInfo(formData))
+    onAdvance()
+  }
 
   return (
-    <form tabIndex={-1} onSubmit={handleSubmit(onSubmit(onAdvance))}>
+    <form tabIndex={-1} onSubmit={handleSubmit(onSubmit)}>
       <FormProvider {...methods}>
         <h2>Refund Information</h2>
         <Grid container spacing={2}>
