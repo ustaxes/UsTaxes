@@ -29,7 +29,13 @@ const Questions = (): ReactElement => {
 
   const methods = useForm<Responses>({ defaultValues: stateQuestions })
 
-  const { handleSubmit, watch, getValues, reset } = methods
+  const {
+    handleSubmit,
+    watch,
+    getValues,
+    reset,
+    formState: { isDirty }
+  } = methods
 
   const currentValues = watch()
 
@@ -43,8 +49,14 @@ const Questions = (): ReactElement => {
     }
   })
 
+  // This form rerenders because the user is editing it or because
+  // the global state was modified by another control. We have to reset
+  // the form values in the second case.
   useEffect(() => {
-    if (!_.isEqual(_.defaults(getValues(), emptyQuestions), stateQuestions)) {
+    if (
+      !isDirty &&
+      !_.isEqual(_.defaults(getValues(), emptyQuestions), stateQuestions)
+    ) {
       reset(information.questions)
     }
   })

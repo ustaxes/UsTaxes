@@ -31,14 +31,20 @@ export default function ContactInfo(): ReactElement {
   const { navButtons, onAdvance } = usePager()
 
   const methods = useForm<Contact>({ defaultValues })
-  const { handleSubmit, reset, getValues } = methods
-  const currentValues = { ...blankContact, ...getValues() }
+  const {
+    handleSubmit,
+    reset,
+    getValues,
+    formState: { isDirty }
+  } = methods
 
+  // This form rerenders because the user is editing it
+  // or because the global state was modified from a different
+  // control.
+  const currentValues = { ...blankContact, ...getValues() }
   useEffect(() => {
-    if (!_.isEqual(currentValues, defaultValues)) {
-      console.log(getValues())
-      console.log(defaultValues)
-      return reset(defaultValues)
+    if (!isDirty && !_.isEqual(currentValues, defaultValues)) {
+      reset(defaultValues)
     }
   })
 

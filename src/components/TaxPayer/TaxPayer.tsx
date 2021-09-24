@@ -88,13 +88,19 @@ export default function PrimaryTaxpayer(): ReactElement {
     defaultValues: newTpForm
   })
 
-  const { handleSubmit, getValues, reset } = methods
+  const {
+    handleSubmit,
+    getValues,
+    reset,
+    formState: { isDirty }
+  } = methods
 
-  // Make sure form rerender is triggered
-  // if the state was updated outside of this form
+  // Form rerenders happen either because the user is editing the form
+  // or because the global state has been updated by another control.
+  // We have to reset the form only in the second case here:
   const currentValues = { ...defaultTaxpayerUserForm, ...getValues() }
   useEffect(() => {
-    if (!_.isEqual(currentValues, newTpForm)) {
+    if (!isDirty && !_.isEqual(currentValues, newTpForm)) {
       return reset(newTpForm)
     }
   })
