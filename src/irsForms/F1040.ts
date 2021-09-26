@@ -395,7 +395,7 @@ export default class F1040 extends Form {
     displayNumber(sumFields([this.l25a(), this.l25b(), this.l25c()]))
 
   // TODO: handle estimated tax payments
-  l26 = (): number | undefined => undefined
+  l26 = (): number | undefined => Number(this.info.questions.ESTIMATED_TAX_PAYMENTS)
 
   l27 = (): number | undefined =>
     displayNumber(this.scheduleEIC?.credit(this) ?? 0)

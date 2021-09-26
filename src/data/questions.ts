@@ -11,6 +11,7 @@ export interface QuestionTag {
   FINCEN_114_ACCOUNT_COUNTRY: string
   FOREIGN_TRUST_RELATIONSHIP: boolean
   LIVE_APART_FROM_SPOUSE: boolean
+  ESTIMATED_TAX_PAYMENTS: string
 }
 
 export type QuestionTagName = keyof QuestionTag
@@ -23,7 +24,8 @@ export const questionTagNames: QuestionTagName[] = [
   'FINCEN_114',
   'FINCEN_114_ACCOUNT_COUNTRY',
   'FOREIGN_TRUST_RELATIONSHIP',
-  'LIVE_APART_FROM_SPOUSE'
+  'LIVE_APART_FROM_SPOUSE',
+  'ESTIMATED_TAX_PAYMENTS'
 ]
 
 type ValueTag = 'string' | 'boolean'
@@ -84,6 +86,12 @@ export const questions: Question[] = [
     (s: TaxesState) =>
       s.information.taxPayer.filingStatus == FilingStatus.MFS &&
       s.information.f1099s.some((i) => i.type == Income1099Type.SSA)
+  ),
+  q(
+    'ESTIMATED_TAX_PAYMENTS',
+    `Did you make any estimated tax payments for ${CURRENT_YEAR}?`,
+    'string',
+    (s: TaxesState) => true
   )
 ]
 
