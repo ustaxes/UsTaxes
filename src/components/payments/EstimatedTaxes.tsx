@@ -5,18 +5,18 @@ import { usePager } from 'ustaxes/components/pager'
 import {
   TaxesState,
   EstimatedTaxPayments,
-  Information,
+  Information
 } from 'ustaxes/redux/data'
-import {
-  Currency,
-  LabeledInput,
-} from 'ustaxes/components/input'
+import { Currency, LabeledInput } from 'ustaxes/components/input'
 import { Patterns } from 'ustaxes/components/Patterns'
 import { FormListContainer } from 'ustaxes/components/FormContainer'
 import { Grid } from '@material-ui/core'
 import { Work } from '@material-ui/icons'
-import { addEstimatedPayment, editEstimatedPayment, removeEstimatedPayment } from 'ustaxes/redux/actions'
-
+import {
+  addEstimatedPayment,
+  editEstimatedPayment,
+  removeEstimatedPayment
+} from 'ustaxes/redux/actions'
 
 interface EstimatedTaxesUserInput {
   payment: string
@@ -26,7 +26,9 @@ const blankUserInput: EstimatedTaxesUserInput = {
   payment: ''
 }
 
-const toPayments = (formData: EstimatedTaxesUserInput): EstimatedTaxPayments => ({
+const toPayments = (
+  formData: EstimatedTaxesUserInput
+): EstimatedTaxPayments => ({
   ...formData,
   // Note we are not error checking here because
   // we are already in the input validated happy path
@@ -34,14 +36,18 @@ const toPayments = (formData: EstimatedTaxesUserInput): EstimatedTaxPayments => 
   payment: parseInt(formData.payment)
 })
 
-const toEstimatedTaxesUserInput = (data: EstimatedTaxPayments): EstimatedTaxesUserInput => ({
+const toEstimatedTaxesUserInput = (
+  data: EstimatedTaxPayments
+): EstimatedTaxesUserInput => ({
   ...blankUserInput,
   ...data,
   payment: data.payment.toString()
 })
 
 export default function EstimatedTaxes(): ReactElement {
-  const estimatedTaxes = useSelector((state: TaxesState) => state.information.estimatedTaxes)
+  const estimatedTaxes = useSelector(
+    (state: TaxesState) => state.information.estimatedTaxes
+  )
 
   const dispatch = useDispatch()
 
@@ -52,7 +58,6 @@ export default function EstimatedTaxes(): ReactElement {
   const information: Information = useSelector(
     (state: TaxesState) => state.information
   )
-
 
   const onSubmitAdd = (formData: EstimatedTaxesUserInput): void => {
     dispatch(addEstimatedPayment(toPayments(formData)))
@@ -71,7 +76,7 @@ export default function EstimatedTaxes(): ReactElement {
       onSubmitEdit={onSubmitEdit}
       removeItem={(i) => dispatch(removeEstimatedPayment(i))}
       icon={() => <Work />}
-      primary={(f) => ("Estimated Taxes")}
+      primary={(f) => 'Estimated Taxes'}
       secondary={(estimatedTaxes: EstimatedTaxesUserInput) => (
         <span>
           Payment: <Currency value={toPayments(estimatedTaxes).payment} />
@@ -89,11 +94,7 @@ export default function EstimatedTaxes(): ReactElement {
     </FormListContainer>
   )
 
-  const form: ReactElement = (
-    <>
-      {w2sBlock}
-    </>
-  )
+  const form: ReactElement = <>{w2sBlock}</>
 
   return (
     <form tabIndex={-1} onSubmit={onAdvance}>

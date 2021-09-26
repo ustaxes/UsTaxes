@@ -23,7 +23,7 @@ export const questionTagNames: QuestionTagName[] = [
   'FINCEN_114',
   'FINCEN_114_ACCOUNT_COUNTRY',
   'FOREIGN_TRUST_RELATIONSHIP',
-  'LIVE_APART_FROM_SPOUSE',
+  'LIVE_APART_FROM_SPOUSE'
 ]
 
 type ValueTag = 'string' | 'boolean'
