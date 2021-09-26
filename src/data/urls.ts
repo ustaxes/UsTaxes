@@ -15,6 +15,9 @@ const Urls = {
     f1099s: '/income/f1099s',
     realEstate: '/income/realestate'
   },
+  payments: {
+    estimatedTaxes: 'payments/estimatedTaxes'
+  },
   deductions: {
     f1098es: '/deductions/studentloaninterest'
   },

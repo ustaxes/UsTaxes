@@ -13,10 +13,12 @@ import {
   EditPropertyAction,
   Property,
   Edit1099Action,
+  EditEstimatedTaxAction,
   EditW2Action,
   Edit1098eAction,
   TaxesState,
-  StateResidency
+  StateResidency,
+  EstimatedTaxPayments
 } from './data'
 import { ValidateFunction } from 'ajv'
 import ajv, { checkType } from './validate'
@@ -36,6 +38,9 @@ export enum ActionName {
   ADD_W2 = 'ADD_W2',
   EDIT_W2 = 'EDIT_W2',
   REMOVE_W2 = 'REMOVE_W2',
+  ADD_ESTIMATED_TAX = 'ADD_ESTIMATED_TAX',
+  EDIT_ESTIMATED_TAX = 'EDIT_ESTIMATED_TAX',
+  REMOVE_ESTIMATED_TAX = 'REMOVE_ESTIMATED_TAX',
   ADD_1099 = 'ADD_1099',
   EDIT_1099 = 'EDIT_1099',
   REMOVE_1099 = 'REMOVE_1099',
@@ -250,6 +255,21 @@ export const editW2: ActionCreator<EditW2Action> = makeActionCreator(
 
 export const removeW2: ActionCreator<number> = makeActionCreator(
   ActionName.REMOVE_W2,
+  ajv.compile(indexSchema)
+)
+
+export const addEstimatedPayment: ActionCreator<EstimatedTaxPayments> = makeActionCreator(
+  ActionName.ADD_ESTIMATED_TAX,
+  ajv.getSchema('#/definitions/EstimatedTaxPayments') as ValidateFunction<EstimatedTaxPayments>
+)
+
+export const editEstimatedPayment: ActionCreator<EditEstimatedTaxAction> = makeActionCreator(
+  ActionName.EDIT_ESTIMATED_TAX,
+  ajv.getSchema('#/definitions/EditEstimatedTaxAction') as ValidateFunction<EditEstimatedTaxAction>
+)
+
+export const removeEstimatedPayment: ActionCreator<number> = makeActionCreator(
+  ActionName.REMOVE_ESTIMATED_TAX,
   ajv.compile(indexSchema)
 )
 
