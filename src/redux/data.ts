@@ -337,7 +337,7 @@ export interface ArrayItemEditAction<A> {
 
 export type EditDependentAction = ArrayItemEditAction<Dependent>
 export type EditW2Action = ArrayItemEditAction<IncomeW2>
-export type EditEstimatedTaxAction = ArrayItemEditAction<EstimatedTaxPayments>
+export type EditEstimatedTaxesAction = ArrayItemEditAction<EstimatedTaxPayments>
 export type Edit1099Action = ArrayItemEditAction<Supported1099>
 export type EditPropertyAction = ArrayItemEditAction<Property>
 export type Edit1098eAction = ArrayItemEditAction<F1098e>

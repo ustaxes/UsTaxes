@@ -13,8 +13,8 @@ import {
   EditPropertyAction,
   Property,
   Edit1099Action,
-  EditEstimatedTaxAction,
   EditW2Action,
+  EditEstimatedTaxesAction,
   Edit1098eAction,
   TaxesState,
   StateResidency,
@@ -81,6 +81,9 @@ type RemoveSpouse = Save<typeof ActionName.REMOVE_SPOUSE, Record<string, never>>
 type AddW2 = Save<typeof ActionName.ADD_W2, IncomeW2>
 type EditW2 = Save<typeof ActionName.EDIT_W2, EditW2Action>
 type RemoveW2 = Save<typeof ActionName.REMOVE_W2, number>
+type AddEstimatedTaxes = Save<typeof ActionName.ADD_ESTIMATED_TAX, EstimatedTaxPayments>
+type EditEstimatedTaxes = Save<typeof ActionName.EDIT_ESTIMATED_TAX, EditEstimatedTaxesAction>
+type RemoveEstimatedTaxes = Save<typeof ActionName.REMOVE_ESTIMATED_TAX, number>
 type Add1099 = Save<typeof ActionName.ADD_1099, Supported1099>
 type Edit1099 = Save<typeof ActionName.EDIT_1099, Edit1099Action>
 type Remove1099 = Save<typeof ActionName.REMOVE_1099, number>
@@ -107,6 +110,9 @@ export type Actions =
   | AddW2
   | EditW2
   | RemoveW2
+  | AddEstimatedTaxes
+  | EditEstimatedTaxes
+  | RemoveEstimatedTaxes
   | Add1099
   | Edit1099
   | Remove1099
@@ -263,9 +269,9 @@ export const addEstimatedPayment: ActionCreator<EstimatedTaxPayments> = makeActi
   ajv.getSchema('#/definitions/EstimatedTaxPayments') as ValidateFunction<EstimatedTaxPayments>
 )
 
-export const editEstimatedPayment: ActionCreator<EditEstimatedTaxAction> = makeActionCreator(
+export const editEstimatedPayment: ActionCreator<EditEstimatedTaxesAction> = makeActionCreator(
   ActionName.EDIT_ESTIMATED_TAX,
-  ajv.getSchema('#/definitions/EditEstimatedTaxAction') as ValidateFunction<EditEstimatedTaxAction>
+  ajv.getSchema('#/definitions/EditEstimatedTaxAction') as ValidateFunction<EditEstimatedTaxesAction>
 )
 
 export const removeEstimatedPayment: ActionCreator<number> = makeActionCreator(

@@ -1,33 +1,22 @@
-import { ReactElement, ReactNode } from 'react'
+import { ReactElement } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { FormProvider, useForm } from 'react-hook-form'
 import { usePager } from 'ustaxes/components/pager'
 import {
   TaxesState,
   EstimatedTaxPayments,
-  Person,
-  PersonRole,
-  Employer,
-  Spouse,
-  PrimaryPerson,
-  FilingStatus,
   Information,
-  State
 } from 'ustaxes/redux/data'
 import {
   Currency,
-  formatSSID,
-  GenericLabeledDropdown,
   LabeledInput,
-  USStateDropDown
 } from 'ustaxes/components/input'
 import { Patterns } from 'ustaxes/components/Patterns'
 import { FormListContainer } from 'ustaxes/components/FormContainer'
 import { Grid } from '@material-ui/core'
 import { Work } from '@material-ui/icons'
 import { addEstimatedPayment, editEstimatedPayment, removeEstimatedPayment } from 'ustaxes/redux/actions'
-import { If } from 'react-if'
-import { Alert } from '@material-ui/lab'
+
 
 interface EstimatedTaxesUserInput {
   payment: string
@@ -88,10 +77,6 @@ export default function EstimatedTaxes(): ReactElement {
           Payment: <Currency value={toPayments(estimatedTaxes).payment} />
         </span>
       )}
-    //   grouping={(w2) => (w2.personRole === PersonRole.PRIMARY ? 0 : 1)}
-    //   groupHeaders={[primary?.firstName, spouse?.firstName].map((x) =>
-    //     x !== undefined ? <h2>{x}&apos; W2s</h2> : undefined
-    //   )}
     >
       <Grid container spacing={2}>
         <LabeledInput
@@ -112,7 +97,7 @@ export default function EstimatedTaxes(): ReactElement {
 
   return (
     <form tabIndex={-1} onSubmit={onAdvance}>
-      <h2>Job Information</h2>
+      <h2>Estimated Taxes</h2>
       <FormProvider {...methods}>{form}</FormProvider>
       {navButtons}
     </form>
