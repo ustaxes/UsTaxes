@@ -2,11 +2,7 @@ import { ReactElement } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { FormProvider, useForm } from 'react-hook-form'
 import { usePager } from 'ustaxes/components/pager'
-import {
-  TaxesState,
-  EstimatedTaxPayments,
-  Information
-} from 'ustaxes/redux/data'
+import { TaxesState, EstimatedTaxPayments } from 'ustaxes/redux/data'
 import { Currency, LabeledInput } from 'ustaxes/components/input'
 import { Patterns } from 'ustaxes/components/Patterns'
 import { FormListContainer } from 'ustaxes/components/FormContainer'
@@ -55,10 +51,6 @@ export default function EstimatedTaxes(): ReactElement {
 
   const { navButtons, onAdvance } = usePager()
 
-  const information: Information = useSelector(
-    (state: TaxesState) => state.information
-  )
-
   const onSubmitAdd = (formData: EstimatedTaxesUserInput): void => {
     dispatch(addEstimatedPayment(toPayments(formData)))
   }
@@ -76,7 +68,7 @@ export default function EstimatedTaxes(): ReactElement {
       onSubmitEdit={onSubmitEdit}
       removeItem={(i) => dispatch(removeEstimatedPayment(i))}
       icon={() => <Work />}
-      primary={(f) => 'Estimated Taxes'}
+      primary={() => 'Estimated Taxes'}
       secondary={(estimatedTaxes: EstimatedTaxesUserInput) => (
         <span>
           Payment: <Currency value={toPayments(estimatedTaxes).payment} />
