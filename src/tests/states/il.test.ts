@@ -33,7 +33,7 @@ const withStateReturn = (
 describe('il year 2020', () => {
   it('should produce correct withholding attachments in', () => {
     fc.assert(
-      fc.property(arbitraries.information, fc.context(), (info, ctx) => {
+      fc.property(arbitraries.information(), fc.context(), (info, ctx) => {
         info.stateResidencies = [{ state: 'IL' }]
         info.w2s.forEach((w2) => {
           w2.state = 'IL'

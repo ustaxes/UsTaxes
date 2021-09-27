@@ -28,7 +28,7 @@ export const StateLoader = (): ReactElement => {
   const gen = new fc.Random(prand.mersenne(new Date().getMilliseconds()))
 
   const generator = (): Information =>
-    information.noShrink().generate(gen).value
+    information().noShrink().generate(gen).value
 
   return (
     <div className={classes.root}>
