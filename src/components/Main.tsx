@@ -15,7 +15,7 @@ import { StateLoader } from './debug'
 import NoMatchPage from './NoMatchPage'
 import SkipToLinks from './SkipToLinks'
 import ScrollTop from './ScrollTop'
-import Menu, { drawerSections } from './Menu'
+import Menu, { drawerSections, getTitleAndPage } from './Menu'
 import { Section, SectionItem } from './ResponsiveDrawer'
 
 import { useDevice } from 'ustaxes/hooks/Device'
@@ -130,7 +130,14 @@ export default function Main(): ReactElement {
             <Redirect path="/" to={Urls.default} exact />
             {allItems.map((item) => (
               <Route key={item.title} exact path={item.url}>
-                {!isStartPage && <Menu />}
+                {!isStartPage && (
+                  <Menu
+                    title={getTitleAndPage(
+                      drawerSections,
+                      useLocation().pathname
+                    )}
+                  />
+                )}
                 <Layout>
                   {!isStartPage && <DataPropagator />}
                   {item.element}
