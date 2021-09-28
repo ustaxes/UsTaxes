@@ -32,7 +32,7 @@ export default class SDQualifiedAndCapGains {
 
   // worksheet line 24
   tax = (): number | undefined => {
-    const fs = this.f1040.filingStatus
+    const fs = this.f1040.info.taxPayer.filingStatus
     if (fs === undefined) {
       return undefined
     }

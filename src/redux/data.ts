@@ -65,11 +65,15 @@ export interface Refund {
 export interface IncomeW2 {
   occupation: string
   income: number
+  medicareIncome: number
   fedWithholding: number
   ssWithholding: number
   medicareWithholding: number
   employer?: Employer
   personRole: PersonRole.PRIMARY | PersonRole.SPOUSE
+  state?: State
+  stateWages?: number
+  stateWithholding?: number
 }
 
 export enum Income1099Type {

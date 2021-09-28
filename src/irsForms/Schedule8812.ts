@@ -4,13 +4,14 @@ import F1040 from './F1040'
 import { computeField, sumFields } from './util'
 import Form, { FormTag } from './Form'
 
-export default class Schedule8812 implements Form {
+export default class Schedule8812 extends Form {
   tp: TaxPayer
   f1040: F1040
   tag: FormTag = 'f1040s8'
   sequenceIndex = 47
 
   constructor(tp: TP, f1040: F1040) {
+    super()
     this.tp = new TaxPayer(tp)
     this.f1040 = f1040
   }

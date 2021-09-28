@@ -3,7 +3,7 @@ import { SingleButtons } from './pager'
 
 export default function NoMatchPage(): ReactElement {
   return (
-    <form>
+    <form tabIndex={-1}>
       <h2>Page not found</h2>
       <p>
         We can&apos;t find the page you&apos;re looking for! Don&apos;t worry,

@@ -228,7 +228,7 @@ const SpouseAndDependent = (): ReactElement => {
     }
 
   const page = (
-    <form onSubmit={handleSubmit(onSubmit(onAdvance))}>
+    <form tabIndex={-1} onSubmit={handleSubmit(onSubmit(onAdvance))}>
       <h2>Family Information</h2>
       <h3>Spouse Information</h3>
       <SpouseInfo />

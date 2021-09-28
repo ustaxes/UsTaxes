@@ -21,7 +21,12 @@ jobs:
         node-version: ${{ matrix.node-version }}
       # installs dependencies
     - run: npm ci
-
       # run tests
     - name: Run jest unit tests
-      run: npm test
+      run: npm run test:report
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v2
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        directory: ./coverage
+        verbose: true

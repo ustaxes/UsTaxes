@@ -24,7 +24,7 @@ export default class ChildTaxCreditWorksheet {
 
   // worksheet line 1
   numberQualifyingChildren = (): number =>
-    this.f1040.dependents.reduce(
+    this.f1040.info.taxPayer.dependents.reduce(
       (total, dependent) =>
         this.qualifiesChild(dependent) ? total + 1 : total,
       0
@@ -34,7 +34,7 @@ export default class ChildTaxCreditWorksheet {
 
   // worksheet line 2
   numberQualifyingOtherDependents = (): number =>
-    this.f1040.dependents.reduce(
+    this.f1040.info.taxPayer.dependents.reduce(
       (total, dependent) =>
         this.qualifiesOther(dependent) ? total : total + 1,
       0
@@ -50,7 +50,7 @@ export default class ChildTaxCreditWorksheet {
 
   // worksheet line 5
   l5 = (): number =>
-    this.f1040.filingStatus === FilingStatus.MFJ ? 400000 : 200000
+    this.f1040.info.taxPayer.filingStatus === FilingStatus.MFJ ? 400000 : 200000
 
   // worksheet line 6
   l6 = (): number | undefined =>

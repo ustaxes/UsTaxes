@@ -1,4 +1,5 @@
 import { ReactElement } from 'react'
+import { Link, useMediaQuery } from '@material-ui/core'
 import { StartButtons, SingleButtons } from './pager'
 import { isWeb } from 'ustaxes/util'
 
@@ -26,6 +27,8 @@ const singleButtons: ReactElement = (
 )
 
 export default function GettingStarted(): ReactElement {
+  const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)')
+
   return (
     <>
       <h1>UsTaxes.org</h1>
@@ -100,27 +103,33 @@ export default function GettingStarted(): ReactElement {
       </p>
       <ul>
         <li>
-          File an issue: <a href={urls.issues}>GitHub Issues</a>
+          File an issue: <Link href={urls.issues}>GitHub Issues</Link>
         </li>
         <li>
-          Message us on <a href={urls.twitter}>Twitter</a>
+          Message us on <Link href={urls.twitter}>Twitter</Link>
         </li>
         <li>
           Think you have something to contribute? Come to our{' '}
-          <a href={urls.discord}>Discord channel</a>.
+          <Link href={urls.discord}>Discord channel</Link>.
         </li>
       </ul>
       {isWeb() ? doubleButtons : singleButtons}
       <h2>About This Project</h2>
       <p>
         UsTaxes is an open source project maintained by{' '}
-        <a href={urls.aidan}>Aidan Grimshaw</a> and{' '}
-        <a href={urls.zak}>Zak Patterson</a>.
+        <Link href={urls.aidan}>Aidan Grimshaw</Link> and{' '}
+        <Link href={urls.zak}>Zak Patterson</Link>.
       </p>
       <p>
-        Contributions to the <a href={urls.repo}>GitHub</a> repository are
+        Contributions to the <Link href={urls.repo}>GitHub</Link> repository are
         welcome.
       </p>
+      <a href="https://www.netlify.com">
+        <img
+          src={prefersDarkMode ? 'netlify-dark.svg' : 'netlify-light.svg'}
+          alt="Deploys by Netlify"
+        />
+      </a>
     </>
   )
 }

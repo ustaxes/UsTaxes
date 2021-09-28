@@ -98,23 +98,42 @@ const employer: Arbitrary<types.Employer> = fc
   }))
 
 const w2: Arbitrary<types.IncomeW2> = fc
-  .tuple(maxWords(2), wages, fc.nat(), fc.nat(), fc.nat(), employer)
+  .tuple(
+    maxWords(2),
+    wages,
+    fc.nat(),
+    fc.nat(),
+    fc.nat(),
+    fc.nat(),
+    employer,
+    state,
+    fc.nat(),
+    fc.nat()
+  )
   .map(
     ([
       occupation,
       income,
+      medicareIncome,
       fedWithholding,
       ssWithholding,
       medicareWithholding,
-      employer
+      employer,
+      state,
+      stateWages,
+      stateWithholding
     ]) => ({
       occupation,
       income,
+      medicareIncome,
       fedWithholding,
       employer,
       personRole: types.PersonRole.PRIMARY,
       ssWithholding,
-      medicareWithholding
+      medicareWithholding,
+      state,
+      stateWages,
+      stateWithholding
     })
   )
 

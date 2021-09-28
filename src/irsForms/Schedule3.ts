@@ -27,13 +27,14 @@ export const claimableExcessSSTaxWithholding = (w2s: IncomeW2[]): number => {
   }
 }
 
-export default class Schedule3 implements Form {
+export default class Schedule3 extends Form {
   tag: FormTag = 'f1040s3'
   sequenceIndex = 3
   state: Information
   f1040: F1040
 
   constructor(state: Information, f1040: F1040) {
+    super()
     this.state = state
     this.f1040 = f1040
   }

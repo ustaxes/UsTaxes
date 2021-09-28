@@ -6,33 +6,41 @@ import { resizeWindow, renderWithProviders } from 'ustaxes/testUtil'
 const heading = drawerSections[0].title
 
 describe('Menu', () => {
-  beforeEach(() => {
-    renderWithProviders(<Menu />)
-  })
-  it('renders', () => {
-    expect(
-      screen.getByRole('button', { name: /open drawer/ })
-    ).toBeInTheDocument()
-  })
-  it('toggles open', async () => {
-    expect(screen.getByRole('heading', { name: heading })).toBeInTheDocument()
+  describe('desktop view', () => {
+    it('renders', () => {
+      renderWithProviders(<Menu />)
+      expect(screen.getByText(heading)).toBeInTheDocument()
+    })
   })
   describe('mobile view', () => {
     beforeEach(async () => {
       await waitFor(() => resizeWindow(400, 900))
+      renderWithProviders(<Menu />)
     })
     it('renders', async () => {
       expect(
-        screen.queryByRole('heading', { name: heading })
+        screen.queryByRole('button', { name: /close drawer/i })
       ).not.toBeInTheDocument()
     })
-    it('closes with esc', async () => {
-      userEvent.click(screen.getByRole('button', { name: /open drawer/ }))
-      userEvent.type(screen.getByRole('heading', { name: heading }), '{esc}')
-      const headingElement = await screen.queryByRole('heading', {
-        name: heading
-      })
-      expect(headingElement).not.toBeInTheDocument()
+    it('toggles open', async () => {
+      userEvent.click(screen.getByRole('button', { name: /open drawer/i }))
+
+      expect(
+        await screen.queryByRole('button', { name: /open drawer/i })
+      ).not.toBeInTheDocument()
+    })
+    it('closes with menu', async () => {
+      userEvent.click(screen.getByRole('button', { name: /open drawer/i }))
+      userEvent.click(
+        screen.getByRole('button', {
+          name: /close drawer/i,
+          hidden: true
+        })
+      )
+
+      expect(
+        screen.queryByRole('button', { name: /close drawer/i })
+      ).not.toBeInTheDocument()
     })
   })
 })

@@ -9,7 +9,7 @@ import F1040 from './F1040'
 const unimplemented = (message: string): void =>
   log.warn(`[Schedule 1] unimplemented ${message}`)
 
-export default class Schedule1 implements Form {
+export default class Schedule1 extends Form {
   tag: FormTag = 'f1040s1'
   sequenceIndex = 1
   state: Information
@@ -17,6 +17,7 @@ export default class Schedule1 implements Form {
   f1040: F1040
 
   constructor(info: Information, f1040: F1040) {
+    super()
     this.state = info
     this.f1040 = f1040
   }

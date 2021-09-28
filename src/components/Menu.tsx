@@ -1,15 +1,24 @@
-import { useEffect, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
+import { useLocation } from 'react-router-dom'
+
 import {
   createStyles,
   makeStyles,
   AppBar,
   IconButton,
+  Slide,
   Theme,
-  Toolbar
+  Toolbar,
+  Typography
 } from '@material-ui/core'
+import CloseIcon from '@material-ui/icons/Close'
 import MenuIcon from '@material-ui/icons/Menu'
 
-import ResponsiveDrawer, { item, Section } from './ResponsiveDrawer'
+import ResponsiveDrawer, {
+  item,
+  Section,
+  SectionItem
+} from './ResponsiveDrawer'
 
 import W2JobInfo from './income/W2JobInfo'
 import CreatePDF from './createPDF'
@@ -25,24 +34,57 @@ import F1098eInfo from './deductions/F1098eInfo'
 import Questions from './Questions'
 import Urls from 'ustaxes/data/urls'
 import { useDevice } from 'ustaxes/hooks/Device'
-import { ReactElement } from 'react'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    appBar: {
-      width: '100%',
+    root: {
+      flexGrow: 1,
+      zIndex: theme.zIndex.drawer + 1,
       [theme.breakpoints.up('sm')]: {
         display: 'none'
       }
+    },
+    toolbar: {
+      alignItems: 'center'
+    },
+    title: {
+      position: 'absolute',
+      width: '100%',
+      textAlign: 'center',
+      pointerEvents: 'none'
     },
     menuButton: {
       marginRight: theme.spacing(2),
       [theme.breakpoints.up('sm')]: {
         display: 'none'
       }
+    },
+    gutters: {
+      margin: '0 12px',
+      padding: 0
     }
   })
 )
+
+const getTitleAndPage = (sections: Section[], currentUrl: string): string => {
+  let currentSection
+  let currentPage
+
+  sections.forEach(({ title, items }: Section) => {
+    if (
+      items.find(({ url, title }: SectionItem) => {
+        if (url === currentUrl) {
+          currentPage = title
+          return true
+        }
+        return false
+      })
+    ) {
+      currentSection = title
+    }
+  })
+  return `${currentSection} - ${currentPage}`
+}
 
 export const drawerSections: Section[] = [
   {
@@ -101,23 +143,34 @@ const Menu = (): ReactElement => {
 
   return (
     <>
-      <AppBar position="fixed" className={classes.appBar}>
-        <Toolbar>
+      <AppBar position="fixed" className={classes.root}>
+        <Toolbar
+          className={classes.toolbar}
+          classes={{ gutters: classes.gutters }}
+        >
           <IconButton
             color="inherit"
-            aria-label="open drawer"
+            aria-label={`${isOpen ? 'close' : 'open'} drawer`}
             edge="start"
             onClick={() => setOpen((isOpen) => !isOpen)}
             className={classes.menuButton}
           >
-            <MenuIcon />
+            {isOpen ? <CloseIcon /> : <MenuIcon />}
           </IconButton>
+          <Slide in={isOpen} direction={'right'}>
+            <Typography className={classes.title}>Menu</Typography>
+          </Slide>
+          <Slide in={!isOpen} direction={'left'}>
+            <Typography className={classes.title}>
+              {getTitleAndPage(drawerSections, useLocation().pathname)}
+            </Typography>
+          </Slide>
         </Toolbar>
       </AppBar>
       <ResponsiveDrawer
         sections={drawerSections}
         isOpen={isOpen}
-        onClose={() => setOpen(false)}
+        setOpen={setOpen}
       />
     </>
   )

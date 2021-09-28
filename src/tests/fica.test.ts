@@ -89,12 +89,15 @@ describe('fica', () => {
   it('should add Additional Medicare Tax form 8959', () => {
     fc.assert(
       fc.property(arbitraries.f1040, ([f1040, forms]) => {
-        if (f1040.filingStatus === undefined) {
+        if (f1040.info.taxPayer.filingStatus === undefined) {
           return
         }
-        const filingStatus = f1040.filingStatus
-        // Should add Additional Medicare Tax iff wages over threshold
-        if (f1040.wages() > fica.additionalMedicareTaxThreshold(filingStatus)) {
+        const filingStatus = f1040.info.taxPayer.filingStatus
+        // Should add Additional Medicare Tax if medicare wages over threshold
+        if (
+          f1040.medicareWages() >
+          fica.additionalMedicareTaxThreshold(filingStatus)
+        ) {
           expect(hasAdditionalMedicareTax(f1040)).toEqual(true)
 
           // Should attach both S2 and F8959 to return
@@ -111,13 +114,14 @@ describe('fica', () => {
   it('should add Additional Medicare Tax based on filing status', () => {
     fc.assert(
       fc.property(arbitraries.f1040, ([f1040]) => {
-        if (f1040.filingStatus === undefined) {
+        if (f1040.info.taxPayer.filingStatus === undefined) {
           return
         }
         if (hasAdditionalMedicareTax(f1040)) {
-          const filingStatus = f1040.filingStatus
+          const filingStatus = f1040.info.taxPayer.filingStatus
           const incomeOverThreshold =
-            f1040.wages() - fica.additionalMedicareTaxThreshold(filingStatus)
+            f1040.medicareWages() -
+            fica.additionalMedicareTaxThreshold(filingStatus)
           expect(incomeOverThreshold).toBeGreaterThan(0)
 
           // Adds the right amount of additional tax
@@ -133,7 +137,7 @@ describe('fica', () => {
             .map((w2) => w2.medicareWithholding)
             .reduce((l, r) => l + r, 0)
           const regularWithholding = Math.round(
-            fica.regularMedicareTaxRate * f1040.wages()
+            fica.regularMedicareTaxRate * f1040.medicareWages()
           )
           if (medicareWithheld > regularWithholding) {
             const f1040l25c = f1040.l25c()
