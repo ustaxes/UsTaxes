@@ -51,7 +51,7 @@ describe('W2Info', () => {
       expect(screen.queryByText(label)).toBeNull()
     }
   })
-  
+
   it('saves and edits a W-2', async () => {
     // Creates, saves test taxpayer and spouse
     const sallyAddress: Address = {
