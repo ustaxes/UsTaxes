@@ -21,7 +21,7 @@ const useYearDispatch = (): Dispatch<SignalAction> => {
 /**
  * Provides an override of the useSelector hook for
  * UI that doesn't care which year's data is currently
- * being accessed
+ * being accessed.
  */
 const useYearSelector = <R>(f: (t: TS) => R): R =>
   f(
