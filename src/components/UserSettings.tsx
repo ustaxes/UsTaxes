@@ -3,7 +3,7 @@ import { ReactElement, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { Load } from 'ustaxes/redux/fs'
 import { FSRecover } from 'ustaxes/redux/fs/Actions'
-import SaveToFile from './SaveToFIle'
+import SaveToFile from './SaveToFile'
 
 const UserSettings = (): ReactElement => {
   const dispatch = useDispatch()
