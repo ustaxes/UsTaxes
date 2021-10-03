@@ -1,5 +1,5 @@
 name: "publish"
-on: 
+on:
   push:
     tags:
       - v*
