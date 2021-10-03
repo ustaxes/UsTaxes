@@ -2,7 +2,7 @@ name: "publish"
 on:
   push:
     tags:
-      - v*
+      - app-v*
 jobs:
   publish-tauri:
     strategy:
