@@ -282,7 +282,7 @@ export const editEstimatedPayment: ActionCreator<EditEstimatedTaxesAction> =
   makeActionCreator(
     ActionName.EDIT_ESTIMATED_TAX,
     ajv.getSchema(
-      '#/definitions/EditEstimatedTaxAction'
+      '#/definitions/EditEstimatedTaxesAction'
     ) as ValidateFunction<EditEstimatedTaxesAction>
   )
 
