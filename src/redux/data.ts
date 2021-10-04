@@ -77,6 +77,7 @@ export interface IncomeW2 {
 }
 
 export interface EstimatedTaxPayments {
+  label: string
   payment: number
 }
 

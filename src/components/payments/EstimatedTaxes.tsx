@@ -2,10 +2,7 @@ import { ReactElement } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { FormProvider, useForm } from 'react-hook-form'
 import { usePager } from 'ustaxes/components/pager'
-import {
-  TaxesState,
-  EstimatedTaxPayments,
-} from 'ustaxes/redux/data'
+import { TaxesState, EstimatedTaxPayments } from 'ustaxes/redux/data'
 import { CURRENT_YEAR } from 'ustaxes/data/federal'
 import { Currency, LabeledInput } from 'ustaxes/components/input'
 import { Patterns } from 'ustaxes/components/Patterns'
@@ -19,10 +16,12 @@ import {
 } from 'ustaxes/redux/actions'
 
 interface EstimatedTaxesUserInput {
+  label: string
   payment: string
 }
 
 const blankUserInput: EstimatedTaxesUserInput = {
+  label: '',
   payment: ''
 }
 
@@ -33,6 +32,7 @@ const toPayments = (
   // Note we are not error checking here because
   // we are already in the input validated happy path
   // of handleSubmit.
+  label: formData.label,
   payment: parseInt(formData.payment)
 })
 
@@ -41,6 +41,7 @@ const toEstimatedTaxesUserInput = (
 ): EstimatedTaxesUserInput => ({
   ...blankUserInput,
   ...data,
+  label: data.label,
   payment: data.payment.toString()
 })
 
@@ -72,7 +73,9 @@ export default function EstimatedTaxes(): ReactElement {
       onSubmitEdit={onSubmitEdit}
       removeItem={(i) => dispatch(removeEstimatedPayment(i))}
       icon={() => <Work />}
-      primary={() => 'Estimated Taxes'}
+      primary={(estimatedTaxes: EstimatedTaxesUserInput) =>
+        estimatedTaxes.label
+      }
       secondary={(estimatedTaxes: EstimatedTaxesUserInput) => (
         <span>
           Payment: <Currency value={toPayments(estimatedTaxes).payment} />
@@ -80,6 +83,12 @@ export default function EstimatedTaxes(): ReactElement {
       )}
     >
       <Grid container spacing={2}>
+        <LabeledInput
+          name="label"
+          label="label or date of this payment"
+          patternConfig={Patterns.plain}
+          sizes={{ xs: 12, lg: 6 }}
+        />
         <LabeledInput
           name="payment"
           label="Estimated tax payment"
@@ -95,7 +104,10 @@ export default function EstimatedTaxes(): ReactElement {
   return (
     <form tabIndex={-1} onSubmit={onAdvance}>
       <h2>Estimated Taxes</h2>
-      <p>did you already make payments towards your {CURRENT_YEAR} taxes this year or last year?</p>
+      <p>
+        did you already make payments towards your {CURRENT_YEAR} taxes this
+        year or last year?
+      </p>
       <FormProvider {...methods}>{form}</FormProvider>
       {navButtons}
     </form>
