@@ -1,4 +1,5 @@
-import fc, { Arbitrary } from 'fast-check'
+import * as fc from 'fast-check'
+import { Arbitrary } from 'fast-check'
 import { CURRENT_YEAR } from 'ustaxes/data/federal'
 import locationPostalCodes from 'ustaxes/data/locationPostalCodes'
 import {
@@ -53,6 +54,7 @@ const wages = (): Arbitrary<number> => fc.nat({ max: 10000000 })
 const investment = (): Arbitrary<number> => fc.nat({ max: 100000 })
 const expense = (): Arbitrary<number> => fc.nat({ max: 10000 })
 const interest = (): Arbitrary<number> => fc.nat({ max: 2000 })
+const payment = (): Arbitrary<number> => fc.nat({ max: 200000 })
 const daysInYear = (): Arbitrary<number> =>
   fc.nat({
     max: util.daysInYear(CURRENT_YEAR)
@@ -256,6 +258,12 @@ const f1098e = (): Arbitrary<types.F1098e> =>
     interest
   }))
 
+const estTax = (): Arbitrary<types.EstimatedTaxPayments> =>
+  fc.tuple(maxWords(5), payment()).map(([label, payment]) => ({
+    label,
+    payment
+  }))
+
 export const accountType = (): Arbitrary<types.AccountType> =>
   fc.constantFrom(types.AccountType.checking, types.AccountType.savings)
 
@@ -356,6 +364,7 @@ export const information = (): Arbitrary<types.Information> =>
       fc.array(f1099()),
       fc.array(w2()),
       fc.array(property()),
+      fc.array(estTax()),
       fc.array(f1098e()),
       refund(),
       taxPayer(),
@@ -367,6 +376,7 @@ export const information = (): Arbitrary<types.Information> =>
         f1099s,
         w2s,
         realEstate,
+        estimatedTaxes,
         f1098es,
         refund,
         taxPayer,
@@ -376,6 +386,7 @@ export const information = (): Arbitrary<types.Information> =>
         f1099s,
         w2s,
         realEstate,
+        estimatedTaxes,
         f1098es,
         refund,
         taxPayer,

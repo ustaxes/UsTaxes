@@ -14,6 +14,7 @@ const DEFAULT_TAX_YEAR: TaxYear = 'Y2020'
 export const blankState: Information = {
   f1099s: [],
   w2s: [],
+  estimatedTaxes: [],
   realEstate: [],
   taxPayer: { dependents: [] },
   questions: {},
@@ -140,6 +141,32 @@ const formReducer =
         return {
           ...newState,
           w2s: newW2s
+        }
+      }
+      case ActionName.ADD_ESTIMATED_TAX: {
+        return {
+          ...newState,
+          estimatedTaxes: [...newState.estimatedTaxes, action.formData]
+        }
+      }
+      case ActionName.EDIT_ESTIMATED_TAX: {
+        const newEstimatedTaxes = [...newState.estimatedTaxes]
+        newEstimatedTaxes.splice(
+          action.formData.index,
+          1,
+          action.formData.value
+        )
+        return {
+          ...newState,
+          estimatedTaxes: newEstimatedTaxes
+        }
+      }
+      case ActionName.REMOVE_ESTIMATED_TAX: {
+        const newEstimatedTaxes = [...newState.estimatedTaxes]
+        newEstimatedTaxes.splice(action.formData, 1)
+        return {
+          ...newState,
+          estimatedTaxes: newEstimatedTaxes
         }
       }
       case ActionName.ADD_1099: {
