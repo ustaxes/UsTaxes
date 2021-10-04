@@ -27,6 +27,7 @@ import RefundBankAccount from './RefundBankAccount'
 import SpouseAndDependent from './TaxPayer/SpouseAndDependent'
 import ContactInfo from './TaxPayer/ContactInfo'
 import F1099Info from './income/F1099Info'
+import EstimatedTaxes from './payments/EstimatedTaxes'
 import Summary from './Summary'
 import RealEstate from './income/RealEstate'
 import GettingStarted from './GettingStarted'
@@ -109,6 +110,12 @@ export const drawerSections: Section[] = [
       item('Wages (W2)', Urls.income.w2s, <W2JobInfo />),
       item('Income (1099)', Urls.income.f1099s, <F1099Info />),
       item('Real Estate', Urls.income.realEstate, <RealEstate />)
+    ]
+  },
+  {
+    title: 'Payments',
+    items: [
+      item('Estimated Taxes', Urls.payments.estimatedTaxes, <EstimatedTaxes />)
     ]
   },
   {
