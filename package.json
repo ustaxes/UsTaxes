@@ -1,6 +1,6 @@
 {
   "name": "ustaxes",
-  "version": "0.1.11",
+  "version": "0.1.12",
   "private": true,
   "dependencies": {
     "@material-ui/core": "^4.12.3",
@@ -32,7 +32,7 @@
     "build": "node ./setup.js && craco build",
     "test": "node ./setup.js && craco test",
     "eject": "craco eject",
-    "test:report": "node ./setup.js && craco test -- --coverage",
+    "test:report": "npm run test -- --coverage .",
     "desktop-release": "node ./setup.js && tauri build",
     "desktop": "node ./notice.js && node ./setup.js && tauri dev",
     "tauri": "tauri",
