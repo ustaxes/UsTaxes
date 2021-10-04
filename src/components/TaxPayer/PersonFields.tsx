@@ -15,7 +15,7 @@ import DeleteIcon from '@material-ui/icons/Delete'
 import EditIcon from '@material-ui/icons/Edit'
 import ListItemText from '@material-ui/core/ListItemText'
 import PersonIcon from '@material-ui/icons/Person'
-import { If } from 'react-if'
+import { If, Then } from 'react-if'
 
 export const PersonFields = ({
   children
@@ -54,11 +54,13 @@ export const PersonListItem = ({
       secondary={formatSSID(person.ssid)}
     />
     <If condition={editing !== undefined}>
-      <ListItemIcon>
-        <IconButton onClick={onEdit} edge="end" aria-label="edit">
-          <EditIcon />
-        </IconButton>
-      </ListItemIcon>
+      <Then>
+        <ListItemIcon>
+          <IconButton onClick={onEdit} edge="end" aria-label="edit">
+            <EditIcon />
+          </IconButton>
+        </ListItemIcon>
+      </Then>
     </If>
     <ListItemSecondaryAction>
       <IconButton onClick={remove} edge="end" aria-label="delete">
