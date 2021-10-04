@@ -5,8 +5,8 @@ import { usePager } from 'ustaxes/components/pager'
 import {
   TaxesState,
   EstimatedTaxPayments,
-  Information
 } from 'ustaxes/redux/data'
+import { CURRENT_YEAR } from 'ustaxes/data/federal'
 import { Currency, LabeledInput } from 'ustaxes/components/input'
 import { Patterns } from 'ustaxes/components/Patterns'
 import { FormListContainer } from 'ustaxes/components/FormContainer'
@@ -55,10 +55,6 @@ export default function EstimatedTaxes(): ReactElement {
 
   const { navButtons, onAdvance } = usePager()
 
-  const information: Information = useSelector(
-    (state: TaxesState) => state.information
-  )
-
   const onSubmitAdd = (formData: EstimatedTaxesUserInput): void => {
     dispatch(addEstimatedPayment(toPayments(formData)))
   }
@@ -76,7 +72,7 @@ export default function EstimatedTaxes(): ReactElement {
       onSubmitEdit={onSubmitEdit}
       removeItem={(i) => dispatch(removeEstimatedPayment(i))}
       icon={() => <Work />}
-      primary={(f) => 'Estimated Taxes'}
+      primary={() => 'Estimated Taxes'}
       secondary={(estimatedTaxes: EstimatedTaxesUserInput) => (
         <span>
           Payment: <Currency value={toPayments(estimatedTaxes).payment} />
@@ -99,6 +95,7 @@ export default function EstimatedTaxes(): ReactElement {
   return (
     <form tabIndex={-1} onSubmit={onAdvance}>
       <h2>Estimated Taxes</h2>
+      <p>did you already make payments towards your {CURRENT_YEAR} taxes this year or last year?</p>
       <FormProvider {...methods}>{form}</FormProvider>
       {navButtons}
     </form>
