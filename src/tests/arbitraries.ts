@@ -254,8 +254,9 @@ const f1098e: Arbitrary<types.F1098e> = fc
   }))
 
 const estTax: Arbitrary<types.EstimatedTaxPayments> = fc
-  .tuple(payment)
-  .map(([payment]) => ({
+  .tuple(maxWords(5), payment)
+  .map(([label, payment]) => ({
+    label,
     payment
   }))
 
