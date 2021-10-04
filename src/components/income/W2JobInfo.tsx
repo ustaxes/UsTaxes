@@ -27,7 +27,7 @@ import { FormListContainer } from 'ustaxes/components/FormContainer'
 import { Grid } from '@material-ui/core'
 import { Work } from '@material-ui/icons'
 import { addW2, editW2, removeW2 } from 'ustaxes/redux/actions'
-import { If } from 'react-if'
+import { If, Then } from 'react-if'
 import { Alert } from '@material-ui/lab'
 
 interface IncomeW2UserInput {
@@ -229,11 +229,13 @@ export default function W2JobInfo(): ReactElement {
     if (spouse !== undefined && spouseW2s.length > 0) {
       return (
         <If condition={filingStatus === FilingStatus.MFS}>
-          <Alert className="inner" severity="warning">
-            Filing status is set to Married Filing Separately.{' '}
-            <strong>{spouse.firstName}</strong>
-            &apos;s W2s will not be added to the return.
-          </Alert>
+          <Then>
+            <Alert className="inner" severity="warning">
+              Filing status is set to Married Filing Separately.{' '}
+              <strong>{spouse.firstName}</strong>
+              &apos;s W2s will not be added to the return.
+            </Alert>
+          </Then>
         </If>
       )
     }

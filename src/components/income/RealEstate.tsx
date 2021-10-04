@@ -29,7 +29,7 @@ import { HouseOutlined } from '@material-ui/icons'
 import { FormListContainer } from 'ustaxes/components/FormContainer'
 import { Grid } from '@material-ui/core'
 import { CURRENT_YEAR } from 'ustaxes/data/federal'
-import { If } from 'react-if'
+import { If, Then } from 'react-if'
 import _ from 'lodash'
 
 interface PropertyAddForm {
@@ -230,11 +230,13 @@ export default function RealEstate(): ReactElement {
           valueMapping={(n) => n}
         />
         <If condition={propertyType === 'other'}>
-          <LabeledInput
-            name="otherPropertyType"
-            label="Short property type description"
-            required={true}
-          />
+          <Then>
+            <LabeledInput
+              name="otherPropertyType"
+              label="Short property type description"
+              required={true}
+            />
+          </Then>
         </If>
       </Grid>
       <h3>Use</h3>
