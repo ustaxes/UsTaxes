@@ -10,7 +10,6 @@ import { LabeledCheckbox, LabeledInput } from './input'
 import { answerQuestion } from 'ustaxes/redux/actions'
 import { FormProvider, useForm } from 'react-hook-form'
 import { usePager } from './pager'
-import { Else, If, Then } from 'react-if'
 import _ from 'lodash'
 
 const emptyQuestions: Responses = {
@@ -90,14 +89,12 @@ const Questions = (): ReactElement => {
         <List>
           {questions.map((q, i) => (
             <ListItem key={i}>
-              <If condition={q.valueTag === 'boolean'}>
-                <Then>
-                  <LabeledCheckbox name={q.tag} label={q.text} />
-                </Then>
-                <Else>
-                  <LabeledInput name={q.tag} label={q.text} />
-                </Else>
-              </If>
+              {(() => {
+                if (q.valueTag === 'boolean') {
+                  return <LabeledCheckbox name={q.tag} label={q.text} />
+                }
+                return <LabeledInput name={q.tag} label={q.text} />
+              })()}
             </ListItem>
           ))}
         </List>

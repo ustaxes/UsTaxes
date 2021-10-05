@@ -15,7 +15,6 @@ import {
 import { create1040 } from 'ustaxes/irsForms/Main'
 import { isRight } from 'ustaxes/util'
 import { savePDF } from 'ustaxes/pdfFiller/pdfHandler'
-import { If, Then, Else } from 'react-if'
 import { Box, Button } from '@material-ui/core'
 
 const useStyles = makeStyles((theme) => ({
@@ -89,55 +88,59 @@ export default function CreatePDF(): ReactElement {
           </Alert>
         ))}
       </div>
-      <If condition={canCreateFederal}>
-        <Then>
-          <Box
-            display="flex"
-            justifyContent="flex-start"
-            paddingTop={2}
-            paddingBottom={1}
-          >
-            <Button
-              type="button"
-              onClick={federalReturn}
-              variant="contained"
-              color="primary"
+      {(() => {
+        if (canCreateFederal) {
+          return (
+            <Box
+              display="flex"
+              justifyContent="flex-start"
+              paddingTop={2}
+              paddingBottom={1}
             >
-              Create Federal 1040
-            </Button>
-          </Box>
-        </Then>
-        <Else>
+              <Button
+                type="button"
+                onClick={federalReturn}
+                variant="contained"
+                color="primary"
+              >
+                Create Federal 1040
+              </Button>
+            </Box>
+          )
+        }
+        return (
           <Alert severity="info">
             Support for federal return for {year} is not yet available.
           </Alert>
-        </Else>
-      </If>
-      <If condition={canCreateState}>
-        <Then>
-          <Box
-            display="flex"
-            justifyContent="flex-start"
-            paddingTop={2}
-            paddingBottom={1}
-          >
-            <Button
-              type="button"
-              onClick={stateReturn}
-              variant="contained"
-              color="primary"
+        )
+      })()}
+      {() => {
+        if (canCreateState) {
+          return (
+            <Box
+              display="flex"
+              justifyContent="flex-start"
+              paddingTop={2}
+              paddingBottom={1}
             >
-              Create {residency} Return
-            </Button>
-          </Box>
-        </Then>
-        <Else>
+              <Button
+                type="button"
+                onClick={stateReturn}
+                variant="contained"
+                color="primary"
+              >
+                Create {residency} Return
+              </Button>
+            </Box>
+          )
+        }
+        return (
           <Alert severity="info">
             Support for {residency ?? 'state'} return, year {year} not yet
             available.
           </Alert>
-        </Else>
-      </If>
+        )
+      }}
       {navButtons}
     </form>
   )
