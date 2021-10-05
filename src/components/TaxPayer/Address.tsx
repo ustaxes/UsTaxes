@@ -1,6 +1,5 @@
 import { ReactElement } from 'react'
 import { useFormContext, useWatch } from 'react-hook-form'
-import { If, Then } from 'react-if'
 import {
   LabeledCheckbox,
   LabeledInput,
@@ -75,11 +74,13 @@ export default function AddressFields(props: AddressProps): ReactElement {
         name="address.city"
         patternConfig={Patterns.name}
       />
-      <If condition={allowForeignCountry}>
-        <Then>
-          <LabeledCheckbox label={checkboxText} name="isForeignCountry" />
-        </Then>
-      </If>
+      {(() => {
+        if (allowForeignCountry) {
+          return (
+            <LabeledCheckbox label={checkboxText} name="isForeignCountry" />
+          )
+        }
+      })()}
       {csz}
     </>
   )
