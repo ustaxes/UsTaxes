@@ -1,5 +1,4 @@
 import { ReactElement } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
 import { FormProvider, useForm } from 'react-hook-form'
 import { usePager } from 'ustaxes/components/pager'
 import { EstimatedTaxPayments } from 'ustaxes/redux/data'
@@ -14,7 +13,7 @@ import {
   editEstimatedPayment,
   removeEstimatedPayment
 } from 'ustaxes/redux/actions'
-import { TaxesState } from 'ustaxes/redux'
+import { useDispatch, useSelector, TaxesState } from 'ustaxes/redux'
 
 interface EstimatedTaxesUserInput {
   label: string
