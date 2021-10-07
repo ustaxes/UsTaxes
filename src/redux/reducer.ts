@@ -1,12 +1,6 @@
 /* eslint-disable indent */
 import { CombinedState, combineReducers, Reducer } from 'redux'
-import {
-  FilingStatus,
-  Information,
-  TaxesState,
-  TaxYear,
-  TaxYears
-} from './data'
+import { FilingStatus, Information, TaxesState, TaxYear } from './data'
 import { ActionName, Actions } from './actions'
 
 const DEFAULT_TAX_YEAR: TaxYear = 'Y2020'
@@ -298,9 +292,9 @@ const rootReducer: Reducer<
   CombinedState<TaxesState>,
   Actions
 > = combineReducers({
-  [TaxYears.Y2019]: formReducer('Y2019'),
-  [TaxYears.Y2020]: formReducer('Y2020'),
-  [TaxYears.Y2021]: formReducer('Y2021'),
+  Y2019: formReducer('Y2019'),
+  Y2020: formReducer('Y2020'),
+  Y2021: formReducer('Y2021'),
   activeYear
 }) as Reducer<CombinedState<TaxesState>, Actions>
 

@@ -4,7 +4,13 @@ import Alert from '@material-ui/lab/Alert'
 import { makeStyles } from '@material-ui/core/styles'
 import log from 'ustaxes/log'
 import { useSelector } from 'react-redux'
-import { Information, State, TaxesState, TaxYear } from 'ustaxes/redux/data'
+import {
+  Information,
+  State,
+  TaxesState,
+  TaxYear,
+  TaxYears
+} from 'ustaxes/redux/data'
 import { createPDFPopup } from 'ustaxes/irsForms'
 import {
   canCreateFederalReturn,
@@ -79,9 +85,9 @@ export default function CreatePDF(): ReactElement {
     stateForm[residency] !== undefined
 
   return (
-    <form tabIndex={-1}>
+    <form className={classes.root} tabIndex={-1}>
       <h2>Print Copy to File</h2>
-      <div className={classes.root}>
+      <div>
         {errors.map((error, i) => (
           <Alert key={i} severity="warning">
             {error}
@@ -110,11 +116,12 @@ export default function CreatePDF(): ReactElement {
         }
         return (
           <Alert severity="info">
-            Support for federal return for {year} is not yet available.
+            Support for federal return for {TaxYears[year]} is not yet
+            available.
           </Alert>
         )
       })()}
-      {() => {
+      {(() => {
         if (canCreateState) {
           return (
             <Box
@@ -136,11 +143,11 @@ export default function CreatePDF(): ReactElement {
         }
         return (
           <Alert severity="info">
-            Support for {residency ?? 'state'} return, year {year} not yet
-            available.
+            Support for {residency ?? 'state'} return for {TaxYears[year]} not
+            yet available.
           </Alert>
         )
-      }}
+      })()}
       {navButtons}
     </form>
   )
