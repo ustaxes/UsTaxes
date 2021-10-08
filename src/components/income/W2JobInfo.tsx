@@ -24,7 +24,7 @@ import {
 } from 'ustaxes/components/input'
 import { Patterns } from 'ustaxes/components/Patterns'
 import { FormListContainer } from 'ustaxes/components/FormContainer'
-import { Grid } from '@material-ui/core'
+import { Grid, Box } from '@material-ui/core'
 import { Work } from '@material-ui/icons'
 import { addW2, editW2, removeW2 } from 'ustaxes/redux/actions'
 import { Alert } from '@material-ui/lab'
@@ -232,12 +232,13 @@ export default function W2JobInfo(): ReactElement {
     ) {
       return (
         <div>
-          <Alert className="inner" severity="warning">
-            Filing status is set to Married Filing Separately.{' '}
-            <strong>{spouse.firstName}</strong>
-            &apos;s W2s will not be added to the return.
-          </Alert>
-          <br />
+          <Box marginBottom={3}>
+            <Alert className="inner" severity="warning" >
+              Filing status is set to Married Filing Separately.{' '}
+              <strong>{spouse.firstName}</strong>
+              &apos;s W2s will not be added to the return.
+            </Alert>
+          </Box>
         </div>
       )
     }
