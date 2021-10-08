@@ -233,7 +233,7 @@ export default function W2JobInfo(): ReactElement {
       return (
         <div>
           <Box marginBottom={3}>
-            <Alert className="inner" severity="warning" >
+            <Alert className="inner" severity="warning">
               Filing status is set to Married Filing Separately.{' '}
               <strong>{spouse.firstName}</strong>
               &apos;s W2s will not be added to the return.
