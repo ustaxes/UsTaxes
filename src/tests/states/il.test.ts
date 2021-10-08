@@ -2,7 +2,7 @@ import * as fc from 'fast-check'
 import F1040 from 'ustaxes/irsForms/F1040'
 import Form from 'ustaxes/irsForms/Form'
 import { create1040 } from 'ustaxes/irsForms/Main'
-import { Information, PersonRole, TaxYears } from 'ustaxes/redux/data'
+import { Information, PersonRole } from 'ustaxes/redux/data'
 import { createStateReturn } from 'ustaxes/stateForms'
 import { ILWIT } from 'ustaxes/stateForms/IL/ILWit'
 import { isLeft } from 'ustaxes/util'
@@ -22,7 +22,7 @@ const withStateReturn = (
   }
 
   const [f1040] = f1040Result.right
-  const stateReturn = createStateReturn(info, f1040, TaxYears.Y2020)
+  const stateReturn = createStateReturn(info, f1040, 'Y2020')
   if (stateReturn === undefined) {
     fail('IL Return creation failed')
   }

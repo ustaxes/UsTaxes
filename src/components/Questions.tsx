@@ -24,19 +24,16 @@ const emptyQuestions: Responses = {
 const Questions = (): ReactElement => {
   const information = useSelector((state: TaxesState) => state.information)
 
-  const stateQuestions = _.defaults(information.questions, emptyQuestions)
+  const stateAnswers: Responses = {
+    ...emptyQuestions,
+    ...information.questions
+  }
 
-  const methods = useForm<Responses>({ defaultValues: stateQuestions })
+  const methods = useForm<Responses>({ defaultValues: stateAnswers })
 
-  const {
-    handleSubmit,
-    watch,
-    getValues,
-    reset,
-    formState: { isDirty }
-  } = methods
+  const { handleSubmit, getValues, reset } = methods
 
-  const currentValues = watch()
+  const currentValues = getValues()
 
   const { navButtons, onAdvance } = usePager()
 
@@ -48,17 +45,15 @@ const Questions = (): ReactElement => {
     }
   })
 
-  // This form rerenders because the user is editing it or because
-  // the global state was modified by another control. We have to reset
-  // the form values in the second case.
+  const currentAnswers: Responses = { ...emptyQuestions, ...currentValues }
+
+  // This form can be rerendered because the global state was modified by
+  // another control.
   useEffect(() => {
-    if (
-      !isDirty &&
-      !_.isEqual(_.defaults(getValues(), emptyQuestions), stateQuestions)
-    ) {
-      reset(information.questions)
+    if (!_.isEqual(currentAnswers, stateAnswers)) {
+      reset(stateAnswers)
     }
-  })
+  }, [])
 
   const dispatch = useDispatch()
 

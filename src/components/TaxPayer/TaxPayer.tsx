@@ -39,7 +39,10 @@ const defaultTaxpayerUserForm: TaxPayerUserForm = {
   isForeignCountry: false,
   address: {
     address: '',
-    city: ''
+    city: '',
+    aptNo: '',
+    state: undefined,
+    zip: undefined
   },
   isTaxpayerDependent: false
 }
@@ -88,19 +91,14 @@ export default function PrimaryTaxpayer(): ReactElement {
     defaultValues: newTpForm
   })
 
-  const {
-    handleSubmit,
-    getValues,
-    reset,
-    formState: { isDirty }
-  } = methods
+  const { handleSubmit, getValues, reset } = methods
 
-  // Form rerenders happen either because the user is editing the form
-  // or because the global state has been updated by another control.
-  // We have to reset the form only in the second case here:
+  // This form can be rerendered because the global state was modified by
+  // another control.
   const currentValues = { ...defaultTaxpayerUserForm, ...getValues() }
+
   useEffect(() => {
-    if (!isDirty && !_.isEqual(currentValues, newTpForm)) {
+    if (!_.isEqual(currentValues, newTpForm)) {
       return reset(newTpForm)
     }
   })

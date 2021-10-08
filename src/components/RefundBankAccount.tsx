@@ -18,20 +18,14 @@ export default function RefundBankAccount(): ReactElement {
   const { navButtons, onAdvance } = usePager()
 
   const methods = useForm<Refund>({ defaultValues })
-  const {
-    handleSubmit,
-    reset,
-    formState: { isDirty },
-    getValues
-  } = methods
+  const { handleSubmit, reset, getValues } = methods
   // const variable dispatch to allow use inside function
   const dispatch = useDispatch()
 
-  // Form rerenders happen either because the user is editing the form
-  // or because the global state has been updated by another control.
-  // We have to reset the form only in the second case here:
+  // This form can be rerendered because the global state was modified by
+  // another control.
   useEffect(() => {
-    if (!isDirty && !_.isEqual(getValues(), defaultValues)) {
+    if (!_.isEqual(getValues(), defaultValues)) {
       return reset(defaultValues)
     }
   })
