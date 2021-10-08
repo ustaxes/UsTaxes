@@ -231,11 +231,14 @@ export default function W2JobInfo(): ReactElement {
       filingStatus === FilingStatus.MFS
     ) {
       return (
-        <Alert className="inner" severity="warning">
-          Filing status is set to Married Filing Separately.{' '}
-          <strong>{spouse.firstName}</strong>
-          &apos;s W2s will not be added to the return.
-        </Alert>
+        <div>
+          <Alert className="inner" severity="warning">
+            Filing status is set to Married Filing Separately.{' '}
+            <strong>{spouse.firstName}</strong>
+            &apos;s W2s will not be added to the return.
+          </Alert>
+          <br/>
+        </div>
       )
     }
   })()
