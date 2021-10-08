@@ -237,7 +237,7 @@ export default function W2JobInfo(): ReactElement {
             <strong>{spouse.firstName}</strong>
             &apos;s W2s will not be added to the return.
           </Alert>
-          <br/>
+          <br />
         </div>
       )
     }
