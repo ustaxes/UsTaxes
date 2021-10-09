@@ -101,8 +101,10 @@ export default function PrimaryTaxpayer(): ReactElement {
     (onAdvance: () => void) =>
     (form: TaxPayerUserForm): void => {
       dispatch(savePrimaryPersonInfo(asPrimaryPerson(form))),
-      dispatch(saveContactInfo(form)),
-      dispatch(saveStateResidencyInfo({ state: form.stateResidency as State }))
+        dispatch(saveContactInfo(form)),
+        dispatch(
+          saveStateResidencyInfo({ state: form.stateResidency as State })
+        )
       onAdvance()
     }
 
