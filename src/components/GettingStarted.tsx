@@ -42,9 +42,8 @@ export default function GettingStarted(): ReactElement {
         Interested in using UsTaxes? The income forms, return attachments,
         credits, and states of residency are provided below.
       </p>
-      <h2>Federal Filing Support</h2>
-      <h3>Supported Income Forms</h3>
-      The following income forms are (mostly) supported:
+      <h2>Supported Income Forms</h2>
+      The following federal income forms are (mostly) supported:
       <ul>
         <li>W2</li>
         <li>1099-INT</li>
@@ -57,7 +56,6 @@ export default function GettingStarted(): ReactElement {
         </li>
         <li>SSA-1099</li>
       </ul>
-      <h3>Supported Attachments to Form 1040</h3>
       USTaxes can attach the following to your 1040:
       <ul>
         <li>Schedule 1 (as related to Schedule E only)</li>
@@ -68,7 +66,6 @@ export default function GettingStarted(): ReactElement {
         <li>Schedule E</li>
         <li>F1040-V</li>
       </ul>
-      <h3>Supported Credits</h3>
       These federal income tax credits are supported:
       <ul>
         <li>Credit for Children and Other Dependents</li>
@@ -97,6 +94,9 @@ export default function GettingStarted(): ReactElement {
         state residency are supported, you should be able to use UsTaxes to
         paper file your return!
       </p>
+      <h2>Get Started</h2>
+      {isWeb() ? doubleButtons : singleButtons}
+      <h2>Get Involved!</h2>
       <p>
         The success of this project depends on user feedback. If you notice any
         issues at all with the project, please reach out to us!
@@ -113,8 +113,6 @@ export default function GettingStarted(): ReactElement {
           <Link href={urls.discord}>Discord channel</Link>.
         </li>
       </ul>
-      {isWeb() ? doubleButtons : singleButtons}
-      <h2>About This Project</h2>
       <p>
         UsTaxes is an open source project maintained by{' '}
         <Link href={urls.aidan}>Aidan Grimshaw</Link> and{' '}
