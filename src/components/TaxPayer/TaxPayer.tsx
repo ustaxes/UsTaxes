@@ -3,7 +3,8 @@ import { FormProvider, useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import {
   savePrimaryPersonInfo,
-  saveStateResidencyInfo
+  saveStateResidencyInfo,
+  saveContactInfo
 } from 'ustaxes/redux/actions'
 import {
   Address,
@@ -19,11 +20,15 @@ import { usePager } from 'ustaxes/components/pager'
 import { LabeledCheckbox, USStateDropDown } from 'ustaxes/components/input'
 import AddressFields from './Address'
 import { Grid } from '@material-ui/core'
+import { LabeledInput } from 'ustaxes/components/input'
+import { Patterns } from 'ustaxes/components/Patterns'
 
 interface TaxPayerUserForm {
   firstName: string
   lastName: string
   ssid: string
+  contactPhoneNumber?: string
+  contactEmail?: string
   role: PersonRole
   address: Address
   isForeignCountry: boolean
@@ -35,6 +40,8 @@ const defaultTaxpayerUserForm: TaxPayerUserForm = {
   firstName: '',
   lastName: '',
   ssid: '',
+  contactPhoneNumber: '',
+  contactEmail: '',
   role: PersonRole.PRIMARY,
   isForeignCountry: false,
   address: {
@@ -48,6 +55,8 @@ const asPrimaryPerson = (formData: TaxPayerUserForm): PrimaryPerson => ({
   address: formData.address,
   firstName: formData.firstName,
   lastName: formData.lastName,
+  contactPhoneNumber: formData.contactPhoneNumber,
+  contactEmail: formData.contactEmail,
   ssid: formData.ssid.replace(/-/g, ''),
   isTaxpayerDependent: formData.isTaxpayerDependent,
   role: PersonRole.PRIMARY
@@ -91,7 +100,8 @@ export default function PrimaryTaxpayer(): ReactElement {
   const onSubmit =
     (onAdvance: () => void) =>
     (form: TaxPayerUserForm): void => {
-      dispatch(savePrimaryPersonInfo(asPrimaryPerson(form)))
+      dispatch(savePrimaryPersonInfo(asPrimaryPerson(form))),
+      dispatch(saveContactInfo(form)),
       dispatch(saveStateResidencyInfo({ state: form.stateResidency as State }))
       onAdvance()
     }
@@ -101,6 +111,16 @@ export default function PrimaryTaxpayer(): ReactElement {
       <h2>Primary Taxpayer Information</h2>
       <Grid container spacing={2}>
         <PersonFields />
+        <LabeledInput
+          label="Contact phone number"
+          patternConfig={Patterns.usPhoneNumber}
+          name="contactPhoneNumber"
+        />
+        <LabeledInput
+          label="Contact email address"
+          required={true}
+          name="contactEmail"
+        />
         <LabeledCheckbox
           label="Check if you are a dependent"
           name="isTaxpayerDependent"

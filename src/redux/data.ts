@@ -11,6 +11,8 @@ export interface Person {
   firstName: string
   lastName: string
   ssid: string
+  contactPhoneNumber?: string
+  contactEmail?: string
   role: PersonRole
 }
 
