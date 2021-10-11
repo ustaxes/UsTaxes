@@ -3,10 +3,12 @@ import { FormProvider, useForm } from 'react-hook-form'
 import { useDispatch, useSelector, TaxesState } from 'ustaxes/redux'
 import {
   savePrimaryPersonInfo,
-  saveStateResidencyInfo
+  saveStateResidencyInfo,
+  saveContactInfo
 } from 'ustaxes/redux/actions'
 import {
   Address,
+  ContactInfo,
   PersonRole,
   PrimaryPerson,
   State,
@@ -19,11 +21,15 @@ import { LabeledCheckbox, USStateDropDown } from 'ustaxes/components/input'
 import AddressFields from './Address'
 import { Grid } from '@material-ui/core'
 import _ from 'lodash'
+import { LabeledInput } from 'ustaxes/components/input'
+import { Patterns } from 'ustaxes/components/Patterns'
 
 interface TaxPayerUserForm {
   firstName: string
   lastName: string
   ssid: string
+  contactPhoneNumber?: string
+  contactEmail?: string
   role: PersonRole
   address: Address
   isForeignCountry: boolean
@@ -35,6 +41,8 @@ const defaultTaxpayerUserForm: TaxPayerUserForm = {
   firstName: '',
   lastName: '',
   ssid: '',
+  contactPhoneNumber: '',
+  contactEmail: '',
   role: PersonRole.PRIMARY,
   isForeignCountry: false,
   address: {
@@ -54,6 +62,11 @@ const asPrimaryPerson = (formData: TaxPayerUserForm): PrimaryPerson => ({
   ssid: formData.ssid.replace(/-/g, ''),
   isTaxpayerDependent: formData.isTaxpayerDependent,
   role: PersonRole.PRIMARY
+})
+
+const asContactInfo = (formData: TaxPayerUserForm): ContactInfo => ({
+  contactPhoneNumber: formData.contactPhoneNumber,
+  contactEmail: formData.contactEmail
 })
 
 const asTaxPayerUserForm = (person: PrimaryPerson): TaxPayerUserForm => ({
@@ -80,9 +93,11 @@ export default function PrimaryTaxpayer(): ReactElement {
     ...defaultTaxpayerUserForm,
     ...(taxPayer.primaryPerson !== undefined
       ? {
+          ...asTaxPayerUserForm(taxPayer.primaryPerson),
+          contactPhoneNumber: taxPayer.contactPhoneNumber,
+          contactEmail: taxPayer.contactEmail,
           stateResidency:
-            stateResidency[0]?.state ?? taxPayer.primaryPerson.address.state,
-          ...asTaxPayerUserForm(taxPayer.primaryPerson)
+            stateResidency[0]?.state ?? taxPayer.primaryPerson.address.state
         }
       : {})
   }
@@ -105,6 +120,7 @@ export default function PrimaryTaxpayer(): ReactElement {
 
   const onSubmit = (form: TaxPayerUserForm): void => {
     dispatch(savePrimaryPersonInfo(asPrimaryPerson(form)))
+    dispatch(saveContactInfo(asContactInfo(form)))
     dispatch(saveStateResidencyInfo({ state: form.stateResidency as State }))
     onAdvance()
   }
@@ -114,6 +130,16 @@ export default function PrimaryTaxpayer(): ReactElement {
       <h2>Primary Taxpayer Information</h2>
       <Grid container spacing={2}>
         <PersonFields />
+        <LabeledInput
+          label="Contact phone number"
+          patternConfig={Patterns.usPhoneNumber}
+          name="contactPhoneNumber"
+        />
+        <LabeledInput
+          label="Contact email address"
+          required={true}
+          name="contactEmail"
+        />
         <LabeledCheckbox
           label="Check if you are a dependent"
           name="isTaxpayerDependent"

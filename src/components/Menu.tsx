@@ -24,7 +24,6 @@ import CreatePDF from './createPDF'
 import PrimaryTaxpayer from './TaxPayer'
 import RefundBankAccount from './RefundBankAccount'
 import SpouseAndDependent from './TaxPayer/SpouseAndDependent'
-import ContactInfo from './TaxPayer/ContactInfo'
 import F1099Info from './income/F1099Info'
 import EstimatedTaxes from './payments/EstimatedTaxes'
 import Summary from './Summary'
@@ -102,8 +101,7 @@ export const drawerSections: Section[] = [
         'Spouse and Dependents',
         Urls.taxPayer.spouseAndDependent,
         <SpouseAndDependent />
-      ),
-      item('Contact Information', Urls.taxPayer.contactInfo, <ContactInfo />)
+      )
     ]
   },
   {
