@@ -16,7 +16,6 @@ import {
 import GitHubIcon from '@material-ui/icons/GitHub'
 import TwitterIcon from '@material-ui/icons/Twitter'
 import { useDevice } from 'ustaxes/hooks/Device'
-import YearDropDown from './YearDropDown'
 import Urls from 'ustaxes/data/urls'
 import { Settings } from '@material-ui/icons'
 
@@ -161,7 +160,6 @@ function ResponsiveDrawer(props: DrawerItemsProps): ReactElement {
           </Link>
         </ListItem>
       </List>
-      <YearDropDown />
     </>
   )
 

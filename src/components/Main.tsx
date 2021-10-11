@@ -23,6 +23,7 @@ import { useFocus } from 'ustaxes/hooks/Focus'
 import Urls from 'ustaxes/data/urls'
 import DataPropagator from './DataPropagator'
 import UserSettings from './UserSettings'
+import YearStatusBar from './YearStatusBar'
 
 type Props = {
   isMobile: boolean
@@ -112,8 +113,11 @@ export default function Main(): ReactElement {
       justifyContent="center"
       direction="row"
     >
-      <Grid item sm={12} md={8} lg={6} className={classes.content}>
-        {children}
+      <Grid item sm={12} md={8} lg={6}>
+        <Grid item>{!isStartPage && <YearStatusBar />}</Grid>
+        <Grid item className={classes.content}>
+          {children}
+        </Grid>
       </Grid>
     </Grid>
   )
