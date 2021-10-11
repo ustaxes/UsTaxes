@@ -55,8 +55,6 @@ const asPrimaryPerson = (formData: TaxPayerUserForm): PrimaryPerson => ({
   address: formData.address,
   firstName: formData.firstName,
   lastName: formData.lastName,
-  contactPhoneNumber: formData.contactPhoneNumber,
-  contactEmail: formData.contactEmail,
   ssid: formData.ssid.replace(/-/g, ''),
   isTaxpayerDependent: formData.isTaxpayerDependent,
   role: PersonRole.PRIMARY
@@ -88,6 +86,8 @@ export default function PrimaryTaxpayer(): ReactElement {
       ...(taxPayer.primaryPerson !== undefined
         ? {
             ...asTaxPayerUserForm(taxPayer.primaryPerson),
+            contactPhoneNumber: taxPayer.contactPhoneNumber,
+            contactEmail: taxPayer.contactEmail,
             stateResidency:
               stateResidency[0]?.state ?? taxPayer.primaryPerson.address.state
           }
@@ -100,11 +100,9 @@ export default function PrimaryTaxpayer(): ReactElement {
   const onSubmit =
     (onAdvance: () => void) =>
     (form: TaxPayerUserForm): void => {
-      dispatch(savePrimaryPersonInfo(asPrimaryPerson(form))),
-        dispatch(saveContactInfo(form)),
-        dispatch(
-          saveStateResidencyInfo({ state: form.stateResidency as State })
-        )
+      dispatch(savePrimaryPersonInfo(asPrimaryPerson(form)))
+      dispatch(saveContactInfo(form))
+      dispatch(saveStateResidencyInfo({ state: form.stateResidency as State }))
       onAdvance()
     }
 
