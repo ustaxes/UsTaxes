@@ -8,6 +8,7 @@ import {
 } from 'ustaxes/redux/actions'
 import {
   Address,
+  ContactInfo,
   PersonRole,
   PrimaryPerson,
   State,
@@ -60,6 +61,11 @@ const asPrimaryPerson = (formData: TaxPayerUserForm): PrimaryPerson => ({
   role: PersonRole.PRIMARY
 })
 
+const asContactInfo = (formData: TaxPayerUserForm): ContactInfo => ({
+  contactPhoneNumber: formData.contactPhoneNumber,
+  contactEmail: formData.contactEmail
+})
+
 const asTaxPayerUserForm = (person: PrimaryPerson): TaxPayerUserForm => ({
   ...person,
   isForeignCountry: person.address.foreignCountry !== undefined,
@@ -97,17 +103,15 @@ export default function PrimaryTaxpayer(): ReactElement {
 
   const { handleSubmit } = methods
 
-  const onSubmit =
-    (onAdvance: () => void) =>
-    (form: TaxPayerUserForm): void => {
-      dispatch(savePrimaryPersonInfo(asPrimaryPerson(form)))
-      dispatch(saveContactInfo(form))
-      dispatch(saveStateResidencyInfo({ state: form.stateResidency as State }))
-      onAdvance()
-    }
+  const onSubmit = (form: TaxPayerUserForm): void => {
+    dispatch(savePrimaryPersonInfo(asPrimaryPerson(form)))
+    dispatch(saveContactInfo(asContactInfo(form)))
+    dispatch(saveStateResidencyInfo({ state: form.stateResidency as State }))
+    onAdvance()
+  }
 
   const page = (
-    <form tabIndex={-1} onSubmit={handleSubmit(onSubmit(onAdvance))}>
+    <form tabIndex={-1} onSubmit={handleSubmit(onSubmit)}>
       <h2>Primary Taxpayer Information</h2>
       <Grid container spacing={2}>
         <PersonFields />
