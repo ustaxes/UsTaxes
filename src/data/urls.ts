@@ -5,8 +5,7 @@ const Urls = {
   taxPayer: {
     root: '/taxpayer',
     info: '/info',
-    spouseAndDependent: '/spouseanddependent',
-    contactInfo: '/contact'
+    spouseAndDependent: '/spouseanddependent'
   },
   refund: '/refundinfo',
   questions: '/questions',
