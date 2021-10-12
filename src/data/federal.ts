@@ -150,6 +150,27 @@ export const fica = {
   }
 }
 
+// Net Investment Income Tax calculated on form 8960
+export const netInvestmentIncomeTax = {
+  taxRate: 0.038, // 3.8%
+  taxThreshold: (filingStatus: FilingStatus): number => {
+    switch (filingStatus) {
+      case FilingStatus.MFJ: {
+        return 250000
+      }
+      case FilingStatus.W: {
+        return 250000
+      }
+      case FilingStatus.MFS: {
+        return 125000
+      }
+      default: {
+        return 200000 // Single, Head of Household
+      }
+    }
+  }
+}
+
 // line 11 caps based on step one in instructions
 const line11Caps = [15820, 41756, 47440, 50954]
 const line11MfjCaps = [21710, 47646, 53330, 56844]

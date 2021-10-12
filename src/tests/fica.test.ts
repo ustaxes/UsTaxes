@@ -16,9 +16,8 @@ function hasSSRefund(f1040: F1040): boolean {
 }
 
 function hasAdditionalMedicareTax(f1040: F1040): boolean {
-  const s2 = f1040.schedule2
-  const l8 = s2?.l8()
-  return l8 !== undefined && l8 > 0
+  const medicareTax = f1040.f8959?.l18()
+  return medicareTax !== undefined && medicareTax > 0
 }
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -125,7 +124,7 @@ describe('fica', () => {
           expect(incomeOverThreshold).toBeGreaterThan(0)
 
           // Adds the right amount of additional tax
-          const s2l8 = f1040.schedule2?.l8()
+          const s2l8 = f1040.f8959?.l18()
           expect(s2l8).not.toBeUndefined()
           expect(s2l8).toEqual(
             Math.round(incomeOverThreshold * fica.additionalMedicareTaxRate)
