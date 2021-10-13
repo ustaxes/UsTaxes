@@ -5,6 +5,7 @@ import ScheduleE from './ScheduleE'
 import { sumFields } from './util'
 import log from 'ustaxes/log'
 import F1040 from './F1040'
+import F8889 from './F8889'
 
 const unimplemented = (message: string): void =>
   log.warn(`[Schedule 1] unimplemented ${message}`)
@@ -15,11 +16,15 @@ export default class Schedule1 extends Form {
   state: Information
   scheduleE?: ScheduleE
   f1040: F1040
+  f8889?: F8889
+  otherIncomeStrings: Set<string>
 
-  constructor(info: Information, f1040: F1040) {
+  constructor(info: Information, f1040: F1040, f8889?: F8889) {
     super()
     this.state = info
     this.f1040 = f1040
+    this.f8889 = f8889
+    this.otherIncomeStrings = new Set<string>()
   }
 
   addScheduleE = (scheduleE: ScheduleE): void => {
@@ -34,7 +39,12 @@ export default class Schedule1 extends Form {
   l5 = (): number | undefined => this.scheduleE?.l41()
   l6 = (): number | undefined => undefined
   l7 = (): number | undefined => undefined
-  l8 = (): number | undefined => undefined
+  l8 = (): number => {
+    if (this.f8889?.l16() !== undefined || this.f8889?.l20() !== undefined) {
+      this.otherIncomeStrings.add('HSA')
+    }
+    return sumFields([this.f8889?.l16(), this.f8889?.l20()])
+  }
   l9 = (): number =>
     sumFields([
       this.l1(),
@@ -49,7 +59,7 @@ export default class Schedule1 extends Form {
 
   l10 = (): number | undefined => undefined
   l11 = (): number | undefined => undefined
-  l12 = (): number | undefined => undefined
+  l12 = (): number | undefined => this.f8889?.l13()
   l13 = (): number | undefined => undefined
   l14 = (): number | undefined => undefined
   l15 = (): number | undefined => undefined
@@ -95,8 +105,8 @@ export default class Schedule1 extends Form {
       this.l5(),
       this.l6(),
       this.l7(),
-      undefined, // Other income type
-      undefined, // Other income type 2
+      Array.from(this.otherIncomeStrings).join(' '), // Other income type textbox
+      undefined, // Other income type 2 textbox
       this.l8(),
       this.l9(),
       this.l10(),

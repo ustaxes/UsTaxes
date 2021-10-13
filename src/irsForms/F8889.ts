@@ -16,6 +16,24 @@ export default class F8889 extends Form {
     this.state = state
   }
 
+  /* If you were covered, or considered covered, by a self-only HDHP and a family HDHP 
+     at different times during the year, check the box for the plan that was in effect 
+     for a longer period. If you were covered by both a self-only HDHP and a family HDHP 
+     at the same time, you are treated as having family coverage during that period. 
+     If, on the first day of the last month of your tax year (December 1 for most taxpayers), 
+     you had family coverage, check the "family" box.
+  */
+  determineCoverageType = (): string => {
+    return 'self-only'
+  }
+
+  /* Include on line 2 only those amounts you, or others on your behalf, contributed to your HSA in 2020. 
+     Also, include those contributions made from January 1, 2021, through April 15, 2021, that were for 2020. 
+     Do not include employer contributions (see line 9) or amounts rolled over from another HSA or Archer MSA. 
+     See Rollovers, earlier. Also, do not include any qualified HSA funding distributions (see line 10). 
+     Contributions to an employee's account through a cafeteria plan are treated as employer contributions 
+     and are not included on line 2.
+  */
   l2 = (): number | undefined => undefined
   l3 = (): number | undefined => undefined
   l4 = (): number | undefined => undefined
