@@ -95,7 +95,7 @@ export default class F8960 extends Form {
       this.l7()
     ])
   // Todo: Implement Schedule A
-  l9a = (): number | undefined => undefined // this.f1040.scheduleA?.l9()
+  l9a = (): number | undefined => this.f1040.scheduleA?.l9()
   l9b = (): number | undefined => undefined
   l9c = (): number | undefined => undefined
   l9d = (): number => sumFields([this.l9a(), this.l9b(), this.l9c()])
