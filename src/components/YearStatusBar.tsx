@@ -9,7 +9,8 @@ const YearStatusBar = (): ReactElement => {
   const [isOpen, setOpen] = useState(false)
 
   const openButton = (
-    <Link href=""
+    <Link
+      href=""
       onClick={(e) => {
         e.preventDefault()
         setOpen(true)
