@@ -76,6 +76,11 @@ export interface IncomeW2 {
   stateWithholding?: number
 }
 
+export interface EstimatedTaxPayments {
+  label: string
+  payment: number
+}
+
 export enum Income1099Type {
   B = 'B',
   INT = 'INT',
@@ -314,6 +319,7 @@ export interface Information {
   f1099s: Supported1099[]
   w2s: IncomeW2[]
   realEstate: Property[]
+  estimatedTaxes: EstimatedTaxPayments[]
   f1098es: F1098e[]
   refund?: Refund
   taxPayer: TaxPayer
@@ -332,6 +338,7 @@ export interface ArrayItemEditAction<A> {
 
 export type EditDependentAction = ArrayItemEditAction<Dependent>
 export type EditW2Action = ArrayItemEditAction<IncomeW2>
+export type EditEstimatedTaxesAction = ArrayItemEditAction<EstimatedTaxPayments>
 export type Edit1099Action = ArrayItemEditAction<Supported1099>
 export type EditPropertyAction = ArrayItemEditAction<Property>
 export type Edit1098eAction = ArrayItemEditAction<F1098e>

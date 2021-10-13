@@ -10,7 +10,6 @@ import { createStatePDF, createStateReturn, stateForm } from '../stateForms'
 import { create1040 } from 'ustaxes/irsForms/Main'
 import { isRight } from 'ustaxes/util'
 import { savePDF } from 'ustaxes/pdfFiller/pdfHandler'
-import { If } from 'react-if'
 import { Box, Button } from '@material-ui/core'
 
 const useStyles = makeStyles((theme) => ({
@@ -84,27 +83,27 @@ export default function CreatePDF(): ReactElement {
           Create Federal 1040
         </Button>
       </Box>
-      <If
-        condition={
-          residency !== undefined && stateForm[residency] !== undefined
+      {(() => {
+        if (residency !== undefined && stateForm[residency] !== undefined) {
+          return (
+            <Box
+              display="flex"
+              justifyContent="flex-start"
+              paddingTop={2}
+              paddingBottom={1}
+            >
+              <Button
+                type="button"
+                onClick={stateReturn}
+                variant="contained"
+                color="primary"
+              >
+                Create {residency} Return
+              </Button>
+            </Box>
+          )
         }
-      >
-        <Box
-          display="flex"
-          justifyContent="flex-start"
-          paddingTop={2}
-          paddingBottom={1}
-        >
-          <Button
-            type="button"
-            onClick={stateReturn}
-            variant="contained"
-            color="primary"
-          >
-            Create {residency} Return
-          </Button>
-        </Box>
-      </If>
+      })()}
       {navButtons}
     </form>
   )

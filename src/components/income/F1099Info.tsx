@@ -143,6 +143,9 @@ const toUserInput = (f: Supported1099): F1099UserInput => ({
       case Income1099Type.R: {
         return f.form
       }
+      case Income1099Type.SSA: {
+        return f.form
+      }
     }
   })()
 })
