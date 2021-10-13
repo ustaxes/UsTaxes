@@ -54,7 +54,7 @@ const YearDropDown = (props: YearDropProps): ReactElement => {
         <Grid item>
           <Button
             variant="contained"
-            color={dirty ? 'secondary' : 'primary'}
+            color={dirty ? 'primary' : 'secondary'}
             onClick={() => handleSubmit(onSubmit)()}
           >
             Update

@@ -114,7 +114,7 @@ export default function Main(): ReactElement {
       direction="row"
     >
       <Grid item sm={12} md={8} lg={6}>
-        <Grid item>{!isStartPage && <YearStatusBar />}</Grid>
+        {!isStartPage && <Grid item className={classes.content}> <YearStatusBar /></Grid> }
         <Grid item className={classes.content}>
           {children}
         </Grid>
