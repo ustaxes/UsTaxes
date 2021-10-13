@@ -3,17 +3,20 @@ import Form, { FormTag } from './Form'
 import { computeField, displayNumber, sumFields } from './util'
 import TaxPayer from 'ustaxes/redux/TaxPayer'
 import F8959 from './F8959'
+import F8960 from './F8960'
 
 export default class Schedule2 extends Form {
   tag: FormTag = 'f1040s2'
   sequenceIndex = 2
   tp: TaxPayer
   f8959?: F8959
+  f8960?: F8960
 
-  constructor(tp: TP, f8959?: F8959) {
+  constructor(tp: TP, f8959?: F8959, f8960?: F8960) {
     super()
     this.tp = new TaxPayer(tp)
     this.f8959 = f8959
+    this.f8960 = f8960
   }
 
   // Part I: Tax
@@ -28,7 +31,8 @@ export default class Schedule2 extends Form {
   l6 = (): number | undefined => undefined // TODO: additional tax on retirement accounts
   l7a = (): number | undefined => undefined // TODO: household employment taxes
   l7b = (): number | undefined => undefined // TODO: repayment of first-time homebuyer credit
-  l8 = (): number | undefined => this.f8959?.l18()
+  l8 = (): number | undefined =>
+    sumFields([this.f8959?.l18(), this.f8960?.l17()])
   l9 = (): number | undefined => undefined // TODO: section 965 net tax liability
   l10 = (): number | undefined =>
     sumFields([
@@ -56,10 +60,10 @@ export default class Schedule2 extends Form {
       this.l6(),
       this.l7a(),
       this.l7b(),
-      this.f8959 !== undefined, // 8959 checkbox
+      this.f8959 !== undefined, // Form 8959 checkbox
+      this.f8960 !== undefined, // Form 8960 checkbox
       undefined,
       undefined,
-      undefined, // Form 8960 checkbox and 'instructions' checkbox and textbox
       this.l8(),
       this.l9(),
       this.l10()
