@@ -6,7 +6,7 @@ import * as arbitraries from './arbitraries'
 describe('f1040', () => {
   it('should be created in', () => {
     fc.assert(
-      fc.property(arbitraries.information, (information) => {
+      fc.property(arbitraries.information(), (information) => {
         const f1040Res = create1040(information)
         if (isRight(f1040Res)) {
           const [f1040, forms] = f1040Res.right
@@ -22,7 +22,7 @@ describe('f1040', () => {
 
   it('should not create duplicate schedules in', () => {
     fc.assert(
-      fc.property(arbitraries.information, (information) => {
+      fc.property(arbitraries.information(), (information) => {
         const f1040Res = create1040(information)
         if (isRight(f1040Res)) {
           const [, forms] = f1040Res.right
@@ -37,7 +37,7 @@ describe('f1040', () => {
 
   it('should arrange attachments according to sequence order', () => {
     fc.assert(
-      fc.property(arbitraries.information, (information) => {
+      fc.property(arbitraries.information(), (information) => {
         const f1040Res = create1040(information)
         if (isRight(f1040Res)) {
           const [, forms] = f1040Res.right

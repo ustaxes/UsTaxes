@@ -23,7 +23,7 @@ beforeAll(async () => jest.spyOn(console, 'warn').mockImplementation(() => {}))
 describe('ScheduleEIC', () => {
   it('should disallow EIC for income below threshold', () => {
     fc.assert(
-      fc.property(arbitraries.f1040, ([f1040]) => {
+      fc.property(arbitraries.f1040(), ([f1040]) => {
         if (f1040.info.taxPayer.filingStatus !== undefined) {
           const formula = federal.EIC.formulas[f1040.info.taxPayer.filingStatus]
           if (

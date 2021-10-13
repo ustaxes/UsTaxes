@@ -327,8 +327,16 @@ export interface Information {
   stateResidencies: StateResidency[]
 }
 
-export interface TaxesState {
-  information: Information
+export enum TaxYears {
+  Y2019 = '2019',
+  Y2020 = '2020',
+  Y2021 = '2021'
+}
+
+export type TaxYear = keyof typeof TaxYears
+
+export type TaxesState = Partial<{ [K in TaxYear]: Information }> & {
+  activeYear: TaxYear
 }
 
 export interface ArrayItemEditAction<A> {

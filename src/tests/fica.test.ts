@@ -36,7 +36,7 @@ function hasAttachment<FormType>(
 describe('fica', () => {
   it('should give refund SS tax overpayment only in some conditions', () => {
     fc.assert(
-      fc.property(arbitraries.information, (information) => {
+      fc.property(arbitraries.information(), (information) => {
         const f1040Result = create1040(information)
         if (isRight(f1040Result)) {
           const [f1040, forms] = f1040Result.right
@@ -69,7 +69,7 @@ describe('fica', () => {
 
   it('should give SS refund based on filing status', () => {
     fc.assert(
-      fc.property(arbitraries.f1040, ([f1040]) => {
+      fc.property(arbitraries.f1040(), ([f1040]) => {
         if (hasSSRefund(f1040)) {
           const s3l10 = f1040.schedule3?.l10()
           expect(s3l10).not.toBeUndefined()
@@ -87,7 +87,7 @@ describe('fica', () => {
 
   it('should add Additional Medicare Tax form 8959', () => {
     fc.assert(
-      fc.property(arbitraries.f1040, ([f1040, forms]) => {
+      fc.property(arbitraries.f1040(), ([f1040, forms]) => {
         if (f1040.info.taxPayer.filingStatus === undefined) {
           return
         }
@@ -112,7 +112,7 @@ describe('fica', () => {
 
   it('should add Additional Medicare Tax based on filing status', () => {
     fc.assert(
-      fc.property(arbitraries.f1040, ([f1040]) => {
+      fc.property(arbitraries.f1040(), ([f1040]) => {
         if (f1040.info.taxPayer.filingStatus === undefined) {
           return
         }
