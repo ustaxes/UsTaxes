@@ -27,7 +27,6 @@ import RefundBankAccount from './RefundBankAccount'
 import SpouseAndDependent from './TaxPayer/SpouseAndDependent'
 import F1099Info from './income/F1099Info'
 import EstimatedTaxes from './payments/EstimatedTaxes'
-import Summary from './Summary'
 import RealEstate from './income/RealEstate'
 import GettingStarted from './GettingStarted'
 import F1098eInfo from './deductions/F1098eInfo'
@@ -127,7 +126,6 @@ export const drawerSections: Section[] = [
     items: [
       item('Refund Information', Urls.refund, <RefundBankAccount />),
       item('Informational Questions', Urls.questions, <Questions />),
-      item('Summary', Urls.summary, <Summary />),
       item('Review and Print', Urls.createPdf, <CreatePDF />)
     ]
   }

@@ -104,7 +104,7 @@ const Summary = (): ReactElement => {
     (state: TaxesState) => state.information
   )
 
-  const { onAdvance, navButtons } = usePager()
+  const { onAdvance } = usePager()
 
   const summaryBody = (() => {
     if (information.taxPayer.primaryPerson === undefined) {
@@ -135,7 +135,6 @@ const Summary = (): ReactElement => {
     <form tabIndex={-1} onSubmit={onAdvance}>
       <h2>Summary</h2>
       {summaryBody}
-      {navButtons}
     </form>
   )
 }
