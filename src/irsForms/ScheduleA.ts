@@ -17,5 +17,8 @@ export default class ScheduleA extends Form {
     return 0
   }
 
+  // Used in Form 8960
+  l9 = (): number | undefined => undefined
+
   fields = (): Field[] => []
 }
