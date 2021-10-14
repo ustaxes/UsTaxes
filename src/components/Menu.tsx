@@ -1,6 +1,5 @@
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useState } from 'react'
 import { useLocation } from 'react-router-dom'
-import { isMobile } from 'react-device-detect'
 
 import {
   createStyles,
@@ -134,16 +133,7 @@ export const drawerSections: Section[] = [
 
 const Menu = (): ReactElement => {
   const classes = useStyles()
-  const [isOpen, setOpen] = useState(!isMobile)
-
-  useEffect(() => {
-    console.log(isMobile)
-    if (isMobile) {
-      setOpen(false)
-    } else {
-      setOpen(true)
-    }
-  }, [isMobile])
+  const [isOpen, setOpen] = useState(false)
 
   return (
     <>
