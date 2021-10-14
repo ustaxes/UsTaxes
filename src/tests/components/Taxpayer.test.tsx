@@ -1,10 +1,13 @@
+import { ReactElement } from 'react'
 import { render, waitFor } from '@testing-library/react'
+import { Provider } from 'react-redux'
 
-import { Information, TaxYears } from 'ustaxes/redux/data'
+import { createStoreUnpersisted } from 'ustaxes/redux/store'
+import { PagerButtons, PagerContext } from 'ustaxes/components/pager'
+import { Information } from 'ustaxes/redux/data'
 import { blankState } from 'ustaxes/redux/reducer'
 import TaxPayer from 'ustaxes/components/TaxPayer'
 import userEvent from '@testing-library/user-event'
-import { TestComponent } from '../common/Page'
 
 jest.setTimeout(1000 * 60 * 10)
 
@@ -22,14 +25,32 @@ jest.mock('redux-persist', () => {
 })
 
 describe('Taxpayer', () => {
-  const taxpayerComponent = (info: Information = blankState) => (
-    <TestComponent state={{ Y2020: info, activeYear: TaxYears.Y2020 }}>
-      <TaxPayer />
-    </TestComponent>
-  )
+  const navButtons = <PagerButtons submitText="save" />
+
+  const testComponent = (
+    info: Information | undefined = blankState
+  ): ReactElement => {
+    const store = createStoreUnpersisted(info)
+    const component = (
+      <Provider store={store}>
+        <PagerContext.Provider
+          value={{
+            onAdvance: () => {
+              /* do nothing */
+            },
+            navButtons
+          }}
+        >
+          <TaxPayer />
+        </PagerContext.Provider>
+      </Provider>
+    )
+
+    return component
+  }
 
   it('checkbox should open foreign country fields', () => {
-    const component = taxpayerComponent()
+    const component = testComponent()
     const result = render(component)
 
     const allFieldNames = (): string[] =>

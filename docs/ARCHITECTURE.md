@@ -57,8 +57,6 @@ export interface Information {
 }
 ```
 
-_Note_: A separate copy of this data is preserved for each tax year. When the user is ready to begin the next tax year all of the previous year's data may be copied to the new year, ready for modifications.
-
 - **f1099s**: An array of all 1099s that have been added. Note this includes 1099-B which goes to Schedule D, 1099-INT which goes to Schedule B, and 1099-DIV which provides data that goes to both Schedule B and Schedule D. This confusion is not needed at this level of the data model. Later when PDFs are created, the correct data can be accessed by the code managing those schedules.
 - **w2s**: All W-2s that have been added for both primary taxpayer and spouse
 - **refund**: Direct deposit information

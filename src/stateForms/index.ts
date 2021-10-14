@@ -3,7 +3,7 @@ import { PDFDocument } from 'pdf-lib'
 import F1040 from '../irsForms/F1040'
 import { fillPDF } from '../pdfFiller/fillPdf'
 import { combinePdfs, downloadPDF } from '../pdfFiller/pdfHandler'
-import { State, Information, TaxYear } from '../redux/data'
+import { State, Information } from '../redux/data'
 import Form from './Form'
 import il1040 from './IL/IL1040'
 
@@ -13,23 +13,17 @@ export const stateForm: {
   IL: il1040
 }
 
-export const canCreateFederalReturn = (taxYear: TaxYear): boolean =>
-  taxYear === 'Y2020'
-
 export const createStateReturn = (
   info: Information,
-  f1040: F1040,
-  taxYear: TaxYear
+  f1040: F1040
 ): Form[] | undefined => {
-  if (taxYear === 'Y2020') {
-    const residency = info.stateResidencies[0]
-    if (residency !== undefined) {
-      const form = stateForm[residency.state]?.call(undefined, info, f1040)
-      if (form !== undefined) {
-        return [form, ...form?.attachments()].sort(
-          (a, b) => a.formOrder - b.formOrder
-        )
-      }
+  const residency = info.stateResidencies[0]
+  if (residency !== undefined) {
+    const form = stateForm[residency.state]?.call(undefined, info, f1040)
+    if (form !== undefined) {
+      return [form, ...form?.attachments()].sort(
+        (a, b) => a.formOrder - b.formOrder
+      )
     }
   }
 }

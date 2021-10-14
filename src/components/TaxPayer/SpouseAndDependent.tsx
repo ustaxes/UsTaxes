@@ -1,7 +1,7 @@
 import { ReactElement } from 'react'
 
 import { useForm, FormProvider } from 'react-hook-form'
-import { useDispatch, useSelector, TaxesState } from 'ustaxes/redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { Patterns } from 'ustaxes/components/Patterns'
 import {
   LabeledInput,
@@ -10,6 +10,7 @@ import {
   GenericLabeledDropdown
 } from 'ustaxes/components/input'
 import {
+  TaxesState,
   TaxPayer,
   Dependent,
   Spouse,

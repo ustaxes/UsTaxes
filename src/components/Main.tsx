@@ -15,15 +15,13 @@ import { StateLoader } from './debug'
 import NoMatchPage from './NoMatchPage'
 import SkipToLinks from './SkipToLinks'
 import ScrollTop from './ScrollTop'
-import Menu, { drawerSections, getTitleAndPage } from './Menu'
+import Menu, { drawerSections } from './Menu'
 import { Section, SectionItem } from './ResponsiveDrawer'
 
 import { useDevice } from 'ustaxes/hooks/Device'
 import { useFocus } from 'ustaxes/hooks/Focus'
 import Urls from 'ustaxes/data/urls'
-import DataPropagator from './DataPropagator'
 import UserSettings from './UserSettings'
-import YearStatusBar from './YearStatusBar'
 
 type Props = {
   isMobile: boolean
@@ -98,11 +96,10 @@ export default function Main(): ReactElement {
     }
   ]
 
-  const steps: SectionItem[] = drawerSections.flatMap(
-    (section: Section) => section.items
-  )
-
-  const allItems: SectionItem[] = [...steps, ...backPages]
+  const allItems: SectionItem[] = [
+    ...drawerSections.flatMap((section: Section) => section.items),
+    ...backPages
+  ]
 
   const Layout = ({ children }: PropsWithChildren<{ children: ReactNode }>) => (
     <Grid
@@ -113,16 +110,8 @@ export default function Main(): ReactElement {
       justifyContent="center"
       direction="row"
     >
-      <Grid item sm={12} md={8} lg={6}>
-        {!isStartPage && (
-          <Grid item className={classes.content}>
-            {' '}
-            <YearStatusBar />
-          </Grid>
-        )}
-        <Grid item className={classes.content}>
-          {children}
-        </Grid>
+      <Grid item sm={12} md={8} lg={6} className={classes.content}>
+        {children}
       </Grid>
     </Grid>
   )
@@ -134,23 +123,13 @@ export default function Main(): ReactElement {
       {isMobile && !isStartPage && <div className={classes.toolbar} />}
       <div className={classes.container}>
         <StateLoader />
-        <PagerProvider pages={steps}>
+        <PagerProvider pages={allItems}>
           <Switch>
             <Redirect path="/" to={Urls.default} exact />
             {allItems.map((item) => (
               <Route key={item.title} exact path={item.url}>
-                {!isStartPage && (
-                  <Menu
-                    title={getTitleAndPage(
-                      drawerSections,
-                      useLocation().pathname
-                    )}
-                  />
-                )}
-                <Layout>
-                  {!isStartPage && <DataPropagator />}
-                  {item.element}
-                </Layout>
+                {!isStartPage && <Menu />}
+                <Layout>{item.element}</Layout>
               </Route>
             ))}
             <Route>

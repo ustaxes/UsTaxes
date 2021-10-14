@@ -6,7 +6,6 @@ import _ from 'lodash'
 import log from '../log'
 import { buildPdf, downloadPDF, savePDF } from '../pdfFiller/pdfHandler'
 import { Information } from '../redux/data'
-import TaxesStateMethods from 'ustaxes/redux/TaxesState'
 
 // opens new with filled information in the window of the component it is called from
 export async function create1040PDF(state: Information): Promise<Uint8Array> {
@@ -32,12 +31,6 @@ export async function create1040PDF(state: Information): Promise<Uint8Array> {
 
 // opens new with filled information in the window of the component it is called from
 export async function createPDFPopup(defaultFilename: string): Promise<void> {
-  const information = new TaxesStateMethods(store.getState()).info()
-  if (information === undefined) {
-    throw new Error(
-      `Information was undefined for tax year: ${store.getState().activeYear}`
-    )
-  }
-  const pdfBytes = await create1040PDF(information)
+  const pdfBytes = await create1040PDF(store.getState().information)
   return await savePDF(pdfBytes, defaultFilename)
 }

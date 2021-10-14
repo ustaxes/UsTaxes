@@ -1,10 +1,4 @@
-import {
-  createContext,
-  useState,
-  PropsWithChildren,
-  ReactElement,
-  ReactNode
-} from 'react'
+import { createContext, useState, PropsWithChildren, ReactElement } from 'react'
 import { useMediaQuery, Button, Grid } from '@material-ui/core'
 import { useContext } from 'react'
 import { Link, useHistory } from 'react-router-dom'
@@ -64,7 +58,7 @@ export const PagerProvider = <A extends Page>({
   const navButtons: ReactElement = (
     <PagerButtons
       previousUrl={prev?.url}
-      submitText={onAdvance !== undefined ? 'Save and Continue' : undefined}
+      submitText={onAdvance !== undefined ? 'Save and Continue' : 'Create PDF'}
     />
   )
 
@@ -86,7 +80,7 @@ export const PagerProvider = <A extends Page>({
 
 interface PagerButtonsProps {
   previousUrl?: string
-  submitText?: string
+  submitText: string
 }
 
 export const PagerButtons = ({
@@ -113,23 +107,19 @@ export const PagerButtons = ({
     }
   })()
 
-  const submitButton: ReactNode = (() => {
-    if (submitText !== undefined) {
-      return (
-        <Grid item xs={isMobile ? 12 : undefined}>
-          <Button
-            type="submit"
-            name="submit"
-            variant="contained"
-            color="primary"
-            fullWidth
-          >
-            {submitText}
-          </Button>
-        </Grid>
-      )
-    }
-  })()
+  const submitButton = (() => (
+    <Grid item xs={isMobile ? 12 : undefined}>
+      <Button
+        type="submit"
+        name="submit"
+        variant="contained"
+        color="primary"
+        fullWidth
+      >
+        {submitText}
+      </Button>
+    </Grid>
+  ))()
 
   return (
     <Grid container spacing={2} direction={isMobile ? 'row-reverse' : 'row'}>

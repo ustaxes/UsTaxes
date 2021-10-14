@@ -2,9 +2,7 @@
 
 ## What is UsTaxes?
 
-UsTaxes is a free open source tax filing application that can be used to file the Federal 1040 form. It is available in both [web](https://ustaxes.org/) and [desktop](#desktop-application) versions. It is provided free of charge and requires no sharing of personal data. Data is only saved in the browser's local storage or to a local file.
-
-Work is currently underway to support as many 2020 returns as possible, and to extend the software for 2019 and 2021 as well.
+UsTaxes is a free open source tax filing application that can be used to file the Federal 1040 form. It is available in both [web](https://ustaxes.org/) and [desktop](#desktop-application) versions. It is provided free of charge and requires no sharing of personal data.
 
 ## Supported Income data
 

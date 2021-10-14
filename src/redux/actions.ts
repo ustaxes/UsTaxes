@@ -16,10 +16,8 @@ import {
   EditW2Action,
   EditEstimatedTaxesAction,
   Edit1098eAction,
-  StateResidency,
-  TaxYear,
-  Information,
   TaxesState,
+  StateResidency,
   EstimatedTaxPayments
 } from './data'
 import { ValidateFunction } from 'ajv'
@@ -53,15 +51,11 @@ export enum ActionName {
   ADD_1098e = 'ADD_1098e',
   EDIT_1098e = 'EDIT_1098e',
   REMOVE_1098e = 'REMOVE_1098e',
-  SET_INFO = 'SET_INFO',
-  SET_ACTIVE_YEAR = 'SET_ACTIVE_YEAR',
-  PROPAGATE_YEAR_DATA = 'PROPAGATE_YEAR_DATA',
-  SET_WHOLE_STATE = 'SET_WHOLE_STATE'
+  SET_ENTIRE_STATE = 'SET_ENTIRE_STATE'
 }
 
 interface Save<T, R> {
   type: T
-  year: TaxYear
   formData: R
 }
 
@@ -106,9 +100,7 @@ type AnswerQuestion = Save<typeof ActionName.ANSWER_QUESTION, Responses>
 type Add1098e = Save<typeof ActionName.ADD_1098e, F1098e>
 type Edit1098e = Save<typeof ActionName.EDIT_1098e, Edit1098eAction>
 type Remove1098e = Save<typeof ActionName.REMOVE_1098e, number>
-type SetInfo = Save<typeof ActionName.SET_INFO, Information>
-type SetActiveYear = Save<typeof ActionName.SET_ACTIVE_YEAR, TaxYear>
-type SetWholeState = Save<typeof ActionName.SET_WHOLE_STATE, TaxesState>
+type SetEntireState = Save<typeof ActionName.SET_ENTIRE_STATE, TaxesState>
 
 export type Actions =
   | SaveRefundInfo
@@ -137,21 +129,17 @@ export type Actions =
   | Add1098e
   | Edit1098e
   | Remove1098e
-  | SetInfo
-  | SetActiveYear
-  | SetWholeState
+  | SetEntireState
 
-export type SignalAction = (year: TaxYear) => Actions
-export type ActionCreator<A> = (formData: A) => SignalAction
+export type ActionCreator<A> = (formData: A) => Actions
 
 function signalAction<T extends ActionName>(
   t: T
-): (year: TaxYear) => Save<T, Record<string, never>> {
-  return (year: TaxYear) => ({
+): Save<T, Record<string, never>> {
+  return {
     type: t,
-    year,
     formData: {}
-  })
+  }
 }
 
 /**
@@ -163,13 +151,11 @@ function signalAction<T extends ActionName>(
 function makeActionCreator<A, T extends ActionName>(
   t: T,
   validate: ValidateFunction<A>
-): (formData: A) => (year: TaxYear) => Save<T, A> {
-  return (formData: A) =>
-    (year: TaxYear): Save<typeof t, A> => ({
-      type: t,
-      year,
-      formData: checkType<A>(formData, validate)
-    })
+): (formData: A) => Save<T, A> {
+  return (formData: A): Save<typeof t, A> => ({
+    type: t,
+    formData: checkType<A>(formData, validate)
+  })
 }
 
 /**
@@ -180,13 +166,11 @@ function makePreprocessActionCreator<A, T extends ActionName>(
   t: T,
   validate: ValidateFunction<A>,
   clean: (d: A) => Partial<A>
-): (formData: A) => (year: TaxYear) => Save<T, A> {
-  return (formData: A) =>
-    (year: TaxYear): Save<T, A> => ({
-      type: t,
-      year,
-      formData: checkType({ ...formData, ...clean(formData) }, validate)
-    })
+): (formData: A) => Save<T, A> {
+  return (formData: A): Save<T, A> => ({
+    type: t,
+    formData: checkType({ ...formData, ...clean(formData) }, validate)
+  })
 }
 
 export const saveRefundInfo: ActionCreator<Refund> = makeActionCreator(
@@ -269,7 +253,7 @@ export const addSpouse: ActionCreator<Spouse> = makePreprocessActionCreator(
   cleanPerson
 )
 
-export const removeSpouse: SignalAction = signalAction(ActionName.REMOVE_SPOUSE)
+export const removeSpouse: Actions = signalAction(ActionName.REMOVE_SPOUSE)
 
 export const addW2: ActionCreator<IncomeW2> = makeActionCreator(
   ActionName.ADD_W2,
@@ -367,17 +351,7 @@ export const remove1098e: ActionCreator<number> = makeActionCreator(
 )
 
 // debugging purposes only, leaving unchecked.
-export const setInfo: ActionCreator<Information> = makeActionCreator(
-  ActionName.SET_INFO,
-  ajv.getSchema('#/definitions/Information') as ValidateFunction<Information>
-)
-
-export const setActiveYear: ActionCreator<TaxYear> = makeActionCreator(
-  ActionName.SET_ACTIVE_YEAR,
-  ajv.getSchema('#/definitions/TaxYear') as ValidateFunction<TaxYear>
-)
-
-export const setWholeState: ActionCreator<TaxesState> = makeActionCreator(
-  ActionName.SET_WHOLE_STATE,
-  ajv.getSchema('#/definitions/TaxesState') as ValidateFunction<TaxesState>
-)
+export const setEntireState = (formData: TaxesState): SetEntireState => ({
+  type: ActionName.SET_ENTIRE_STATE,
+  formData
+})
