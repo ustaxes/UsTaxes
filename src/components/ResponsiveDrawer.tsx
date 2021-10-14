@@ -1,5 +1,6 @@
 import { Dispatch, Fragment, ReactElement, SetStateAction } from 'react'
 import { useLocation, NavLink, Link } from 'react-router-dom'
+import { isMobile } from 'react-device-detect'
 import {
   createStyles,
   makeStyles,
@@ -16,6 +17,7 @@ import {
 import GitHubIcon from '@material-ui/icons/GitHub'
 import TwitterIcon from '@material-ui/icons/Twitter'
 import { Settings } from '@material-ui/icons'
+import Urls from 'ustaxes/data/urls'
 
 const drawerWidth = 240
 
