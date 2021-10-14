@@ -61,7 +61,7 @@ export default function CreatePDF(): ReactElement {
 
   return (
     <div>
-      <Summary/>
+      <Summary />
       <form tabIndex={-1}>
         <h2>Print Copy to File</h2>
         <div className={classes.root}>
