@@ -22,7 +22,7 @@ const withStateReturn = (
   }
 
   const [f1040] = f1040Result.right
-  const stateReturn = createStateReturn(info, f1040, 'Y2020')
+  const stateReturn = createStateReturn(info, f1040)
   if (stateReturn === undefined) {
     fail('IL Return creation failed')
   }
@@ -30,10 +30,10 @@ const withStateReturn = (
   test(f1040Result.right, stateReturn)
 }
 
-describe('il year 2020', () => {
+describe('il', () => {
   it('should produce correct withholding attachments in', () => {
     fc.assert(
-      fc.property(arbitraries.information(), fc.context(), (info, ctx) => {
+      fc.property(arbitraries.information, fc.context(), (info, ctx) => {
         info.stateResidencies = [{ state: 'IL' }]
         info.w2s.forEach((w2) => {
           w2.state = 'IL'

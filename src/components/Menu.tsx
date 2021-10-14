@@ -1,4 +1,5 @@
 import { ReactElement, useEffect, useState } from 'react'
+import { useLocation } from 'react-router-dom'
 
 import {
   createStyles,
@@ -65,10 +66,7 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 )
 
-export const getTitleAndPage = (
-  sections: Section[],
-  currentUrl: string
-): string => {
+const getTitleAndPage = (sections: Section[], currentUrl: string): string => {
   let currentSection
   let currentPage
 
@@ -135,11 +133,7 @@ export const drawerSections: Section[] = [
   }
 ]
 
-interface MenuProps {
-  title: string
-}
-
-const Menu = ({ title }: MenuProps): ReactElement => {
+const Menu = (): ReactElement => {
   const classes = useStyles()
   const { isMobile } = useDevice()
   const [isOpen, setOpen] = useState(!isMobile)
@@ -172,7 +166,9 @@ const Menu = ({ title }: MenuProps): ReactElement => {
             <Typography className={classes.title}>Menu</Typography>
           </Slide>
           <Slide in={!isOpen} direction={'left'}>
-            <Typography className={classes.title}>{title}</Typography>
+            <Typography className={classes.title}>
+              {getTitleAndPage(drawerSections, useLocation().pathname)}
+            </Typography>
           </Slide>
         </Toolbar>
       </AppBar>

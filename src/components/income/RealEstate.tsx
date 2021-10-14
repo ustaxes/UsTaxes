@@ -1,6 +1,6 @@
 import { ReactElement } from 'react'
 import { Message, useForm, useWatch, FormProvider } from 'react-hook-form'
-import { useDispatch, useSelector, TaxesState } from 'ustaxes/redux'
+import { useDispatch, useSelector } from 'react-redux'
 import {
   addProperty,
   editProperty,
@@ -12,6 +12,7 @@ import {
   Address,
   PropertyExpenseType,
   PropertyExpenseTypeName,
+  TaxesState,
   PropertyType,
   PropertyTypeName
 } from 'ustaxes/redux/data'
