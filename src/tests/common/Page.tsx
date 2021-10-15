@@ -11,7 +11,7 @@ const TestComponent = ({
   state,
   children
 }: PropsWithChildren<{ state: TaxesState }>): ReactElement => {
-  const store = createStoreUnpersisted(state.information)
+  const store = createStoreUnpersisted(state)
 
   return <Provider store={store}>{children}</Provider>
 }
