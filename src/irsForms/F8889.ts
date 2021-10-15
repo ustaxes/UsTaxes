@@ -1,6 +1,7 @@
 import { Information } from 'ustaxes/redux/data'
 import { computeField, sumFields } from './util'
 import Form, { FormTag } from './Form'
+import F8853 from './F8853'
 
 export const needsF8889 = (state: Information): boolean => {
   return false
@@ -10,10 +11,12 @@ export default class F8889 extends Form {
   tag: FormTag = 'f8889'
   sequenceIndex = 52
   state: Information
+  f8853?: F8853
 
-  constructor(state: Information) {
+  constructor(state: Information, f8853?: F8853) {
     super()
     this.state = state
+    this.f8853 = f8853
   }
 
   /* If you were covered, or considered covered, by a self-only HDHP and a family HDHP 
@@ -35,9 +38,7 @@ export default class F8889 extends Form {
      and are not included on line 2.
   */
   l2 = (): number | undefined => undefined
-  l3 = (): number | undefined => undefined
-  l4 = (): number | undefined => undefined
-  l5 = (): number | undefined => undefined
+  l4 = (): number => sumFields([this.f8853?.l1(), this.f8853?.l2()])
   l6 = (): number | undefined => undefined
   l7 = (): number | undefined => undefined
   l8 = (): number | undefined => undefined
