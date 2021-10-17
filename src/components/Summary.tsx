@@ -1,6 +1,5 @@
 import { ReactElement } from 'react'
 import { Avatar, Grid, List, Typography } from '@material-ui/core'
-import { usePager } from './pager'
 import { create1040 } from 'ustaxes/irsForms/Main'
 import { useSelector } from 'react-redux'
 import { Information, TaxesState } from 'ustaxes/redux/data'
@@ -104,8 +103,6 @@ const Summary = (): ReactElement => {
     (state: TaxesState) => state.information
   )
 
-  const { onAdvance } = usePager()
-
   const summaryBody = (() => {
     if (information.taxPayer.primaryPerson === undefined) {
       return <p>No data entered yet</p>
@@ -132,10 +129,10 @@ const Summary = (): ReactElement => {
   })()
 
   return (
-    <form tabIndex={-1} onSubmit={onAdvance}>
+    <div>
       <h2>Summary</h2>
       {summaryBody}
-    </form>
+    </div>
   )
 }
 
