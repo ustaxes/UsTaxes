@@ -90,8 +90,8 @@
     "typescript-eslint": "0.0.1-alpha.0"
   },
   "lint-staged": {
-    "**/*": "prettier --write --ignore-unknown",
-    "*.{ts,js,tsx,jsx}": "eslint --cache --fix"
+    "**/*": "prettier --write --ignore-unknown .",
+    "*.{ts,js,tsx,jsx}": "eslint ./src --cache --fix"
   },
   "jest": {
     "moduleNameMapper": {
