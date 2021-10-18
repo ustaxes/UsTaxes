@@ -12,7 +12,7 @@
     "lodash": "^4.17.21",
     "loglevel": "^1.7.1",
     "node-fetch": "^2.6.1",
-    "pdf-lib": "^1.16.0",
+    "pdf-lib": "^1.17.0",
     "react": "^17.0.1",
     "react-dom": "^17.0.2",
     "react-hook-form": "^7.17.4",
