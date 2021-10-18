@@ -40,7 +40,8 @@
     "lint": "eslint ./src --ext ts,js,tsx,jsx --max-warnings=0 && prettier -c .",
     "lint:fix": "eslint ./src --fix --ext ts,js,tsx,jsx && prettier --write .",
     "prettier": "prettier --write .",
-    "formgen": "ts-node ./scripts/formgen.ts"
+    "formgen": "ts-node ./scripts/formgen.ts",
+    "prepare": "husky install"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -88,14 +89,9 @@
     "ts-node": "^10.2.1",
     "typescript-eslint": "0.0.1-alpha.0"
   },
-  "husky": {
-    "hooks": {
-      "pre-push": "eslint ./src --ext .ts --ext .js --ext .tsx --ext .jsx",
-      "post-merge": "node ./setup.js"
-    }
-  },
   "lint-staged": {
-    "**/*": "prettier --write --ignore-unknown"
+    "**/*": "prettier --write --ignore-unknown",
+    "*.{ts,js,tsx,jsx}": "eslint --cache --fix"
   },
   "jest": {
     "moduleNameMapper": {
