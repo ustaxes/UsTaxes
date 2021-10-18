@@ -32,6 +32,8 @@ import F1098eInfo from './deductions/F1098eInfo'
 import Questions from './Questions'
 import Urls from 'ustaxes/data/urls'
 
+import { isMobile } from 'react-device-detect'
+
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
@@ -131,7 +133,7 @@ export const drawerSections: Section[] = [
 
 const Menu = (): ReactElement => {
   const classes = useStyles()
-  const [isOpen, setOpen] = useState(false)
+  const [isOpen, setOpen] = useState(!isMobile)
 
   return (
     <>
