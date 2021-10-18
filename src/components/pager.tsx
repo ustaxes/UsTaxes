@@ -9,7 +9,7 @@ import { useMediaQuery, Button, Grid } from '@material-ui/core'
 import { isMobile } from 'react-device-detect'
 import { Link, useHistory } from 'react-router-dom'
 
-interface PagerProps {
+export interface PagerProps {
   onAdvance: () => void
   navButtons: ReactElement
 }
