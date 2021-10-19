@@ -1,21 +1,14 @@
-import { ReactElement } from 'react'
+import { ReactElement, useEffect } from 'react'
 import { useForm, FormProvider } from 'react-hook-form'
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch, useSelector, TaxesState } from 'ustaxes/redux'
 import { LabeledInput, LabeledRadio } from './input'
 import { Patterns } from './Patterns'
 import { saveRefundInfo } from 'ustaxes/redux/actions'
+import _ from 'lodash'
 
-import { AccountType, Refund, TaxesState } from 'ustaxes/redux/data'
+import { Refund } from 'ustaxes/redux/data'
 import { usePager } from './pager'
 import { Grid } from '@material-ui/core'
-
-interface UserRefundForm {
-  routingNumber: string
-  accountNumber: string
-  accountType: AccountType
-}
-
-const toRefund = (formData: UserRefundForm): Refund => formData
 
 export default function RefundBankAccount(): ReactElement {
   const defaultValues: Refund | undefined = useSelector((state: TaxesState) => {
@@ -24,14 +17,22 @@ export default function RefundBankAccount(): ReactElement {
 
   const { navButtons, onAdvance } = usePager()
 
-  const methods = useForm<UserRefundForm>({ defaultValues })
-  const { handleSubmit } = methods
+  const methods = useForm<Refund>({ defaultValues })
+  const { handleSubmit, reset, getValues } = methods
   // const variable dispatch to allow use inside function
   const dispatch = useDispatch()
 
+  // This form can be rerendered because the global state was modified by
+  // another control.
+  useEffect(() => {
+    if (!_.isEqual(getValues(), defaultValues)) {
+      return reset(defaultValues)
+    }
+  })
+
   // component functions
-  const onSubmit = (formData: UserRefundForm): void => {
-    dispatch(saveRefundInfo(toRefund(formData)))
+  const onSubmit = (formData: Refund): void => {
+    dispatch(saveRefundInfo(formData))
     onAdvance()
   }
 

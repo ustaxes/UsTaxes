@@ -1,4 +1,5 @@
-import fc, { Arbitrary } from 'fast-check'
+import * as fc from 'fast-check'
+import { Arbitrary } from 'fast-check'
 import { CURRENT_YEAR } from 'ustaxes/data/federal'
 import locationPostalCodes from 'ustaxes/data/locationPostalCodes'
 import {
@@ -388,11 +389,19 @@ export const information: Arbitrary<types.Information> = fc
     })
   )
 
-export const taxesState: Arbitrary<types.TaxesState> = information.map(
-  (information) => ({
-    information
-  })
-)
+export const taxesState: Arbitrary<types.TaxesState> = fc
+  .tuple(
+    information,
+    information,
+    information,
+    fc.constantFrom(...util.enumKeys(types.TaxYears))
+  )
+  .map(([Y2019, Y2020, Y2021, activeYear]) => ({
+    Y2019,
+    Y2020,
+    Y2021,
+    activeYear
+  }))
 
 export const f1040: Arbitrary<[F1040, Form[]]> = information
   .map((information) => create1040(information))

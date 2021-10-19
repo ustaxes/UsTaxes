@@ -1,4 +1,4 @@
-import { FilingStatus, Income1099Type, TaxesState } from 'ustaxes/redux/data'
+import { FilingStatus, Income1099Type, Information } from 'ustaxes/redux/data'
 import { Either, isLeft, isRight, left, right } from 'ustaxes/util'
 import { CURRENT_YEAR } from './federal'
 
@@ -30,7 +30,7 @@ type ValueTag = 'string' | 'boolean'
 
 export interface Question {
   text: string
-  required: Either<boolean, (state: TaxesState) => boolean>
+  required: Either<boolean, (state: Information) => boolean>
   tag: QuestionTagName
   // This is repeated effort, as it has to mirror value type from QuestionTag:
   readonly valueTag: ValueTag
@@ -42,7 +42,7 @@ function q(
   tag: QuestionTagName,
   text: string,
   valueTag: ValueTag,
-  required: (s: TaxesState) => boolean
+  required: (s: Information) => boolean
 ): Question {
   return { text, tag, required: right(required), valueTag }
 }
@@ -65,13 +65,13 @@ export const questions: Question[] = [
     'FINCEN_114',
     'Are you required to file FinCEN Form 114, Report of Foreign Bank and Financial Accounts (FBAR), to report that financial interest or signature authority? See FinCEN Form 114 and its instructions for filing requirements and exceptions to those requirements',
     'boolean',
-    (s: TaxesState) => s.information.questions.FOREIGN_ACCOUNT_EXISTS ?? false
+    (s: Information) => s.questions.FOREIGN_ACCOUNT_EXISTS ?? false
   ),
   q(
     'FINCEN_114_ACCOUNT_COUNTRY',
     'Enter the name of the foreign country where the financial account is located',
     'string',
-    (s: TaxesState) => s.information.questions.FINCEN_114 ?? false
+    (s: Information) => s.questions.FINCEN_114 ?? false
   ),
   qr(
     'FOREIGN_TRUST_RELATIONSHIP',
@@ -81,13 +81,13 @@ export const questions: Question[] = [
     'LIVE_APART_FROM_SPOUSE',
     `Did you lived apart from your spouse for all of ${CURRENT_YEAR}?`,
     'boolean',
-    (s: TaxesState) =>
-      s.information.taxPayer.filingStatus == FilingStatus.MFS &&
-      s.information.f1099s.some((i) => i.type == Income1099Type.SSA)
+    (s: Information) =>
+      s.taxPayer.filingStatus == FilingStatus.MFS &&
+      s.f1099s.some((i) => i.type == Income1099Type.SSA)
   )
 ]
 
-export const getRequiredQuestions = (state: TaxesState): Question[] =>
+export const getRequiredQuestions = (state: Information): Question[] =>
   questions.filter(
     (q) =>
       isLeft(q.required) || (isRight(q.required) && q.required.right(state))

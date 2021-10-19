@@ -53,8 +53,11 @@ export type PersistedStore = Store<
   dispatch: unknown
 }
 
-export const createStoreUnpersisted = (state: TaxesState): InfoStore =>
+export const createWholeStoreUnpersisted = (state: TaxesState): InfoStore =>
   reduxCreateStore(rootReducer, state, undefined)
+
+export const createStoreUnpersisted = (information: Information): InfoStore =>
+  createWholeStoreUnpersisted({ Y2020: information, activeYear: 'Y2020' })
 
 export const createStore = (): PersistedStore =>
   reduxCreateStore(persistedReducer, applyMiddleware(logger))

@@ -1,6 +1,6 @@
 import { TaxesState } from 'ustaxes/redux/data'
 import { PropsWithChildren, ReactElement } from 'react'
-import { createStoreUnpersisted } from 'ustaxes/redux/store'
+import { createWholeStoreUnpersisted } from 'ustaxes/redux/store'
 import { Provider } from 'react-redux'
 import * as Queries from '@testing-library/dom/types/queries'
 import { render, RenderResult } from '@testing-library/react'
@@ -11,7 +11,7 @@ const TestComponent = ({
   state,
   children
 }: PropsWithChildren<{ state: TaxesState }>): ReactElement => {
-  const store = createStoreUnpersisted(state)
+  const store = createWholeStoreUnpersisted(state)
 
   return <Provider store={store}>{children}</Provider>
 }

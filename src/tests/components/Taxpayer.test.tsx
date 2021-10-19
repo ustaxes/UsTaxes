@@ -55,7 +55,7 @@ class TaxPayerTestPage extends TestPage {
 
 describe('Taxpayer', () => {
   const taxpayerComponent = (information: Information = blankState) =>
-    new TaxPayerTestPage({ information })
+    new TaxPayerTestPage({ Y2020: information, activeYear: 'Y2020' })
 
   it('should show errors if incomplete data is entered', async () => {
     const page = taxpayerComponent()
@@ -63,7 +63,7 @@ describe('Taxpayer', () => {
     page.setFirstName('Bob')
     userEvent.click(page.saveButton())
 
-    expect(await page.errors()).not.toHaveLength(0)
+    waitFor(async () => expect(await page.errors()).not.toHaveLength(0))
     page.cleanup()
   })
 
