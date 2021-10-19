@@ -1,4 +1,4 @@
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 
 import {
@@ -13,7 +13,6 @@ import {
 } from '@material-ui/core'
 import CloseIcon from '@material-ui/icons/Close'
 import MenuIcon from '@material-ui/icons/Menu'
-
 import ResponsiveDrawer, {
   item,
   Section,
@@ -27,13 +26,13 @@ import RefundBankAccount from './RefundBankAccount'
 import SpouseAndDependent from './TaxPayer/SpouseAndDependent'
 import F1099Info from './income/F1099Info'
 import EstimatedTaxes from './payments/EstimatedTaxes'
-import Summary from './Summary'
 import RealEstate from './income/RealEstate'
 import GettingStarted from './GettingStarted'
 import F1098eInfo from './deductions/F1098eInfo'
 import Questions from './Questions'
 import Urls from 'ustaxes/data/urls'
-import { useDevice } from 'ustaxes/hooks/Device'
+
+import { isMobile } from 'react-device-detect'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -127,7 +126,6 @@ export const drawerSections: Section[] = [
     items: [
       item('Refund Information', Urls.refund, <RefundBankAccount />),
       item('Informational Questions', Urls.questions, <Questions />),
-      item('Summary', Urls.summary, <Summary />),
       item('Review and Print', Urls.createPdf, <CreatePDF />)
     ]
   }
@@ -135,16 +133,7 @@ export const drawerSections: Section[] = [
 
 const Menu = (): ReactElement => {
   const classes = useStyles()
-  const { isMobile } = useDevice()
   const [isOpen, setOpen] = useState(!isMobile)
-
-  useEffect(() => {
-    if (!isMobile) {
-      setOpen(true)
-    } else {
-      setOpen(false)
-    }
-  }, [isMobile])
 
   return (
     <>
