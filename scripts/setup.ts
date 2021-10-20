@@ -1,5 +1,5 @@
-const tsj = require('ts-json-schema-generator')
-const fs = require('fs')
+import { createGenerator } from 'ts-json-schema-generator'
+import fs from 'fs'
 
 const config = {
   path: 'src/redux/data.ts',
@@ -9,8 +9,8 @@ const config = {
 
 const outputPath = 'src/redux/validation.json'
 
-const schema = tsj.createGenerator(config).createSchema(config.type)
+const schema = createGenerator(config).createSchema(config.type)
 const schemaString = JSON.stringify(schema, null, 2)
-fs.writeFile(outputPath, schemaString, (err) => {
+fs.writeFile(outputPath, schemaString, (err): void => {
   if (err) throw err
 })
