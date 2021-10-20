@@ -13,11 +13,7 @@ import {
 } from '@material-ui/core'
 import CloseIcon from '@material-ui/icons/Close'
 import MenuIcon from '@material-ui/icons/Menu'
-import ResponsiveDrawer, {
-  item,
-  Section,
-  SectionItem
-} from './ResponsiveDrawer'
+import ResponsiveDrawer, { item, Section } from './ResponsiveDrawer'
 
 import W2JobInfo from './income/W2JobInfo'
 import CreatePDF from './createPDF'
@@ -66,23 +62,13 @@ const useStyles = makeStyles((theme: Theme) =>
 )
 
 const getTitleAndPage = (sections: Section[], currentUrl: string): string => {
-  let currentSection
-  let currentPage
+  const page = sections
+    .flatMap(({ title: sectionTitle, items }) =>
+      items.map(({ title, url }) => ({ sectionTitle, title, url }))
+    )
+    .find(({ url }) => url === currentUrl)
 
-  sections.forEach(({ title, items }: Section) => {
-    if (
-      items.find(({ url, title }: SectionItem) => {
-        if (url === currentUrl) {
-          currentPage = title
-          return true
-        }
-        return false
-      })
-    ) {
-      currentSection = title
-    }
-  })
-  return `${currentSection} - ${currentPage}`
+  return `${page?.sectionTitle} - ${page?.title}`
 }
 
 export const drawerSections: Section[] = [
