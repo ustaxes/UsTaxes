@@ -389,13 +389,12 @@ export const information: Arbitrary<types.Information> = fc
     })
   )
 
+export const taxYear: Arbitrary<types.TaxYear> = fc.constantFrom(
+  ...util.enumKeys(types.TaxYears)
+)
+
 export const taxesState: Arbitrary<types.TaxesState> = fc
-  .tuple(
-    information,
-    information,
-    information,
-    fc.constantFrom(...util.enumKeys(types.TaxYears))
-  )
+  .tuple(information, information, information, taxYear)
   .map(([Y2019, Y2020, Y2021, activeYear]) => ({
     Y2019,
     Y2020,
