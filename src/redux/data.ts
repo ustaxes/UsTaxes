@@ -74,6 +74,7 @@ export interface IncomeW2 {
   state?: State
   stateWages?: number
   stateWithholding?: number
+  box12?: Array<W2Box12Info>
 }
 
 export interface EstimatedTaxPayments {
@@ -145,6 +146,43 @@ export interface Income1099<T, D> {
   type: T
   form: D
   personRole: PersonRole.PRIMARY | PersonRole.SPOUSE
+}
+
+export enum W2Box12Code {
+  A = 'A',
+  B = 'B',
+  C = 'C',
+  D = 'D',
+  E = 'E',
+  F = 'F',
+  G = 'G',
+  H = 'H',
+  J = 'J',
+  K = 'K',
+  L = 'L',
+  M = 'M',
+  N = 'N',
+  P = 'P',
+  Q = 'Q',
+  R = 'R',
+  S = 'S',
+  T = 'T',
+  V = 'V',
+  W = 'W',
+  Y = 'Y',
+  Z = 'Z',
+  AA = 'AA',
+  BB = 'BB',
+  DD = 'DD',
+  EE = 'EE',
+  FF = 'FF',
+  GG = 'GG',
+  HH = 'HH'
+}
+
+export type W2Box12Info = {
+  code: W2Box12Code
+  amount: number
 }
 
 export enum FilingStatus {
@@ -256,6 +294,12 @@ export interface F1098e {
   interest: number
 }
 
+export interface HealthSavingsAccount {
+  coverageType: 'self-only' | 'family'
+  contributions: number
+  personRole: PersonRole.PRIMARY | PersonRole.SPOUSE
+}
+
 export type State =
   | 'AL'
   | 'AK'
@@ -325,6 +369,7 @@ export interface Information {
   taxPayer: TaxPayer
   questions: Responses
   stateResidencies: StateResidency[]
+  healthSavingsAccounts: HealthSavingsAccount[]
 }
 
 export interface TaxesState {
