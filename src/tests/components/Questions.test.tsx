@@ -7,7 +7,7 @@ import Questions from 'ustaxes/components/Questions'
 import { InfoStore, createStoreUnpersisted } from 'ustaxes/redux/store'
 import { questions } from 'ustaxes/data/questions'
 import { PagerButtons, PagerContext } from 'ustaxes/components/pager'
-import { Information } from 'ustaxes/redux/data'
+import { TaxesState } from 'ustaxes/redux/data'
 import { blankState } from 'ustaxes/redux/reducer'
 import TaxesStateMethods from 'ustaxes/redux/TaxesState'
 
@@ -28,9 +28,9 @@ describe('Questions', () => {
   const navButtons = <PagerButtons submitText="Save" />
 
   const testComponent = (
-    info: Information | undefined = blankState
+    taxesState: TaxesState = { information: blankState }
   ): [InfoStore, ReactElement] => {
-    const store = createStoreUnpersisted(info)
+    const store = createStoreUnpersisted(taxesState)
     const component = (
       <Provider store={store}>
         <PagerContext.Provider value={{ onAdvance: () => {}, navButtons }}>
