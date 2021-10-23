@@ -34,8 +34,11 @@ export default class Schedule2 extends Form {
   l7a = (): number | undefined => undefined // TODO: household employment taxes
   l7b = (): number | undefined => undefined // TODO: repayment of first-time homebuyer credit
   l8 = (): number => {
-    if (this.f8889?.l17b() !== undefined || this.f8889?.l21() !== undefined) {
+    if (this.f8889?.l17b() !== undefined ) {
       this.otherIncomeStrings.add('HSA')
+    }
+    if (this.f8889?.l21() !== undefined && this.f8889?.l21() > 0) {
+      this.otherIncomeStrings.add('HDHP')
     }
     return sumFields([this.f8959?.l18(), this.f8889?.l17b(), this.f8889?.l21()])
   }
