@@ -352,6 +352,21 @@ export const questions: Arbitrary<Responses> = fc
   .set(questionTag)
   .map((tags) => Object.fromEntries(tags.map((t) => [t, true])))
 
+export const healthSavingsAccount: Arbitrary<types.HealthSavingsAccount> = fc
+  .tuple(
+    fc.constantFrom<'self-only' | 'family'>('self-only', 'family'),
+    fc.nat({ max: 100000 }),
+    fc.constantFrom<types.PersonRole.PRIMARY | types.PersonRole.SPOUSE>(
+      types.PersonRole.PRIMARY,
+      types.PersonRole.SPOUSE
+    )
+  )
+  .map(([coverageType, contributions, personRole]) => ({
+    coverageType,
+    contributions,
+    personRole
+  }))
+
 export const information: Arbitrary<types.Information> = fc
   .tuple(
     fc.array(f1099),
@@ -362,7 +377,8 @@ export const information: Arbitrary<types.Information> = fc
     refund,
     taxPayer,
     questions,
-    state
+    state,
+    fc.array(healthSavingsAccount)
   )
   .map(
     ([
@@ -374,7 +390,8 @@ export const information: Arbitrary<types.Information> = fc
       refund,
       taxPayer,
       questions,
-      state
+      state,
+      healthSavingsAccounts
     ]) => ({
       f1099s,
       w2s,
@@ -384,7 +401,8 @@ export const information: Arbitrary<types.Information> = fc
       refund,
       taxPayer,
       questions,
-      stateResidencies: [{ state }]
+      stateResidencies: [{ state }],
+      healthSavingsAccounts
     })
   )
 

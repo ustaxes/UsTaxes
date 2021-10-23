@@ -11,7 +11,8 @@ export const blankState: Information = {
   taxPayer: { dependents: [] },
   questions: {},
   f1098es: [],
-  stateResidencies: []
+  stateResidencies: [],
+  healthSavingsAccounts: []
 }
 
 function formReducer(
