@@ -1,9 +1,4 @@
-import {
-  Information,
-  W2Box12Code,
-  Person,
-  HealthSavingsAccount
-} from 'ustaxes/redux/data'
+import { Information, Person, HealthSavingsAccount } from 'ustaxes/redux/data'
 import { computeField, sumFields, displayNumber } from './util'
 import Form, { FormTag } from './Form'
 import F8853 from './F8853'
@@ -99,21 +94,8 @@ export default class F8889 extends Form {
   l7 = (): number | undefined => undefined
   l8 = (): number => sumFields([this.l6(), this.l7()])
   // Employer contributions are listed in W2 box 12 with code W
-  l9 = (): number => {
-    this.state.w2s.reduce((res, w2) => {
-      if (w2.box12 !== undefined) {
-        return (
-          res +
-          w2.box12.reduce(
-            (res2, b12) => (b12.code == W2Box12Code.W ? res2 + b12.amount : 0),
-            0
-          )
-        )
-      }
-      return 0
-    }, 0)
-    return 0
-  }
+  l9 = (): number =>
+    this.state.w2s.reduce((res, w2) => res + (w2.box12?.W ?? 0), 0)
   l10 = (): number | undefined => undefined
   l11 = (): number => sumFields([this.l9(), this.l10()])
   l12 = (): number => {

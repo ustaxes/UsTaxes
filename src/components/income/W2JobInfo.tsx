@@ -1,6 +1,6 @@
-import { ReactElement, ReactNode } from 'react'
+import { ReactElement, ReactNode, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { FormProvider, useForm } from 'react-hook-form'
+import { FormProvider, useForm, useFormContext } from 'react-hook-form'
 import { usePager } from 'ustaxes/components/pager'
 import {
   TaxesState,
@@ -12,7 +12,10 @@ import {
   PrimaryPerson,
   FilingStatus,
   Information,
-  State
+  State,
+  W2Box12Info,
+  W2Box12Code,
+  W2Box12CodeDescriptions
 } from 'ustaxes/redux/data'
 import {
   boxLabel,
@@ -24,10 +27,11 @@ import {
 } from 'ustaxes/components/input'
 import { Patterns } from 'ustaxes/components/Patterns'
 import { FormListContainer } from 'ustaxes/components/FormContainer'
-import { Grid, Box } from '@material-ui/core'
+import { Grid, Box, Button, Paper } from '@material-ui/core'
 import { Work } from '@material-ui/icons'
 import { addW2, editW2, removeW2 } from 'ustaxes/redux/actions'
 import { Alert } from '@material-ui/lab'
+import { enumKeys } from 'ustaxes/util'
 
 interface IncomeW2UserInput {
   employer?: Employer
@@ -41,6 +45,7 @@ interface IncomeW2UserInput {
   state?: State
   stateWages: string
   stateWithholding: string
+  box12: W2Box12Info
 }
 
 const blankW2UserInput: IncomeW2UserInput = {
@@ -55,7 +60,8 @@ const blankW2UserInput: IncomeW2UserInput = {
   medicareWithholding: '',
   personRole: PersonRole.PRIMARY,
   stateWages: '',
-  stateWithholding: ''
+  stateWithholding: '',
+  box12: {}
 }
 
 const toIncomeW2 = (formData: IncomeW2UserInput): IncomeW2 => ({
@@ -86,10 +92,73 @@ const toIncomeW2UserInput = (data: IncomeW2): IncomeW2UserInput => ({
   stateWithholding: data.stateWithholding?.toString() ?? ''
 })
 
+const Box12Data = (): ReactElement => {
+  const [editBox12, setEditBox12] = useState(false)
+
+  const { getValues } = useFormContext<IncomeW2UserInput>()
+
+  const { box12 } = getValues()
+
+  const box12Fields = (
+    <>
+      {enumKeys(W2Box12Code).map((code) => (
+        <>
+          <p>
+            <strong>Code {code}</strong>: {W2Box12CodeDescriptions[code]}
+          </p>
+          <LabeledInput
+            label={code}
+            key={`box-12{$code}`}
+            name={`box12.${code}`}
+            patternConfig={Patterns.currency}
+            required={false}
+          />
+        </>
+      ))}
+    </>
+  )
+
+  const openCloseButton = (
+    <Button
+      type="button"
+      variant="contained"
+      color={editBox12 ? 'secondary' : 'default'}
+      onClick={() => setEditBox12(!editBox12)}
+    >
+      {editBox12 ? 'Done' : 'Edit'}
+    </Button>
+  )
+
+  const box12Data = (
+    <ul>
+      {enumKeys(W2Box12Code)
+        .filter((code) => box12[code] !== undefined)
+        .map((code) => (
+          <li key={`box-12-data-${code}`}>
+            {code}: <Currency plain value={box12[code] as number} /> (
+            {W2Box12CodeDescriptions[code]})
+          </li>
+        ))}
+    </ul>
+  )
+
+  return (
+    <Paper>
+      <Box padding={2} paddingTop={2}>
+        <h4>Box 12 Information</h4>
+        {editBox12 ? box12Fields : box12Data}
+        <Box paddingTop={1}>{openCloseButton}</Box>
+      </Box>
+    </Paper>
+  )
+}
+
 export default function W2JobInfo(): ReactElement {
   const dispatch = useDispatch()
 
-  const methods = useForm<IncomeW2UserInput>()
+  const methods = useForm<IncomeW2UserInput>({
+    defaultValues: blankW2UserInput
+  })
 
   const { navButtons, onAdvance } = usePager()
 
@@ -193,6 +262,9 @@ export default function W2JobInfo(): ReactElement {
           sizes={{ xs: 12, lg: 6 }}
         />
         <USStateDropDown name="state" label={boxLabel('15', 'State')} />
+        <Grid item xs={12} spacing={2}>
+          <Box12Data />
+        </Grid>
         <LabeledInput
           name="stateWages"
           label={boxLabel('16', 'State wages, tips, etc')}
