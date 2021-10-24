@@ -30,15 +30,13 @@ export default function RefundBankAccount(): ReactElement {
   const dispatch = useDispatch()
 
   // component functions
-  const onSubmit =
-    (onAdvance: () => void) =>
-    (formData: UserRefundForm): void => {
-      dispatch(saveRefundInfo(toRefund(formData)))
-      onAdvance()
-    }
+  const onSubmit = (formData: UserRefundForm): void => {
+    dispatch(saveRefundInfo(toRefund(formData)))
+    onAdvance()
+  }
 
   return (
-    <form tabIndex={-1} onSubmit={handleSubmit(onSubmit(onAdvance))}>
+    <form tabIndex={-1} onSubmit={handleSubmit(onSubmit)}>
       <FormProvider {...methods}>
         <h2>Refund Information</h2>
         <Grid container spacing={2}>

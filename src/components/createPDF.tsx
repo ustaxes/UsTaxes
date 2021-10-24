@@ -11,6 +11,7 @@ import { create1040 } from 'ustaxes/irsForms/Main'
 import { isRight } from 'ustaxes/util'
 import { savePDF } from 'ustaxes/pdfFiller/pdfHandler'
 import { Box, Button } from '@material-ui/core'
+import Summary from './Summary'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -59,52 +60,55 @@ export default function CreatePDF(): ReactElement {
   }
 
   return (
-    <form tabIndex={-1}>
-      <h2>Print Copy to File</h2>
-      <div className={classes.root}>
-        {errors.map((error, i) => (
-          <Alert key={i} severity="warning">
-            {error}
-          </Alert>
-        ))}
-      </div>
-      <Box
-        display="flex"
-        justifyContent="flex-start"
-        paddingTop={2}
-        paddingBottom={1}
-      >
-        <Button
-          type="button"
-          onClick={federalReturn}
-          variant="contained"
-          color="primary"
+    <div>
+      <Summary />
+      <form tabIndex={-1}>
+        <h2>Print Copy to File</h2>
+        <div className={classes.root}>
+          {errors.map((error, i) => (
+            <Alert key={i} severity="warning">
+              {error}
+            </Alert>
+          ))}
+        </div>
+        <Box
+          display="flex"
+          justifyContent="flex-start"
+          paddingTop={2}
+          paddingBottom={1}
         >
-          Create Federal 1040
-        </Button>
-      </Box>
-      {(() => {
-        if (residency !== undefined && stateForm[residency] !== undefined) {
-          return (
-            <Box
-              display="flex"
-              justifyContent="flex-start"
-              paddingTop={2}
-              paddingBottom={1}
-            >
-              <Button
-                type="button"
-                onClick={stateReturn}
-                variant="contained"
-                color="primary"
+          <Button
+            type="button"
+            onClick={federalReturn}
+            variant="contained"
+            color="primary"
+          >
+            Create Federal 1040
+          </Button>
+        </Box>
+        {(() => {
+          if (residency !== undefined && stateForm[residency] !== undefined) {
+            return (
+              <Box
+                display="flex"
+                justifyContent="flex-start"
+                paddingTop={2}
+                paddingBottom={1}
               >
-                Create {residency} Return
-              </Button>
-            </Box>
-          )
-        }
-      })()}
-      {navButtons}
-    </form>
+                <Button
+                  type="button"
+                  onClick={stateReturn}
+                  variant="contained"
+                  color="primary"
+                >
+                  Create {residency} Return
+                </Button>
+              </Box>
+            )
+          }
+        })()}
+        {navButtons}
+      </form>
+    </div>
   )
 }

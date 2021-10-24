@@ -220,15 +220,13 @@ const SpouseAndDependent = (): ReactElement => {
   // const variable dispatch to allow use inside function
   const dispatch = useDispatch()
 
-  const onSubmit =
-    (onAdvance: () => void) =>
-    (formData: { filingStatus: FilingStatus }): void => {
-      dispatch(saveFilingStatusInfo(formData.filingStatus))
-      onAdvance()
-    }
+  const onSubmit = (formData: { filingStatus: FilingStatus }): void => {
+    dispatch(saveFilingStatusInfo(formData.filingStatus))
+    onAdvance()
+  }
 
   const page = (
-    <form tabIndex={-1} onSubmit={handleSubmit(onSubmit(onAdvance))}>
+    <form tabIndex={-1} onSubmit={handleSubmit(onSubmit)}>
       <h2>Family Information</h2>
       <h3>Spouse Information</h3>
       <SpouseInfo />
