@@ -98,45 +98,54 @@ const employer: Arbitrary<types.Employer> = fc
     address
   }))
 
-const w2: Arbitrary<types.IncomeW2> = fc
-  .tuple(
-    maxWords(2),
-    wages,
-    fc.nat(),
-    fc.nat(),
-    fc.nat(),
-    fc.nat(),
-    employer,
-    state,
-    fc.nat(),
-    fc.nat()
+const w2Box12Info = (max: number): Arbitrary<types.W2Box12Info> =>
+  fc.dictionary(
+    fc.constantFrom(...util.enumKeys(types.W2Box12Code)),
+    fc.nat({ max })
   )
-  .map(
-    ([
-      occupation,
-      income,
-      medicareIncome,
-      fedWithholding,
-      ssWithholding,
-      medicareWithholding,
+
+const w2: Arbitrary<types.IncomeW2> = wages.chain((income) =>
+  fc
+    .tuple(
+      maxWords(2),
+      fc.nat({ max: income }),
+      fc.nat({ max: income }),
+      fc.nat({ max: income }),
+      fc.nat({ max: income }),
       employer,
+      w2Box12Info(income),
       state,
-      stateWages,
-      stateWithholding
-    ]) => ({
-      occupation,
-      income,
-      medicareIncome,
-      fedWithholding,
-      employer,
-      personRole: types.PersonRole.PRIMARY,
-      ssWithholding,
-      medicareWithholding,
-      state,
-      stateWages,
-      stateWithholding
-    })
-  )
+      fc.nat(),
+      fc.nat()
+    )
+    .map(
+      ([
+        occupation,
+        medicareIncome,
+        fedWithholding,
+        ssWithholding,
+        medicareWithholding,
+        employer,
+        box12,
+        state,
+        stateWages,
+        stateWithholding
+      ]) => ({
+        occupation,
+        income,
+        medicareIncome,
+        fedWithholding,
+        employer,
+        personRole: types.PersonRole.PRIMARY,
+        ssWithholding,
+        medicareWithholding,
+        box12,
+        state,
+        stateWages,
+        stateWithholding
+      })
+    )
+)
 
 export const f1099IntData: Arbitrary<types.F1099IntData> = fc
   .nat()
@@ -352,6 +361,21 @@ export const questions: Arbitrary<Responses> = fc
   .set(questionTag)
   .map((tags) => Object.fromEntries(tags.map((t) => [t, true])))
 
+export const healthSavingsAccount: Arbitrary<types.HealthSavingsAccount> = fc
+  .tuple(
+    fc.constantFrom<'self-only' | 'family'>('self-only', 'family'),
+    fc.nat({ max: 100000 }),
+    fc.constantFrom<types.PersonRole.PRIMARY | types.PersonRole.SPOUSE>(
+      types.PersonRole.PRIMARY,
+      types.PersonRole.SPOUSE
+    )
+  )
+  .map(([coverageType, contributions, personRole]) => ({
+    coverageType,
+    contributions,
+    personRole
+  }))
+
 export const information: Arbitrary<types.Information> = fc
   .tuple(
     fc.array(f1099),
@@ -362,7 +386,8 @@ export const information: Arbitrary<types.Information> = fc
     refund,
     taxPayer,
     questions,
-    state
+    state,
+    fc.array(healthSavingsAccount)
   )
   .map(
     ([
@@ -374,7 +399,8 @@ export const information: Arbitrary<types.Information> = fc
       refund,
       taxPayer,
       questions,
-      state
+      state,
+      healthSavingsAccounts
     ]) => ({
       f1099s,
       w2s,
@@ -384,7 +410,8 @@ export const information: Arbitrary<types.Information> = fc
       refund,
       taxPayer,
       questions,
-      stateResidencies: [{ state }]
+      stateResidencies: [{ state }],
+      healthSavingsAccounts
     })
   )
 
