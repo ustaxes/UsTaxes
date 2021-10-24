@@ -41,7 +41,7 @@ interface IncomeW2UserInput {
   fedWithholding: string
   ssWithholding: string
   medicareWithholding: string
-  personRole: PersonRole.PRIMARY | PersonRole.SPOUSE
+  personRole?: PersonRole.PRIMARY | PersonRole.SPOUSE
   state?: State
   stateWages: string
   stateWithholding: string
@@ -75,7 +75,8 @@ const toIncomeW2 = (formData: IncomeW2UserInput): IncomeW2 => ({
   medicareWithholding: parseInt(formData.medicareWithholding),
   state: formData.state,
   stateWages: parseInt(formData.stateWages),
-  stateWithholding: parseInt(formData.stateWithholding)
+  stateWithholding: parseInt(formData.stateWithholding),
+  personRole: formData.personRole ?? PersonRole.PRIMARY
 })
 
 const toIncomeW2UserInput = (data: IncomeW2): IncomeW2UserInput => ({
