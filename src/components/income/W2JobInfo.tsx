@@ -58,7 +58,6 @@ const blankW2UserInput: IncomeW2UserInput = {
   fedWithholding: '',
   ssWithholding: '',
   medicareWithholding: '',
-  personRole: PersonRole.PRIMARY,
   stateWages: '',
   stateWithholding: '',
   box12: {}
