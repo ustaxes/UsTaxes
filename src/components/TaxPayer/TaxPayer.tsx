@@ -106,14 +106,19 @@ export default function PrimaryTaxpayer(): ReactElement {
     defaultValues: newTpForm
   })
 
-  const { handleSubmit, getValues, reset } = methods
+  const {
+    handleSubmit,
+    getValues,
+    reset,
+    formState: { isDirty }
+  } = methods
 
   // This form can be rerendered because the global state was modified by
   // another control.
   const currentValues = { ...defaultTaxpayerUserForm, ...getValues() }
 
   useEffect(() => {
-    if (!_.isEqual(currentValues, newTpForm)) {
+    if (!isDirty && !_.isEqual(currentValues, newTpForm)) {
       return reset(newTpForm)
     }
   })
