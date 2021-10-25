@@ -11,11 +11,11 @@ export class TaxPayerTestPage extends TestPage {
     </FakePagerProvider>
   )
 
+  firstName = (): HTMLInputElement =>
+    this.rendered().getByLabelText('First Name and Initial') as HTMLInputElement
+
   setFirstName = (name: string): void => {
-    userEvent.type(
-      this.rendered().getByLabelText('First Name and Initial'),
-      name
-    )
+    userEvent.type(this.firstName(), name)
   }
 
   saveButton = (): HTMLButtonElement =>
@@ -28,8 +28,8 @@ export class TaxPayerTestPage extends TestPage {
       ) as HTMLInputElement
   }
 
-  errors = async (): Promise<HTMLElement[]> =>
-    await this.rendered().findAllByText('Input is required')
+  errors = (): HTMLElement[] =>
+    this.rendered().queryAllByText('Input is required')
 
   setIsForeignCountry = (value: boolean): void =>
     (value ? userEvent.click : userEvent.clear)(this.g.foreignCountryBox())

@@ -19,23 +19,19 @@ jest.mock('redux-persist', () => {
   }
 })
 
-describe('Taxpayer', () => {
-  const taxpayerComponent = (information: Information = blankState) =>
-    new TaxPayerTestPage({ Y2020: information, activeYear: 'Y2020' })
-
-  it('should show errors if incomplete data is entered', async () => {
-    const page = taxpayerComponent()
-
+export const tests = {
+  incompleteData: async (page: TaxPayerTestPage): Promise<void> => {
     page.setFirstName('Bob')
+
+    await waitFor(() => expect(page.saveButton()).toBeInTheDocument())
+
     userEvent.click(page.saveButton())
 
-    waitFor(async () => expect(await page.errors()).not.toHaveLength(0))
-    page.cleanup()
-  })
-
-  it('checkbox should open foreign country fields', () => {
-    const page = taxpayerComponent()
-
+    await waitFor(() => expect(page.errors()).not.toHaveLength(0))
+  },
+  checkboxForeignCountryFields: async (
+    page: TaxPayerTestPage
+  ): Promise<void> => {
     const allFieldNames = (): string[] =>
       page
         .rendered()
@@ -49,8 +45,30 @@ describe('Taxpayer', () => {
     expect(allFieldNames()).toContain('address.zip')
 
     page.setIsForeignCountry(true)
-    expect(allFieldNames()).toContain('address.province')
-    expect(allFieldNames()).not.toContain('address.zip')
+    await waitFor(() => {
+      expect(allFieldNames()).toContain('address.province')
+      expect(allFieldNames()).not.toContain('address.zip')
+    })
+  }
+}
+
+describe('Taxpayer', () => {
+  const taxpayerComponent = (information: Information = blankState) =>
+    new TaxPayerTestPage({ Y2020: information, activeYear: 'Y2020' })
+
+  it('should show errors if incomplete data is entered', async () => {
+    const page = taxpayerComponent()
+
+    await tests.incompleteData(page)
+
+    page.cleanup()
+  })
+
+  it('checkbox should open foreign country fields', async () => {
+    const page = taxpayerComponent()
+
+    await tests.checkboxForeignCountryFields(page)
+
     page.cleanup()
   })
 })

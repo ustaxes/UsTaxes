@@ -12,10 +12,11 @@ export abstract class TestPage {
   private _baseElement: HTMLElement | undefined
   abstract component: ReactElement
   initialState: TaxesState
-  store: InfoStore | undefined
+  store: InfoStore
 
   constructor(state: TaxesState) {
     this.initialState = state
+    this.store = createWholeStoreUnpersisted(state)
   }
 
   rendered = (): TestRenderResult => {
@@ -25,7 +26,6 @@ export abstract class TestPage {
       // accessed asynchronously
       const baseElement: HTMLElement = document.createElement('div')
       document.getElementsByTagName('body')[0].appendChild(baseElement)
-      this.store = createWholeStoreUnpersisted(this.initialState)
       const rendered = render(
         <Provider store={this.store}>{this.component}</Provider>,
         { baseElement }
@@ -37,7 +37,6 @@ export abstract class TestPage {
   }
 
   cleanup = (): void => {
-    this.store = undefined
     this._rendered?.unmount()
     this._rendered = undefined
     this._baseElement?.remove()
