@@ -34,30 +34,27 @@ const Questions = (): ReactElement => {
 
   const dispatch = useDispatch()
 
-  const onSubmit =
-    (onAdvance: () => void) =>
-    (responses: Responses): void => {
-      // fix to remove unrequired answers:
-      const qtags = questions.map((q) => q.tag)
-      const unrequired = Object.keys(responses).filter(
-        (rtag) =>
-          qtags.find((t) => t === (rtag as QuestionTagName)) === undefined
-      )
+  const onSubmit = (responses: Responses): void => {
+    // fix to remove unrequired answers:
+    const qtags = questions.map((q) => q.tag)
+    const unrequired = Object.keys(responses).filter(
+      (rtag) => qtags.find((t) => t === (rtag as QuestionTagName)) === undefined
+    )
 
-      const newResponses = {
-        ...responses,
-        ...Object.fromEntries(unrequired.map((k) => [k, undefined]))
-      }
-
-      dispatch(answerQuestion(newResponses))
-      onAdvance()
+    const newResponses = {
+      ...responses,
+      ...Object.fromEntries(unrequired.map((k) => [k, undefined]))
     }
 
+    dispatch(answerQuestion(newResponses))
+    onAdvance()
+  }
+
   const page = (
-    <form tabIndex={-1} onSubmit={handleSubmit(onSubmit(onAdvance))}>
+    <form tabIndex={-1} onSubmit={handleSubmit(onSubmit)}>
       <h2>Informational Questions</h2>
       <p>
-        Based on your prior responses, reseponses to these questions are
+        Based on your prior responses, responses to these questions are
         required.
       </p>
       <Grid container spacing={2}>

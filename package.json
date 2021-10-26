@@ -1,6 +1,6 @@
 {
   "name": "ustaxes",
-  "version": "0.1.12",
+  "version": "0.1.13",
   "private": true,
   "dependencies": {
     "@material-ui/core": "^4.12.3",
@@ -28,13 +28,13 @@
     "typescript": "^4.4.4"
   },
   "scripts": {
-    "start": "node ./notice.js && node ./setup.js && craco start",
-    "build": "node ./setup.js && craco build",
-    "test": "node ./setup.js && craco test",
+    "start": "node ./notice.js && ts-node ./scripts/setup.ts && craco start",
+    "build": "ts-node ./scripts/setup.ts && craco build",
+    "test": "ts-node ./scripts/setup.ts && craco test",
     "eject": "craco eject",
+    "desktop-release": "ts-node ./scripts/setup.ts && tauri build",
+    "desktop": "node ./notice.js && ts-node ./scripts/setup.ts && tauri dev",
     "test:report": "npm run test -- --coverage .",
-    "desktop-release": "node ./setup.js && tauri build",
-    "desktop": "node ./notice.js && node ./setup.js && tauri dev",
     "tauri": "tauri",
     "schema-generate": "node ./setup.js",
     "lint": "eslint ./src --ext ts,js,tsx,jsx --max-warnings=0 && prettier -c .",
