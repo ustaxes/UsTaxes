@@ -5,8 +5,7 @@ const Urls = {
   taxPayer: {
     root: '/taxpayer',
     info: '/info',
-    spouseAndDependent: '/spouseanddependent',
-    contactInfo: '/contact'
+    spouseAndDependent: '/spouseanddependent'
   },
   refund: '/refundinfo',
   questions: '/questions',
@@ -14,6 +13,9 @@ const Urls = {
     w2s: '/income/w2jobinfo',
     f1099s: '/income/f1099s',
     realEstate: '/income/realestate'
+  },
+  payments: {
+    estimatedTaxes: '/payments/estimatedtaxes'
   },
   deductions: {
     f1098es: '/deductions/studentloaninterest'
@@ -23,7 +25,6 @@ const Urls = {
     eic: '/credits/eic'
   },
   createPdf: '/createpdf',
-  summary: '/summary',
   settings: '/settings',
   default: ''
 }

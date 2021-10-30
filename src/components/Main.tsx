@@ -10,6 +10,7 @@ import {
   ThemeProvider
 } from '@material-ui/core'
 import { Switch, Route, Redirect, useLocation } from 'react-router-dom'
+import { isMobile } from 'react-device-detect'
 import { PagerProvider } from './pager'
 import { StateLoader } from './debug'
 import NoMatchPage from './NoMatchPage'
@@ -18,7 +19,6 @@ import ScrollTop from './ScrollTop'
 import Menu, { drawerSections } from './Menu'
 import { Section, SectionItem } from './ResponsiveDrawer'
 
-import { useDevice } from 'ustaxes/hooks/Device'
 import { useFocus } from 'ustaxes/hooks/Focus'
 import Urls from 'ustaxes/data/urls'
 import UserSettings from './UserSettings'
@@ -85,7 +85,6 @@ export default function Main(): ReactElement {
     [prefersDarkMode]
   )
 
-  const { isMobile } = useDevice()
   const classes = useStyles({ isMobile })
 
   const backPages: SectionItem[] = [

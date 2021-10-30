@@ -1,5 +1,6 @@
 import { Responses } from 'ustaxes/data/questions'
 import {
+  EstimatedTaxPayments,
   F1098e,
   Income1099B,
   Income1099Div,
@@ -20,6 +21,7 @@ import {
 export default class InformationMethods implements Information {
   f1099s: Supported1099[]
   w2s: IncomeW2[]
+  estimatedTaxes: EstimatedTaxPayments[]
   realEstate: Property[]
   f1098es: F1098e[]
   refund?: Refund
@@ -30,6 +32,7 @@ export default class InformationMethods implements Information {
   constructor(info: Information) {
     this.f1099s = info.f1099s
     this.w2s = info.w2s
+    this.estimatedTaxes = info.estimatedTaxes
     this.realEstate = info.realEstate
     this.f1098es = info.f1098es
     this.refund = info.refund

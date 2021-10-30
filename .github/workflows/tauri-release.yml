@@ -1,8 +1,8 @@
 name: "publish"
-on: 
+on:
   push:
-    branches:
-      - master
+    tags:
+      - app-v*
 jobs:
   publish-tauri:
     strategy:

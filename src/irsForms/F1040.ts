@@ -39,6 +39,7 @@ import StudentLoanInterestWorksheet from './worksheets/StudentLoanInterestWorksh
 import F1040V from './F1040v'
 import InformationMethods from 'ustaxes/redux/methods'
 import _ from 'lodash'
+import F8960, { needsF8960 } from './F8960'
 
 export enum F1040Error {
   filingStatusUndefined = 'Select a filing status'
@@ -70,6 +71,7 @@ export default class F1040 extends Form {
   f8910?: F8910
   f8936?: F8936
   f8959?: F8959
+  f8960?: F8960
   f8995?: F8995 | F8995A
   studentLoanInterestWorksheet?: StudentLoanInterestWorksheet
   socialSecurityBenefitsWorksheet?: SocialSecurityBenefitsWorksheet
@@ -107,6 +109,7 @@ export default class F1040 extends Form {
       this.f8910,
       this.f8936,
       this.f8959,
+      this.f8960,
       this.f8995,
       this.schedule1,
       this.schedule2,
@@ -163,10 +166,14 @@ export default class F1040 extends Form {
       if (this.f8959 === undefined) {
         this.f8959 = new F8959(this.info, undefined, undefined, undefined)
       }
+    }
 
-      if (this.schedule2 === undefined) {
-        this.schedule2 = new Schedule2(this.info.taxPayer, this.f8959)
-      }
+    if (needsF8960(this.info)) {
+      this.f8960 = new F8960(this.info, this)
+    }
+
+    if (this.f8959 !== undefined || this.f8960 !== undefined) {
+      this.schedule2 = new Schedule2(this.info.taxPayer, this.f8959, this.f8960)
     }
 
     if (
@@ -394,8 +401,8 @@ export default class F1040 extends Form {
   l25d = (): number | undefined =>
     displayNumber(sumFields([this.l25a(), this.l25b(), this.l25c()]))
 
-  // TODO: handle estimated tax payments
-  l26 = (): number | undefined => undefined
+  l26 = (): number =>
+    this.info.estimatedTaxes.reduce((res, et) => res + et.payment, 0)
 
   l27 = (): number | undefined =>
     displayNumber(this.scheduleEIC?.credit(this) ?? 0)

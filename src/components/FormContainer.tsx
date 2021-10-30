@@ -14,7 +14,6 @@ import {
   Theme
 } from '@material-ui/core'
 import { Delete, Edit } from '@material-ui/icons'
-import { Else, If, Then } from 'react-if'
 import { SubmitHandler, useFormContext } from 'react-hook-form'
 import _ from 'lodash'
 import { ReactNode } from 'react'
@@ -265,14 +264,15 @@ const FormListContainer = <A,>(
   return (
     <>
       {itemDisplay}
-      <If condition={formState !== FormState.Closed}>
-        <Then>
-          <FormContainer onDone={handleSubmit(onSave)} onCancel={onClose}>
-            {children}
-          </FormContainer>
-        </Then>
-        <Else>
-          <If condition={max === undefined || items.length < max}>
+      {(() => {
+        if (formState !== FormState.Closed) {
+          return (
+            <FormContainer onDone={handleSubmit(onSave)} onCancel={onClose}>
+              {children}
+            </FormContainer>
+          )
+        } else if (max === undefined || items.length < max) {
+          return (
             <div className={classes.buttonList}>
               <Button
                 type="button"
@@ -283,9 +283,9 @@ const FormListContainer = <A,>(
                 Add
               </Button>
             </div>
-          </If>
-        </Else>
-      </If>
+          )
+        }
+      })()}
     </>
   )
 }

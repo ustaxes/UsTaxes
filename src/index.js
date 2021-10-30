@@ -7,27 +7,24 @@ import { BrowserRouter as Router } from 'react-router-dom'
 
 import { store, persistor } from './redux/store'
 import { PersistGate } from 'redux-persist/integration/react'
-import { ViewportProvider } from './hooks/Viewport'
 import { LastLocationProvider } from 'react-router-last-location'
 
 import './index.css'
 
 const component = (
   <StrictMode>
-    <ViewportProvider>
-      <Provider store={store}>
-        <PersistGate
-          loading={<h1>Loading from Local Storage</h1>}
-          persistor={persistor}
-        >
-          <Router>
-            <LastLocationProvider>
-              <App />
-            </LastLocationProvider>
-          </Router>
-        </PersistGate>
-      </Provider>
-    </ViewportProvider>
+    <Provider store={store}>
+      <PersistGate
+        loading={<h1>Loading from Local Storage</h1>}
+        persistor={persistor}
+      >
+        <Router>
+          <LastLocationProvider>
+            <App />
+          </LastLocationProvider>
+        </Router>
+      </PersistGate>
+    </Provider>
   </StrictMode>
 )
 

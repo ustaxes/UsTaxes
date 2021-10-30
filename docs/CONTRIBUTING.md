@@ -21,6 +21,14 @@ Before contributing please make sure to take a moment to read through the [Code 
 
 ## Pull Request Guidelines
 
+- For code security, we require signed commits. If you haven't set up signed commits yet, please do the following:
+
+  - Follow [this Github tutorial](https://docs.github.com/en/github/authenticating-to-github/managing-commit-signature-verification)
+
+  - To ensure all your commits are signed going forward, `git config --global commit.gpgsign true`,
+
+  - If you have unsigned commits that you would like to sign, you can do so by rebasing. `git rebase master`, followed by `git commit --amend` to redo each commit on the branch.
+
 - The only requirement is that your PR is well described and your intentions are clearly communicated.
 
 - If adding new feature, provide some clear reason to add this feature.
@@ -38,7 +46,7 @@ Before contributing please make sure to take a moment to read through the [Code 
   - Include as much detail as you need in the following lines.
   - Github PR title style is the same as commit first line style.
 
-- It's OK to have multiple small commits as you work on the PR - we apply squash merges to all PRs at the end. In particular, you are free to rebase your commits so long as your pull request is in Draft status. As soon as you take it out of draft status, request a review, or receive a review on your pull request, please do not rebase or force push.
+- It's OK to have multiple small commits as you work on the PR - we apply squash merges to all PRs at the end. In particular, you are free to rebase your commits so long as your pull request is in draft status. As soon as you take it out of draft status, request a review, or receive a review on your pull request, please do not rebase or force push.
 
 ## Development Guide
 
