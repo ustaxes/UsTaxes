@@ -1,4 +1,4 @@
-import { ReactElement } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 
 import { useForm, FormProvider } from 'react-hook-form'
 import { useDispatch, useSelector, TaxesState } from 'ustaxes/redux'
@@ -29,8 +29,9 @@ import {
 import { PersonFields } from './PersonFields'
 import { FormListContainer } from 'ustaxes/components/FormContainer'
 import { usePager } from 'ustaxes/components/pager'
-import { Grid } from '@material-ui/core'
+import { Box, Grid } from '@material-ui/core'
 import { Person } from '@material-ui/icons'
+import { Alert } from '@material-ui/lab'
 
 interface UserPersonForm {
   firstName: string
@@ -208,13 +209,15 @@ const SpouseAndDependent = (): ReactElement => {
     return state.information.taxPayer
   })
 
+  const [error, setError] = useState<ReactElement | undefined>(undefined)
+
   const { onAdvance, navButtons } = usePager()
 
-  const methods = useForm<{ filingStatus: FilingStatus }>({
-    defaultValues: { filingStatus: taxPayer.filingStatus }
+  const methods = useForm<{ filingStatus: FilingStatus | '' }>({
+    defaultValues: { filingStatus: taxPayer.filingStatus ?? '' }
   })
 
-  const { handleSubmit } = methods
+  const { handleSubmit, getValues, reset, watch } = methods
 
   // const variable dispatch to allow use inside function
   const dispatch = useDispatch()
@@ -223,6 +226,32 @@ const SpouseAndDependent = (): ReactElement => {
     dispatch(saveFilingStatusInfo(formData.filingStatus))
     onAdvance()
   }
+
+  const allowedFilingStatuses = filingStatuses(taxPayer)
+
+  const currentFilingStatus = getValues().filingStatus
+
+  const newValue = watch()
+
+  useEffect(() => {
+    if (
+      currentFilingStatus !== '' &&
+      !allowedFilingStatuses.includes(currentFilingStatus)
+    ) {
+      reset({ filingStatus: '' })
+      setError(
+        <Box paddingTop={2}>
+          <Alert severity="warning">
+            Filing status was set to {FilingStatusTexts[currentFilingStatus]}{' '}
+            which is no longer allowed due to your inputs. Make another
+            selection.
+          </Alert>
+        </Box>
+      )
+    } else if (currentFilingStatus !== '' || newValue.filingStatus !== '') {
+      setError(undefined)
+    }
+  })
 
   const page = (
     <form tabIndex={-1} onSubmit={handleSubmit(onSubmit)}>
@@ -236,13 +265,14 @@ const SpouseAndDependent = (): ReactElement => {
       <Grid container spacing={2}>
         <GenericLabeledDropdown<FilingStatus>
           label="Filing Status"
-          dropDownData={filingStatuses(taxPayer)}
+          dropDownData={allowedFilingStatuses}
           valueMapping={(x) => x}
           keyMapping={(x, i) => i}
           textMapping={(status) => FilingStatusTexts[status]}
           name="filingStatus"
         />
       </Grid>
+      {error}
       {navButtons}
     </form>
   )
