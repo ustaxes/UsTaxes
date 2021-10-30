@@ -1,4 +1,4 @@
-import { PropsWithChildren, ReactElement, useState } from 'react'
+import { PropsWithChildren, ReactElement, useState, KeyboardEvent } from 'react'
 import {
   createStyles,
   makeStyles,
@@ -29,8 +29,17 @@ const FormContainer = ({
   children
 }: PropsWithChildren<FormContainerProps>): ReactElement => {
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)')
+
+  function handleEnterKey(event: KeyboardEvent<HTMLDivElement>) {
+    const target = event.target as HTMLInputElement
+    if (target != null && event.key === 'Enter') {
+      event.preventDefault()
+      onDone()
+    }
+  }
+
   return (
-    <div>
+    <div onKeyDown={handleEnterKey}>
       {children}
       <Box
         display="flex"
