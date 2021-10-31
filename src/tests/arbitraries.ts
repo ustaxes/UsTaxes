@@ -363,18 +363,32 @@ export const questions: Arbitrary<Responses> = fc
 
 export const healthSavingsAccount: Arbitrary<types.HealthSavingsAccount> = fc
   .tuple(
+    words,
     fc.constantFrom<'self-only' | 'family'>('self-only', 'family'),
     fc.nat({ max: 100000 }),
     fc.constantFrom<types.PersonRole.PRIMARY | types.PersonRole.SPOUSE>(
       types.PersonRole.PRIMARY,
       types.PersonRole.SPOUSE
-    )
+    ),
+    fc.date({
+      min: new Date(CURRENT_YEAR, 0, 1),
+      max: new Date(CURRENT_YEAR, 11, 31)
+    }),
+    fc.date({
+      min: new Date(CURRENT_YEAR, 0, 1),
+      max: new Date(CURRENT_YEAR, 11, 31)
+    })
   )
-  .map(([coverageType, contributions, personRole]) => ({
-    coverageType,
-    contributions,
-    personRole
-  }))
+  .map(
+    ([label, coverageType, contributions, personRole, startDate, endDate]) => ({
+      label,
+      coverageType,
+      contributions,
+      personRole,
+      startDate,
+      endDate
+    })
+  )
 
 export const information: Arbitrary<types.Information> = fc
   .tuple(

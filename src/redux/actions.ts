@@ -18,7 +18,9 @@ import {
   Edit1098eAction,
   TaxesState,
   StateResidency,
-  EstimatedTaxPayments
+  EstimatedTaxPayments,
+  HealthSavingsAccount,
+  EditHSAAction
 } from './data'
 import { ValidateFunction } from 'ajv'
 import ajv, { checkType } from './validate'
@@ -51,7 +53,10 @@ export enum ActionName {
   ADD_1098e = 'ADD_1098e',
   EDIT_1098e = 'EDIT_1098e',
   REMOVE_1098e = 'REMOVE_1098e',
-  SET_ENTIRE_STATE = 'SET_ENTIRE_STATE'
+  SET_ENTIRE_STATE = 'SET_ENTIRE_STATE',
+  ADD_HSA = 'ADD_HSA',
+  EDIT_HSA = 'EDIT_HSA',
+  REMOVE_HSA = 'REMOVE_HSA'
 }
 
 interface Save<T, R> {
@@ -90,6 +95,9 @@ type EditEstimatedTaxes = Save<
   EditEstimatedTaxesAction
 >
 type RemoveEstimatedTaxes = Save<typeof ActionName.REMOVE_ESTIMATED_TAX, number>
+type AddHSA = Save<typeof ActionName.ADD_HSA, HealthSavingsAccount>
+type EditHSA = Save<typeof ActionName.EDIT_HSA, EditHSAAction>
+type RemoveHSA = Save<typeof ActionName.REMOVE_HSA, number>
 type Add1099 = Save<typeof ActionName.ADD_1099, Supported1099>
 type Edit1099 = Save<typeof ActionName.EDIT_1099, Edit1099Action>
 type Remove1099 = Save<typeof ActionName.REMOVE_1099, number>
@@ -130,6 +138,9 @@ export type Actions =
   | Edit1098e
   | Remove1098e
   | SetEntireState
+  | AddHSA
+  | EditHSA
+  | RemoveHSA
 
 export type ActionCreator<A> = (formData: A) => Actions
 
@@ -288,6 +299,25 @@ export const editEstimatedPayment: ActionCreator<EditEstimatedTaxesAction> =
 
 export const removeEstimatedPayment: ActionCreator<number> = makeActionCreator(
   ActionName.REMOVE_ESTIMATED_TAX,
+  ajv.compile(indexSchema)
+)
+
+export const addHSA: ActionCreator<HealthSavingsAccount> = makeActionCreator(
+  ActionName.ADD_HSA,
+  ajv.getSchema(
+    '#/definitions/HealthSavingsAccount'
+  ) as ValidateFunction<HealthSavingsAccount>
+)
+
+export const editHSA: ActionCreator<EditHSAAction> = makeActionCreator(
+  ActionName.EDIT_HSA,
+  ajv.getSchema(
+    '#/definitions/EditHSAAction'
+  ) as ValidateFunction<EditHSAAction>
+)
+
+export const removeHSA: ActionCreator<number> = makeActionCreator(
+  ActionName.REMOVE_HSA,
   ajv.compile(indexSchema)
 )
 

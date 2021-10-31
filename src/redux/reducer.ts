@@ -261,6 +261,31 @@ function formReducer(
         ...action.formData.information
       }
     }
+    case ActionName.ADD_HSA: {
+      return {
+        ...newState,
+        healthSavingsAccounts: [
+          ...newState.healthSavingsAccounts,
+          action.formData
+        ]
+      }
+    }
+    case ActionName.EDIT_HSA: {
+      const newHsa = [...newState.healthSavingsAccounts]
+      newHsa.splice(action.formData.index, 1, action.formData.value)
+      return {
+        ...newState,
+        healthSavingsAccounts: newHsa
+      }
+    }
+    case ActionName.REMOVE_HSA: {
+      const newHsa = [...newState.healthSavingsAccounts]
+      newHsa.splice(action.formData, 1)
+      return {
+        ...newState,
+        healthSavingsAccounts: newHsa
+      }
+    }
     default: {
       return newState
     }

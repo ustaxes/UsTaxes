@@ -324,9 +324,13 @@ export interface F1098e {
 }
 
 export interface HealthSavingsAccount {
+  label: string
   coverageType: 'self-only' | 'family'
   contributions: number
   personRole: PersonRole.PRIMARY | PersonRole.SPOUSE
+  startDate: Date
+  endDate: Date
+  //coverageDateRange: {from: {year: number, month: number}, to: {year: number, month: number}}
 }
 
 export type State =
@@ -416,3 +420,4 @@ export type EditEstimatedTaxesAction = ArrayItemEditAction<EstimatedTaxPayments>
 export type Edit1099Action = ArrayItemEditAction<Supported1099>
 export type EditPropertyAction = ArrayItemEditAction<Property>
 export type Edit1098eAction = ArrayItemEditAction<F1098e>
+export type EditHSAAction = ArrayItemEditAction<HealthSavingsAccount>

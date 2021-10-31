@@ -1,4 +1,5 @@
 import Ajv, { DefinedError, ValidateFunction } from 'ajv'
+import addFormats from 'ajv-formats'
 import schema from './validation.json'
 import log from 'ustaxes/log'
 
@@ -23,7 +24,11 @@ export const checkType = <A>(data: A, validate: ValidateFunction<A>): A => {
   return data
 }
 
-const ajv = new Ajv().addSchema(schema)
+const ajv = new Ajv()
+// Adding formats lets you validate for date-time
+addFormats(ajv)
+
+ajv.addSchema(schema)
 
 // Doing this seems to be necessary so that recursive self
 // links (ref fields) are created properly. Without it we get
@@ -49,6 +54,8 @@ ajv.getSchema('#/definitions/IncomeW2')
 ajv.getSchema('#/definitions/EditW2Action')
 ajv.getSchema('#/definitions/EstimatedTaxPayments')
 ajv.getSchema('#/definitions/EditEstimatedTaxesAction')
+ajv.getSchema('#/definitions/HealthSavingsAccounts')
+ajv.getSchema('#/definitions/EditHSAAction')
 ajv.getSchema('#/definitions/Refund')
 ajv.getSchema('#/definitions/TaxPayer')
 ajv.getSchema('#/definitions/Information')
