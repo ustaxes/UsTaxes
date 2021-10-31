@@ -33,9 +33,8 @@ export const evaluatePiecewise = (f: Piecewise, x: number): number => {
   return f[selection].f(x)
 }
 
-export const isLeapYear = (year: number): boolean => {
-  return (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0
-}
+export const isLeapYear = (year: number): boolean =>
+  (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0
 
 export const daysInYear = (year: number): number =>
   isLeapYear(year) ? 366 : 365

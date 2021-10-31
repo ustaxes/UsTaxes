@@ -1,10 +1,11 @@
 import F1040 from 'ustaxes/irsForms/F1040'
 import { Dependent, FilingStatus } from 'ustaxes/redux/data'
 import { computeField, sumFields } from 'ustaxes/irsForms/util'
-import { CURRENT_YEAR, QualifyingDependents } from 'ustaxes/data/federal'
+import { QualifyingDependents } from 'ustaxes/data/federal'
 
 export default class ChildTaxCreditWorksheet {
   f1040: F1040
+  year = 2020
 
   constructor(f1040: F1040) {
     this.f1040 = f1040
@@ -12,12 +13,12 @@ export default class ChildTaxCreditWorksheet {
 
   qualifiesChild = (d: Dependent): boolean =>
     d.qualifyingInfo !== undefined &&
-    CURRENT_YEAR - d.qualifyingInfo.birthYear < QualifyingDependents.childMaxAge
+    this.year - d.qualifyingInfo.birthYear < QualifyingDependents.childMaxAge
 
   qualifiesOther = (d: Dependent): boolean =>
     d.qualifyingInfo !== undefined &&
     !this.qualifiesChild(d) &&
-    CURRENT_YEAR - d.qualifyingInfo.birthYear <
+    this.year - d.qualifyingInfo.birthYear <
       (d.qualifyingInfo.isStudent
         ? QualifyingDependents.qualifyingDependentMaxAge
         : QualifyingDependents.qualifyingStudentMaxAge)

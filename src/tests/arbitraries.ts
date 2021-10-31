@@ -1,6 +1,5 @@
 import * as fc from 'fast-check'
 import { Arbitrary } from 'fast-check'
-import { CURRENT_YEAR } from 'ustaxes/data/federal'
 import locationPostalCodes from 'ustaxes/data/locationPostalCodes'
 import {
   QuestionTagName,
@@ -56,16 +55,21 @@ const investment: Arbitrary<number> = fc.nat({ max: 100000 })
 const expense: Arbitrary<number> = fc.nat({ max: 10000 })
 const interest: Arbitrary<number> = fc.nat({ max: 2000 })
 const payment: Arbitrary<number> = fc.nat({ max: 200000 })
-const daysInYear: Arbitrary<number> = fc.nat({
-  max: util.daysInYear(CURRENT_YEAR)
-})
-const daysInYearPair: Arbitrary<[number, number]> = daysInYear.chain((d) =>
-  fc.nat({ max: util.daysInYear(CURRENT_YEAR) - d }).map((d2) => [d, d2])
-)
-const birthYear: Arbitrary<number> = fc.integer({
-  min: 1900,
-  max: CURRENT_YEAR
-})
+const daysInYear = (currentYear: number): Arbitrary<number> =>
+  fc.nat({
+    max: util.daysInYear(currentYear)
+  })
+
+const daysInYearPair = (currentYear: number): Arbitrary<[number, number]> =>
+  daysInYear(currentYear).chain((d) =>
+    fc.nat({ max: util.daysInYear(currentYear) - d }).map((d2) => [d, d2])
+  )
+
+const birthYear = (max: number): Arbitrary<number> =>
+  fc.integer({
+    min: 1900,
+    max
+  })
 
 const payerName: Arbitrary<string> = maxWords(3)
 
@@ -216,36 +220,39 @@ const propertyExpenses: Arbitrary<
     )
 )
 
-export const property: Arbitrary<types.Property> = fc
-  .tuple(
-    address,
-    daysInYearPair,
-    investment,
-    propertyType,
-    words,
-    fc.boolean(),
-    propertyExpenses
-  )
-  .map(
-    ([
+export const property = (
+  currentYear: types.TaxYear
+): Arbitrary<types.Property> =>
+  fc
+    .tuple(
       address,
-      [rentalDays, personalUseDays],
-      rentReceived,
+      daysInYearPair(types.TaxYears[currentYear]),
+      investment,
       propertyType,
-      otherPropertyType,
-      qualifiedJointVenture,
-      expenses
-    ]) => ({
-      address,
-      rentalDays,
-      personalUseDays,
-      rentReceived,
-      propertyType,
-      otherPropertyType,
-      qualifiedJointVenture,
-      expenses
-    })
-  )
+      words,
+      fc.boolean(),
+      propertyExpenses
+    )
+    .map(
+      ([
+        address,
+        [rentalDays, personalUseDays],
+        rentReceived,
+        propertyType,
+        otherPropertyType,
+        qualifiedJointVenture,
+        expenses
+      ]) => ({
+        address,
+        rentalDays,
+        personalUseDays,
+        rentReceived,
+        propertyType,
+        otherPropertyType,
+        qualifiedJointVenture,
+        expenses
+      })
+    )
 
 const f1098e: Arbitrary<types.F1098e> = fc
   .tuple(maxWords(2), interest)
@@ -302,48 +309,61 @@ export const spouse: Arbitrary<types.Spouse> = fc
     isTaxpayerDependent
   }))
 
-const qualifyingInformation: Arbitrary<types.QualifyingInformation> = fc
-  .tuple(birthYear, fc.nat({ max: 12 }), fc.boolean())
-  .map(([birthYear, numberOfMonths, isStudent]) => ({
-    birthYear,
-    numberOfMonths,
-    isStudent
-  }))
+const qualifyingInformation = (
+  currentYear: types.TaxYear
+): Arbitrary<types.QualifyingInformation> =>
+  fc
+    .tuple(
+      birthYear(types.TaxYears[currentYear]),
+      fc.nat({ max: 12 }),
+      fc.boolean()
+    )
+    .map(([birthYear, numberOfMonths, isStudent]) => ({
+      birthYear,
+      numberOfMonths,
+      isStudent
+    }))
 
-export const dependent: Arbitrary<types.Dependent> = fc
-  .tuple(person, word, qualifyingInformation)
-  .map(([person, relationship, qualifyingInfo]) => ({
-    ...person,
-    relationship,
-    qualifyingInfo
-  }))
+export const dependent = (
+  currentYear: types.TaxYear
+): Arbitrary<types.Dependent> =>
+  fc
+    .tuple(person, word, qualifyingInformation(currentYear))
+    .map(([person, relationship, qualifyingInfo]) => ({
+      ...person,
+      relationship,
+      qualifyingInfo
+    }))
 
-export const taxPayer: Arbitrary<types.TaxPayer> = fc
-  .tuple(
-    filingStatus,
-    primaryPerson,
-    spouse,
-    fc.array(dependent),
-    email,
-    phoneNumber
-  )
-  .map(
-    ([
+export const taxPayer = (
+  currentYear: types.TaxYear
+): Arbitrary<types.TaxPayer> =>
+  fc
+    .tuple(
       filingStatus,
       primaryPerson,
       spouse,
-      dependents,
-      contactEmail,
-      contactPhoneNumber
-    ]) => ({
-      filingStatus,
-      primaryPerson,
-      spouse,
-      dependents,
-      contactEmail,
-      contactPhoneNumber
-    })
-  )
+      fc.array(dependent(currentYear)),
+      email,
+      phoneNumber
+    )
+    .map(
+      ([
+        filingStatus,
+        primaryPerson,
+        spouse,
+        dependents,
+        contactEmail,
+        contactPhoneNumber
+      ]) => ({
+        filingStatus,
+        primaryPerson,
+        spouse,
+        dependents,
+        contactEmail,
+        contactPhoneNumber
+      })
+    )
 
 const questionTag: Arbitrary<QuestionTagName> = fc.constantFrom(
   ...questionTagNames
@@ -353,56 +373,66 @@ export const questions: Arbitrary<Responses> = fc
   .set(questionTag)
   .map((tags) => Object.fromEntries(tags.map((t) => [t, true])))
 
-export const information: Arbitrary<types.Information> = fc
-  .tuple(
-    fc.array(f1099),
-    fc.array(w2),
-    fc.array(property),
-    fc.array(estTax),
-    fc.array(f1098e),
-    refund,
-    taxPayer,
-    questions,
-    state
-  )
-  .map(
-    ([
-      f1099s,
-      w2s,
-      realEstate,
-      estimatedTaxes,
-      f1098es,
+export const information = (
+  currentYear: types.TaxYear
+): Arbitrary<types.Information> =>
+  fc
+    .tuple(
+      fc.array(f1099),
+      fc.array(w2),
+      fc.array(property(currentYear)),
+      fc.array(estTax),
+      fc.array(f1098e),
       refund,
-      taxPayer,
+      taxPayer(currentYear),
       questions,
       state
-    ]) => ({
-      f1099s,
-      w2s,
-      realEstate,
-      estimatedTaxes,
-      f1098es,
-      refund,
-      taxPayer,
-      questions,
-      stateResidencies: [{ state }]
-    })
-  )
+    )
+    .map(
+      ([
+        f1099s,
+        w2s,
+        realEstate,
+        estimatedTaxes,
+        f1098es,
+        refund,
+        taxPayer,
+        questions,
+        state
+      ]) => ({
+        f1099s,
+        w2s,
+        realEstate,
+        estimatedTaxes,
+        f1098es,
+        refund,
+        taxPayer,
+        questions,
+        stateResidencies: [{ state }]
+      })
+    )
 
 export const taxYear: Arbitrary<types.TaxYear> = fc.constantFrom(
   ...util.enumKeys(types.TaxYears)
 )
 
-export const taxesState: Arbitrary<types.TaxesState> = fc
-  .tuple(information, information, information, taxYear)
-  .map(([Y2019, Y2020, Y2021, activeYear]) => ({
-    Y2019,
-    Y2020,
-    Y2021,
-    activeYear
-  }))
+export const taxesState: Arbitrary<types.TaxesState> = taxYear.chain(
+  (activeYear) =>
+    fc
+      .tuple(
+        ...[information, information, information].map((f) => f(activeYear))
+      )
+      .map(([Y2019, Y2020, Y2021]) => ({
+        Y2019,
+        Y2020,
+        Y2021,
+        activeYear
+      }))
+)
 
-export const f1040: Arbitrary<[F1040, Form[]]> = information
-  .map((information) => create1040(information))
-  .filter((res) => util.isRight(res))
-  .map((res) => (res as util.Right<[F1040, Form[]]>).right)
+export const f1040: Arbitrary<[F1040, Form[]]> = taxYear.chain((year) =>
+  information(year)
+    .map((information) => create1040(information))
+    .filter((res) => util.isRight(res))
+    .map((res) => (res as util.Right<[F1040, Form[]]>).right)
+)

@@ -1,6 +1,5 @@
 import { FilingStatus, Income1099Type, Information } from 'ustaxes/redux/data'
 import { Either, isLeft, isRight, left, right } from 'ustaxes/util'
-import { CURRENT_YEAR } from './federal'
 
 // Defines usable tag names for each question later defined,
 // and maps to a type which is the expected response type.
@@ -79,7 +78,7 @@ export const questions: Question[] = [
   ),
   q(
     'LIVE_APART_FROM_SPOUSE',
-    `Did you lived apart from your spouse for all of ${CURRENT_YEAR}?`,
+    `Did you lived apart from your spouse for all of the year?`,
     'boolean',
     (s: Information) =>
       s.taxPayer.filingStatus == FilingStatus.MFS &&

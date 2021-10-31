@@ -1,6 +1,8 @@
 import { ReactElement } from 'react'
 import { Message, useForm, useWatch, FormProvider } from 'react-hook-form'
-import { useDispatch, useSelector, TaxesState } from 'ustaxes/redux'
+import { useDispatch } from 'ustaxes/redux'
+import { useYearSelector } from 'ustaxes/redux/yearDispatch'
+import { useSelector } from 'react-redux'
 import {
   addProperty,
   editProperty,
@@ -13,7 +15,10 @@ import {
   PropertyExpenseType,
   PropertyExpenseTypeName,
   PropertyType,
-  PropertyTypeName
+  PropertyTypeName,
+  TaxesState,
+  TaxYear,
+  TaxYears
 } from 'ustaxes/redux/data'
 import AddressFields from 'ustaxes/components/TaxPayer/Address'
 import {
@@ -27,7 +32,6 @@ import { daysInYear, enumKeys } from '../../util'
 import { HouseOutlined } from '@material-ui/icons'
 import { FormListContainer } from 'ustaxes/components/FormContainer'
 import { Grid } from '@material-ui/core'
-import { CURRENT_YEAR } from 'ustaxes/data/federal'
 import _ from 'lodash'
 
 interface PropertyAddForm {
@@ -140,8 +144,12 @@ export default function RealEstate(): ReactElement {
 
   const { onAdvance, navButtons } = usePager()
 
-  const properties: Property[] = useSelector(
-    (state: TaxesState) => state.information.realEstate
+  const activeYear: TaxYear = useSelector(
+    (state: TaxesState) => state.activeYear
+  )
+
+  const properties: Property[] = useYearSelector(
+    (state) => state.information.realEstate
   )
 
   const propertyType = useWatch({
@@ -155,7 +163,7 @@ export default function RealEstate(): ReactElement {
   })
 
   const validateDays = (n: number, other: number): Message | true => {
-    const days = daysInYear(CURRENT_YEAR)
+    const days = daysInYear(TaxYears[activeYear])
     return n + other <= days ? true : `Total use days must be less than ${days}`
   }
 
@@ -245,13 +253,13 @@ export default function RealEstate(): ReactElement {
           name="rentalDays"
           rules={{ validate: (n: string) => validateRental(Number(n)) }}
           label="Number of days in the year used for rental"
-          patternConfig={Patterns.numDays}
+          patternConfig={Patterns.numDays(activeYear)}
         />
         <LabeledInput
           name="personalUseDays"
           rules={{ validate: (n: string) => validatePersonal(Number(n)) }}
           label="Number of days in the year for personal use"
-          patternConfig={Patterns.numDays}
+          patternConfig={Patterns.numDays(activeYear)}
         />
         <LabeledCheckbox
           name="qualifiedJointVenture"

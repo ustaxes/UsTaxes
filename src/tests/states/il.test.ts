@@ -33,28 +33,34 @@ const withStateReturn = (
 describe('il year 2020', () => {
   it('should produce correct withholding attachments in', () => {
     fc.assert(
-      fc.property(arbitraries.information, fc.context(), (info, ctx) => {
-        info.stateResidencies = [{ state: 'IL' }]
-        info.w2s.forEach((w2) => {
-          w2.state = 'IL'
-        })
-        withStateReturn(info, ctx, (_, stateForms) => {
-          ctx.log(stateForms.map((f) => f.formName).join(';'))
-          expect(stateForms.filter((f) => f.formName === 'IL-WIT').length).toBe(
-            Math.ceil(
-              Math.max(
-                ...[PersonRole.PRIMARY, PersonRole.SPOUSE].map(
-                  (r) =>
-                    info.w2s.filter(
-                      (w2) =>
-                        w2.personRole === r && (w2.stateWithholding ?? 0) > 0
-                    ).length
-                )
-              ) / ILWIT.WITHHOLDING_FORMS_PER_PAGE
+      fc.property(
+        arbitraries.information('Y2020'),
+        fc.context(),
+        (info, ctx) => {
+          info.stateResidencies = [{ state: 'IL' }]
+          info.w2s.forEach((w2) => {
+            w2.state = 'IL'
+          })
+          withStateReturn(info, ctx, (_, stateForms) => {
+            ctx.log(stateForms.map((f) => f.formName).join(';'))
+            expect(
+              stateForms.filter((f) => f.formName === 'IL-WIT').length
+            ).toBe(
+              Math.ceil(
+                Math.max(
+                  ...[PersonRole.PRIMARY, PersonRole.SPOUSE].map(
+                    (r) =>
+                      info.w2s.filter(
+                        (w2) =>
+                          w2.personRole === r && (w2.stateWithholding ?? 0) > 0
+                      ).length
+                  )
+                ) / ILWIT.WITHHOLDING_FORMS_PER_PAGE
+              )
             )
-          )
-        })
-      })
+          })
+        }
+      )
     )
   })
 })

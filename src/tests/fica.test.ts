@@ -36,7 +36,7 @@ function hasAttachment<FormType>(
 describe('fica', () => {
   it('should give refund SS tax overpayment only in some conditions', () => {
     fc.assert(
-      fc.property(arbitraries.information, (information) => {
+      fc.property(arbitraries.information('Y2020'), (information) => {
         const f1040Result = create1040(information)
         if (isRight(f1040Result)) {
           const [f1040, forms] = f1040Result.right

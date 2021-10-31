@@ -48,7 +48,7 @@ const YearDropDown = (props: YearDropProps): ReactElement => {
           label="Select Tax Year"
           valueMapping={(x) => x}
           keyMapping={(x) => x}
-          textMapping={(x) => TaxYears[x]}
+          textMapping={(x) => `${TaxYears[x]}`}
           sizes={{ xs: 9 }}
         />
         <Grid item>
