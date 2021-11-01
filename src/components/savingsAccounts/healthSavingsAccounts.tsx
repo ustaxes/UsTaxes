@@ -24,6 +24,8 @@ import { Work } from '@material-ui/icons'
 import { addHSA, editHSA, removeHSA } from 'ustaxes/redux/actions'
 import { CURRENT_YEAR } from 'ustaxes/data/federal'
 
+import { format } from 'date-fns'
+
 interface HSAUserInput {
   label: string
   coverageType: 'self-only' | 'family'
@@ -103,6 +105,10 @@ export default function HealthSavingsAccounts(): ReactElement {
       secondary={(hsa: HSAUserInput) => (
         <span>
           contributions: <Currency value={toHSA(hsa).contributions} />
+          <br />
+          coverage type: {hsa.coverageType}
+          <br />
+          coverage span: {format(hsa.startDate, 'MMMM do, yyyy')} to {format(hsa.endDate, 'MMMM do, yyyy')}
         </span>
       )}
     >
