@@ -42,16 +42,6 @@ export function DatePicker(props: LabeledFormProps): ReactElement {
                   onChange={onChange}
                 />
               </MuiPickersUtilsProvider>
-              {/* <RadioGroup name={name} value={value} onChange={onChange}>
-                {values.map(([rowLabel, rowValue], i) => (
-                  <FormControlLabel
-                    key={i}
-                    value={rowValue}
-                    control={<Radio color="primary" />}
-                    label={rowLabel}
-                  />
-                ))}
-              </RadioGroup> */}
             </FormControl>
           </div>
         )}
