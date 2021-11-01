@@ -78,7 +78,7 @@ export const questions: Question[] = [
   ),
   q(
     'LIVE_APART_FROM_SPOUSE',
-    `Did you lived apart from your spouse for all of the year?`,
+    `Did you live apart from your spouse for all of the year?`,
     'boolean',
     (s: Information) =>
       s.taxPayer.filingStatus == FilingStatus.MFS &&
