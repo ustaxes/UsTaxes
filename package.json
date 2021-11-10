@@ -11,7 +11,7 @@
     "ajv": "^8.7.1",
     "lodash": "^4.17.21",
     "loglevel": "^1.7.1",
-    "node-fetch": "^2.6.1",
+    "node-fetch": "^3.1.0",
     "pdf-lib": "^1.17.1",
     "react": "^17.0.1",
     "react-device-detect": "^2.1.2",
