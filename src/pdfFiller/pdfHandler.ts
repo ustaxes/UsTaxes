@@ -5,32 +5,34 @@ import { PDFDocument } from 'pdf-lib'
 import { Fill } from '.'
 import { fillPDF } from './fillPdf'
 
-export async function downloadPDF(url: string): Promise<PDFDocument> {
-  const download = await fetch(url)
-  const buffer = await download.arrayBuffer()
-  return await PDFDocument.load(buffer)
+export interface PDFDownloader {
+  (url: string): Promise<PDFDocument>
 }
 
-export const combinePdfs = (
-  pdfFiles: Array<Promise<PDFDocument>>
-): Promise<PDFDocument> => {
+export const makeDownloader =
+  (baseUrl: string): PDFDownloader =>
+  async (url: string): Promise<PDFDocument> => {
+    const download = await fetch(`${baseUrl}${url}`)
+    const buffer = await download.arrayBuffer()
+    return await PDFDocument.load(buffer)
+  }
+
+export const combinePdfs = (pdfFiles: PDFDocument[]): Promise<PDFDocument> => {
   const [head, ...rest] = pdfFiles
 
   // Make sure we combine the documents from left to right and preserve order
   return rest.reduce(async (l, r) => {
-    return await Promise.all([l, r]).then(
-      async ([l, r]) =>
-        await l.copyPages(r, r.getPageIndices()).then((pgs) => {
-          pgs.forEach((p) => l.addPage(p))
-          return l
-        })
-    )
-  }, head)
+    const doc = await l
+    return await doc.copyPages(r, r.getPageIndices()).then((pgs) => {
+      pgs.forEach((p) => doc.addPage(p))
+      return doc
+    })
+  }, Promise.resolve(head))
 }
 
-export const buildPdf = async (
+export const getPdfs = async (
   formData: Array<[Fill, PDFDocument]>
-): Promise<Uint8Array> => {
+): Promise<PDFDocument[]> => {
   // Insert the values from each field into the PDF
   const pdfFiles: Array<Promise<PDFDocument>> = formData.map(
     async ([data, f]) => {
@@ -40,8 +42,12 @@ export const buildPdf = async (
     }
   )
 
-  return (await combinePdfs(pdfFiles)).save()
+  return await Promise.all(pdfFiles)
 }
+
+export const buildPdf = async (
+  formData: Array<[Fill, PDFDocument]>
+): Promise<Uint8Array> => (await combinePdfs(await getPdfs(formData))).save()
 
 export async function savePDF(
   contents: Uint8Array,

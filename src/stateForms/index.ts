@@ -2,7 +2,7 @@ import _ from 'lodash'
 import { PDFDocument } from 'pdf-lib'
 import F1040 from '../irsForms/F1040'
 import { fillPDF } from '../pdfFiller/fillPdf'
-import { combinePdfs, downloadPDF } from '../pdfFiller/pdfHandler'
+import { combinePdfs, PDFDownloader } from '../pdfFiller/pdfHandler'
 import { State, Information } from '../redux/data'
 import Form from './Form'
 import il1040 from './IL/IL1040'
@@ -28,21 +28,23 @@ export const createStateReturn = (
   }
 }
 
-export const createStatePDF = async (forms: Form[]): Promise<PDFDocument> => {
-  const filenames = forms.map(
-    (form) => `/states/${form.state}/${form.formName}.pdf`
-  )
+export const createStatePDF =
+  (forms: Form[]) =>
+  async (downloader: PDFDownloader): Promise<PDFDocument> => {
+    const filenames = forms.map(
+      (form) => `/states/${form.state}/${form.formName}.pdf`
+    )
 
-  const pdfs = filenames.map((filename) => downloadPDF(filename))
+    const pdfs = filenames.map(downloader)
 
-  const filled: Array<Promise<PDFDocument>> = _.zipWith(
-    pdfs,
-    forms,
-    async (pdf, form) => {
-      fillPDF(await pdf, form.fields())
-      return pdf
-    }
-  )
+    const filled: Array<Promise<PDFDocument>> = _.zipWith(
+      pdfs,
+      forms,
+      async (pdf, form) => {
+        fillPDF(await pdf, form.fields())
+        return pdf
+      }
+    )
 
-  return combinePdfs(filled)
-}
+    return combinePdfs(await Promise.all(filled))
+  }
