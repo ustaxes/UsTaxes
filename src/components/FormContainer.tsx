@@ -1,11 +1,4 @@
-import {
-  PropsWithChildren,
-  ReactElement,
-  useState,
-  KeyboardEvent,
-  useCallback,
-  useEffect
-} from 'react'
+import { PropsWithChildren, ReactElement, useState, KeyboardEvent } from 'react'
 import {
   createStyles,
   makeStyles,
@@ -29,24 +22,13 @@ import { Prompt } from 'react-router'
 interface FormContainerProps {
   onDone: () => void
   onCancel: () => void
-  onChange: () => void
 }
 
 const FormContainer = ({
   onDone,
   onCancel,
-  onChange,
   children
 }: PropsWithChildren<FormContainerProps>): ReactElement => {
-  const handleFormChange = useCallback(() => {
-    onChange()
-    window.removeEventListener('input', handleFormChange)
-  }, [])
-
-  useEffect(() => {
-    window.addEventListener('input', handleFormChange)
-  }, [])
-
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)')
 
   const handleEnterKey = (event: KeyboardEvent<HTMLDivElement>): void => {
@@ -169,7 +151,6 @@ interface FormListContainerProps<A> {
 enum FormState {
   Adding,
   Editing,
-  Dirty,
   Closed
 }
 
@@ -228,7 +209,11 @@ const FormListContainer = <A,>(
 
   // Note useFormContext here instead of useForm reuses the
   // existing form context from the parent.
-  const { reset, handleSubmit } = useFormContext()
+  const {
+    reset,
+    handleSubmit,
+    formState: { isDirty }
+  } = useFormContext()
 
   const onClose = (): void => {
     onCancel()
@@ -242,10 +227,6 @@ const FormListContainer = <A,>(
       onSubmitAdd(formData)
     }
     close()
-  }
-
-  const onChange = (): void => {
-    setFormState(FormState.Dirty)
   }
 
   const openEditForm = (n: number): (() => void) | undefined => {
@@ -297,18 +278,14 @@ const FormListContainer = <A,>(
   return (
     <>
       <Prompt
-        when={formState === FormState.Dirty}
+        when={isDirty}
         message="Warning: you have unsaved changes. Are you sure you want to leave?"
       />
       {itemDisplay}
       {(() => {
         if (formState !== FormState.Closed) {
           return (
-            <FormContainer
-              onDone={handleSubmit(onSave)}
-              onCancel={onClose}
-              onChange={onChange}
-            >
+            <FormContainer onDone={handleSubmit(onSave)} onCancel={onClose}>
               {children}
             </FormContainer>
           )
