@@ -2,7 +2,7 @@ import { save } from '@tauri-apps/api/dialog'
 import { writeBinaryFile } from '@tauri-apps/api/fs'
 import fetch from 'node-fetch'
 import { PDFDocument } from 'pdf-lib'
-import { Fill } from '.'
+import Fill from './Fill'
 import { fillPDF } from './fillPdf'
 
 export interface PDFDownloader {
@@ -36,7 +36,7 @@ export const getPdfs = async (
   // Insert the values from each field into the PDF
   const pdfFiles: Array<Promise<PDFDocument>> = formData.map(
     async ([data, f]) => {
-      fillPDF(f, data.fields())
+      fillPDF(f, data.renderedFields())
       const pageBytes = await f.save()
       return await PDFDocument.load(pageBytes)
     }
