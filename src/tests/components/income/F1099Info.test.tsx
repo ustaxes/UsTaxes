@@ -12,6 +12,7 @@ import {
 } from 'ustaxes/redux/data'
 import { blankState } from 'ustaxes/redux/reducer'
 import userEvent from '@testing-library/user-event'
+import { BrowserRouter as Router } from 'react-router-dom'
 
 const testW2sSpouse: IncomeW2 = {
   employer: { EIN: '111111111', employerName: 'w2s employer name' },
@@ -87,11 +88,13 @@ describe('F1099Info', () => {
     const navButtons = <PagerButtons submitText="Save and Continue" />
 
     render(
-      <Provider store={store}>
-        <PagerContext.Provider value={{ onAdvance: jest.fn(), navButtons }}>
-          <F1099Info />
-        </PagerContext.Provider>
-      </Provider>
+      <Router>
+        <Provider store={store}>
+          <PagerContext.Provider value={{ onAdvance: jest.fn(), navButtons }}>
+            <F1099Info />
+          </PagerContext.Provider>
+        </Provider>
+      </Router>
     )
 
     const labelTextChange = (labelText: string | RegExp, input: string) => {

@@ -1,4 +1,4 @@
-import { PropsWithChildren, ReactElement, useState } from 'react'
+import { PropsWithChildren, ReactElement, useState, KeyboardEvent } from 'react'
 import {
   createStyles,
   makeStyles,
@@ -17,6 +17,7 @@ import { Delete, Edit } from '@material-ui/icons'
 import { SubmitHandler, useFormContext } from 'react-hook-form'
 import _ from 'lodash'
 import { ReactNode } from 'react'
+import { Prompt } from 'react-router'
 
 interface FormContainerProps {
   onDone: () => void
@@ -29,8 +30,17 @@ const FormContainer = ({
   children
 }: PropsWithChildren<FormContainerProps>): ReactElement => {
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)')
+
+  const handleEnterKey = (event: KeyboardEvent<HTMLDivElement>): void => {
+    const target = event.target as HTMLInputElement
+    if (target != null && event.key === 'Enter') {
+      event.preventDefault()
+      onDone()
+    }
+  }
+
   return (
-    <div>
+    <div onKeyDown={handleEnterKey}>
       {children}
       <Box
         display="flex"
@@ -199,7 +209,11 @@ const FormListContainer = <A,>(
 
   // Note useFormContext here instead of useForm reuses the
   // existing form context from the parent.
-  const { reset, handleSubmit } = useFormContext()
+  const {
+    reset,
+    handleSubmit,
+    formState: { isDirty }
+  } = useFormContext()
 
   const onClose = (): void => {
     onCancel()
@@ -263,6 +277,10 @@ const FormListContainer = <A,>(
 
   return (
     <>
+      <Prompt
+        when={isDirty}
+        message="Warning: you have unsaved changes. Are you sure you want to leave?"
+      />
       {itemDisplay}
       {(() => {
         if (formState !== FormState.Closed) {
