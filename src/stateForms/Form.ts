@@ -1,17 +1,17 @@
 import F1040 from 'ustaxes/irsForms/F1040'
-import { Fill } from '../pdfFiller'
+import Fill from 'ustaxes/pdfFiller/Fill'
 import { IncomeW2, Information, State } from '../redux/data'
 
 /**
  * Represents a state's income tax form, or schedule
  */
-export default interface Form extends Fill {
-  state: State
-  formName: string
-  formOrder: number
-  attachments: () => Form[]
-  info: Information
-  f1040: F1040
+export default abstract class Form extends Fill {
+  abstract state: State
+  abstract formName: string
+  abstract formOrder: number
+  abstract attachments: () => Form[]
+  abstract info: Information
+  abstract f1040: F1040
 }
 
 /**

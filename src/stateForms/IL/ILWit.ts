@@ -1,6 +1,6 @@
 import Form, { FormMethods } from '../Form'
 import F1040 from '../../irsForms/F1040'
-import { Field } from '../../pdfFiller'
+import { Field } from 'ustaxes/pdfFiller'
 import { IncomeW2, Information, PersonRole, State } from '../../redux/data'
 import _ from 'lodash'
 
@@ -49,7 +49,7 @@ const toWithholdingForm = (w2: IncomeW2): WithholdingForm | undefined => {
  * primary taxpayer and 5 for spouse
  * TODO: support more than 5 for each
  */
-export class ILWIT implements Form {
+export class ILWIT extends Form {
   info: Information
   f1040: F1040
   formName = 'IL-WIT'
@@ -61,6 +61,7 @@ export class ILWIT implements Form {
   static WITHHOLDING_FORMS_PER_PAGE = 5
 
   constructor(info: Information, f1040: F1040, subFormIndex = 0) {
+    super()
     this.info = info
     this.f1040 = f1040
     this.methods = new FormMethods(this)

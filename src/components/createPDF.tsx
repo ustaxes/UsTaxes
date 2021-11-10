@@ -9,7 +9,7 @@ import { createPDFPopup } from 'ustaxes/irsForms'
 import { createStatePDF, createStateReturn, stateForm } from '../stateForms'
 import { create1040 } from 'ustaxes/irsForms/Main'
 import { isRight } from 'ustaxes/util'
-import { savePDF } from 'ustaxes/pdfFiller/pdfHandler'
+import { PDFDownloader, savePDF } from 'ustaxes/pdfFiller/pdfHandler'
 import { Box, Button } from '@material-ui/core'
 import Summary from './Summary'
 
@@ -22,7 +22,13 @@ const useStyles = makeStyles((theme) => ({
   }
 }))
 
-export default function CreatePDF(): ReactElement {
+interface CreatePDFProps {
+  downloader: PDFDownloader
+}
+
+export default function CreatePDF({
+  downloader
+}: CreatePDFProps): ReactElement {
   const [errors, updateErrors] = useState<string[]>([])
   const classes = useStyles()
 
@@ -37,15 +43,17 @@ export default function CreatePDF(): ReactElement {
 
   const federalReturn = async (e: FormEvent<Element>): Promise<void> => {
     e.preventDefault()
-    return await createPDFPopup(federalFileName).catch((errors: string[]) => {
-      if (errors.length !== undefined && errors.length > 0) {
-        updateErrors(errors)
-      } else {
-        log.error('unhandled exception')
-        log.error(errors)
-        return Promise.reject(errors)
+    return await createPDFPopup(federalFileName)(downloader).catch(
+      (errors: string[]) => {
+        if (errors.length !== undefined && errors.length > 0) {
+          updateErrors(errors)
+        } else {
+          log.error('unhandled exception')
+          log.error(errors)
+          return Promise.reject(errors)
+        }
       }
-    })
+    )
   }
 
   const stateReturn = async (): Promise<void> => {
@@ -53,7 +61,7 @@ export default function CreatePDF(): ReactElement {
     if (isRight(f1040Result)) {
       const stateReturn = await createStateReturn(info, f1040Result.right[0])
       if (stateReturn !== undefined) {
-        const pdfBytes = (await createStatePDF(stateReturn)).save()
+        const pdfBytes = (await createStatePDF(stateReturn)(downloader)).save()
         savePDF(await pdfBytes, stateFileName)
       }
     }
