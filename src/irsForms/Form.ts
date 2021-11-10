@@ -1,4 +1,4 @@
-import { Field, Fill } from '../pdfFiller'
+import Fill from 'ustaxes/pdfFiller/Fill'
 
 export type FormTag =
   | 'f1040'
@@ -31,13 +31,11 @@ export type FormTag =
  * Any PDF can be filled from an array of values.
  *
  */
-export default abstract class Form implements Fill {
+export default abstract class Form extends Fill {
   // Match the filename without extension when downloaded from IRS
   abstract tag: FormTag
   // Match the sequence number in the header of the PDF.
   abstract sequenceIndex: number
-
-  abstract fields: () => Field[]
 
   public toString = (): string => `
     Form ${this.tag}, at sequence ${this.sequenceIndex}

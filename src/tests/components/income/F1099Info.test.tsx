@@ -83,7 +83,7 @@ describe('F1099Info', () => {
     selectOption: (labelText: string | RegExp, input: string) => void
     buttonClick: (buttonText: string) => void
   } => {
-    const store = createStoreUnpersisted(info)
+    const store = createStoreUnpersisted({ information: info })
     const navButtons = <PagerButtons submitText="Save and Continue" />
 
     render(
