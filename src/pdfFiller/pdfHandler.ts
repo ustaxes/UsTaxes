@@ -1,6 +1,5 @@
 import { save } from '@tauri-apps/api/dialog'
 import { writeBinaryFile } from '@tauri-apps/api/fs'
-import fetch from 'node-fetch'
 import { PDFDocument } from 'pdf-lib'
 import Fill from './Fill'
 import { fillPDF } from './fillPdf'
