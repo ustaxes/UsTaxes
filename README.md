@@ -1,4 +1,8 @@
-# [ustaxes.org](//ustaxes.org) [![Netlify Status][netlify-badge]][netlify-url] [![Github Latest Release][release-badge]][github-release] [![discord-badge]][discord-url]
+<p align="center">
+  <a href="//ustaxes.org"><img src="/public/UsTaxes.gif" /></a>
+</p>
+
+[![Netlify Status][netlify-badge]][netlify-url] [![Github Latest Release][release-badge]][github-release] [![discord-badge]][discord-url]
 
 ## What is UsTaxes?
 
@@ -103,3 +107,4 @@ To release, run `npm run desktop-release` or `yarn desktop-release`. This will p
 [discord-url]: https://discord.gg/dAaz472mPz
 [github-release]: https://github.com/ustaxes/UsTaxes/releases/latest
 [release-badge]: https://badgen.net/github/release/ustaxes/ustaxes
+[animated-logo]: /public/UsTaxes.gif
