@@ -1,4 +1,5 @@
 import { FilingStatus } from 'ustaxes/redux/data'
+import { healthSavingsAccount } from 'ustaxes/tests/arbitraries'
 import { linear, Piecewise } from 'ustaxes/util'
 
 export const CURRENT_YEAR = 2020
@@ -168,6 +169,13 @@ export const netInvestmentIncomeTax = {
         return 200000 // Single, Head of Household
       }
     }
+  }
+}
+
+export const healthSavingsAccounts = {
+  contributionLimit: {
+    'self-only': 3550,
+    family: 7100
   }
 }
 

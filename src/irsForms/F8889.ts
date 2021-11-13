@@ -2,6 +2,7 @@ import { Information, Person, HealthSavingsAccount } from 'ustaxes/redux/data'
 import { computeField, sumFields, displayNumber } from './util'
 import Form, { FormTag } from './Form'
 import F8853 from './F8853'
+import { CURRENT_YEAR, healthSavingsAccounts } from 'ustaxes/data/federal'
 
 export const needsF8889 = (): boolean => {
   return false
@@ -16,6 +17,8 @@ export default class F8889 extends Form {
   f8853?: F8853
   person: Person
   state: Information
+  calculatedCoverageType: 'self-only' | 'family'
+  readonly firstDayOfLastMonth: Date
 
   constructor(state: Information, person: Person, f8853?: F8853) {
     super()
@@ -23,10 +26,44 @@ export default class F8889 extends Form {
     this.person = person
     this.state = state
     this.hsas = []
+    this.calculatedCoverageType = 'self-only'
+    this.firstDayOfLastMonth = new Date(CURRENT_YEAR, 11, 1)
   }
 
   getHSAs = (): undefined => {
     return undefined
+  }
+  /* If you are an eligible individual on the first day of the last month of your tax year 
+     (December 1 for most taxpayers), you are considered to be an eligible individual 
+     for the entire year.
+    */
+  lastMonthRule = (): boolean => {
+    return this.hsas.some((hsa) => hsa.endDate >= this.firstDayOfLastMonth)
+  }
+
+  /*If, on the first day of the last month of your tax year (December 1 for most taxpayers), 
+    you had family coverage, check the "family" box.
+  */
+  lastMonthCoverage = (): string | undefined => {
+    let coverage = undefined
+    for (const hsa of this.hsas) {
+      if (hsa.endDate >= this.firstDayOfLastMonth) {
+        if (hsa.coverageType == 'family') {
+          coverage = 'family'
+          break
+        }
+        coverage = 'self-only'
+      }
+    }
+    return coverage
+  }
+
+  fullYearHsa = (): boolean => {
+    return this.hsas.some(
+      (hsa) =>
+        hsa.startDate <= new Date(CURRENT_YEAR, 0, 1) &&
+        hsa.endDate >= this.firstDayOfLastMonth
+    )
   }
 
   /*If you were covered, or considered covered, by a self-only HDHP and a family HDHP 
@@ -35,23 +72,6 @@ export default class F8889 extends Form {
     at the same time, you are treated as having family coverage during that period. 
     If, on the first day of the last month of your tax year (December 1 for most taxpayers), 
     you had family coverage, check the "family" box.
-  */
-  determineCoverageType = (): string => {
-    return 'self-only'
-  }
-
-  /*Include on line 2 only those amounts you, or others on your behalf, contributed to your HSA in 2020. 
-    Also, include those contributions made from January 1, 2021, through April 15, 2021, that were for 2020. 
-    Do not include employer contributions (see line 9) or amounts rolled over from another HSA or Archer MSA. 
-    See Rollovers, earlier. Also, do not include any qualified HSA funding distributions (see line 10). 
-    Contributions to an employee's account through a cafeteria plan are treated as employer contributions 
-    and are not included on line 2.
-  */
-  l2 = (): number =>
-    this.hsas.reduce((total, hsa) => hsa.contributions + total, 0)
-  /*If you were under age 55 at the end of 2020 and, on the first day of every month during 2020, 
-    you were, or were considered, an eligible individual with the same coverage, enter $3,550 
-    ($7,100 for family coverage). All others, see the instructions for the amount to enter.
 
     When figuring the amount to enter on line 3, apply the following rules.
 
@@ -86,8 +106,55 @@ export default class F8889 extends Form {
     Note. If you are married and had family coverage at any time during the year, the additional contribution amount 
     is figured on line 7 and is not included on line 3.
   */
-  // rule 1
-  l3 = (): number | undefined => undefined
+  contributionLimit = (): number => {
+    /*If you were under age 55 at the end of 2020 and, on the first day of every month during 2020, 
+    you were, or were considered, an eligible individual with the same coverage, enter $3,550 
+    ($7,100 for family coverage). All others, see the instructions for the amount to enter.
+    */
+    if (this.hsas.length == 1) {
+      const onlyHsa = this.hsas[0]
+      if (
+        onlyHsa.startDate <= new Date(CURRENT_YEAR, 0, 1) &&
+        onlyHsa.endDate >= this.firstDayOfLastMonth
+      ) {
+        if (onlyHsa.coverageType == 'family') {
+          this.calculatedCoverageType = 'family'
+          return healthSavingsAccounts.contributionLimit.family
+        } else {
+          return healthSavingsAccounts.contributionLimit['self-only']
+        }
+      }
+      /*If the last-month rule (see Last-month rule, earlier) applies, you are considered an eligible individual 
+        for the entire year. You are treated as having the same HDHP coverage for the entire year as you had on 
+        the first day of the last month of your tax year.
+        */
+      if (this.lastMonthRule()) {
+        // If, on the first day of the last month of your tax year (December 1 for most taxpayers),
+        // you had family coverage, check the "family" box.
+        const lastMonthCoverage = this.lastMonthCoverage()
+        if (lastMonthCoverage !== undefined) {
+          if (lastMonthCoverage == 'family') {
+            return healthSavingsAccounts.contributionLimit.family
+          } else if (lastMonthCoverage == 'self-only') {
+            return healthSavingsAccounts.contributionLimit['self-only']
+          }
+        }
+      }
+    }
+    return healthSavingsAccounts.contributionLimit['self-only']
+  }
+
+  /*Include on line 2 only those amounts you, or others on your behalf, contributed to your HSA in 2020. 
+    Also, include those contributions made from January 1, 2021, through April 15, 2021, that were for 2020. 
+    Do not include employer contributions (see line 9) or amounts rolled over from another HSA or Archer MSA. 
+    See Rollovers, earlier. Also, do not include any qualified HSA funding distributions (see line 10). 
+    Contributions to an employee's account through a cafeteria plan are treated as employer contributions 
+    and are not included on line 2.
+  */
+  l2 = (): number =>
+    this.hsas.reduce((total, hsa) => hsa.contributions + total, 0)
+
+  l3 = (): number => this.contributionLimit()
   l4 = (): number => sumFields([this.f8853?.l1(), this.f8853?.l2()])
   l5 = (): number | undefined => displayNumber(this.l3() ?? 0 - this.l4())
   l6 = (): number | undefined => undefined
