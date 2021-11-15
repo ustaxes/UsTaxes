@@ -128,6 +128,7 @@ export default class F8889 extends Form {
           this.calculatedCoverageType = 'family'
           return healthSavingsAccounts.contributionLimit.family
         } else {
+          this.calculatedCoverageType = 'self-only'
           return healthSavingsAccounts.contributionLimit['self-only']
         }
       }
@@ -141,14 +142,59 @@ export default class F8889 extends Form {
         const lastMonthCoverage = this.lastMonthCoverage()
         if (lastMonthCoverage !== undefined) {
           if (lastMonthCoverage == 'family') {
+            this.calculatedCoverageType = 'family'
             return healthSavingsAccounts.contributionLimit.family
           } else if (lastMonthCoverage == 'self-only') {
+            this.calculatedCoverageType = 'self-only'
             return healthSavingsAccounts.contributionLimit['self-only']
           }
         }
       }
     }
-    return healthSavingsAccounts.contributionLimit['self-only']
+
+    // If you don't have coverage in the last month, then you need to figure out
+    // your contribution limit. If you don't have coverage for that month then
+    // your contribution limit is 0. So let's initialize our per-month contribution
+    // limit based on that.
+    const monthAmounts = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    for (let index = 0; index < monthAmounts.length; index++) {
+      // for each month check each HSA to see if we are covered.
+      this.hsas.forEach((h) => {
+        const firstDayOfThisMonth = new Date(CURRENT_YEAR, index, 1)
+        if (
+          h.startDate <= firstDayOfThisMonth &&
+          h.endDate >= firstDayOfThisMonth
+        ) {
+          // the coverage limit for that month is based on the type of coverage of the
+          // HSA. If you have both types of HSA coverage for that month, then the family
+          // coverage limit wins out. Since family coverage limit is higher we can just
+          // take the max of the coverage limit for this month.
+          if (
+            monthAmounts[index] <
+            healthSavingsAccounts.contributionLimit[h.coverageType]
+          ) {
+            monthAmounts[index] =
+              healthSavingsAccounts.contributionLimit[h.coverageType]
+          }
+        }
+      })
+    }
+    // The calculated coverage type is whichever one was in effect for longer
+    let familyMonthCount = 0
+    let singleMonthCount = 0
+    monthAmounts.forEach((m) => {
+      if (m == healthSavingsAccounts.contributionLimit.family) {
+        familyMonthCount += 1
+      } else if (m == healthSavingsAccounts.contributionLimit['self-only']) {
+        singleMonthCount += 1
+      }
+    })
+    if (familyMonthCount >= singleMonthCount) {
+      this.calculatedCoverageType = 'family'
+    } else {
+      this.calculatedCoverageType = 'self-only'
+    }
+    return Math.round(monthAmounts.reduce((a, b) => a + b) / 12)
   }
 
   /*Include on line 2 only those amounts you, or others on your behalf, contributed to your HSA in 2020. 

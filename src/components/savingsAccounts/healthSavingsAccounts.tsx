@@ -108,7 +108,8 @@ export default function HealthSavingsAccounts(): ReactElement {
           <br />
           coverage type: {hsa.coverageType}
           <br />
-          coverage span: {format(hsa.startDate, 'MMMM do, yyyy')} to {format(hsa.endDate, 'MMMM do, yyyy')}
+          coverage span: {format(hsa.startDate, 'MMMM do, yyyy')} to{' '}
+          {format(hsa.endDate, 'MMMM do, yyyy')}
         </span>
       )}
     >
