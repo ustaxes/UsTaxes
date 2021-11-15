@@ -25,7 +25,14 @@ export default class F8889 extends Form {
     this.f8853 = f8853
     this.person = person
     this.state = state
-    this.hsas = []
+    // The relevant HSAs are the ones either for this person or any that
+    // have family coverage.
+    this.hsas = state.healthSavingsAccounts.filter((h) => {
+      if (h.personRole == person.role || h.coverageType == 'family') {
+        return true
+      }
+      return false
+    })
     this.calculatedCoverageType = 'self-only'
     this.firstDayOfLastMonth = new Date(CURRENT_YEAR, 11, 1)
   }
