@@ -10,9 +10,9 @@ import { createPDFPopup } from 'ustaxes/irsForms'
 import { createStatePDF, createStateReturn, stateForm } from '../stateForms'
 import { create1040 } from 'ustaxes/irsForms/Main'
 import { isRight } from 'ustaxes/util'
-import { savePDF } from 'ustaxes/pdfFiller/pdfHandler'
-import { If } from 'react-if'
+import { PDFDownloader, savePDF } from 'ustaxes/pdfFiller/pdfHandler'
 import { Box, Button } from '@material-ui/core'
+import Summary from './Summary'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -23,7 +23,13 @@ const useStyles = makeStyles((theme) => ({
   }
 }))
 
-export default function CreatePDF(): ReactElement {
+interface CreatePDFProps {
+  downloader: PDFDownloader
+}
+
+export default function CreatePDF({
+  downloader
+}: CreatePDFProps): ReactElement {
   const [errors, updateErrors] = useState<string[]>([])
   const classes = useStyles()
 
@@ -38,15 +44,17 @@ export default function CreatePDF(): ReactElement {
 
   const federalReturn = async (e: FormEvent<Element>): Promise<void> => {
     e.preventDefault()
-    return await createPDFPopup(federalFileName).catch((errors: string[]) => {
-      if (errors.length !== undefined && errors.length > 0) {
-        updateErrors(errors)
-      } else {
-        log.error('unhandled exception')
-        log.error(errors)
-        return Promise.reject(errors)
+    return await createPDFPopup(federalFileName)(downloader).catch(
+      (errors: string[]) => {
+        if (errors.length !== undefined && errors.length > 0) {
+          updateErrors(errors)
+        } else {
+          log.error('unhandled exception')
+          log.error(errors)
+          return Promise.reject(errors)
+        }
       }
-    })
+    )
   }
 
   const stateReturn = async (): Promise<void> => {
@@ -54,45 +62,27 @@ export default function CreatePDF(): ReactElement {
     if (isRight(f1040Result)) {
       const stateReturn = await createStateReturn(info, f1040Result.right[0])
       if (stateReturn !== undefined) {
-        const pdfBytes = (await createStatePDF(stateReturn)).save()
+        const pdfBytes = (await createStatePDF(stateReturn)(downloader)).save()
         savePDF(await pdfBytes, stateFileName)
       }
     }
   }
 
   return (
-    <form tabIndex={-1}>
-      <Helmet>
-        <title>Print Copy to File | Results | UsTaxes.org</title>
-      </Helmet>
-      <h2>Print Copy to File</h2>
-      <div className={classes.root}>
-        {errors.map((error, i) => (
-          <Alert key={i} severity="warning">
-            {error}
-          </Alert>
-        ))}
-      </div>
-      <Box
-        display="flex"
-        justifyContent="flex-start"
-        paddingTop={2}
-        paddingBottom={1}
-      >
-        <Button
-          type="button"
-          onClick={federalReturn}
-          variant="contained"
-          color="primary"
-        >
-          Create Federal 1040
-        </Button>
-      </Box>
-      <If
-        condition={
-          residency !== undefined && stateForm[residency] !== undefined
-        }
-      >
+    <div>
+      <Summary />
+      <form tabIndex={-1}>
+        <Helmet>
+          <title>Print Copy to File | Results | UsTaxes.org</title>
+        </Helmet>
+        <h2>Print Copy to File</h2>
+        <div className={classes.root}>
+          {errors.map((error, i) => (
+            <Alert key={i} severity="warning">
+              {error}
+            </Alert>
+          ))}
+        </div>
         <Box
           display="flex"
           justifyContent="flex-start"
@@ -101,15 +91,36 @@ export default function CreatePDF(): ReactElement {
         >
           <Button
             type="button"
-            onClick={stateReturn}
+            onClick={federalReturn}
             variant="contained"
             color="primary"
           >
-            Create {residency} Return
+            Create Federal 1040
           </Button>
         </Box>
-      </If>
-      {navButtons}
-    </form>
+        {(() => {
+          if (residency !== undefined && stateForm[residency] !== undefined) {
+            return (
+              <Box
+                display="flex"
+                justifyContent="flex-start"
+                paddingTop={2}
+                paddingBottom={1}
+              >
+                <Button
+                  type="button"
+                  onClick={stateReturn}
+                  variant="contained"
+                  color="primary"
+                >
+                  Create {residency} Return
+                </Button>
+              </Box>
+            )
+          }
+        })()}
+        {navButtons}
+      </form>
+    </div>
   )
 }

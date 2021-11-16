@@ -1,5 +1,2 @@
 export type Field = string | number | boolean | undefined
-
-export interface Fill {
-  fields: () => Field[]
-}
+export type RenderedField = string | boolean | undefined

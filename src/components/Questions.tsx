@@ -12,7 +12,6 @@ import { TaxesState } from 'ustaxes/redux/data'
 import { answerQuestion } from 'ustaxes/redux/actions'
 import { FormProvider, useForm } from 'react-hook-form'
 import { usePager } from './pager'
-import { Else, If, Then } from 'react-if'
 
 const Questions = (): ReactElement => {
   const information = useSelector((state: TaxesState) => state.information)
@@ -36,56 +35,50 @@ const Questions = (): ReactElement => {
 
   const dispatch = useDispatch()
 
-  const onSubmit =
-    (onAdvance: () => void) =>
-    (responses: Responses): void => {
-      // fix to remove unrequired answers:
-      const qtags = questions.map((q) => q.tag)
-      const unrequired = Object.keys(responses).filter(
-        (rtag) =>
-          qtags.find((t) => t === (rtag as QuestionTagName)) === undefined
-      )
+  const onSubmit = (responses: Responses): void => {
+    // fix to remove unrequired answers:
+    const qtags = questions.map((q) => q.tag)
+    const unrequired = Object.keys(responses).filter(
+      (rtag) => qtags.find((t) => t === (rtag as QuestionTagName)) === undefined
+    )
 
-      const newResponses = {
-        ...responses,
-        ...Object.fromEntries(unrequired.map((k) => [k, undefined]))
-      }
-
-      dispatch(answerQuestion(newResponses))
-      onAdvance()
+    const newResponses = {
+      ...responses,
+      ...Object.fromEntries(unrequired.map((k) => [k, undefined]))
     }
 
-  return (
-    <FormProvider {...methods}>
-      <form tabIndex={-1} onSubmit={handleSubmit(onSubmit(onAdvance))}>
-        <Helmet>
-          <title>Informational Questions | Results | UsTaxes.org</title>
-        </Helmet>
-        <h2>Informational Questions</h2>
-        <p>
-          Based on your prior responses, reseponses to these questions are
-          required.
-        </p>
-        <Grid container spacing={2}>
-          <List>
-            {questions.map((q, i) => (
-              <ListItem key={i}>
-                <If condition={q.valueTag === 'boolean'}>
-                  <Then>
-                    <LabeledCheckbox name={q.tag} label={q.text} />
-                  </Then>
-                  <Else>
-                    <LabeledInput name={q.tag} label={q.text} />
-                  </Else>
-                </If>
-              </ListItem>
-            ))}
-          </List>
-        </Grid>
-        {navButtons}
-      </form>
-    </FormProvider>
+    dispatch(answerQuestion(newResponses))
+    onAdvance()
+  }
+
+  const page = (
+    <form tabIndex={-1} onSubmit={handleSubmit(onSubmit)}>
+      <Helmet>
+        <title>Informational Questions | Results | UsTaxes.org</title>
+      </Helmet>
+      <h2>Informational Questions</h2>
+      <p>
+        Based on your prior responses, responses to these questions are
+        required.
+      </p>
+      <Grid container spacing={2}>
+        <List>
+          {questions.map((q, i) => (
+            <ListItem key={i}>
+              {(() => {
+                if (q.valueTag === 'boolean') {
+                  return <LabeledCheckbox name={q.tag} label={q.text} />
+                }
+                return <LabeledInput name={q.tag} label={q.text} />
+              })()}
+            </ListItem>
+          ))}
+        </List>
+      </Grid>
+      {navButtons}
+    </form>
   )
+  return <FormProvider {...methods}>{page}</FormProvider>
 }
 
 export default Questions

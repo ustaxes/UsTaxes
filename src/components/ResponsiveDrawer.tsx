@@ -1,5 +1,6 @@
-import { Dispatch, ReactElement, SetStateAction } from 'react'
-import { useLocation, NavLink } from 'react-router-dom'
+import { Dispatch, Fragment, ReactElement, SetStateAction } from 'react'
+import { useLocation, NavLink, Link } from 'react-router-dom'
+import { isMobile } from 'react-device-detect'
 import {
   createStyles,
   makeStyles,
@@ -15,7 +16,8 @@ import {
 } from '@material-ui/core'
 import GitHubIcon from '@material-ui/icons/GitHub'
 import TwitterIcon from '@material-ui/icons/Twitter'
-import { useDevice } from 'ustaxes/hooks/Device'
+import { Settings } from '@material-ui/icons'
+import Urls from 'ustaxes/data/urls'
 
 const drawerWidth = 240
 
@@ -90,7 +92,6 @@ export interface DrawerItemsProps {
 }
 
 function ResponsiveDrawer(props: DrawerItemsProps): ReactElement {
-  const { isMobile } = useDevice()
   const location = useLocation()
   const classes = useStyles({ isMobile })
   const theme = useTheme()
@@ -101,7 +102,7 @@ function ResponsiveDrawer(props: DrawerItemsProps): ReactElement {
     <>
       {/* {isMobile && <Toolbar />} */}
       {sections.map(({ title, items }) => (
-        <>
+        <Fragment key={`section ${title}`}>
           <List
             subheader={<ListSubheader disableSticky>{title}</ListSubheader>}
             className={classes.list}
@@ -123,12 +124,12 @@ function ResponsiveDrawer(props: DrawerItemsProps): ReactElement {
             ))}
           </List>
           <Divider />
-        </>
+        </Fragment>
       ))}
       <List className={classes.listSocial}>
         <ListItem className={classes.listItemSocial}>
           <IconButton
-            color="inherit"
+            color="secondary"
             aria-label="github, opens in new tab"
             component="a"
             href={`https://github.com/ustaxes/UsTaxes`}
@@ -140,7 +141,7 @@ function ResponsiveDrawer(props: DrawerItemsProps): ReactElement {
         </ListItem>
         <ListItem className={classes.listItemSocial}>
           <IconButton
-            color="inherit"
+            color="secondary"
             aria-label="twitter, opens in new tab"
             component="a"
             href={`https://www.twitter.com/ustaxesorg`}
@@ -149,6 +150,13 @@ function ResponsiveDrawer(props: DrawerItemsProps): ReactElement {
           >
             <TwitterIcon />
           </IconButton>
+        </ListItem>
+        <ListItem className={classes.listItemSocial}>
+          <Link to={Urls.settings}>
+            <IconButton color="secondary" aria-label="site user settings">
+              <Settings />
+            </IconButton>
+          </Link>
         </ListItem>
       </List>
     </>

@@ -54,6 +54,7 @@ const wages: Arbitrary<number> = fc.nat({ max: 10000000 })
 const investment: Arbitrary<number> = fc.nat({ max: 100000 })
 const expense: Arbitrary<number> = fc.nat({ max: 10000 })
 const interest: Arbitrary<number> = fc.nat({ max: 2000 })
+const payment: Arbitrary<number> = fc.nat({ max: 200000 })
 const daysInYear: Arbitrary<number> = fc.nat({
   max: util.daysInYear(CURRENT_YEAR)
 })
@@ -98,23 +99,42 @@ const employer: Arbitrary<types.Employer> = fc
   }))
 
 const w2: Arbitrary<types.IncomeW2> = fc
-  .tuple(maxWords(2), wages, fc.nat(), fc.nat(), fc.nat(), employer)
+  .tuple(
+    maxWords(2),
+    wages,
+    fc.nat(),
+    fc.nat(),
+    fc.nat(),
+    fc.nat(),
+    employer,
+    state,
+    fc.nat(),
+    fc.nat()
+  )
   .map(
     ([
       occupation,
       income,
+      medicareIncome,
       fedWithholding,
       ssWithholding,
       medicareWithholding,
-      employer
+      employer,
+      state,
+      stateWages,
+      stateWithholding
     ]) => ({
       occupation,
       income,
+      medicareIncome,
       fedWithholding,
       employer,
       personRole: types.PersonRole.PRIMARY,
       ssWithholding,
-      medicareWithholding
+      medicareWithholding,
+      state,
+      stateWages,
+      stateWithholding
     })
   )
 
@@ -233,6 +253,13 @@ const f1098e: Arbitrary<types.F1098e> = fc
     interest
   }))
 
+const estTax: Arbitrary<types.EstimatedTaxPayments> = fc
+  .tuple(maxWords(5), payment)
+  .map(([label, payment]) => ({
+    label,
+    payment
+  }))
+
 export const accountType: Arbitrary<types.AccountType> = fc.constantFrom(
   types.AccountType.checking,
   types.AccountType.savings
@@ -330,6 +357,7 @@ export const information: Arbitrary<types.Information> = fc
     fc.array(f1099),
     fc.array(w2),
     fc.array(property),
+    fc.array(estTax),
     fc.array(f1098e),
     refund,
     taxPayer,
@@ -341,6 +369,7 @@ export const information: Arbitrary<types.Information> = fc
       f1099s,
       w2s,
       realEstate,
+      estimatedTaxes,
       f1098es,
       refund,
       taxPayer,
@@ -350,6 +379,7 @@ export const information: Arbitrary<types.Information> = fc
       f1099s,
       w2s,
       realEstate,
+      estimatedTaxes,
       f1098es,
       refund,
       taxPayer,

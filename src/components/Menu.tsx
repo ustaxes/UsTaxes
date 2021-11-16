@@ -1,4 +1,4 @@
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 
 import {
@@ -13,27 +13,23 @@ import {
 } from '@material-ui/core'
 import CloseIcon from '@material-ui/icons/Close'
 import MenuIcon from '@material-ui/icons/Menu'
-
-import ResponsiveDrawer, {
-  item,
-  Section,
-  SectionItem
-} from './ResponsiveDrawer'
+import ResponsiveDrawer, { item, Section } from './ResponsiveDrawer'
 
 import W2JobInfo from './income/W2JobInfo'
 import CreatePDF from './createPDF'
 import PrimaryTaxpayer from './TaxPayer'
 import RefundBankAccount from './RefundBankAccount'
 import SpouseAndDependent from './TaxPayer/SpouseAndDependent'
-import ContactInfo from './TaxPayer/ContactInfo'
 import F1099Info from './income/F1099Info'
-import Summary from './Summary'
+import EstimatedTaxes from './payments/EstimatedTaxes'
 import RealEstate from './income/RealEstate'
 import GettingStarted from './GettingStarted'
 import F1098eInfo from './deductions/F1098eInfo'
 import Questions from './Questions'
 import Urls from 'ustaxes/data/urls'
-import { useDevice } from 'ustaxes/hooks/Device'
+
+import { isMobile } from 'react-device-detect'
+import { makeDownloader } from 'ustaxes/pdfFiller/pdfHandler'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -66,24 +62,16 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 )
 
-const getTitleAndPage = (sections: Section[], currentUrl: string): string => {
-  let currentSection
-  let currentPage
+const downloader = makeDownloader('')
 
-  sections.forEach(({ title, items }: Section) => {
-    if (
-      items.find(({ url, title }: SectionItem) => {
-        if (url === currentUrl) {
-          currentPage = title
-          return true
-        }
-        return false
-      })
-    ) {
-      currentSection = title
-    }
-  })
-  return `${currentSection} - ${currentPage}`
+const getTitleAndPage = (sections: Section[], currentUrl: string): string => {
+  const page = sections
+    .flatMap(({ title: sectionTitle, items }) =>
+      items.map(({ title, url }) => ({ sectionTitle, title, url }))
+    )
+    .find(({ url }) => url === currentUrl)
+
+  return `${page?.sectionTitle} - ${page?.title}`
 }
 
 export const drawerSections: Section[] = [
@@ -99,8 +87,7 @@ export const drawerSections: Section[] = [
         'Spouse and Dependents',
         Urls.taxPayer.spouseAndDependent,
         <SpouseAndDependent />
-      ),
-      item('Contact Information', Urls.taxPayer.contactInfo, <ContactInfo />)
+      )
     ]
   },
   {
@@ -109,6 +96,12 @@ export const drawerSections: Section[] = [
       item('Wages (W2)', Urls.income.w2s, <W2JobInfo />),
       item('Income (1099)', Urls.income.f1099s, <F1099Info />),
       item('Real Estate', Urls.income.realEstate, <RealEstate />)
+    ]
+  },
+  {
+    title: 'Payments',
+    items: [
+      item('Estimated Taxes', Urls.payments.estimatedTaxes, <EstimatedTaxes />)
     ]
   },
   {
@@ -122,24 +115,18 @@ export const drawerSections: Section[] = [
     items: [
       item('Refund Information', Urls.refund, <RefundBankAccount />),
       item('Informational Questions', Urls.questions, <Questions />),
-      item('Summary', Urls.summary, <Summary />),
-      item('Review and Print', Urls.createPdf, <CreatePDF />)
+      item(
+        'Review and Print',
+        Urls.createPdf,
+        <CreatePDF downloader={downloader} />
+      )
     ]
   }
 ]
 
 const Menu = (): ReactElement => {
   const classes = useStyles()
-  const { isMobile } = useDevice()
   const [isOpen, setOpen] = useState(!isMobile)
-
-  useEffect(() => {
-    if (!isMobile) {
-      setOpen(true)
-    } else {
-      setOpen(false)
-    }
-  }, [isMobile])
 
   return (
     <>

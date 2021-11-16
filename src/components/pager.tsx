@@ -1,10 +1,15 @@
-import { createContext, useState, PropsWithChildren, ReactElement } from 'react'
+import {
+  createContext,
+  useContext,
+  useState,
+  PropsWithChildren,
+  ReactElement
+} from 'react'
 import { useMediaQuery, Button, Grid } from '@material-ui/core'
-import { useContext } from 'react'
+import { isMobile } from 'react-device-detect'
 import { Link, useHistory } from 'react-router-dom'
-import { useDevice } from 'ustaxes/hooks/Device'
 
-interface PagerProps {
+export interface PagerProps {
   onAdvance: () => void
   navButtons: ReactElement
 }
@@ -88,7 +93,6 @@ export const PagerButtons = ({
   previousUrl
 }: PagerButtonsProps): ReactElement => {
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)')
-  const { isMobile } = useDevice()
   const backButton = (() => {
     if (previousUrl !== undefined && previousUrl !== '/start') {
       return (
@@ -108,7 +112,7 @@ export const PagerButtons = ({
   })()
 
   const submitButton = (() => (
-    <Grid item xs={isMobile && 12}>
+    <Grid item xs={isMobile ? 12 : undefined}>
       <Button
         type="submit"
         name="submit"
@@ -120,12 +124,11 @@ export const PagerButtons = ({
       </Button>
     </Grid>
   ))()
-  const buttonList = [backButton, submitButton]
-  isMobile && buttonList.reverse()
 
   return (
-    <Grid container spacing={2}>
-      {buttonList.map((x) => x)}
+    <Grid container spacing={2} direction={isMobile ? 'row-reverse' : 'row'}>
+      {backButton}
+      {submitButton}
     </Grid>
   )
 }

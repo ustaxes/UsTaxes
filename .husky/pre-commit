@@ -1,0 +1,5 @@
+#!/bin/sh
+. "$(dirname "$0")/husky.sh"
+
+# npm test
+npx lint-staged

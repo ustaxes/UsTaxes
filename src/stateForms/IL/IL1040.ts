@@ -1,28 +1,32 @@
-import Form from '../Form'
+import Form, { FormMethods } from '../Form'
 import F1040 from '../../irsForms/F1040'
-import { Field } from '../../pdfFiller'
+import { Field } from 'ustaxes/pdfFiller'
 import { displayNumber, sumFields } from '../../irsForms/util'
 import { AccountType, FilingStatus, Information, State } from '../../redux/data'
 import parameters from './Parameters'
-import { il1040scheduleileeic } from './IL1040ScheduleILEIC'
+import { IL1040scheduleileeic } from './IL1040ScheduleILEIC'
 import IL1040V from './IL1040V'
+import { ILWIT } from './ILWit'
 
-export class IL1040 implements Form {
+export class IL1040 extends Form {
   info: Information
   f1040: F1040
   formName: string
   state: State
-  scheduleEIC: il1040scheduleileeic
+  scheduleEIC: IL1040scheduleileeic
   il1040V: IL1040V
   formOrder = 0
+  methods: FormMethods
 
   constructor(info: Information, f1040: F1040) {
+    super()
     this.info = info
     this.f1040 = f1040
     this.formName = 'IL-1040'
     this.state = 'IL'
-    this.scheduleEIC = new il1040scheduleileeic(info, f1040)
+    this.scheduleEIC = new IL1040scheduleileeic(info, f1040)
     this.il1040V = new IL1040V(info, f1040, this)
+    this.methods = new FormMethods(this)
   }
 
   attachments = (): Form[] => {
@@ -34,8 +38,13 @@ export class IL1040 implements Form {
     if (this.scheduleEIC.isRequired()) {
       result.push(this.scheduleEIC)
     }
+    if (this.methods.stateWithholding() > 0) {
+      const ilwit = new ILWIT(this.info, this.f1040)
+      result.push(ilwit)
+      ilwit.attachments().forEach((f) => result.push(f))
+    }
 
-    return result.sort((l, r) => l.formOrder - r.formOrder)
+    return result
   }
 
   /**
@@ -459,9 +468,9 @@ export class IL1040 implements Form {
 
   /**
    * Index 59: 25
-   * TODO: IL Income tax withheld
+   * IL Income tax withheld
    */
-  l25 = (): number | undefined => undefined
+  l25 = (): number | undefined => this.methods.stateWithholding()
 
   /**
    * Index 60: 26

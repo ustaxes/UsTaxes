@@ -15,7 +15,12 @@ import DeleteIcon from '@material-ui/icons/Delete'
 import EditIcon from '@material-ui/icons/Edit'
 import ListItemText from '@material-ui/core/ListItemText'
 import PersonIcon from '@material-ui/icons/Person'
-import { If } from 'react-if'
+
+export const labels = {
+  fname: 'First Name and Initial',
+  lname: 'Last Name',
+  ssn: 'SSN / TIN'
+}
 
 export const PersonFields = ({
   children,
@@ -25,13 +30,13 @@ export const PersonFields = ({
     <>
       <LabeledInput
         autofocus={autofocus}
-        label="First Name and Initial"
+        label={labels.fname}
         name="firstName"
         required={true}
       />
-      <LabeledInput label="Last Name" name="lastName" required={true} />
+      <LabeledInput label={labels.lname} name="lastName" required={true} />
       <LabeledInput
-        label="SSN / TIN"
+        label={labels.ssn}
         name="ssid"
         patternConfig={Patterns.ssn}
       />
@@ -61,13 +66,17 @@ export const PersonListItem = ({
       primary={`${person.firstName} ${person.lastName}`}
       secondary={formatSSID(person.ssid)}
     />
-    <If condition={editing !== undefined}>
-      <ListItemIcon>
-        <IconButton onClick={onEdit} edge="end" aria-label="edit">
-          <EditIcon />
-        </IconButton>
-      </ListItemIcon>
-    </If>
+    {(() => {
+      if (editing !== undefined) {
+        return (
+          <ListItemIcon>
+            <IconButton onClick={onEdit} edge="end" aria-label="edit">
+              <EditIcon />
+            </IconButton>
+          </ListItemIcon>
+        )
+      }
+    })()}
     <ListItemSecondaryAction>
       <IconButton onClick={remove} edge="end" aria-label="delete">
         <DeleteIcon />

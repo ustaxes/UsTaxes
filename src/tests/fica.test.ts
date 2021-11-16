@@ -16,9 +16,8 @@ function hasSSRefund(f1040: F1040): boolean {
 }
 
 function hasAdditionalMedicareTax(f1040: F1040): boolean {
-  const s2 = f1040.schedule2
-  const l8 = s2?.l8()
-  return l8 !== undefined && l8 > 0
+  const medicareTax = f1040.f8959?.l18()
+  return medicareTax !== undefined && medicareTax > 0
 }
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -89,12 +88,15 @@ describe('fica', () => {
   it('should add Additional Medicare Tax form 8959', () => {
     fc.assert(
       fc.property(arbitraries.f1040, ([f1040, forms]) => {
-        if (f1040.filingStatus === undefined) {
+        if (f1040.info.taxPayer.filingStatus === undefined) {
           return
         }
-        const filingStatus = f1040.filingStatus
-        // Should add Additional Medicare Tax iff wages over threshold
-        if (f1040.wages() > fica.additionalMedicareTaxThreshold(filingStatus)) {
+        const filingStatus = f1040.info.taxPayer.filingStatus
+        // Should add Additional Medicare Tax if medicare wages over threshold
+        if (
+          f1040.medicareWages() >
+          fica.additionalMedicareTaxThreshold(filingStatus)
+        ) {
           expect(hasAdditionalMedicareTax(f1040)).toEqual(true)
 
           // Should attach both S2 and F8959 to return
@@ -111,17 +113,18 @@ describe('fica', () => {
   it('should add Additional Medicare Tax based on filing status', () => {
     fc.assert(
       fc.property(arbitraries.f1040, ([f1040]) => {
-        if (f1040.filingStatus === undefined) {
+        if (f1040.info.taxPayer.filingStatus === undefined) {
           return
         }
         if (hasAdditionalMedicareTax(f1040)) {
-          const filingStatus = f1040.filingStatus
+          const filingStatus = f1040.info.taxPayer.filingStatus
           const incomeOverThreshold =
-            f1040.wages() - fica.additionalMedicareTaxThreshold(filingStatus)
+            f1040.medicareWages() -
+            fica.additionalMedicareTaxThreshold(filingStatus)
           expect(incomeOverThreshold).toBeGreaterThan(0)
 
           // Adds the right amount of additional tax
-          const s2l8 = f1040.schedule2?.l8()
+          const s2l8 = f1040.f8959?.l18()
           expect(s2l8).not.toBeUndefined()
           expect(s2l8).toEqual(
             Math.round(incomeOverThreshold * fica.additionalMedicareTaxRate)
@@ -133,7 +136,7 @@ describe('fica', () => {
             .map((w2) => w2.medicareWithholding)
             .reduce((l, r) => l + r, 0)
           const regularWithholding = Math.round(
-            fica.regularMedicareTaxRate * f1040.wages()
+            fica.regularMedicareTaxRate * f1040.medicareWages()
           )
           if (medicareWithheld > regularWithholding) {
             const f1040l25c = f1040.l25c()

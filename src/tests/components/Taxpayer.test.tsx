@@ -1,13 +1,11 @@
-import { ReactElement } from 'react'
-import { render, waitFor } from '@testing-library/react'
-import { Provider } from 'react-redux'
-
-import { createStoreUnpersisted } from 'ustaxes/redux/store'
-import { PagerButtons, PagerContext } from 'ustaxes/components/pager'
+import { waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { Information } from 'ustaxes/redux/data'
 import { blankState } from 'ustaxes/redux/reducer'
 import TaxPayer from 'ustaxes/components/TaxPayer'
-import userEvent from '@testing-library/user-event'
+import { TestPage } from '../common/Page'
+import { ReactElement } from 'react'
+import { FakePagerProvider } from '../common/FakePager'
 
 jest.setTimeout(1000 * 60 * 10)
 
@@ -24,52 +22,69 @@ jest.mock('redux-persist', () => {
   }
 })
 
-describe('Taxpayer', () => {
-  const navButtons = <PagerButtons submitText="save" />
+class TaxPayerTestPage extends TestPage {
+  component: ReactElement = (
+    <FakePagerProvider>
+      <TaxPayer />
+    </FakePagerProvider>
+  )
 
-  const testComponent = (
-    info: Information | undefined = blankState
-  ): ReactElement => {
-    const store = createStoreUnpersisted(info)
-    const component = (
-      <Provider store={store}>
-        <PagerContext.Provider
-          value={{
-            onAdvance: () => {
-              /* do nothing */
-            },
-            navButtons
-          }}
-        >
-          <TaxPayer />
-        </PagerContext.Provider>
-      </Provider>
+  setFirstName = (name: string): void => {
+    userEvent.type(
+      this.rendered().getByLabelText('First Name and Initial'),
+      name
     )
-
-    return component
   }
 
+  saveButton = (): HTMLButtonElement =>
+    this.rendered().getByRole('button', { name: /Save/i }) as HTMLButtonElement
+
+  g = {
+    foreignCountryBox: (): HTMLInputElement =>
+      this.rendered().getByLabelText(
+        'Do you have a foreign address?'
+      ) as HTMLInputElement
+  }
+
+  errors = async (): Promise<HTMLElement[]> =>
+    await this.rendered().findAllByText('Input is required')
+
+  setIsForeignCountry = (value: boolean): void =>
+    (value ? userEvent.click : userEvent.clear)(this.g.foreignCountryBox())
+}
+
+describe('Taxpayer', () => {
+  const taxpayerComponent = (information: Information = blankState) =>
+    new TaxPayerTestPage({ information })
+
+  it('should show errors if incomplete data is entered', async () => {
+    const page = taxpayerComponent()
+
+    page.setFirstName('Bob')
+    userEvent.click(page.saveButton())
+
+    expect(await page.errors()).not.toHaveLength(0)
+    page.cleanup()
+  })
+
   it('checkbox should open foreign country fields', () => {
-    const component = testComponent()
-    const result = render(component)
+    const page = taxpayerComponent()
 
     const allFieldNames = (): string[] =>
-      result.getAllByRole('textbox').flatMap((x) => {
-        const name = x.getAttribute('name')
-        return name !== null ? [name] : []
-      })
+      page
+        .rendered()
+        .getAllByRole('textbox')
+        .flatMap((x) => {
+          const name = x.getAttribute('name')
+          return name !== null ? [name] : []
+        })
 
     expect(allFieldNames()).not.toContain('address.province')
     expect(allFieldNames()).toContain('address.zip')
 
-    const foreignCountry = result
-      .getAllByRole('checkbox')
-      .find((x) => x.getAttribute('name') === 'isForeignCountry')
-    if (foreignCountry !== undefined) {
-      userEvent.click(foreignCountry)
-      expect(allFieldNames()).toContain('address.province')
-      expect(allFieldNames()).not.toContain('address.zip')
-    }
-    expect(foreignCountry).not.toBeUndefined()
+    page.setIsForeignCountry(true)
+    expect(allFieldNames()).toContain('address.province')
+    expect(allFieldNames()).not.toContain('address.zip')
+    page.cleanup()
   })
 })

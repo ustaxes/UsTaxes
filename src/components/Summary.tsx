@@ -1,7 +1,5 @@
 import { ReactElement } from 'react'
-import { Helmet } from 'react-helmet'
 import { Avatar, Grid, List, Typography } from '@material-ui/core'
-import { usePager } from './pager'
 import { create1040 } from 'ustaxes/irsForms/Main'
 import { useSelector } from 'react-redux'
 import { Information, TaxesState } from 'ustaxes/redux/data'
@@ -105,8 +103,6 @@ const Summary = (): ReactElement => {
     (state: TaxesState) => state.information
   )
 
-  const { onAdvance, navButtons } = usePager()
-
   const summaryBody = (() => {
     if (information.taxPayer.primaryPerson === undefined) {
       return <p>No data entered yet</p>
@@ -133,14 +129,10 @@ const Summary = (): ReactElement => {
   })()
 
   return (
-    <form tabIndex={-1} onSubmit={onAdvance}>
-      <Helmet>
-        <title>Summary | Results | UsTaxes.org</title>
-      </Helmet>
+    <div>
       <h2>Summary</h2>
       {summaryBody}
-      {navButtons}
-    </form>
+    </div>
   )
 }
 

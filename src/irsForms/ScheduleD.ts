@@ -1,21 +1,15 @@
-import {
-  Income1099B,
-  Income1099Type,
-  Information,
-  F1099DivData,
-  F1099BData,
-  FilingStatus
-} from 'ustaxes/redux/data'
+import { Information, F1099BData, FilingStatus } from 'ustaxes/redux/data'
 import Form, { FormTag } from './Form'
 import TaxPayer from 'ustaxes/redux/TaxPayer'
 import { computeField, displayNumber, sumFields } from './util'
 import SDRateGainWorksheet from './worksheets/SDRateGainWorksheet'
 import SDUnrecaptured1250 from './worksheets/SDUnrecaptured1250'
+import InformationMethods from 'ustaxes/redux/methods'
 
-export default class ScheduleD implements Form {
+export default class ScheduleD extends Form {
   tag: FormTag = 'f1040sd'
   sequenceIndex = 12
-  state: Information
+  state: InformationMethods
   aggregated: F1099BData
   rateGainWorksheet: SDRateGainWorksheet
   unrecaptured1250: SDUnrecaptured1250
@@ -24,11 +18,10 @@ export default class ScheduleD implements Form {
   readonly l21MinDefault = 3000
 
   constructor(info: Information) {
-    this.state = info
+    super()
+    this.state = new InformationMethods(info)
 
-    const bs: F1099BData[] = this.state.f1099s
-      .filter((v) => v.type === Income1099Type.B)
-      .map((v) => (v as Income1099B).form)
+    const bs: F1099BData[] = this.state.f1099Bs().map((f) => f.form)
 
     this.aggregated = {
       shortTermProceeds: bs
@@ -184,9 +177,7 @@ export default class ScheduleD implements Form {
 
     return (
       undefined !==
-      this.state.f1099s
-        .filter((f) => f.type === Income1099Type.DIV)
-        .find((f) => ((f.form as F1099DivData).qualifiedDividends ?? 0) > 0)
+      this.state.f1099Divs().find((f) => (f.form.qualifiedDividends ?? 0) > 0)
     )
   }
 

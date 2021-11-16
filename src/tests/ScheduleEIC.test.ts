@@ -24,8 +24,8 @@ describe('ScheduleEIC', () => {
   it('should disallow EIC for income below threshold', () => {
     fc.assert(
       fc.property(arbitraries.f1040, ([f1040]) => {
-        if (f1040.filingStatus !== undefined) {
-          const formula = federal.EIC.formulas[f1040.filingStatus]
+        if (f1040.info.taxPayer.filingStatus !== undefined) {
+          const formula = federal.EIC.formulas[f1040.info.taxPayer.filingStatus]
           if (
             formula !== undefined &&
             f1040.wages() < formula[0][1].lowerBound
