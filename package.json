@@ -10,7 +10,7 @@
     "@tauri-apps/cli": "^1.0.0-beta.10",
     "ajv": "^8.8.1",
     "lodash": "^4.17.21",
-    "loglevel": "^1.7.1",
+    "loglevel": "^1.8.0",
     "pdf-lib": "^1.17.1",
     "react": "^17.0.1",
     "react-device-detect": "^2.1.2",
