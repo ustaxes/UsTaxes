@@ -8,6 +8,7 @@ import { store } from 'ustaxes/redux/store'
 import { TestPage } from '../common/Page'
 import { ReactElement } from 'react'
 import { labels as personLabels } from 'ustaxes/components/TaxPayer/PersonFields'
+import { BrowserRouter as Router } from 'react-router-dom'
 
 afterEach(async () => {
   await waitFor(() => localStorage.clear())
@@ -65,7 +66,11 @@ abstract class CommonPageComponents extends TestPage {
 }
 
 class SpouseTestPage extends CommonPageComponents {
-  component: ReactElement = (<SpouseInfo />)
+  component: ReactElement = (
+    <Router>
+      <SpouseInfo />
+    </Router>
+  )
 
   addButton = async (): Promise<HTMLButtonElement> =>
     (await this.rendered().findByRole('button', {
@@ -82,7 +87,11 @@ class SpouseTestPage extends CommonPageComponents {
 }
 
 class SpouseAndDependentTestPage extends CommonPageComponents {
-  component: ReactElement = (<SpouseAndDependent />)
+  component: ReactElement = (
+    <Router>
+      <SpouseAndDependent />
+    </Router>
+  )
 
   addButtons = async (): Promise<HTMLButtonElement[]> =>
     (await this.rendered().findAllByRole('button', {

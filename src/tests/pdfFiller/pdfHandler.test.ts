@@ -2,10 +2,8 @@ import * as fc from 'fast-check'
 import { PDFDocument, PDFField, PDFTextField } from 'pdf-lib'
 import { create1040PDFs } from 'ustaxes/irsForms'
 import * as arbitraries from 'ustaxes/tests/arbitraries'
-import { PDFDownloader } from 'ustaxes/pdfFiller/pdfHandler'
-import fs from 'fs'
-import path from 'path'
 import { Information } from 'ustaxes/redux/data'
+import { localPDFs } from '../common/LocalForms'
 
 jest.setTimeout(120 * 1000)
 
@@ -14,30 +12,6 @@ beforeAll(() => {
   // PDF-lib creates console warning on every creation due to no XFA support
   jest.spyOn(console, 'warn').mockImplementation(() => {})
 })
-
-const files: { [key: string]: PDFDocument } = {}
-
-const downloader: PDFDownloader = async (url: string): Promise<PDFDocument> => {
-  const p = path.join(__dirname, '../../../public', url)
-
-  if (p in files) {
-    return files[p].copy()
-  }
-
-  const pdfBytes: Uint8Array = await new Promise((resolve, reject) =>
-    fs.readFile(p, null, (err, data) => {
-      if (err) {
-        reject(err)
-      } else {
-        resolve(data)
-      }
-    })
-  )
-
-  const pdf = await PDFDocument.load(pdfBytes.buffer)
-  files[p] = pdf
-  return pdf
-}
 
 const findBadDecimalFormat = (
   field: PDFField
@@ -61,7 +35,7 @@ const testEveryField = async <A>(
   info: Information,
   fieldMatch: (field: PDFField) => A | undefined
 ): Promise<[string, [number, A][]][]> => {
-  const schedules: PDFDocument[] = await create1040PDFs(info)(downloader)
+  const schedules: PDFDocument[] = await create1040PDFs(info)(localPDFs)
   return schedules.flatMap((pdf, i) => {
     const pdfBadFields: [number, A][] = pdf
       .getForm()

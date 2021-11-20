@@ -31,6 +31,7 @@ const FormContainer = ({
   children
 }: PropsWithChildren<FormContainerProps>): ReactElement => {
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)')
+
   return (
     <div>
       <FormContainerProvider onSubmit={onDone}>
