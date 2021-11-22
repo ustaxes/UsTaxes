@@ -39,3 +39,4 @@ yarn-error.log*
 /src-tauri
 src/forms/
 ustaxes-forms/
+tsconfig.json
