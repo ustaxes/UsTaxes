@@ -13,7 +13,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [14.x]
+        node-version: [16.13]
 
     steps:
     - name: Checkout repository and submodules
@@ -25,7 +25,11 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
       # installs dependencies
-    - run: npm ci
+    - name: Install main project dependencies
+      run: npm ci
+    - name: Install submodule dependencies
+      working-directory: ustaxes-forms/Y2020
+      run: npm ci
       # run tests
     - name: Run jest unit tests
       run: npm run test:report
