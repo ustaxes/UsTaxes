@@ -37,3 +37,5 @@ yarn-error.log*
 # don't worry about src-tauri (rust code)
 
 /src-tauri
+src/forms/
+ustaxes-forms/
