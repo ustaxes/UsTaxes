@@ -72,7 +72,20 @@ To ensure the project is fun for every contributor, please review:
 - [Contributing guide](docs/CONTRIBUTING.md)
 - [Project Architecture](docs/ARCHITECTURE.md)
 
-## Running
+## Cloning and Running
+
+This project uses submodules to separate development of state and IRS tax forms from the user interface. So make sure to use the `--recursive` flag when cloning, for example
+
+```
+git clone --recursive git@github.com:ustaxes/ustaxes
+```
+
+If you have already cloned this project, then you must initialize the submodules with:
+
+```
+git submodule init
+git submodule update --recursive --remote
+```
 
 This application can be run as either a web application or a standalone desktop application.
 
