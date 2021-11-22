@@ -1,7 +1,8 @@
 import { ReactElement } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { usePager } from 'ustaxes/components/pager'
-import { EstimatedTaxPayments, TaxesState, TaxYear } from 'ustaxes/redux/data'
+import { EstimatedTaxPayments } from 'ustaxes/forms/Y2020/data'
+import { YearsTaxesState, TaxYear } from 'ustaxes/redux'
 import { Currency, LabeledInput } from 'ustaxes/components/input'
 import { Patterns } from 'ustaxes/components/Patterns'
 import { FormListContainer } from 'ustaxes/components/FormContainer'
@@ -48,7 +49,7 @@ const toEstimatedTaxesUserInput = (
 
 export default function EstimatedTaxes(): ReactElement {
   const activeYear: TaxYear = useSelector(
-    (state: TaxesState) => state.activeYear
+    (state: YearsTaxesState) => state.activeYear
   )
 
   const estimatedTaxes = useYearSelector(

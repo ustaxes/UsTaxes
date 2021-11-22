@@ -1,13 +1,12 @@
-import { Information, TaxesState } from './data'
+import { Information } from 'ustaxes/forms/Y2020/data'
+import { YearsTaxesState } from './data'
 
-class TaxesStateMethods {
-  ts: TaxesState
+export default class TaxesStateMethods {
+  ts: YearsTaxesState
 
-  constructor(ts: TaxesState) {
+  constructor(ts: YearsTaxesState) {
     this.ts = ts
   }
 
   info = (): Information | undefined => this.ts[this.ts.activeYear]
 }
-
-export default TaxesStateMethods

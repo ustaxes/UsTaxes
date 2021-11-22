@@ -1,11 +1,11 @@
 import { Link } from '@material-ui/core'
 import { ReactElement, useState } from 'react'
 import { useSelector } from 'react-redux'
-import { TaxesState, TaxYears } from 'ustaxes/redux/data'
+import { YearsTaxesState, TaxYears } from 'ustaxes/redux'
 import YearDropDown from './YearDropDown'
 
 const YearStatusBar = (): ReactElement => {
-  const year = useSelector((state: TaxesState) => state.activeYear)
+  const year = useSelector((state: YearsTaxesState) => state.activeYear)
   const [isOpen, setOpen] = useState(false)
 
   const openButton = (

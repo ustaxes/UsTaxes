@@ -17,7 +17,7 @@ import {
   FilingStatus,
   FilingStatusTexts,
   filingStatuses
-} from 'ustaxes/redux/data'
+} from 'ustaxes/forms/Y2020/data'
 import {
   addDependent,
   addSpouse,
@@ -61,7 +61,7 @@ const blankUserDependentForm: UserDependentForm = {
 }
 
 const toDependent = (formData: UserDependentForm): Dependent => {
-  const { birthYear, numberOfMonths, isStudent, ...rest } = formData
+  const { birthYear, isStudent, numberOfMonths, ...rest } = formData
 
   return {
     ...rest,

@@ -31,3 +31,6 @@ yarn-error.log*
 /.vscode
 /.devcontainer/
 /src/redux/validation.json
+
+# public files copied in from submodules
+public/forms

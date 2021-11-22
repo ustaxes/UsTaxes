@@ -1,12 +1,12 @@
 import { ReactElement } from 'react'
 import { Grid, TextField } from '@material-ui/core'
 import { Controller, useFormContext } from 'react-hook-form'
-import locationPostalCodes from 'ustaxes/data/locationPostalCodes'
+import locationPostalCodes from 'ustaxes/forms/Y2020/data/locationPostalCodes'
 import useStyles from './styles'
 import { BaseDropdownProps, LabeledDropdownProps } from './types'
 import _ from 'lodash'
 import countries from 'ustaxes/data/countries'
-import { State } from 'ustaxes/redux/data'
+import { State } from 'ustaxes/forms/Y2020/data'
 import ConditionallyWrap from 'ustaxes/components/ConditionallyWrap'
 
 export function GenericLabeledDropdown<A>(

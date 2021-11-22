@@ -1,9 +1,9 @@
 import { Dispatch } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Actions, SignalAction } from './actions'
-import { TaxesState, TaxYear } from './data'
+import { YearsTaxesState, TaxYear } from '.'
 import { blankState } from './reducer'
-import { TaxesState as TS } from '.'
+import { TaxesState } from '.'
 
 /**
  * Provides an override over the default redux dispatch
@@ -13,7 +13,9 @@ import { TaxesState as TS } from '.'
  */
 const useYearDispatch = (): Dispatch<SignalAction> => {
   const dispatch = useDispatch<Dispatch<Actions>>()
-  const year: TaxYear = useSelector((state: TaxesState) => state.activeYear)
+  const year: TaxYear = useSelector(
+    (state: YearsTaxesState) => state.activeYear
+  )
 
   return (v: SignalAction) => dispatch(v(year))
 }
@@ -23,9 +25,9 @@ const useYearDispatch = (): Dispatch<SignalAction> => {
  * UI that doesn't care which year's data is currently
  * being accessed.
  */
-const useYearSelector = <R>(f: (t: TS) => R): R =>
+const useYearSelector = <R>(f: (t: TaxesState) => R): R =>
   f(
-    useSelector((state: TaxesState) => ({
+    useSelector((state: YearsTaxesState) => ({
       information:
         state.activeYear === undefined
           ? blankState

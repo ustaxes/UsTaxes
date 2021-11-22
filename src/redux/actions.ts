@@ -9,22 +9,36 @@ import {
   Supported1099,
   F1098e,
   Spouse,
+  Property,
+  StateResidency,
+  Information,
+  EstimatedTaxPayments
+} from 'ustaxes/forms/Y2020/data'
+
+import {
   EditDependentAction,
   EditPropertyAction,
-  Property,
   Edit1099Action,
   EditW2Action,
   EditEstimatedTaxesAction,
-  Edit1098eAction,
-  StateResidency,
-  TaxYear,
-  Information,
-  TaxesState,
-  EstimatedTaxPayments
+  Edit1098eAction
 } from './data'
-import { ValidateFunction } from 'ajv'
-import ajv, { checkType } from './validate'
-import { Responses } from 'ustaxes/data/questions'
+import { TaxYear } from '.'
+import Ajv, { ValidateFunction } from 'ajv'
+import { Responses } from 'ustaxes/forms/Y2020/data'
+import { checkType, validators } from 'ustaxes/forms/Y2020/data/validate'
+import formsSchema from 'ustaxes/forms/Y2020/data/validation.json'
+
+const ajv = new Ajv({ schemas: [formsSchema] })
+
+const vs = validators(ajv)
+
+const indexSchema = {
+  type: 'number',
+  minimum: 0
+}
+
+const indexValidator: ValidateFunction<number> = ajv.compile(indexSchema)
 
 export enum ActionName {
   SAVE_REFUND_INFO = 'SAVE_REFUND_INFO',
@@ -55,8 +69,7 @@ export enum ActionName {
   REMOVE_1098e = 'REMOVE_1098e',
   SET_INFO = 'SET_INFO',
   SET_ACTIVE_YEAR = 'SET_ACTIVE_YEAR',
-  PROPAGATE_YEAR_DATA = 'PROPAGATE_YEAR_DATA',
-  SET_WHOLE_STATE = 'SET_WHOLE_STATE'
+  PROPAGATE_YEAR_DATA = 'PROPAGATE_YEAR_DATA'
 }
 
 interface Save<T, R> {
@@ -108,7 +121,6 @@ type Edit1098e = Save<typeof ActionName.EDIT_1098e, Edit1098eAction>
 type Remove1098e = Save<typeof ActionName.REMOVE_1098e, number>
 type SetInfo = Save<typeof ActionName.SET_INFO, Information>
 type SetActiveYear = Save<typeof ActionName.SET_ACTIVE_YEAR, TaxYear>
-type SetWholeState = Save<typeof ActionName.SET_WHOLE_STATE, TaxesState>
 
 export type Actions =
   | SaveRefundInfo
@@ -139,7 +151,6 @@ export type Actions =
   | Remove1098e
   | SetInfo
   | SetActiveYear
-  | SetWholeState
 
 export type SignalAction = (year: TaxYear) => Actions
 export type ActionCreator<A> = (formData: A) => SignalAction
@@ -160,38 +171,39 @@ function signalAction<T extends ActionName>(
  *  the schema at runtime so we can see errors if data of the wrong types
  *  about to be inserted into the model
  */
-function makeActionCreator<A, T extends ActionName>(
-  t: T,
-  validate: ValidateFunction<A>
-): (formData: A) => (year: TaxYear) => Save<T, A> {
-  return (formData: A) =>
-    (year: TaxYear): Save<typeof t, A> => ({
-      type: t,
-      year,
-      formData: checkType<A>(formData, validate)
-    })
-}
+const makeActionCreator =
+  <A, T extends ActionName>(t: T, validate?: ValidateFunction<A>) =>
+  (formData: A) =>
+  (year: TaxYear): Save<T, A> => ({
+    type: t,
+    year,
+    formData:
+      validate !== undefined ? checkType<A>(formData, validate) : formData
+  })
 
 /**
  * This variant includes a preprocessor function that can be used to
  * apply formatting changes to provided data, for example.
  */
-function makePreprocessActionCreator<A, T extends ActionName>(
-  t: T,
-  validate: ValidateFunction<A>,
-  clean: (d: A) => Partial<A>
-): (formData: A) => (year: TaxYear) => Save<T, A> {
-  return (formData: A) =>
-    (year: TaxYear): Save<T, A> => ({
-      type: t,
-      year,
-      formData: checkType({ ...formData, ...clean(formData) }, validate)
-    })
-}
+const makePreprocessActionCreator =
+  <A, T extends ActionName>(
+    t: T,
+    validate: ValidateFunction<A> | undefined,
+    clean: (d: A) => Partial<A>
+  ) =>
+  (formData: A) =>
+  (year: TaxYear): Save<T, A> => ({
+    type: t,
+    year,
+    formData:
+      validate !== undefined
+        ? checkType({ ...formData, ...clean(formData) }, validate)
+        : { ...formData, ...clean(formData) }
+  })
 
 export const saveRefundInfo: ActionCreator<Refund> = makeActionCreator(
   ActionName.SAVE_REFUND_INFO,
-  ajv.getSchema('#/definitions/Refund') as ValidateFunction<Refund>
+  vs.refund
 )
 
 const cleanPerson = <P extends Person>(p: P): P => ({
@@ -202,32 +214,20 @@ const cleanPerson = <P extends Person>(p: P): P => ({
 export const savePrimaryPersonInfo: ActionCreator<PrimaryPerson> =
   makePreprocessActionCreator(
     ActionName.SAVE_PRIMARY_PERSON_INFO,
-    ajv.getSchema(
-      '#/definitions/PrimaryPerson'
-    ) as ValidateFunction<PrimaryPerson>,
+    vs.primaryPerson,
     cleanPerson
   )
 
 export const saveStateResidencyInfo: ActionCreator<StateResidency> =
-  makeActionCreator(
-    ActionName.SAVE_STATE_RESIDENCY,
-    ajv.getSchema(
-      '#/definitions/StateResidency'
-    ) as ValidateFunction<StateResidency>
-  )
+  makeActionCreator(ActionName.SAVE_STATE_RESIDENCY, vs.stateResidency)
 
 export const saveFilingStatusInfo: ActionCreator<FilingStatus> =
-  makeActionCreator(
-    ActionName.SAVE_FILING_STATUS_INFO,
-    ajv.getSchema(
-      '#/definitions/FilingStatus'
-    ) as ValidateFunction<FilingStatus>
-  )
+  makeActionCreator(ActionName.SAVE_FILING_STATUS_INFO, vs.filingStatus)
 
 export const saveContactInfo: ActionCreator<ContactInfo> =
   makePreprocessActionCreator(
     ActionName.SAVE_CONTACT_INFO,
-    ajv.getSchema('#/definitions/ContactInfo') as ValidateFunction<ContactInfo>,
+    vs.contactInfo,
     (t) => ({
       ...t,
       contactPhoneNumber: t.contactPhoneNumber?.replace(/-/g, '')
@@ -237,35 +237,28 @@ export const saveContactInfo: ActionCreator<ContactInfo> =
 export const addDependent: ActionCreator<Dependent> =
   makePreprocessActionCreator(
     ActionName.ADD_DEPENDENT,
-    ajv.getSchema('#/definitions/Dependent') as ValidateFunction<Dependent>,
+    vs.dependent,
     (t: Dependent) => cleanPerson(t)
   )
 
 export const editDependent: ActionCreator<EditDependentAction> =
   makePreprocessActionCreator(
     ActionName.EDIT_DEPENDENT,
-    ajv.getSchema(
-      '#/definitions/EditDependentAction'
-    ) as ValidateFunction<EditDependentAction>,
+    undefined,
     ({ index, value }: EditDependentAction) => ({
       index,
       value: cleanPerson(value)
     })
   )
 
-const indexSchema = {
-  type: 'number',
-  minimum: 0
-}
-
 export const removeDependent: ActionCreator<number> = makeActionCreator(
   ActionName.REMOVE_DEPENDENT,
-  ajv.compile(indexSchema)
+  indexValidator
 )
 
 export const addSpouse: ActionCreator<Spouse> = makePreprocessActionCreator(
   ActionName.ADD_SPOUSE,
-  ajv.getSchema('#/definitions/Spouse') as ValidateFunction<Spouse>,
+  vs.spouse,
   cleanPerson
 )
 
@@ -273,111 +266,82 @@ export const removeSpouse: SignalAction = signalAction(ActionName.REMOVE_SPOUSE)
 
 export const addW2: ActionCreator<IncomeW2> = makeActionCreator(
   ActionName.ADD_W2,
-  ajv.getSchema('#/definitions/IncomeW2') as ValidateFunction<IncomeW2>
+  vs.incomeW2
 )
 
 export const editW2: ActionCreator<EditW2Action> = makeActionCreator(
-  ActionName.EDIT_W2,
-  ajv.getSchema('#/definitions/EditW2Action') as ValidateFunction<EditW2Action>
+  ActionName.EDIT_W2
 )
 
 export const removeW2: ActionCreator<number> = makeActionCreator(
   ActionName.REMOVE_W2,
-  ajv.compile(indexSchema)
+  indexValidator
 )
 
 export const addEstimatedPayment: ActionCreator<EstimatedTaxPayments> =
-  makeActionCreator(
-    ActionName.ADD_ESTIMATED_TAX,
-    ajv.getSchema(
-      '#/definitions/EstimatedTaxPayments'
-    ) as ValidateFunction<EstimatedTaxPayments>
-  )
+  makeActionCreator(ActionName.ADD_ESTIMATED_TAX, vs.estimatedTaxPayments)
 
 export const editEstimatedPayment: ActionCreator<EditEstimatedTaxesAction> =
-  makeActionCreator(
-    ActionName.EDIT_ESTIMATED_TAX,
-    ajv.getSchema(
-      '#/definitions/EditEstimatedTaxesAction'
-    ) as ValidateFunction<EditEstimatedTaxesAction>
-  )
+  makeActionCreator(ActionName.EDIT_ESTIMATED_TAX)
 
 export const removeEstimatedPayment: ActionCreator<number> = makeActionCreator(
   ActionName.REMOVE_ESTIMATED_TAX,
-  ajv.compile(indexSchema)
+  indexValidator
 )
 
 export const add1099: ActionCreator<Supported1099> = makeActionCreator(
   ActionName.ADD_1099,
-  ajv.getSchema(
-    '#/definitions/Supported1099'
-  ) as ValidateFunction<Supported1099>
+  vs.supported1099
 )
 
 export const edit1099: ActionCreator<Edit1099Action> = makeActionCreator(
-  ActionName.EDIT_1099,
-  ajv.getSchema(
-    '#/definitions/Edit1099Action'
-  ) as ValidateFunction<Edit1099Action>
+  ActionName.EDIT_1099
 )
 
 export const remove1099: ActionCreator<number> = makeActionCreator(
   ActionName.REMOVE_1099,
-  ajv.compile(indexSchema)
+  indexValidator
 )
 
 export const addProperty: ActionCreator<Property> = makeActionCreator(
   ActionName.ADD_PROPERTY,
-  ajv.getSchema('#/definitions/Property') as ValidateFunction<Property>
+  vs.property
 )
 
 export const editProperty: ActionCreator<EditPropertyAction> =
-  makeActionCreator(
-    ActionName.EDIT_PROPERTY,
-    ajv.getSchema(
-      '#/definitions/EditPropertyAction'
-    ) as ValidateFunction<EditPropertyAction>
-  )
+  makeActionCreator(ActionName.EDIT_PROPERTY)
 
 export const removeProperty: ActionCreator<number> = makeActionCreator(
   ActionName.REMOVE_PROPERTY,
-  ajv.compile(indexSchema)
+  indexValidator
 )
 
 export const answerQuestion: ActionCreator<Responses> = makeActionCreator(
   ActionName.ANSWER_QUESTION,
-  ajv.getSchema('#/definitions/Responses') as ValidateFunction<Responses>
+  vs.responses
 )
 
 export const add1098e: ActionCreator<F1098e> = makeActionCreator(
   ActionName.ADD_1098e,
-  ajv.getSchema('#/definitions/F1098e') as ValidateFunction<F1098e>
+  vs.f1098e
 )
 
 export const edit1098e: ActionCreator<Edit1098eAction> = makeActionCreator(
-  ActionName.EDIT_1098e,
-  ajv.getSchema(
-    '#/definitions/Edit1098eAction'
-  ) as ValidateFunction<Edit1098eAction>
+  ActionName.EDIT_1098e
 )
 
 export const remove1098e: ActionCreator<number> = makeActionCreator(
   ActionName.REMOVE_1098e,
-  ajv.compile(indexSchema)
+  indexValidator
 )
 
 // debugging purposes only, leaving unchecked.
 export const setInfo: ActionCreator<Information> = makeActionCreator(
   ActionName.SET_INFO,
-  ajv.getSchema('#/definitions/Information') as ValidateFunction<Information>
+  vs.information
 )
 
 export const setActiveYear: ActionCreator<TaxYear> = makeActionCreator(
   ActionName.SET_ACTIVE_YEAR,
   ajv.getSchema('#/definitions/TaxYear') as ValidateFunction<TaxYear>
-)
-
-export const setWholeState: ActionCreator<TaxesState> = makeActionCreator(
-  ActionName.SET_WHOLE_STATE,
-  ajv.getSchema('#/definitions/TaxesState') as ValidateFunction<TaxesState>
 )

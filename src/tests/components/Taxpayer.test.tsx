@@ -1,6 +1,6 @@
 import { waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { Information } from 'ustaxes/redux/data'
+import { Information } from 'ustaxes/forms/Y2020/data'
 import { blankState } from 'ustaxes/redux/reducer'
 import { TaxPayerTestPage } from './TaxPayerTestPage'
 

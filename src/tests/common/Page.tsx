@@ -1,4 +1,4 @@
-import { TaxesState } from 'ustaxes/redux/data'
+import { YearsTaxesState } from 'ustaxes/redux'
 import { ReactElement } from 'react'
 import { createWholeStoreUnpersisted, InfoStore } from 'ustaxes/redux/store'
 import { Provider } from 'react-redux'
@@ -11,10 +11,10 @@ export abstract class TestPage {
   private _rendered: TestRenderResult | undefined
   private _baseElement: HTMLElement | undefined
   abstract component: ReactElement
-  initialState: TaxesState
+  initialState: YearsTaxesState
   store: InfoStore
 
-  constructor(state: TaxesState) {
+  constructor(state: YearsTaxesState) {
     this.initialState = state
     this.store = createWholeStoreUnpersisted(state)
   }

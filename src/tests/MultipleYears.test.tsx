@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import * as fc from 'fast-check'
-import * as arbitraries from './arbitraries'
+import * as utarbitraries from './arbitraries'
 import { cleanup, waitFor } from '@testing-library/react'
 import YearDropDown from 'ustaxes/components/YearDropDown'
-import { TaxYear, TaxesState } from 'ustaxes/redux/data'
+import { TaxYear, YearsTaxesState } from 'ustaxes/redux'
 import userEvent from '@testing-library/user-event'
 import { ReactElement } from 'react'
 import { TaxPayerTestPage } from './components/TaxPayerTestPage'
@@ -29,8 +29,8 @@ fc.configureGlobal({
 
 const gen = new fc.Random(prand.mersenne(new Date().getMilliseconds()))
 
-const justOneState = (): TaxesState =>
-  arbitraries.taxesState.noShrink().generate(gen).value
+const justOneState = (): YearsTaxesState =>
+  utarbitraries.taxesState.noShrink().generate(gen).value
 
 class TestForm extends TaxPayerTestPage {
   doneEv = jest.fn()
@@ -79,7 +79,7 @@ class TestForm extends TaxPayerTestPage {
 }
 
 const withForm =
-  (state: TaxesState) =>
+  (state: YearsTaxesState) =>
   async (
     f: (form: TestForm) => Promise<boolean | undefined>
   ): Promise<boolean> => {
@@ -130,8 +130,8 @@ describe('years', () => {
     await fc
       .assert(
         fc.asyncProperty(
-          arbitraries.taxYear,
-          arbitraries.taxYear,
+          utarbitraries.taxYear,
+          utarbitraries.taxYear,
           async (startYear, year) => {
             // Generating states can lead to long runtimes as the generator
             // tries to fiddle with all of state's parameters to induce a failure.
@@ -156,7 +156,7 @@ describe('years', () => {
 
   it('should update form data on select', async () =>
     await fc.assert(
-      fc.asyncProperty(arbitraries.taxYear, async (year) => {
+      fc.asyncProperty(utarbitraries.taxYear, async (year) => {
         const state = justOneState()
         await withForm(state)(async (form) => {
           await waitFor(() => expect(form.yearSelect()).toBeInTheDocument())

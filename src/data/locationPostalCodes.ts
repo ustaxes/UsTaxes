@@ -1,4 +1,4 @@
-import { State } from '../redux/data'
+import { State } from 'ustaxes/forms/Y2020/data'
 
 const locationPostalCodes: Array<[string, State]> = [
   ['Alabama', 'AL'],

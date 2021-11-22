@@ -1,6 +1,7 @@
 import { ReactElement } from 'react'
 import { useSelector } from 'react-redux'
-import { Information, TaxesState, TaxYears } from 'ustaxes/redux/data'
+import { YearsTaxesState, TaxYears } from 'ustaxes/redux'
+import { Information } from 'ustaxes/forms/Y2020/data'
 import _ from 'lodash'
 import { enumKeys } from 'ustaxes/util'
 import { useDispatch } from 'ustaxes/redux'
@@ -9,7 +10,7 @@ import { Button } from '@material-ui/core'
 import { Alert } from '@material-ui/lab'
 
 const DataPropagator = (): ReactElement => {
-  const wholeState = useSelector((state: TaxesState) => state)
+  const wholeState = useSelector((state: YearsTaxesState) => state)
   const allYears = enumKeys(TaxYears)
   const yearIndex = _.indexOf(allYears, wholeState.activeYear)
   const dispatch = useDispatch()

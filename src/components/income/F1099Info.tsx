@@ -11,7 +11,7 @@ import {
   Income1099Type,
   PlanType1099,
   PlanType1099Texts
-} from 'ustaxes/redux/data'
+} from 'ustaxes/forms/Y2020/data'
 import {
   Currency,
   formatSSID,

@@ -15,11 +15,9 @@ import {
   PropertyExpenseType,
   PropertyExpenseTypeName,
   PropertyType,
-  PropertyTypeName,
-  TaxesState,
-  TaxYear,
-  TaxYears
-} from 'ustaxes/redux/data'
+  PropertyTypeName
+} from 'ustaxes/forms/Y2020/data'
+import { YearsTaxesState, TaxYear, TaxYears } from 'ustaxes/redux'
 import AddressFields from 'ustaxes/components/TaxPayer/Address'
 import {
   Currency,
@@ -145,7 +143,7 @@ export default function RealEstate(): ReactElement {
   const { onAdvance, navButtons } = usePager()
 
   const activeYear: TaxYear = useSelector(
-    (state: TaxesState) => state.activeYear
+    (state: YearsTaxesState) => state.activeYear
   )
 
   const properties: Property[] = useYearSelector(

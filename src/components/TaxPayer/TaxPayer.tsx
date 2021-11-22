@@ -14,7 +14,7 @@ import {
   State,
   StateResidency,
   TaxPayer
-} from 'ustaxes/redux/data'
+} from 'ustaxes/forms/Y2020/data'
 import { PersonFields } from './PersonFields'
 import { usePager } from 'ustaxes/components/pager'
 import { LabeledCheckbox, USStateDropDown } from 'ustaxes/components/input'

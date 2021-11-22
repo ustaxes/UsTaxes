@@ -29,7 +29,7 @@ import Questions from './Questions'
 import Urls from 'ustaxes/data/urls'
 
 import { isMobile } from 'react-device-detect'
-import { makeDownloader } from 'ustaxes/pdfFiller/pdfHandler'
+import { makeDownloader } from 'ustaxes/forms/Y2020/pdfFiller/pdfHandler'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -62,7 +62,7 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 )
 
-const downloader = makeDownloader('')
+const downloader = makeDownloader('forms/Y2020')
 
 const getTitleAndPage = (sections: Section[], currentUrl: string): string => {
   const page = sections

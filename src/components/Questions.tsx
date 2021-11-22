@@ -1,11 +1,8 @@
 import { ReactElement, useEffect } from 'react'
 import { Grid, List, ListItem } from '@material-ui/core'
 import { useDispatch, useSelector, TaxesState } from 'ustaxes/redux'
-import {
-  getRequiredQuestions,
-  QuestionTagName,
-  Responses
-} from 'ustaxes/data/questions'
+import { QuestionTagName, Responses } from 'ustaxes/forms/Y2020/data'
+import { getRequiredQuestions } from 'ustaxes/forms/Y2020/data/questions'
 import { LabeledCheckbox, LabeledInput } from './input'
 import { answerQuestion } from 'ustaxes/redux/actions'
 import { FormProvider, useForm } from 'react-hook-form'

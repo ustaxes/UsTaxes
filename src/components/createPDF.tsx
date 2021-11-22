@@ -3,38 +3,55 @@ import { usePager } from './pager'
 import Alert from '@material-ui/lab/Alert'
 import log from 'ustaxes/log'
 import { useSelector } from 'react-redux'
+import { Information, State } from 'ustaxes/forms/Y2020/data'
+import { YearsTaxesState, TaxYear, TaxYears } from 'ustaxes/redux'
+
 import {
-  Information,
-  State,
-  TaxesState,
-  TaxYear,
-  TaxYears
-} from 'ustaxes/redux/data'
-import { createPDFPopup } from 'ustaxes/irsForms'
-import {
-  canCreateFederalReturn,
   createStatePDF,
   createStateReturn,
   stateForm
-} from '../stateForms'
-import { create1040 } from 'ustaxes/irsForms/Main'
-import { isRight } from 'ustaxes/util'
-import { PDFDownloader, savePDF } from 'ustaxes/pdfFiller/pdfHandler'
+} from 'ustaxes/forms/Y2020/stateForms'
+import { create1040 } from 'ustaxes/forms/Y2020/irsForms/Main'
+import { isRight } from 'ustaxes/forms/Y2020/util'
+import { PDFDownloader } from 'ustaxes/forms/Y2020/pdfFiller/pdfHandler'
 import { Box, Button } from '@material-ui/core'
 import Summary from './Summary'
+import { create1040PDF } from 'ustaxes/forms/Y2020/irsForms'
+import { store } from 'ustaxes/redux/store'
+import { savePDF } from 'ustaxes/pdfHandler'
+import TaxesStateMethods from 'ustaxes/redux/TaxesState'
 
 interface CreatePDFProps {
   downloader: PDFDownloader
 }
+
+export const canCreateFederalReturn = (year: TaxYear): boolean =>
+  year === 'Y2020'
+
+// opens new with filled information in the window of the component it is called from
+export const createPDFPopup =
+  (defaultFilename: string) =>
+  async (downloader: PDFDownloader): Promise<void> => {
+    const information = new TaxesStateMethods(store.getState()).info()
+    if (information === undefined) {
+      throw new Error(
+        `Information was undefined for tax year: ${store.getState().activeYear}`
+      )
+    }
+    const pdfBytes = await create1040PDF(information)(downloader)
+    return await savePDF(pdfBytes, defaultFilename)
+  }
 
 export default function CreatePDF({
   downloader
 }: CreatePDFProps): ReactElement {
   const [errors, updateErrors] = useState<string[]>([])
 
-  const year: TaxYear = useSelector((state: TaxesState) => state.activeYear)
+  const year: TaxYear = useSelector(
+    (state: YearsTaxesState) => state.activeYear
+  )
   const info: Information | undefined = useSelector(
-    (state: TaxesState) => state[state.activeYear]
+    (state: YearsTaxesState) => state[state.activeYear]
   )
   const lastName = info?.taxPayer.primaryPerson?.lastName
   const residency: State | undefined = info?.stateResidencies[0]?.state
@@ -63,11 +80,7 @@ export default function CreatePDF({
     if (info !== undefined) {
       const f1040Result = create1040(info)
       if (isRight(f1040Result)) {
-        const stateReturn = await createStateReturn(
-          info,
-          f1040Result.right[0],
-          year
-        )
+        const stateReturn = await createStateReturn(info, f1040Result.right[0])
         if (stateReturn !== undefined) {
           const pdfBytes = (
             await createStatePDF(stateReturn)(downloader)

@@ -6,7 +6,7 @@ import { Patterns } from './Patterns'
 import { saveRefundInfo } from 'ustaxes/redux/actions'
 import _ from 'lodash'
 
-import { Refund } from 'ustaxes/redux/data'
+import { Refund } from 'ustaxes/forms/Y2020/data'
 import { usePager } from './pager'
 import { Grid } from '@material-ui/core'
 

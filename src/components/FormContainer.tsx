@@ -190,7 +190,7 @@ const FormListContainer = <A,>(
 
   const close = (): void => {
     setFormState(FormState.Closed)
-    reset({ values: undefined })
+    reset(undefined)
     setEditing(undefined)
   }
 

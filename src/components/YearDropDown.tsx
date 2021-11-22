@@ -4,7 +4,7 @@ import { FormProvider, useForm } from 'react-hook-form'
 import { useDispatch } from 'ustaxes/redux'
 import { useSelector } from 'react-redux'
 import { setActiveYear } from 'ustaxes/redux/actions'
-import { TaxesState, TaxYear, TaxYears } from 'ustaxes/redux/data'
+import { YearsTaxesState, TaxYear, TaxYears } from 'ustaxes/redux'
 import { enumKeys } from 'ustaxes/util'
 import { GenericLabeledDropdown } from './input'
 
@@ -22,7 +22,7 @@ const YearDropDown = (props: YearDropProps): ReactElement => {
       // default do nothing
     }
   } = props
-  const year = useSelector((state: TaxesState) => state.activeYear)
+  const year = useSelector((state: YearsTaxesState) => state.activeYear)
   const methods = useForm<YearForm>({
     defaultValues: { year }
   })

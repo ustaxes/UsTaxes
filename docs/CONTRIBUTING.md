@@ -56,7 +56,7 @@ First, [join our Discord server](https://discord.gg/dAaz472mPz) and let us know 
 
 1. To set up your machine for development, review the [Architecture doc](ARCHITECTURE.md), for required links to set up NPM 6 and Rust.
 
-1. Next, fork and clone this repo.
+1. Next, fork and clone this repo. This project uses git submodules to track each tax year, so you should clone using `git clone --recursive`. If you have already cloned and need to clone the submodules, you may use `git submodule init`, `git submodule update`.
 
 1. Run `npm ci` to install the package versions referenced in `package-lock.json`. If your feature requires a new dependency, add it using `npm install <package-name>@<version>` to avoid affecting other dependencies in `package-lock.json`.
 
@@ -79,18 +79,20 @@ In order to manage state between many different components and concerns in a pro
 
 ### Directories Overview
 
+#### Main Project:
+
 - [`src/components`](../src/components) Contains React forms and **all UI**.
 - [`src/data`](../src/data) Contains static data such as a list of states and a list of tax brackets
-- [`src/irsForms`](../src/irsForms)
-  - These are typescript model implementations of the actual IRS pdfs. Each form provides the data to be filled into the final PDF via an array where each index must match the expected index in the PDF. We use the convention that methods are named after the actual line referred to in the PDF. So `const l1 = (): number = ...` will be the function to call to get the numeric value needed on line 1 of that form.
-  - Also, because the forms closely follow IRS published instructions and worksheets, the tax calculations are also coded in this directory.
-- [`pdfFiller`](../src/pdfFiller): All the logic to actually fill form data into a PDF.
 - [`redux`](../src/redux) All the types and logic to manage global state in the app.
 - [`customTypes`](../src/customTypes) Special purpose definitions needed to give the typescript compiler more type information about some features of our dependencies we use. Ideally these needs would be provided by our dependencies and this folder can be deleted in the future.
 
+#### Years Subprojects:
+
+Each tax year has its own main branch in [ustaxes-forms](//github.com/ustaxes/ustaxes-forms)
+
 ## License
 
-UsTaxes is a GPL-licensed open source project. We think this choice is important for a few reasons
+UsTaxes is a AGPL-licensed open source project. We think this choice is important for a few reasons
 
 - If anyone wants to use the software for any reason, they are welcome to.
 - If anyone wants to sell the software, they can, but they have to provide all the source so users can build the project themselves.
