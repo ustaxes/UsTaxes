@@ -1,4 +1,4 @@
 [submodule "ustaxes-forms/Y2020"]
 	path = ustaxes-forms/Y2020
-	url = git@github.com:ustaxes/ustaxes-forms
+	url = https://github.com/ustaxes/ustaxes-forms.git
 	branch = main-2020
