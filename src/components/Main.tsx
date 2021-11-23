@@ -115,6 +115,9 @@ export default function Main(): ReactElement {
     </Grid>
   )
 
+  const pathname = useLocation().pathname
+  console.log(pathname)
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />

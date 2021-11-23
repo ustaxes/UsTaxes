@@ -39,6 +39,7 @@
     "lint": "eslint ./src --ext ts,js,tsx,jsx --max-warnings=0 && prettier -c .",
     "lint:fix": "eslint ./src --fix --ext ts,js,tsx,jsx && prettier --write .",
     "prettier": "prettier --write .",
+    "postbuild": "react-snap",
     "formgen": "ts-node ./scripts/formgen.ts",
     "prepare": "husky install"
   },
@@ -84,12 +85,23 @@
     "lint-staged": "^11.2.6",
     "prettier": "2.4.1",
     "react-router-last-location": "^2.0.1",
+    "react-snap": "^1.23.0",
     "ts-node": "^10.4.0",
     "typescript-eslint": "0.0.1-alpha.0"
   },
   "lint-staged": {
     "**/*": "prettier --write --ignore-unknown .",
     "*.{ts,js,tsx,jsx}": "eslint ./src --cache --fix"
+  },
+  "reactSnap": {
+    "inlineCss": true,
+    "waitFor": 5000,
+    "include": [
+      "/",
+      "/info",
+      "/start",
+      "/spouseanddependent"
+    ]
   },
   "jest": {
     "moduleNameMapper": {

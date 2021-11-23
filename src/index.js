@@ -1,5 +1,5 @@
 import { StrictMode } from 'react'
-import ReactDOM from 'react-dom'
+import { hydrate, render } from 'react-dom'
 import { Provider } from 'react-redux'
 import App from './App'
 import * as serviceWorker from './serviceWorker'
@@ -11,7 +11,7 @@ import { LastLocationProvider } from 'react-router-last-location'
 
 import './index.css'
 
-ReactDOM.render(
+const component = (
   <StrictMode>
     <Provider store={store}>
       <PersistGate
@@ -25,9 +25,16 @@ ReactDOM.render(
         </Router>
       </PersistGate>
     </Provider>
-  </StrictMode>,
-  document.getElementById('root')
+  </StrictMode>
 )
+
+const rootElement = document.getElementById('root')
+
+if (rootElement.hasChildNodes()) {
+  hydrate(component, rootElement)
+} else {
+  render(component, rootElement)
+}
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
