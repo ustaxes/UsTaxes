@@ -192,12 +192,13 @@ export default function RealEstate(): ReactElement {
         label={displayExpense(PropertyExpenseType[k])}
         name={`expenses.${k.toString()}`}
         patternConfig={Patterns.currency}
+        required={false}
       />
     )
   )
 
   const otherExpenseDescription = (() => {
-    if (otherExpensesEntered !== 0) {
+    if (otherExpensesEntered ?? 0 !== 0) {
       return (
         <LabeledInput
           key={enumKeys(PropertyExpenseType).length}
