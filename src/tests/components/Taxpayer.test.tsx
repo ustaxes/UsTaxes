@@ -6,6 +6,7 @@ import TaxPayer from 'ustaxes/components/TaxPayer'
 import { TestPage } from '../common/Page'
 import { ReactElement } from 'react'
 import { FakePagerProvider } from '../common/FakePager'
+import { BrowserRouter as Router } from 'react-router-dom'
 
 jest.setTimeout(1000 * 60 * 10)
 
@@ -24,9 +25,11 @@ jest.mock('redux-persist', () => {
 
 class TaxPayerTestPage extends TestPage {
   component: ReactElement = (
-    <FakePagerProvider>
-      <TaxPayer />
-    </FakePagerProvider>
+    <Router>
+      <FakePagerProvider>
+        <TaxPayer />
+      </FakePagerProvider>
+    </Router>
   )
 
   setFirstName = (name: string): void => {
