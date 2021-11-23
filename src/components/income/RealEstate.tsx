@@ -136,7 +136,7 @@ const toUserInput = (property: Property): PropertyAddForm => {
 }
 
 export default function RealEstate(): ReactElement {
-  const methods = useForm<PropertyAddForm>()
+  const methods = useForm<PropertyAddForm>({ defaultValues: blankAddForm })
   const { control, getValues } = methods
   const dispatch = useDispatch()
 
