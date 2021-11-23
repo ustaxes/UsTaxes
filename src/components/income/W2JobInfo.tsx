@@ -90,18 +90,7 @@ const toIncomeW2UserInput = (data: IncomeW2): IncomeW2UserInput => ({
 export default function W2JobInfo(): ReactElement {
   const dispatch = useDispatch()
 
-  const methods = useForm<IncomeW2UserInput>({
-    defaultValues: {
-      employer: { employerName: '' },
-      occupation: '',
-      income: '',
-      fedWithholding: '',
-      ssWithholding: '',
-      medicareWithholding: '',
-      personRole: PersonRole.PRIMARY
-    }
-  })
-  const { handleSubmit } = methods
+  const methods = useForm<IncomeW2UserInput>()
 
   const { navButtons, onAdvance } = usePager()
 
@@ -266,7 +255,7 @@ export default function W2JobInfo(): ReactElement {
 
   return (
     <FormProvider {...methods}>
-      <form tabIndex={-1} onSubmit={handleSubmit(onAdvance)}>
+      <form tabIndex={-1} onSubmit={onAdvance}>
         <Helmet>
           <title>Job Information | Income | UsTaxes.org</title>
         </Helmet>
