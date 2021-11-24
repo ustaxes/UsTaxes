@@ -2,3 +2,7 @@
 	path = ustaxes-forms/Y2020
 	url = https://github.com/ustaxes/ustaxes-forms.git
 	branch = main-2020
+[submodule "ustaxes-forms/Y2021"]
+	path = ustaxes-forms/Y2021
+	url = https://github.com/ustaxes/ustaxes-forms.git
+	branch = main-2021

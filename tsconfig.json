@@ -37,11 +37,6 @@
     "**/node_modules",
     "**/.*/"
   ],
-  "references": [
-    {
-      "path": "./ustaxes-forms/Y2020"
-    }
-  ],
   "ts-node": {
     "compilerOptions": {
       "module": "commonjs"

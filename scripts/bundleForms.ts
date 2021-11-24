@@ -1,8 +1,7 @@
 import fs from 'fs/promises'
 import path from 'path'
-
-// fs.cp since 16.7
-const requiredNodeVersion = [16, 7]
+import { requiredNodeVersion } from './env'
+import { supportedYears } from './env'
 
 const checkVersion = () => {
   const [M, m] = process.version.split('.').map((x) => parseInt(x, 10))
@@ -15,7 +14,6 @@ const checkVersion = () => {
   }
 }
 
-const years = ['Y2020']
 const src = (year: string): string =>
   path.join(__dirname, `../ustaxes-forms/${year}/public/`)
 
@@ -32,9 +30,12 @@ const copyYear = async (year: string): Promise<void> => {
   return fs.cp(from, to, { recursive: true })
 }
 
-if (require.main === module) {
+const main = async (): Promise<void> => {
   checkVersion()
-  Promise.all(years.map(async (y) => copyYear(y))).then(() =>
-    console.log('done')
-  )
+  console.log(`Moved forms into public folder for all supported years.`)
+  await Promise.all(supportedYears.map(async (y) => copyYear(y)))
 }
+
+export default main
+
+if (require.main === module) main()
