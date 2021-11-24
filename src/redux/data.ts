@@ -330,6 +330,8 @@ export interface HealthSavingsAccount {
   personRole: PersonRole.PRIMARY | PersonRole.SPOUSE
   startDate: Date
   endDate: Date
+  totalDistributions: number
+  qualifiedDistributions: number
   //coverageDateRange: {from: {year: number, month: number}, to: {year: number, month: number}}
 }
 

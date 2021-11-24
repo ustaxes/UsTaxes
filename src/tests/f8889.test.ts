@@ -79,7 +79,9 @@ describe('Health Savings Accounts', () => {
         personRole: PersonRole.PRIMARY,
         startDate: new Date(CURRENT_YEAR, 0, 1),
         endDate: new Date(CURRENT_YEAR, 11, 31),
-        label: 'test'
+        label: 'test',
+        totalDistributions: 500,
+        qualifiedDistributions: 500
       }
     ]
 
@@ -116,7 +118,9 @@ describe('Health Savings Accounts', () => {
         personRole: PersonRole.PRIMARY,
         startDate: new Date(CURRENT_YEAR, 0, 1),
         endDate: new Date(CURRENT_YEAR, 11, 31),
-        label: 'test'
+        label: 'test',
+        totalDistributions: 500,
+        qualifiedDistributions: 500
       },
       {
         coverageType: 'family',
@@ -124,7 +128,9 @@ describe('Health Savings Accounts', () => {
         personRole: PersonRole.SPOUSE,
         startDate: new Date(CURRENT_YEAR, 0, 1),
         endDate: new Date(CURRENT_YEAR, 11, 31),
-        label: 'test'
+        label: 'test',
+        totalDistributions: 500,
+        qualifiedDistributions: 500
       }
     ]
 
@@ -146,7 +152,9 @@ describe('Health Savings Accounts', () => {
         personRole: PersonRole.PRIMARY,
         startDate: new Date(CURRENT_YEAR, 0, 1), // Jan 1st
         endDate: new Date(CURRENT_YEAR, 5, 30), // Jun 30th
-        label: 'test'
+        label: 'test',
+        totalDistributions: 500,
+        qualifiedDistributions: 500
       }
     ]
 
@@ -167,7 +175,9 @@ describe('Health Savings Accounts', () => {
         personRole: PersonRole.PRIMARY,
         startDate: new Date(CURRENT_YEAR, 0, 1), // Jan 1st
         endDate: new Date(CURRENT_YEAR, 5, 30), // Jun 30th
-        label: 'test'
+        label: 'test',
+        totalDistributions: 500,
+        qualifiedDistributions: 500
       },
       {
         coverageType: 'self-only',
@@ -175,7 +185,9 @@ describe('Health Savings Accounts', () => {
         personRole: PersonRole.PRIMARY,
         startDate: new Date(CURRENT_YEAR, 6, 1), // Jul 1st
         endDate: new Date(CURRENT_YEAR, 10, 30), // Nov 30st
-        label: 'test'
+        label: 'test',
+        totalDistributions: 500,
+        qualifiedDistributions: 500
       }
     ]
 
@@ -199,7 +211,9 @@ describe('Health Savings Accounts', () => {
         personRole: PersonRole.PRIMARY,
         startDate: new Date(CURRENT_YEAR, 0, 1), // Jan 1st
         endDate: new Date(CURRENT_YEAR, 5, 30), // Jun 30th
-        label: 'test'
+        label: 'test',
+        totalDistributions: 500,
+        qualifiedDistributions: 500
       },
       {
         coverageType: 'self-only',
@@ -207,7 +221,9 @@ describe('Health Savings Accounts', () => {
         personRole: PersonRole.PRIMARY,
         startDate: new Date(CURRENT_YEAR, 3, 1), // Apr 1st
         endDate: new Date(CURRENT_YEAR, 10, 30), // Nov 30st
-        label: 'test'
+        label: 'test',
+        totalDistributions: 500,
+        qualifiedDistributions: 500
       }
     ]
 
@@ -220,5 +236,36 @@ describe('Health Savings Accounts', () => {
       )
     )
     expect(f8889.calculatedCoverageType).toEqual('family')
+  })
+
+  it('should should split the family contribution correctly', () => {
+    
+    const information = cloneDeep(baseInformation)
+    information.healthSavingsAccounts = [
+      {
+        coverageType: 'family',
+        contributions: 3550,
+        personRole: PersonRole.PRIMARY,
+        startDate: new Date(CURRENT_YEAR, 0, 1), // Jan 1st
+        endDate: new Date(CURRENT_YEAR, 4, 31), // May 31st
+        label: 'test',
+        totalDistributions: 500,
+        qualifiedDistributions: 500
+      },
+      {
+        coverageType: 'self-only',
+        contributions: 1750,
+        personRole: PersonRole.PRIMARY,
+        startDate: new Date(CURRENT_YEAR, 5, 1), // Jun 1st
+        endDate: new Date(CURRENT_YEAR, 11, 31), // Dec 31st
+        label: 'test',
+        totalDistributions: 500,
+        qualifiedDistributions: 500
+      }
+    ]
+
+    const f8889 = new F8889(information, information.taxPayer.primaryPerson)
+    expect(f8889.splitFamilyContributionLimit()).toEqual(3550)
+    expect(f8889.calculatedCoverageType).toEqual('self-only')
   })
 })

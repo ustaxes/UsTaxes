@@ -377,16 +377,20 @@ export const healthSavingsAccount: Arbitrary<types.HealthSavingsAccount> = fc
     fc.date({
       min: new Date(CURRENT_YEAR, 0, 1),
       max: new Date(CURRENT_YEAR, 11, 31)
-    })
+    }),
+    fc.nat({ max: 100000 }),
+    fc.nat({ max: 100000 }),
   )
   .map(
-    ([label, coverageType, contributions, personRole, startDate, endDate]) => ({
+    ([label, coverageType, contributions, personRole, startDate, endDate, totalDistributions, qualifiedDistributions]) => ({
       label,
       coverageType,
       contributions,
       personRole,
       startDate,
-      endDate
+      endDate,
+      totalDistributions,
+      qualifiedDistributions
     })
   )
 
