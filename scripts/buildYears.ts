@@ -1,4 +1,5 @@
 import fs from 'fs/promises'
+import { checkVersion } from './env'
 import { spawn } from 'child_process'
 import path from 'path'
 import { supportedYears } from './env'
@@ -70,4 +71,7 @@ const main = async (): Promise<void> => {
 
 export default main
 
-if (require.main === module) main()
+if (require.main === module) {
+  checkVersion()
+  main()
+}

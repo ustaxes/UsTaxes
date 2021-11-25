@@ -1,18 +1,7 @@
 import fs from 'fs/promises'
 import path from 'path'
-import { requiredNodeVersion } from './env'
+import { checkVersion } from './env'
 import { supportedYears } from './env'
-
-const checkVersion = () => {
-  const [M, m] = process.version.split('.').map((x) => parseInt(x, 10))
-  const [R, r] = requiredNodeVersion
-  if (M < R || (M === R && m < r)) {
-    console.error('Required node version not found.')
-    console.error(`Required: >= ${requiredNodeVersion.join('.')}`)
-    console.error(`Found:       ${process.version}`)
-    process.exit(1)
-  }
-}
 
 const src = (year: string): string =>
   path.join(__dirname, `../ustaxes-forms/${year}/public/`)
@@ -32,10 +21,13 @@ const copyYear = async (year: string): Promise<void> => {
 
 const main = async (): Promise<void> => {
   checkVersion()
-  console.log(`Moved forms into public folder for all supported years.`)
+  console.log(`Moving forms into public folder for all supported years.`)
   await Promise.all(supportedYears.map(async (y) => copyYear(y)))
 }
 
 export default main
 
-if (require.main === module) main()
+if (require.main === module) {
+  checkVersion()
+  main()
+}
