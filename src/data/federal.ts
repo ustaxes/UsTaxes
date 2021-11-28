@@ -1,5 +1,4 @@
 import { FilingStatus } from 'ustaxes/redux/data'
-import { healthSavingsAccount } from 'ustaxes/tests/arbitraries'
 import { linear, Piecewise } from 'ustaxes/util'
 
 export const CURRENT_YEAR = 2020

@@ -40,7 +40,7 @@ import F1040V from './F1040v'
 import InformationMethods from 'ustaxes/redux/methods'
 import _ from 'lodash'
 import F8960, { needsF8960 } from './F8960'
-import F8889 from './F8889'
+import F8889, { needsF8889 } from './F8889'
 
 export enum F1040Error {
   filingStatusUndefined = 'Select a filing status'
@@ -70,6 +70,7 @@ export default class F1040 extends Form {
   f8814?: F8814
   f8888?: F8888
   f8889?: F8889
+  f8889Spouse?: F8889
   f8910?: F8910
   f8936?: F8936
   f8959?: F8959
@@ -109,6 +110,7 @@ export default class F1040 extends Form {
       this.f8814,
       this.f8888,
       this.f8889,
+      this.f8889Spouse,
       this.f8910,
       this.f8936,
       this.f8959,
@@ -173,6 +175,24 @@ export default class F1040 extends Form {
 
     if (needsF8960(this.info)) {
       this.f8960 = new F8960(this.info, this)
+    }
+
+    console.log(this.info.taxPayer.primaryPerson)
+    if (
+      this.info.taxPayer.primaryPerson &&
+      needsF8889(this.info, this.info.taxPayer.primaryPerson)
+    ) {
+      // add form 8889 for the primary tax payer
+      console.log(needsF8889(this.info, this.info.taxPayer.primaryPerson))
+      this.f8889 = new F8889(this.info, this.info.taxPayer.primaryPerson)
+    }
+
+    if (
+      this.info.taxPayer.spouse &&
+      needsF8889(this.info, this.info.taxPayer.spouse)
+    ) {
+      // add in separate form 8889 for the spouse
+      this.f8889Spouse = new F8889(this.info, this.info.taxPayer.spouse)
     }
 
     if (this.f8959 !== undefined || this.f8960 !== undefined) {
