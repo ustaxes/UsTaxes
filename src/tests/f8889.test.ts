@@ -239,7 +239,6 @@ describe('Health Savings Accounts', () => {
   })
 
   it('should should split the family contribution correctly', () => {
-    
     const information = cloneDeep(baseInformation)
     information.healthSavingsAccounts = [
       {
