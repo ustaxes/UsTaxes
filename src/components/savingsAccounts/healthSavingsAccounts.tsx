@@ -33,6 +33,8 @@ interface HSAUserInput {
   personRole: PersonRole.PRIMARY | PersonRole.SPOUSE
   startDate: Date
   endDate: Date
+  totalDistributions: string
+  qualifiedDistributions: string
 }
 
 const blankUserInput: HSAUserInput = {
@@ -41,7 +43,9 @@ const blankUserInput: HSAUserInput = {
   contributions: '',
   personRole: PersonRole.PRIMARY,
   startDate: new Date(CURRENT_YEAR, 0, 1),
-  endDate: new Date(CURRENT_YEAR, 11, 31)
+  endDate: new Date(CURRENT_YEAR, 11, 31),
+  totalDistributions: '',
+  qualifiedDistributions: ''
 }
 
 const toHSA = (formData: HSAUserInput): HealthSavingsAccount => ({
@@ -54,7 +58,9 @@ const toHSA = (formData: HSAUserInput): HealthSavingsAccount => ({
   contributions: parseInt(formData.contributions),
   personRole: formData.personRole,
   startDate: formData.startDate,
-  endDate: formData.endDate
+  endDate: formData.endDate,
+  totalDistributions: parseInt(formData.totalDistributions),
+  qualifiedDistributions: parseInt(formData.qualifiedDistributions)
 })
 
 const toHSAUserInput = (data: HealthSavingsAccount): HSAUserInput => ({
@@ -63,7 +69,9 @@ const toHSAUserInput = (data: HealthSavingsAccount): HSAUserInput => ({
   coverageType: data.coverageType,
   contributions: data.contributions.toString(),
   startDate: data.startDate,
-  endDate: data.endDate
+  endDate: data.endDate,
+  totalDistributions: data.totalDistributions.toString(),
+  qualifiedDistributions: data.qualifiedDistributions.toString()
 })
 
 export default function HealthSavingsAccounts(): ReactElement {
@@ -123,6 +131,18 @@ export default function HealthSavingsAccounts(): ReactElement {
         <LabeledInput
           name="contributions"
           label="Your total contributions to this account."
+          patternConfig={Patterns.currency}
+          sizes={{ xs: 12, lg: 6 }}
+        />
+        <LabeledInput
+          name="totalDistributions"
+          label="Total distributions from this account."
+          patternConfig={Patterns.currency}
+          sizes={{ xs: 12, lg: 6 }}
+        />
+        <LabeledInput
+          name="qualifiedDistributions"
+          label="Qualified medical distributions from this account."
           patternConfig={Patterns.currency}
           sizes={{ xs: 12, lg: 6 }}
         />
