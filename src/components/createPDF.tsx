@@ -42,19 +42,21 @@ export const createPDFPopup =
       )
     }
 
-    if (year === 'Y2020') {
-      const pdfBytes = await create1040PDF2020(information)(downloader)
-      return await savePDF(pdfBytes, defaultFilename)
-    } else if (year === 'Y2021') {
-      const pdfBytes = await create1040PDF2021(information)(downloader)
-      if (isRight(pdfBytes)) {
-        return await savePDF(pdfBytes.right, defaultFilename)
+    const pdfBytes = await (() => {
+      if (year === 'Y2020') {
+        return create1040PDF2020(information)(downloader)
+      } else if (year === 'Y2021') {
+        return create1040PDF2021(information)(downloader)
       } else {
-        throw new Error(pdfBytes.left.join('\n'))
+        throw new Error(`Unknown tax year: ${year}`)
       }
-    } else {
-      throw new Error(`Unknown tax year: ${year}`)
+    })()
+
+    if (!isRight(pdfBytes)) {
+      throw new Error(pdfBytes.left.join('\n'))
     }
+
+    return await savePDF(pdfBytes.right, defaultFilename)
   }
 
 export default function CreatePDF({
