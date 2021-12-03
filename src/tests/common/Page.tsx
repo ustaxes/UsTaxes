@@ -19,6 +19,10 @@ export abstract class TestPage {
     this.store = createWholeStoreUnpersisted(state)
   }
 
+  renderComponent(): ReactElement {
+    return <Provider store={this.store}>{this.component}</Provider>
+  }
+
   rendered = (): TestRenderResult => {
     if (this._rendered === undefined) {
       // Attempt to fully isolate the rendered component
@@ -26,10 +30,7 @@ export abstract class TestPage {
       // accessed asynchronously
       const baseElement: HTMLElement = document.createElement('div')
       document.getElementsByTagName('body')[0].appendChild(baseElement)
-      const rendered = render(
-        <Provider store={this.store}>{this.component}</Provider>,
-        { baseElement }
-      )
+      const rendered = render(this.renderComponent(), { baseElement })
       this._baseElement = baseElement
       this._rendered = rendered
     }

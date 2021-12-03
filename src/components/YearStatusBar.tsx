@@ -11,6 +11,7 @@ const YearStatusBar = (): ReactElement => {
   const openButton = (
     <Link
       href=""
+      data-testid="year-dropdown-button"
       onClick={(e) => {
         e.preventDefault()
         setOpen(true)
