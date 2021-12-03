@@ -16,21 +16,24 @@ import { isRight } from 'ustaxes/forms/Y2020/util'
 import { PDFDownloader } from 'ustaxes/forms/Y2020/pdfFiller/pdfHandler'
 import { Box, Button } from '@material-ui/core'
 import Summary from './Summary'
-import { create1040PDF } from 'ustaxes/forms/Y2020/irsForms'
+import { create1040PDF as create1040PDF2020 } from 'ustaxes/forms/Y2020/irsForms'
+import { create1040PDF as create1040PDF2021 } from 'ustaxes/forms/Y2021/irsForms'
+
 import { store } from 'ustaxes/redux/store'
 import { savePDF } from 'ustaxes/pdfHandler'
 import TaxesStateMethods from 'ustaxes/redux/TaxesState'
 
 interface CreatePDFProps {
-  downloader: PDFDownloader
+  downloader2020: PDFDownloader
+  downloader2021: PDFDownloader
 }
 
 export const canCreateFederalReturn = (year: TaxYear): boolean =>
-  year === 'Y2020'
+  ['Y2020', 'Y2021'].some((x) => x === year)
 
 // opens new with filled information in the window of the component it is called from
 export const createPDFPopup =
-  (defaultFilename: string) =>
+  (year: TaxYear, defaultFilename: string) =>
   async (downloader: PDFDownloader): Promise<void> => {
     const information = new TaxesStateMethods(store.getState()).info()
     if (information === undefined) {
@@ -38,12 +41,25 @@ export const createPDFPopup =
         `Information was undefined for tax year: ${store.getState().activeYear}`
       )
     }
-    const pdfBytes = await create1040PDF(information)(downloader)
-    return await savePDF(pdfBytes, defaultFilename)
+
+    if (year === 'Y2020') {
+      const pdfBytes = await create1040PDF2020(information)(downloader)
+      return await savePDF(pdfBytes, defaultFilename)
+    } else if (year === 'Y2021') {
+      const pdfBytes = await create1040PDF2021(information)(downloader)
+      if (isRight(pdfBytes)) {
+        return await savePDF(pdfBytes.right, defaultFilename)
+      } else {
+        throw new Error(pdfBytes.left.join('\n'))
+      }
+    } else {
+      throw new Error(`Unknown tax year: ${year}`)
+    }
   }
 
 export default function CreatePDF({
-  downloader
+  downloader2020,
+  downloader2021
 }: CreatePDFProps): ReactElement {
   const [errors, updateErrors] = useState<string[]>([])
 
@@ -61,22 +77,40 @@ export default function CreatePDF({
 
   const { navButtons } = usePager()
 
+  const downloader = (() => {
+    if (year === 'Y2020') {
+      return downloader2020
+    } else if (year === 'Y2021') {
+      return downloader2021
+    }
+  })()
+
   const federalReturn = async (e: FormEvent<Element>): Promise<void> => {
     e.preventDefault()
-    return await createPDFPopup(federalFileName)(downloader).catch(
-      (errors: string[]) => {
-        if (errors.length !== undefined && errors.length > 0) {
-          updateErrors(errors)
-        } else {
-          log.error('unhandled exception')
-          log.error(errors)
-          return Promise.reject(errors)
-        }
+
+    if (downloader === undefined) {
+      throw new Error(`downloader was undefined for tax year: ${year}`)
+    }
+
+    return await createPDFPopup(
+      year,
+      federalFileName
+    )(downloader).catch((errors: string[]) => {
+      if (errors.length !== undefined && errors.length > 0) {
+        updateErrors(errors)
+      } else {
+        log.error('unhandled exception')
+        log.error(errors)
+        return Promise.reject(errors)
       }
-    )
+    })
   }
 
   const stateReturn = async (): Promise<void> => {
+    if (downloader === undefined) {
+      throw new Error(`downloader was undefined for tax year: ${year}`)
+    }
+
     if (info !== undefined) {
       const f1040Result = create1040(info)
       if (isRight(f1040Result)) {

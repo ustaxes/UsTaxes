@@ -1,13 +1,5 @@
-import { PDFDocument } from 'pdf-lib'
-import { combinePdfs } from 'ustaxes/forms/Y2020/pdfFiller/pdfHandler'
-import { getPdfs } from 'ustaxes/forms/Y2020/pdfFiller/pdfHandler'
-import Fill from 'ustaxes/forms/Y2020/pdfFiller/Fill'
 import { save } from '@tauri-apps/api/dialog'
 import { writeBinaryFile } from '@tauri-apps/api/fs'
-
-export const buildPdf = async (
-  formData: Array<[Fill, PDFDocument]>
-): Promise<Uint8Array> => (await combinePdfs(await getPdfs(formData))).save()
 
 export async function savePDF(
   contents: Uint8Array,

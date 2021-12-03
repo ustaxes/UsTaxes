@@ -29,7 +29,8 @@ import Questions from './Questions'
 import Urls from 'ustaxes/data/urls'
 
 import { isMobile } from 'react-device-detect'
-import { makeDownloader } from 'ustaxes/forms/Y2020/pdfFiller/pdfHandler'
+import { makeDownloader as makeDownloader2020 } from 'ustaxes/forms/Y2020/pdfFiller/pdfHandler'
+import { makeDownloader as makeDownloader2021 } from 'ustaxes/forms/Y2021/pdfFiller/pdfHandler'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -62,7 +63,8 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 )
 
-const downloader = makeDownloader('forms/Y2020')
+const downloader2020 = makeDownloader2020('forms/Y2020')
+const downloader2021 = makeDownloader2021('forms/Y2021')
 
 const getTitleAndPage = (sections: Section[], currentUrl: string): string => {
   const page = sections
@@ -118,7 +120,10 @@ export const drawerSections: Section[] = [
       item(
         'Review and Print',
         Urls.createPdf,
-        <CreatePDF downloader={downloader} />
+        <CreatePDF
+          downloader2020={downloader2020}
+          downloader2021={downloader2021}
+        />
       )
     ]
   }
