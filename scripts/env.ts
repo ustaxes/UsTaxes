@@ -30,3 +30,7 @@ export const checkVersion = (): void => {
     process.exit(1)
   }
 }
+
+if (require.main === module) {
+  checkVersion()
+}

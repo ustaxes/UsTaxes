@@ -4,11 +4,11 @@ set -e
 
 export CI=false 
 
-cd ./ustaxes-forms/Y2020
-
-echo "Running npm ci in 2020 forms directory"
 npm ci
-cd ../.. 
+
+npx ts-node ./scripts/env.ts
+
+npx ts-node ./scripts/setup.ts
 
 npm run lint
 
