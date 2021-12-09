@@ -40,3 +40,4 @@ yarn-error.log*
 src/forms/
 ustaxes-forms/
 tsconfig.json
+ustaxes-core/
