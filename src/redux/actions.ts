@@ -12,8 +12,9 @@ import {
   Property,
   StateResidency,
   Information,
-  EstimatedTaxPayments
-} from 'ustaxes/forms/Y2020/data'
+  EstimatedTaxPayments,
+  Responses
+} from 'ustaxes-core/data'
 
 import {
   EditDependentAction,
@@ -23,11 +24,10 @@ import {
   EditEstimatedTaxesAction,
   Edit1098eAction
 } from './data'
-import { TaxYear } from '.'
 import Ajv, { ValidateFunction } from 'ajv'
-import { Responses } from 'ustaxes/forms/Y2020/data'
-import { checkType, validators } from 'ustaxes/forms/Y2020/data/validate'
-import formsSchema from 'ustaxes/forms/Y2020/data/validation.json'
+import { checkType, validators } from 'ustaxes-core/data/validate'
+import formsSchema from 'ustaxes-core/data/validation.json'
+import { TaxYear } from 'ustaxes/data'
 
 const ajv = new Ajv({ schemas: [formsSchema] })
 

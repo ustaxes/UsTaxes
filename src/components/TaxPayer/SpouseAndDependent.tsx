@@ -17,7 +17,7 @@ import {
   FilingStatus,
   FilingStatusTexts,
   filingStatuses
-} from 'ustaxes/forms/Y2020/data'
+} from 'ustaxes-core/data'
 import {
   addDependent,
   addSpouse,

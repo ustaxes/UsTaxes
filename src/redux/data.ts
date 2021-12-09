@@ -1,3 +1,4 @@
+import { TaxYear } from 'ustaxes/data'
 import {
   Dependent,
   IncomeW2,
@@ -6,20 +7,12 @@ import {
   Property,
   F1098e,
   Information
-} from 'ustaxes/forms/Y2020/data'
+} from 'ustaxes-core/data'
 
 export interface ArrayItemEditAction<A> {
   index: number
   value: A
 }
-
-export enum TaxYears {
-  Y2019 = 2019,
-  Y2020 = 2020,
-  Y2021 = 2021
-}
-
-export type TaxYear = keyof typeof TaxYears
 
 /**
  * This is a simplified form of our global TaxesState

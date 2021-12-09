@@ -1,4 +1,4 @@
-import { Information } from 'ustaxes/forms/Y2020/data'
+import { Information } from 'ustaxes-core/data'
 import { YearsTaxesState } from './data'
 
 export default class TaxesStateMethods {

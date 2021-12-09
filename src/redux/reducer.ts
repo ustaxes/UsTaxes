@@ -1,7 +1,8 @@
 /* eslint-disable indent */
 import { CombinedState, combineReducers, Reducer } from 'redux'
-import { FilingStatus, Information } from 'ustaxes/forms/Y2020/data'
-import { YearsTaxesState, TaxYear } from '.'
+import { FilingStatus, Information } from 'ustaxes-core/data'
+import { TaxYear } from 'ustaxes/data'
+import { YearsTaxesState } from '.'
 import { ActionName, Actions } from './actions'
 
 const DEFAULT_TAX_YEAR: TaxYear = 'Y2020'

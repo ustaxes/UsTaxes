@@ -1,7 +1,8 @@
 import { Dispatch } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Actions, SignalAction } from './actions'
-import { YearsTaxesState, TaxYear } from '.'
+import { YearsTaxesState } from '.'
+import { TaxYear } from 'ustaxes/data'
 import { blankState } from './reducer'
 import { TaxesState } from '.'
 

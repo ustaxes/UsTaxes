@@ -1,4 +1,4 @@
-import { Person, TaxPayer as TP } from 'ustaxes/forms/Y2020/data'
+import { Person, TaxPayer as TP } from 'ustaxes-core/data'
 
 /**
  * Used to augment the TaxPayer data interface with some convenience

@@ -8,7 +8,7 @@ import {
   PersonRole,
   IncomeW2,
   Information
-} from 'ustaxes/forms/Y2020/data'
+} from 'ustaxes-core/data'
 import { blankState } from 'ustaxes/redux/reducer'
 import W2JobInfo from 'ustaxes/components/income/W2JobInfo'
 import userEvent from '@testing-library/user-event'

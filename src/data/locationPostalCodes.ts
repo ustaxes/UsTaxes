@@ -1,4 +1,4 @@
-import { State } from 'ustaxes/forms/Y2020/data'
+import { State } from 'ustaxes-core/data'
 
 const locationPostalCodes: Array<[string, State]> = [
   ['Alabama', 'AL'],

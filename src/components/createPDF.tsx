@@ -3,33 +3,33 @@ import { usePager } from './pager'
 import Alert from '@material-ui/lab/Alert'
 import log from 'ustaxes/log'
 import { useSelector } from 'react-redux'
-import { Information, State } from 'ustaxes/forms/Y2020/data'
-import { YearsTaxesState, TaxYear, TaxYears } from 'ustaxes/redux'
+import { Information, State } from 'ustaxes-core/data'
+import { YearsTaxesState } from 'ustaxes/redux'
+import { TaxYear, TaxYears } from 'ustaxes/data'
 
 import {
-  createStatePDF,
-  createStateReturn,
-  stateForm
-} from 'ustaxes/forms/Y2020/stateForms'
-import { create1040 } from 'ustaxes/forms/Y2020/irsForms/Main'
-import { isRight } from 'ustaxes/forms/Y2020/util'
-import { PDFDownloader } from 'ustaxes/forms/Y2020/pdfFiller/pdfHandler'
+  canCreateFederalReturn,
+  canCreateStateReturn,
+  create1040,
+  makeStateReturn,
+  yearFormInfer
+} from 'ustaxes/forms/YearForms'
+import { isRight } from 'ustaxes-core/util'
+import { PDFDownloader } from 'ustaxes-core/pdfFiller/pdfHandler'
 import { Box, Button } from '@material-ui/core'
 import Summary from './Summary'
-import { create1040PDF as create1040PDF2020 } from 'ustaxes/forms/Y2020/irsForms'
-import { create1040PDF as create1040PDF2021 } from 'ustaxes/forms/Y2021/irsForms'
+import { create1040PDF as create1040PDF2020 } from 'ustaxes-forms-2020/irsForms'
+import { create1040PDF as create1040PDF2021 } from 'ustaxes-forms-2021/irsForms'
 
 import { store } from 'ustaxes/redux/store'
 import { savePDF } from 'ustaxes/pdfHandler'
 import TaxesStateMethods from 'ustaxes/redux/TaxesState'
+import { createStatePDF } from 'ustaxes-core/stateForms'
+import StateForm from 'ustaxes-core/stateForms/Form'
 
 interface CreatePDFProps {
-  downloader2020: PDFDownloader
-  downloader2021: PDFDownloader
+  downloader: Partial<{ [y in TaxYear]: PDFDownloader }>
 }
-
-export const canCreateFederalReturn = (year: TaxYear): boolean =>
-  ['Y2020', 'Y2021'].some((x) => x === year)
 
 // opens new with filled information in the window of the component it is called from
 export const createPDFPopup =
@@ -60,8 +60,7 @@ export const createPDFPopup =
   }
 
 export default function CreatePDF({
-  downloader2020,
-  downloader2021
+  downloader
 }: CreatePDFProps): ReactElement {
   const [errors, updateErrors] = useState<string[]>([])
 
@@ -79,25 +78,19 @@ export default function CreatePDF({
 
   const { navButtons } = usePager()
 
-  const downloader = (() => {
-    if (year === 'Y2020') {
-      return downloader2020
-    } else if (year === 'Y2021') {
-      return downloader2021
-    }
-  })()
+  const yearDownloader = downloader[year]
 
   const federalReturn = async (e: FormEvent<Element>): Promise<void> => {
     e.preventDefault()
 
-    if (downloader === undefined) {
+    if (yearDownloader === undefined) {
       throw new Error(`downloader was undefined for tax year: ${year}`)
     }
 
     return await createPDFPopup(
       year,
       federalFileName
-    )(downloader).catch((errors: string[]) => {
+    )(yearDownloader).catch((errors: string[]) => {
       if (errors.length !== undefined && errors.length > 0) {
         updateErrors(errors)
       } else {
@@ -109,19 +102,25 @@ export default function CreatePDF({
   }
 
   const stateReturn = async (): Promise<void> => {
-    if (downloader === undefined) {
+    if (yearDownloader === undefined) {
       throw new Error(`downloader was undefined for tax year: ${year}`)
     }
 
     if (info !== undefined) {
-      const f1040Result = create1040(info)
-      if (isRight(f1040Result)) {
-        const stateReturn = await createStateReturn(info, f1040Result.right[0])
-        if (stateReturn !== undefined) {
-          const pdfBytes = (
-            await createStatePDF(stateReturn)(downloader)
-          ).save()
-          savePDF(await pdfBytes, stateFileName)
+      const f1040Result = create1040(year)?.(info)
+      if (f1040Result !== undefined && isRight(f1040Result)) {
+        const pdf = await (async () => {
+          const forms: StateForm[] | undefined = makeStateReturn(
+            info,
+            yearFormInfer(year, f1040Result.right[0])
+          )
+          if (forms === undefined) {
+            return
+          }
+          return createStatePDF(forms)(yearDownloader)
+        })()
+        if (pdf !== undefined) {
+          savePDF(await pdf.save(), stateFileName)
         }
       }
     }
@@ -131,7 +130,7 @@ export default function CreatePDF({
   const canCreateState =
     canCreateFederal &&
     residency !== undefined &&
-    stateForm[residency] !== undefined
+    canCreateStateReturn(year, residency)
 
   return (
     <div>

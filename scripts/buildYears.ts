@@ -1,71 +1,68 @@
-import fs from 'fs/promises'
 import { checkVersion } from './env'
 import { spawn } from 'child_process'
 import path from 'path'
 import { supportedYears } from './env'
 
-const ci = async (year: string): Promise<void> =>
-  new Promise((resolve, reject) => {
-    spawn('npm', ['ci'], {
-      cwd: path.resolve(__dirname, `../ustaxes-forms/${year}`)
+const projectDir = path.resolve(__dirname, '../')
+
+// Expects passed directory to be at the root of this project
+// (directory containing scripts directory)
+const spawnToClose = (
+  command: string,
+  args: string[],
+  inDir?: string
+): Promise<void> => {
+  const cwd = inDir ? path.resolve(projectDir, inDir) : projectDir
+
+  console.log(`Running ${command} ${args.join(' ')} in ${cwd}`)
+
+  return new Promise((resolve, reject) =>
+    spawn(command, args, {
+      cwd
     }).on('close', (code: number): void => {
-      if (code === 0) {
-        resolve()
+      if (code !== 0) {
+        reject(
+          new Error(
+            `in ${inDir}, ${command} ${args.join(' ')} failed with code ${code}`
+          )
+        )
       } else {
-        reject(new Error(`Failed to run npm ci for ${year}, exit code ${code}`))
+        resolve()
       }
     })
-  })
+  )
+}
+
+const ciProject = async (dir: string): Promise<void> =>
+  spawnToClose('npm', ['ci'], dir)
+
+const ci = async (year: string): Promise<void> =>
+  ciProject(`ustaxes-forms/${year}`)
+
+export const ciCore = async (): Promise<void> => ciProject('ustaxes-core')
 
 const buildYear = async (year: string): Promise<void> =>
-  new Promise((resolve, reject) => {
-    spawn('pwd')
-    spawn('npx', [
-      'tsc',
-      '-b',
-      path.resolve(__dirname, `../ustaxes-forms/${year}/tsconfig.json`)
-    ]).on('close', (code: number): void => {
-      if (code === 0) {
-        resolve()
-      } else {
-        reject(new Error(`Failed to build ${year}, exit code ${code}`))
-      }
-    })
-  })
+  spawnToClose('npx', ['tsc'], `ustaxes-forms/${year}`)
 
-const linkBuiltDirectories = async (year: string): Promise<void> => {
-  const cwd = path.resolve(__dirname, '../src/forms')
-  fs.access(path.resolve(cwd, year)).catch((): Promise<void> => {
-    const isWindows = process.platform === 'win32'
-    return new Promise((resolve, reject) => {
-      const target = `../../ustaxes-forms/${year}/dist/src`
-      const [linkCommand, ...linkArgs] = isWindows
-        ? ['mklink', '/D', year, target]
-        : ['ln', '-s', '-f', target, year]
-
-      spawn(linkCommand, linkArgs, { cwd }).on(
-        'close',
-        (code: number): void => {
-          if (code === 0) {
-            resolve()
-          } else {
-            reject(
-              new Error(`Failed to link dist for ${year}, exit code ${code}`)
-            )
-          }
-        }
-      )
-    })
-  })
+const buildCore = async (): Promise<void> => {
+  spawnToClose('npx', ['tsc'], 'ustaxes-core')
 }
+
+const runSetupScript = async (dir: string): Promise<void> =>
+  spawnToClose('npx', ['ts-node', './scripts/setup.ts'], dir)
+
+const runSetupScriptYear = async (year: string): Promise<void> =>
+  runSetupScript(`ustaxes-forms/${year}`)
 
 const main = async (): Promise<void> => {
   console.info('Running npm ci for each submodule')
   await Promise.all(supportedYears.map(ci))
+  console.info('Running setup script for core')
+  await runSetupScript('./ustaxes-core')
+  console.info('Running setup script for each supported year')
+  await Promise.all(supportedYears.map(runSetupScriptYear))
   console.info('Building each submodule with tsc')
-  await Promise.all(supportedYears.map(buildYear))
-  console.info('Linking each built submodule')
-  await Promise.all(supportedYears.map(linkBuiltDirectories))
+  await Promise.all([buildCore(), ...supportedYears.map(buildYear)])
   console.info('Done!')
 }
 

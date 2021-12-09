@@ -9,7 +9,7 @@ import {
   Information,
   PersonRole,
   IncomeW2
-} from 'ustaxes/forms/Y2020/data'
+} from 'ustaxes-core/data'
 import { blankState } from 'ustaxes/redux/reducer'
 import userEvent from '@testing-library/user-event'
 import { BrowserRouter as Router } from 'react-router-dom'

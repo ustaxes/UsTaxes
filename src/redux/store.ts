@@ -9,7 +9,7 @@ import rootReducer, { blankState } from './reducer'
 
 import { persistStore, persistReducer, createTransform } from 'redux-persist'
 import storage from 'redux-persist/lib/storage' // defaults to localStorage for web
-import { Information } from 'ustaxes/forms/Y2020/data'
+import { Information } from 'ustaxes-core/data'
 import { YearsTaxesState } from '.'
 import { Actions } from './actions'
 import { PersistPartial } from 'redux-persist/es/persistReducer'

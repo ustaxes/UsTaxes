@@ -24,10 +24,15 @@
     "redux-logger": "^3.0.6",
     "redux-persist": "^6.0.0",
     "ts-json-schema-generator": "^0.97.0",
-    "typescript": "^4.5.2"
+    "typescript": "^4.5.2",
+    "ustaxes-core": "file:ustaxes-core/dist",
+    "ustaxes-forms-2020": "file:ustaxes-forms/Y2020/dist",
+    "ustaxes-forms-2021": "file:ustaxes-forms/Y2021/dist"
   },
   "scripts": {
     "start": "node ./notice.js && ts-node ./scripts/setup.ts && craco start",
+    "start:skip-setup": "craco start",
+    "start:watchers": "ts-node ./scripts/watch.ts",
     "build": "ts-node ./scripts/setup.ts && ts-node ./scripts/bundleForms.ts && craco build",
     "test": "ts-node ./scripts/setup.ts && craco test",
     "eject": "craco eject",

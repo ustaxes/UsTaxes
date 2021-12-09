@@ -12,7 +12,7 @@ import {
   FilingStatus,
   Information,
   State
-} from 'ustaxes/forms/Y2020/data'
+} from 'ustaxes-core/data'
 import {
   boxLabel,
   Currency,

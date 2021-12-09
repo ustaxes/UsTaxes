@@ -2,11 +2,13 @@ import { ReactElement } from 'react'
 import { IconButton, makeStyles } from '@material-ui/core'
 import { Star } from '@material-ui/icons'
 import fc from 'fast-check'
-import { useDispatch } from 'ustaxes/redux'
+import { useDispatch, YearsTaxesState } from 'ustaxes/redux'
 import { setInfo } from 'ustaxes/redux/actions'
-import { Information } from 'ustaxes/forms/Y2020/data'
-import { information } from 'ustaxes/forms/Y2020/tests/arbitraries'
+import { Information } from 'ustaxes-core/data'
+import * as arbitraries from 'ustaxes-core/tests/arbitraries'
 import * as prand from 'pure-rand'
+import { useSelector } from 'react-redux'
+import { TaxYears } from 'ustaxes/data'
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -22,10 +24,13 @@ export const StateLoader = (): ReactElement => {
     return <></>
   }
   const dispatch = useDispatch()
+  const year = useSelector((state: YearsTaxesState) => state.activeYear)
 
   const classes = useStyles()
 
   const gen = new fc.Random(prand.mersenne(new Date().getMilliseconds()))
+
+  const information = arbitraries.forYear(TaxYears[year]).information()
 
   const generator = (): Information =>
     information.noShrink().generate(gen).value

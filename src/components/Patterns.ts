@@ -1,5 +1,5 @@
+import { TaxYear, TaxYears } from 'ustaxes/data'
 import { daysInYear } from 'ustaxes/util'
-import { TaxYear, TaxYears } from 'ustaxes/redux'
 
 export interface BasePattern {
   regexp?: RegExp
