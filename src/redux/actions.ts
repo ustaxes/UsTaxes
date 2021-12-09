@@ -24,14 +24,9 @@ import {
   EditEstimatedTaxesAction,
   Edit1098eAction
 } from './data'
-import Ajv, { ValidateFunction } from 'ajv'
-import { checkType, validators } from 'ustaxes-core/data/validate'
-import formsSchema from 'ustaxes-core/data/validation.json'
+import ajv, * as validators from 'ustaxes-core/data/validate'
 import { TaxYear } from 'ustaxes/data'
-
-const ajv = new Ajv({ schemas: [formsSchema] })
-
-const vs = validators(ajv)
+import { ValidateFunction } from 'ajv'
 
 const indexSchema = {
   type: 'number',
@@ -178,7 +173,9 @@ const makeActionCreator =
     type: t,
     year,
     formData:
-      validate !== undefined ? checkType<A>(formData, validate) : formData
+      validate !== undefined
+        ? validators.checkType<A>(formData, validate)
+        : formData
   })
 
 /**
@@ -197,13 +194,13 @@ const makePreprocessActionCreator =
     year,
     formData:
       validate !== undefined
-        ? checkType({ ...formData, ...clean(formData) }, validate)
+        ? validators.checkType({ ...formData, ...clean(formData) }, validate)
         : { ...formData, ...clean(formData) }
   })
 
 export const saveRefundInfo: ActionCreator<Refund> = makeActionCreator(
   ActionName.SAVE_REFUND_INFO,
-  vs.refund
+  validators.refund
 )
 
 const cleanPerson = <P extends Person>(p: P): P => ({
@@ -214,20 +211,20 @@ const cleanPerson = <P extends Person>(p: P): P => ({
 export const savePrimaryPersonInfo: ActionCreator<PrimaryPerson> =
   makePreprocessActionCreator(
     ActionName.SAVE_PRIMARY_PERSON_INFO,
-    vs.primaryPerson,
+    validators.primaryPerson,
     cleanPerson
   )
 
 export const saveStateResidencyInfo: ActionCreator<StateResidency> =
-  makeActionCreator(ActionName.SAVE_STATE_RESIDENCY, vs.stateResidency)
+  makeActionCreator(ActionName.SAVE_STATE_RESIDENCY, validators.stateResidency)
 
 export const saveFilingStatusInfo: ActionCreator<FilingStatus> =
-  makeActionCreator(ActionName.SAVE_FILING_STATUS_INFO, vs.filingStatus)
+  makeActionCreator(ActionName.SAVE_FILING_STATUS_INFO, validators.filingStatus)
 
 export const saveContactInfo: ActionCreator<ContactInfo> =
   makePreprocessActionCreator(
     ActionName.SAVE_CONTACT_INFO,
-    vs.contactInfo,
+    validators.contactInfo,
     (t) => ({
       ...t,
       contactPhoneNumber: t.contactPhoneNumber?.replace(/-/g, '')
@@ -237,7 +234,7 @@ export const saveContactInfo: ActionCreator<ContactInfo> =
 export const addDependent: ActionCreator<Dependent> =
   makePreprocessActionCreator(
     ActionName.ADD_DEPENDENT,
-    vs.dependent,
+    validators.dependent,
     (t: Dependent) => cleanPerson(t)
   )
 
@@ -258,7 +255,7 @@ export const removeDependent: ActionCreator<number> = makeActionCreator(
 
 export const addSpouse: ActionCreator<Spouse> = makePreprocessActionCreator(
   ActionName.ADD_SPOUSE,
-  vs.spouse,
+  validators.spouse,
   cleanPerson
 )
 
@@ -266,7 +263,7 @@ export const removeSpouse: SignalAction = signalAction(ActionName.REMOVE_SPOUSE)
 
 export const addW2: ActionCreator<IncomeW2> = makeActionCreator(
   ActionName.ADD_W2,
-  vs.incomeW2
+  validators.incomeW2
 )
 
 export const editW2: ActionCreator<EditW2Action> = makeActionCreator(
@@ -279,7 +276,10 @@ export const removeW2: ActionCreator<number> = makeActionCreator(
 )
 
 export const addEstimatedPayment: ActionCreator<EstimatedTaxPayments> =
-  makeActionCreator(ActionName.ADD_ESTIMATED_TAX, vs.estimatedTaxPayments)
+  makeActionCreator(
+    ActionName.ADD_ESTIMATED_TAX,
+    validators.estimatedTaxPayments
+  )
 
 export const editEstimatedPayment: ActionCreator<EditEstimatedTaxesAction> =
   makeActionCreator(ActionName.EDIT_ESTIMATED_TAX)
@@ -291,7 +291,7 @@ export const removeEstimatedPayment: ActionCreator<number> = makeActionCreator(
 
 export const add1099: ActionCreator<Supported1099> = makeActionCreator(
   ActionName.ADD_1099,
-  vs.supported1099
+  validators.supported1099
 )
 
 export const edit1099: ActionCreator<Edit1099Action> = makeActionCreator(
@@ -305,7 +305,7 @@ export const remove1099: ActionCreator<number> = makeActionCreator(
 
 export const addProperty: ActionCreator<Property> = makeActionCreator(
   ActionName.ADD_PROPERTY,
-  vs.property
+  validators.property
 )
 
 export const editProperty: ActionCreator<EditPropertyAction> =
@@ -318,12 +318,12 @@ export const removeProperty: ActionCreator<number> = makeActionCreator(
 
 export const answerQuestion: ActionCreator<Responses> = makeActionCreator(
   ActionName.ANSWER_QUESTION,
-  vs.responses
+  validators.responses
 )
 
 export const add1098e: ActionCreator<F1098e> = makeActionCreator(
   ActionName.ADD_1098e,
-  vs.f1098e
+  validators.f1098e
 )
 
 export const edit1098e: ActionCreator<Edit1098eAction> = makeActionCreator(
@@ -338,7 +338,7 @@ export const remove1098e: ActionCreator<number> = makeActionCreator(
 // debugging purposes only, leaving unchecked.
 export const setInfo: ActionCreator<Information> = makeActionCreator(
   ActionName.SET_INFO,
-  vs.information
+  validators.information
 )
 
 export const setActiveYear: ActionCreator<TaxYear> = makeActionCreator(
