@@ -136,7 +136,7 @@ export const AddDependentForm = (): ReactElement => {
       removeItem={(i) => dispatch(removeDependent(i))}
     >
       <Grid container spacing={2}>
-        <PersonFields autofocus={true} />
+        <PersonFields />
         <LabeledInput
           label="Relationship to Taxpayer"
           name="relationship"
