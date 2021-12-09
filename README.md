@@ -91,7 +91,7 @@ This application can be run as either a web application or a standalone desktop 
 
 ### Web application
 
-To run, `npm run start` or `yarn start`.
+After getting dependencies using `npm ci`, to run, `npm run start` or `yarn start`.
 
 If preferred, a Docker alternative is available:
 

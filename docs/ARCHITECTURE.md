@@ -4,7 +4,7 @@ Thank you for your interest in this project. The below should summarize the gene
 
 ## Stack and developer requirements
 
-This project uses TypeScript and is built with [NPM 6][npm-install].
+This project uses TypeScript and is built with [NPM 8][npm-install].
 
 ## Desktop application requirements
 
@@ -90,7 +90,7 @@ You should be able to work on any year's tax implementation through this project
 - For a new UI form that needs its own page, add to routes in [Main.tsx](../src/components/Main.tsx)
 - A UI form can push new data into the state using Redux actions. Define your new action in [src/redux/actions.ts](../src/redux/actions.ts), and add your state updates to [src/redux/reducer.ts](../src/redux/reducer.ts)
 
-[npm-install]: https://www.npmjs.com/get-npm
+[npm-install]: https://docs.npmjs.com/downloading-and-installing-node-js-and-npm
 [tauri-root]: https://tauri.studio/
 [rust-root]: https://www.rust-lang.org/
 [webview2]: https://developer.microsoft.com/en-us/microsoft-edge/webview2/
