@@ -8,11 +8,6 @@ git submodule sync --recursive
 git submodule update --init --recursive
 
 npm ci
-
-npx ts-node ./scripts/env.ts
-
 npx ts-node ./scripts/setup.ts
-
-npm run lint
 
 npm run build
