@@ -1,4 +1,4 @@
-import { PropsWithChildren, ReactElement, useState, KeyboardEvent } from 'react'
+import { PropsWithChildren, ReactElement, useState } from 'react'
 import {
   createStyles,
   makeStyles,
@@ -17,7 +17,8 @@ import { Delete, Edit } from '@material-ui/icons'
 import { SubmitHandler, useFormContext } from 'react-hook-form'
 import _ from 'lodash'
 import { ReactNode } from 'react'
-import { Prompt } from 'react-router'
+import { FormContainerProvider } from './FormContainer/Context'
+import { Prompt } from 'ustaxes/components/Prompt'
 
 interface FormContainerProps {
   onDone: () => void
@@ -31,17 +32,11 @@ const FormContainer = ({
 }: PropsWithChildren<FormContainerProps>): ReactElement => {
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)')
 
-  const handleEnterKey = (event: KeyboardEvent<HTMLDivElement>): void => {
-    const target = event.target as HTMLInputElement
-    if (target != null && event.key === 'Enter') {
-      event.preventDefault()
-      onDone()
-    }
-  }
-
   return (
-    <div onKeyDown={handleEnterKey}>
-      {children}
+    <div>
+      <FormContainerProvider onSubmit={onDone}>
+        {children}
+      </FormContainerProvider>
       <Box
         display="flex"
         justifyContent="flex-start"
@@ -185,7 +180,6 @@ const FormListContainer = <A,>(
     groupHeaders = []
   } = props
   const [formState, setFormState] = useState(FormState.Closed)
-
   const [editing, setEditing] = useState<number | undefined>(undefined)
 
   const close = (): void => {
@@ -212,7 +206,7 @@ const FormListContainer = <A,>(
   const {
     reset,
     handleSubmit,
-    formState: { isDirty }
+    formState: { isDirty, errors }
   } = useFormContext()
 
   const onClose = (): void => {
@@ -277,10 +271,7 @@ const FormListContainer = <A,>(
 
   return (
     <>
-      <Prompt
-        when={isDirty}
-        message="Warning: you have unsaved changes. Are you sure you want to leave?"
-      />
+      <Prompt when={!_.isEmpty(errors) || isDirty} />
       {itemDisplay}
       {(() => {
         if (formState !== FormState.Closed) {

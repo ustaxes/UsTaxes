@@ -1,5 +1,7 @@
 import { ReactElement } from 'react'
+import { Helmet } from 'react-helmet'
 import { FormProvider, useForm } from 'react-hook-form'
+import _ from 'lodash'
 import { useDispatch, useSelector } from 'react-redux'
 import {
   savePrimaryPersonInfo,
@@ -18,10 +20,14 @@ import {
 } from 'ustaxes/redux/data'
 import { PersonFields } from './PersonFields'
 import { usePager } from 'ustaxes/components/pager'
-import { LabeledCheckbox, USStateDropDown } from 'ustaxes/components/input'
+import {
+  LabeledCheckbox,
+  USStateDropDown,
+  LabeledInput
+} from 'ustaxes/components/input'
+import { Prompt } from 'ustaxes/components/Prompt'
 import AddressFields from './Address'
 import { Grid } from '@material-ui/core'
-import { LabeledInput } from 'ustaxes/components/input'
 import { Patterns } from 'ustaxes/components/Patterns'
 
 interface TaxPayerUserForm {
@@ -101,7 +107,10 @@ export default function PrimaryTaxpayer(): ReactElement {
     }
   })
 
-  const { handleSubmit } = methods
+  const {
+    handleSubmit,
+    formState: { errors }
+  } = methods
 
   const onSubmit = (form: TaxPayerUserForm): void => {
     dispatch(savePrimaryPersonInfo(asPrimaryPerson(form)))
@@ -112,6 +121,10 @@ export default function PrimaryTaxpayer(): ReactElement {
 
   const page = (
     <form tabIndex={-1} onSubmit={handleSubmit(onSubmit)}>
+      <Prompt when={!_.isEmpty(errors)} />
+      <Helmet>
+        <title>Primary Taxpayer Information | Personal | UsTaxes.org</title>
+      </Helmet>
       <h2>Primary Taxpayer Information</h2>
       <Grid container spacing={2}>
         <PersonFields />
@@ -135,6 +148,5 @@ export default function PrimaryTaxpayer(): ReactElement {
       {navButtons}
     </form>
   )
-
   return <FormProvider {...methods}>{page}</FormProvider>
 }

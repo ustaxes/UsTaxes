@@ -1,4 +1,5 @@
 import { ReactElement } from 'react'
+import { Helmet } from 'react-helmet'
 import { useForm, FormProvider } from 'react-hook-form'
 import { Icon, Grid } from '@material-ui/core'
 import { useDispatch, useSelector } from 'react-redux'
@@ -220,7 +221,7 @@ export default function F1099Info(): ReactElement {
   const f1099s = useSelector((state: TaxesState) => state.information.f1099s)
 
   const methods = useForm<F1099UserInput>()
-  const { watch } = methods
+  const { handleSubmit, watch } = methods
   const selectedType: Income1099Type | undefined = watch('formType')
 
   const dispatch = useDispatch()
@@ -429,6 +430,7 @@ export default function F1099Info(): ReactElement {
       <p>Input data from 1099</p>
       <Grid container spacing={2}>
         <GenericLabeledDropdown
+          autofocus={true}
           dropDownData={Object.values(Income1099Type)}
           label="Form Type"
           valueMapping={(v: Income1099Type) => v}
@@ -462,10 +464,15 @@ export default function F1099Info(): ReactElement {
   )
 
   return (
-    <form tabIndex={-1} onSubmit={onAdvance}>
-      <h2>1099 Information</h2>
-      <FormProvider {...methods}>{form}</FormProvider>
-      {navButtons}
-    </form>
+    <FormProvider {...methods}>
+      <form tabIndex={-1} onSubmit={handleSubmit(onAdvance)}>
+        <Helmet>
+          <title>1099 Information | Income | UsTaxes.org</title>
+        </Helmet>
+        <h2>1099 Information</h2>
+        {form}
+        {navButtons}
+      </form>
+    </FormProvider>
   )
 }

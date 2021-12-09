@@ -1,6 +1,7 @@
 import { ReactElement } from 'react'
-import { Message, useForm, useWatch, FormProvider } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
+import { Helmet } from 'react-helmet'
+import { Message, useForm, useWatch, FormProvider } from 'react-hook-form'
 import {
   addProperty,
   editProperty,
@@ -136,7 +137,7 @@ const toUserInput = (property: Property): PropertyAddForm => {
 
 export default function RealEstate(): ReactElement {
   const methods = useForm<PropertyAddForm>()
-  const { control, getValues } = methods
+  const { handleSubmit, control, getValues } = methods
   const dispatch = useDispatch()
 
   const { onAdvance, navButtons } = usePager()
@@ -217,6 +218,7 @@ export default function RealEstate(): ReactElement {
       <h3>Property Location</h3>
       <Grid container spacing={2}>
         <AddressFields
+          autofocus={true}
           checkboxText="Does the property have a foreign address"
           allowForeignCountry={false}
         />
@@ -285,10 +287,15 @@ export default function RealEstate(): ReactElement {
   )
 
   return (
-    <form tabIndex={-1} onSubmit={onAdvance}>
-      <h2>Properties</h2>
-      <FormProvider {...methods}>{form}</FormProvider>
-      {navButtons}
-    </form>
+    <FormProvider {...methods}>
+      <form tabIndex={-1} onSubmit={handleSubmit(onAdvance)}>
+        <Helmet>
+          <title>Real Estate | Income | UsTaxes.org</title>
+        </Helmet>
+        <h2>Properties</h2>
+        {form}
+        {navButtons}
+      </form>
+    </FormProvider>
   )
 }
