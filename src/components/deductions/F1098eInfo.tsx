@@ -1,4 +1,5 @@
 import { ReactElement } from 'react'
+import { Helmet } from 'react-helmet'
 import { FormProvider, useForm } from 'react-hook-form'
 import SchoolIcon from '@material-ui/icons/School'
 import { useDispatch, useSelector } from 'react-redux'
@@ -45,6 +46,7 @@ export default function F1098eInfo(): ReactElement {
   const { onAdvance, navButtons } = usePager()
 
   const methods = useForm<F1098EUserInput>({ defaultValues })
+  const { handleSubmit } = methods
 
   const dispatch = useDispatch()
 
@@ -68,11 +70,10 @@ export default function F1098eInfo(): ReactElement {
       secondary={(f) => showInterest(toF1098e(f))}
       icon={() => <SchoolIcon />}
     >
-      <p>
-        <strong>Input data from 1098-E</strong>
-      </p>
+      <p>Input data from 1098-E</p>
       <Grid container spacing={2}>
         <LabeledInput
+          autofocus={true}
           label="Enter name of Lender"
           patternConfig={Patterns.name}
           name="lender"
@@ -87,12 +88,15 @@ export default function F1098eInfo(): ReactElement {
   )
 
   return (
-    <form tabIndex={-1} onSubmit={onAdvance}>
-      <FormProvider {...methods}>
+    <FormProvider {...methods}>
+      <form tabIndex={-1} onSubmit={handleSubmit(onAdvance)}>
+        <Helmet>
+          <title>1098-E Information | Deductions | UsTaxes.org</title>
+        </Helmet>
         <h2>1098-E Information</h2>
         {form}
         {navButtons}
-      </FormProvider>
-    </form>
+      </form>
+    </FormProvider>
   )
 }

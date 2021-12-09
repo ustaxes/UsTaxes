@@ -1,4 +1,5 @@
 import { ReactElement } from 'react'
+import { Helmet } from 'react-helmet'
 import { Grid, List, ListItem } from '@material-ui/core'
 import { useDispatch, useSelector } from 'react-redux'
 import {
@@ -52,6 +53,9 @@ const Questions = (): ReactElement => {
 
   const page = (
     <form tabIndex={-1} onSubmit={handleSubmit(onSubmit)}>
+      <Helmet>
+        <title>Informational Questions | Results | UsTaxes.org</title>
+      </Helmet>
       <h2>Informational Questions</h2>
       <p>
         Based on your prior responses, responses to these questions are
@@ -74,7 +78,6 @@ const Questions = (): ReactElement => {
       {navButtons}
     </form>
   )
-
   return <FormProvider {...methods}>{page}</FormProvider>
 }
 

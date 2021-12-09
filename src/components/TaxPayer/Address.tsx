@@ -9,12 +9,14 @@ import { CountryDropDown } from 'ustaxes/components/input/LabeledDropdown'
 import { Patterns } from 'ustaxes/components/Patterns'
 
 interface AddressProps {
+  autofocus?: boolean
   checkboxText: string
   allowForeignCountry?: boolean
 }
 
 export default function AddressFields(props: AddressProps): ReactElement {
   const {
+    autofocus,
     checkboxText = 'Check if you have a foreign address',
     allowForeignCountry = true
   } = props
@@ -67,7 +69,12 @@ export default function AddressFields(props: AddressProps): ReactElement {
 
   return (
     <>
-      <LabeledInput label="Address" name="address.address" required={true} />
+      <LabeledInput
+        autofocus={autofocus}
+        label="Address"
+        name="address.address"
+        required={true}
+      />
       <LabeledInput label="Unit No" name="address.aptNo" required={false} />
       <LabeledInput
         label="City"
