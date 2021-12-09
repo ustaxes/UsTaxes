@@ -2,3 +2,4 @@ serviceWorker.js
 src/forms/
 ustaxes-forms/
 ustaxes-core/
+.*
