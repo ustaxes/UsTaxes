@@ -1,6 +1,9 @@
 import { ReactElement, useEffect } from 'react'
+import { Helmet } from 'react-helmet'
 import { FormProvider, useForm } from 'react-hook-form'
+import _ from 'lodash'
 import { useDispatch, useSelector, TaxesState } from 'ustaxes/redux'
+
 import {
   savePrimaryPersonInfo,
   saveStateResidencyInfo,
@@ -17,11 +20,14 @@ import {
 } from 'ustaxes-core/data'
 import { PersonFields } from './PersonFields'
 import { usePager } from 'ustaxes/components/pager'
-import { LabeledCheckbox, USStateDropDown } from 'ustaxes/components/input'
+import {
+  LabeledCheckbox,
+  USStateDropDown,
+  LabeledInput
+} from 'ustaxes/components/input'
+import { Prompt } from 'ustaxes/components/Prompt'
 import AddressFields from './Address'
 import { Grid } from '@material-ui/core'
-import _ from 'lodash'
-import { LabeledInput } from 'ustaxes/components/input'
 import { Patterns } from 'ustaxes/components/Patterns'
 
 interface TaxPayerUserForm {
@@ -110,7 +116,7 @@ export default function PrimaryTaxpayer(): ReactElement {
     handleSubmit,
     getValues,
     reset,
-    formState: { isDirty }
+    formState: { errors, isDirty }
   } = methods
 
   // This form can be rerendered because the global state was modified by
@@ -132,6 +138,10 @@ export default function PrimaryTaxpayer(): ReactElement {
 
   const page = (
     <form tabIndex={-1} onSubmit={handleSubmit(onSubmit)}>
+      <Prompt when={!_.isEmpty(errors)} />
+      <Helmet>
+        <title>Primary Taxpayer Information | Personal | UsTaxes.org</title>
+      </Helmet>
       <h2>Primary Taxpayer Information</h2>
       <Grid container spacing={2}>
         <PersonFields />
@@ -155,6 +165,5 @@ export default function PrimaryTaxpayer(): ReactElement {
       {navButtons}
     </form>
   )
-
   return <FormProvider {...methods}>{page}</FormProvider>
 }

@@ -1,5 +1,5 @@
 import { ReactElement, useEffect, useState } from 'react'
-
+import { Helmet } from 'react-helmet'
 import { useForm, FormProvider } from 'react-hook-form'
 import { useDispatch, useSelector, TaxesState } from 'ustaxes/redux'
 import { Patterns } from 'ustaxes/components/Patterns'
@@ -191,7 +191,7 @@ export const SpouseInfo = (): ReactElement => {
       removeItem={() => dispatch(removeSpouse)}
     >
       <Grid container spacing={2}>
-        <PersonFields>
+        <PersonFields autofocus={true}>
           <LabeledCheckbox
             label="Check if your spouse is a dependent"
             name="isTaxpayerDependent"
@@ -255,6 +255,9 @@ const SpouseAndDependent = (): ReactElement => {
 
   const page = (
     <form tabIndex={-1} onSubmit={handleSubmit(onSubmit)}>
+      <Helmet>
+        <title>Family Information | Personal | UsTaxes.org</title>
+      </Helmet>
       <h2>Family Information</h2>
       <h3>Spouse Information</h3>
       <SpouseInfo />

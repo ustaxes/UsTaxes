@@ -1,4 +1,5 @@
 import { ReactElement, useEffect } from 'react'
+import { Helmet } from 'react-helmet'
 import { useForm, FormProvider } from 'react-hook-form'
 import { useDispatch, useSelector, TaxesState } from 'ustaxes/redux'
 import { LabeledInput, LabeledRadio } from './input'
@@ -61,6 +62,9 @@ export default function RefundBankAccount(): ReactElement {
   return (
     <form tabIndex={-1} onSubmit={handleSubmit(onSubmit)}>
       <FormProvider {...methods}>
+        <Helmet>
+          <title>Refund Information | Results | UsTaxes.org</title>
+        </Helmet>
         <h2>Refund Information</h2>
         <Grid container spacing={2}>
           <LabeledInput

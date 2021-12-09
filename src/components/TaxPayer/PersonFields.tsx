@@ -23,15 +23,27 @@ export const labels = {
 }
 
 export const PersonFields = ({
-  children
-}: PropsWithChildren<Record<never, never>>): ReactElement => (
-  <>
-    <LabeledInput label={labels.fname} name="firstName" required={true} />
-    <LabeledInput label={labels.lname} name="lastName" required={true} />
-    <LabeledInput label={labels.ssn} name="ssid" patternConfig={Patterns.ssn} />
-    {children}
-  </>
-)
+  children,
+  autofocus
+}: PropsWithChildren<{ autofocus?: boolean }>): ReactElement => {
+  return (
+    <>
+      <LabeledInput
+        autofocus={autofocus}
+        label={labels.fname}
+        name="firstName"
+        required={true}
+      />
+      <LabeledInput label={labels.lname} name="lastName" required={true} />
+      <LabeledInput
+        label={labels.ssn}
+        name="ssid"
+        patternConfig={Patterns.ssn}
+      />
+      {children}
+    </>
+  )
+}
 
 interface PersonListItemProps {
   person: Person

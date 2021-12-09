@@ -22,7 +22,6 @@ jest.mock('redux-persist', () => {
 export const tests = {
   incompleteData: async (page: TaxPayerTestPage): Promise<void> => {
     page.setFirstName('Bob')
-
     await waitFor(() => expect(page.saveButton()).toBeInTheDocument())
 
     userEvent.click(page.saveButton())

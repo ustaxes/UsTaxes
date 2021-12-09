@@ -1,4 +1,5 @@
-import { ReactElement } from 'react'
+import { useEffect, useRef, KeyboardEvent, ReactElement } from 'react'
+import { useForkRef } from 'rooks'
 import { InputAdornment, Grid, TextField } from '@material-ui/core'
 import { LabeledInputProps } from './types'
 import NumberFormat from 'react-number-format'
@@ -7,20 +8,31 @@ import { isNumeric, Patterns } from 'ustaxes/components/Patterns'
 import ConditionallyWrap from 'ustaxes/components/ConditionallyWrap'
 import useStyles from './styles'
 import _ from 'lodash'
+import { useFormContainer } from 'ustaxes/components/FormContainer/Context'
 
 export function LabeledInput(props: LabeledInputProps): ReactElement {
+  const { onSubmit } = useFormContainer()
   const { label, patternConfig: patternConfigDefined, name, rules = {} } = props
   const { required = patternConfigDefined !== undefined } = props
   const {
+    autofocus,
     patternConfig = Patterns.plain,
     useGrid = true,
     sizes = { xs: 12 }
   } = props
   const classes = useStyles()
+  const inputRef = useRef<HTMLElement | null>(null)
+
+  useEffect(() => {
+    if (autofocus && inputRef.current) {
+      inputRef.current.focus()
+    }
+  }, [inputRef.current])
 
   const {
     control,
     register,
+    handleSubmit,
     formState: { errors }
   } = useFormContext()
   const error = _.get(errors, name)
@@ -48,7 +60,7 @@ export function LabeledInput(props: LabeledInputProps): ReactElement {
           render={({ field: { name, onChange, ref, value } }) => (
             <NumberFormat
               customInput={TextField}
-              inputRef={ref}
+              inputRef={autofocus ? useForkRef(ref, inputRef) : ref}
               id={name}
               name={name}
               className={classes.root}
@@ -73,7 +85,13 @@ export function LabeledInput(props: LabeledInputProps): ReactElement {
                   <InputAdornment position="start">
                     {patternConfig.prefix}
                   </InputAdornment>
-                ) : undefined
+                ) : undefined,
+                onKeyDown: (e: KeyboardEvent) => {
+                  if (e.key === 'Enter') {
+                    onSubmit?.()
+                    handleSubmit(_.noop)()
+                  }
+                }
               }}
             />
           )}
@@ -97,7 +115,7 @@ export function LabeledInput(props: LabeledInputProps): ReactElement {
       <Controller
         control={control}
         name={name}
-        render={({ field: { onChange, value, name } }) => (
+        render={({ field: { name, onChange, ref, value } }) => (
           <TextField
             {...register(name, {
               ...rules,
@@ -109,12 +127,19 @@ export function LabeledInput(props: LabeledInputProps): ReactElement {
                   (required ? 'Input is required' : '')
               }
             })}
+            inputRef={autofocus ? useForkRef(ref, inputRef) : ref}
             id={name}
             name={name}
             className={classes.root}
             label={label}
             value={value ?? ''}
             onChange={onChange}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                handleSubmit(_.noop)()
+                onSubmit?.()
+              }
+            }}
             fullWidth
             helperText={error?.message}
             error={error !== undefined}
