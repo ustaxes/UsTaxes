@@ -3,7 +3,8 @@ import { ReactElement } from 'react'
 import { createWholeStoreUnpersisted, InfoStore } from 'ustaxes/redux/store'
 import { Provider } from 'react-redux'
 import * as Queries from '@testing-library/dom/types/queries'
-import { render, RenderResult } from '@testing-library/react'
+import { RenderResult } from '@testing-library/react'
+import { renderWithProviders } from 'ustaxes/testUtil'
 
 export type TestRenderResult = RenderResult<typeof Queries, HTMLElement>
 
@@ -30,7 +31,9 @@ export abstract class TestPage {
       // accessed asynchronously
       const baseElement: HTMLElement = document.createElement('div')
       document.getElementsByTagName('body')[0].appendChild(baseElement)
-      const rendered = render(this.renderComponent(), { baseElement })
+      const rendered = renderWithProviders(this.renderComponent(), {
+        baseElement
+      })
       this._baseElement = baseElement
       this._rendered = rendered
     }
