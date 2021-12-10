@@ -1,6 +1,6 @@
 import bundleForms from './bundleForms'
 import buildYears from './buildYears'
-import { checkVersion } from './env'
+import checkVersions from './env'
 
 const main = async (): Promise<void> => {
   await bundleForms()
@@ -10,6 +10,6 @@ const main = async (): Promise<void> => {
 export default main
 
 if (require.main === module) {
-  checkVersion()
+  checkVersions()
   main()
 }
