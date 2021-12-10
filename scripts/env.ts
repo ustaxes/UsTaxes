@@ -2,7 +2,7 @@ import { exec } from 'child_process'
 
 // fs.cp since 16.7
 export const requiredNodeVersion = [16, 7]
-export const requiredNpmVersion = [8, 0]
+export const requiredNpmVersion = [7, 0]
 export const supportedYears = ['Y2020', 'Y2021']
 
 const showError = (...errLines: string[]): void => {
