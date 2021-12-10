@@ -72,9 +72,9 @@ To ensure the project is fun for every contributor, please review:
 - [Contributing guide](docs/CONTRIBUTING.md)
 - [Project Architecture](docs/ARCHITECTURE.md)
 
-## Cloning and Running
+## Cloning
 
-This project uses submodules to separate development of state and IRS tax forms from the user interface. So make sure to use the `--recursive` flag when cloning, for example
+This project uses submodules to separate development of state and IRS tax forms for different tax years from development of the user interface. So make sure to use the `--recursive` flag when cloning:
 
 ```
 git clone --recursive git@github.com:ustaxes/ustaxes
@@ -87,11 +87,29 @@ git submodule init
 git submodule update --recursive --remote
 ```
 
+At first, all the submodules will just point to the referenced commit hash. To work on this project in a single directory, just as you would a git project without submodules, it is helpful to checkout branches for all your submodules. Make sure you're in the project directory and do it in one command:
+
+```
+cd ustaxes
+
+git submodule foreach -q --recursive 'git checkout $(git config -f $toplevel/.gitmodules submodule.$name.branch || echo main)'
+```
+
+Ensure you're on npm version 7 or above, and run:
+
+```
+npm ci
+```
+
+To get all project dependencies. You should be set!
+
+## Running
+
 This application can be run as either a web application or a standalone desktop application.
 
 ### Web application
 
-After getting dependencies using `npm ci`, to run, `npm run start` or `yarn start`.
+After getting dependencies using `npm ci`, to run, `npm run start`.
 
 If preferred, a Docker alternative is available:
 

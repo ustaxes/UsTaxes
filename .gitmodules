@@ -2,11 +2,14 @@
 	path = ustaxes-forms/Y2020
 	url = https://github.com/zakpatterson/ustaxes-forms.git
 	branch = refactor-abstract-core
+	update = merge
 [submodule "ustaxes-forms/Y2021"]
 	path = ustaxes-forms/Y2021
 	url = https://github.com/zakpatterson/ustaxes-forms.git
 	branch = refactor-abstract-core-2021
+	update = merge
 [submodule "ustaxes-core"]
 	path = ustaxes-core
 	url = https://github.com/ustaxes/ustaxes-core.git
 	branch = main
+	update = merge
