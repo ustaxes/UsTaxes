@@ -32,8 +32,8 @@
     "ustaxes-forms-2021": "file:ustaxes-forms/Y2021/dist"
   },
   "scripts": {
-    "start": "node ./notice.js && ts-node ./scripts/setup.ts && craco start",
-    "start:skip-setup": "craco start",
+    "start": "node ./notice.js && ts-node ./scripts/setup.ts && concurrently npm:dev",
+    "dev": "craco start",
     "start:watchers": "ts-node ./scripts/watch.ts",
     "build": "ts-node ./scripts/setup.ts && ts-node ./scripts/bundleForms.ts && craco build",
     "test": "ts-node ./scripts/setup.ts && craco test",
@@ -78,6 +78,7 @@
     "@types/redux-logger": "^3.0.9",
     "@typescript-eslint/eslint-plugin": "^4.33.0",
     "@typescript-eslint/parser": "^4.33.0",
+    "concurrently": "^6.4.0",
     "eslint": "^7.32.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-import": "^2.25.3",
