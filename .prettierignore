@@ -34,6 +34,7 @@ yarn-error.log*
 /.husky/
 /src/core/data/validation.json
 tsconfig.json
+.codecov.yml
 
 # don't worry about src-tauri (rust code)
 
