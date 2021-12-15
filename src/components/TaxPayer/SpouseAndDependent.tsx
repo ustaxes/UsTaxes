@@ -1,7 +1,7 @@
 import { ReactElement, useEffect, useState } from 'react'
 import { Helmet } from 'react-helmet'
 import { useForm, FormProvider } from 'react-hook-form'
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch, useSelector, TaxesState } from 'ustaxes/redux'
 import { Patterns } from 'ustaxes/components/Patterns'
 import {
   LabeledInput,
@@ -10,7 +10,6 @@ import {
   GenericLabeledDropdown
 } from 'ustaxes/components/input'
 import {
-  TaxesState,
   TaxPayer,
   Dependent,
   Spouse,
@@ -18,7 +17,7 @@ import {
   FilingStatus,
   FilingStatusTexts,
   filingStatuses
-} from 'ustaxes/redux/data'
+} from 'ustaxes/core/data'
 import {
   addDependent,
   addSpouse,
@@ -62,7 +61,7 @@ const blankUserDependentForm: UserDependentForm = {
 }
 
 const toDependent = (formData: UserDependentForm): Dependent => {
-  const { birthYear, numberOfMonths, isStudent, ...rest } = formData
+  const { birthYear, isStudent, numberOfMonths, ...rest } = formData
 
   return {
     ...rest,

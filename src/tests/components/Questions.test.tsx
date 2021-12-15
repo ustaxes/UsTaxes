@@ -5,10 +5,11 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 import { Provider } from 'react-redux'
 import Questions from 'ustaxes/components/Questions'
 import { InfoStore, createStoreUnpersisted } from 'ustaxes/redux/store'
-import { questions } from 'ustaxes/data/questions'
+import { questions } from 'ustaxes/core/data/questions'
 import { PagerButtons, PagerContext } from 'ustaxes/components/pager'
-import { TaxesState } from 'ustaxes/redux/data'
+import { Information } from 'ustaxes/core/data'
 import { blankState } from 'ustaxes/redux/reducer'
+import TaxesStateMethods from 'ustaxes/redux/TaxesState'
 
 afterEach(async () => {
   await waitFor(() => localStorage.clear())
@@ -27,9 +28,9 @@ describe('Questions', () => {
   const navButtons = <PagerButtons submitText="Save" />
 
   const testComponent = (
-    taxesState: TaxesState = { information: blankState }
+    info: Information = blankState
   ): [InfoStore, ReactElement] => {
-    const store = createStoreUnpersisted(taxesState)
+    const store = createStoreUnpersisted(info)
     const component = (
       <Provider store={store}>
         <PagerContext.Provider value={{ onAdvance: () => {}, navButtons }}>
@@ -63,6 +64,8 @@ describe('Questions', () => {
     fireEvent.click(save)
 
     await waitFor(() => {})
-    expect(store.getState().information.questions.CRYPTO).toBeTruthy()
+    expect(
+      new TaxesStateMethods(store.getState()).info()?.questions.CRYPTO
+    ).toEqual(true)
   })
 })

@@ -32,7 +32,8 @@ yarn-error.log*
 /.vscode
 /.devcontainer/
 /.husky/
-/src/redux/validation.json
+/src/core/data/validation.json
+tsconfig.json
 
 # don't worry about src-tauri (rust code)
 

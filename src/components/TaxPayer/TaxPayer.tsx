@@ -1,8 +1,9 @@
-import { ReactElement } from 'react'
+import { ReactElement, useEffect } from 'react'
 import { Helmet } from 'react-helmet'
 import { FormProvider, useForm } from 'react-hook-form'
 import _ from 'lodash'
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch, useSelector, TaxesState } from 'ustaxes/redux'
+
 import {
   savePrimaryPersonInfo,
   saveStateResidencyInfo,
@@ -15,9 +16,8 @@ import {
   PrimaryPerson,
   State,
   StateResidency,
-  TaxesState,
   TaxPayer
-} from 'ustaxes/redux/data'
+} from 'ustaxes/core/data'
 import { PersonFields } from './PersonFields'
 import { usePager } from 'ustaxes/components/pager'
 import {
@@ -53,7 +53,10 @@ const defaultTaxpayerUserForm: TaxPayerUserForm = {
   isForeignCountry: false,
   address: {
     address: '',
-    city: ''
+    city: '',
+    aptNo: '',
+    state: undefined,
+    zip: undefined
   },
   isTaxpayerDependent: false
 }
@@ -92,25 +95,39 @@ export default function PrimaryTaxpayer(): ReactElement {
     (state: TaxesState) => state.information.stateResidencies
   )
 
+  const newTpForm: TaxPayerUserForm = {
+    ...defaultTaxpayerUserForm,
+    ...(taxPayer.primaryPerson !== undefined
+      ? {
+          ...asTaxPayerUserForm(taxPayer.primaryPerson),
+          contactPhoneNumber: taxPayer.contactPhoneNumber,
+          contactEmail: taxPayer.contactEmail,
+          stateResidency:
+            stateResidency[0]?.state ?? taxPayer.primaryPerson.address.state
+        }
+      : {})
+  }
+
   const methods = useForm<TaxPayerUserForm>({
-    defaultValues: {
-      ...defaultTaxpayerUserForm,
-      ...(taxPayer.primaryPerson !== undefined
-        ? {
-            ...asTaxPayerUserForm(taxPayer.primaryPerson),
-            contactPhoneNumber: taxPayer.contactPhoneNumber,
-            contactEmail: taxPayer.contactEmail,
-            stateResidency:
-              stateResidency[0]?.state ?? taxPayer.primaryPerson.address.state
-          }
-        : {})
-    }
+    defaultValues: newTpForm
   })
 
   const {
     handleSubmit,
-    formState: { errors }
+    getValues,
+    reset,
+    formState: { errors, isDirty }
   } = methods
+
+  // This form can be rerendered because the global state was modified by
+  // another control.
+  const currentValues = { ...defaultTaxpayerUserForm, ...getValues() }
+
+  useEffect(() => {
+    if (!isDirty && !_.isEqual(currentValues, newTpForm)) {
+      return reset(newTpForm)
+    }
+  })
 
   const onSubmit = (form: TaxPayerUserForm): void => {
     dispatch(savePrimaryPersonInfo(asPrimaryPerson(form)))

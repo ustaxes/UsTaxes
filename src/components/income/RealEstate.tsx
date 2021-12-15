@@ -1,7 +1,10 @@
 import { ReactElement } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import { Helmet } from 'react-helmet'
 import { Message, useForm, useWatch, FormProvider } from 'react-hook-form'
+import { useDispatch } from 'ustaxes/redux'
+import { useYearSelector } from 'ustaxes/redux/yearDispatch'
+import { useSelector } from 'react-redux'
+import { Helmet } from 'react-helmet'
+
 import {
   addProperty,
   editProperty,
@@ -13,10 +16,10 @@ import {
   Address,
   PropertyExpenseType,
   PropertyExpenseTypeName,
-  TaxesState,
   PropertyType,
   PropertyTypeName
-} from 'ustaxes/redux/data'
+} from 'ustaxes/core/data'
+import { YearsTaxesState } from 'ustaxes/redux'
 import AddressFields from 'ustaxes/components/TaxPayer/Address'
 import {
   Currency,
@@ -29,8 +32,8 @@ import { daysInYear, enumKeys } from '../../util'
 import { HouseOutlined } from '@material-ui/icons'
 import { FormListContainer } from 'ustaxes/components/FormContainer'
 import { Grid } from '@material-ui/core'
-import { CURRENT_YEAR } from 'ustaxes/data/federal'
 import _ from 'lodash'
+import { TaxYear, TaxYears } from 'ustaxes/data'
 
 interface PropertyAddForm {
   address?: Address
@@ -136,14 +139,19 @@ const toUserInput = (property: Property): PropertyAddForm => {
 }
 
 export default function RealEstate(): ReactElement {
-  const methods = useForm<PropertyAddForm>()
+  const methods = useForm<PropertyAddForm>({ defaultValues: blankAddForm })
   const { handleSubmit, control, getValues } = methods
+
   const dispatch = useDispatch()
 
   const { onAdvance, navButtons } = usePager()
 
-  const properties: Property[] = useSelector(
-    (state: TaxesState) => state.information.realEstate
+  const activeYear: TaxYear = useSelector(
+    (state: YearsTaxesState) => state.activeYear
+  )
+
+  const properties: Property[] = useYearSelector(
+    (state) => state.information.realEstate
   )
 
   const propertyType = useWatch({
@@ -157,7 +165,7 @@ export default function RealEstate(): ReactElement {
   })
 
   const validateDays = (n: number, other: number): Message | true => {
-    const days = daysInYear(CURRENT_YEAR)
+    const days = daysInYear(TaxYears[activeYear])
     return n + other <= days ? true : `Total use days must be less than ${days}`
   }
 
@@ -188,12 +196,13 @@ export default function RealEstate(): ReactElement {
         label={displayExpense(PropertyExpenseType[k])}
         name={`expenses.${k.toString()}`}
         patternConfig={Patterns.currency}
+        required={false}
       />
     )
   )
 
   const otherExpenseDescription = (() => {
-    if (otherExpensesEntered !== 0) {
+    if (otherExpensesEntered ?? 0 !== 0) {
       return (
         <LabeledInput
           key={enumKeys(PropertyExpenseType).length}
@@ -248,13 +257,13 @@ export default function RealEstate(): ReactElement {
           name="rentalDays"
           rules={{ validate: (n: string) => validateRental(Number(n)) }}
           label="Number of days in the year used for rental"
-          patternConfig={Patterns.numDays}
+          patternConfig={Patterns.numDays(activeYear)}
         />
         <LabeledInput
           name="personalUseDays"
           rules={{ validate: (n: string) => validatePersonal(Number(n)) }}
           label="Number of days in the year for personal use"
-          patternConfig={Patterns.numDays}
+          patternConfig={Patterns.numDays(activeYear)}
         />
         <LabeledCheckbox
           name="qualifiedJointVenture"

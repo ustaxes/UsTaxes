@@ -1,5 +1,5 @@
 import F1099Info from 'ustaxes/components/income/F1099Info'
-import { fireEvent, screen, render, waitFor, act } from '@testing-library/react'
+import { fireEvent, screen, waitFor, act } from '@testing-library/react'
 import { Provider } from 'react-redux'
 import { InfoStore, createStoreUnpersisted } from 'ustaxes/redux/store'
 import { PagerButtons, PagerContext } from 'ustaxes/components/pager'
@@ -9,10 +9,10 @@ import {
   Information,
   PersonRole,
   IncomeW2
-} from 'ustaxes/redux/data'
+} from 'ustaxes/core/data'
 import { blankState } from 'ustaxes/redux/reducer'
 import userEvent from '@testing-library/user-event'
-import { BrowserRouter as Router } from 'react-router-dom'
+import { renderWithProviders } from 'ustaxes/testUtil'
 
 const testW2sSpouse: IncomeW2 = {
   employer: { EIN: '111111111', employerName: 'w2s employer name' },
@@ -84,17 +84,15 @@ describe('F1099Info', () => {
     selectOption: (labelText: string | RegExp, input: string) => void
     buttonClick: (buttonText: string) => void
   } => {
-    const store = createStoreUnpersisted({ information: info })
+    const store = createStoreUnpersisted(info)
     const navButtons = <PagerButtons submitText="Save and Continue" />
 
-    render(
-      <Router>
-        <Provider store={store}>
-          <PagerContext.Provider value={{ onAdvance: jest.fn(), navButtons }}>
-            <F1099Info />
-          </PagerContext.Provider>
-        </Provider>
-      </Router>
+    renderWithProviders(
+      <Provider store={store}>
+        <PagerContext.Provider value={{ onAdvance: jest.fn(), navButtons }}>
+          <F1099Info />
+        </PagerContext.Provider>
+      </Provider>
     )
 
     const labelTextChange = (labelText: string | RegExp, input: string) => {

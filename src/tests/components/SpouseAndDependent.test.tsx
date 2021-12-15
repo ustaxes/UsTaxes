@@ -9,10 +9,15 @@ import { TestPage } from '../common/Page'
 import { ReactElement } from 'react'
 import { labels as personLabels } from 'ustaxes/components/TaxPayer/PersonFields'
 import { BrowserRouter as Router } from 'react-router-dom'
+import log from 'ustaxes/core/log'
 
 afterEach(async () => {
   await waitFor(() => localStorage.clear())
   jest.resetAllMocks()
+})
+
+beforeEach(() => {
+  log.setLevel(log.levels.TRACE)
 })
 
 jest.mock('redux-persist', () => {

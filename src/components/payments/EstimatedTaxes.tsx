@@ -1,9 +1,9 @@
 import { ReactElement } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
 import { FormProvider, useForm } from 'react-hook-form'
 import { usePager } from 'ustaxes/components/pager'
-import { TaxesState, EstimatedTaxPayments } from 'ustaxes/redux/data'
-import { CURRENT_YEAR } from 'ustaxes/data/federal'
+import { EstimatedTaxPayments } from 'ustaxes/core/data'
+import { YearsTaxesState } from 'ustaxes/redux'
+import { TaxYear } from 'ustaxes/data'
 import { Currency, LabeledInput } from 'ustaxes/components/input'
 import { Patterns } from 'ustaxes/components/Patterns'
 import { FormListContainer } from 'ustaxes/components/FormContainer'
@@ -14,6 +14,9 @@ import {
   editEstimatedPayment,
   removeEstimatedPayment
 } from 'ustaxes/redux/actions'
+import { useDispatch } from 'ustaxes/redux'
+import { useSelector } from 'react-redux'
+import { useYearSelector } from 'ustaxes/redux/yearDispatch'
 
 interface EstimatedTaxesUserInput {
   label: string
@@ -46,8 +49,12 @@ const toEstimatedTaxesUserInput = (
 })
 
 export default function EstimatedTaxes(): ReactElement {
-  const estimatedTaxes = useSelector(
-    (state: TaxesState) => state.information.estimatedTaxes
+  const activeYear: TaxYear = useSelector(
+    (state: YearsTaxesState) => state.activeYear
+  )
+
+  const estimatedTaxes = useYearSelector(
+    (state) => state.information.estimatedTaxes
   )
 
   const dispatch = useDispatch()
@@ -105,8 +112,8 @@ export default function EstimatedTaxes(): ReactElement {
     <form tabIndex={-1} onSubmit={onAdvance}>
       <h2>Estimated Taxes</h2>
       <p>
-        did you already make payments towards your {CURRENT_YEAR} taxes this
-        year or last year?
+        Did you already make payments towards your {activeYear} taxes this year
+        or last year?
       </p>
       <FormProvider {...methods}>{form}</FormProvider>
       {navButtons}

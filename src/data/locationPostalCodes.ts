@@ -1,4 +1,4 @@
-import { State } from '../redux/data'
+import { State } from 'ustaxes/core/data'
 
 const locationPostalCodes: Array<[string, State]> = [
   ['Alabama', 'AL'],

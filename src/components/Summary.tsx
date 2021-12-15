@@ -1,13 +1,13 @@
 import { ReactElement } from 'react'
 import { Avatar, Grid, List, Typography } from '@material-ui/core'
-import { create1040 } from 'ustaxes/irsForms/Main'
-import { useSelector } from 'react-redux'
-import { Information, TaxesState } from 'ustaxes/redux/data'
+import { create1040 } from 'ustaxes/forms/Y2020/irsForms/Main'
+import { useSelector, TaxesState } from 'ustaxes/redux'
+import { Information } from 'ustaxes/core/data'
 import { Check, Close } from '@material-ui/icons'
-import F1040 from 'ustaxes/irsForms/F1040'
+import F1040 from 'ustaxes/forms/Y2020/irsForms/F1040'
 import { Currency } from './input'
 import Alert from '@material-ui/lab/Alert'
-import { isLeft } from 'ustaxes/util'
+import { isLeft } from 'ustaxes/core/util'
 
 interface BinaryStateListItemProps {
   active: boolean
