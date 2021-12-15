@@ -2,7 +2,7 @@ FROM rust:1.51-slim-buster
 
 RUN apt-get update && apt-get -y upgrade && apt-get install -y curl
 
-# Install nvm, node, npm, and yarn
+# Install nvm, node, npm
 ARG NVM_DIR="/root/.nvm"
 ARG NODE_VERSION=14.6.0
 RUN curl https://raw.githubusercontent.com/creationix/nvm/v0.38.0/install.sh | bash
