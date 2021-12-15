@@ -54,7 +54,7 @@ Before contributing please make sure to take a moment to read through the [Code 
 
 First, [join our Discord server](https://discord.gg/dAaz472mPz) and let us know that you want to contribute. This way we can point you in the right direction and help ensure your contribution will be as helpful as possible.
 
-1. To set up your machine for development, review the [Architecture doc](ARCHITECTURE.md), for required links to set up NPM 6 and Rust.
+1. To set up your machine for development, review the [Architecture doc](ARCHITECTURE.md), for required links to set up NPM 8 and Rust.
 
 1. Next, fork and clone this repo.
 
