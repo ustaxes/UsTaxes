@@ -10,6 +10,19 @@ updates:
     schedule:
       interval: "daily"
     target-branch: "dependabot-updates"
+    ignore:
+      # We're holding react-router-dom, 
+      # 5->6 is a big api change.
+      - dependency-name: "react-router-dom"
+        versions: ["6.x"]
+      # react-scripts (this upgrade causes jest issues)
+      - dependency-name: "react-scripts"
+        versions: ["5.x"]
+      # react (blocked by react-router-last-location)
+      - dependency-name: "react"
+        versions: ["17.x"]
+      # eslint (blocked by react-scripts)
+        versions: ["8.x"]
   - package-ecosystem: "cargo"
     directory: "/src-tauri/" # Location of package manifests
     schedule:
