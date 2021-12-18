@@ -37,3 +37,4 @@ yarn-error.log*
 # don't worry about src-tauri (rust code)
 
 /src-tauri
+craco.config.js
