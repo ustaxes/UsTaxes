@@ -1,4 +1,17 @@
+import { localPDFs } from 'ustaxes/core/tests/LocalForms'
+import { isRight } from 'ustaxes/core/util'
+import { yearFormBuilder } from 'ustaxes/forms/YearForms'
 import { with1040Assert } from './common/F1040'
+
+jest.setTimeout(40000)
+
+beforeAll(() => {
+  jest.spyOn(console, 'warn').mockImplementation((x: string) => {
+    if (!x.includes('Removing XFA form data as pdf-lib')) {
+      console.warn(x)
+    }
+  })
+})
 
 describe('f1040', () => {
   it('should be created in', async () => {
@@ -32,6 +45,19 @@ describe('f1040', () => {
         expect(f1040.l24() ?? 0).toBeLessThan(f1040.l15() ?? 0)
       } else {
         expect(f1040.l24() ?? 0).toEqual(0)
+      }
+    })
+  })
+
+  it('should create a PDF without failing', async () => {
+    await with1040Assert(async ([f1040]) => {
+      const forms = await yearFormBuilder('Y2020', f1040.info)
+        .setDownloader(localPDFs('Y2020'))
+        .build()
+        .f1040Pdfs()
+      expect(isRight(forms)).toEqual(true)
+      if (isRight(forms)) {
+        expect(forms.right).not.toHaveLength(0)
       }
     })
   })
