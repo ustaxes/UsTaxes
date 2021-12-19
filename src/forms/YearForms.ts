@@ -14,7 +14,11 @@ import { createStateReturn as createStateReturn2020 } from 'ustaxes/forms/Y2020/
 import { createStateReturn as createStateReturn2021 } from 'ustaxes/forms/Y2021/stateForms'
 import { PDFDocument } from 'pdf-lib'
 import { fillPDF } from 'ustaxes/core/pdfFiller/fillPdf'
-import { combinePdfs, downloadPDF } from 'ustaxes/core/pdfFiller/pdfHandler'
+import {
+  combinePdfs,
+  downloadPDF,
+  PDFDownloader
+} from 'ustaxes/core/pdfFiller/pdfHandler'
 
 class YearCreateForm {
   readonly year: TaxYear
@@ -106,12 +110,21 @@ class YearCreateForm {
 class CreateForms {
   readonly year: TaxYear
   readonly info: Information
+
+  downloader: PDFDownloader
+
   constructor(year: TaxYear, info: Information) {
     this.year = year
     this.info = info
+    this.downloader = downloadPDF
   }
 
-  builder = (): YearCreateForm => {
+  setDownloader = (downloader: PDFDownloader): CreateForms => {
+    this.downloader = downloader
+    return this
+  }
+
+  build = (): YearCreateForm => {
     const takeSecond =
       <A, E, B, C>(f: (a: A) => Either<E, [B, C]>): ((a: A) => Either<E, C>) =>
       (a: A): Either<E, C> =>
@@ -119,44 +132,44 @@ class CreateForms {
           .map(([, c]) => c)
           .value()
 
-    const yearIrsDownloader =
-      (y: TaxYear) =>
-      (form: Form): Promise<PDFDocument> =>
-        downloadPDF(`/forms/${y}/irs/${form.tag}.pdf`)
+    const getPDF = (form: Form): Promise<PDFDocument> =>
+      this.downloader(`irs/${form.tag}.pdf`)
 
-    const yearStateDownloader =
-      (y: TaxYear) =>
-      (form: StateForm): Promise<PDFDocument> =>
-        downloadPDF(`/forms/${y}/state/${form.state}/${form.formName}.pdf`)
+    const getStatePDF = (form: StateForm): Promise<PDFDocument> =>
+      this.downloader(`/state/${form.state}/${form.formName}.pdf`)
 
-    if (this.year === 'Y2020') {
-      return new YearCreateForm(
-        'Y2020',
-        this.info,
-        takeSecond(create1040For2020),
-        yearIrsDownloader('Y2020'),
-        yearStateDownloader('Y2020'),
-        (f: Form) => createStateReturn2020(this.info, f as F1040For2020)
-      )
-    } else if (this.year === 'Y2021') {
-      return new YearCreateForm(
-        'Y2021',
-        this.info,
-        takeSecond(create1040For2021),
-        yearIrsDownloader('Y2021'),
-        yearStateDownloader('Y2021'),
-        (f: Form) => createStateReturn2021(this.info, f as F1040For2021)
-      )
-    } else {
-      throw new Error('Unsupported year')
+    const params = {
+      Y2020: {
+        createF1040: takeSecond(create1040For2020),
+        createStateReturn: (f: Form) =>
+          createStateReturn2020(this.info, f as F1040For2020)
+      },
+      Y2021: {
+        createF1040: takeSecond(create1040For2021),
+        createStateReturn: (f: Form) =>
+          createStateReturn2021(this.info, f as F1040For2021)
+      }
     }
+
+    if (this.year === 'Y2019') {
+      throw new Error('Year not supported')
+    }
+
+    return new YearCreateForm(
+      this.year,
+      this.info,
+      params[this.year].createF1040,
+      getPDF,
+      getStatePDF,
+      params[this.year].createStateReturn
+    )
   }
 }
 
-export default (year: TaxYear, info: Information): YearCreateForm => {
-  if (info === undefined) {
-    throw new Error('info is undefined')
-  }
-  const createForms = new CreateForms(year, info)
-  return createForms.builder()
-}
+export const yearFormBuilder = (
+  year: TaxYear,
+  info: Information
+): CreateForms => new CreateForms(year, info)
+
+export default (year: TaxYear, info: Information): YearCreateForm =>
+  yearFormBuilder(year, info).build()

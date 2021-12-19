@@ -2,9 +2,11 @@ import { PDFDocument } from 'pdf-lib'
 import Fill from './Fill'
 import { fillPDF } from './fillPdf'
 
-export interface PDFDownloader {
-  (url: string): Promise<PDFDocument>
+export interface FileDownloader<T> {
+  (url: string): Promise<T>
 }
+
+export type PDFDownloader = FileDownloader<PDFDocument>
 
 export const downloadPDF: PDFDownloader = async (url) => {
   const download = await fetch(url)
