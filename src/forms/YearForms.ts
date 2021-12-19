@@ -1,17 +1,21 @@
 import { Information } from 'ustaxes/core/data'
 import { Either, isRight, run, runAsync } from 'ustaxes/core/util'
 import { TaxYear } from 'ustaxes/data'
+import { create1040 as create1040For2019 } from 'ustaxes/forms/Y2019/irsForms/Main'
 import { create1040 as create1040For2020 } from 'ustaxes/forms/Y2020/irsForms/Main'
 import { create1040 as create1040For2021 } from 'ustaxes/forms/Y2021/irsForms/Main'
 
+import F1040For2019 from 'ustaxes/forms/Y2020/irsForms/F1040'
 import F1040For2020 from 'ustaxes/forms/Y2020/irsForms/F1040'
 import F1040For2021 from 'ustaxes/forms/Y2021/irsForms/F1040'
 
 import Form from 'ustaxes/core/irsForms/Form'
 import StateForm from 'ustaxes/core/stateForms/Form'
 
+import { createStateReturn as createStateReturn2019 } from 'ustaxes/forms/Y2020/stateForms'
 import { createStateReturn as createStateReturn2020 } from 'ustaxes/forms/Y2020/stateForms'
 import { createStateReturn as createStateReturn2021 } from 'ustaxes/forms/Y2021/stateForms'
+
 import { PDFDocument } from 'pdf-lib'
 import { fillPDF } from 'ustaxes/core/pdfFiller/fillPdf'
 import { combinePdfs, downloadPDF } from 'ustaxes/core/pdfFiller/pdfHandler'
@@ -129,27 +133,38 @@ class CreateForms {
       (form: StateForm): Promise<PDFDocument> =>
         downloadPDF(`/forms/${y}/state/${form.state}/${form.formName}.pdf`)
 
-    if (this.year === 'Y2020') {
-      return new YearCreateForm(
-        'Y2020',
-        this.info,
-        takeSecond(create1040For2020),
-        yearIrsDownloader('Y2020'),
-        yearStateDownloader('Y2020'),
-        (f: Form) => createStateReturn2020(this.info, f as F1040For2020)
-      )
-    } else if (this.year === 'Y2021') {
-      return new YearCreateForm(
-        'Y2021',
-        this.info,
-        takeSecond(create1040For2021),
-        yearIrsDownloader('Y2021'),
-        yearStateDownloader('Y2021'),
-        (f: Form) => createStateReturn2021(this.info, f as F1040For2021)
-      )
-    } else {
-      throw new Error('Unsupported year')
+    const params = {
+      Y2019: {
+        createF1040: takeSecond(create1040For2019),
+        getPDF: yearIrsDownloader('Y2019'),
+        getStatePDF: yearStateDownloader('Y2019'),
+        createStateReturn: (f: Form) =>
+          createStateReturn2019(this.info, f as F1040For2019)
+      },
+      Y2020: {
+        createF1040: takeSecond(create1040For2020),
+        getPDF: yearIrsDownloader('Y2020'),
+        getStatePDF: yearStateDownloader('Y2020'),
+        createStateReturn: (f: Form) =>
+          createStateReturn2020(this.info, f as F1040For2020)
+      },
+      Y2021: {
+        createF1040: takeSecond(create1040For2021),
+        getPDF: yearIrsDownloader('Y2021'),
+        getStatePDF: yearStateDownloader('Y2021'),
+        createStateReturn: (f: Form) =>
+          createStateReturn2021(this.info, f as F1040For2021)
+      }
     }
+
+    return new YearCreateForm(
+      this.year,
+      this.info,
+      params[this.year].createF1040,
+      params[this.year].getPDF,
+      params[this.year].getStatePDF,
+      params[this.year].createStateReturn
+    )
   }
 }
 
