@@ -1,6 +1,6 @@
 import { Information } from 'ustaxes/core/data'
 import F1040 from './F1040'
-import Form, { FormTag } from './Form'
+import Form, { FormTag } from 'ustaxes/core/irsForms/Form'
 
 export default class F1040V extends Form {
   tag: FormTag = 'f1040v'

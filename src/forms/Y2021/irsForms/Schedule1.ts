@@ -1,6 +1,6 @@
 import { Information } from 'ustaxes/core/data'
 import TaxPayer from 'ustaxes/core/data/TaxPayer'
-import Form, { FormTag } from './Form'
+import Form, { FormTag } from 'ustaxes/core/irsForms/Form'
 import ScheduleE from './ScheduleE'
 import { sumFields } from './util'
 import F1040 from './F1040'

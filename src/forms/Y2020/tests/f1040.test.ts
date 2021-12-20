@@ -1,37 +1,27 @@
-import { with1040Assert } from './common/F1040'
+import { testKit, commonTests } from '.'
+
+jest.setTimeout(40000)
+
+beforeAll(() => {
+  jest.spyOn(console, 'warn').mockImplementation((x: string) => {
+    if (!x.includes('Removing XFA form data as pdf-lib')) {
+      console.warn(x)
+    }
+  })
+})
 
 describe('f1040', () => {
-  it('should be created in', async () => {
-    await with1040Assert(async ([f1040, forms]) => {
-      expect(f1040.errors()).toEqual([])
-      expect(forms).not.toEqual([])
-    })
-  })
-
-  it('should not create duplicate schedules in', async () => {
-    await with1040Assert(async ([, forms]) => {
-      expect(new Set(forms.map((a) => a.tag)).size).toEqual(forms.length)
-      expect(new Set(forms.map((a) => a.sequenceIndex)).size).toEqual(
-        forms.length
-      )
-    })
-  })
-
-  it('should arrange attachments according to sequence order', async () => {
-    await with1040Assert(async ([, forms]) => {
-      expect(forms.sort((a, b) => a.sequenceIndex - b.sequenceIndex)).toEqual(
-        forms
-      )
-    })
-  })
+  commonTests.run()
 
   it('should never produce higher tax than income', async () => {
-    await with1040Assert(async ([f1040]) => {
+    await testKit.with1040Assert(async (forms) => {
+      const f1040 = commonTests.findF1040OrFail(forms)
+      expect(f1040).not.toBeUndefined()
       // tax is less than taxable income
-      if (f1040.l15() ?? 0 > 0) {
-        expect(f1040.l24() ?? 0).toBeLessThan(f1040.l15() ?? 0)
+      if (f1040?.l15() ?? 0 > 0) {
+        expect(f1040?.l24() ?? 0).toBeLessThan(f1040?.l15() ?? 0)
       } else {
-        expect(f1040.l24() ?? 0).toEqual(0)
+        expect(f1040?.l24() ?? 0).toEqual(0)
       }
     })
   })

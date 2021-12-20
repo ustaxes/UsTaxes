@@ -1,5 +1,5 @@
 import { Information, F1099BData, FilingStatus } from 'ustaxes/core/data'
-import Form, { FormTag } from './Form'
+import Form, { FormTag } from 'ustaxes/core/irsForms/Form'
 import TaxPayer from 'ustaxes/core/data/TaxPayer'
 import { sumFields } from './util'
 import SDRateGainWorksheet from './worksheets/SDRateGainWorksheet'

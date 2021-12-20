@@ -1,6 +1,6 @@
 import * as fc from 'fast-check'
 import F1040 from '../../irsForms/F1040'
-import Form from '../../irsForms/Form'
+import Form from 'ustaxes/core/irsForms/Form'
 import { create1040 } from '../../irsForms/Main'
 import { Information, PersonRole } from 'ustaxes/core/data'
 import { createStateReturn } from '../../stateForms'

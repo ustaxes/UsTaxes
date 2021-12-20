@@ -1,7 +1,7 @@
 import { Information } from 'ustaxes/core/data'
 import { sumFields } from './util'
 import TaxPayer from 'ustaxes/core/data/TaxPayer'
-import Form, { FormTag } from './Form'
+import Form, { FormTag } from 'ustaxes/core/irsForms/Form'
 import { netInvestmentIncomeTax } from '../data/federal'
 import F1040 from './F1040'
 

@@ -1,14 +1,11 @@
 import F1040 from '../irsForms/F1040'
 import { State, Information } from 'ustaxes/core/data'
 import Form from 'ustaxes/core/stateForms/Form'
-import il1040 from './IL/IL1040'
 import { Either, left, right } from 'ustaxes/core/util'
 
 export const stateForm: {
   [K in State]?: (info: Information, f1040: F1040) => Form
-} = {
-  IL: il1040
-}
+} = {}
 
 enum StateFormError {
   NoResidency = 'No residency defined',

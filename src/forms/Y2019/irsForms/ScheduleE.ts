@@ -5,7 +5,7 @@ import {
   PropertyType,
   PropertyExpenseTypeName
 } from 'ustaxes/core/data'
-import Form, { FormTag } from './Form'
+import Form, { FormTag } from 'ustaxes/core/irsForms/Form'
 import TaxPayer from 'ustaxes/core/data/TaxPayer'
 import F6168 from './F6168'
 import F8582 from './F8582'

@@ -12,15 +12,19 @@ import F1040For2021 from 'ustaxes/forms/Y2021/irsForms/F1040'
 import Form from 'ustaxes/core/irsForms/Form'
 import StateForm from 'ustaxes/core/stateForms/Form'
 
-import { createStateReturn as createStateReturn2019 } from 'ustaxes/forms/Y2020/stateForms'
+import { createStateReturn as createStateReturn2019 } from 'ustaxes/forms/Y2019/stateForms'
 import { createStateReturn as createStateReturn2020 } from 'ustaxes/forms/Y2020/stateForms'
 import { createStateReturn as createStateReturn2021 } from 'ustaxes/forms/Y2021/stateForms'
 
 import { PDFDocument } from 'pdf-lib'
 import { fillPDF } from 'ustaxes/core/pdfFiller/fillPdf'
-import { combinePdfs, downloadPDF } from 'ustaxes/core/pdfFiller/pdfHandler'
+import {
+  combinePdfs,
+  downloadPDF,
+  PDFDownloader
+} from 'ustaxes/core/pdfFiller/pdfHandler'
 
-class YearCreateForm {
+export class YearCreateForm {
   readonly year: TaxYear
   readonly info: Information
   readonly createF1040: (info: Information) => Either<string[], Form[]>
@@ -107,15 +111,21 @@ class YearCreateForm {
   canCreateState = (): boolean => isRight(this.makeStateReturn())
 }
 
-class CreateForms {
+export class CreateForms {
   readonly year: TaxYear
-  readonly info: Information
-  constructor(year: TaxYear, info: Information) {
+  downloader: PDFDownloader
+
+  constructor(year: TaxYear) {
     this.year = year
-    this.info = info
+    this.downloader = downloadPDF
   }
 
-  builder = (): YearCreateForm => {
+  setDownloader = (downloader: PDFDownloader): CreateForms => {
+    this.downloader = downloader
+    return this
+  }
+
+  build = (info: Information): YearCreateForm => {
     const takeSecond =
       <A, E, B, C>(f: (a: A) => Either<E, [B, C]>): ((a: A) => Either<E, C>) =>
       (a: A): Either<E, C> =>
@@ -123,55 +133,43 @@ class CreateForms {
           .map(([, c]) => c)
           .value()
 
-    const yearIrsDownloader =
-      (y: TaxYear) =>
-      (form: Form): Promise<PDFDocument> =>
-        downloadPDF(`/forms/${y}/irs/${form.tag}.pdf`)
+    const getPDF = (form: Form): Promise<PDFDocument> =>
+      this.downloader(`irs/${form.tag}.pdf`)
 
-    const yearStateDownloader =
-      (y: TaxYear) =>
-      (form: StateForm): Promise<PDFDocument> =>
-        downloadPDF(`/forms/${y}/state/${form.state}/${form.formName}.pdf`)
+    const getStatePDF = (form: StateForm): Promise<PDFDocument> =>
+      this.downloader(`/state/${form.state}/${form.formName}.pdf`)
 
     const params = {
       Y2019: {
         createF1040: takeSecond(create1040For2019),
-        getPDF: yearIrsDownloader('Y2019'),
-        getStatePDF: yearStateDownloader('Y2019'),
         createStateReturn: (f: Form) =>
-          createStateReturn2019(this.info, f as F1040For2019)
+          createStateReturn2019(info, f as F1040For2019)
       },
       Y2020: {
         createF1040: takeSecond(create1040For2020),
-        getPDF: yearIrsDownloader('Y2020'),
-        getStatePDF: yearStateDownloader('Y2020'),
         createStateReturn: (f: Form) =>
-          createStateReturn2020(this.info, f as F1040For2020)
+          createStateReturn2020(info, f as F1040For2020)
       },
       Y2021: {
         createF1040: takeSecond(create1040For2021),
-        getPDF: yearIrsDownloader('Y2021'),
-        getStatePDF: yearStateDownloader('Y2021'),
         createStateReturn: (f: Form) =>
-          createStateReturn2021(this.info, f as F1040For2021)
+          createStateReturn2021(info, f as F1040For2021)
       }
     }
 
     return new YearCreateForm(
       this.year,
-      this.info,
+      info,
       params[this.year].createF1040,
-      params[this.year].getPDF,
-      params[this.year].getStatePDF,
+      getPDF,
+      getStatePDF,
       params[this.year].createStateReturn
     )
   }
 }
 
-export default (year: TaxYear, info: Information): YearCreateForm => {
-  if (info === undefined) {
-    throw new Error('info is undefined')
-  }
-  const createForms = new CreateForms(year, info)
-  return createForms.builder()
-}
+export const yearFormBuilder = (year: TaxYear): CreateForms =>
+  new CreateForms(year)
+
+export default (year: TaxYear, info: Information): YearCreateForm =>
+  yearFormBuilder(year).build(info)

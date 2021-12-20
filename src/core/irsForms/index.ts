@@ -1,8 +1,7 @@
 import { PDFDocument } from 'pdf-lib'
 import _ from 'lodash'
 import { getPdfs, PDFDownloader } from '../pdfFiller/pdfHandler'
-import Form from './Form'
-
+import Form from 'ustaxes/core/irsForms/Form'
 export const insertFormDataToPdfs = async (
   forms: Form[],
   downloader: PDFDownloader
