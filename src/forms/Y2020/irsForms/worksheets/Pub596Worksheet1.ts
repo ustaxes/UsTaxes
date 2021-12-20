@@ -2,7 +2,7 @@ import { EIC } from '../../data/federal'
 import { TaxPayer } from 'ustaxes/core/data'
 import { ifNegative, ifPositive } from 'ustaxes/core/util'
 import F1040 from '../../irsForms/F1040'
-import { sumFields } from '../../irsForms/util'
+import { sumFields } from 'ustaxes/core/irsForms/util'
 import log from 'ustaxes/core/log'
 
 const unimplemented = (message: string): void =>

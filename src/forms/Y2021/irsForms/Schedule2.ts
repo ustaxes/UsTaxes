@@ -1,6 +1,6 @@
 import { TaxPayer as TP } from 'ustaxes/core/data'
 import Form, { FormTag } from 'ustaxes/core/irsForms/Form'
-import { sumFields } from './util'
+import { sumFields } from 'ustaxes/core/irsForms/util'
 import TaxPayer from 'ustaxes/core/data/TaxPayer'
 import F1040 from './F1040'
 

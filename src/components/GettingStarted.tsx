@@ -2,7 +2,7 @@ import { ReactElement } from 'react'
 import { Helmet } from 'react-helmet'
 import { Link, useMediaQuery } from '@material-ui/core'
 import { StartButtons, SingleButtons } from './pager'
-import { isWeb } from 'ustaxes/util'
+import { isWeb } from 'ustaxes/core/util'
 
 const urls = {
   repo: 'https://github.com/ustaxes/UsTaxes',

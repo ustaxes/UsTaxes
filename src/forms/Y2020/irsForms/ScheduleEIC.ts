@@ -1,16 +1,16 @@
+import _ from 'lodash'
 import { Dependent, FilingStatus, TaxPayer as TP } from 'ustaxes/core/data'
 import TaxPayer from 'ustaxes/core/data/TaxPayer'
-import F1040 from './F1040'
-import { sumFields } from './util'
+import Form, { FormTag } from 'ustaxes/core/irsForms/Form'
+import { evaluatePiecewise, Piecewise } from 'ustaxes/core/util'
+import { sumFields } from 'ustaxes/core/irsForms/util'
+import log from 'ustaxes/core/log'
 import * as federal from '../data/federal'
+import F1040 from './F1040'
 import F2555 from './F2555'
 import F4797 from './F4797'
 import F8814 from './F8814'
 import Pub596Worksheet1 from './worksheets/Pub596Worksheet1'
-import Form, { FormTag } from 'ustaxes/core/irsForms/Form'
-import { evaluatePiecewise, Piecewise } from 'ustaxes/core/util'
-import log from 'ustaxes/core/log'
-import _ from 'lodash'
 
 type PrecludesEIC<F> = (f: F) => boolean
 

@@ -1,7 +1,7 @@
 import Form, { FormMethods } from 'ustaxes/core/stateForms/Form'
 import F1040 from '../../irsForms/F1040'
 import { Field } from 'ustaxes/core/pdfFiller'
-import { sumFields } from '../../irsForms/util'
+import { sumFields } from 'ustaxes/core/irsForms/util'
 import {
   AccountType,
   FilingStatus,

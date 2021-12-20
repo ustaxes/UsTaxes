@@ -2,7 +2,7 @@ import { Information } from 'ustaxes/core/data'
 import InformationMethods from 'ustaxes/core/data/methods'
 import TaxPayer from 'ustaxes/core/data/TaxPayer'
 import Form, { FormTag } from 'ustaxes/core/irsForms/Form'
-import { sumFields } from './util'
+import { sumFields } from 'ustaxes/core/irsForms/util'
 
 interface PayerAmount {
   payer?: string

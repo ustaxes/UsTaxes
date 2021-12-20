@@ -1,7 +1,7 @@
 import { Dependent, FilingStatus, TaxPayer as TP } from 'ustaxes/core/data'
 import TaxPayer from 'ustaxes/core/data/TaxPayer'
 import F1040 from './F1040'
-import { sumFields } from './util'
+import { sumFields } from 'ustaxes/core/irsForms/util'
 import * as federal from '../data/federal'
 import F2555 from './F2555'
 import F4797 from './F4797'

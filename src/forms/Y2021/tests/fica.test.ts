@@ -4,7 +4,7 @@ import F8959 from '../irsForms/F8959'
 import Form from 'ustaxes/core/irsForms/Form'
 import Schedule2 from '../irsForms/Schedule2'
 import Schedule3 from '../irsForms/Schedule3'
-import { displayRound } from '../irsForms/util'
+import { displayRound } from 'ustaxes/core/irsForms/util'
 import { testKit, commonTests } from '.'
 
 function hasSSRefund(f1040: F1040): boolean {

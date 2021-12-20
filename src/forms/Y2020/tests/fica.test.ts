@@ -2,9 +2,9 @@ import { fica } from '../data/federal'
 import F1040 from '../irsForms/F1040'
 import F8959 from '../irsForms/F8959'
 import Form from 'ustaxes/core/irsForms/Form'
+import { displayRound } from 'ustaxes/core/irsForms/util'
 import Schedule2 from '../irsForms/Schedule2'
 import Schedule3 from '../irsForms/Schedule3'
-import { displayRound } from '../irsForms/util'
 import { testKit, commonTests } from '.'
 
 beforeAll(() => {

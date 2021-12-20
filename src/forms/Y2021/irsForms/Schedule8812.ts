@@ -1,7 +1,7 @@
 import { FilingStatus } from 'ustaxes/core/data'
 import TaxPayer from 'ustaxes/core/data/TaxPayer'
 import F1040 from './F1040'
-import { sumFields } from './util'
+import { sumFields } from 'ustaxes/core/irsForms/util'
 import Form, { FormTag } from 'ustaxes/core/irsForms/Form'
 import { CURRENT_YEAR } from '../data/federal'
 

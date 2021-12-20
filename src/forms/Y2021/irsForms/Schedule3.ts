@@ -1,5 +1,5 @@
 import { Information, IncomeW2 } from 'ustaxes/core/data'
-import { sumFields } from './util'
+import { sumFields } from 'ustaxes/core/irsForms/util'
 import Form, { FormTag } from 'ustaxes/core/irsForms/Form'
 import TaxPayer from 'ustaxes/core/data/TaxPayer'
 import { fica } from '../data/federal'
