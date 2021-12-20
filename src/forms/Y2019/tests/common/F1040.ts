@@ -9,7 +9,7 @@ import Form from '../../irsForms/Form'
 import { create1040 } from '../../irsForms/Main'
 import { isRight } from 'ustaxes/core/util'
 import * as arbitraries from 'ustaxes/core/tests/arbitraries'
-import { localPDFs } from 'ustaxes/core/tests/LocalForms'
+import { localPDFs } from './LocalForms'
 import fs from 'fs/promises'
 import path from 'path'
 import { PDFDocument } from 'pdf-lib'
@@ -20,9 +20,9 @@ export const log1040Err = async (
   err: any
 ): Promise<void> => {
   try {
-    const pdfs = await insertFormDataToPdfs(forms, localPDFs('Y2019'))
+    const pdfs = await insertFormDataToPdfs(forms, localPDFs)
     const saveDirName = `Errors ${new Date().getUTCHours()}:${new Date().getMinutes()}:${new Date().getSeconds()}`
-    const saveRoot = path.resolve(__dirname, '../../../../../logs/errors')
+    const saveRoot = path.resolve(__dirname, '../../../logs/errors')
     const saveDir = path.resolve(saveRoot, saveDirName)
     await fs.mkdir(saveDir, { recursive: true })
     await Promise.all(
@@ -65,7 +65,7 @@ export const with1040Pdfs = async (
 ): Promise<void> =>
   await with1040Assert(
     async ([, forms], info) => {
-      const pdfs = await insertFormDataToPdfs(forms, localPDFs('Y2019'))
+      const pdfs = await insertFormDataToPdfs(forms, localPDFs)
       f(pdfs, info)
     },
     logErr,
@@ -74,7 +74,7 @@ export const with1040Pdfs = async (
 
 export const with1040Property = (
   f: (f1040: [F1040, Form[]], info: Information) => Promise<void>,
-  year = 2019
+  year = 2020
 ): fc.IAsyncPropertyWithHooks<[Information]> =>
   fc.asyncProperty(
     new arbitraries.Arbitraries(year).information(),
