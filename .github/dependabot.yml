@@ -10,16 +10,18 @@ updates:
     directory: "/" # Location of package manifests
     schedule:
       interval: "daily"
-    target-branch: "dependabot-updates"
+    target-branch: "dependabot-updates-minor"
     ignore:
       - dependency-name: "*"
-        update-types: ["version-update:semver-minor", "version-update:semver-patch"]
+        update-types: ["version-update:semver-major"]
+    labels: 
+      - "minor"
   # major updates:
   - package-ecosystem: "npm"
     directory: "/" # Location of package manifests
     schedule:
       interval: "daily"
-    target-branch: "dependabot-updates-major"
+    target-branch: "dependabot-updates"
     ignore:
       # We're holding react-router-dom, 
       # 5->6 is a big api change.
@@ -33,6 +35,8 @@ updates:
         versions: ["17.x"]
       # eslint (blocked by react-scripts)
         versions: ["8.x"]
+    labels: 
+      - "major"
   - package-ecosystem: "cargo"
     directory: "/src-tauri/" # Location of package manifests
     schedule:
