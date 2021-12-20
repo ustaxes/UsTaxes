@@ -21,7 +21,7 @@ updates:
     directory: "/" # Location of package manifests
     schedule:
       interval: "daily"
-    target-branch: "dependabot-updates"
+    target-branch: "dependabot-updates-major"
     ignore:
       # We're holding react-router-dom, 
       # 5->6 is a big api change.
@@ -35,6 +35,8 @@ updates:
         versions: ["17.x"]
       # eslint (blocked by react-scripts)
         versions: ["8.x"]
+      - dependency-name: "*"
+        update-types: ["version-update:semver-minor", "version-update:semver-patch"]
     labels: 
       - "major"
   - package-ecosystem: "cargo"
