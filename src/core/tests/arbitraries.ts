@@ -138,7 +138,7 @@ export const f1099IntData: Arbitrary<types.F1099IntData> = fc
 export const f1099DivData: Arbitrary<types.F1099DivData> = interest.chain(
   (dividends) =>
     fc
-      .nat({ max: dividends * 100 })
+      .nat({ max: Math.round(dividends * 100) })
       .map((qdiv) => ({ dividends, qualifiedDividends: qdiv / 100 }))
 )
 
