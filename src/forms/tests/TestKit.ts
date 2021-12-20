@@ -14,7 +14,7 @@ import { TaxYear, TaxYears } from 'ustaxes/data'
 import { CreateForms, yearFormBuilder } from '../YearForms'
 import { PDFDownloader } from 'ustaxes/core/pdfFiller/pdfHandler'
 
-const logsDir = path.resolve(__dirname, '../../../../logs/errors')
+const logsDir = path.resolve(__dirname, '../../../logs/errors')
 
 export default class TestKit {
   year: TaxYear
