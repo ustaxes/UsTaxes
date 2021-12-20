@@ -1,6 +1,6 @@
 import { Field } from 'ustaxes/core/pdfFiller'
 import { TaxPayer } from 'ustaxes/core/data'
-import Form, { FormTag } from './Form'
+import Form, { FormTag } from 'ustaxes/core/irsForms/Form'
 
 export default class ScheduleR extends Form {
   tp: TaxPayer

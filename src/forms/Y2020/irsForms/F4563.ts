@@ -1,6 +1,6 @@
 import { TaxPayer } from 'ustaxes/core/data'
 import { Field } from 'ustaxes/core/pdfFiller'
-import Form, { FormTag } from './Form'
+import Form, { FormTag } from 'ustaxes/core/irsForms/Form'
 
 /**
  * Exclusion of income for residents of American Somoa

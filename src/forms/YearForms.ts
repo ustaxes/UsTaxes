@@ -20,7 +20,7 @@ import {
   PDFDownloader
 } from 'ustaxes/core/pdfFiller/pdfHandler'
 
-class YearCreateForm {
+export class YearCreateForm {
   readonly year: TaxYear
   readonly info: Information
   readonly createF1040: (info: Information) => Either<string[], Form[]>
@@ -107,15 +107,12 @@ class YearCreateForm {
   canCreateState = (): boolean => isRight(this.makeStateReturn())
 }
 
-class CreateForms {
+export class CreateForms {
   readonly year: TaxYear
-  readonly info: Information
-
   downloader: PDFDownloader
 
-  constructor(year: TaxYear, info: Information) {
+  constructor(year: TaxYear) {
     this.year = year
-    this.info = info
     this.downloader = downloadPDF
   }
 
@@ -124,7 +121,7 @@ class CreateForms {
     return this
   }
 
-  build = (): YearCreateForm => {
+  build = (info: Information): YearCreateForm => {
     const takeSecond =
       <A, E, B, C>(f: (a: A) => Either<E, [B, C]>): ((a: A) => Either<E, C>) =>
       (a: A): Either<E, C> =>
@@ -142,12 +139,12 @@ class CreateForms {
       Y2020: {
         createF1040: takeSecond(create1040For2020),
         createStateReturn: (f: Form) =>
-          createStateReturn2020(this.info, f as F1040For2020)
+          createStateReturn2020(info, f as F1040For2020)
       },
       Y2021: {
         createF1040: takeSecond(create1040For2021),
         createStateReturn: (f: Form) =>
-          createStateReturn2021(this.info, f as F1040For2021)
+          createStateReturn2021(info, f as F1040For2021)
       }
     }
 
@@ -157,7 +154,7 @@ class CreateForms {
 
     return new YearCreateForm(
       this.year,
-      this.info,
+      info,
       params[this.year].createF1040,
       getPDF,
       getStatePDF,
@@ -166,10 +163,8 @@ class CreateForms {
   }
 }
 
-export const yearFormBuilder = (
-  year: TaxYear,
-  info: Information
-): CreateForms => new CreateForms(year, info)
+export const yearFormBuilder = (year: TaxYear): CreateForms =>
+  new CreateForms(year)
 
 export default (year: TaxYear, info: Information): YearCreateForm =>
-  yearFormBuilder(year, info).build()
+  yearFormBuilder(year).build(info)

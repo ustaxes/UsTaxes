@@ -1,11 +1,11 @@
 import { fica } from '../data/federal'
 import F1040 from '../irsForms/F1040'
 import F8959 from '../irsForms/F8959'
-import Form from '../irsForms/Form'
+import Form from 'ustaxes/core/irsForms/Form'
 import Schedule2 from '../irsForms/Schedule2'
 import Schedule3 from '../irsForms/Schedule3'
 import { displayRound } from '../irsForms/util'
-import { with1040Assert } from './common/F1040'
+import { testKit, commonTests } from '.'
 
 beforeAll(() => {
   jest.spyOn(console, 'warn').mockImplementation(() => {
@@ -39,7 +39,8 @@ function hasAttachment<FormType>(
 
 describe('fica', () => {
   it('should give refund SS tax overpayment only in some conditions', async () => {
-    await with1040Assert(async ([f1040, forms]) => {
+    await testKit.with1040Assert(async (forms) => {
+      const f1040 = commonTests.findF1040OrFail(forms)
       if (f1040.validW2s().length <= 1) {
         // Should never give SS refund with 1 or fewer W2s
         expect(hasSSRefund(f1040)).toEqual(false)
@@ -65,7 +66,8 @@ describe('fica', () => {
   })
 
   it('should give SS refund based on filing status', async () => {
-    await with1040Assert(async ([f1040]) => {
+    await testKit.with1040Assert(async (forms) => {
+      const f1040 = commonTests.findF1040OrFail(forms)
       if (hasSSRefund(f1040)) {
         const s3l10 = f1040.schedule3?.l10()
         expect(displayRound(s3l10)).not.toBeUndefined()
@@ -80,7 +82,8 @@ describe('fica', () => {
   })
 
   it('should add Additional Medicare Tax form 8959', async () => {
-    await with1040Assert(async ([f1040, forms]) => {
+    await testKit.with1040Assert(async (forms) => {
+      const f1040 = commonTests.findF1040OrFail(forms)
       if (f1040.info.taxPayer.filingStatus === undefined) {
         return
       }
@@ -103,7 +106,8 @@ describe('fica', () => {
   })
 
   it('should add Additional Medicare Tax based on filing status', async () => {
-    await with1040Assert(async ([f1040]) => {
+    await testKit.with1040Assert(async (forms) => {
+      const f1040 = commonTests.findF1040OrFail(forms)
       if (f1040.info.taxPayer.filingStatus === undefined) {
         return
       }
