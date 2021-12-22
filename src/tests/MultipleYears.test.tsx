@@ -2,9 +2,7 @@
 import * as fc from 'fast-check'
 import * as utarbitraries from './arbitraries'
 import { cleanup, waitFor } from '@testing-library/react'
-import { TaxYear } from 'ustaxes/data'
 import { YearsTaxesState } from 'ustaxes/redux'
-import userEvent from '@testing-library/user-event'
 import { ReactElement } from 'react'
 import TaxPayer from 'ustaxes/components/TaxPayer'
 import { tests as TaxPayerTests } from './components/Taxpayer.test'
@@ -13,6 +11,7 @@ import { FakePagerProvider } from './common/FakePager'
 import prand from 'pure-rand'
 import YearStatusBar from 'ustaxes/components/YearStatusBar'
 import { TaxPayerTestPage } from './components/TaxPayerTestPage'
+import YearStatusBarMethods from './common/YearsStatusBarMethods'
 
 // RTL's cleanup method only after each
 // jest test is done. (Not each property test)
@@ -35,6 +34,13 @@ const justOneState = (): YearsTaxesState =>
 
 class TestForm extends TaxPayerTestPage {
   doneEv = jest.fn()
+  yearStatus: YearStatusBarMethods
+
+  constructor(state: YearsTaxesState) {
+    super(state)
+    this.yearStatus = new YearStatusBarMethods(this)
+  }
+
   component: ReactElement = (
     <FakePagerProvider>
       <YearStatusBar />
@@ -44,48 +50,6 @@ class TestForm extends TaxPayerTestPage {
 
   saveButton = (): HTMLButtonElement =>
     this.rendered().getByRole('button', { name: /Save/i }) as HTMLButtonElement
-
-  yearDropdownButton = (): HTMLElement | null =>
-    this.rendered().queryByTestId('year-dropdown-button')
-
-  openDropdown = (): void => {
-    userEvent.click(this.yearDropdownButton()!)
-  }
-
-  yearSelect = (): HTMLSelectElement | null => {
-    const boxes = this.rendered().queryAllByRole(
-      'combobox'
-    ) as HTMLInputElement[]
-
-    const box = boxes.find((box) => box.getAttribute('name') === 'year') ?? null
-
-    return box as HTMLSelectElement | null
-  }
-
-  year = (): HTMLInputElement | null =>
-    this.rendered().getByLabelText('Select Tax Year') as HTMLInputElement
-
-  yearValue = (): string | undefined => {
-    const y = this.year()
-    return y?.value
-  }
-
-  yearSelectConfirm = (): HTMLButtonElement | null =>
-    this.rendered().queryByRole('button', {
-      name: /Update/
-    }) as HTMLButtonElement
-
-  getOption = (y: TaxYear): HTMLOptionElement | null =>
-    (this.rendered()
-      .getAllByRole('option')
-      .find((x) => x.getAttribute('value') === y) as
-      | HTMLOptionElement
-      | undefined) ?? null
-
-  setYear = (y: TaxYear): void => {
-    userEvent.selectOptions(this.yearSelect()!, [y])
-    userEvent.click(this.yearSelectConfirm()!)
-  }
 }
 
 const withForm =
@@ -97,16 +61,16 @@ const withForm =
       const form = new TestForm(state)
 
       await waitFor(async () =>
-        expect(form.yearDropdownButton()).toBeInTheDocument()
+        expect(form.yearStatus.yearDropdownButton()).toBeInTheDocument()
       )
 
-      form.openDropdown()
+      form.yearStatus.openDropdown()
 
       await waitFor(async () =>
-        expect(form.yearDropdownButton()).not.toBeInTheDocument()
+        expect(form.yearStatus.yearDropdownButton()).not.toBeInTheDocument()
       )
 
-      expect(form.yearSelect()).toBeInTheDocument()
+      expect(form.yearStatus.yearSelect()).toBeInTheDocument()
 
       try {
         let res = await f(form).catch((e) => {
@@ -141,7 +105,7 @@ describe('years', () => {
     await withForm(state)(async (form): Promise<boolean> => {
       await waitFor(async () => {
         expect(form.store.getState().activeYear).toBe(state.activeYear)
-        expect(form.yearValue()).toEqual(state.activeYear)
+        expect(form.yearStatus.yearValue()).toEqual(state.activeYear)
       })
       return true
     })
@@ -159,13 +123,15 @@ describe('years', () => {
             // We're just testing the year part of the state now.
             const state = { [startYear]: blankState, activeYear: startYear }
             await withForm(state)(async (form): Promise<boolean> => {
-              form.setYear(year)
+              form.yearStatus.setYear(year)
 
               await waitFor(async () =>
                 expect(form.store.getState().activeYear).toEqual(year)
               )
-              form.openDropdown()
-              await waitFor(async () => expect(form.yearValue()).toEqual(year))
+              form.yearStatus.openDropdown()
+              await waitFor(async () =>
+                expect(form.yearStatus.yearValue()).toEqual(year)
+              )
               return true
             })
           }
@@ -182,7 +148,7 @@ describe('years', () => {
       fc.asyncProperty(utarbitraries.taxYear, async (year) => {
         const state = justOneState()
         await withForm(state)(async (form) => {
-          form.setYear(year)
+          form.yearStatus.setYear(year)
 
           await waitFor(async () =>
             expect(form.firstName()?.value).toEqual(
@@ -200,11 +166,13 @@ describe('years', () => {
 
     await TaxPayerTests.incompleteData(form)
 
-    form.openDropdown()
+    form.yearStatus.openDropdown()
 
-    await waitFor(async () => expect(form.yearSelect()).toBeInTheDocument())
+    await waitFor(async () =>
+      expect(form.yearStatus.yearSelect()).toBeInTheDocument()
+    )
 
-    form.setYear('Y2021')
+    form.yearStatus.setYear('Y2021')
 
     await TaxPayerTests.incompleteData(form)
 
