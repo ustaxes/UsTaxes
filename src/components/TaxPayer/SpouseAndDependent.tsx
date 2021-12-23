@@ -204,12 +204,16 @@ export const SpouseInfo = (): ReactElement => {
   return <FormProvider {...methods}>{page}</FormProvider>
 }
 
-const SpouseAndDependent = (): ReactElement => {
+export const FilingStatusDropdown = (): ReactElement => {
+  const dispatch = useDispatch()
+
+  const onSubmit = (formData: { filingStatus: FilingStatus }): void => {
+    dispatch(saveFilingStatusInfo(formData.filingStatus))
+    onAdvance()
+  }
   const taxPayer: TaxPayer | undefined = useSelector((state: TaxesState) => {
     return state.information.taxPayer
   })
-
-  const [error, setError] = useState<ReactElement | undefined>(undefined)
 
   const { onAdvance, navButtons } = usePager()
 
@@ -217,15 +221,9 @@ const SpouseAndDependent = (): ReactElement => {
     defaultValues: { filingStatus: taxPayer.filingStatus ?? '' }
   })
 
+  const [error, setError] = useState<ReactElement | undefined>(undefined)
+
   const { handleSubmit, getValues, reset, watch } = methods
-
-  // const variable dispatch to allow use inside function
-  const dispatch = useDispatch()
-
-  const onSubmit = (formData: { filingStatus: FilingStatus }): void => {
-    dispatch(saveFilingStatusInfo(formData.filingStatus))
-    onAdvance()
-  }
 
   const allowedFilingStatuses = filingStatuses(taxPayer)
 
@@ -253,34 +251,40 @@ const SpouseAndDependent = (): ReactElement => {
     }
   })
 
-  const page = (
-    <form tabIndex={-1} onSubmit={handleSubmit(onSubmit)}>
-      <Helmet>
-        <title>Family Information | Personal | UsTaxes.org</title>
-      </Helmet>
-      <h2>Family Information</h2>
-      <h3>Spouse Information</h3>
-      <SpouseInfo />
-
-      <h3>Dependent Information</h3>
-      <AddDependentForm />
-
-      <Grid container spacing={2}>
-        <GenericLabeledDropdown<FilingStatus>
-          label="Filing Status"
-          dropDownData={allowedFilingStatuses}
-          valueMapping={(x) => x}
-          keyMapping={(x, i) => i}
-          textMapping={(status) => FilingStatusTexts[status]}
-          name="filingStatus"
-        />
-      </Grid>
-      {error}
-      {navButtons}
-    </form>
+  return (
+    <FormProvider {...methods}>
+      <form tabIndex={-1} onSubmit={handleSubmit(onSubmit)}>
+        <Box marginBottom={2}>
+          <GenericLabeledDropdown<FilingStatus>
+            label="Filing Status"
+            dropDownData={allowedFilingStatuses}
+            valueMapping={(x) => x}
+            keyMapping={(x, i) => i}
+            textMapping={(status) => FilingStatusTexts[status]}
+            name="filingStatus"
+          />
+        </Box>
+        {error}
+        {navButtons}
+      </form>
+    </FormProvider>
   )
-
-  return <FormProvider {...methods}>{page}</FormProvider>
 }
+
+const SpouseAndDependent = (): ReactElement => (
+  <>
+    <Helmet>
+      <title>Family Information | Personal | UsTaxes.org</title>
+    </Helmet>
+    <h2>Family Information</h2>
+    <h3>Spouse Information</h3>
+    <SpouseInfo />
+
+    <h3>Dependent Information</h3>
+    <AddDependentForm />
+
+    <FilingStatusDropdown />
+  </>
+)
 
 export default SpouseAndDependent

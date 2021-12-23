@@ -38,12 +38,16 @@ class TestForm extends TaxPayerTestPage {
 
   constructor(state: YearsTaxesState) {
     super(state)
-    this.yearStatus = new YearStatusBarMethods(this)
+    this.yearStatus = new YearStatusBarMethods(() =>
+      this.rendered().getByTestId('year-status-bar')
+    )
   }
 
   component: ReactElement = (
     <FakePagerProvider>
-      <YearStatusBar />
+      <div data-testid="year-status-bar">
+        <YearStatusBar />
+      </div>
       <TaxPayer />
     </FakePagerProvider>
   )

@@ -1,35 +1,23 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
+import { within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { TaxYear } from 'ustaxes/data'
-import TestPage from './Page'
+import DomMethods from './DomMethods'
 
-export default class YearStatusBarMethods {
-  page: TestPage
-
-  constructor(page: TestPage) {
-    this.page = page
-  }
-
+export default class YearStatusBarMethods extends DomMethods {
   yearDropdownButton = (): HTMLElement | null =>
-    this.page.rendered().queryByTestId('year-dropdown-button')
+    within(this.dom()).queryByTestId('year-dropdown-button')
 
   openDropdown = (): void => {
     userEvent.click(this.yearDropdownButton()!)
   }
 
-  yearSelect = (): HTMLSelectElement | null => {
-    const boxes = this.page
-      .rendered()
-      .queryAllByRole('combobox') as HTMLInputElement[]
-
-    const box = boxes.find((box) => box.getAttribute('name') === 'year') ?? null
-
-    return box as HTMLSelectElement | null
-  }
+  yearSelect = (): HTMLSelectElement =>
+    within(this.dom()).getByRole('combobox') as HTMLSelectElement
 
   year = (): HTMLInputElement | null =>
-    this.page.rendered().getByLabelText('Select Tax Year') as HTMLInputElement
+    within(this.dom()).getByLabelText('Select Tax Year') as HTMLInputElement
 
   yearValue = (): string | undefined => {
     const y = this.year()
@@ -37,13 +25,12 @@ export default class YearStatusBarMethods {
   }
 
   yearSelectConfirm = (): HTMLButtonElement | null =>
-    this.page.rendered().queryByRole('button', {
+    within(this.dom()).queryByRole('button', {
       name: /Update/
     }) as HTMLButtonElement
 
   getOption = (y: TaxYear): HTMLOptionElement | null =>
-    (this.page
-      .rendered()
+    (within(this.dom())
       .getAllByRole('option')
       .find((x) => x.getAttribute('value') === y) as
       | HTMLOptionElement
