@@ -5,24 +5,36 @@ import CreatePDF from 'ustaxes/components/createPDF'
 import { Information } from 'ustaxes/core/data'
 import { F1040Error } from 'ustaxes/forms/Y2020/irsForms/F1040'
 import { blankState } from 'ustaxes/redux/reducer'
-import { PagerTestPage } from '../common/FakePager'
+import { FakePagerProvider, PagerMethods } from '../common/FakePager'
 import * as arbitraries from 'ustaxes/core/tests/arbitraries'
 import * as fc from 'fast-check'
+import TestPage from '../common/Page'
+import { YearsTaxesState } from 'ustaxes/redux'
 
 afterEach(async () => {
   await waitFor(() => localStorage.clear())
   jest.resetAllMocks()
 })
 
-export default class CreatePDFTestPage extends PagerTestPage {
-  component: ReactElement = (<CreatePDF />)
+export default class CreatePDFTestPage extends TestPage {
+  pager: PagerMethods
+  constructor(state: YearsTaxesState) {
+    super(state)
+    this.pager = new PagerMethods(() => this.rendered().container)
+  }
+
+  component: ReactElement = (
+    <FakePagerProvider>
+      <CreatePDF />
+    </FakePagerProvider>
+  )
 }
 
 export const tests = {
-  incompleteData: async (page: CreatePDFTestPage): Promise<void> => {
-    await waitFor(() => expect(page.saveButton()).toBeInTheDocument())
+  incompleteData: async ({ pager }: CreatePDFTestPage): Promise<void> => {
+    await waitFor(() => expect(pager.saveButton()).toBeInTheDocument())
 
-    userEvent.click(page.saveButton())
+    userEvent.click(pager.saveButton())
   }
 }
 

@@ -1,6 +1,6 @@
-import { PersonMethods } from './PersonMethods'
+import { PersonMethods } from '../../common/PersonMethods'
 import { within } from '@testing-library/react'
-import DomMethods from './DomMethods'
+import DomMethods from '../../common/DomMethods'
 import { FilingStatus } from 'ustaxes/core/data'
 
 export class SpouseMethods extends PersonMethods {
@@ -46,9 +46,8 @@ export class FilingStatusMethods extends DomMethods {
         return v === null ? [] : [v]
       })
 
-  dropdown = (): HTMLSelectElement | undefined =>
-    (within(this.dom()).getByRole('combobox') as HTMLSelectElement | null) ??
-    undefined
+  dropdown = (): HTMLSelectElement | null =>
+    within(this.dom()).queryByRole('combobox') as HTMLSelectElement | null
 
   selected = (): FilingStatus | undefined =>
     this.dropdown()?.value as FilingStatus | undefined

@@ -31,3 +31,4 @@ yarn-error.log*
 /.vscode
 /.devcontainer/
 /src/core/data/validation.json
+/logs/

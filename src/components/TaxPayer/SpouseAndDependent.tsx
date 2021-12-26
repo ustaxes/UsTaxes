@@ -215,28 +215,52 @@ export const FilingStatusDropdown = (): ReactElement => {
     return state.information.taxPayer
   })
 
+  const allowedFilingStatuses = filingStatuses(taxPayer)
+
   const { onAdvance, navButtons } = usePager()
 
-  const methods = useForm<{ filingStatus: FilingStatus | '' }>({
-    defaultValues: { filingStatus: taxPayer.filingStatus ?? '' }
+  const defaultValues: { filingStatus: FilingStatus | '' } = {
+    filingStatus: (() => {
+      if (
+        taxPayer.filingStatus !== undefined &&
+        allowedFilingStatuses.includes(taxPayer.filingStatus)
+      ) {
+        return taxPayer.filingStatus
+      }
+      return ''
+    })()
+  }
+
+  const methods = useForm({
+    defaultValues
   })
 
   const [error, setError] = useState<ReactElement | undefined>(undefined)
 
-  const { handleSubmit, getValues, reset, watch } = methods
-
-  const allowedFilingStatuses = filingStatuses(taxPayer)
+  const {
+    handleSubmit,
+    getValues,
+    reset,
+    watch,
+    formState: { isDirty }
+  } = methods
 
   const currentFilingStatus = getValues().filingStatus
 
   const newValue = watch()
 
   useEffect(() => {
-    if (
+    // Handle state updates outside this control
+    if (!isDirty && currentFilingStatus !== defaultValues.filingStatus) {
+      reset(defaultValues)
+    }
+    // Handle other state updates that cause current
+    // value to be invalid
+    else if (
       currentFilingStatus !== '' &&
       !allowedFilingStatuses.includes(currentFilingStatus)
     ) {
-      reset({ filingStatus: '' })
+      reset({})
       setError(
         <Box paddingTop={2}>
           <Alert severity="warning">
@@ -249,7 +273,7 @@ export const FilingStatusDropdown = (): ReactElement => {
     } else if (currentFilingStatus !== '' || newValue.filingStatus !== '') {
       setError(undefined)
     }
-  })
+  }, [defaultValues.filingStatus, currentFilingStatus])
 
   return (
     <FormProvider {...methods}>

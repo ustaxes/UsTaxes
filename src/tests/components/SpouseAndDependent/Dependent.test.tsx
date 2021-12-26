@@ -3,33 +3,9 @@
 
 import { waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import * as fc from 'fast-check'
-import * as arbitraries from 'ustaxes/core/tests/arbitraries'
-import * as yarbitraries from '../arbitraries'
-import { blankState } from 'ustaxes/redux/reducer'
-
-import {
-  AddDependentForm,
-  FilingStatusDropdown,
-  SpouseInfo
-} from 'ustaxes/components/TaxPayer/SpouseAndDependent'
 import { store } from 'ustaxes/redux/store'
-import { TestPage } from '../common/Page'
-import { ReactElement } from 'react'
-import { BrowserRouter as Router } from 'react-router-dom'
 import log from 'ustaxes/core/log'
-import YearStatusBar from 'ustaxes/components/YearStatusBar'
-import YearStatusBarMethods from '../common/YearsStatusBarMethods'
-import { YearsTaxesState } from 'ustaxes/redux'
-import {
-  DependentMethods,
-  FilingStatusMethods,
-  SpouseMethods
-} from '../common/SpouseAndDependentMethods'
-import { FormProvider, useForm } from 'react-hook-form'
-import { FilingStatus, filingStatuses } from 'ustaxes/core/data'
-import { TaxPayer } from 'ustaxes/core/data'
-import { TaxYear, TaxYears } from 'ustaxes/data'
+import { SpouseAndDependentTestPage } from './Pages'
 
 afterEach(async () => {
   await waitFor(() => localStorage.clear())
@@ -46,262 +22,6 @@ jest.mock('redux-persist', () => {
     ...real,
     persistReducer: jest.fn().mockImplementation((config, reducers) => reducers)
   }
-})
-
-jest.setTimeout(10000)
-
-const force = <A,>(a: A | null | undefined): A => {
-  if (a === null || a === undefined) {
-    throw new Error('Forced but found no value.')
-  }
-  return a
-}
-
-class SpouseTestPage extends TestPage {
-  spouse: SpouseMethods
-
-  constructor(state: YearsTaxesState) {
-    super(state)
-    this.spouse = new SpouseMethods(() =>
-      this.rendered().getByTestId('spouse-info')
-    )
-  }
-
-  component: ReactElement = (
-    <Router>
-      <div data-testid="spouse-info">
-        <SpouseInfo />
-      </div>
-    </Router>
-  )
-}
-
-const SpouseAndDependentComponent = (): ReactElement => {
-  return (
-    <FormProvider {...useForm<{ filingStatus: FilingStatus | '' }>()}>
-      <div data-testid="year-status-bar">
-        <YearStatusBar />
-      </div>
-      <div data-testid="spouse-info">
-        <SpouseInfo />
-      </div>
-      <div data-testid="add-dependent-form">
-        <AddDependentForm />
-      </div>
-      <div data-testid="filing-status-dropdown">
-        <FilingStatusDropdown />
-      </div>
-    </FormProvider>
-  )
-}
-
-class SpouseAndDependentTestPage extends TestPage {
-  yearStatus: YearStatusBarMethods
-  spouse: SpouseMethods
-  dependent: DependentMethods
-  filingStatus: FilingStatusMethods
-
-  constructor(state: YearsTaxesState) {
-    super(state)
-
-    const testId = (id: string) => (): HTMLElement =>
-      this.rendered().getByTestId(id)
-
-    this.yearStatus = new YearStatusBarMethods(testId('year-status-bar'))
-    this.spouse = new SpouseMethods(testId('spouse-info'))
-    this.dependent = new DependentMethods(testId('add-dependent-form'))
-    this.filingStatus = new FilingStatusMethods(
-      testId('filing-status-dropdown')
-    )
-  }
-
-  component: ReactElement = (
-    <Router>
-      <SpouseAndDependentComponent />
-    </Router>
-  )
-}
-
-describe('SpouseInfo', () => {
-  it('renders an `Add` button when no spouse has been added', async () => {
-    const spousePage = new SpouseTestPage(store.getState())
-    const spouseTest = spousePage.spouse
-
-    // initial state has an add button
-    expect(await spouseTest.addButton()).toBeInTheDocument()
-
-    // initial state does not have any forms or labels
-    expect(spouseTest.firstNameField()).not.toBeInTheDocument()
-    expect(spouseTest.lastNameField()).not.toBeInTheDocument()
-    expect(spouseTest.ssnField()).not.toBeInTheDocument()
-
-    spousePage.cleanup()
-  })
-
-  it('renders form elements when `Add` button is clicked', async () => {
-    const spousePage = new SpouseTestPage(store.getState())
-    const spouseTest = spousePage.spouse
-    userEvent.click(await spouseTest.addButton())
-
-    // forms and labels appear after clicking the add button
-    await waitFor(async () => {
-      expect(spouseTest.firstNameField()).toBeInTheDocument()
-      expect(spouseTest.lastNameField()).toBeInTheDocument()
-      expect(spouseTest.ssnField()).toBeInTheDocument()
-      expect(await spouseTest.saveButton()).toBeInTheDocument()
-      expect(await spouseTest.closeButton()).toBeInTheDocument()
-    })
-
-    spousePage.cleanup()
-  })
-
-  it('saves and edits a spouse', async () => {
-    const spousePage = new SpouseTestPage(store.getState())
-    const { spouse } = spousePage
-
-    await waitFor(async () =>
-      expect(await spouse.addButton()).toBeInTheDocument()
-    )
-
-    userEvent.click(await spouse.addButton())
-
-    // add values for each input
-    userEvent.type(force(spouse.firstNameField()), 'Sally K')
-    userEvent.type(force(spouse.lastNameField()), 'Ride')
-    userEvent.clear(force(spouse.ssnField()))
-    userEvent.type(force(spouse.ssnField()), '123456789')
-
-    // click the save button
-    userEvent.click(await spouse.saveButton())
-
-    // expect first and last name to be concatenated
-    expect(
-      await spousePage.rendered().findByText('Sally K Ride')
-    ).toBeInTheDocument()
-    // expect ssn to appear with hyphens
-    expect(spousePage.rendered().getByText('123-45-6789')).toBeInTheDocument()
-
-    userEvent.click(await spouse.editButton())
-
-    // expect the edit button to no longer be in the document
-    await waitFor(() => expect(spouse.q.editButton()).not.toBeInTheDocument())
-
-    // assert that the input values match what was entered
-    expect(force(spouse.firstNameField()).value).toBe('Sally K')
-    expect(force(spouse.lastNameField()).value).toBe('Ride')
-    expect(force(spouse.ssnField()).value).toBe('123-45-6789')
-
-    // delete the old values and add new ones
-    userEvent.type(force(spouse.firstNameField()), '{selectall}{del}Fella')
-    userEvent.type(force(spouse.lastNameField()), '{selectall}{del}McGee')
-    userEvent.clear(force(spouse.ssnField()))
-    userEvent.type(force(spouse.ssnField()), '987-65-4321')
-
-    // click the save button to save the new values
-    userEvent.click(await spouse.saveButton())
-
-    // expect the new names to be concatenated and new ssn to appear with hyphens
-    expect(
-      await spousePage.rendered().findByText('Fella McGee')
-    ).toBeInTheDocument()
-    expect(spousePage.rendered().getByText('987-65-4321')).toBeInTheDocument()
-
-    // click the delete button
-    userEvent.click((await spouse.deleteButtons())[0])
-
-    // the add button is back
-    expect(await spouse.addButton()).toBeInTheDocument()
-
-    // expect input fields to not be in the document
-    expect(spousePage.rendered().queryAllByRole('textbox')).toHaveLength(0)
-
-    spousePage.cleanup()
-  })
-
-  it('does not save when required fields not completed', async () => {
-    const spousePage = new SpouseTestPage(store.getState())
-    const { spouse } = spousePage
-
-    await waitFor(async () =>
-      expect(await spouse.addButton()).toBeInTheDocument()
-    )
-
-    userEvent.click(force(await spouse.addButton()))
-
-    expect(await spouse.saveButton()).toBeInTheDocument()
-    expect(await spouse.closeButton()).toBeInTheDocument()
-
-    // click the save button with empty inputs
-    userEvent.click(await spouse.saveButton())
-
-    // expect three `Input is required` errors
-    await waitFor(() => expect(spouse.requiredErrors()).toHaveLength(3))
-    // fill in the first name incorrectly
-    userEvent.type(force(spouse.firstNameField()), 'F$LF(#)& ##3')
-    userEvent.click(await spouse.saveButton())
-
-    await waitFor(async () =>
-      expect(await spouse.requiredErrors()).toHaveLength(2)
-    )
-
-    // fill in the first name correctly
-    userEvent.type(force(spouse.firstNameField()), '{selectall}{del}Sally K')
-    userEvent.click(await spouse.saveButton())
-
-    await waitFor(async () =>
-      expect(await spouse.requiredErrors()).toHaveLength(2)
-    )
-
-    // add a name with restricted characters
-    userEvent.type(force(spouse.lastNameField()), 'R5$%84')
-    userEvent.click(await spouse.saveButton())
-
-    await waitFor(async () =>
-      expect(await spouse.requiredErrors()).toHaveLength(1)
-    )
-
-    // correctly enter a last name
-    userEvent.type(force(spouse.lastNameField()), '{selectall}{del}Ride')
-    userEvent.click(await spouse.saveButton())
-
-    // only the ssn error remains
-    expect(spouse.requiredErrors()).toHaveLength(1)
-
-    // incorrectly enter ssn
-    userEvent.clear(force(spouse.ssnField()))
-    userEvent.type(force(spouse.ssnField()), '123sc')
-    userEvent.click(await spouse.saveButton())
-
-    expect(
-      await spousePage
-        .rendered()
-        .findByText('Input should be filled with 9 digits')
-    ).toBeInTheDocument()
-
-    // clear ssn and add a valid value
-    userEvent.clear(force(spouse.ssnField()))
-    userEvent.type(force(spouse.ssnField()), '123456789')
-    userEvent.click(await spouse.saveButton())
-
-    // expect saved values to be formatted correctly
-    expect(await spousePage.rendered().findByText('Sally K Ride'))
-    expect(spousePage.rendered().getByText('123-45-6789'))
-
-    // expect ssn error to be gone
-    const ssnError = spousePage
-      .rendered()
-      .queryByText('Input should be filled with 9 digits')
-    expect(ssnError).not.toBeInTheDocument()
-
-    // delete the entry
-    userEvent.click((await spouse.deleteButtons())[0])
-
-    const inputsAfterDelete = spousePage.rendered().queryAllByRole('textbox')
-
-    expect(inputsAfterDelete).toHaveLength(0)
-
-    spousePage.cleanup()
-  })
 })
 
 describe('Dependents', () => {
@@ -404,7 +124,7 @@ describe('Dependents', () => {
     userEvent.type(relationInput, 'Son')
     userEvent.type(birthYearInput, '1999')
     userEvent.type(durationInput, '12')
-    userEvent.click(force(dependent.q.isStudent()))
+    userEvent.click(dependent.q.isStudent()!)
 
     userEvent.click(await dependent.saveButton())
 
@@ -440,7 +160,7 @@ describe('Dependents', () => {
     userEvent.type(newRelationInput, 'Daughter')
     userEvent.type(newBirthYearInput, '2002')
     userEvent.type(newDurationInput, '12')
-    userEvent.click(force(dependent.q.isStudent()))
+    userEvent.click(dependent.q.isStudent()!)
 
     userEvent.click(await dependent.saveButton())
 
@@ -519,7 +239,7 @@ describe('Dependents', () => {
     userEvent.type(relationInput, 'Son')
     userEvent.type(birthYearInput, '1999')
     userEvent.type(durationInput, '12')
-    userEvent.click(force(dependent.q.isStudent()))
+    userEvent.click(dependent.q.isStudent()!)
 
     userEvent.click(await dependent.saveButton())
 
@@ -555,7 +275,7 @@ describe('Dependents', () => {
     userEvent.type(newRelationInput, 'Daughter')
     userEvent.type(newBirthYearInput, '2002')
     userEvent.type(newDurationInput, '12')
-    userEvent.click(force(dependent.q.isStudent()))
+    userEvent.click(dependent.q.isStudent()!)
     userEvent.click(await dependent.saveButton())
 
     await waitFor(async () => {
@@ -863,56 +583,5 @@ describe('Dependents', () => {
     )
 
     spouseAndDependent.cleanup()
-  })
-})
-
-describe('FilingStatus', () => {
-  jest.setTimeout(20000)
-
-  const twoYears = (): fc.Arbitrary<[TaxYear, TaxYear, YearsTaxesState]> =>
-    fc.tuple(yarbitraries.taxYear, yarbitraries.taxYear).chain(([y1, y2]) =>
-      fc
-        .tuple(
-          new arbitraries.Arbitraries(TaxYears[y1]).taxPayer(),
-          new arbitraries.Arbitraries(TaxYears[y2]).taxPayer()
-        )
-        .map(([tp1, tp2]): [TaxYear, TaxYear, YearsTaxesState] => [
-          y1,
-          y2,
-          {
-            [y1]: { ...blankState, taxPayer: tp1 },
-            [y2]: { ...blankState, taxPayer: tp2 },
-            activeYear: y1
-          }
-        ])
-    )
-
-  it('should update on year change', async () => {
-    await fc.assert(
-      fc.asyncProperty(twoYears(), async ([y1, y2, state]) => {
-        const { yearStatus, filingStatus } = new SpouseAndDependentTestPage(
-          state
-        )
-
-        expect(filingStatus.dropdown()).toBeInTheDocument()
-
-        const checkFs = (tp: TaxPayer) => {
-          if (
-            tp.filingStatus === undefined ||
-            !filingStatuses(tp).includes(tp.filingStatus)
-          ) {
-            expect(filingStatus.selected()).toEqual('')
-          } else {
-            expect(filingStatus.selected()).toEqual(tp.filingStatus)
-          }
-        }
-        expect(state[y1]?.taxPayer).not.toBeUndefined()
-        checkFs(state[y1]?.taxPayer!)
-        yearStatus.openDropdown()
-        yearStatus.setYear(y2)
-        expect(state[y2]?.taxPayer).not.toBeUndefined()
-        checkFs(state[y2]?.taxPayer!)
-      })
-    )
   })
 })

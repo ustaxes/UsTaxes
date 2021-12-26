@@ -7,11 +7,12 @@ import { ReactElement } from 'react'
 import TaxPayer from 'ustaxes/components/TaxPayer'
 import { tests as TaxPayerTests } from './components/Taxpayer.test'
 import { blankState } from 'ustaxes/redux/reducer'
-import { FakePagerProvider } from './common/FakePager'
-import prand from 'pure-rand'
+import { FakePagerProvider, PagerMethods } from './common/FakePager'
 import YearStatusBar from 'ustaxes/components/YearStatusBar'
-import { TaxPayerTestPage } from './components/TaxPayerTestPage'
+import TaxPayerMethods from './common/TaxPayerMethods'
 import YearStatusBarMethods from './common/YearsStatusBarMethods'
+import { PersonMethods } from './common/PersonMethods'
+import TestPage from './common/Page'
 
 // RTL's cleanup method only after each
 // jest test is done. (Not each property test)
@@ -27,20 +28,24 @@ fc.configureGlobal({
   // When set to false, timeout during initial cases (1) will not be considered as a failure
 })
 
-const gen = new fc.Random(prand.mersenne(new Date().getMilliseconds()))
-
-const justOneState = (): YearsTaxesState =>
-  utarbitraries.taxesState.noShrink().generate(gen).value
-
-class TestForm extends TaxPayerTestPage {
-  doneEv = jest.fn()
+class TestForm extends TestPage {
   yearStatus: YearStatusBarMethods
+  person: PersonMethods
+  taxPayer: TaxPayerMethods
+  pager: PagerMethods
 
   constructor(state: YearsTaxesState) {
     super(state)
     this.yearStatus = new YearStatusBarMethods(() =>
       this.rendered().getByTestId('year-status-bar')
     )
+    this.person = new PersonMethods(() =>
+      this.rendered().getByTestId('taxpayer')
+    )
+    this.taxPayer = new TaxPayerMethods(() =>
+      this.rendered().getByTestId('taxpayer')
+    )
+    this.pager = new PagerMethods(() => this.rendered().getByTestId('taxpayer'))
   }
 
   component: ReactElement = (
@@ -48,12 +53,11 @@ class TestForm extends TaxPayerTestPage {
       <div data-testid="year-status-bar">
         <YearStatusBar />
       </div>
-      <TaxPayer />
+      <div data-testid="taxpayer">
+        <TaxPayer />
+      </div>
     </FakePagerProvider>
   )
-
-  saveButton = (): HTMLButtonElement =>
-    this.rendered().getByRole('button', { name: /Save/i }) as HTMLButtonElement
 }
 
 const withForm =
@@ -64,30 +68,17 @@ const withForm =
     try {
       const form = new TestForm(state)
 
-      await waitFor(async () =>
-        expect(form.yearStatus.yearDropdownButton()).toBeInTheDocument()
-      )
-
-      form.yearStatus.openDropdown()
-
-      await waitFor(async () =>
-        expect(form.yearStatus.yearDropdownButton()).not.toBeInTheDocument()
-      )
-
-      expect(form.yearStatus.yearSelect()).toBeInTheDocument()
-
       try {
-        let res = await f(form).catch((e) => {
+        const res = await f(form).catch((e) => {
           console.info('Error caught in handling promise.')
           console.info(e)
           console.info(form.rendered().container.innerHTML)
           form.cleanup()
           throw e
         })
-        res = res === undefined ? true : res
 
         form.cleanup()
-        return res
+        return res ?? true
       } catch (e) {
         console.info('Error caught in handling outer.')
         console.info(e)
@@ -103,8 +94,28 @@ const withForm =
   }
 
 describe('years', () => {
+  it('should have open feature', async () => {
+    const state = utarbitraries.justOneState()
+
+    await withForm(state)(async (form): Promise<boolean> => {
+      await waitFor(async () =>
+        expect(form.yearStatus.yearDropdownButton()).toBeInTheDocument()
+      )
+
+      form.yearStatus.openDropdown()
+
+      await waitFor(async () =>
+        expect(form.yearStatus.yearDropdownButton()).not.toBeInTheDocument()
+      )
+
+      expect(form.yearStatus.yearSelect()).toBeInTheDocument()
+
+      return true
+    })
+  })
+
   it('should start with correct selected', async () => {
-    const state = justOneState()
+    const state = utarbitraries.justOneState()
 
     await withForm(state)(async (form): Promise<boolean> => {
       await waitFor(async () => {
@@ -127,7 +138,7 @@ describe('years', () => {
             // We're just testing the year part of the state now.
             const state = { [startYear]: blankState, activeYear: startYear }
             await withForm(state)(async (form): Promise<boolean> => {
-              form.yearStatus.setYear(year)
+              await form.yearStatus.setYear(year)
 
               await waitFor(async () =>
                 expect(form.store.getState().activeYear).toEqual(year)
@@ -150,12 +161,12 @@ describe('years', () => {
   it('should update form data on select', async () =>
     await fc.assert(
       fc.asyncProperty(utarbitraries.taxYear, async (year) => {
-        const state = justOneState()
+        const state = utarbitraries.justOneState()
         await withForm(state)(async (form) => {
-          form.yearStatus.setYear(year)
+          await form.yearStatus.setYear(year)
 
           await waitFor(async () =>
-            expect(form.firstName()?.value).toEqual(
+            expect(form.person.firstNameField()?.value).toEqual(
               state[year]?.taxPayer.primaryPerson?.firstName
             )
           )
@@ -170,13 +181,7 @@ describe('years', () => {
 
     await TaxPayerTests.incompleteData(form)
 
-    form.yearStatus.openDropdown()
-
-    await waitFor(async () =>
-      expect(form.yearStatus.yearSelect()).toBeInTheDocument()
-    )
-
-    form.yearStatus.setYear('Y2021')
+    await form.yearStatus.setYear('Y2021')
 
     await TaxPayerTests.incompleteData(form)
 

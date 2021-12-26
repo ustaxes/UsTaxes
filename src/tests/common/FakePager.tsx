@@ -1,7 +1,9 @@
 import { Button } from '@material-ui/core'
+import { within } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { PropsWithChildren, ReactElement } from 'react'
 import { PagerContext, PagerProps } from 'ustaxes/components/pager'
-import TestPage from './Page'
+import DomMethods from './DomMethods'
 
 const constPagerProps: PagerProps = {
   onAdvance: () => {
@@ -14,13 +16,13 @@ const constPagerProps: PagerProps = {
   )
 }
 
-export abstract class PagerTestPage extends TestPage {
-  renderComponent(): ReactElement {
-    return <FakePagerProvider>{super.renderComponent()}</FakePagerProvider>
-  }
-
+export class PagerMethods extends DomMethods {
   saveButton = (): HTMLButtonElement =>
-    this.rendered().getByRole('button', { name: /Save/i }) as HTMLButtonElement
+    within(this.dom()).getByRole('button', {
+      name: /Save/i
+    }) as HTMLButtonElement
+
+  save = (): void => userEvent.click(this.saveButton())
 }
 
 export const FakePagerProvider = ({

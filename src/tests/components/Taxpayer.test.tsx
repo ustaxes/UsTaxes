@@ -1,8 +1,13 @@
 import { waitFor } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
+import { BrowserRouter as Router } from 'react-router-dom'
+import TaxPayer from 'ustaxes/components/TaxPayer'
 import { Information } from 'ustaxes/core/data'
+import { YearsTaxesState } from 'ustaxes/redux'
 import { blankState } from 'ustaxes/redux/reducer'
-import { TaxPayerTestPage } from './TaxPayerTestPage'
+import { FakePagerProvider, PagerMethods } from '../common/FakePager'
+import TestPage from '../common/Page'
+import { PersonMethods } from '../common/PersonMethods'
+import TaxPayerMethods from '../common/TaxPayerMethods'
 
 jest.setTimeout(1000 * 60 * 10)
 
@@ -19,34 +24,61 @@ jest.mock('redux-persist', () => {
   }
 })
 
+class TaxPayerTestPage extends TestPage {
+  taxPayer: TaxPayerMethods
+  person: PersonMethods
+  pager: PagerMethods
+
+  constructor(state: YearsTaxesState) {
+    super(state)
+    const dom = () => this.rendered().getByTestId('taxpayer')
+
+    this.taxPayer = new TaxPayerMethods(dom)
+    this.person = new PersonMethods(dom)
+    this.pager = new PagerMethods(dom)
+  }
+
+  component = (
+    <Router>
+      <FakePagerProvider>
+        <div data-testid="taxpayer">
+          <TaxPayer />
+        </div>
+      </FakePagerProvider>
+    </Router>
+  )
+}
+
+interface Person {
+  person: PersonMethods
+}
+interface Pager {
+  pager: PagerMethods
+}
+
+interface TaxPayer {
+  taxPayer: TaxPayerMethods
+}
+
 export const tests = {
-  incompleteData: async (page: TaxPayerTestPage): Promise<void> => {
-    page.setFirstName('Bob')
-    await waitFor(() => expect(page.saveButton()).toBeInTheDocument())
+  incompleteData: async ({ person, pager }: Person & Pager): Promise<void> => {
+    person.setFirstName('Bob')
+    await waitFor(() => expect(pager.saveButton()).toBeInTheDocument())
 
-    userEvent.click(page.saveButton())
+    pager.save()
 
-    await waitFor(() => expect(page.errors()).not.toHaveLength(0))
+    await waitFor(() => expect(person.requiredErrors()).not.toHaveLength(0))
   },
   checkboxForeignCountryFields: async (
-    page: TaxPayerTestPage
+    page: TestPage & TaxPayer
   ): Promise<void> => {
-    const allFieldNames = (): string[] =>
-      page
-        .rendered()
-        .getAllByRole('textbox')
-        .flatMap((x) => {
-          const name = x.getAttribute('name')
-          return name !== null ? [name] : []
-        })
+    expect(page.allFieldNames()).not.toContain('address.province')
+    expect(page.allFieldNames()).toContain('address.zip')
 
-    expect(allFieldNames()).not.toContain('address.province')
-    expect(allFieldNames()).toContain('address.zip')
-
-    page.setIsForeignCountry(true)
+    page.taxPayer.setIsForeignCountry(true)
     await waitFor(() => {
-      expect(allFieldNames()).toContain('address.province')
-      expect(allFieldNames()).not.toContain('address.zip')
+      expect(page.allFieldNames()).toContain('address.province')
+      expect(page.allFieldNames()).not.toContain('address.zip')
     })
   }
 }

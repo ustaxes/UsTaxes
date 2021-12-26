@@ -368,7 +368,7 @@ export class Arbitraries {
       .tuple(
         filingStatus,
         primaryPerson,
-        spouse,
+        fc.oneof(spouse, fc.constant(undefined)),
         fc.array(this.dependent()),
         email,
         phoneNumber
@@ -389,6 +389,12 @@ export class Arbitraries {
           contactEmail,
           contactPhoneNumber
         })
+      )
+      // Ensure we don't generate an invalid filing status.
+      .chain((tp) =>
+        fc
+          .constantFrom(...types.filingStatuses(tp))
+          .map((fs) => ({ ...tp, filingStatus: fs }))
       )
 
   information = (): Arbitrary<types.Information> =>

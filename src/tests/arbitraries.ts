@@ -3,6 +3,7 @@ import * as util from 'ustaxes/core/util'
 import * as arbitraries from 'ustaxes/core/tests/arbitraries'
 import { YearsTaxesState } from 'ustaxes/redux'
 import { TaxYear, TaxYears } from 'ustaxes/data'
+import prand from 'pure-rand'
 
 export const taxYear: fc.Arbitrary<TaxYear> = fc.constantFrom(
   ...util.enumKeys(TaxYears)
@@ -26,3 +27,8 @@ export const taxesState: fc.Arbitrary<YearsTaxesState> = taxYear.chain(
       }))
   }
 )
+
+const gen = new fc.Random(prand.mersenne(new Date().getMilliseconds()))
+
+export const justOneState = (): YearsTaxesState =>
+  taxesState.noShrink().generate(gen).value
