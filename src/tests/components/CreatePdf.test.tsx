@@ -1,7 +1,7 @@
 import { waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { ReactElement } from 'react'
-import CreatePDF from 'ustaxes/components/createPDF'
+import CreatePDF from 'ustaxes/components/CreatePDF'
 import { Information } from 'ustaxes/core/data'
 import { F1040Error } from 'ustaxes/forms/Y2020/irsForms/F1040'
 import { blankState } from 'ustaxes/redux/reducer'
