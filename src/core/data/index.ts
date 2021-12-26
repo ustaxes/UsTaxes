@@ -175,9 +175,9 @@ export const filingStatuses = (p: TaxPayer | undefined): FilingStatus[] => {
     // HoH not available if married
     withDependents = []
   } else {
-    spouseStatuses = [FilingStatus.S]
+    spouseStatuses = [FilingStatus.S, FilingStatus.W]
   }
-  return [...spouseStatuses, ...withDependents, FilingStatus.W]
+  return [...spouseStatuses, ...withDependents]
 }
 
 export interface ContactInfo {
