@@ -137,26 +137,26 @@ export default class IL1040V extends Form {
   /**
    * Index 14: PaymentAmount
    */
-  PaymentAmount = (): string | undefined => {
+  PaymentAmount = (): number | undefined => {
     const amount = this.il1040.l39()
     if (amount !== undefined) {
-      return Math.trunc(amount).toString()
+      return Math.trunc(amount)
     }
   }
 
-  f14 = (): string | undefined => this.PaymentAmount()
+  f14 = (): number | undefined => this.PaymentAmount()
 
   /**
    * Index 15: PaymentAmountCents
    */
-  PaymentAmountCents = (): string | undefined => {
+  PaymentAmountCents = (): number | undefined => {
     const amount = this.il1040.l39()
     if (amount !== undefined) {
-      return Math.round((amount - Math.trunc(amount)) * 100).toString()
+      return Math.round((amount - Math.trunc(amount)) * 100)
     }
   }
 
-  f15 = (): string | undefined => this.PaymentAmountCents()
+  f15 = (): number | undefined => this.PaymentAmountCents()
 
   /**
    * Index 16: Reset

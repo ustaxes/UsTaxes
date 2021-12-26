@@ -75,7 +75,11 @@ export class YearCreateForm {
         if (forms.length < 1) {
           throw new Error('No forms to create state return')
         }
-        return this.createStateReturn(forms[0])
+        const f1040 = forms.find((f) => f.tag === 'f1040')
+        if (f1040 === undefined) {
+          throw new Error('Fed forms sent to state creator without 1040')
+        }
+        return this.createStateReturn(f1040)
       })
       .value()
 
@@ -133,7 +137,7 @@ export class CreateForms {
       this.downloader(`irs/${form.tag}.pdf`)
 
     const getStatePDF = (form: StateForm): Promise<PDFDocument> =>
-      this.downloader(`/state/${form.state}/${form.formName}.pdf`)
+      this.downloader(`states/${form.state}/${form.formName}.pdf`)
 
     const params = {
       Y2020: {
