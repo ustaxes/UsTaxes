@@ -113,7 +113,7 @@ export class CreateForms {
 
   constructor(year: TaxYear) {
     this.year = year
-    this.downloader = downloadPDF
+    this.downloader = (url: string) => downloadPDF(`/forms/${year}/${url}`)
   }
 
   setDownloader = (downloader: PDFDownloader): CreateForms => {
