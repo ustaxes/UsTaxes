@@ -27,12 +27,19 @@ export default function Currency(props: CurrencyProps): ReactElement {
     }
   })()
 
+  const showValue = (() => {
+    if (value === Math.trunc(value)) {
+      return Math.abs(value)
+    }
+    return Math.abs(value).toFixed(2)
+  })()
+
   return (
     <NumberFormat
       className={className}
       thousandSeparator={true}
       prefix={`${prefix}  $`}
-      value={value < 0 ? -value : value}
+      value={showValue}
       displayType="text"
     />
   )
