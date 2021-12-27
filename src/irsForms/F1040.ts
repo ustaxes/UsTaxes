@@ -177,18 +177,16 @@ export default class F1040 extends Form {
       this.f8960 = new F8960(this.info, this)
     }
 
-    console.log(this.info.taxPayer.primaryPerson)
     if (
-      this.info.taxPayer.primaryPerson &&
+      this.info.taxPayer.primaryPerson !== undefined &&
       needsF8889(this.info, this.info.taxPayer.primaryPerson)
     ) {
       // add form 8889 for the primary tax payer
-      console.log(needsF8889(this.info, this.info.taxPayer.primaryPerson))
       this.f8889 = new F8889(this.info, this.info.taxPayer.primaryPerson)
     }
 
     if (
-      this.info.taxPayer.spouse &&
+      this.info.taxPayer.spouse !== undefined &&
       needsF8889(this.info, this.info.taxPayer.spouse)
     ) {
       // add in separate form 8889 for the spouse
