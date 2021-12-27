@@ -1,14 +1,12 @@
-import { Information, Person, HealthSavingsAccount } from 'ustaxes/redux/data'
-import TaxPayer from 'ustaxes/redux/TaxPayer'
-import { computeField, sumFields, displayNumber } from './util'
+import { Information, Person, HealthSavingsAccount } from '../redux/data'
+import { sumFields } from './util'
 import Form, { FormTag } from './Form'
 import F8853 from './F8853'
-import { CURRENT_YEAR, healthSavingsAccounts } from 'ustaxes/data/federal'
+import { CURRENT_YEAR, healthSavingsAccounts } from '../data/federal'
 
 export const needsF8889 = (state: Information, person: Person): boolean => {
-  console.log(state)
   return state.healthSavingsAccounts.some(
-    (h) => h.personRole == person.role || h.coverageType == 'family'
+    (h) => h.personRole === person.role || h.coverageType === 'family'
   )
 }
 
@@ -22,7 +20,7 @@ export default class F8889 extends Form {
   sequenceIndex = 52
   // these should only be the HSAs that belong to this person
   // the person can be either the primary person or the spouse
-  hsas: HealthSavingsAccount[]
+  hsas: HealthSavingsAccount<Date>[]
   f8853?: F8853
   person: Person
   state: Information
@@ -37,12 +35,20 @@ export default class F8889 extends Form {
     this.state = state
     // The relevant HSAs are the ones either for this person or any that
     // have family coverage.
-    this.hsas = state.healthSavingsAccounts.filter((h) => {
-      if (h.personRole == person.role || h.coverageType == 'family') {
-        return true
-      }
-      return false
-    })
+    this.hsas = state.healthSavingsAccounts
+      .filter((h) => {
+        if (h.personRole == person.role || h.coverageType == 'family') {
+          return true
+        }
+        return false
+      })
+      .map((h) => {
+        return {
+          ...h,
+          startDate: new Date(h.startDate),
+          endDate: new Date(h.endDate)
+        }
+      })
     this.calculatedCoverageType = 'self-only'
     this.firstDayOfLastMonth = new Date(CURRENT_YEAR, 11, 1)
     this.perMonthContributions = {
@@ -52,7 +58,6 @@ export default class F8889 extends Form {
   }
 
   calculatePerMonthLimits = (): void => {
-    //const monthAmounts = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
     for (
       let index = 0;
       index < this.perMonthContributions.amount.length;
@@ -95,7 +100,6 @@ export default class F8889 extends Form {
     } else {
       this.calculatedCoverageType = 'self-only'
     }
-    //return Math.round(this.perMonthContributions.amount.reduce((a, b) => a + b) / 12)
   }
 
   /* If you are an eligible individual on the first day of the last month of your tax year 
@@ -131,89 +135,34 @@ export default class F8889 extends Form {
     )
   }
 
-  /*If you were covered, or considered covered, by a self-only HDHP and a family HDHP 
-    at different times during the year, check the box for the plan that was in effect 
-    for a longer period. If you were covered by both a self-only HDHP and a family HDHP 
-    at the same time, you are treated as having family coverage during that period. 
-    If, on the first day of the last month of your tax year (December 1 for most taxpayers), 
-    you had family coverage, check the "family" box.
-
-    When figuring the amount to enter on line 3, apply the following rules.
-
-    1. Use the family coverage amount if you or your spouse had an HDHP with family coverage. 
-        Disregard any plan with self-only coverage.
-    2. If the last-month rule (see Last-month rule, earlier) applies, you are considered an eligible individual 
-        for the entire year. You are treated as having the same HDHP coverage for the entire year as you had on 
-        the first day of the last month of your tax year.
-    3. If you were, or were considered, an eligible individual for the entire year and you did not change your 
-        type of coverage, enter $3,550 for a self-only HDHP or $7,100 for a family HDHP on line 3. 
-        (See (6) in this list.)
-    4. If you were, or were considered, an eligible individual for the entire year and you changed your type of 
-        coverage during the year, enter on line 3 (see (6) in this list) the greater of:
-        a) The limitation shown on the last line of the Line 3 Limitation Chart and Worksheet (in these instructions);
-        
-        or  
-        
-        b) The maximum amount that can be contributed based on the type of HDHP coverage you had on the first day of 
-          the last month of your tax year.
-
-        If you had family coverage on the first day of the last month, you do not need to use the worksheet;
-        enter $7,100 on line 3.
-
-      5. If you were not an eligible individual on the first day of the last month of your tax year, use the Line 3 
-        Limitation Chart and Worksheet (in these instructions) to determine the amount to enter on line 3. 
-        (See (6) in this list.)
-      6. If, at the end of 2020, you were age 55 or older and unmarried or married with self-only HDHP coverage for 
-        the entire year, you can increase the amount determined in (3) or (4) by $1,000 (the additional contribution 
-        amount). For the Line 3 Limitation Chart and Worksheet, the additional contribution amount is included for 
-        each month you are an eligible individual.
-
-    Note. If you are married and had family coverage at any time during the year, the additional contribution amount 
-    is figured on line 7 and is not included on line 3.
-  */
   contributionLimit = (): number => {
     /*If you were under age 55 at the end of 2020 and, on the first day of every month during 2020, 
     you were, or were considered, an eligible individual with the same coverage, enter $3,550 
     ($7,100 for family coverage). All others, see the instructions for the amount to enter.
     */
-    if (this.hsas.length == 1) {
-      const onlyHsa = this.hsas[0]
-      if (
-        onlyHsa.startDate <= new Date(CURRENT_YEAR, 0, 1) &&
-        onlyHsa.endDate >= this.firstDayOfLastMonth
-      ) {
-        if (onlyHsa.coverageType === 'family') {
+    /*If the last-month rule (see Last-month rule, earlier) applies, you are considered an eligible individual 
+      for the entire year. You are treated as having the same HDHP coverage for the entire year as you had on 
+      the first day of the last month of your tax year.
+      */
+    if (this.lastMonthRule()) {
+      // If, on the first day of the last month of your tax year (December 1 for most taxpayers),
+      // you had family coverage, check the "family" box.
+      const lastMonthCoverage = this.lastMonthCoverage()
+      if (lastMonthCoverage !== undefined) {
+        if (lastMonthCoverage === 'family') {
           this.calculatedCoverageType = 'family'
           return healthSavingsAccounts.contributionLimit.family
-        } else {
+        } else if (lastMonthCoverage === 'self-only') {
           this.calculatedCoverageType = 'self-only'
           return healthSavingsAccounts.contributionLimit['self-only']
         }
       }
-      /*If the last-month rule (see Last-month rule, earlier) applies, you are considered an eligible individual 
-        for the entire year. You are treated as having the same HDHP coverage for the entire year as you had on 
-        the first day of the last month of your tax year.
-        */
-      if (this.lastMonthRule()) {
-        // If, on the first day of the last month of your tax year (December 1 for most taxpayers),
-        // you had family coverage, check the "family" box.
-        const lastMonthCoverage = this.lastMonthCoverage()
-        if (lastMonthCoverage !== undefined) {
-          if (lastMonthCoverage === 'family') {
-            this.calculatedCoverageType = 'family'
-            return healthSavingsAccounts.contributionLimit.family
-          } else if (lastMonthCoverage === 'self-only') {
-            this.calculatedCoverageType = 'self-only'
-            return healthSavingsAccounts.contributionLimit['self-only']
-          }
-        }
-      }
     }
-
-    // If you don't have coverage in the last month, then you need to figure out
-    // your contribution limit. If you don't have coverage for that month then
-    // your contribution limit is 0. So let's initialize our per-month contribution
-    // limit based on that.
+    /* If you don't have coverage in the last month, then you need to figure out
+       your contribution limit. If you don't have coverage for that month then
+       your contribution limit is 0. So let's initialize our per-month contribution
+       limit based on that.
+     */
     this.calculatePerMonthLimits()
     return Math.round(
       this.perMonthContributions.amount.reduce((a, b) => a + b) / 12
@@ -274,7 +223,7 @@ export default class F8889 extends Form {
 
   l3 = (): number => this.contributionLimit()
   l4 = (): number => sumFields([this.f8853?.l1(), this.f8853?.l2()])
-  l5 = (): number | undefined => displayNumber(this.l3() ?? 0 - this.l4())
+  l5 = (): number => (this.l3() ?? 0) - this.l4()
   l6 = (): number | undefined => this.splitFamilyContributionLimit()
   // TODO: Additional contirbution amount. Need to know the age of the user
   l7 = (): number | undefined => undefined
@@ -293,7 +242,7 @@ export default class F8889 extends Form {
   l14a = (): number =>
     this.hsas.reduce((total, hsa) => hsa.totalDistributions + total, 0)
   l14b = (): number | undefined => undefined
-  l14c = (): number => this.l14a() - computeField(this.l14b())
+  l14c = (): number => this.l14a() - (this.l14b() ?? 0)
   l15 = (): number =>
     this.hsas.reduce((total, hsa) => hsa.qualifiedDistributions + total, 0)
   l16 = (): number => this.l14c() - this.l15()
@@ -307,10 +256,9 @@ export default class F8889 extends Form {
   l21 = (): number => Math.round(this.l20() * 0.1)
 
   fields = (): Array<string | number | boolean | undefined> => {
-    const tp = new TaxPayer(this.state.taxPayer)
     return [
-      tp.namesString(),
-      tp.tp.primaryPerson?.ssid,
+      `${this.person.firstName} ${this.person.lastName}`,
+      this.person.ssid,
       this.calculatedCoverageType === 'self-only', // line 1: self-only check box
       this.calculatedCoverageType === 'family', // line 1: family checkbox
       this.l2(),

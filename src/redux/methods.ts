@@ -41,7 +41,7 @@ export default class InformationMethods implements Information {
     this.taxPayer = info.taxPayer
     this.questions = info.questions
     this.stateResidencies = info.stateResidencies
-    this.healthSavingsAccounts = []
+    this.healthSavingsAccounts = info.healthSavingsAccounts
   }
 
   f1099sByType = (ft: Income1099Type): Supported1099[] =>

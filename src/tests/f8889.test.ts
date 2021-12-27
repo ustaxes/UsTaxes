@@ -1,16 +1,16 @@
-import fc from 'fast-check'
-import * as arbitraries from './arbitraries'
+/* eslint @typescript-eslint/no-empty-function: "off" */
 
+import fc from 'fast-check'
 import {
   FilingStatus,
   Income1099Type,
   PersonRole,
-  IncomeW2,
   Information
-} from 'ustaxes/redux/data'
-import { CURRENT_YEAR, healthSavingsAccounts } from 'ustaxes/data/federal'
-import F8889 from 'ustaxes/irsForms/F8889'
+} from '../redux/data'
+import { CURRENT_YEAR, healthSavingsAccounts } from '../data/federal'
+import F8889, { needsF8889 } from '../irsForms/F8889'
 import { cloneDeep } from 'lodash'
+import * as arbitraries from './arbitraries'
 
 const baseInformation: Information = {
   f1099s: [
@@ -70,6 +70,12 @@ const baseInformation: Information = {
 }
 
 describe('Health Savings Accounts', () => {
+  it('shold not need form 8889 if there are no health savings accounts', () => {
+    expect(
+      needsF8889(baseInformation, baseInformation.taxPayer.primaryPerson)
+    ).toEqual(false)
+  })
+
   it('should have a max contribution limit when covered for all months', () => {
     const information = cloneDeep(baseInformation)
     information.healthSavingsAccounts = [
@@ -77,8 +83,8 @@ describe('Health Savings Accounts', () => {
         coverageType: 'self-only',
         contributions: 3550,
         personRole: PersonRole.PRIMARY,
-        startDate: new Date(CURRENT_YEAR, 0, 1),
-        endDate: new Date(CURRENT_YEAR, 11, 31),
+        startDate: new Date(CURRENT_YEAR, 0, 1).toISOString(),
+        endDate: new Date(CURRENT_YEAR, 11, 31).toISOString(),
         label: 'test',
         totalDistributions: 500,
         qualifiedDistributions: 500
@@ -92,21 +98,33 @@ describe('Health Savings Accounts', () => {
       healthSavingsAccounts.contributionLimit['self-only']
     )
     expect(f8889.calculatedCoverageType).toEqual('self-only')
-    /*
+  })
+
+  it('should give the right coverage amount', () => {
     fc.assert(
       fc.property(arbitraries.information, (information) => {
-        if (information.taxPayer.primaryPerson !== undefined) {
-          let f8889 = new F8889(information, information.taxPayer.primaryPerson)
+        if (
+          information.taxPayer.primaryPerson !== undefined &&
+          information.healthSavingsAccounts.length > 0
+        ) {
+          const f8889 = new F8889(
+            information,
+            information.taxPayer.primaryPerson
+          )
           if (f8889.fullYearHsa()) {
-            if(f8889.lastMonthCoverage() == 'self-only') {
-              expect(f8889.contributionLimit()).toEqual(healthSavingsAccounts.contributionLimit['self-only'])
+            if (f8889.lastMonthCoverage() == 'self-only') {
+              expect(f8889.contributionLimit()).toEqual(
+                healthSavingsAccounts.contributionLimit['self-only']
+              )
             } else {
-              expect(f8889.contributionLimit()).toEqual(healthSavingsAccounts.contributionLimit['self-only'])
+              expect(f8889.contributionLimit()).toEqual(
+                healthSavingsAccounts.contributionLimit['family']
+              )
             }
           }
         }
       })
-    )*/
+    )
   })
 
   it('should select family coverage when both are options', () => {
@@ -116,8 +134,8 @@ describe('Health Savings Accounts', () => {
         coverageType: 'self-only',
         contributions: 3550,
         personRole: PersonRole.PRIMARY,
-        startDate: new Date(CURRENT_YEAR, 0, 1),
-        endDate: new Date(CURRENT_YEAR, 11, 31),
+        startDate: new Date(CURRENT_YEAR, 0, 1).toISOString(),
+        endDate: new Date(CURRENT_YEAR, 11, 31).toISOString(),
         label: 'test',
         totalDistributions: 500,
         qualifiedDistributions: 500
@@ -126,8 +144,8 @@ describe('Health Savings Accounts', () => {
         coverageType: 'family',
         contributions: 7100,
         personRole: PersonRole.SPOUSE,
-        startDate: new Date(CURRENT_YEAR, 0, 1),
-        endDate: new Date(CURRENT_YEAR, 11, 31),
+        startDate: new Date(CURRENT_YEAR, 0, 1).toISOString(),
+        endDate: new Date(CURRENT_YEAR, 11, 31).toISOString(),
         label: 'test',
         totalDistributions: 500,
         qualifiedDistributions: 500
@@ -143,15 +161,15 @@ describe('Health Savings Accounts', () => {
     expect(f8889.calculatedCoverageType).toEqual('family')
   })
 
-  it('should should calculate a partial contribution limit correctly with a single HSA', () => {
+  it('should calculate a partial contribution limit correctly with a single HSA', () => {
     const information = cloneDeep(baseInformation)
     information.healthSavingsAccounts = [
       {
         coverageType: 'family',
         contributions: 3550,
         personRole: PersonRole.PRIMARY,
-        startDate: new Date(CURRENT_YEAR, 0, 1), // Jan 1st
-        endDate: new Date(CURRENT_YEAR, 5, 30), // Jun 30th
+        startDate: new Date(CURRENT_YEAR, 0, 1).toISOString(), // Jan 1st
+        endDate: new Date(CURRENT_YEAR, 5, 30).toISOString(), // Jun 30th
         label: 'test',
         totalDistributions: 500,
         qualifiedDistributions: 500
@@ -166,15 +184,15 @@ describe('Health Savings Accounts', () => {
     expect(f8889.calculatedCoverageType).toEqual('family')
   })
 
-  it('should should calculate a partial contribution limit correctly with a multiple HSA', () => {
+  it('should calculate a partial contribution limit correctly with a multiple HSA', () => {
     const information = cloneDeep(baseInformation)
     information.healthSavingsAccounts = [
       {
         coverageType: 'family',
         contributions: 3550,
         personRole: PersonRole.PRIMARY,
-        startDate: new Date(CURRENT_YEAR, 0, 1), // Jan 1st
-        endDate: new Date(CURRENT_YEAR, 5, 30), // Jun 30th
+        startDate: new Date(CURRENT_YEAR, 0, 1).toISOString(), // Jan 1st
+        endDate: new Date(CURRENT_YEAR, 5, 30).toISOString(), // Jun 30th
         label: 'test',
         totalDistributions: 500,
         qualifiedDistributions: 500
@@ -183,8 +201,8 @@ describe('Health Savings Accounts', () => {
         coverageType: 'self-only',
         contributions: 1750,
         personRole: PersonRole.PRIMARY,
-        startDate: new Date(CURRENT_YEAR, 6, 1), // Jul 1st
-        endDate: new Date(CURRENT_YEAR, 10, 30), // Nov 30st
+        startDate: new Date(CURRENT_YEAR, 6, 1).toISOString(), // Jul 1st
+        endDate: new Date(CURRENT_YEAR, 10, 30).toISOString(), // Nov 30st
         label: 'test',
         totalDistributions: 500,
         qualifiedDistributions: 500
@@ -202,15 +220,15 @@ describe('Health Savings Accounts', () => {
     expect(f8889.calculatedCoverageType).toEqual('family')
   })
 
-  it('should should calculate a partial contribution limit correctly with a multiple overlapping HSA', () => {
+  it('should calculate a partial contribution limit correctly with a multiple overlapping HSA', () => {
     const information = cloneDeep(baseInformation)
     information.healthSavingsAccounts = [
       {
         coverageType: 'family',
         contributions: 3550,
         personRole: PersonRole.PRIMARY,
-        startDate: new Date(CURRENT_YEAR, 0, 1), // Jan 1st
-        endDate: new Date(CURRENT_YEAR, 5, 30), // Jun 30th
+        startDate: new Date(CURRENT_YEAR, 0, 1).toISOString(), // Jan 1st
+        endDate: new Date(CURRENT_YEAR, 5, 30).toISOString(), // Jun 30th
         label: 'test',
         totalDistributions: 500,
         qualifiedDistributions: 500
@@ -219,8 +237,8 @@ describe('Health Savings Accounts', () => {
         coverageType: 'self-only',
         contributions: 1750,
         personRole: PersonRole.PRIMARY,
-        startDate: new Date(CURRENT_YEAR, 3, 1), // Apr 1st
-        endDate: new Date(CURRENT_YEAR, 10, 30), // Nov 30st
+        startDate: new Date(CURRENT_YEAR, 3, 1).toISOString(), // Apr 1st
+        endDate: new Date(CURRENT_YEAR, 10, 30).toISOString(), // Nov 30st
         label: 'test',
         totalDistributions: 500,
         qualifiedDistributions: 500
@@ -238,15 +256,15 @@ describe('Health Savings Accounts', () => {
     expect(f8889.calculatedCoverageType).toEqual('family')
   })
 
-  it('should should split the family contribution correctly', () => {
+  it('should split the family contribution correctly', () => {
     const information = cloneDeep(baseInformation)
     information.healthSavingsAccounts = [
       {
         coverageType: 'family',
         contributions: 3550,
         personRole: PersonRole.PRIMARY,
-        startDate: new Date(CURRENT_YEAR, 0, 1), // Jan 1st
-        endDate: new Date(CURRENT_YEAR, 4, 31), // May 31st
+        startDate: new Date(CURRENT_YEAR, 0, 1).toISOString(), // Jan 1st
+        endDate: new Date(CURRENT_YEAR, 4, 31).toISOString(), // May 31st
         label: 'test',
         totalDistributions: 500,
         qualifiedDistributions: 500
@@ -255,8 +273,8 @@ describe('Health Savings Accounts', () => {
         coverageType: 'self-only',
         contributions: 1750,
         personRole: PersonRole.PRIMARY,
-        startDate: new Date(CURRENT_YEAR, 5, 1), // Jun 1st
-        endDate: new Date(CURRENT_YEAR, 11, 31), // Dec 31st
+        startDate: new Date(CURRENT_YEAR, 5, 1).toISOString(), // Jun 1st
+        endDate: new Date(CURRENT_YEAR, 11, 31).toISOString(), // Dec 31st
         label: 'test',
         totalDistributions: 500,
         qualifiedDistributions: 500

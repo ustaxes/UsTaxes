@@ -323,16 +323,15 @@ export interface F1098e {
   interest: number
 }
 
-export interface HealthSavingsAccount {
+export interface HealthSavingsAccount<DateType = string> {
   label: string
   coverageType: 'self-only' | 'family'
   contributions: number
   personRole: PersonRole.PRIMARY | PersonRole.SPOUSE
-  startDate: Date
-  endDate: Date
+  startDate: DateType
+  endDate: DateType
   totalDistributions: number
   qualifiedDistributions: number
-  //coverageDateRange: {from: {year: number, month: number}, to: {year: number, month: number}}
 }
 
 export type State =

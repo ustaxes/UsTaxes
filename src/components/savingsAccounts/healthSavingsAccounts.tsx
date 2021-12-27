@@ -57,8 +57,8 @@ const toHSA = (formData: HSAUserInput): HealthSavingsAccount => ({
   coverageType: formData.coverageType,
   contributions: parseInt(formData.contributions),
   personRole: formData.personRole,
-  startDate: formData.startDate,
-  endDate: formData.endDate,
+  startDate: formData.startDate.toISOString(),
+  endDate: formData.endDate.toISOString(),
   totalDistributions: parseInt(formData.totalDistributions),
   qualifiedDistributions: parseInt(formData.qualifiedDistributions)
 })
@@ -68,8 +68,8 @@ const toHSAUserInput = (data: HealthSavingsAccount): HSAUserInput => ({
   ...data,
   coverageType: data.coverageType,
   contributions: data.contributions.toString(),
-  startDate: data.startDate,
-  endDate: data.endDate,
+  startDate: new Date(data.startDate),
+  endDate: new Date(data.endDate),
   totalDistributions: data.totalDistributions.toString(),
   qualifiedDistributions: data.qualifiedDistributions.toString()
 })

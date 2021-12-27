@@ -396,8 +396,8 @@ export const healthSavingsAccount: Arbitrary<types.HealthSavingsAccount> = fc
       coverageType,
       contributions,
       personRole,
-      startDate,
-      endDate,
+      startDate: startDate.toISOString(),
+      endDate: endDate.toISOString(),
       totalDistributions,
       qualifiedDistributions
     })
