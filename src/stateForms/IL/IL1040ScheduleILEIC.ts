@@ -1,11 +1,11 @@
-import Form from '../Form'
-import F1040 from '../../irsForms/F1040'
-import { Field } from '../../pdfFiller'
+import Form from 'ustaxes/stateForms/Form'
+import F1040 from 'ustaxes/irsForms/F1040'
+import { Field } from 'ustaxes/pdfFiller'
 import { displayNumber } from '../../irsForms/util'
 import { Dependent, Information, State } from '../../redux/data'
 import parameters from './Parameters'
 
-export class il1040scheduleileeic implements Form {
+export class IL1040scheduleileeic extends Form {
   info: Information
   f1040: F1040
   formName: string
@@ -15,6 +15,7 @@ export class il1040scheduleileeic implements Form {
   qualifyingDependents: Dependent[]
 
   constructor(info: Information, f1040: F1040) {
+    super()
     this.info = info
     this.f1040 = f1040
     this.formName = 'il-1040-schedule-il-e-eic'
@@ -1838,6 +1839,6 @@ export class il1040scheduleileeic implements Form {
 const makeil1040scheduleileeic = (
   info: Information,
   f1040: F1040
-): il1040scheduleileeic => new il1040scheduleileeic(info, f1040)
+): IL1040scheduleileeic => new IL1040scheduleileeic(info, f1040)
 
 export default makeil1040scheduleileeic

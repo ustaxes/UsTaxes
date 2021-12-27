@@ -1,4 +1,5 @@
-import { ReactElement } from 'react'
+import { useEffect, useRef, ReactElement } from 'react'
+import { useForkRef } from 'rooks'
 import { Grid, TextField } from '@material-ui/core'
 import { Controller, useFormContext } from 'react-hook-form'
 import locationPostalCodes from 'ustaxes/data/locationPostalCodes'
@@ -18,6 +19,7 @@ export function GenericLabeledDropdown<A>(
     formState: { errors }
   } = useFormContext()
   const {
+    autofocus,
     label,
     dropDownData,
     valueMapping,
@@ -29,6 +31,13 @@ export function GenericLabeledDropdown<A>(
     sizes = { xs: 12 }
   } = props
   const error = _.get(errors, name)
+  const inputRef = useRef<HTMLElement | null>(null)
+
+  useEffect(() => {
+    if (autofocus && inputRef.current) {
+      inputRef.current.focus()
+    }
+  }, [inputRef.current])
 
   return (
     <ConditionallyWrap
@@ -42,7 +51,7 @@ export function GenericLabeledDropdown<A>(
       <Controller
         render={({ field: { name, onChange, ref, value } }) => (
           <TextField
-            inputRef={ref}
+            inputRef={autofocus ? useForkRef(ref, inputRef) : ref}
             id={name}
             name={name}
             className={classes.root}

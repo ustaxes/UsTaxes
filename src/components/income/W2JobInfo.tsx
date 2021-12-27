@@ -1,6 +1,7 @@
 import { ReactElement, ReactNode, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { FormProvider, useForm, useFormContext } from 'react-hook-form'
+import { Helmet } from 'react-helmet'
+import { FormProvider, useForm } from 'react-hook-form'
 import { usePager } from 'ustaxes/components/pager'
 import {
   TaxesState,
@@ -214,6 +215,7 @@ export default function W2JobInfo(): ReactElement {
       <p>Input data from W-2</p>
       <Grid container spacing={2}>
         <LabeledInput
+          autofocus={true}
           label="Employer name"
           patternConfig={Patterns.name}
           name="employer.employerName"
@@ -324,10 +326,15 @@ export default function W2JobInfo(): ReactElement {
   )
 
   return (
-    <form tabIndex={-1} onSubmit={onAdvance}>
-      <h2>Job Information</h2>
-      <FormProvider {...methods}>{form}</FormProvider>
-      {navButtons}
-    </form>
+    <FormProvider {...methods}>
+      <form tabIndex={-1} onSubmit={onAdvance}>
+        <Helmet>
+          <title>Job Information | Income | UsTaxes.org</title>
+        </Helmet>
+        <h2>Job Information</h2>
+        {form}
+        {navButtons}
+      </form>
+    </FormProvider>
   )
 }

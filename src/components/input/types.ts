@@ -22,6 +22,7 @@ interface SizeList {
 }
 
 export interface LabeledDropdownProps<A> extends BaseDropdownProps {
+  autofocus?: boolean
   useGrid?: boolean
   sizes?: SizeList
   dropDownData: A[]
@@ -31,6 +32,7 @@ export interface LabeledDropdownProps<A> extends BaseDropdownProps {
 }
 
 export interface LabeledInputProps {
+  autofocus?: boolean
   useGrid?: boolean
   sizes?: SizeList
   patternConfig?: PatternConfig

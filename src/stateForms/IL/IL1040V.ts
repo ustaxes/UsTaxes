@@ -1,10 +1,10 @@
 import Form from '../Form'
 import F1040 from '../../irsForms/F1040'
 import { IL1040 } from './IL1040'
-import { Field } from '../../pdfFiller'
+import { Field } from 'ustaxes/pdfFiller'
 import { Information, State } from '../../redux/data'
 
-export default class IL1040V implements Form {
+export default class IL1040V extends Form {
   info: Information
   f1040: F1040
   formName: string
@@ -14,6 +14,7 @@ export default class IL1040V implements Form {
   attachments: () => Form[] = () => []
 
   constructor(info: Information, f1040: F1040, il1040: IL1040) {
+    super()
     this.info = info
     this.f1040 = f1040
     this.formName = 'IL-1040-V'

@@ -30,6 +30,7 @@ import Urls from 'ustaxes/data/urls'
 
 import { isMobile } from 'react-device-detect'
 import HealthSavingsAccounts from './savingsAccounts/healthSavingsAccounts'
+import { makeDownloader } from 'ustaxes/pdfFiller/pdfHandler'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -61,6 +62,8 @@ const useStyles = makeStyles((theme: Theme) =>
     }
   })
 )
+
+const downloader = makeDownloader('')
 
 const getTitleAndPage = (sections: Section[], currentUrl: string): string => {
   const page = sections
@@ -123,7 +126,11 @@ export const drawerSections: Section[] = [
     items: [
       item('Refund Information', Urls.refund, <RefundBankAccount />),
       item('Informational Questions', Urls.questions, <Questions />),
-      item('Review and Print', Urls.createPdf, <CreatePDF />)
+      item(
+        'Review and Print',
+        Urls.createPdf,
+        <CreatePDF downloader={downloader} />
+      )
     ]
   }
 ]
