@@ -1,5 +1,5 @@
 import { Information } from 'ustaxes/core/data'
-import { Either, isRight, run, runAsync } from 'ustaxes/core/util'
+import { Either, isRight, left, run, runAsync } from 'ustaxes/core/util'
 import { TaxYear } from 'ustaxes/data'
 import { create1040 as create1040For2020 } from 'ustaxes/forms/Y2020/irsForms/Main'
 import { create1040 as create1040For2021 } from 'ustaxes/forms/Y2021/irsForms/Main'
@@ -19,6 +19,8 @@ import {
   downloadPDF,
   PDFDownloader
 } from 'ustaxes/core/pdfFiller/pdfHandler'
+import { F1040Error } from './errors'
+import { StateFormError } from './StateForms'
 
 export class YearCreateForm {
   readonly year: TaxYear
@@ -108,6 +110,7 @@ export class YearCreateForm {
   }
 
   canCreateFederal = (): boolean => isRight(this.f1040())
+
   canCreateState = (): boolean => isRight(this.makeStateReturn())
 }
 
@@ -140,6 +143,10 @@ export class CreateForms {
       this.downloader(`states/${form.state}/${form.formName}.pdf`)
 
     const params = {
+      Y2019: {
+        createF1040: () => left([F1040Error.unsupportedTaxYear]),
+        createStateReturn: () => left([StateFormError.unsupportedTaxYear])
+      },
       Y2020: {
         createF1040: takeSecond(create1040For2020),
         createStateReturn: (f: Form) =>
@@ -150,10 +157,6 @@ export class CreateForms {
         createStateReturn: (f: Form) =>
           createStateReturn2021(info, f as F1040For2021)
       }
-    }
-
-    if (this.year === 'Y2019') {
-      throw new Error('Year not supported')
     }
 
     return new YearCreateForm(

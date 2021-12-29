@@ -5,7 +5,7 @@ import Alert from '@material-ui/lab/Alert'
 import { useSelector } from 'react-redux'
 import { Information, State } from 'ustaxes/core/data'
 import { YearsTaxesState } from 'ustaxes/redux'
-import { TaxYear, TaxYears } from 'ustaxes/data'
+import { TaxYear } from 'ustaxes/data'
 
 import yearFormBuilder from 'ustaxes/forms/YearForms'
 import { isLeft, runAsync } from 'ustaxes/core/util'
@@ -78,16 +78,6 @@ export default function CreatePDF(): ReactElement {
     }
   }
 
-  const canCreateFederal =
-    irsErrors.length === 0 && (builder?.canCreateFederal() ?? false)
-
-  const canCreateState =
-    canCreateFederal &&
-    stateErrors.length === 0 &&
-    residency !== undefined &&
-    info !== undefined &&
-    (builder?.canCreateState() ?? false)
-
   return (
     <div>
       <Summary />
@@ -96,22 +86,11 @@ export default function CreatePDF(): ReactElement {
           <title>Print Copy to File | Results | UsTaxes.org</title>
         </Helmet>
         <h2>Print Copy to File</h2>
-        <div>
-          {[...irsErrors, ...stateErrors].map((error, i) => (
-            <Alert key={i} severity="warning">
-              {error}
-            </Alert>
-          ))}
-        </div>
-        {(() => {
-          if (canCreateFederal) {
-            return (
-              <Box
-                display="flex"
-                justifyContent="flex-start"
-                paddingTop={2}
-                paddingBottom={1}
-              >
+        <h3>Federal</h3>
+        <Box marginBottom={2}>
+          {(() => {
+            if (irsErrors.length === 0) {
+              return (
                 <Button
                   type="button"
                   onClick={federalReturn}
@@ -120,25 +99,20 @@ export default function CreatePDF(): ReactElement {
                 >
                   Create Federal 1040
                 </Button>
-              </Box>
-            )
-          }
-          return (
-            <Alert severity="info">
-              Support for federal return for {TaxYears[year]} is not yet
-              available.
-            </Alert>
-          )
-        })()}
-        {(() => {
-          if (canCreateState) {
-            return (
-              <Box
-                display="flex"
-                justifyContent="flex-start"
-                paddingTop={2}
-                paddingBottom={1}
-              >
+              )
+            }
+            return irsErrors.map((e) => (
+              <Alert key={e} severity="info">
+                {e}
+              </Alert>
+            ))
+          })()}
+        </Box>
+        <h3>State: {info?.stateResidencies[0].state} </h3>
+        <Box marginBottom={2}>
+          {(() => {
+            if (stateErrors.length === 0) {
+              return (
                 <Button
                   type="button"
                   onClick={stateReturn}
@@ -147,16 +121,15 @@ export default function CreatePDF(): ReactElement {
                 >
                   Create {residency} Return
                 </Button>
-              </Box>
-            )
-          }
-          return (
-            <Alert severity="info">
-              Support for {residency ?? 'state'} return for {TaxYears[year]} not
-              yet available.
-            </Alert>
-          )
-        })()}
+              )
+            }
+            return stateErrors.map((e) => (
+              <Alert key={e} severity="info">
+                {e}
+              </Alert>
+            ))
+          })()}
+        </Box>
         {navButtons}
       </form>
     </div>
