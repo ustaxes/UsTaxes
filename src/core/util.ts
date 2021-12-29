@@ -98,12 +98,15 @@ class EitherMethods<E, A> {
   fold = <B, C>(f: (e: E) => B, g: (a: A) => C): B | C =>
     isLeft(this.e) ? f(this.e.left) : g(this.e.right)
 
-  orThrow = (): A => {
-    if (isLeft(this.e)) {
-      throw this.e.left
-    }
-    return this.e.right
-  }
+  orThrow = (): A =>
+    this.fold(
+      (e) => {
+        throw e
+      },
+      (a) => a
+    )
+
+  handle = <B>(f: (e: E) => B): B | undefined => this.fold(f, () => undefined)
 
   mapAsync = async <B>(
     f: (a: A) => Promise<B>
