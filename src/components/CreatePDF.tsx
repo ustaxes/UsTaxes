@@ -108,7 +108,11 @@ export default function CreatePDF(): ReactElement {
             ))
           })()}
         </Box>
-        <h3>State: {info?.stateResidencies[0].state} </h3>
+        {(() => {
+          if (info?.stateResidencies[0]?.state !== undefined) {
+            return <h3>State: {info.stateResidencies[0].state} </h3>
+          }
+        })()}
         <Box marginBottom={2}>
           {(() => {
             if (stateErrors.length === 0) {
