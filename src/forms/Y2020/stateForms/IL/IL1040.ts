@@ -344,8 +344,8 @@ export class IL1040 extends Form {
    */
   l10b = (): number | undefined => {
     return (
-      [this.CheckBox3, this.CheckBox4].filter((x) => x).length *
-      parameters.seniorExemption
+      [this.CheckBox3() ?? false, this.CheckBox4() ?? false].filter((x) => x)
+        .length * parameters.seniorExemption
     )
   }
 
