@@ -4,7 +4,7 @@ import { Either, isLeft, isRight, right } from 'ustaxes/core/util'
 import log from 'ustaxes/core/log'
 import { combinePdfs, PDFDownloader } from 'ustaxes/core/pdfFiller/pdfHandler'
 import { Information } from 'ustaxes/core/data'
-import { F1040Error } from './F1040'
+import { F1040Error } from 'ustaxes/forms/errors'
 import { insertFormDataToPdfs } from 'ustaxes/core/irsForms'
 
 export { create1040 }

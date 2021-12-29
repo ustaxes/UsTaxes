@@ -48,12 +48,7 @@ import F4136 from './F4136'
 import F2439 from './F2439'
 import F2441 from './F2441'
 import ScheduleC from './ScheduleC'
-
-export enum F1040Error {
-  filingStatusUndefined = 'Select a filing status',
-  medicareWagesGreaterThanWages = 'Medicare wages are not allowed to be greater than wages',
-  filingStatusRequirementsNotMet = 'Filing status does not match dependents or spouse requirements'
-}
+import { F1040Error } from 'ustaxes/forms/errors'
 
 export default class F1040 extends Form {
   tag: FormTag = 'f1040'

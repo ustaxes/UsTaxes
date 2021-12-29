@@ -47,12 +47,7 @@ import SocialSecurityBenefitsWorksheet from './worksheets/SocialSecurityBenefits
 import StudentLoanInterestWorksheet from './worksheets/StudentLoanInterestWorksheet'
 import InformationMethods from 'ustaxes/core/data/methods'
 import _ from 'lodash'
-
-export enum F1040Error {
-  filingStatusUndefined = 'Select a filing status',
-  medicareWagesGreaterThanWages = 'Medicare wages are not allowed to be greater than wages',
-  filingStatusRequirementsNotMet = 'Filing status does not match dependents or spouse requirements'
-}
+import { F1040Error } from 'ustaxes/forms/errors'
 
 export default class F1040 extends Form {
   tag: FormTag = 'f1040'

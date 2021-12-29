@@ -1,7 +1,8 @@
 import { Information } from 'ustaxes/core/data'
 import { Either, left, right } from 'ustaxes/core/util'
-import F1040, { F1040Error } from './F1040'
+import F1040 from './F1040'
 import Form from 'ustaxes/core/irsForms/Form'
+import { F1040Error } from 'ustaxes/forms/errors'
 
 export function create1040(
   state: Information
