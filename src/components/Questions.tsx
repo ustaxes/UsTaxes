@@ -29,7 +29,12 @@ const Questions = (): ReactElement => {
 
   const methods = useForm<Responses>({ defaultValues: stateAnswers })
 
-  const { handleSubmit, getValues, reset } = methods
+  const {
+    handleSubmit,
+    getValues,
+    reset,
+    formState: { isDirty }
+  } = methods
 
   const currentValues = getValues()
 
@@ -48,7 +53,7 @@ const Questions = (): ReactElement => {
   // This form can be rerendered because the global state was modified by
   // another control.
   useEffect(() => {
-    if (!_.isEqual(currentAnswers, stateAnswers)) {
+    if (!isDirty && !_.isEqual(currentAnswers, stateAnswers)) {
       reset(stateAnswers)
     }
   }, [])
