@@ -12,9 +12,11 @@ afterEach(async () => {
   jest.resetAllMocks()
 })
 
-beforeEach(() => {
+beforeAll(() => {
   log.setLevel(log.levels.TRACE)
 })
+
+jest.setTimeout(10000)
 
 jest.mock('redux-persist', () => {
   const real = jest.requireActual('redux-persist')
