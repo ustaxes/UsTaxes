@@ -172,8 +172,8 @@ export const netInvestmentIncomeTax = {
 }
 
 // line 11 caps based on step one in instructions
-const line11Caps = [15820, 41756, 47440, 50954]
-const line11MfjCaps = [21710, 47646, 53330, 56844]
+const line11Caps = [21430, 42158, 47915, 51464]
+const line11MfjCaps = [27830, 48108, 53865, 57414]
 
 type Point = [number, number]
 
@@ -274,7 +274,7 @@ export const EIC: EICDef = {
     [FilingStatus.MFS]: undefined,
     [FilingStatus.MFJ]: line11MfjCaps
   },
-  maxInvestmentIncome: 3650,
+  maxInvestmentIncome: 10000,
   formulas: {
     [FilingStatus.S]: unmarriedFormulas,
     [FilingStatus.W]: unmarriedFormulas,
