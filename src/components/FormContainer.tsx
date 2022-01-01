@@ -182,12 +182,6 @@ const FormListContainer = <A,>(
   const [formState, setFormState] = useState(FormState.Closed)
   const [editing, setEditing] = useState<number | undefined>(undefined)
 
-  const close = (): void => {
-    setFormState(FormState.Closed)
-    reset({ values: undefined })
-    setEditing(undefined)
-  }
-
   // Use the provided grouping function to split the input
   // array into an array of groups. Each group has a title
   // and a list of items, along with their original index.
@@ -208,6 +202,12 @@ const FormListContainer = <A,>(
     handleSubmit,
     formState: { isDirty, errors }
   } = useFormContext()
+
+  const close = (): void => {
+    setFormState(FormState.Closed)
+    reset({})
+    setEditing(undefined)
+  }
 
   const onClose = (): void => {
     onCancel()

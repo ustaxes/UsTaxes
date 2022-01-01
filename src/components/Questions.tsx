@@ -1,37 +1,62 @@
-import { ReactElement } from 'react'
+import { ReactElement, useEffect } from 'react'
 import { Helmet } from 'react-helmet'
 import { Grid, List, ListItem } from '@material-ui/core'
-import { useDispatch, useSelector } from 'react-redux'
-import {
-  getRequiredQuestions,
-  QuestionTagName,
-  Responses
-} from 'ustaxes/data/questions'
+import { useDispatch, useSelector, TaxesState } from 'ustaxes/redux'
+import { QuestionTagName, Responses } from 'ustaxes/core/data'
+import { getRequiredQuestions } from 'ustaxes/core/data/questions'
 import { LabeledCheckbox, LabeledInput } from './input'
-import { TaxesState } from 'ustaxes/redux/data'
 import { answerQuestion } from 'ustaxes/redux/actions'
 import { FormProvider, useForm } from 'react-hook-form'
 import { usePager } from './pager'
+import _ from 'lodash'
+
+const emptyQuestions: Responses = {
+  CRYPTO: false,
+  FOREIGN_ACCOUNT_EXISTS: false,
+  FINCEN_114: false,
+  FINCEN_114_ACCOUNT_COUNTRY: '',
+  FOREIGN_TRUST_RELATIONSHIP: false,
+  LIVE_APART_FROM_SPOUSE: false
+}
 
 const Questions = (): ReactElement => {
   const information = useSelector((state: TaxesState) => state.information)
 
-  const methods = useForm<Responses>({ defaultValues: information.questions })
-  const { handleSubmit, watch } = methods
+  const stateAnswers: Responses = {
+    ...emptyQuestions,
+    ...information.questions
+  }
 
-  const currentValues = watch()
+  const methods = useForm<Responses>({ defaultValues: stateAnswers })
+
+  const {
+    handleSubmit,
+    getValues,
+    reset,
+    formState: { isDirty }
+  } = methods
+
+  const currentValues = getValues()
 
   const { navButtons, onAdvance } = usePager()
 
   const questions = getRequiredQuestions({
-    information: {
-      ...information,
-      questions: {
-        ...information.questions,
-        ...currentValues
-      }
+    ...information,
+    questions: {
+      ...information.questions,
+      ...currentValues
     }
   })
+
+  const currentAnswers: Responses = { ...emptyQuestions, ...currentValues }
+
+  // This form can be rerendered because the global state was modified by
+  // another control.
+  useEffect(() => {
+    if (!isDirty && !_.isEqual(currentAnswers, stateAnswers)) {
+      reset(stateAnswers)
+    }
+  }, [])
 
   const dispatch = useDispatch()
 

@@ -1,13 +1,15 @@
 import { ReactElement } from 'react'
 import { Avatar, Grid, List, Typography } from '@material-ui/core'
-import { create1040 } from 'ustaxes/irsForms/Main'
-import { useSelector } from 'react-redux'
-import { Information, TaxesState } from 'ustaxes/redux/data'
+import { YearsTaxesState } from 'ustaxes/redux'
+import { Information } from 'ustaxes/core/data'
 import { Check, Close } from '@material-ui/icons'
-import F1040 from 'ustaxes/irsForms/F1040'
-import { Currency } from './input'
 import Alert from '@material-ui/lab/Alert'
-import { isLeft } from 'ustaxes/util'
+import { run } from 'ustaxes/core/util'
+import yearFormBuilder from 'ustaxes/forms/YearForms'
+import { TaxYear } from 'ustaxes/data'
+import { useSelector } from 'react-redux'
+import { createSummary, SummaryData } from './SummaryData'
+import { Currency } from './input'
 
 interface BinaryStateListItemProps {
   active: boolean
@@ -36,95 +38,82 @@ const BinaryStateListItem = ({
   )
 }
 
-interface F1040Props {
-  f1040: F1040
+interface F1040SummaryProps {
+  summary: SummaryData
 }
 
-const F1040Summary = ({ f1040 }: F1040Props): ReactElement => {
-  const qualifyingDependents = f1040.scheduleEIC?.qualifyingDependents()
-  const earnedIncomeTaxCredit = (
-    <BinaryStateListItem active={f1040.scheduleEIC?.allowed(f1040) ?? false}>
-      <>
-        <Typography color="textPrimary">Earned Income Tax Credit</Typography>
-        {qualifyingDependents && (
-          <>
-            <Typography variant="body2" color="textPrimary">
-              Qualifying Dependents:
-            </Typography>
-            <Typography variant="body2" color="textSecondary">
-              {f1040.scheduleEIC
-                ?.qualifyingDependents()
-                .map((d) => `${d?.firstName ?? ''} ${d?.lastName ?? ''}`)
-                .join(', ')}
-            </Typography>
-          </>
-        )}
-        <Typography variant="body2" color="textPrimary">
-          Credit:{' '}
-          <Currency value={Math.round(f1040.scheduleEIC?.credit(f1040) ?? 0)} />
-        </Typography>
-      </>
-    </BinaryStateListItem>
-  )
-
-  const creditForChildrenAndOtherDependents = (
-    <BinaryStateListItem
-      active={f1040.childTaxCreditWorksheet?.isAllowed() ?? false}
-    >
-      <Typography color="textPrimary">
-        Credit for children and other dependents
-      </Typography>
-      <Typography variant="body2" color="textPrimary">
-        Credit:{' '}
-        <Currency
-          value={Math.round(f1040.childTaxCreditWorksheet?.credit() ?? 0)}
-        />
-      </Typography>
-    </BinaryStateListItem>
-  )
-
-  return (
-    <>
-      <h3>Credits</h3>
-      <Grid container>
-        <Grid item zeroMinWidth>
-          <List>
-            <li>{earnedIncomeTaxCredit}</li>
-            <li>{creditForChildrenAndOtherDependents}</li>
-          </List>
-        </Grid>
+const F1040Summary = ({ summary }: F1040SummaryProps): ReactElement => (
+  <>
+    <h3>Credits</h3>
+    <Grid container>
+      <Grid item zeroMinWidth>
+        <List>
+          {summary.credits.map((credit) => (
+            <BinaryStateListItem key={credit.name} active={credit.allowed}>
+              <Typography variant="body2" color="textPrimary">
+                {credit.name}
+              </Typography>
+              {(() => {
+                if (credit.value !== undefined) {
+                  return (
+                    <Typography variant="body2" color="textSecondary">
+                      Credit: <Currency value={credit.value} />
+                    </Typography>
+                  )
+                }
+                return <></>
+              })()}
+            </BinaryStateListItem>
+          ))}
+        </List>
       </Grid>
-    </>
-  )
-}
+    </Grid>
+  </>
+)
 
 const Summary = (): ReactElement => {
-  const information: Information = useSelector(
-    (state: TaxesState) => state.information
+  const year: TaxYear = useSelector(
+    (state: YearsTaxesState) => state.activeYear
+  )
+  const info: Information | undefined = useSelector(
+    (state: YearsTaxesState) => state[state.activeYear]
   )
 
+  const builder = info === undefined ? undefined : yearFormBuilder(year, info)
+
   const summaryBody = (() => {
-    if (information.taxPayer.primaryPerson === undefined) {
+    if (
+      info === undefined ||
+      builder === undefined ||
+      info.taxPayer.primaryPerson === undefined
+    ) {
       return <p>No data entered yet</p>
     } else {
-      const f1040Result = create1040(information)
+      const f1040Result = builder.f1040()
 
-      if (isLeft(f1040Result)) {
-        const errors = f1040Result.left
-
-        return (
-          <>
-            {errors.map((error, i) => (
-              <Alert key={i} severity="warning">
-                {error}
-              </Alert>
-            ))}
-          </>
-        )
-      } else {
-        const [f1040] = f1040Result.right
-        return <F1040Summary f1040={f1040} />
-      }
+      return (
+        <>
+          <h3>Federal</h3>
+          {run(f1040Result).fold(
+            (errors) => (
+              <>
+                {errors.map((error, i) => (
+                  <Alert key={i} severity="warning">
+                    {error}
+                  </Alert>
+                ))}
+              </>
+            ),
+            (forms) => {
+              const summary = createSummary(year, forms)
+              if (summary === undefined) {
+                return undefined
+              }
+              return <F1040Summary summary={summary} />
+            }
+          )}
+        </>
+      )
     }
   })()
 
