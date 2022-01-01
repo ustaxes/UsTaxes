@@ -87,4 +87,8 @@ export const stateResidency = ajv.getSchema<types.StateResidency>(
   '#/definitions/StateResidency'
 )
 
+export const healthSavingsAccounts = ajv.getSchema<types.HealthSavingsAccount>(
+  '#/definitions/HealthSavingsAccount'
+)
+
 export default ajv

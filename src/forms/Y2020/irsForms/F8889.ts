@@ -1,6 +1,6 @@
-import { Information, Person, HealthSavingsAccount } from '../redux/data'
-import { sumFields } from './util'
-import Form, { FormTag } from './Form'
+import { Information, Person, HealthSavingsAccount } from 'ustaxes/core/data'
+import { sumFields } from 'ustaxes/core/irsForms/util'
+import Form, { FormTag } from 'ustaxes/core/irsForms/Form'
 import F8853 from './F8853'
 import { CURRENT_YEAR, healthSavingsAccounts } from '../data/federal'
 

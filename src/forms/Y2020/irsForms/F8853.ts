@@ -1,6 +1,6 @@
-import { Field } from 'ustaxes/pdfFiller'
-import { TaxPayer } from 'ustaxes/redux/data'
-import Form, { FormTag } from './Form'
+import { Field } from 'ustaxes/core/pdfFiller'
+import { TaxPayer } from 'ustaxes/core/data'
+import Form, { FormTag } from 'ustaxes/core/irsForms/Form'
 
 // Not yet implemented
 export default class Form8853 extends Form {

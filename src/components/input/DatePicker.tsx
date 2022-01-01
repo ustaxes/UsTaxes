@@ -8,12 +8,17 @@ import {
   KeyboardDatePicker as MuiDatePicker
 } from '@material-ui/pickers'
 import DateFnsUtils from '@date-io/date-fns'
-import { LabeledFormProps } from './types'
+import { DatePickerProps } from './types'
 
-import { CURRENT_YEAR } from 'ustaxes/data/federal'
-
-export function DatePicker(props: LabeledFormProps): ReactElement {
-  const { label, name, useGrid = true, sizes = { xs: 12 } } = props
+export function DatePicker(props: DatePickerProps): ReactElement {
+  const {
+    label,
+    name,
+    minDate,
+    maxDate,
+    useGrid = true,
+    sizes = { xs: 12 }
+  } = props
 
   const classes = useStyles()
   const { control } = useFormContext()
@@ -35,8 +40,8 @@ export function DatePicker(props: LabeledFormProps): ReactElement {
               <FormLabel>{label}</FormLabel>
               <MuiPickersUtilsProvider utils={DateFnsUtils}>
                 <MuiDatePicker
-                  minDate={new Date(CURRENT_YEAR, 0, 1)}
-                  maxDate={new Date(CURRENT_YEAR, 11, 31)}
+                  minDate={minDate}
+                  maxDate={maxDate}
                   value={value}
                   onChange={onChange}
                   format="MM/dd/yyyy"

@@ -1,4 +1,4 @@
-import { ReactElement, ReactNode } from 'react'
+import { ReactElement, ReactNode, useState } from 'react'
 import { useDispatch, useSelector, TaxesState } from 'ustaxes/redux'
 import { Helmet } from 'react-helmet'
 import { FormProvider, useForm, useFormContext } from 'react-hook-form'
@@ -16,7 +16,7 @@ import {
   W2Box12Info,
   W2Box12Code,
   W2Box12CodeDescriptions
-} from 'ustaxes/redux/data'
+} from 'ustaxes/core/data'
 import {
   boxLabel,
   Currency,
@@ -31,7 +31,7 @@ import { Grid, Box, Button, Paper } from '@material-ui/core'
 import { Work } from '@material-ui/icons'
 import { addW2, editW2, removeW2 } from 'ustaxes/redux/actions'
 import { Alert } from '@material-ui/lab'
-import { enumKeys } from 'ustaxes/util'
+import { enumKeys } from 'ustaxes/core/util'
 
 interface IncomeW2UserInput {
   employer?: Employer

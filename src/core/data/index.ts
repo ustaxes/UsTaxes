@@ -72,6 +72,7 @@ export interface IncomeW2 {
   state?: State
   stateWages?: number
   stateWithholding?: number
+  box12?: W2Box12Info
 }
 
 export interface EstimatedTaxPayments {

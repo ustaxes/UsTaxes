@@ -1,13 +1,9 @@
 import { ReactElement } from 'react'
+import { Helmet } from 'react-helmet'
 import { useDispatch, useSelector } from 'react-redux'
 import { FormProvider, useForm } from 'react-hook-form'
 import { usePager } from 'ustaxes/components/pager'
-import {
-  TaxesState,
-  HealthSavingsAccount,
-  Person,
-  PersonRole
-} from 'ustaxes/redux/data'
+import { HealthSavingsAccount, Person, PersonRole } from 'ustaxes/core/data'
 
 import {
   Currency,
@@ -21,8 +17,10 @@ import { Patterns } from 'ustaxes/components/Patterns'
 import { FormListContainer } from 'ustaxes/components/FormContainer'
 import { Grid } from '@material-ui/core'
 import { Work } from '@material-ui/icons'
+import { TaxesState } from 'ustaxes/redux'
 import { addHSA, editHSA, removeHSA } from 'ustaxes/redux/actions'
-import { CURRENT_YEAR } from 'ustaxes/data/federal'
+import { YearsTaxesState } from 'ustaxes/redux'
+import { TaxYear, TaxYears } from 'ustaxes/data'
 
 import { format } from 'date-fns'
 
@@ -42,8 +40,8 @@ const blankUserInput: HSAUserInput = {
   coverageType: 'self-only',
   contributions: '',
   personRole: PersonRole.PRIMARY,
-  startDate: new Date(CURRENT_YEAR, 0, 1),
-  endDate: new Date(CURRENT_YEAR, 11, 31),
+  startDate: new Date(),
+  endDate: new Date(),
   totalDistributions: '',
   qualifiedDistributions: ''
 }
@@ -89,6 +87,11 @@ export default function HealthSavingsAccounts(): ReactElement {
   const dispatch = useDispatch()
 
   const methods = useForm<HSAUserInput>()
+  const { handleSubmit } = methods
+
+  const activeYear: TaxYear = useSelector(
+    (state: YearsTaxesState) => state.activeYear
+  )
 
   const { navButtons, onAdvance } = usePager()
 
@@ -173,11 +176,15 @@ export default function HealthSavingsAccounts(): ReactElement {
           name="startDate"
           label="Starting Date"
           sizes={{ xs: 12, lg: 6 }}
+          minDate={new Date(TaxYears[activeYear], 0, 1)}
+          maxDate={new Date(TaxYears[activeYear], 11, 31)}
         />
         <DatePicker
           name="endDate"
           label="Ending Date"
           sizes={{ xs: 12, lg: 6 }}
+          minDate={new Date(TaxYears[activeYear], 0, 1)}
+          maxDate={new Date(TaxYears[activeYear], 11, 31)}
         />
       </Grid>
     </FormListContainer>
@@ -185,15 +192,27 @@ export default function HealthSavingsAccounts(): ReactElement {
 
   const form: ReactElement = <>{hsaBlock}</>
 
+  // return (
+  //   <form tabIndex={-1} onSubmit={onAdvance}>
+  //     <h2>Health Savings Accounts (HSA)</h2>
+  //     {/* <p>
+  //       did you already make payments towards your {CURRENT_YEAR} taxes this
+  //       year or last year?
+  //     </p> */}
+  //     <FormProvider {...methods}>{form}</FormProvider>
+  //     {navButtons}
+  //   </form>
+  // )
   return (
-    <form tabIndex={-1} onSubmit={onAdvance}>
-      <h2>Health Savings Accounts (HSA)</h2>
-      {/* <p>
-        did you already make payments towards your {CURRENT_YEAR} taxes this
-        year or last year?
-      </p> */}
-      <FormProvider {...methods}>{form}</FormProvider>
-      {navButtons}
-    </form>
+    <FormProvider {...methods}>
+      <form tabIndex={-1} onSubmit={handleSubmit(onAdvance)}>
+        <Helmet>
+          <title>Health Savings Accounts (HSA) | Income | UsTaxes.org</title>
+        </Helmet>
+        <h2>Health Savings Accounts (HSA)</h2>
+        {form}
+        {navButtons}
+      </form>
+    </FormProvider>
   )
 }

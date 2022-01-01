@@ -316,6 +316,9 @@
         },
         "stateWithholding": {
           "type": "number"
+        },
+        "box12": {
+          "$ref": "#/definitions/W2Box12Info"
         }
       },
       "required": [
@@ -327,6 +330,99 @@
         "medicareWithholding",
         "personRole"
       ],
+      "additionalProperties": false
+    },
+    "W2Box12Info": {
+      "type": "object",
+      "properties": {
+        "A": {
+          "type": "number"
+        },
+        "B": {
+          "type": "number"
+        },
+        "C": {
+          "type": "number"
+        },
+        "D": {
+          "type": "number"
+        },
+        "E": {
+          "type": "number"
+        },
+        "F": {
+          "type": "number"
+        },
+        "G": {
+          "type": "number"
+        },
+        "H": {
+          "type": "number"
+        },
+        "J": {
+          "type": "number"
+        },
+        "K": {
+          "type": "number"
+        },
+        "L": {
+          "type": "number"
+        },
+        "M": {
+          "type": "number"
+        },
+        "N": {
+          "type": "number"
+        },
+        "P": {
+          "type": "number"
+        },
+        "Q": {
+          "type": "number"
+        },
+        "R": {
+          "type": "number"
+        },
+        "S": {
+          "type": "number"
+        },
+        "T": {
+          "type": "number"
+        },
+        "V": {
+          "type": "number"
+        },
+        "W": {
+          "type": "number"
+        },
+        "Y": {
+          "type": "number"
+        },
+        "Z": {
+          "type": "number"
+        },
+        "AA": {
+          "type": "number"
+        },
+        "BB": {
+          "type": "number"
+        },
+        "DD": {
+          "type": "number"
+        },
+        "EE": {
+          "type": "number"
+        },
+        "FF": {
+          "type": "number"
+        },
+        "GG": {
+          "type": "number"
+        },
+        "HH": {
+          "type": "number"
+        }
+      },
       "additionalProperties": false
     },
     "EstimatedTaxPayments": {
@@ -454,6 +550,40 @@
       ],
       "additionalProperties": false
     },
+    "W2Box12Code": {
+      "type": "string",
+      "enum": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F",
+        "G",
+        "H",
+        "J",
+        "K",
+        "L",
+        "M",
+        "N",
+        "P",
+        "Q",
+        "R",
+        "S",
+        "T",
+        "V",
+        "W",
+        "Y",
+        "Z",
+        "AA",
+        "BB",
+        "DD",
+        "EE",
+        "FF",
+        "GG",
+        "HH"
+      ]
+    },
     "FilingStatus": {
       "type": "string",
       "enum": [
@@ -526,9 +656,9 @@
       "additionalProperties": false
     },
     "Income1099Int": {
-      "$ref": "#/definitions/Income1099%3Cenum-823009365-1501-1515-823009365-1460-1558-823009365-0-7175%2CF1099IntData%3E"
+      "$ref": "#/definitions/Income1099%3Cenum-823009365-1523-1537-823009365-1482-1580-823009365-0-12376%2CF1099IntData%3E"
     },
-    "Income1099<enum-823009365-1501-1515-823009365-1460-1558-823009365-0-7175,F1099IntData>": {
+    "Income1099<enum-823009365-1523-1537-823009365-1482-1580-823009365-0-12376,F1099IntData>": {
       "type": "object",
       "properties": {
         "payer": {
@@ -558,9 +688,9 @@
       "additionalProperties": false
     },
     "Income1099B": {
-      "$ref": "#/definitions/Income1099%3Cenum-823009365-1490-1500-823009365-1460-1558-823009365-0-7175%2CF1099BData%3E"
+      "$ref": "#/definitions/Income1099%3Cenum-823009365-1512-1522-823009365-1482-1580-823009365-0-12376%2CF1099BData%3E"
     },
-    "Income1099<enum-823009365-1490-1500-823009365-1460-1558-823009365-0-7175,F1099BData>": {
+    "Income1099<enum-823009365-1512-1522-823009365-1482-1580-823009365-0-12376,F1099BData>": {
       "type": "object",
       "properties": {
         "payer": {
@@ -590,9 +720,9 @@
       "additionalProperties": false
     },
     "Income1099Div": {
-      "$ref": "#/definitions/Income1099%3Cenum-823009365-1516-1530-823009365-1460-1558-823009365-0-7175%2CF1099DivData%3E"
+      "$ref": "#/definitions/Income1099%3Cenum-823009365-1538-1552-823009365-1482-1580-823009365-0-12376%2CF1099DivData%3E"
     },
-    "Income1099<enum-823009365-1516-1530-823009365-1460-1558-823009365-0-7175,F1099DivData>": {
+    "Income1099<enum-823009365-1538-1552-823009365-1482-1580-823009365-0-12376,F1099DivData>": {
       "type": "object",
       "properties": {
         "payer": {
@@ -622,9 +752,9 @@
       "additionalProperties": false
     },
     "Income1099R": {
-      "$ref": "#/definitions/Income1099%3Cenum-823009365-1531-1541-823009365-1460-1558-823009365-0-7175%2CF1099RData%3E"
+      "$ref": "#/definitions/Income1099%3Cenum-823009365-1553-1563-823009365-1482-1580-823009365-0-12376%2CF1099RData%3E"
     },
-    "Income1099<enum-823009365-1531-1541-823009365-1460-1558-823009365-0-7175,F1099RData>": {
+    "Income1099<enum-823009365-1553-1563-823009365-1482-1580-823009365-0-12376,F1099RData>": {
       "type": "object",
       "properties": {
         "payer": {
@@ -654,9 +784,9 @@
       "additionalProperties": false
     },
     "Income1099SSA": {
-      "$ref": "#/definitions/Income1099%3Cenum-823009365-1542-1556-823009365-1460-1558-823009365-0-7175%2CF1099SSAData%3E"
+      "$ref": "#/definitions/Income1099%3Cenum-823009365-1564-1578-823009365-1482-1580-823009365-0-12376%2CF1099SSAData%3E"
     },
-    "Income1099<enum-823009365-1542-1556-823009365-1460-1558-823009365-0-7175,F1099SSAData>": {
+    "Income1099<enum-823009365-1564-1578-823009365-1482-1580-823009365-0-12376,F1099SSAData>": {
       "type": "object",
       "properties": {
         "payer": {
@@ -1007,6 +1137,12 @@
           "items": {
             "$ref": "#/definitions/StateResidency"
           }
+        },
+        "healthSavingsAccounts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/HealthSavingsAccount"
+          }
         }
       },
       "required": [
@@ -1017,7 +1153,56 @@
         "f1098es",
         "taxPayer",
         "questions",
-        "stateResidencies"
+        "stateResidencies",
+        "healthSavingsAccounts"
+      ],
+      "additionalProperties": false
+    },
+    "HealthSavingsAccount": {
+      "type": "object",
+      "properties": {
+        "label": {
+          "type": "string"
+        },
+        "coverageType": {
+          "type": "string",
+          "enum": [
+            "self-only",
+            "family"
+          ]
+        },
+        "contributions": {
+          "type": "number"
+        },
+        "personRole": {
+          "type": "string",
+          "enum": [
+            "PRIMARY",
+            "SPOUSE"
+          ]
+        },
+        "startDate": {
+          "type": "string"
+        },
+        "endDate": {
+          "type": "string"
+        },
+        "totalDistributions": {
+          "type": "number"
+        },
+        "qualifiedDistributions": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "label",
+        "coverageType",
+        "contributions",
+        "personRole",
+        "startDate",
+        "endDate",
+        "totalDistributions",
+        "qualifiedDistributions"
       ],
       "additionalProperties": false
     }

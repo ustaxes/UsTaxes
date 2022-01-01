@@ -302,9 +302,7 @@ export const removeEstimatedPayment: ActionCreator<number> = makeActionCreator(
 
 export const addHSA: ActionCreator<HealthSavingsAccount> = makeActionCreator(
   ActionName.ADD_HSA,
-  ajv.getSchema(
-    '#/definitions/HealthSavingsAccount'
-  ) as ValidateFunction<HealthSavingsAccount>
+  validators.healthSavingsAccounts
 )
 
 export const editHSA: ActionCreator<EditHSAAction> = makeActionCreator(
@@ -316,7 +314,7 @@ export const editHSA: ActionCreator<EditHSAAction> = makeActionCreator(
 
 export const removeHSA: ActionCreator<number> = makeActionCreator(
   ActionName.REMOVE_HSA,
-  ajv.compile(indexSchema)
+  indexValidator
 )
 
 export const add1099: ActionCreator<Supported1099> = makeActionCreator(
