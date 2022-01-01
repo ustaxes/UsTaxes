@@ -26,10 +26,13 @@ describe('f1040', () => {
         const f1040Res = create1040(information)
         if (isRight(f1040Res)) {
           const [, forms] = f1040Res.right
-          expect(new Set(forms.map((a) => a.tag)).size).toEqual(forms.length)
-          expect(new Set(forms.map((a) => a.sequenceIndex)).size).toEqual(
-            forms.length
-          )
+
+          // Although most schedules are unique, some such as F8889 must
+          // be filled out for each individual person when married
+          // filter out forms that are known to be needed in duplicate copies
+          const dupForms = new Set(['f8889'])
+          const shouldBeUnique = forms.filter((a) => !dupForms.has(a.tag))
+          expect(new Set(shouldBeUnique).size).toEqual(shouldBeUnique.length)
         }
       })
     )

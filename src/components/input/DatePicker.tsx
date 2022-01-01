@@ -5,7 +5,7 @@ import useStyles from './styles'
 import ConditionallyWrap from 'ustaxes/components/ConditionallyWrap'
 import {
   MuiPickersUtilsProvider,
-  DatePicker as MuiDatePicker
+  KeyboardDatePicker as MuiDatePicker
 } from '@material-ui/pickers'
 import DateFnsUtils from '@date-io/date-fns'
 import { LabeledFormProps } from './types'
@@ -35,11 +35,11 @@ export function DatePicker(props: LabeledFormProps): ReactElement {
               <FormLabel>{label}</FormLabel>
               <MuiPickersUtilsProvider utils={DateFnsUtils}>
                 <MuiDatePicker
-                  views={['date']}
                   minDate={new Date(CURRENT_YEAR, 0, 1)}
                   maxDate={new Date(CURRENT_YEAR, 11, 31)}
                   value={value}
                   onChange={onChange}
+                  format="MM/dd/yyyy"
                 />
               </MuiPickersUtilsProvider>
             </FormControl>

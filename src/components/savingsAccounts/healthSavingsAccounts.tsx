@@ -114,6 +114,12 @@ export default function HealthSavingsAccounts(): ReactElement {
         <span>
           contributions: <Currency value={toHSA(hsa).contributions} />
           <br />
+          total distributions:{' '}
+          <Currency value={toHSA(hsa).totalDistributions} />
+          <br />
+          qualified distributions:{' '}
+          <Currency value={toHSA(hsa).qualifiedDistributions} />
+          <br />
           coverage type: {hsa.coverageType}
           <br />
           coverage span: {format(hsa.startDate, 'MMMM do, yyyy')} to{' '}
@@ -163,8 +169,16 @@ export default function HealthSavingsAccounts(): ReactElement {
             `${p.firstName} ${p.lastName} (${formatSSID(p.ssid)})`
           }
         />
-        <DatePicker name="startDate" label="Starting Month" />
-        <DatePicker name="endDate" label="Ending Month" />
+        <DatePicker
+          name="startDate"
+          label="Starting Date"
+          sizes={{ xs: 12, lg: 6 }}
+        />
+        <DatePicker
+          name="endDate"
+          label="Ending Date"
+          sizes={{ xs: 12, lg: 6 }}
+        />
       </Grid>
     </FormListContainer>
   )

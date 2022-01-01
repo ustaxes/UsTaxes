@@ -1,9 +1,9 @@
-import { Information } from 'ustaxes/redux/data'
-import TaxPayer from 'ustaxes/redux/TaxPayer'
+import { Information } from '../redux/data'
+import TaxPayer from '../redux/TaxPayer'
 import Form, { FormTag } from './Form'
 import ScheduleE from './ScheduleE'
 import { sumFields } from './util'
-import log from 'ustaxes/log'
+import log from '../log'
 import F1040 from './F1040'
 import F8889 from './F8889'
 
@@ -17,18 +17,25 @@ export default class Schedule1 extends Form {
   scheduleE?: ScheduleE
   f1040: F1040
   f8889?: F8889
+  f8889Spouse?: F8889
   otherIncomeStrings: Set<string>
 
-  constructor(info: Information, f1040: F1040, f8889?: F8889) {
+  constructor(info: Information, f1040: F1040) {
     super()
     this.state = info
     this.f1040 = f1040
-    this.f8889 = f8889
     this.otherIncomeStrings = new Set<string>()
   }
 
   addScheduleE = (scheduleE: ScheduleE): void => {
     this.scheduleE = scheduleE
+  }
+
+  addF8889 = (f8889: F8889): void => {
+    this.f8889 = f8889
+  }
+  addF8889Spouse = (f8889: F8889): void => {
+    this.f8889Spouse = f8889
   }
 
   l1 = (): number | undefined => undefined
@@ -40,10 +47,20 @@ export default class Schedule1 extends Form {
   l6 = (): number | undefined => undefined
   l7 = (): number | undefined => undefined
   l8 = (): number => {
-    if (this.f8889?.l16() !== undefined || this.f8889?.l20() !== undefined) {
+    if (
+      this.f8889?.l16() !== undefined ||
+      this.f8889?.l20() !== undefined ||
+      this.f8889Spouse?.l16() !== undefined ||
+      this.f8889Spouse?.l20() !== undefined
+    ) {
       this.otherIncomeStrings.add('HSA')
     }
-    return sumFields([this.f8889?.l16(), this.f8889?.l20()])
+    return sumFields([
+      this.f8889?.l16(),
+      this.f8889?.l20(),
+      this.f8889Spouse?.l16(),
+      this.f8889Spouse?.l20()
+    ])
   }
   l9 = (): number =>
     sumFields([
@@ -59,7 +76,8 @@ export default class Schedule1 extends Form {
 
   l10 = (): number | undefined => undefined
   l11 = (): number | undefined => undefined
-  l12 = (): number | undefined => this.f8889?.l13()
+  l12 = (): number | undefined =>
+    sumFields([this.f8889?.l13(), this.f8889Spouse?.l13()])
   l13 = (): number | undefined => undefined
   l14 = (): number | undefined => undefined
   l15 = (): number | undefined => undefined
@@ -106,7 +124,7 @@ export default class Schedule1 extends Form {
       this.l6(),
       this.l7(),
       Array.from(this.otherIncomeStrings).join(' '), // Other income type textbox
-      undefined, // Other income type 2 textbox
+      undefined, // Other income type 2
       this.l8(),
       this.l9(),
       this.l10(),
