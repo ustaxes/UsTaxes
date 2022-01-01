@@ -16,7 +16,7 @@ import MenuIcon from '@material-ui/icons/Menu'
 import ResponsiveDrawer, { item, Section } from './ResponsiveDrawer'
 
 import W2JobInfo from './income/W2JobInfo'
-import CreatePDF from './createPDF'
+import CreatePDF from './CreatePDF'
 import PrimaryTaxpayer from './TaxPayer'
 import RefundBankAccount from './RefundBankAccount'
 import SpouseAndDependent from './TaxPayer/SpouseAndDependent'
@@ -30,7 +30,6 @@ import Urls from 'ustaxes/data/urls'
 
 import { isMobile } from 'react-device-detect'
 import HealthSavingsAccounts from './savingsAccounts/healthSavingsAccounts'
-import { makeDownloader } from 'ustaxes/pdfFiller/pdfHandler'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -62,8 +61,6 @@ const useStyles = makeStyles((theme: Theme) =>
     }
   })
 )
-
-const downloader = makeDownloader('')
 
 const getTitleAndPage = (sections: Section[], currentUrl: string): string => {
   const page = sections
@@ -126,11 +123,7 @@ export const drawerSections: Section[] = [
     items: [
       item('Refund Information', Urls.refund, <RefundBankAccount />),
       item('Informational Questions', Urls.questions, <Questions />),
-      item(
-        'Review and Print',
-        Urls.createPdf,
-        <CreatePDF downloader={downloader} />
-      )
+      item('Review and Print', Urls.createPdf, <CreatePDF />)
     ]
   }
 ]

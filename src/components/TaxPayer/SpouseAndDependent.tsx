@@ -1,7 +1,7 @@
 import { ReactElement, useEffect, useState } from 'react'
 import { Helmet } from 'react-helmet'
 import { useForm, FormProvider } from 'react-hook-form'
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch, useSelector, TaxesState } from 'ustaxes/redux'
 import { Patterns } from 'ustaxes/components/Patterns'
 import {
   LabeledInput,
@@ -10,7 +10,6 @@ import {
   GenericLabeledDropdown
 } from 'ustaxes/components/input'
 import {
-  TaxesState,
   TaxPayer,
   Dependent,
   Spouse,
@@ -18,7 +17,7 @@ import {
   FilingStatus,
   FilingStatusTexts,
   filingStatuses
-} from 'ustaxes/redux/data'
+} from 'ustaxes/core/data'
 import {
   addDependent,
   addSpouse,
@@ -62,7 +61,7 @@ const blankUserDependentForm: UserDependentForm = {
 }
 
 const toDependent = (formData: UserDependentForm): Dependent => {
-  const { birthYear, numberOfMonths, isStudent, ...rest } = formData
+  const { birthYear, isStudent, numberOfMonths, ...rest } = formData
 
   return {
     ...rest,
@@ -205,41 +204,63 @@ export const SpouseInfo = (): ReactElement => {
   return <FormProvider {...methods}>{page}</FormProvider>
 }
 
-const SpouseAndDependent = (): ReactElement => {
-  const taxPayer: TaxPayer | undefined = useSelector((state: TaxesState) => {
-    return state.information.taxPayer
-  })
-
-  const [error, setError] = useState<ReactElement | undefined>(undefined)
-
-  const { onAdvance, navButtons } = usePager()
-
-  const methods = useForm<{ filingStatus: FilingStatus | '' }>({
-    defaultValues: { filingStatus: taxPayer.filingStatus ?? '' }
-  })
-
-  const { handleSubmit, getValues, reset, watch } = methods
-
-  // const variable dispatch to allow use inside function
+export const FilingStatusDropdown = (): ReactElement => {
   const dispatch = useDispatch()
 
   const onSubmit = (formData: { filingStatus: FilingStatus }): void => {
     dispatch(saveFilingStatusInfo(formData.filingStatus))
     onAdvance()
   }
+  const taxPayer: TaxPayer | undefined = useSelector((state: TaxesState) => {
+    return state.information.taxPayer
+  })
 
   const allowedFilingStatuses = filingStatuses(taxPayer)
+
+  const { onAdvance, navButtons } = usePager()
+
+  const defaultValues: { filingStatus: FilingStatus | '' } = {
+    filingStatus: (() => {
+      if (
+        taxPayer.filingStatus !== undefined &&
+        allowedFilingStatuses.includes(taxPayer.filingStatus)
+      ) {
+        return taxPayer.filingStatus
+      }
+      return ''
+    })()
+  }
+
+  const methods = useForm({
+    defaultValues
+  })
+
+  const [error, setError] = useState<ReactElement | undefined>(undefined)
+
+  const {
+    handleSubmit,
+    getValues,
+    reset,
+    watch,
+    formState: { isDirty }
+  } = methods
 
   const currentFilingStatus = getValues().filingStatus
 
   const newValue = watch()
 
   useEffect(() => {
-    if (
+    // Handle state updates outside this control
+    if (!isDirty && currentFilingStatus !== defaultValues.filingStatus) {
+      reset(defaultValues)
+    }
+    // Handle other state updates that cause current
+    // value to be invalid
+    else if (
       currentFilingStatus !== '' &&
       !allowedFilingStatuses.includes(currentFilingStatus)
     ) {
-      reset({ filingStatus: '' })
+      reset({})
       setError(
         <Box paddingTop={2}>
           <Alert severity="warning">
@@ -252,36 +273,42 @@ const SpouseAndDependent = (): ReactElement => {
     } else if (currentFilingStatus !== '' || newValue.filingStatus !== '') {
       setError(undefined)
     }
-  })
+  }, [defaultValues.filingStatus, currentFilingStatus])
 
-  const page = (
-    <form tabIndex={-1} onSubmit={handleSubmit(onSubmit)}>
-      <Helmet>
-        <title>Family Information | Personal | UsTaxes.org</title>
-      </Helmet>
-      <h2>Family Information</h2>
-      <h3>Spouse Information</h3>
-      <SpouseInfo />
-
-      <h3>Dependent Information</h3>
-      <AddDependentForm />
-
-      <Grid container spacing={2}>
-        <GenericLabeledDropdown<FilingStatus>
-          label="Filing Status"
-          dropDownData={allowedFilingStatuses}
-          valueMapping={(x) => x}
-          keyMapping={(x, i) => i}
-          textMapping={(status) => FilingStatusTexts[status]}
-          name="filingStatus"
-        />
-      </Grid>
-      {error}
-      {navButtons}
-    </form>
+  return (
+    <FormProvider {...methods}>
+      <form tabIndex={-1} onSubmit={handleSubmit(onSubmit)}>
+        <Box marginBottom={2}>
+          <GenericLabeledDropdown<FilingStatus>
+            label="Filing Status"
+            dropDownData={allowedFilingStatuses}
+            valueMapping={(x) => x}
+            keyMapping={(x, i) => i}
+            textMapping={(status) => FilingStatusTexts[status]}
+            name="filingStatus"
+          />
+        </Box>
+        {error}
+        {navButtons}
+      </form>
+    </FormProvider>
   )
-
-  return <FormProvider {...methods}>{page}</FormProvider>
 }
+
+const SpouseAndDependent = (): ReactElement => (
+  <>
+    <Helmet>
+      <title>Family Information | Personal | UsTaxes.org</title>
+    </Helmet>
+    <h2>Family Information</h2>
+    <h3>Spouse Information</h3>
+    <SpouseInfo />
+
+    <h3>Dependent Information</h3>
+    <AddDependentForm />
+
+    <FilingStatusDropdown />
+  </>
+)
 
 export default SpouseAndDependent

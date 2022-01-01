@@ -1,10 +1,9 @@
-import { ReactElement, ReactNode, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import { ReactElement, ReactNode } from 'react'
+import { useDispatch, useSelector, TaxesState } from 'ustaxes/redux'
 import { Helmet } from 'react-helmet'
 import { FormProvider, useForm, useFormContext } from 'react-hook-form'
 import { usePager } from 'ustaxes/components/pager'
 import {
-  TaxesState,
   IncomeW2,
   Person,
   PersonRole,

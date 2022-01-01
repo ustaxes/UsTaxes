@@ -9,7 +9,8 @@ import rootReducer, { blankState } from './reducer'
 
 import { persistStore, persistReducer, createTransform } from 'redux-persist'
 import storage from 'redux-persist/lib/storage' // defaults to localStorage for web
-import { Information, TaxesState } from './data'
+import { Information } from 'ustaxes/core/data'
+import { YearsTaxesState } from '.'
 import { Actions } from './actions'
 import { PersistPartial } from 'redux-persist/es/persistReducer'
 import { FSAction } from './fs/Actions'
@@ -39,22 +40,32 @@ const persistConfig = {
 
 const persistedReducer = fsReducer(
   'ustaxes_save.json',
-  persistReducer<CombinedState<TaxesState>, Actions>(persistConfig, rootReducer)
+  persistReducer<CombinedState<YearsTaxesState>, Actions>(
+    persistConfig,
+    rootReducer
+  )
 )
 
-export type InfoStore = Store<TaxesState, FSAction<TaxesState> & Actions> & {
-  dispatch: unknown
-}
-
-export type PersistedStore = Store<
-  TaxesState & PersistPartial,
-  FSAction<TaxesState> & Actions
+export type InfoStore = Store<
+  YearsTaxesState,
+  FSAction<YearsTaxesState> & Actions
 > & {
   dispatch: unknown
 }
 
-export const createStoreUnpersisted = (state: TaxesState): InfoStore =>
-  reduxCreateStore(rootReducer, state, undefined)
+export type PersistedStore = Store<
+  YearsTaxesState & PersistPartial,
+  FSAction<YearsTaxesState> & Actions
+> & {
+  dispatch: unknown
+}
+
+export const createWholeStoreUnpersisted = (
+  state: YearsTaxesState
+): InfoStore => reduxCreateStore(rootReducer, state, undefined)
+
+export const createStoreUnpersisted = (information: Information): InfoStore =>
+  createWholeStoreUnpersisted({ Y2020: information, activeYear: 'Y2020' })
 
 export const createStore = (): PersistedStore =>
   reduxCreateStore(persistedReducer, applyMiddleware(logger))

@@ -7,8 +7,8 @@ import {
   Income1099Type,
   PersonRole,
   IncomeW2,
-  TaxesState
-} from 'ustaxes/redux/data'
+  Information
+} from 'ustaxes/core/data'
 import { blankState } from 'ustaxes/redux/reducer'
 import W2JobInfo from 'ustaxes/components/income/W2JobInfo'
 import userEvent from '@testing-library/user-event'
@@ -38,49 +38,47 @@ const testW2sSpouse: IncomeW2 = {
   stateWithholding: 777
 }
 
-const testTaxesState: TaxesState = {
-  information: {
-    f1099s: [
-      {
-        payer: 'payer-name',
-        type: Income1099Type.INT,
-        form: { income: 1111111 },
-        personRole: PersonRole.PRIMARY
-      }
-    ],
-    w2s: [testW2sSpouse],
-    estimatedTaxes: [],
-    realEstate: [],
-    taxPayer: {
-      primaryPerson: {
-        address: {
-          address: '0001',
-          aptNo: '',
-          city: 'AR city',
-          state: 'AR',
-          zip: '1234567'
-        },
-        firstName: 'payer-first-name',
-        lastName: 'payer-last-name',
-        isTaxpayerDependent: false,
-        role: PersonRole.PRIMARY,
-        ssid: '111111111'
+const testInfo: Information = {
+  f1099s: [
+    {
+      payer: 'payer-name',
+      type: Income1099Type.INT,
+      form: { income: 1111111 },
+      personRole: PersonRole.PRIMARY
+    }
+  ],
+  w2s: [testW2sSpouse],
+  estimatedTaxes: [],
+  realEstate: [],
+  taxPayer: {
+    primaryPerson: {
+      address: {
+        address: '0001',
+        aptNo: '',
+        city: 'AR city',
+        state: 'AR',
+        zip: '1234567'
       },
-      spouse: {
-        firstName: 'spouse-first-name',
-        isTaxpayerDependent: false,
-        lastName: 'spouse-last-name',
-        role: PersonRole.SPOUSE,
-        ssid: '222222222'
-      },
-      dependents: [],
-      filingStatus: FilingStatus.MFS
+      firstName: 'payer-first-name',
+      lastName: 'payer-last-name',
+      isTaxpayerDependent: false,
+      role: PersonRole.PRIMARY,
+      ssid: '111111111'
     },
-    questions: {},
-    f1098es: [],
-    stateResidencies: [{ state: 'AL' }],
-    healthSavingsAccounts: []
-  }
+    spouse: {
+      firstName: 'spouse-first-name',
+      isTaxpayerDependent: false,
+      lastName: 'spouse-last-name',
+      role: PersonRole.SPOUSE,
+      ssid: '222222222'
+    },
+    dependents: [],
+    filingStatus: FilingStatus.MFS
+  },
+  questions: {},
+  f1098es: [],
+  stateResidencies: [{ state: 'AL' }],
+  healthSavingsAccounts: []
 }
 
 describe('W2JobInfo', () => {
@@ -90,14 +88,14 @@ describe('W2JobInfo', () => {
   })
 
   const setup = (
-    taxesState: TaxesState = { information: blankState }
+    info: Information = blankState
   ): {
     store: InfoStore
     changeByLabelText: (labelText: string | RegExp, input: string) => void
     selectOption: (labelText: string | RegExp, input: string) => void
     clickButton: (buttonText: string) => void
   } => {
-    const store = createStoreUnpersisted(taxesState)
+    const store = createStoreUnpersisted(info)
     const navButtons = <PagerButtons submitText="Save and Continue" />
 
     render(
@@ -194,7 +192,7 @@ describe('W2JobInfo', () => {
   })
 
   it('shows spouse W2 message', async () => {
-    setup(testTaxesState)
+    setup(testInfo)
 
     expect(
       screen.getByText(/Filing status is set to Married Filing Separately./)
@@ -202,8 +200,7 @@ describe('W2JobInfo', () => {
   })
 
   it('saves information', async () => {
-    const { changeByLabelText, selectOption, clickButton } =
-      setup(testTaxesState)
+    const { changeByLabelText, selectOption, clickButton } = setup(testInfo)
 
     clickButton('Add')
 
@@ -230,7 +227,7 @@ describe('W2JobInfo', () => {
 
   it('removes item of list', async () => {
     if (testW2sSpouse.employer?.employerName) {
-      setup(testTaxesState)
+      setup(testInfo)
 
       expect(
         screen.getByText(testW2sSpouse.employer.employerName)
@@ -245,7 +242,7 @@ describe('W2JobInfo', () => {
   })
 
   it('sets current information when editing', () => {
-    setup(testTaxesState)
+    setup(testInfo)
 
     userEvent.click(screen.getAllByRole('button')[0])
 
@@ -289,8 +286,7 @@ describe('W2JobInfo', () => {
   })
 
   it('updates information', async () => {
-    const { changeByLabelText, selectOption, clickButton } =
-      setup(testTaxesState)
+    const { changeByLabelText, selectOption, clickButton } = setup(testInfo)
 
     userEvent.click(screen.getAllByRole('button')[0])
 

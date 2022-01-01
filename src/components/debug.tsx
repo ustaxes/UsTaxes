@@ -2,11 +2,13 @@ import { ReactElement } from 'react'
 import { IconButton, makeStyles } from '@material-ui/core'
 import { Star } from '@material-ui/icons'
 import fc from 'fast-check'
-import { useDispatch } from 'react-redux'
-import { setEntireState } from 'ustaxes/redux/actions'
-import { TaxesState } from 'ustaxes/redux/data'
-import { taxesState } from 'ustaxes/tests/arbitraries'
+import { useDispatch, YearsTaxesState } from 'ustaxes/redux'
+import { setInfo } from 'ustaxes/redux/actions'
+import { Information } from 'ustaxes/core/data'
+import * as arbitraries from 'ustaxes/core/tests/arbitraries'
 import * as prand from 'pure-rand'
+import { useSelector } from 'react-redux'
+import { TaxYears } from 'ustaxes/data'
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -22,18 +24,22 @@ export const StateLoader = (): ReactElement => {
     return <></>
   }
   const dispatch = useDispatch()
+  const year = useSelector((state: YearsTaxesState) => state.activeYear)
 
   const classes = useStyles()
 
   const gen = new fc.Random(prand.mersenne(new Date().getMilliseconds()))
 
-  const generator = (): TaxesState => taxesState.noShrink().generate(gen).value
+  const information = arbitraries.forYear(TaxYears[year]).information()
+
+  const generator = (): Information =>
+    information.noShrink().generate(gen).value
 
   return (
     <div className={classes.root}>
       <IconButton
         className={classes.button}
-        onClick={() => dispatch(setEntireState(generator()))}
+        onClick={() => dispatch(setInfo(generator()))}
       >
         <Star />
         Seed random state
