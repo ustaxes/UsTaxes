@@ -1,17 +1,21 @@
 import { Information } from 'ustaxes/core/data'
-import { Either, isRight, left, run, runAsync } from 'ustaxes/core/util'
+import { Either, isRight, run, runAsync } from 'ustaxes/core/util'
 import { TaxYear } from 'ustaxes/data'
+import { create1040 as create1040For2019 } from 'ustaxes/forms/Y2019/irsForms/Main'
 import { create1040 as create1040For2020 } from 'ustaxes/forms/Y2020/irsForms/Main'
 import { create1040 as create1040For2021 } from 'ustaxes/forms/Y2021/irsForms/Main'
 
+import F1040For2019 from 'ustaxes/forms/Y2019/irsForms/F1040'
 import F1040For2020 from 'ustaxes/forms/Y2020/irsForms/F1040'
 import F1040For2021 from 'ustaxes/forms/Y2021/irsForms/F1040'
 
 import Form from 'ustaxes/core/irsForms/Form'
 import StateForm from 'ustaxes/core/stateForms/Form'
 
+import { createStateReturn as createStateReturn2019 } from 'ustaxes/forms/Y2019/stateForms'
 import { createStateReturn as createStateReturn2020 } from 'ustaxes/forms/Y2020/stateForms'
 import { createStateReturn as createStateReturn2021 } from 'ustaxes/forms/Y2021/stateForms'
+
 import { PDFDocument } from 'pdf-lib'
 import { fillPDF } from 'ustaxes/core/pdfFiller/fillPdf'
 import {
@@ -19,8 +23,6 @@ import {
   downloadPDF,
   PDFDownloader
 } from 'ustaxes/core/pdfFiller/pdfHandler'
-import { F1040Error } from './errors'
-import { StateFormError } from './StateForms'
 
 export class YearCreateForm {
   readonly year: TaxYear
@@ -144,8 +146,9 @@ export class CreateForms {
 
     const params = {
       Y2019: {
-        createF1040: () => left([F1040Error.unsupportedTaxYear]),
-        createStateReturn: () => left([StateFormError.unsupportedTaxYear])
+        createF1040: takeSecond(create1040For2019),
+        createStateReturn: (f: Form) =>
+          createStateReturn2019(info, f as F1040For2019)
       },
       Y2020: {
         createF1040: takeSecond(create1040For2020),
