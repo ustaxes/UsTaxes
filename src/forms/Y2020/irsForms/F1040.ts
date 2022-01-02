@@ -186,6 +186,10 @@ export default class F1040 extends Form {
       if (this.schedule1 === undefined) {
         this.schedule1 = new Schedule1(this.info, this)
       }
+
+      if (this.schedule2 === undefined) {
+        this.schedule2 = new Schedule2(this.info.taxPayer, this)
+      }
       this.schedule1.addF8889(this.f8889)
     }
 
@@ -197,6 +201,10 @@ export default class F1040 extends Form {
       this.f8889Spouse = new F8889(this.info, this.info.taxPayer.spouse)
       if (this.schedule1 === undefined) {
         this.schedule1 = new Schedule1(this.info, this)
+      }
+
+      if (this.schedule2 === undefined) {
+        this.schedule2 = new Schedule2(this.info.taxPayer, this)
       }
       this.schedule1.addF8889Spouse(this.f8889Spouse)
     }
