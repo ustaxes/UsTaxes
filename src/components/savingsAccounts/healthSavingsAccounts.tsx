@@ -1,6 +1,7 @@
 import { ReactElement } from 'react'
 import { Helmet } from 'react-helmet'
-import { useDispatch, useSelector } from 'react-redux'
+import { useSelector } from 'react-redux'
+import { useYearSelector, useYearDispatch } from 'ustaxes/redux/yearDispatch'
 import { FormProvider, useForm } from 'react-hook-form'
 import { usePager } from 'ustaxes/components/pager'
 import { HealthSavingsAccount, Person, PersonRole } from 'ustaxes/core/data'
@@ -73,18 +74,18 @@ const toHSAUserInput = (data: HealthSavingsAccount): HSAUserInput => ({
 })
 
 export default function HealthSavingsAccounts(): ReactElement {
-  const hsa = useSelector(
+  const hsa = useYearSelector(
     (state: TaxesState) => state.information.healthSavingsAccounts
   )
 
-  const people: Person[] = useSelector((state: TaxesState) => [
+  const people: Person[] = useYearSelector((state: TaxesState) => [
     state.information.taxPayer?.primaryPerson,
     state.information.taxPayer?.spouse
   ])
     .filter((p) => p !== undefined)
     .map((p) => p as Person)
 
-  const dispatch = useDispatch()
+  const dispatch = useYearDispatch()
 
   const methods = useForm<HSAUserInput>()
   const { handleSubmit } = methods
