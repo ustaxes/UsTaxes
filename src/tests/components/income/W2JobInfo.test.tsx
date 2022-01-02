@@ -80,6 +80,24 @@ const testInfo: Information = {
   stateResidencies: [{ state: 'AL' }]
 }
 
+const errors = {
+  inputRequired: () => screen.queryAllByText('Input is required'),
+  selectionRequired: () => screen.queryAllByText('Make a selection'),
+  inputWordFormat: () =>
+    screen.queryAllByText('Input should only include letters and spaces'),
+  einFormat: () =>
+    screen.queryAllByText('Input should be filled with 9 digits'),
+  all: () => {
+    // just a moment
+  }
+}
+errors.all = () => [
+  ...errors.inputRequired(),
+  ...errors.selectionRequired(),
+  ...errors.inputWordFormat(),
+  ...errors.einFormat()
+]
+
 describe('W2JobInfo', () => {
   afterEach(async () => {
     await waitFor(() => localStorage.clear())
@@ -142,8 +160,8 @@ describe('W2JobInfo', () => {
       clickButton('Save')
 
       await waitFor(() => {
-        expect(screen.getAllByText('Input is required')).toHaveLength(8)
-        expect(screen.getAllByText('Make a selection')).toHaveLength(2)
+        expect(errors.inputRequired()).toHaveLength(10)
+        expect(errors.selectionRequired()).toHaveLength(2)
       })
     })
 
@@ -154,11 +172,7 @@ describe('W2JobInfo', () => {
       changeByLabelText('Employer name', '123')
       clickButton('Save')
 
-      await waitFor(() =>
-        expect(
-          screen.getByText('Input should only include letters and spaces')
-        ).toBeInTheDocument()
-      )
+      await waitFor(() => expect(errors.inputWordFormat()).toHaveLength(1))
     })
 
     it('Employers Identification Number', async () => {
@@ -168,11 +182,7 @@ describe('W2JobInfo', () => {
       changeByLabelText(/Employer's Identification Number/, '123')
       clickButton('Save')
 
-      await waitFor(() =>
-        expect(
-          screen.getByText('Input should be filled with 9 digits')
-        ).toBeInTheDocument()
-      )
+      await waitFor(() => expect(errors.einFormat()).toHaveLength(1))
     })
 
     it('Occupation', async () => {
@@ -182,11 +192,7 @@ describe('W2JobInfo', () => {
       changeByLabelText('Occupation', '123')
       clickButton('Save')
 
-      await waitFor(() =>
-        expect(
-          screen.getByText('Input should only include letters and spaces')
-        ).toBeInTheDocument()
-      )
+      await waitFor(() => expect(errors.inputWordFormat()).toHaveLength(1))
     })
   })
 
