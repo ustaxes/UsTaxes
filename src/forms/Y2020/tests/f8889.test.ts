@@ -1,16 +1,14 @@
 /* eslint @typescript-eslint/no-empty-function: "off" */
 
-import fc from 'fast-check'
 import {
   FilingStatus,
   Income1099Type,
   PersonRole,
   Information
-} from '../redux/data'
+} from 'ustaxes/core/data'
 import { CURRENT_YEAR, healthSavingsAccounts } from '../data/federal'
 import F8889, { needsF8889 } from '../irsForms/F8889'
 import { cloneDeep } from 'lodash'
-import * as arbitraries from './arbitraries'
 
 const baseInformation: Information = {
   f1099s: [
@@ -98,33 +96,6 @@ describe('Health Savings Accounts', () => {
       healthSavingsAccounts.contributionLimit['self-only']
     )
     expect(f8889.calculatedCoverageType).toEqual('self-only')
-  })
-
-  it('should give the right coverage amount', () => {
-    fc.assert(
-      fc.property(arbitraries.information, (information) => {
-        if (
-          information.taxPayer.primaryPerson !== undefined &&
-          information.healthSavingsAccounts.length > 0
-        ) {
-          const f8889 = new F8889(
-            information,
-            information.taxPayer.primaryPerson
-          )
-          if (f8889.fullYearHsa()) {
-            if (f8889.lastMonthCoverage() == 'self-only') {
-              expect(f8889.contributionLimit()).toEqual(
-                healthSavingsAccounts.contributionLimit['self-only']
-              )
-            } else {
-              expect(f8889.contributionLimit()).toEqual(
-                healthSavingsAccounts.contributionLimit['family']
-              )
-            }
-          }
-        }
-      })
-    )
   })
 
   it('should select family coverage when both are options', () => {
