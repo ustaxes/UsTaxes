@@ -28,6 +28,7 @@ import { Grid, Box } from '@material-ui/core'
 import { Work } from '@material-ui/icons'
 import { addW2, editW2, removeW2 } from 'ustaxes/redux/actions'
 import { Alert } from '@material-ui/lab'
+import { parseFormNumber, parseFormNumberOrThrow } from 'ustaxes/core/util'
 
 interface IncomeW2UserInput {
   employer?: Employer
@@ -63,14 +64,14 @@ const toIncomeW2 = (formData: IncomeW2UserInput): IncomeW2 => ({
   // Note we are not error checking here because
   // we are already in the input validated happy path
   // of handleSubmit.
-  income: parseInt(formData.income),
-  medicareIncome: parseInt(formData.medicareIncome),
-  fedWithholding: parseInt(formData.fedWithholding),
-  ssWithholding: parseInt(formData.ssWithholding),
-  medicareWithholding: parseInt(formData.medicareWithholding),
+  income: parseFormNumberOrThrow(formData.income),
+  medicareIncome: parseFormNumberOrThrow(formData.medicareIncome),
+  fedWithholding: parseFormNumberOrThrow(formData.fedWithholding),
+  ssWithholding: parseFormNumberOrThrow(formData.ssWithholding),
+  medicareWithholding: parseFormNumberOrThrow(formData.medicareWithholding),
   state: formData.state,
-  stateWages: parseInt(formData.stateWages),
-  stateWithholding: parseInt(formData.stateWithholding)
+  stateWages: parseFormNumber(formData.stateWages),
+  stateWithholding: parseFormNumber(formData.stateWithholding)
 })
 
 const toIncomeW2UserInput = (data: IncomeW2): IncomeW2UserInput => ({
