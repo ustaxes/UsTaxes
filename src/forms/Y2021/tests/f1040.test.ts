@@ -1,4 +1,4 @@
-import { testKit, commonTests } from '.'
+import { commonTests } from '.'
 
 jest.setTimeout(40000)
 
