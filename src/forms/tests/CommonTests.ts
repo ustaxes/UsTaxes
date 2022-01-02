@@ -41,14 +41,16 @@ export default class CommonTests<F1040 extends Form> {
       })
     })
 
-    it('should not create duplicate schedules in', async () => {
-      await this.testKit.with1040Assert(async (forms) => {
-        expect(new Set(forms.map((a) => a.tag)).size).toEqual(forms.length)
-        expect(new Set(forms.map((a) => a.sequenceIndex)).size).toEqual(
-          forms.length
-        )
-      })
-    })
+    // Some forms like 8889 are included multiple times in some situations
+    // so this broad test no longer holds true
+    // it('should not create duplicate schedules in', async () => {
+    //   await this.testKit.with1040Assert(async (forms) => {
+    //     expect(new Set(forms.map((a) => a.tag)).size).toEqual(forms.length)
+    //     expect(new Set(forms.map((a) => a.sequenceIndex)).size).toEqual(
+    //       forms.length
+    //     )
+    //   })
+    // })
 
     it('should arrange attachments according to sequence order', async () => {
       await this.testKit.with1040Assert(async (forms) => {
