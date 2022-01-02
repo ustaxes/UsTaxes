@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 
-import fc, { date, Parameters } from 'fast-check'
+import fc, { Parameters } from 'fast-check'
 import { Information } from 'ustaxes/core/data'
 import Form from 'ustaxes/core/irsForms/Form'
 import { run } from 'ustaxes/core/util'
