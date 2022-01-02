@@ -242,10 +242,10 @@ export default class F8889 extends Form {
   l14a = (): number =>
     this.hsas.reduce((total, hsa) => hsa.totalDistributions + total, 0)
   l14b = (): number | undefined => undefined
-  l14c = (): number => this.l14a() - (this.l14b() ?? 0)
+  l14c = (): number => Math.max(0, this.l14a() - (this.l14b() ?? 0))
   l15 = (): number =>
     this.hsas.reduce((total, hsa) => hsa.qualifiedDistributions + total, 0)
-  l16 = (): number => this.l14c() - this.l15()
+  l16 = (): number => Math.max(0, this.l14c() - this.l15())
   l17a = (): boolean => false
   // TODO: add in logic for when line 17a is true
   l17b = (): number | undefined => Math.round(this.l16() * 0.2)
