@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 
-import fc, { Parameters } from 'fast-check'
+import fc, { date, Parameters } from 'fast-check'
 import { Information } from 'ustaxes/core/data'
 import Form from 'ustaxes/core/irsForms/Form'
 import { run } from 'ustaxes/core/util'
@@ -37,7 +37,11 @@ export default class TestKit {
     try {
       const builder = this.builder.build(info)
       const pdfs = await builder.f1040Pdfs()
-      const saveDirName = `Errors ${new Date().getUTCHours()}:${new Date().getMinutes()}:${new Date().getSeconds()}`
+      const today = new Date()
+      const dateStr = `${today.getFullYear()}-${
+        today.getMonth() + 1
+      }-${today.getDate()}`
+      const saveDirName = `Errors ${dateStr} ${today.toLocaleTimeString()}`
       const saveDir = path.resolve(logsDir, saveDirName)
       await fs.mkdir(saveDir, { recursive: true })
       await run(pdfs).fold(
