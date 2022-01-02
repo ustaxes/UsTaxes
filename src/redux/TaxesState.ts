@@ -8,5 +8,5 @@ export default class TaxesStateMethods {
     this.ts = ts
   }
 
-  info = (): Information | undefined => this.ts[this.ts.activeYear]
+  info = (): Information => this.ts[this.ts.activeYear]
 }

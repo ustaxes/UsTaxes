@@ -1,13 +1,9 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain */
 
-// import * as fc from 'fast-check'
 import { TaxYear } from 'ustaxes/data'
 import log from 'ustaxes/core/log'
 
-// import { YearsTaxesState } from 'ustaxes/redux'
-// import { blankState } from 'ustaxes/redux/reducer'
-// import * as arbitraries from 'ustaxes/core/tests/arbitraries'
 import * as yarbitraries from '../../arbitraries'
 import { SpouseAndDependentTestPage } from './Pages'
 import { filingStatuses, TaxPayer } from 'ustaxes/core/data'
@@ -29,24 +25,6 @@ jest.setTimeout(10000)
 
 describe('FilingStatus', () => {
   jest.setTimeout(20000)
-
-  // const twoYears = (): fc.Arbitrary<[TaxYear, TaxYear, YearsTaxesState]> =>
-  //   fc.tuple(yarbitraries.taxYear, yarbitraries.taxYear).chain(([y1, y2]) =>
-  //     fc
-  //       .tuple(
-  //         new arbitraries.Arbitraries(TaxYears[y1]).taxPayer(),
-  //         new arbitraries.Arbitraries(TaxYears[y2]).taxPayer()
-  //       )
-  //       .map(([tp1, tp2]): [TaxYear, TaxYear, YearsTaxesState] => [
-  //         y1,
-  //         y2,
-  //         {
-  //           [y1]: { ...blankState, taxPayer: tp1 },
-  //           [y2]: { ...blankState, taxPayer: tp2 },
-  //           activeYear: y1
-  //         }
-  //       ])
-  //   )
 
   it('should update on year change', async () => {
     const state = yarbitraries.justOneState()

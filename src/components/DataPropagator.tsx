@@ -16,8 +16,8 @@ const DataPropagator = (): ReactElement => {
   const yearIndex = _.indexOf(allYears, wholeState.activeYear)
   const dispatch = useDispatch()
 
-  const currentYear: Information | undefined = wholeState[wholeState.activeYear]
-  const priorYear: Information | undefined = wholeState[allYears[yearIndex - 1]]
+  const currentYear: Information = wholeState[wholeState.activeYear]
+  const priorYear: Information = wholeState[allYears[yearIndex - 1]]
 
   const canPropagate =
     yearIndex > 0 &&
