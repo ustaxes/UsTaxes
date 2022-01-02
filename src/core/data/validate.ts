@@ -20,7 +20,12 @@ export const checkType = <A>(data: A, validate: ValidateFunction<A>): A => {
     log.error(validate.errors)
     log.error(data)
 
-    throw new Error('Validation Failed: ' + validate.errors?.join('\n'))
+    throw new Error(
+      'Validation Failed: ' +
+        validate.errors
+          ?.map((e) => `${e.instancePath}: ${e.message}`)
+          .join('\n')
+    )
   }
 
   return data
