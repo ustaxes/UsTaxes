@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from 'react-redux'
 import { Actions, SignalAction } from './actions'
 import { YearsTaxesState } from '.'
 import { TaxYear } from 'ustaxes/data'
-import { blankState } from './reducer'
 import { TaxesState } from '.'
 
 /**
@@ -29,10 +28,7 @@ const useYearDispatch = (): Dispatch<SignalAction> => {
 const useYearSelector = <R>(f: (t: TaxesState) => R): R =>
   f(
     useSelector((state: YearsTaxesState) => ({
-      information:
-        state.activeYear === undefined
-          ? blankState
-          : state[state.activeYear] ?? blankState
+      information: state[state.activeYear]
     }))
   )
 

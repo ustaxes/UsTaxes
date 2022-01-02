@@ -75,18 +75,14 @@ const Summary = (): ReactElement => {
   const year: TaxYear = useSelector(
     (state: YearsTaxesState) => state.activeYear
   )
-  const info: Information | undefined = useSelector(
+  const info: Information = useSelector(
     (state: YearsTaxesState) => state[state.activeYear]
   )
 
-  const builder = info === undefined ? undefined : yearFormBuilder(year, info)
+  const builder = yearFormBuilder(year, info)
 
   const summaryBody = (() => {
-    if (
-      info === undefined ||
-      builder === undefined ||
-      info.taxPayer.primaryPerson === undefined
-    ) {
+    if (info.taxPayer.primaryPerson === undefined) {
       return <p>No data entered yet</p>
     } else {
       const f1040Result = builder.f1040()
