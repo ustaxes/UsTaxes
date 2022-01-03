@@ -9,6 +9,7 @@ import {
   Information,
   HealthSavingsAccount
 } from 'ustaxes/core/data'
+import { blankState } from './reducer'
 
 export interface ArrayItemEditAction<A> {
   index: number
@@ -22,8 +23,15 @@ export interface ArrayItemEditAction<A> {
  */
 export type TaxesState = { information: Information }
 
-export type YearsTaxesState = Partial<{ [K in TaxYear]: Information }> & {
+export type YearsTaxesState = { [K in TaxYear]: Information } & {
   activeYear: TaxYear
+}
+
+export const blankYearTaxesState: YearsTaxesState = {
+  Y2019: blankState,
+  Y2020: blankState,
+  Y2021: blankState,
+  activeYear: 'Y2020'
 }
 
 export type EditDependentAction = ArrayItemEditAction<Dependent>

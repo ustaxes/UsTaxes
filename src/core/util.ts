@@ -149,3 +149,22 @@ export const fix2 = fixDecimals(2)
 export const fix0 = (n: number): number => Math.round(n)
 export const fix5 = fixDecimals(5)
 export const fix10 = fixDecimals(10)
+
+export const parseFormNumber = (x: string | undefined): number | undefined => {
+  if (x !== undefined && x.length > 0) {
+    try {
+      return parseFloat(x)
+    } catch (e) {
+      return undefined
+    }
+  }
+  return undefined
+}
+
+export const parseFormNumberOrThrow = (x: string | undefined): number => {
+  const res = parseFormNumber(x)
+  if (res === undefined) {
+    throw new Error(`${x} does not parse to number`)
+  }
+  return res
+}
