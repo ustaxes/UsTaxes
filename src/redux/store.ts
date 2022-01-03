@@ -10,7 +10,7 @@ import rootReducer, { blankState } from './reducer'
 import { persistStore, persistReducer, createTransform } from 'redux-persist'
 import storage from 'redux-persist/lib/storage' // defaults to localStorage for web
 import { Information } from 'ustaxes/core/data'
-import { YearsTaxesState } from '.'
+import { blankYearTaxesState, YearsTaxesState } from '.'
 import { Actions } from './actions'
 import { PersistPartial } from 'redux-persist/es/persistReducer'
 import { FSAction } from './fs/Actions'
@@ -65,7 +65,10 @@ export const createWholeStoreUnpersisted = (
 ): InfoStore => reduxCreateStore(rootReducer, state, undefined)
 
 export const createStoreUnpersisted = (information: Information): InfoStore =>
-  createWholeStoreUnpersisted({ Y2020: information, activeYear: 'Y2020' })
+  createWholeStoreUnpersisted({
+    ...blankYearTaxesState,
+    Y2020: information
+  })
 
 export const createStore = (): PersistedStore =>
   reduxCreateStore(persistedReducer, applyMiddleware(logger))

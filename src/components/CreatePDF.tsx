@@ -22,11 +22,11 @@ export default function CreatePDF(): ReactElement {
   const year: TaxYear = useSelector(
     (state: YearsTaxesState) => state.activeYear
   )
-  const info: Information | undefined = useSelector(
+  const info: Information = useSelector(
     (state: YearsTaxesState) => state[state.activeYear]
   )
 
-  const builder = info === undefined ? undefined : yearFormBuilder(year, info)
+  const builder = yearFormBuilder(year, info)
 
   useEffect(() => {
     if (builder !== undefined) {
