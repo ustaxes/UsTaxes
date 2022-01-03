@@ -13,6 +13,8 @@ beforeAll(() => {
   })
 })
 
+jest.setTimeout(10000)
+
 function hasSSRefund(f1040: F1040): boolean {
   const s3 = f1040.schedule3
   const l10 = s3?.l10()
