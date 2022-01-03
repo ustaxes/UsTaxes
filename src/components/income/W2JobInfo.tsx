@@ -28,6 +28,7 @@ import { Grid, Box } from '@material-ui/core'
 import { Work } from '@material-ui/icons'
 import { addW2, editW2, removeW2 } from 'ustaxes/redux/actions'
 import { Alert } from '@material-ui/lab'
+import { parseFormNumberOrThrow } from 'ustaxes/core/util'
 
 interface IncomeW2UserInput {
   employer?: Employer
@@ -63,14 +64,14 @@ const toIncomeW2 = (formData: IncomeW2UserInput): IncomeW2 => ({
   // Note we are not error checking here because
   // we are already in the input validated happy path
   // of handleSubmit.
-  income: parseInt(formData.income),
-  medicareIncome: parseInt(formData.medicareIncome),
-  fedWithholding: parseInt(formData.fedWithholding),
-  ssWithholding: parseInt(formData.ssWithholding),
-  medicareWithholding: parseInt(formData.medicareWithholding),
+  income: parseFormNumberOrThrow(formData.income),
+  medicareIncome: parseFormNumberOrThrow(formData.medicareIncome),
+  fedWithholding: parseFormNumberOrThrow(formData.fedWithholding),
+  ssWithholding: parseFormNumberOrThrow(formData.ssWithholding),
+  medicareWithholding: parseFormNumberOrThrow(formData.medicareWithholding),
   state: formData.state,
-  stateWages: parseInt(formData.stateWages),
-  stateWithholding: parseInt(formData.stateWithholding)
+  stateWages: parseFormNumberOrThrow(formData.stateWages),
+  stateWithholding: parseFormNumberOrThrow(formData.stateWithholding)
 })
 
 const toIncomeW2UserInput = (data: IncomeW2): IncomeW2UserInput => ({
@@ -198,14 +199,14 @@ export default function W2JobInfo(): ReactElement {
           name="stateWages"
           label={boxLabel('16', 'State wages, tips, etc')}
           patternConfig={Patterns.currency}
-          required={false}
+          required={true}
           sizes={{ xs: 12, lg: 6 }}
         />
         <LabeledInput
           name="stateWithholding"
           label={boxLabel('17', 'State income tax')}
           patternConfig={Patterns.currency}
-          required={false}
+          required={true}
           sizes={{ xs: 12, lg: 6 }}
         />
         <GenericLabeledDropdown
