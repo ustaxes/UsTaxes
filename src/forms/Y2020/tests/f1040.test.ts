@@ -1,3 +1,4 @@
+import { displayRound } from 'ustaxes/core/irsForms/util'
 import { commonTests, testKit } from '.'
 
 jest.setTimeout(40000)
@@ -19,7 +20,9 @@ describe('f1040', () => {
       expect(f1040).not.toBeUndefined()
       // tax is less than AGI
       if (f1040?.l11() ?? 0 > 0) {
-        expect(f1040?.l24() ?? 0).toBeLessThanOrEqual(f1040?.l11() ?? 0)
+        expect(displayRound(f1040?.l24()) ?? 0).toBeLessThanOrEqual(
+          displayRound(f1040?.l11()) ?? 0
+        )
       } else {
         expect(f1040?.l24() ?? 0).toEqual(0)
       }
