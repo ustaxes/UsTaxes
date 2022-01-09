@@ -193,17 +193,6 @@ export default function HealthSavingsAccounts(): ReactElement {
 
   const form: ReactElement = <>{hsaBlock}</>
 
-  // return (
-  //   <form tabIndex={-1} onSubmit={onAdvance}>
-  //     <h2>Health Savings Accounts (HSA)</h2>
-  //     {/* <p>
-  //       did you already make payments towards your {CURRENT_YEAR} taxes this
-  //       year or last year?
-  //     </p> */}
-  //     <FormProvider {...methods}>{form}</FormProvider>
-  //     {navButtons}
-  //   </form>
-  // )
   return (
     <FormProvider {...methods}>
       <form tabIndex={-1} onSubmit={handleSubmit(onAdvance)}>
