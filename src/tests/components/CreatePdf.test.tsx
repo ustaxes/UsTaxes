@@ -9,12 +9,14 @@ import { FakePagerProvider, PagerMethods } from '../common/FakePager'
 import * as arbitraries from 'ustaxes/core/tests/arbitraries'
 import * as fc from 'fast-check'
 import TestPage from '../common/Page'
-import { YearsTaxesState } from 'ustaxes/redux'
+import { blankYearTaxesState, YearsTaxesState } from 'ustaxes/redux'
 
 afterEach(async () => {
   await waitFor(() => localStorage.clear())
   jest.resetAllMocks()
 })
+
+jest.setTimeout(10000)
 
 export default class CreatePDFTestPage extends TestPage {
   pager: PagerMethods
@@ -41,6 +43,7 @@ export const tests = {
 describe('CreatePDF Page', () => {
   const taxpayerComponent = (information: Information = blankState) =>
     new CreatePDFTestPage({
+      ...blankYearTaxesState,
       Y2020: information,
       activeYear: 'Y2020'
     })

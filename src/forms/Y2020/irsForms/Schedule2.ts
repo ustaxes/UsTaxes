@@ -9,11 +9,13 @@ export default class Schedule2 extends Form {
   sequenceIndex = 2
   tp: TaxPayer
   f1040: F1040
+  otherIncomeStrings: Set<string>
 
   constructor(tp: TP, f1040: F1040) {
     super()
     this.tp = new TaxPayer(tp)
     this.f1040 = f1040
+    this.otherIncomeStrings = new Set<string>()
   }
 
   // Part I: Tax
@@ -27,8 +29,33 @@ export default class Schedule2 extends Form {
   l6 = (): number | undefined => undefined // TODO: additional tax on retirement accounts
   l7a = (): number | undefined => undefined // TODO: household employment taxes
   l7b = (): number | undefined => undefined // TODO: repayment of first-time homebuyer credit
-  l8 = (): number | undefined =>
-    sumFields([this.f1040.f8959?.l18(), this.f1040.f8960?.l17()])
+  l8 = (): number | undefined => {
+    if (
+      this.f1040.f8889?.l17b() !== undefined ||
+      this.f1040.f8889Spouse?.l17b() !== undefined
+    ) {
+      this.otherIncomeStrings.add('HSA')
+    }
+    if (this.f1040.f8889?.l21() !== undefined && this.f1040.f8889?.l21() > 0) {
+      this.otherIncomeStrings.add('HDHP')
+    }
+
+    if (
+      this.f1040.f8889Spouse?.l21() !== undefined &&
+      this.f1040.f8889Spouse?.l21() > 0
+    ) {
+      this.otherIncomeStrings.add('HDHP')
+    }
+
+    return sumFields([
+      this.f1040.f8959?.l18(),
+      this.f1040.f8960?.l17(),
+      this.f1040.f8889?.l17b(),
+      this.f1040.f8889?.l21(),
+      this.f1040.f8889Spouse?.l17b(),
+      this.f1040.f8889Spouse?.l21()
+    ])
+  }
   l9 = (): number | undefined => undefined // TODO: section 965 net tax liability
   l10 = (): number | undefined =>
     sumFields([
@@ -58,8 +85,8 @@ export default class Schedule2 extends Form {
       this.l7b(),
       this.f1040.f8959 !== undefined, // Form 8959 checkbox
       this.f1040.f8960 !== undefined, // Form 8960 checkbox
-      undefined,
-      undefined,
+      undefined, //others checkbox
+      Array.from(this.otherIncomeStrings).join(' '), // others textbox
       this.l8(),
       this.l9(),
       this.l10()

@@ -44,11 +44,12 @@ export default class Schedule2 extends Form {
   // TODO: Recapture of federal mortgage subsidy. If you sold your home in
   // 2021, see instructions
   l17b = (): number | undefined => undefined
-  // TODO: Additional tax on HSA distributions. Attach Form 8889..
-  l17c = (): number | undefined => undefined
-  // TODO: Additional tax on an HSA because you didn’t remain an eligible
-  // individual. Attach Form 8889
-  l17d = (): number | undefined => undefined
+
+  l17c = (): number | undefined =>
+    sumFields([this.f1040.f8889?.l17b(), this.f1040.f8889Spouse?.l17b()])
+
+  l17d = (): number | undefined =>
+    sumFields([this.f1040.f8889?.l21(), this.f1040.f8889Spouse?.l21()])
   // TODO: Additional tax on Archer MSA distributions. Attach Form 8853
   l17e = (): number | undefined => undefined
   // TODO: Additional tax on Medicare Advantage MSA distributions. Attach
@@ -175,6 +176,7 @@ export default class Schedule2 extends Form {
       this.l17p(),
       this.l17q(),
       this.l17zDesc(),
+      undefined,
       this.l17z(),
       this.l18(),
       this.l19(),

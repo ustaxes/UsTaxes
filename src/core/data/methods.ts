@@ -2,6 +2,7 @@ import { Responses } from '.'
 import {
   EstimatedTaxPayments,
   F1098e,
+  HealthSavingsAccount,
   Income1099B,
   Income1099Div,
   Income1099Int,
@@ -28,6 +29,7 @@ export default class InformationMethods implements Information {
   taxPayer: TaxPayer
   questions: Responses
   stateResidencies: StateResidency[]
+  healthSavingsAccounts: HealthSavingsAccount[]
 
   constructor(info: Information) {
     this.f1099s = info.f1099s
@@ -39,6 +41,7 @@ export default class InformationMethods implements Information {
     this.taxPayer = info.taxPayer
     this.questions = info.questions
     this.stateResidencies = info.stateResidencies
+    this.healthSavingsAccounts = info.healthSavingsAccounts
   }
 
   f1099sByType = (ft: Income1099Type): Supported1099[] =>

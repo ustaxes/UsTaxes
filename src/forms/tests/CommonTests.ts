@@ -41,15 +41,6 @@ export default class CommonTests<F1040 extends Form> {
       })
     })
 
-    it('should not create duplicate schedules in', async () => {
-      await this.testKit.with1040Assert(async (forms) => {
-        expect(new Set(forms.map((a) => a.tag)).size).toEqual(forms.length)
-        expect(new Set(forms.map((a) => a.sequenceIndex)).size).toEqual(
-          forms.length
-        )
-      })
-    })
-
     it('should arrange attachments according to sequence order', async () => {
       await this.testKit.with1040Assert(async (forms) => {
         expect(forms.sort((a, b) => a.sequenceIndex - b.sequenceIndex)).toEqual(

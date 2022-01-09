@@ -29,6 +29,7 @@ import Questions from './Questions'
 import Urls from 'ustaxes/data/urls'
 
 import { isMobile } from 'react-device-detect'
+import HealthSavingsAccounts from './savingsAccounts/healthSavingsAccounts'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -105,6 +106,16 @@ export const drawerSections: Section[] = [
     title: 'Deductions',
     items: [
       item('Student Loan Interest', Urls.deductions.f1098es, <F1098eInfo />)
+    ]
+  },
+  {
+    title: 'Savings Accounts',
+    items: [
+      item(
+        'Health Savings Accout (HSA)',
+        Urls.savingsAccounts.healthSavingsAccounts,
+        <HealthSavingsAccounts />
+      )
     ]
   },
   {

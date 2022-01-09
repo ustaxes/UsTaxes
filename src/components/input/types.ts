@@ -58,3 +58,8 @@ export type LabeledCheckboxProps = LabeledFormProps
 export interface LabeledRadioProps extends LabeledFormProps {
   values: Array<[string, string]>
 }
+
+export interface DatePickerProps extends LabeledFormProps {
+  minDate: Date
+  maxDate: Date
+}

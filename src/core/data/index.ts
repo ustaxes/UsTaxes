@@ -72,6 +72,7 @@ export interface IncomeW2 {
   state?: State
   stateWages?: number
   stateWithholding?: number
+  box12?: W2Box12Info
 }
 
 export interface EstimatedTaxPayments {
@@ -143,6 +144,82 @@ export interface Income1099<T, D> {
   type: T
   form: D
   personRole: PersonRole.PRIMARY | PersonRole.SPOUSE
+}
+export enum W2Box12Code {
+  A = 'A', // Uncollected social security or RRTA tax on tips.
+  B = 'B', // Uncollected Medicare tax on tips.
+  C = 'C', // Taxable cost of group-term life insurance over $50,000.
+  D = 'D', // Elective deferrals under a section 401(k) cash or deferred arrangement (plan).
+  E = 'E', // Elective deferrals under a section 403(b) salary reduction agreement.
+  F = 'F', // Elective deferrals under a section 408(k)(6) salary reduction SEP.
+  G = 'G', // Elective deferrals and employer contributions (including nonelective deferrals) to any governmental or nongovernmental section 457(b) deferred compensation plan.
+  H = 'H', // Elective deferrals under section 501(c)(18)(D) tax-exempt organization plan.
+  J = 'J', // Nontaxable sick pay.
+  K = 'K', // 20% excise tax on excess golden parachute payments (not applicable to Forms W-2AS, W-2CM, W-2GU, or W-2VI).
+  L = 'L', // Substantiated employee business expense reimbursements.
+  M = 'M', // Uncollected social security or RRTA tax on taxable cost of group-term life insurance over $50,000 (for former employees).
+  N = 'N', // Uncollected Medicare tax on taxable cost of group-term life insurance over $50,000 (for former employees).
+  P = 'P', // Excludable moving expense reimbursements paid directly to a member of the U.S. Armed Forces.
+  Q = 'Q', // Nontaxable combat pay.
+  R = 'R', // Employer contributions to an Archer MSA.
+  S = 'S', // Employee salary reduction contributions under a section 408(p) SIMPLE plan.
+  T = 'T', // Adoption benefits.
+  V = 'V', // Income from the exercise of nonstatutory stock option(s).
+  W = 'W', // Employer contributions to a health savings account (HSA).
+  Y = 'Y', // Deferrals under a section 409A nonqualified deferred compensation plan.
+  Z = 'Z', // Income under a nonqualified deferred compensation plan that fails to satisfy section 409A.
+  AA = 'AA', // Designated Roth contributions under a section 401(k) plan.
+  BB = 'BB', // Designated Roth contributions under a section 403(b) plan.
+  DD = 'DD', // Cost of employer-sponsored health coverage.
+  EE = 'EE', // Designated Roth contributions under a governmental section 457(b) plan.
+  FF = 'FF', // Permitted benefits under a qualified small employer health reimbursement arrangement.
+  GG = 'GG', // Income from qualified equity grants under section 83(i).
+  HH = 'HH' // Aggregate deferrals under section 83(i) elections as of the close of the calendar year.}
+}
+
+export const W2Box12CodeDescriptions: { [key in W2Box12Code]: string } = {
+  A: 'Uncollected social security or RRTA tax on tips.',
+  B: 'Uncollected Medicare tax on tips.',
+  C: 'Taxable cost of group-term life insurance over $50,000.',
+  D: 'Elective deferrals under a section 401(k) cash or deferred arrangement (plan).',
+  E: 'Elective deferrals under a section 403(b) salary reduction agreement.',
+  F: 'Elective deferrals under a section 408(k)(6) salary reduction SEP.',
+  G: 'Elective deferrals and employer contributions (including nonelective deferrals) to any governmental or nongovernmental section 457(b) deferred compensation plan.',
+  H: 'Elective deferrals under section 501(c)(18)(D) tax-exempt organization plan.',
+  J: 'Nontaxable sick pay.',
+  K: '20% excise tax on excess golden parachute payments (not applicable to Forms W-2AS, W-2CM, W-2GU, or W-2VI).',
+  L: 'Substantiated employee business expense reimbursements.',
+  M: 'Uncollected social security or RRTA tax on taxable cost of group-term life insurance over $50,000 (for former employees).',
+  N: 'Uncollected Medicare tax on taxable cost of group-term life insurance over $50,000 (for former employees).',
+  P: 'Excludable moving expense reimbursements paid directly to a member of the U.S. Armed Forces.',
+  Q: 'Nontaxable combat pay.',
+  R: 'Employer contributions to an Archer MSA.',
+  S: 'Employee salary reduction contributions under a section 408(p) SIMPLE plan.',
+  T: 'Adoption benefits.',
+  V: 'Income from the exercise of nonstatutory stock option(s).',
+  W: 'Employer contributions to a health savings account (HSA).',
+  Y: 'Deferrals under a section 409A nonqualified deferred compensation plan.',
+  Z: 'Income under a nonqualified deferred compensation plan that fails to satisfy section 409A.',
+  AA: 'Designated Roth contributions under a section 401(k) plan.',
+  BB: 'Designated Roth contributions under a section 403(b) plan.',
+  DD: 'Cost of employer-sponsored health coverage.',
+  EE: 'Designated Roth contributions under a governmental section 457(b) plan.',
+  FF: 'Permitted benefits under a qualified small employer health reimbursement arrangement.',
+  GG: 'Income from qualified equity grants under section 83(i).',
+  HH: 'Aggregate deferrals under section 83(i) elections as of the close of the calendar year.'
+}
+
+export type W2Box12Info = { [key in W2Box12Code]?: number }
+
+export interface HealthSavingsAccount<DateType = string> {
+  label: string
+  coverageType: 'self-only' | 'family'
+  contributions: number
+  personRole: PersonRole.PRIMARY | PersonRole.SPOUSE
+  startDate: DateType
+  endDate: DateType
+  totalDistributions: number
+  qualifiedDistributions: number
 }
 
 export enum FilingStatus {
@@ -351,4 +428,5 @@ export interface Information {
   taxPayer: TaxPayer
   questions: Responses
   stateResidencies: StateResidency[]
+  healthSavingsAccounts: HealthSavingsAccount[]
 }

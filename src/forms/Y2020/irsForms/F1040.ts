@@ -20,6 +20,7 @@ import F5695 from './F5695'
 import F8814 from './F8814'
 import F8863 from './F8863'
 import F8888 from './F8888'
+import F8889, { needsF8889 } from './F8889'
 import F8910 from './F8910'
 import F8936 from './F8936'
 import F8959, { needsF8959 } from './F8959'
@@ -78,6 +79,8 @@ export default class F1040 extends Form {
   f8814?: F8814
   f8863?: F8863
   f8888?: F8888
+  f8889?: F8889
+  f8889Spouse?: F8889
   f8910?: F8910
   f8936?: F8936
   f8959?: F8959
@@ -117,6 +120,8 @@ export default class F1040 extends Form {
       this.f5695,
       this.f8814,
       this.f8888,
+      this.f8889,
+      this.f8889Spouse,
       this.f8910,
       this.f8936,
       this.f8959,
@@ -171,6 +176,37 @@ export default class F1040 extends Form {
       ) {
         this.schedule1 = new Schedule1(this.info, this)
       }
+    }
+
+    if (
+      this.info.taxPayer.primaryPerson &&
+      needsF8889(this.info, this.info.taxPayer.primaryPerson)
+    ) {
+      this.f8889 = new F8889(this.info, this.info.taxPayer.primaryPerson)
+      if (this.schedule1 === undefined) {
+        this.schedule1 = new Schedule1(this.info, this)
+      }
+
+      if (this.schedule2 === undefined) {
+        this.schedule2 = new Schedule2(this.info.taxPayer, this)
+      }
+      this.schedule1.addF8889(this.f8889)
+    }
+
+    if (
+      this.info.taxPayer.spouse &&
+      needsF8889(this.info, this.info.taxPayer.spouse)
+    ) {
+      // add in separate form 8889 for the spouse
+      this.f8889Spouse = new F8889(this.info, this.info.taxPayer.spouse)
+      if (this.schedule1 === undefined) {
+        this.schedule1 = new Schedule1(this.info, this)
+      }
+
+      if (this.schedule2 === undefined) {
+        this.schedule2 = new Schedule2(this.info.taxPayer, this)
+      }
+      this.schedule1.addF8889Spouse(this.f8889Spouse)
     }
 
     if (needsF8959(this.info)) {

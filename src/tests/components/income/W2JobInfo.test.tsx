@@ -77,7 +77,8 @@ const testInfo: Information = {
   },
   questions: {},
   f1098es: [],
-  stateResidencies: [{ state: 'AL' }]
+  stateResidencies: [{ state: 'AL' }],
+  healthSavingsAccounts: []
 }
 
 const errors = {

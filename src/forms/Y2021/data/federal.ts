@@ -171,6 +171,13 @@ export const netInvestmentIncomeTax = {
   }
 }
 
+export const healthSavingsAccounts = {
+  contributionLimit: {
+    'self-only': 3600,
+    family: 7200
+  }
+}
+
 // line 11 caps based on step one in instructions
 const line11Caps = [21430, 42158, 47915, 51464]
 const line11MfjCaps = [27830, 48108, 53865, 57414]

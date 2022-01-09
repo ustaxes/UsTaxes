@@ -11,11 +11,13 @@ export default class Schedule1 extends Form {
   state: Information
   scheduleE?: ScheduleE
   f1040: F1040
+  otherIncomeStrings: Set<string>
 
   constructor(info: Information, f1040: F1040) {
     super()
     this.state = info
     this.f1040 = f1040
+    this.otherIncomeStrings = new Set<string>()
   }
 
   addScheduleE = (scheduleE: ScheduleE): void => {
@@ -34,7 +36,8 @@ export default class Schedule1 extends Form {
   l8b = (): number | undefined => undefined
   l8c = (): number | undefined => undefined
   l8d = (): number | undefined => undefined
-  l8e = (): number | undefined => undefined
+  l8e = (): number | undefined =>
+    sumFields([this.f1040.f8889?.l16(), this.f1040.f8889Spouse?.l16()])
   l8f = (): number | undefined => undefined
   l8g = (): number | undefined => undefined
   l8h = (): number | undefined => undefined
@@ -47,7 +50,16 @@ export default class Schedule1 extends Form {
   l8o = (): number | undefined => undefined
   l8p = (): number | undefined => undefined
   l8q = (): number | undefined => undefined
-  l8z = (): number | undefined => undefined
+  l8z = (): number => {
+    if (
+      this.f1040.f8889?.l20() !== undefined ||
+      this.f1040.f8889Spouse?.l20() != undefined
+    ) {
+      this.otherIncomeStrings.add('HSA')
+    }
+
+    return sumFields([this.f1040.f8889?.l20(), this.f1040.f8889Spouse?.l20()])
+  }
 
   l9 = (): number =>
     sumFields([
@@ -87,7 +99,8 @@ export default class Schedule1 extends Form {
 
   l11 = (): number | undefined => undefined
   l12 = (): number | undefined => undefined
-  l13 = (): number | undefined => undefined
+  l13 = (): number | undefined =>
+    sumFields([this.f1040.f8889?.l13(), this.f1040.f8889Spouse?.l13()])
   l14 = (): number | undefined => undefined
   l15 = (): number | undefined => undefined
   l16 = (): number | undefined => undefined
@@ -180,6 +193,8 @@ export default class Schedule1 extends Form {
       this.l8n(),
       this.l8o(),
       this.l8p(),
+      Array.from(this.otherIncomeStrings).join(' '),
+      undefined,
       this.l8z(),
       this.l9(),
       this.l10(),

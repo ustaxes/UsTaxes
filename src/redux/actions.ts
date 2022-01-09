@@ -13,7 +13,8 @@ import {
   StateResidency,
   Information,
   EstimatedTaxPayments,
-  Responses
+  Responses,
+  HealthSavingsAccount
 } from 'ustaxes/core/data'
 
 import {
@@ -22,7 +23,8 @@ import {
   Edit1099Action,
   EditW2Action,
   EditEstimatedTaxesAction,
-  Edit1098eAction
+  Edit1098eAction,
+  EditHSAAction
 } from './data'
 import ajv, * as validators from 'ustaxes/core/data/validate'
 import { TaxYear } from 'ustaxes/data'
@@ -62,6 +64,9 @@ export enum ActionName {
   ADD_1098e = 'ADD_1098e',
   EDIT_1098e = 'EDIT_1098e',
   REMOVE_1098e = 'REMOVE_1098e',
+  ADD_HSA = 'ADD_HSA',
+  EDIT_HSA = 'EDIT_HSA',
+  REMOVE_HSA = 'REMOVE_HSA',
   SET_INFO = 'SET_INFO',
   SET_ACTIVE_YEAR = 'SET_ACTIVE_YEAR',
   PROPAGATE_YEAR_DATA = 'PROPAGATE_YEAR_DATA'
@@ -104,6 +109,9 @@ type EditEstimatedTaxes = Save<
   EditEstimatedTaxesAction
 >
 type RemoveEstimatedTaxes = Save<typeof ActionName.REMOVE_ESTIMATED_TAX, number>
+type AddHSA = Save<typeof ActionName.ADD_HSA, HealthSavingsAccount>
+type EditHSA = Save<typeof ActionName.EDIT_HSA, EditHSAAction>
+type RemoveHSA = Save<typeof ActionName.REMOVE_HSA, number>
 type Add1099 = Save<typeof ActionName.ADD_1099, Supported1099>
 type Edit1099 = Save<typeof ActionName.EDIT_1099, Edit1099Action>
 type Remove1099 = Save<typeof ActionName.REMOVE_1099, number>
@@ -144,6 +152,9 @@ export type Actions =
   | Add1098e
   | Edit1098e
   | Remove1098e
+  | AddHSA
+  | EditHSA
+  | RemoveHSA
   | SetInfo
   | SetActiveYear
 
@@ -286,6 +297,23 @@ export const editEstimatedPayment: ActionCreator<EditEstimatedTaxesAction> =
 
 export const removeEstimatedPayment: ActionCreator<number> = makeActionCreator(
   ActionName.REMOVE_ESTIMATED_TAX,
+  indexValidator
+)
+
+export const addHSA: ActionCreator<HealthSavingsAccount> = makeActionCreator(
+  ActionName.ADD_HSA,
+  validators.healthSavingsAccounts
+)
+
+export const editHSA: ActionCreator<EditHSAAction> = makeActionCreator(
+  ActionName.EDIT_HSA,
+  ajv.getSchema(
+    '#/definitions/EditHSAAction'
+  ) as ValidateFunction<EditHSAAction>
+)
+
+export const removeHSA: ActionCreator<number> = makeActionCreator(
+  ActionName.REMOVE_HSA,
   indexValidator
 )
 
