@@ -34,7 +34,7 @@ export function DatePicker(props: DatePickerProps): ReactElement {
     >
       <Controller
         name={name}
-        render={({ field: { value, onChange } }) => (
+        render={({ field: { value = null, onChange } }) => (
           <div className={classes.root}>
             <FormControl component="fieldset">
               <FormLabel>{label}</FormLabel>
@@ -45,6 +45,7 @@ export function DatePicker(props: DatePickerProps): ReactElement {
                   value={value}
                   onChange={onChange}
                   format="MM/dd/yyyy"
+                  emptyLabel="mm/dd/yyyy"
                 />
               </MuiPickersUtilsProvider>
             </FormControl>
