@@ -7,6 +7,7 @@ import LabeledDropdown, {
   USStateDropDown
 } from './LabeledDropdown'
 import boxLabel from './boxLabel'
+import { DatePicker } from './DatePicker'
 
 /**
  * Format a string like "123456789" as "123-45-6789". If the string is not
@@ -24,5 +25,6 @@ export {
   LabeledDropdown,
   LabeledRadio,
   GenericLabeledDropdown,
-  USStateDropDown
+  USStateDropDown,
+  DatePicker
 }

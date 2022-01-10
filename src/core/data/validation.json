@@ -1,0 +1,1210 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": {
+    "PersonRole": {
+      "type": "string",
+      "enum": [
+        "PRIMARY",
+        "SPOUSE",
+        "DEPENDENT",
+        "EMPLOYER"
+      ]
+    },
+    "Person": {
+      "type": "object",
+      "properties": {
+        "firstName": {
+          "type": "string"
+        },
+        "lastName": {
+          "type": "string"
+        },
+        "ssid": {
+          "type": "string"
+        },
+        "role": {
+          "$ref": "#/definitions/PersonRole"
+        }
+      },
+      "required": [
+        "firstName",
+        "lastName",
+        "ssid",
+        "role"
+      ],
+      "additionalProperties": false
+    },
+    "QualifyingInformation": {
+      "type": "object",
+      "properties": {
+        "birthYear": {
+          "type": "number"
+        },
+        "numberOfMonths": {
+          "type": "number"
+        },
+        "isStudent": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "birthYear",
+        "numberOfMonths",
+        "isStudent"
+      ],
+      "additionalProperties": false
+    },
+    "Dependent": {
+      "type": "object",
+      "properties": {
+        "firstName": {
+          "type": "string"
+        },
+        "lastName": {
+          "type": "string"
+        },
+        "ssid": {
+          "type": "string"
+        },
+        "role": {
+          "$ref": "#/definitions/PersonRole"
+        },
+        "relationship": {
+          "type": "string"
+        },
+        "qualifyingInfo": {
+          "$ref": "#/definitions/QualifyingInformation"
+        }
+      },
+      "required": [
+        "firstName",
+        "lastName",
+        "relationship",
+        "role",
+        "ssid"
+      ],
+      "additionalProperties": false
+    },
+    "Address": {
+      "type": "object",
+      "properties": {
+        "address": {
+          "type": "string"
+        },
+        "aptNo": {
+          "type": "string"
+        },
+        "city": {
+          "type": "string"
+        },
+        "state": {
+          "$ref": "#/definitions/State"
+        },
+        "zip": {
+          "type": "string"
+        },
+        "foreignCountry": {
+          "type": "string"
+        },
+        "province": {
+          "type": "string"
+        },
+        "postalCode": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "address",
+        "city"
+      ],
+      "additionalProperties": false
+    },
+    "State": {
+      "type": "string",
+      "enum": [
+        "AL",
+        "AK",
+        "AZ",
+        "CO",
+        "DC",
+        "FL",
+        "HI",
+        "ID",
+        "IN",
+        "KY",
+        "MA",
+        "ME",
+        "MN",
+        "MS",
+        "NC",
+        "NE",
+        "NJ",
+        "NV",
+        "OH",
+        "OR",
+        "RI",
+        "SD",
+        "TX",
+        "VA",
+        "WA",
+        "WV",
+        "AR",
+        "CA",
+        "CT",
+        "DE",
+        "GA",
+        "IA",
+        "IL",
+        "KS",
+        "LA",
+        "MD",
+        "MI",
+        "MO",
+        "MT",
+        "ND",
+        "NH",
+        "NM",
+        "NY",
+        "OK",
+        "PA",
+        "SC",
+        "TN",
+        "UT",
+        "VT",
+        "WI",
+        "WY"
+      ]
+    },
+    "PrimaryPerson": {
+      "type": "object",
+      "properties": {
+        "firstName": {
+          "type": "string"
+        },
+        "lastName": {
+          "type": "string"
+        },
+        "ssid": {
+          "type": "string"
+        },
+        "role": {
+          "$ref": "#/definitions/PersonRole"
+        },
+        "address": {
+          "$ref": "#/definitions/Address"
+        },
+        "isTaxpayerDependent": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "address",
+        "firstName",
+        "isTaxpayerDependent",
+        "lastName",
+        "role",
+        "ssid"
+      ],
+      "additionalProperties": false
+    },
+    "Spouse": {
+      "type": "object",
+      "properties": {
+        "firstName": {
+          "type": "string"
+        },
+        "lastName": {
+          "type": "string"
+        },
+        "ssid": {
+          "type": "string"
+        },
+        "role": {
+          "$ref": "#/definitions/PersonRole"
+        },
+        "isTaxpayerDependent": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "firstName",
+        "isTaxpayerDependent",
+        "lastName",
+        "role",
+        "ssid"
+      ],
+      "additionalProperties": false
+    },
+    "Employer": {
+      "type": "object",
+      "properties": {
+        "EIN": {
+          "type": "string"
+        },
+        "employerName": {
+          "type": "string"
+        },
+        "address": {
+          "$ref": "#/definitions/Address"
+        }
+      },
+      "additionalProperties": false
+    },
+    "AccountType": {
+      "type": "string",
+      "enum": [
+        "checking",
+        "savings"
+      ]
+    },
+    "Refund": {
+      "type": "object",
+      "properties": {
+        "routingNumber": {
+          "type": "string"
+        },
+        "accountNumber": {
+          "type": "string"
+        },
+        "accountType": {
+          "$ref": "#/definitions/AccountType"
+        }
+      },
+      "required": [
+        "routingNumber",
+        "accountNumber",
+        "accountType"
+      ],
+      "additionalProperties": false
+    },
+    "IncomeW2": {
+      "type": "object",
+      "properties": {
+        "occupation": {
+          "type": "string"
+        },
+        "income": {
+          "type": "number"
+        },
+        "medicareIncome": {
+          "type": "number"
+        },
+        "fedWithholding": {
+          "type": "number"
+        },
+        "ssWithholding": {
+          "type": "number"
+        },
+        "medicareWithholding": {
+          "type": "number"
+        },
+        "employer": {
+          "$ref": "#/definitions/Employer"
+        },
+        "personRole": {
+          "type": "string",
+          "enum": [
+            "PRIMARY",
+            "SPOUSE"
+          ]
+        },
+        "state": {
+          "$ref": "#/definitions/State"
+        },
+        "stateWages": {
+          "type": "number"
+        },
+        "stateWithholding": {
+          "type": "number"
+        },
+        "box12": {
+          "$ref": "#/definitions/W2Box12Info"
+        }
+      },
+      "required": [
+        "occupation",
+        "income",
+        "medicareIncome",
+        "fedWithholding",
+        "ssWithholding",
+        "medicareWithholding",
+        "personRole"
+      ],
+      "additionalProperties": false
+    },
+    "W2Box12Info": {
+      "type": "object",
+      "properties": {
+        "A": {
+          "type": "number"
+        },
+        "B": {
+          "type": "number"
+        },
+        "C": {
+          "type": "number"
+        },
+        "D": {
+          "type": "number"
+        },
+        "E": {
+          "type": "number"
+        },
+        "F": {
+          "type": "number"
+        },
+        "G": {
+          "type": "number"
+        },
+        "H": {
+          "type": "number"
+        },
+        "J": {
+          "type": "number"
+        },
+        "K": {
+          "type": "number"
+        },
+        "L": {
+          "type": "number"
+        },
+        "M": {
+          "type": "number"
+        },
+        "N": {
+          "type": "number"
+        },
+        "P": {
+          "type": "number"
+        },
+        "Q": {
+          "type": "number"
+        },
+        "R": {
+          "type": "number"
+        },
+        "S": {
+          "type": "number"
+        },
+        "T": {
+          "type": "number"
+        },
+        "V": {
+          "type": "number"
+        },
+        "W": {
+          "type": "number"
+        },
+        "Y": {
+          "type": "number"
+        },
+        "Z": {
+          "type": "number"
+        },
+        "AA": {
+          "type": "number"
+        },
+        "BB": {
+          "type": "number"
+        },
+        "DD": {
+          "type": "number"
+        },
+        "EE": {
+          "type": "number"
+        },
+        "FF": {
+          "type": "number"
+        },
+        "GG": {
+          "type": "number"
+        },
+        "HH": {
+          "type": "number"
+        }
+      },
+      "additionalProperties": false
+    },
+    "EstimatedTaxPayments": {
+      "type": "object",
+      "properties": {
+        "label": {
+          "type": "string"
+        },
+        "payment": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "label",
+        "payment"
+      ],
+      "additionalProperties": false
+    },
+    "Income1099Type": {
+      "type": "string",
+      "enum": [
+        "B",
+        "INT",
+        "DIV",
+        "R",
+        "SSA"
+      ]
+    },
+    "F1099BData": {
+      "type": "object",
+      "properties": {
+        "shortTermProceeds": {
+          "type": "number"
+        },
+        "shortTermCostBasis": {
+          "type": "number"
+        },
+        "longTermProceeds": {
+          "type": "number"
+        },
+        "longTermCostBasis": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "shortTermProceeds",
+        "shortTermCostBasis",
+        "longTermProceeds",
+        "longTermCostBasis"
+      ],
+      "additionalProperties": false
+    },
+    "F1099IntData": {
+      "type": "object",
+      "properties": {
+        "income": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "income"
+      ],
+      "additionalProperties": false
+    },
+    "F1099DivData": {
+      "type": "object",
+      "properties": {
+        "dividends": {
+          "type": "number"
+        },
+        "qualifiedDividends": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "dividends",
+        "qualifiedDividends"
+      ],
+      "additionalProperties": false
+    },
+    "PlanType1099": {
+      "type": "string",
+      "enum": [
+        "IRA",
+        "Pension"
+      ]
+    },
+    "F1099RData": {
+      "type": "object",
+      "properties": {
+        "grossDistribution": {
+          "type": "number"
+        },
+        "taxableAmount": {
+          "type": "number"
+        },
+        "federalIncomeTaxWithheld": {
+          "type": "number"
+        },
+        "planType": {
+          "$ref": "#/definitions/PlanType1099"
+        }
+      },
+      "required": [
+        "grossDistribution",
+        "taxableAmount",
+        "federalIncomeTaxWithheld",
+        "planType"
+      ],
+      "additionalProperties": false
+    },
+    "F1099SSAData": {
+      "type": "object",
+      "properties": {
+        "netBenefits": {
+          "type": "number"
+        },
+        "federalIncomeTaxWithheld": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "netBenefits",
+        "federalIncomeTaxWithheld"
+      ],
+      "additionalProperties": false
+    },
+    "W2Box12Code": {
+      "type": "string",
+      "enum": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F",
+        "G",
+        "H",
+        "J",
+        "K",
+        "L",
+        "M",
+        "N",
+        "P",
+        "Q",
+        "R",
+        "S",
+        "T",
+        "V",
+        "W",
+        "Y",
+        "Z",
+        "AA",
+        "BB",
+        "DD",
+        "EE",
+        "FF",
+        "GG",
+        "HH"
+      ]
+    },
+    "FilingStatus": {
+      "type": "string",
+      "enum": [
+        "S",
+        "MFJ",
+        "MFS",
+        "HOH",
+        "W"
+      ]
+    },
+    "FilingStatusName": {
+      "type": "string",
+      "enum": [
+        "S",
+        "MFJ",
+        "MFS",
+        "HOH",
+        "W"
+      ]
+    },
+    "NamedParameters<typeof filingStatuses>": {
+      "type": "object",
+      "properties": {
+        "p": {
+          "$ref": "#/definitions/TaxPayer"
+        }
+      },
+      "additionalProperties": false
+    },
+    "TaxPayer": {
+      "type": "object",
+      "properties": {
+        "contactPhoneNumber": {
+          "type": "string"
+        },
+        "contactEmail": {
+          "type": "string"
+        },
+        "filingStatus": {
+          "$ref": "#/definitions/FilingStatus"
+        },
+        "primaryPerson": {
+          "$ref": "#/definitions/PrimaryPerson"
+        },
+        "spouse": {
+          "$ref": "#/definitions/Spouse"
+        },
+        "dependents": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Dependent"
+          }
+        }
+      },
+      "required": [
+        "dependents"
+      ],
+      "additionalProperties": false
+    },
+    "ContactInfo": {
+      "type": "object",
+      "properties": {
+        "contactPhoneNumber": {
+          "type": "string"
+        },
+        "contactEmail": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "Income1099Int": {
+      "$ref": "#/definitions/Income1099%3Cenum-823009365-1523-1537-823009365-1482-1580-823009365-0-12376%2CF1099IntData%3E"
+    },
+    "Income1099<enum-823009365-1523-1537-823009365-1482-1580-823009365-0-12376,F1099IntData>": {
+      "type": "object",
+      "properties": {
+        "payer": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string",
+          "const": "INT"
+        },
+        "form": {
+          "$ref": "#/definitions/F1099IntData"
+        },
+        "personRole": {
+          "type": "string",
+          "enum": [
+            "PRIMARY",
+            "SPOUSE"
+          ]
+        }
+      },
+      "required": [
+        "payer",
+        "type",
+        "form",
+        "personRole"
+      ],
+      "additionalProperties": false
+    },
+    "Income1099B": {
+      "$ref": "#/definitions/Income1099%3Cenum-823009365-1512-1522-823009365-1482-1580-823009365-0-12376%2CF1099BData%3E"
+    },
+    "Income1099<enum-823009365-1512-1522-823009365-1482-1580-823009365-0-12376,F1099BData>": {
+      "type": "object",
+      "properties": {
+        "payer": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string",
+          "const": "B"
+        },
+        "form": {
+          "$ref": "#/definitions/F1099BData"
+        },
+        "personRole": {
+          "type": "string",
+          "enum": [
+            "PRIMARY",
+            "SPOUSE"
+          ]
+        }
+      },
+      "required": [
+        "payer",
+        "type",
+        "form",
+        "personRole"
+      ],
+      "additionalProperties": false
+    },
+    "Income1099Div": {
+      "$ref": "#/definitions/Income1099%3Cenum-823009365-1538-1552-823009365-1482-1580-823009365-0-12376%2CF1099DivData%3E"
+    },
+    "Income1099<enum-823009365-1538-1552-823009365-1482-1580-823009365-0-12376,F1099DivData>": {
+      "type": "object",
+      "properties": {
+        "payer": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string",
+          "const": "DIV"
+        },
+        "form": {
+          "$ref": "#/definitions/F1099DivData"
+        },
+        "personRole": {
+          "type": "string",
+          "enum": [
+            "PRIMARY",
+            "SPOUSE"
+          ]
+        }
+      },
+      "required": [
+        "payer",
+        "type",
+        "form",
+        "personRole"
+      ],
+      "additionalProperties": false
+    },
+    "Income1099R": {
+      "$ref": "#/definitions/Income1099%3Cenum-823009365-1553-1563-823009365-1482-1580-823009365-0-12376%2CF1099RData%3E"
+    },
+    "Income1099<enum-823009365-1553-1563-823009365-1482-1580-823009365-0-12376,F1099RData>": {
+      "type": "object",
+      "properties": {
+        "payer": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string",
+          "const": "R"
+        },
+        "form": {
+          "$ref": "#/definitions/F1099RData"
+        },
+        "personRole": {
+          "type": "string",
+          "enum": [
+            "PRIMARY",
+            "SPOUSE"
+          ]
+        }
+      },
+      "required": [
+        "payer",
+        "type",
+        "form",
+        "personRole"
+      ],
+      "additionalProperties": false
+    },
+    "Income1099SSA": {
+      "$ref": "#/definitions/Income1099%3Cenum-823009365-1564-1578-823009365-1482-1580-823009365-0-12376%2CF1099SSAData%3E"
+    },
+    "Income1099<enum-823009365-1564-1578-823009365-1482-1580-823009365-0-12376,F1099SSAData>": {
+      "type": "object",
+      "properties": {
+        "payer": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string",
+          "const": "SSA"
+        },
+        "form": {
+          "$ref": "#/definitions/F1099SSAData"
+        },
+        "personRole": {
+          "type": "string",
+          "enum": [
+            "PRIMARY",
+            "SPOUSE"
+          ]
+        }
+      },
+      "required": [
+        "payer",
+        "type",
+        "form",
+        "personRole"
+      ],
+      "additionalProperties": false
+    },
+    "Supported1099": {
+      "anyOf": [
+        {
+          "$ref": "#/definitions/Income1099Int"
+        },
+        {
+          "$ref": "#/definitions/Income1099B"
+        },
+        {
+          "$ref": "#/definitions/Income1099Div"
+        },
+        {
+          "$ref": "#/definitions/Income1099R"
+        },
+        {
+          "$ref": "#/definitions/Income1099SSA"
+        }
+      ]
+    },
+    "PropertyType": {
+      "type": "number",
+      "enum": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ]
+    },
+    "PropertyTypeName": {
+      "type": "string",
+      "enum": [
+        "singleFamily",
+        "multiFamily",
+        "vacation",
+        "commercial",
+        "land",
+        "selfRental",
+        "other"
+      ]
+    },
+    "PropertyExpenseType": {
+      "type": "number",
+      "enum": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14
+      ]
+    },
+    "PropertyExpenseTypeName": {
+      "type": "string",
+      "enum": [
+        "advertising",
+        "auto",
+        "cleaning",
+        "commissions",
+        "insurance",
+        "legal",
+        "management",
+        "mortgage",
+        "otherInterest",
+        "repairs",
+        "supplies",
+        "taxes",
+        "utilities",
+        "depreciation",
+        "other"
+      ]
+    },
+    "Property": {
+      "type": "object",
+      "properties": {
+        "address": {
+          "$ref": "#/definitions/Address"
+        },
+        "rentalDays": {
+          "type": "number"
+        },
+        "personalUseDays": {
+          "type": "number"
+        },
+        "rentReceived": {
+          "type": "number"
+        },
+        "propertyType": {
+          "$ref": "#/definitions/PropertyTypeName"
+        },
+        "otherPropertyType": {
+          "type": "string"
+        },
+        "qualifiedJointVenture": {
+          "type": "boolean"
+        },
+        "expenses": {
+          "type": "object",
+          "properties": {
+            "advertising": {
+              "type": "number"
+            },
+            "auto": {
+              "type": "number"
+            },
+            "cleaning": {
+              "type": "number"
+            },
+            "commissions": {
+              "type": "number"
+            },
+            "insurance": {
+              "type": "number"
+            },
+            "legal": {
+              "type": "number"
+            },
+            "management": {
+              "type": "number"
+            },
+            "mortgage": {
+              "type": "number"
+            },
+            "otherInterest": {
+              "type": "number"
+            },
+            "repairs": {
+              "type": "number"
+            },
+            "supplies": {
+              "type": "number"
+            },
+            "taxes": {
+              "type": "number"
+            },
+            "utilities": {
+              "type": "number"
+            },
+            "depreciation": {
+              "type": "number"
+            },
+            "other": {
+              "type": "number"
+            }
+          },
+          "additionalProperties": false
+        },
+        "otherExpenseType": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "address",
+        "rentalDays",
+        "personalUseDays",
+        "rentReceived",
+        "propertyType",
+        "qualifiedJointVenture",
+        "expenses"
+      ],
+      "additionalProperties": false
+    },
+    "F1098e": {
+      "type": "object",
+      "properties": {
+        "lender": {
+          "type": "string"
+        },
+        "interest": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "lender",
+        "interest"
+      ],
+      "additionalProperties": false
+    },
+    "StateResidency": {
+      "type": "object",
+      "properties": {
+        "state": {
+          "$ref": "#/definitions/State"
+        }
+      },
+      "required": [
+        "state"
+      ],
+      "additionalProperties": false
+    },
+    "QuestionTag": {
+      "type": "object",
+      "properties": {
+        "CRYPTO": {
+          "type": "boolean"
+        },
+        "FOREIGN_ACCOUNT_EXISTS": {
+          "type": "boolean"
+        },
+        "FINCEN_114": {
+          "type": "boolean"
+        },
+        "FINCEN_114_ACCOUNT_COUNTRY": {
+          "type": "string"
+        },
+        "FOREIGN_TRUST_RELATIONSHIP": {
+          "type": "boolean"
+        },
+        "LIVE_APART_FROM_SPOUSE": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "CRYPTO",
+        "FOREIGN_ACCOUNT_EXISTS",
+        "FINCEN_114",
+        "FINCEN_114_ACCOUNT_COUNTRY",
+        "FOREIGN_TRUST_RELATIONSHIP",
+        "LIVE_APART_FROM_SPOUSE"
+      ],
+      "additionalProperties": false
+    },
+    "QuestionTagName": {
+      "type": "string",
+      "enum": [
+        "CRYPTO",
+        "FOREIGN_ACCOUNT_EXISTS",
+        "FINCEN_114",
+        "FINCEN_114_ACCOUNT_COUNTRY",
+        "FOREIGN_TRUST_RELATIONSHIP",
+        "LIVE_APART_FROM_SPOUSE"
+      ]
+    },
+    "ValueTag": {
+      "type": "string",
+      "enum": [
+        "string",
+        "boolean"
+      ]
+    },
+    "Responses": {
+      "type": "object",
+      "properties": {
+        "CRYPTO": {
+          "type": "boolean"
+        },
+        "FOREIGN_ACCOUNT_EXISTS": {
+          "type": "boolean"
+        },
+        "FINCEN_114": {
+          "type": "boolean"
+        },
+        "FINCEN_114_ACCOUNT_COUNTRY": {
+          "type": "string"
+        },
+        "FOREIGN_TRUST_RELATIONSHIP": {
+          "type": "boolean"
+        },
+        "LIVE_APART_FROM_SPOUSE": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    },
+    "Information": {
+      "type": "object",
+      "properties": {
+        "f1099s": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Supported1099"
+          }
+        },
+        "w2s": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/IncomeW2"
+          }
+        },
+        "realEstate": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Property"
+          }
+        },
+        "estimatedTaxes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/EstimatedTaxPayments"
+          }
+        },
+        "f1098es": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/F1098e"
+          }
+        },
+        "refund": {
+          "$ref": "#/definitions/Refund"
+        },
+        "taxPayer": {
+          "$ref": "#/definitions/TaxPayer"
+        },
+        "questions": {
+          "$ref": "#/definitions/Responses"
+        },
+        "stateResidencies": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/StateResidency"
+          }
+        },
+        "healthSavingsAccounts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/HealthSavingsAccount"
+          }
+        }
+      },
+      "required": [
+        "f1099s",
+        "w2s",
+        "realEstate",
+        "estimatedTaxes",
+        "f1098es",
+        "taxPayer",
+        "questions",
+        "stateResidencies",
+        "healthSavingsAccounts"
+      ],
+      "additionalProperties": false
+    },
+    "HealthSavingsAccount": {
+      "type": "object",
+      "properties": {
+        "label": {
+          "type": "string"
+        },
+        "coverageType": {
+          "type": "string",
+          "enum": [
+            "self-only",
+            "family"
+          ]
+        },
+        "contributions": {
+          "type": "number"
+        },
+        "personRole": {
+          "type": "string",
+          "enum": [
+            "PRIMARY",
+            "SPOUSE"
+          ]
+        },
+        "startDate": {
+          "type": "string"
+        },
+        "endDate": {
+          "type": "string"
+        },
+        "totalDistributions": {
+          "type": "number"
+        },
+        "qualifiedDistributions": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "label",
+        "coverageType",
+        "contributions",
+        "personRole",
+        "startDate",
+        "endDate",
+        "totalDistributions",
+        "qualifiedDistributions"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

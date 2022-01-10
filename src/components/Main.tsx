@@ -21,7 +21,9 @@ import { Section, SectionItem } from './ResponsiveDrawer'
 
 import { useFocus } from 'ustaxes/hooks/Focus'
 import Urls from 'ustaxes/data/urls'
+import DataPropagator from './DataPropagator'
 import UserSettings from './UserSettings'
+import YearStatusBar from './YearStatusBar'
 
 type Props = {
   isMobile: boolean
@@ -95,10 +97,11 @@ export default function Main(): ReactElement {
     }
   ]
 
-  const allItems: SectionItem[] = [
-    ...drawerSections.flatMap((section: Section) => section.items),
-    ...backPages
-  ]
+  const steps: SectionItem[] = drawerSections.flatMap(
+    (section: Section) => section.items
+  )
+
+  const allItems: SectionItem[] = [...steps, ...backPages]
 
   const Layout = ({ children }: PropsWithChildren<{ children: ReactNode }>) => (
     <Grid
@@ -109,8 +112,16 @@ export default function Main(): ReactElement {
       justifyContent="center"
       direction="row"
     >
-      <Grid item sm={12} md={8} lg={6} className={classes.content}>
-        {children}
+      <Grid item sm={12} md={8} lg={6}>
+        {!isStartPage && (
+          <Grid item className={classes.content}>
+            {' '}
+            <YearStatusBar />
+          </Grid>
+        )}
+        <Grid item className={classes.content}>
+          {children}
+        </Grid>
       </Grid>
     </Grid>
   )
@@ -122,13 +133,16 @@ export default function Main(): ReactElement {
       {isMobile && !isStartPage && <div className={classes.toolbar} />}
       <div className={classes.container}>
         <StateLoader />
-        <PagerProvider pages={allItems}>
+        <PagerProvider pages={steps}>
           <Switch>
             <Redirect path="/" to={Urls.default} exact />
             {allItems.map((item) => (
               <Route key={item.title} exact path={item.url}>
                 {!isStartPage && <Menu />}
-                <Layout>{item.element}</Layout>
+                <Layout>
+                  {!isStartPage && <DataPropagator />}
+                  {item.element}
+                </Layout>
               </Route>
             ))}
             <Route>

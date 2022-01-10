@@ -1,5 +1,5 @@
-import { CURRENT_YEAR } from 'ustaxes/data/federal'
-import { daysInYear } from 'ustaxes/util'
+import { TaxYear, TaxYears } from 'ustaxes/data'
+import { daysInYear } from 'ustaxes/core/util'
 
 export interface BasePattern {
   regexp?: RegExp
@@ -54,8 +54,6 @@ const text = (regexp: RegExp, description: string): TextPattern => ({
   description
 })
 
-const numDaysInYear = daysInYear(CURRENT_YEAR)
-
 export const isNumeric = (p: PatternConfig): p is NumericPattern =>
   p.inputType === 'numeric'
 export const isText = (p: PatternConfig): p is TextPattern =>
@@ -66,19 +64,20 @@ export const Patterns = {
     /[12][0-9]{3}/,
     'Input should be a four digit year',
     1900,
-    CURRENT_YEAR,
+    undefined,
     '####',
     '_'
   ),
   numMonths: numeric(/[0-9]{1,2}/, 'Input should be 0-12', 0, 12, '##', ''),
-  numDays: numeric(
-    /[0-9]{1,3}/,
-    `Input should be 0-${numDaysInYear}`,
-    0,
-    numDaysInYear,
-    '###',
-    ''
-  ),
+  numDays: (year: TaxYear): NumericPattern =>
+    numeric(
+      /[0-9]{1,3}/,
+      `Input should be 0-${daysInYear(TaxYears[year])}`,
+      0,
+      daysInYear(TaxYears[year]),
+      '###',
+      ''
+    ),
   name: text(/^[A-Za-z ]+$/i, 'Input should only include letters and spaces'),
   zip: numeric(
     /[0-9]{5}([0-9]{4})?/,

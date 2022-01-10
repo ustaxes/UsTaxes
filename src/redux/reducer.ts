@@ -1,7 +1,11 @@
 /* eslint-disable indent */
-import { combineReducers } from 'redux'
-import { FilingStatus, Information } from './data'
+import { CombinedState, combineReducers, Reducer } from 'redux'
+import { FilingStatus, Information } from 'ustaxes/core/data'
+import { TaxYear } from 'ustaxes/data'
+import { YearsTaxesState } from '.'
 import { ActionName, Actions } from './actions'
+
+const DEFAULT_TAX_YEAR: TaxYear = 'Y2020'
 
 export const blankState: Information = {
   f1099s: [],
@@ -11,13 +15,14 @@ export const blankState: Information = {
   taxPayer: { dependents: [] },
   questions: {},
   f1098es: [],
-  stateResidencies: []
+  stateResidencies: [],
+  healthSavingsAccounts: []
 }
 
-function formReducer(
+const formReducer = (
   state: Information | undefined,
   action: Actions
-): Information {
+): Information => {
   const newState: Information = state ?? blankState
 
   switch (action.type) {
@@ -254,10 +259,35 @@ function formReducer(
         f1098es: new1098es
       }
     }
-    case ActionName.SET_ENTIRE_STATE: {
+    case ActionName.SET_INFO: {
       return {
         ...newState,
-        ...action.formData.information
+        ...action.formData
+      }
+    }
+    case ActionName.ADD_HSA: {
+      return {
+        ...newState,
+        healthSavingsAccounts: [
+          ...newState.healthSavingsAccounts,
+          action.formData
+        ]
+      }
+    }
+    case ActionName.EDIT_HSA: {
+      const newHsa = [...newState.healthSavingsAccounts]
+      newHsa.splice(action.formData.index, 1, action.formData.value)
+      return {
+        ...newState,
+        healthSavingsAccounts: newHsa
+      }
+    }
+    case ActionName.REMOVE_HSA: {
+      const newHsa = [...newState.healthSavingsAccounts]
+      newHsa.splice(action.formData, 1)
+      return {
+        ...newState,
+        healthSavingsAccounts: newHsa
       }
     }
     default: {
@@ -266,8 +296,39 @@ function formReducer(
   }
 }
 
-const rootReducer = combineReducers({
-  information: formReducer
-})
+const guardByYear =
+  (year: TaxYear) =>
+  (state: Information | undefined, action: Actions): Information => {
+    const newState: Information = state ?? blankState
+
+    if (action.year !== year) {
+      return newState
+    }
+
+    return formReducer(newState, action)
+  }
+
+const activeYear = (state: TaxYear | undefined, action: Actions): TaxYear => {
+  const newState = state ?? DEFAULT_TAX_YEAR
+
+  switch (action.type) {
+    case ActionName.SET_ACTIVE_YEAR: {
+      return action.formData
+    }
+    default: {
+      return newState
+    }
+  }
+}
+
+const rootReducer: Reducer<
+  CombinedState<YearsTaxesState>,
+  Actions
+> = combineReducers({
+  Y2019: guardByYear('Y2019'),
+  Y2020: guardByYear('Y2020'),
+  Y2021: guardByYear('Y2021'),
+  activeYear
+}) as Reducer<CombinedState<YearsTaxesState>, Actions>
 
 export default rootReducer

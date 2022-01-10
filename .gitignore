@@ -30,4 +30,5 @@ yarn-error.log*
 # vscode settings
 /.vscode
 /.devcontainer/
-/src/redux/validation.json
+/src/core/data/validation.json
+/logs/
