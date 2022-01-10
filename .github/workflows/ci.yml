@@ -1,4 +1,5 @@
 # Contains unit test, lint, dependabot automerge logic
+# CI test change
 name: CI
 on:
   push:
