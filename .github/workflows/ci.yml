@@ -1,0 +1,73 @@
+# Contains unit test, lint, dependabot automerge logic
+name: CI
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master, dependabot-updates-minor ]
+
+permissions:
+  pull-requests: write
+  contents: write
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: ['16']
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v2
+      with:
+        node-version: ${{ matrix.node-version }}
+      # install dependencies
+    - run: npm ci
+
+    - name: Run ESLint
+      run: npm run lint
+
+  test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: ['16']
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v2
+      with:
+        node-version: ${{ matrix.node-version }}
+      # installs dependencies
+    - run: npm ci
+      # run tests
+    - name: Run jest unit tests
+      run: npm run test:report
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v2
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        directory: ./coverage
+        verbose: true
+
+  dependabot-auto-merge:
+    needs: [lint, test]
+    runs-on: ubuntu-latest
+    if: ${{ github.actor == 'dependabot[bot]' }}
+    steps:
+      - name: Dependabot metadata
+        id: metadata
+        uses: dependabot/fetch-metadata@v1.1.1
+        with:
+          github-token: "${{ secrets.GITHUB_TOKEN }}"
+      - name: Enable auto-merge for Dependabot PRs
+        if: ${{(steps.metadata.outputs.update-type == 'version-update:semver-patch' || steps.metadata.outputs.update-type ==  'version-update:semver-minor')}}
+        run: gh pr merge --auto --merge "$PR_URL"
+        env:
+          PR_URL: ${{github.event.pull_request.html_url}}
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
