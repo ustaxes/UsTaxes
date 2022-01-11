@@ -1,5 +1,7 @@
 import { AnyAction, Reducer } from 'redux'
 import { download } from '.'
+import { YearsTaxesState } from '..'
+import { migrateEachYear } from '../migration'
 import { FSAction } from './Actions'
 
 /**
@@ -21,7 +23,7 @@ const fsReducer = <S, A extends AnyAction>(
       case 'fs/recover': {
         return {
           ...newState,
-          ...action.data
+          ...migrateEachYear(action.data as unknown as YearsTaxesState)
         }
       }
       case 'fs/persist': {
