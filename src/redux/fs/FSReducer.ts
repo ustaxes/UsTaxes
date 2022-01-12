@@ -1,5 +1,7 @@
 import { AnyAction, Reducer } from 'redux'
 import { download } from '.'
+import { migrateEachYear } from '../migration'
+import { USTPersistedState } from '../store'
 import { FSAction } from './Actions'
 
 /**
@@ -10,7 +12,7 @@ import { FSAction } from './Actions'
  * It will overwrite whatever state exists with whatever
  * state it finds, but needs none of its own state.
  */
-const fsReducer = <S, A extends AnyAction>(
+const fsReducer = <S extends USTPersistedState, A extends AnyAction>(
   filename: string,
   reducer: Reducer<S, A>
 ): Reducer<S, A & FSAction<S>> => {
@@ -21,7 +23,7 @@ const fsReducer = <S, A extends AnyAction>(
       case 'fs/recover': {
         return {
           ...newState,
-          ...action.data
+          ...migrateEachYear(action.data)
         }
       }
       case 'fs/persist': {

@@ -112,7 +112,7 @@ export const drawerSections: Section[] = [
     title: 'Savings Accounts',
     items: [
       item(
-        'Health Savings Accout (HSA)',
+        'Health Savings Account (HSA)',
         Urls.savingsAccounts.healthSavingsAccounts,
         <HealthSavingsAccounts />
       )

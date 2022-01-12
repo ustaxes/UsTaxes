@@ -5,9 +5,9 @@ import {
   CombinedState
 } from 'redux'
 import logger from 'redux-logger'
-import rootReducer, { blankState } from './reducer'
+import rootReducer from './reducer'
 
-import { persistStore, persistReducer, createTransform } from 'redux-persist'
+import { persistStore, persistReducer, PersistedState } from 'redux-persist'
 import storage from 'redux-persist/lib/storage' // defaults to localStorage for web
 import { Information } from 'ustaxes/core/data'
 import { blankYearTaxesState, YearsTaxesState } from '.'
@@ -15,33 +15,24 @@ import { Actions } from './actions'
 import { PersistPartial } from 'redux-persist/es/persistReducer'
 import { FSAction } from './fs/Actions'
 import fsReducer from './fs/FSReducer'
+import { migrateEachYear } from './migration'
 
-const baseTransform = createTransform(
-  // transform state on its way to being serialized and persisted.
-  (inboundState: Information) => {
-    return inboundState
-  },
-  // transform state being rehydrated
-  // Just ensure the state has all requisite root members
-  (outboundState: Information): Information => {
-    return {
-      ...blankState,
-      ...outboundState
-    }
-  },
-  { whitelist: ['information'] }
-)
+export type USTPersistedState = NonNullable<PersistedState> & YearsTaxesState
 
-const persistConfig = {
-  key: 'root',
-  storage,
-  transforms: [baseTransform]
-}
+const migrate = async (state: USTPersistedState): Promise<USTPersistedState> =>
+  migrateEachYear(state)
 
 const persistedReducer = fsReducer(
   'ustaxes_save.json',
   persistReducer<CombinedState<YearsTaxesState>, Actions>(
-    persistConfig,
+    {
+      key: 'root',
+      storage,
+      migrate: async (state) =>
+        state === undefined
+          ? undefined
+          : await migrate({ ...blankYearTaxesState, ...state })
+    },
     rootReducer
   )
 )
