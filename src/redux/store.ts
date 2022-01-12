@@ -7,12 +7,7 @@ import {
 import logger from 'redux-logger'
 import rootReducer from './reducer'
 
-import {
-  persistStore,
-  persistReducer,
-  PersistMigrate,
-  PersistedState
-} from 'redux-persist'
+import { persistStore, persistReducer, PersistState } from 'redux-persist'
 import storage from 'redux-persist/lib/storage' // defaults to localStorage for web
 import { Information } from 'ustaxes/core/data'
 import { blankYearTaxesState, YearsTaxesState } from '.'
@@ -22,8 +17,10 @@ import { FSAction } from './fs/Actions'
 import fsReducer from './fs/FSReducer'
 import { migrateEachYear } from './migration'
 
-const migrate: PersistMigrate = async (state) =>
-  migrateEachYear(state as unknown as PersistedState & YearsTaxesState)
+export type USTPersistedState = { _persist: PersistState } & YearsTaxesState
+
+const migrate = async (state: USTPersistedState): Promise<USTPersistedState> =>
+  migrateEachYear(state)
 
 const persistedReducer = fsReducer(
   'ustaxes_save.json',
@@ -31,7 +28,10 @@ const persistedReducer = fsReducer(
     {
       key: 'root',
       storage,
-      migrate
+      migrate: async (state) =>
+        state === undefined
+          ? undefined
+          : await migrate({ ...blankYearTaxesState, ...state })
     },
     rootReducer
   )
