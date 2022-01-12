@@ -7,13 +7,15 @@ import { blankState } from './reducer'
  * Ensures all default fields are present on each year's data
  * @returns state, mutated
  */
-export function migrateEachYear(state: YearsTaxesState) {
-  for (const year of enumKeys(TaxYears)) {
-    // copy default fields into each year's data
-    state[year] = {
-      ...blankState,
-      ...state[year]
-    }
-  }
-  return state
+export function migrateEachYear<S extends YearsTaxesState>(state: S): S {
+  return enumKeys(TaxYears).reduce(
+    (acc, year) => ({
+      ...acc,
+      [year]: {
+        ...blankState,
+        ...acc[year]
+      }
+    }),
+    state
+  )
 }

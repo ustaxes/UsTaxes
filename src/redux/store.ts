@@ -7,7 +7,12 @@ import {
 import logger from 'redux-logger'
 import rootReducer from './reducer'
 
-import { persistStore, persistReducer, createMigrate } from 'redux-persist'
+import {
+  persistStore,
+  persistReducer,
+  PersistMigrate,
+  PersistedState
+} from 'redux-persist'
 import storage from 'redux-persist/lib/storage' // defaults to localStorage for web
 import { Information } from 'ustaxes/core/data'
 import { blankYearTaxesState, YearsTaxesState } from '.'
@@ -17,18 +22,8 @@ import { FSAction } from './fs/Actions'
 import fsReducer from './fs/FSReducer'
 import { migrateEachYear } from './migration'
 
-/**
- * Each key of these migrations will only run if it is less than the current version.
- * Even though this is a general purpose migration function that should handle most changes,
- * a new key will need to be added here with each change to the state shape.
- **/
-const migrate = createMigrate({
-  '0': (state) => {
-    // this type dance is unfortunate, but createMigrate isn't typed generically...
-    const migrated = migrateEachYear(state as unknown as YearsTaxesState)
-    return migrated as unknown as typeof state
-  }
-})
+const migrate: PersistMigrate = async (state) =>
+  migrateEachYear(state as unknown as PersistedState & YearsTaxesState)
 
 const persistedReducer = fsReducer(
   'ustaxes_save.json',
@@ -36,9 +31,7 @@ const persistedReducer = fsReducer(
     {
       key: 'root',
       storage,
-      migrate,
-      // increment version each time anything is changed about the app's state, otherwise migrations don't run
-      version: 0
+      migrate
     },
     rootReducer
   )
