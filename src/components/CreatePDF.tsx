@@ -3,7 +3,7 @@ import { Helmet } from 'react-helmet'
 import { usePager } from './pager'
 import Alert from '@material-ui/lab/Alert'
 import { useSelector } from 'react-redux'
-import { Information, State } from 'ustaxes/core/data'
+import { Information, Asset, State } from 'ustaxes/core/data'
 import { YearsTaxesState } from 'ustaxes/redux'
 import { TaxYear } from 'ustaxes/data'
 
@@ -26,7 +26,11 @@ export default function CreatePDF(): ReactElement {
     (state: YearsTaxesState) => state[state.activeYear]
   )
 
-  const builder = yearFormBuilder(year, info)
+  const assets: Asset<Date>[] = useSelector(
+    (state: YearsTaxesState) => state.assets
+  )
+
+  const builder = yearFormBuilder(year, info, assets)
 
   useEffect(() => {
     if (builder !== undefined) {

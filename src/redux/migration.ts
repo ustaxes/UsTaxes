@@ -1,13 +1,13 @@
 import { enumKeys } from 'ustaxes/core/util'
 import { TaxYears } from 'ustaxes/data'
 import { blankState } from './reducer'
-import { USTPersistedState } from './store'
+import { USTState } from './store'
 
 /**
  * Ensures all default fields are present on each year's data
- * @returns state, mutated
+ * @returns state
  */
-export const migrateEachYear = <S extends USTPersistedState>(state: S): S =>
+export const migrateEachYear = <S extends USTState>(state: S): S =>
   enumKeys(TaxYears).reduce(
     (acc, year) => ({
       ...acc,

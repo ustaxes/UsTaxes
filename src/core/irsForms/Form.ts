@@ -13,6 +13,8 @@ export default abstract class Form extends Fill {
   // Match the sequence number in the header of the PDF.
   abstract sequenceIndex: number
 
+  copies: ThisType<this>[] = []
+
   public toString = (): string => `
     Form ${this.tag}, at sequence ${this.sequenceIndex}
   `

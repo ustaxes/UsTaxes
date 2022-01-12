@@ -656,9 +656,9 @@
       "additionalProperties": false
     },
     "Income1099Int": {
-      "$ref": "#/definitions/Income1099%3Cenum-823009365-1523-1537-823009365-1482-1580-823009365-0-12376%2CF1099IntData%3E"
+      "$ref": "#/definitions/Income1099%3Cenum-823009365-1523-1537-823009365-1482-1580-823009365-0-13314%2CF1099IntData%3E"
     },
-    "Income1099<enum-823009365-1523-1537-823009365-1482-1580-823009365-0-12376,F1099IntData>": {
+    "Income1099<enum-823009365-1523-1537-823009365-1482-1580-823009365-0-13314,F1099IntData>": {
       "type": "object",
       "properties": {
         "payer": {
@@ -688,9 +688,9 @@
       "additionalProperties": false
     },
     "Income1099B": {
-      "$ref": "#/definitions/Income1099%3Cenum-823009365-1512-1522-823009365-1482-1580-823009365-0-12376%2CF1099BData%3E"
+      "$ref": "#/definitions/Income1099%3Cenum-823009365-1512-1522-823009365-1482-1580-823009365-0-13314%2CF1099BData%3E"
     },
-    "Income1099<enum-823009365-1512-1522-823009365-1482-1580-823009365-0-12376,F1099BData>": {
+    "Income1099<enum-823009365-1512-1522-823009365-1482-1580-823009365-0-13314,F1099BData>": {
       "type": "object",
       "properties": {
         "payer": {
@@ -720,9 +720,9 @@
       "additionalProperties": false
     },
     "Income1099Div": {
-      "$ref": "#/definitions/Income1099%3Cenum-823009365-1538-1552-823009365-1482-1580-823009365-0-12376%2CF1099DivData%3E"
+      "$ref": "#/definitions/Income1099%3Cenum-823009365-1538-1552-823009365-1482-1580-823009365-0-13314%2CF1099DivData%3E"
     },
-    "Income1099<enum-823009365-1538-1552-823009365-1482-1580-823009365-0-12376,F1099DivData>": {
+    "Income1099<enum-823009365-1538-1552-823009365-1482-1580-823009365-0-13314,F1099DivData>": {
       "type": "object",
       "properties": {
         "payer": {
@@ -752,9 +752,9 @@
       "additionalProperties": false
     },
     "Income1099R": {
-      "$ref": "#/definitions/Income1099%3Cenum-823009365-1553-1563-823009365-1482-1580-823009365-0-12376%2CF1099RData%3E"
+      "$ref": "#/definitions/Income1099%3Cenum-823009365-1553-1563-823009365-1482-1580-823009365-0-13314%2CF1099RData%3E"
     },
-    "Income1099<enum-823009365-1553-1563-823009365-1482-1580-823009365-0-12376,F1099RData>": {
+    "Income1099<enum-823009365-1553-1563-823009365-1482-1580-823009365-0-13314,F1099RData>": {
       "type": "object",
       "properties": {
         "payer": {
@@ -784,9 +784,9 @@
       "additionalProperties": false
     },
     "Income1099SSA": {
-      "$ref": "#/definitions/Income1099%3Cenum-823009365-1564-1578-823009365-1482-1580-823009365-0-12376%2CF1099SSAData%3E"
+      "$ref": "#/definitions/Income1099%3Cenum-823009365-1564-1578-823009365-1482-1580-823009365-0-13314%2CF1099SSAData%3E"
     },
-    "Income1099<enum-823009365-1564-1578-823009365-1482-1580-823009365-0-12376,F1099SSAData>": {
+    "Income1099<enum-823009365-1564-1578-823009365-1482-1580-823009365-0-13314,F1099SSAData>": {
       "type": "object",
       "properties": {
         "payer": {
