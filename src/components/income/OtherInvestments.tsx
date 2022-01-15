@@ -145,17 +145,17 @@ export default function OtherInvestments(): ReactElement {
           label="Date sold or disposed of"
           name="closeDate"
         />
-        <LabeledInput
-          label="Cost or other basis per unit"
-          patternConfig={Patterns.currency}
-          name="openPrice"
-        />
         {(() => {
           if (positionType === 'Real Estate') {
             return (
               <>
                 <LabeledInput
-                  label="Net proceeds from sale"
+                  label="Cost basis"
+                  patternConfig={Patterns.currency}
+                  name="openPrice"
+                />
+                <LabeledInput
+                  label="Proceeds (sales price)"
                   patternConfig={Patterns.currency}
                   name="closePrice"
                 />
@@ -166,12 +166,17 @@ export default function OtherInvestments(): ReactElement {
             return (
               <>
                 <LabeledInput
+                  label="Cost basis per unit"
+                  patternConfig={Patterns.currency}
+                  name="openPrice"
+                />
+                <LabeledInput
                   label="Quantity"
                   patternConfig={Patterns.number}
                   name="quantity"
                 />
                 <LabeledInput
-                  label="Sell Price"
+                  label="Proceeds (sales price)"
                   patternConfig={Patterns.currency}
                   name="closePrice"
                 />
