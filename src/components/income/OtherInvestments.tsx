@@ -167,7 +167,7 @@ export default function OtherInvestments(): ReactElement {
               <>
                 <LabeledInput
                   label="Quantity"
-                  patternConfig={Patterns.currency}
+                  patternConfig={Patterns.number}
                   name="quantity"
                 />
                 <LabeledInput
