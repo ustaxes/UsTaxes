@@ -25,10 +25,10 @@ import { StateFormError } from './StateForms'
 export class YearCreateForm {
   readonly year: TaxYear
   readonly info: Information
-  readonly createF1040
-  readonly getPDF
-  readonly getStatePDF
-  readonly createStateReturn
+  readonly createF1040: (info: Information) => Either<string[], Form[]>
+  readonly getPDF: (f: Form) => Promise<PDFDocument>
+  readonly getStatePDF: (f: StateForm) => Promise<PDFDocument>
+  readonly createStateReturn: (f1040: Form) => Either<string[], StateForm[]>
 
   constructor(
     year: TaxYear,
