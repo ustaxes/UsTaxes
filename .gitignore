@@ -30,5 +30,6 @@ yarn-error.log*
 # vscode settings
 /.vscode
 /.devcontainer/
+
 /src/core/data/validation.json
 /logs/
