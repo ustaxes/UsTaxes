@@ -137,16 +137,16 @@ export default function OtherInvestments(): ReactElement {
         />
         <DatePicker
           maxDate={new Date(2021, 12, 31)}
-          label={positionType === 'Real Estate' ? 'Purchase date' : 'Open Date'}
+          label="Date acquired"
           name="openDate"
         />
         <DatePicker
           maxDate={new Date(2021, 12, 31)}
-          label={positionType === 'Real Estate' ? 'Sale date' : 'Close Date'}
+          label="Date sold or disposed of"
           name="closeDate"
         />
         <LabeledInput
-          label="Cost of acquisition"
+          label="Cost or other basis per unit"
           patternConfig={Patterns.currency}
           name="openPrice"
         />
