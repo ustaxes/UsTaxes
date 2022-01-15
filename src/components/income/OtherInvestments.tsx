@@ -131,7 +131,7 @@ export default function OtherInvestments(): ReactElement {
           valueMapping={(x) => x}
         />
         <LabeledInput
-          label="Address"
+          label={positionType === 'Real Estate' ? 'Address' : 'Name'}
           patternConfig={Patterns.name}
           name="name"
         />
