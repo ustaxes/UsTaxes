@@ -60,7 +60,7 @@ export default function GettingStarted(): ReactElement {
         </li>
         <li>SSA-1099</li>
       </ul>
-      USTaxes can attach the following to your 1040:
+      UsTaxes can attach the following to your 1040:
       <ul>
         <li>Schedule 1 (as related to Schedule E only)</li>
         <li>Schedule 2</li>
