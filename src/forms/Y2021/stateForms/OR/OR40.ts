@@ -73,7 +73,7 @@ export class OR40 extends Form {
    * Index 2: or-40-p1-2
    */
   or40p12 = (): boolean | undefined => {
-    return undefined
+    return true
   }
 
   f2 = (): boolean | undefined => this.or40p12()
@@ -82,7 +82,7 @@ export class OR40 extends Form {
    * Index 3: or-40-p1-4
    */
   or40p14 = (): boolean | undefined => {
-    return undefined
+    return true
   }
 
   f3 = (): boolean | undefined => this.or40p14()
@@ -91,7 +91,7 @@ export class OR40 extends Form {
    * Index 4: or-40-p1-5
    */
   or40p15 = (): boolean | undefined => {
-    return undefined
+    return true
   }
 
   f4 = (): boolean | undefined => this.or40p15()
@@ -100,7 +100,7 @@ export class OR40 extends Form {
    * Index 5: or-40-p1-6
    */
   or40p16 = (): boolean | undefined => {
-    return undefined
+    return true
   }
 
   f5 = (): boolean | undefined => this.or40p16()
@@ -109,7 +109,7 @@ export class OR40 extends Form {
    * Index 6: or-40-p1-7
    */
   or40p17 = (): boolean | undefined => {
-    return undefined
+    return true
   }
 
   f6 = (): boolean | undefined => this.or40p17()
@@ -118,7 +118,7 @@ export class OR40 extends Form {
    * Index 7: or-40-p1-8
    */
   or40p18 = (): boolean | undefined => {
-    return undefined
+    return true
   }
 
   f7 = (): boolean | undefined => this.or40p18()
@@ -127,7 +127,7 @@ export class OR40 extends Form {
    * Index 8: or-40-p1-9
    */
   or40p19 = (): boolean | undefined => {
-    return undefined
+    return true
   }
 
   f8 = (): boolean | undefined => this.or40p19()
@@ -136,7 +136,7 @@ export class OR40 extends Form {
    * Index 9: or-40-p1-10
    */
   or40p110 = (): boolean | undefined => {
-    return undefined
+    return true
   }
 
   f9 = (): boolean | undefined => this.or40p110()
@@ -172,7 +172,7 @@ export class OR40 extends Form {
    * Index 13: or-40-p1-16
    */
   or40p116 = (): boolean | undefined => {
-    return undefined
+    return true
   }
 
   f13 = (): boolean | undefined => this.or40p116()
@@ -181,7 +181,7 @@ export class OR40 extends Form {
    * Index 14: or-40-p1-17
    */
   or40p117 = (): boolean | undefined => {
-    return undefined
+    return true
   }
 
   f14 = (): boolean | undefined => this.or40p117()
@@ -190,7 +190,7 @@ export class OR40 extends Form {
    * Index 15: or-40-p1-18
    */
   or40p118 = (): boolean | undefined => {
-    return undefined
+    return true
   }
 
   f15 = (): boolean | undefined => this.or40p118()
@@ -217,7 +217,7 @@ export class OR40 extends Form {
    * Index 18: or-40-p2-2
    */
   or40p22 = (): boolean | undefined => {
-    return undefined
+    return true
   }
 
   f18 = (): boolean | undefined => this.or40p22()
@@ -226,7 +226,7 @@ export class OR40 extends Form {
    * Index 19: or-40-p2-3
    */
   or40p23 = (): boolean | undefined => {
-    return undefined
+    return true
   }
 
   f19 = (): boolean | undefined => this.or40p23()
@@ -235,7 +235,7 @@ export class OR40 extends Form {
    * Index 20: or-40-p2-4
    */
   or40p24 = (): boolean | undefined => {
-    return undefined
+    return true
   }
 
   f20 = (): boolean | undefined => this.or40p24()
@@ -253,7 +253,7 @@ export class OR40 extends Form {
    * Index 22: or-40-p2-9
    */
   or40p29 = (): boolean | undefined => {
-    return undefined
+    return true
   }
 
   f22 = (): boolean | undefined => this.or40p29()
@@ -298,7 +298,7 @@ export class OR40 extends Form {
    * Index 27: or-40-p2-17
    */
   or40p217 = (): boolean | undefined => {
-    return undefined
+    return true
   }
 
   f27 = (): boolean | undefined => this.or40p217()
@@ -352,7 +352,7 @@ export class OR40 extends Form {
    * Index 33: or-40-p2-24
    */
   or40p224 = (): boolean | undefined => {
-    return undefined
+    return true
   }
 
   f33 = (): boolean | undefined => this.or40p224()
@@ -397,7 +397,7 @@ export class OR40 extends Form {
    * Index 38: or-40-p2-31
    */
   or40p231 = (): boolean | undefined => {
-    return undefined
+    return true
   }
 
   f38 = (): boolean | undefined => this.or40p231()
@@ -424,7 +424,7 @@ export class OR40 extends Form {
    * Index 41: or-40-p2-6
    */
   or40p26 = (): boolean | undefined => {
-    return undefined
+    return true
   }
 
   f41 = (): boolean | undefined => this.or40p26()
@@ -433,7 +433,7 @@ export class OR40 extends Form {
    * Index 42: or-40-p2-7
    */
   or40p27 = (): boolean | undefined => {
-    return undefined
+    return true
   }
 
   f42 = (): boolean | undefined => this.or40p27()
@@ -442,7 +442,7 @@ export class OR40 extends Form {
    * Index 43: or-40-p2-8
    */
   or40p28 = (): boolean | undefined => {
-    return undefined
+    return true
   }
 
   f43 = (): boolean | undefined => this.or40p28()
@@ -523,7 +523,7 @@ export class OR40 extends Form {
    * Index 52: or-40-p1-24
    */
   or40p124 = (): boolean | undefined => {
-    return undefined
+    return true
   }
 
   f52 = (): boolean | undefined => this.or40p124()
@@ -532,7 +532,7 @@ export class OR40 extends Form {
    * Index 53: or-40-p1-25
    */
   or40p125 = (): boolean | undefined => {
-    return undefined
+    return true
   }
 
   f53 = (): boolean | undefined => this.or40p125()
@@ -541,7 +541,7 @@ export class OR40 extends Form {
    * Index 54: or-40-p1-26
    */
   or40p126 = (): boolean | undefined => {
-    return undefined
+    return true
   }
 
   f54 = (): boolean | undefined => this.or40p126()
@@ -604,7 +604,7 @@ export class OR40 extends Form {
    * Index 61: or-40-p3-12
    */
   or40p312 = (): boolean | undefined => {
-    return undefined
+    return true
   }
 
   f61 = (): boolean | undefined => this.or40p312()
@@ -613,7 +613,7 @@ export class OR40 extends Form {
    * Index 62: or-40-p3-13
    */
   or40p313 = (): boolean | undefined => {
-    return undefined
+    return true
   }
 
   f62 = (): boolean | undefined => this.or40p313()
@@ -622,7 +622,7 @@ export class OR40 extends Form {
    * Index 63: or-40-p3-14
    */
   or40p314 = (): boolean | undefined => {
-    return undefined
+    return true
   }
 
   f63 = (): boolean | undefined => this.or40p314()
@@ -631,7 +631,7 @@ export class OR40 extends Form {
    * Index 64: or-40-p3-15
    */
   or40p315 = (): boolean | undefined => {
-    return undefined
+    return true
   }
 
   f64 = (): boolean | undefined => this.or40p315()
@@ -640,7 +640,7 @@ export class OR40 extends Form {
    * Index 65: or-40-p4-2
    */
   or40p42 = (): boolean | undefined => {
-    return undefined
+    return true
   }
 
   f65 = (): boolean | undefined => this.or40p42()
@@ -649,7 +649,7 @@ export class OR40 extends Form {
    * Index 66: or-40-p4-3
    */
   or40p43 = (): boolean | undefined => {
-    return undefined
+    return true
   }
 
   f66 = (): boolean | undefined => this.or40p43()
@@ -658,7 +658,7 @@ export class OR40 extends Form {
    * Index 67: or-40-p4-4
    */
   or40p44 = (): boolean | undefined => {
-    return undefined
+    return true
   }
 
   f67 = (): boolean | undefined => this.or40p44()
@@ -676,7 +676,7 @@ export class OR40 extends Form {
    * Index 69: or-40-p5-13
    */
   or40p513 = (): boolean | undefined => {
-    return undefined
+    return true
   }
 
   f69 = (): boolean | undefined => this.or40p513()
@@ -703,7 +703,7 @@ export class OR40 extends Form {
    * Index 72: or-40-p6-11
    */
   or40p611 = (): boolean | undefined => {
-    return undefined
+    return true
   }
 
   f72 = (): boolean | undefined => this.or40p611()
@@ -730,7 +730,7 @@ export class OR40 extends Form {
    * Index 75: or-40-p6-16
    */
   or40p616 = (): boolean | undefined => {
-    return undefined
+    return true
   }
 
   f75 = (): boolean | undefined => this.or40p616()
@@ -1347,152 +1347,169 @@ export class OR40 extends Form {
 
   f143 = (): string | undefined => this.or40p130b()
 
-  fields = (): Field[] => [
-    this.f0(),
-    this.f1(),
-    this.f2(),
-    this.f3(),
-    this.f4(),
-    this.f5(),
-    this.f6(),
-    this.f7(),
-    this.f8(),
-    this.f9(),
-    this.f10(),
-    this.f11(),
-    this.f12(),
-    this.f13(),
-    this.f14(),
-    this.f15(),
-    this.f16(),
-    this.f17(),
-    this.f18(),
-    this.f19(),
-    this.f20(),
-    this.f21(),
-    this.f22(),
-    this.f23(),
-    this.f24(),
-    this.f25(),
-    this.f26(),
-    this.f27(),
-    this.f28(),
-    this.f29(),
-    this.f30(),
-    this.f31(),
-    this.f32(),
-    this.f33(),
-    this.f34(),
-    this.f35(),
-    this.f36(),
-    this.f37(),
-    this.f38(),
-    this.f39(),
-    this.f40(),
-    this.f41(),
-    this.f42(),
-    this.f43(),
-    this.f44(),
-    this.f45(),
-    this.f46(),
-    this.f47(),
-    this.f48(),
-    this.f49(),
-    this.f50(),
-    this.f51(),
-    this.f52(),
-    this.f53(),
-    this.f54(),
-    this.f55(),
-    this.f56(),
-    this.f57(),
-    this.f58(),
-    this.f59(),
-    this.f60(),
-    this.f61(),
-    this.f62(),
-    this.f63(),
-    this.f64(),
-    this.f65(),
-    this.f66(),
-    this.f67(),
-    this.f68(),
-    this.f69(),
-    this.f70(),
-    this.f71(),
-    this.f72(),
-    this.f73(),
-    this.f74(),
-    this.f75(),
-    this.f76(),
-    this.f77(),
-    this.f78(),
-    this.f79(),
-    this.f80(),
-    this.f81(),
-    this.f82(),
-    this.f83(),
-    this.f84(),
-    this.f85(),
-    this.f86(),
-    this.f87(),
-    this.f88(),
-    this.f89(),
-    this.f90(),
-    this.f91(),
-    this.f92(),
-    this.f93(),
-    this.f94(),
-    this.f95(),
-    this.f96(),
-    this.f97(),
-    this.f98(),
-    this.f99(),
-    this.f100(),
-    this.f101(),
-    this.f102(),
-    this.f103(),
-    this.f104(),
-    this.f105(),
-    this.f106(),
-    this.f107(),
-    this.f108(),
-    this.f109(),
-    this.f110(),
-    this.f111(),
-    this.f112(),
-    this.f113(),
-    this.f114(),
-    this.f115(),
-    this.f116(),
-    this.f117(),
-    this.f118(),
-    this.f119(),
-    this.f120(),
-    this.f121(),
-    this.f122(),
-    this.f123(),
-    this.f124(),
-    this.f125(),
-    this.f126(),
-    this.f127(),
-    this.f128(),
-    this.f129(),
-    this.f130(),
-    this.f131(),
-    this.f132(),
-    this.f133(),
-    this.f134(),
-    this.f135(),
-    this.f136(),
-    this.f137(),
-    this.f138(),
-    this.f139(),
-    this.f140(),
-    this.f141(),
-    this.f142(),
-    this.f143()
-  ]
+  fields = (): Field[] =>
+    [
+      this.f0(),
+      this.f1(),
+      this.f2(),
+      this.f3(),
+      this.f4(),
+      this.f5(),
+      this.f6(),
+      this.f7(),
+      this.f8(),
+      this.f9(),
+      this.f10(),
+      this.f11(),
+      this.f12(),
+      this.f13(),
+      this.f14(),
+      this.f15(),
+      this.f16(),
+      this.f17(),
+      this.f18(),
+      this.f19(),
+      this.f20(),
+      this.f21(),
+      this.f22(),
+      this.f23(),
+      this.f24(),
+      this.f25(),
+      this.f26(),
+      this.f27(),
+      this.f28(),
+      this.f29(),
+      this.f30(),
+      this.f31(),
+      this.f32(),
+      this.f33(),
+      this.f34(),
+      this.f35(),
+      this.f36(),
+      this.f37(),
+      this.f38(),
+      this.f39(),
+      this.f40(),
+      this.f41(),
+      this.f42(),
+      this.f43(),
+      this.f44(),
+      this.f45(),
+      this.f46(),
+      this.f47(),
+      this.f48(),
+      this.f49(),
+      this.f50(),
+      this.f51(),
+      this.f52(),
+      this.f53(),
+      this.f54(),
+      this.f55(),
+      this.f56(),
+      this.f57(),
+      this.f58(),
+      this.f59(),
+      this.f60(),
+      this.f61(),
+      this.f62(),
+      this.f63(),
+      this.f64(),
+      this.f65(),
+      this.f66(),
+      this.f67(),
+      this.f68(),
+      this.f69(),
+      this.f70(),
+      this.f71(),
+      this.f72(),
+      this.f73(),
+      this.f74(),
+      this.f75(),
+      this.f76(),
+      this.f77(),
+      this.f78(),
+      this.f79(),
+      this.f80(),
+      this.f81(),
+      this.f82(),
+      this.f83(),
+      this.f84(),
+      this.f85(),
+      this.f86(),
+      this.f87(),
+      this.f88(),
+      this.f89(),
+      this.f90(),
+      this.f91(),
+      this.f92(),
+      this.f93(),
+      this.f94(),
+      this.f95(),
+      this.f96(),
+      this.f97(),
+      this.f98(),
+      this.f99(),
+      this.f100(),
+      this.f101(),
+      this.f102(),
+      this.f103(),
+      this.f104(),
+      this.f105(),
+      this.f106(),
+      this.f107(),
+      this.f108(),
+      this.f109(),
+      this.f110(),
+      this.f111(),
+      this.f112(),
+      this.f113(),
+      this.f114(),
+      this.f115(),
+      this.f116(),
+      this.f117(),
+      this.f118(),
+      this.f119(),
+      this.f120(),
+      this.f121(),
+      this.f122(),
+      this.f123(),
+      this.f124(),
+      this.f125(),
+      this.f126(),
+      this.f127(),
+      this.f128(),
+      this.f129(),
+      this.f130(),
+      this.f131(),
+      this.f132(),
+      this.f133(),
+      this.f134(),
+      this.f135(),
+      this.f136(),
+      this.f137(),
+      this.f138(),
+      this.f139(),
+      this.f140(),
+      this.f141(),
+      this.f142(),
+      this.f143()
+    ].map((value, i) => {
+      return value
+        ? value
+        : i === 11 ||
+          i === 23 ||
+          i === 29 ||
+          i === 35 ||
+          i === 48 ||
+          i === 68 ||
+          i === 82 ||
+          i === 135 ||
+          i === 136 ||
+          i === 137 ||
+          i === 138
+        ? 'a'
+        : i
+    })
 }
 
 const makeOR40 = (info: Information, f1040: F1040): OR40 =>
