@@ -121,7 +121,7 @@ export default function OtherInvestments(): ReactElement {
     >
       {' '}
       <Grid container spacing={2}>
-        <p>Manage Assets</p>
+        <h3>Manage Assets</h3>
         <GenericLabeledDropdown<AssetType>
           label="Asset Type"
           name="positionType"
