@@ -132,7 +132,6 @@ export default function OtherInvestments(): ReactElement {
         />
         <LabeledInput
           label={positionType === 'Real Estate' ? 'Address' : 'Name'}
-          patternConfig={Patterns.name}
           name="name"
         />
         <DatePicker
