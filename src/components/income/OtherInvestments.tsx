@@ -5,7 +5,7 @@ import { useDispatch, YearsTaxesState } from 'ustaxes/redux'
 import { useSelector } from 'react-redux'
 import { addAsset, editAsset, removeAsset } from 'ustaxes/redux/actions'
 import { usePager } from 'ustaxes/components/pager'
-import { Asset, State } from 'ustaxes/core/data'
+import { Asset, AssetType, State } from 'ustaxes/core/data'
 import {
   GenericLabeledDropdown,
   USStateDropDown,
@@ -13,10 +13,13 @@ import {
 } from 'ustaxes/components/input'
 import { Patterns } from 'ustaxes/components/Patterns'
 import { FormListContainer } from 'ustaxes/components/FormContainer'
+import { Currency } from 'ustaxes/components/input'
 import { DatePicker } from '../input/DatePicker'
 import { Grid } from '@material-ui/core'
-
-type AssetType = 'Security' | 'Real Estate'
+import {
+  HouseOutlined as RealEstateIcon,
+  ShowChartOutlined as StockIcon
+} from '@material-ui/icons'
 
 interface Show<A> {
   (a: A): string
@@ -44,7 +47,7 @@ interface AssetUserInput {
   openDate?: Date
   closeDate?: Date
   openPrice: string
-  closePrice: string
+  closePrice?: string
   quantity: string
   state?: State
 }
@@ -66,18 +69,27 @@ const toUserInput = (f: Asset<Date>): AssetUserInput => ({
 })
 
 const toAsset = (input: AssetUserInput): Asset<Date> | undefined => {
-  const { name, openDate, closeDate, openPrice, closePrice, quantity, state } =
-    input
+  const {
+    name,
+    openDate,
+    closeDate,
+    openPrice,
+    closePrice,
+    quantity,
+    state,
+    positionType
+  } = input
   if (name === '' || openDate === undefined) {
     return undefined
   }
   return {
+    positionType,
     name,
     openDate,
     closeDate,
     openPrice: Number(openPrice),
     closePrice: Number(closePrice),
-    quantity: Number(quantity),
+    quantity: input.positionType === 'Real Estate' ? 1 : Number(quantity),
     state
   }
 }
@@ -114,10 +126,29 @@ export default function OtherInvestments(): ReactElement {
       onSubmitEdit={onSubmitEdit}
       items={assets.map((a) => toUserInput(a))}
       removeItem={(i) => dispatch(removeAsset(i))}
-      primary={(f) => f.name}
-      secondary={(f) =>
-        `${f.openDate?.toDateString() ?? ''}: ${f.quantity} @ $${f.openPrice}`
+      icon={(a) =>
+        a.positionType === 'Real Estate' ? <RealEstateIcon /> : <StockIcon />
       }
+      primary={(f) => f.name}
+      secondary={(f) => {
+        const asset = toAsset(f)
+        if (asset === undefined) return ''
+        const dates = `${asset.openDate?.toLocaleDateString() ?? ''}-${
+          asset.closeDate?.toLocaleDateString() ?? ''
+        }`
+        const money =
+          asset.closeDate === undefined || asset.closePrice === undefined
+            ? asset.openPrice * asset.quantity
+            : (asset.closePrice - asset.openPrice) * asset.quantity
+        const moneyEl = (
+          <Currency plain={asset.closeDate === undefined} value={money} />
+        )
+        return (
+          <span>
+            {dates}: {moneyEl}
+          </span>
+        )
+      }}
     >
       {' '}
       <Grid container spacing={2}>

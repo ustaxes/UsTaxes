@@ -4,7 +4,7 @@ import * as arbitraries from 'ustaxes/core/tests/arbitraries'
 import { YearsTaxesState } from 'ustaxes/redux'
 import { TaxYear, TaxYears } from 'ustaxes/data'
 import prand from 'pure-rand'
-import { Asset } from 'ustaxes/core/data'
+import { Asset, AssetType } from 'ustaxes/core/data'
 
 export const taxYear: fc.Arbitrary<TaxYear> = fc.constantFrom(
   ...util.enumKeys(TaxYears)
@@ -22,8 +22,15 @@ const orUndefined = <T>(arb: fc.Arbitrary<T>) =>
   fc.oneof(arb, fc.constant(undefined))
 
 export const positionDate: fc.Arbitrary<Asset<Date>> = fc
-  .tuple(fc.date(), orUndefined(taxYearDate))
-  .chain(([openDate, closeDate]) =>
+  .tuple(
+    fc.date(),
+    orUndefined(taxYearDate),
+    fc.oneof(
+      fc.constant<AssetType>('Security'),
+      fc.constant<AssetType>('Real Estate')
+    )
+  )
+  .chain(([openDate, closeDate, positionType]) =>
     fc
       .tuple(
         arbitraries.word,
@@ -40,7 +47,8 @@ export const positionDate: fc.Arbitrary<Asset<Date>> = fc
         giftedDate: closeDate === undefined ? giftedDate : undefined,
         openPrice,
         closePrice,
-        quantity,
+        positionType,
+        quantity: positionType === 'Real Estate' ? 1 : quantity,
         state
       }))
   )

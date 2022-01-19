@@ -448,8 +448,10 @@ export interface Information {
  * "Closing an asset" can result in a long-term or short-term capital
  * gain. An asset is closed when it gets a closeDate.
  */
+export type AssetType = 'Security' | 'Real Estate'
 export interface Asset<DateType = Date> {
   name: string
+  positionType: AssetType
   openDate: DateType
   closeDate?: DateType
   giftedDate?: DateType
