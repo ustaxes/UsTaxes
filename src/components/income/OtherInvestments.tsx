@@ -20,6 +20,8 @@ import {
   HouseOutlined as RealEstateIcon,
   ShowChartOutlined as StockIcon
 } from '@material-ui/icons'
+import { Alert } from '@material-ui/lab'
+import { TaxYears } from 'ustaxes/data'
 
 interface Show<A> {
   (a: A): string
@@ -96,10 +98,12 @@ const toAsset = (input: AssetUserInput): Asset<Date> | undefined => {
 
 export default function OtherInvestments(): ReactElement {
   const assets = useSelector((state: YearsTaxesState) => state.assets)
+  const year = useSelector((state: YearsTaxesState) => state.activeYear)
 
   const methods = useForm<AssetUserInput>()
   const { handleSubmit, watch } = methods
   const positionType = watch('positionType')
+  const closeDate = watch('closeDate')
   const dispatch = useDispatch()
 
   const { onAdvance, navButtons } = usePager()
@@ -211,6 +215,19 @@ export default function OtherInvestments(): ReactElement {
                   name="closePrice"
                 />
               </>
+            )
+          }
+        })()}
+        {(() => {
+          if (
+            closeDate !== undefined &&
+            closeDate.getFullYear() !== TaxYears[year]
+          ) {
+            return (
+              <Alert severity="warning">
+                This asset will not be included in the current year&apos;s
+                return because you have not selected a date in the current year.
+              </Alert>
             )
           }
         })()}
