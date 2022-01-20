@@ -35,11 +35,10 @@ export default class ScheduleD extends Form {
   }
 
   l21Min = (): number => {
-    if (this.state.taxPayer.filingStatus === FilingStatus.MFJ) {
+    if (this.state.taxPayer.filingStatus === FilingStatus.MFS) {
       return this.l21MinMFS
-    } else {
-      return this.l21MinDefault
     }
+    return this.l21MinDefault
   }
 
   l1ad = (): number | undefined => this.aggregated.shortTermProceeds
@@ -148,8 +147,10 @@ export default class ScheduleD extends Form {
     return (this.l18() ?? 0) === 0 && (this.l19() ?? 0) === 0
   }
 
+  fillL21 = (): boolean => (this.l16() > 0 && this.l17()) || this.l16() < 0
+
   l21 = (): number | undefined => {
-    if (this.l16() < 0) {
+    if (this.fillL21()) {
       return Math.max(-this.l21Min(), this.l16())
     }
   }
