@@ -60,6 +60,6 @@ export interface LabeledRadioProps extends LabeledFormProps {
 }
 
 export interface DatePickerProps extends LabeledFormProps {
-  minDate: Date
+  minDate?: Date
   maxDate: Date
 }

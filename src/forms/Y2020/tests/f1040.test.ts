@@ -13,7 +13,6 @@ beforeAll(() => {
 
 describe('f1040', () => {
   commonTests.run()
-
   it('should never have higher AGI than total income', async () => {
     await testKit.with1040Assert(async (forms) => {
       const f1040 = commonTests.findF1040(forms)

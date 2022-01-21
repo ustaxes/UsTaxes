@@ -96,4 +96,6 @@ export const healthSavingsAccounts = ajv.getSchema<types.HealthSavingsAccount>(
   '#/definitions/HealthSavingsAccount'
 )
 
+export const position = ajv.getSchema<types.Asset>('#/definitions/Asset')
+
 export default ajv

@@ -5,6 +5,7 @@ import { sumFields } from 'ustaxes/core/irsForms/util'
 import SDRateGainWorksheet from './worksheets/SDRateGainWorksheet'
 import SDUnrecaptured1250 from './worksheets/SDUnrecaptured1250'
 import InformationMethods from 'ustaxes/core/data/methods'
+import F8949 from './F8949'
 
 export default class ScheduleD extends Form {
   tag: FormTag = 'f1040sd'
@@ -13,13 +14,15 @@ export default class ScheduleD extends Form {
   aggregated: F1099BData
   rateGainWorksheet: SDRateGainWorksheet
   unrecaptured1250: SDUnrecaptured1250
+  f8949: F8949[]
 
   readonly l21MinMFS = 1500
   readonly l21MinDefault = 3000
 
-  constructor(info: Information) {
+  constructor(info: Information, f8949: F8949[]) {
     super()
     this.state = new InformationMethods(info)
+    this.f8949 = f8949
 
     const bs: F1099BData[] = this.state.f1099Bs().map((f) => f.form)
 
@@ -84,18 +87,47 @@ export default class ScheduleD extends Form {
   l8ah = (): number | undefined =>
     sumFields([this.l8ad(), 0 - (this.l8ae() ?? 0)])
 
-  l8bd = (): number | undefined => undefined
-  l8be = (): number | undefined => undefined
-  l8bg = (): number | undefined => undefined
-  l8bh = (): number | undefined => undefined
-  l9d = (): number | undefined => undefined
-  l9e = (): number | undefined => undefined
-  l9g = (): number | undefined => undefined
-  l9h = (): number | undefined => undefined
-  l10d = (): number | undefined => undefined
-  l10e = (): number | undefined => undefined
-  l10g = (): number | undefined => undefined
-  l10h = (): number | undefined => undefined
+  l8f8949s = (): F8949[] => this.f8949.filter((f) => f.part2BoxD())
+
+  l8bd = (): number =>
+    sumFields(this.l8f8949s().map((f) => f.longTermTotalProceeds()))
+
+  l8be = (): number =>
+    sumFields(this.l8f8949s().map((f) => f.longTermTotalCost()))
+
+  l8bg = (): number =>
+    sumFields(this.l8f8949s().map((f) => f.longTermTotalAdjustments()))
+
+  l8bh = (): number =>
+    sumFields(this.l8f8949s().map((f) => f.longTermTotalGain()))
+
+  l9f8949s = (): F8949[] => this.f8949.filter((f) => f.part2BoxE())
+
+  l9d = (): number =>
+    sumFields(this.l9f8949s().map((f) => f.longTermTotalProceeds()))
+
+  l9e = (): number =>
+    sumFields(this.l9f8949s().map((f) => f.longTermTotalCost()))
+
+  l9g = (): number =>
+    sumFields(this.l9f8949s().map((f) => f.longTermTotalAdjustments()))
+
+  l9h = (): number =>
+    sumFields(this.l9f8949s().map((f) => f.longTermTotalGain()))
+
+  l10f8949s = (): F8949[] => this.f8949.filter((f) => f.part2BoxF())
+
+  l10d = (): number =>
+    sumFields(this.l10f8949s().map((f) => f.longTermTotalProceeds()))
+
+  l10e = (): number =>
+    sumFields(this.l10f8949s().map((f) => f.longTermTotalCost()))
+
+  l10g = (): number =>
+    sumFields(this.l10f8949s().map((f) => f.longTermTotalAdjustments()))
+
+  l10h = (): number =>
+    sumFields(this.l10f8949s().map((f) => f.longTermTotalGain()))
 
   l11 = (): number | undefined => undefined
 

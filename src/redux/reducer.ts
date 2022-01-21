@@ -1,6 +1,6 @@
 /* eslint-disable indent */
 import { CombinedState, combineReducers, Reducer } from 'redux'
-import { FilingStatus, Information } from 'ustaxes/core/data'
+import { Asset, FilingStatus, Information } from 'ustaxes/core/data'
 import { TaxYear } from 'ustaxes/data'
 import { YearsTaxesState } from '.'
 import { ActionName, Actions } from './actions'
@@ -321,10 +321,37 @@ const activeYear = (state: TaxYear | undefined, action: Actions): TaxYear => {
   }
 }
 
+const assetReducer = (
+  state: Asset<Date>[] | undefined,
+  action: Actions
+): Asset<Date>[] => {
+  const newState = state ?? []
+
+  switch (action.type) {
+    case ActionName.ADD_ASSET: {
+      return [...newState, action.formData]
+    }
+    case ActionName.EDIT_ASSET: {
+      const newAssets = [...newState]
+      newAssets.splice(action.formData.index, 1, action.formData.value)
+      return newAssets
+    }
+    case ActionName.REMOVE_ASSET: {
+      const newAssets = [...newState]
+      newAssets.splice(action.formData, 1)
+      return newAssets
+    }
+    default: {
+      return newState
+    }
+  }
+}
+
 const rootReducer: Reducer<
   CombinedState<YearsTaxesState>,
   Actions
 > = combineReducers({
+  assets: assetReducer,
   Y2019: guardByYear('Y2019'),
   Y2020: guardByYear('Y2020'),
   Y2021: guardByYear('Y2021'),

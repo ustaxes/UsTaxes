@@ -1,4 +1,4 @@
-import { Information } from 'ustaxes/core/data'
+import { Information, Asset } from 'ustaxes/core/data'
 import { Either, isRight, left, run, runAsync } from 'ustaxes/core/util'
 import { TaxYear } from 'ustaxes/data'
 import { create1040 as create1040For2020 } from 'ustaxes/forms/Y2020/irsForms/Main'
@@ -23,7 +23,7 @@ import { F1040Error } from './errors'
 import { StateFormError } from './StateForms'
 
 interface CreateFormConfig {
-  createF1040: (info: Information) => Either<string[], Form[]>
+  createF1040: (info: Information, assets: Asset[]) => Either<string[], Form[]>
   getPDF: (f: Form) => Promise<PDFDocument>
   getStatePDF: (f: StateForm) => Promise<PDFDocument>
   createStateReturn: (f1040: Form) => Either<string[], StateForm[]>
@@ -32,15 +32,24 @@ interface CreateFormConfig {
 export class YearCreateForm {
   year: TaxYear
   info: Information
+  assets: Asset[]
   config: CreateFormConfig
 
-  constructor(year: TaxYear, info: Information, config: CreateFormConfig) {
+  constructor(
+    year: TaxYear,
+    info: Information,
+    assets: Asset[],
+    config: CreateFormConfig
+  ) {
     this.year = year
     this.info = info
+    this.assets = assets
+
     this.config = config
   }
 
-  f1040 = (): Either<string[], Form[]> => this.config.createF1040(this.info)
+  f1040 = (): Either<string[], Form[]> =>
+    this.config.createF1040(this.info, this.assets)
 
   f1040Pdfs = async (): Promise<Either<string[], PDFDocument[]>> => {
     const r1 = await run(this.f1040()).mapAsync((forms) =>
@@ -122,11 +131,13 @@ export class CreateForms {
     return this
   }
 
-  build = (info: Information): YearCreateForm => {
+  build = (info: Information, assets: Asset<Date>[]): YearCreateForm => {
     const takeSecond =
-      <A, E, B, C>(f: (a: A) => Either<E, [B, C]>): ((a: A) => Either<E, C>) =>
-      (a: A): Either<E, C> =>
-        run(f(a))
+      <A, AA, E, B, C>(
+        f: (a: A, aa: AA) => Either<E, [B, C]>
+      ): ((a: A, aa: AA) => Either<E, C>) =>
+      (a: A, aa: AA): Either<E, C> =>
+        run(f(a, aa))
           .map(([, c]) => c)
           .value()
 
@@ -138,7 +149,7 @@ export class CreateForms {
         this.downloader(`states/${form.state}/${form.formName}.pdf`)
     }
 
-    const configs = {
+    const configs: { [K in TaxYear]: CreateFormConfig } = {
       Y2019: {
         ...baseConfig,
         createF1040: () => left([F1040Error.unsupportedTaxYear]),
@@ -158,12 +169,15 @@ export class CreateForms {
       }
     }
 
-    return new YearCreateForm(this.year, info, configs[this.year])
+    return new YearCreateForm(this.year, info, assets, configs[this.year])
   }
 }
 
 export const yearFormBuilder = (year: TaxYear): CreateForms =>
   new CreateForms(year)
 
-export default (year: TaxYear, info: Information): YearCreateForm =>
-  yearFormBuilder(year).build(info)
+export default (
+  year: TaxYear,
+  info: Information,
+  assets: Asset<Date>[]
+): YearCreateForm => yearFormBuilder(year).build(info, assets)
