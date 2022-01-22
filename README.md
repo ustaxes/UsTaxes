@@ -19,11 +19,17 @@ Most income and deduction information from the following forms are supported for
 So far, this project can attach the following schedules to form 1040:
 
 - Schedule 1 (as to Schedule E and 1098-E data only)
+- Schedule 2
 - Schedule 3 (as to excess FICA tax only)
 - Schedule 8812
 - Schedule B
 - Schedule D
 - Schedule E
+- F1040-V
+- F8949 (Uncovered Investment Transactions)
+- F8889 (Health Savings Accounts)
+- F8959 (Additional Medicare Tax)
+- F8960 (Net Investment Income Tax)
 
 ## Supported Credits
 

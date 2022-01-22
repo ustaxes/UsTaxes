@@ -1,16 +1,23 @@
 type FSActionName = 'fs/persist' | 'fs/recover'
 
-export interface FSAction<S> {
-  type: FSActionName
+export interface FSAction {
+  readonly type: FSActionName
+}
+
+export interface FSPersist extends FSAction {
+  readonly type: 'fs/persist'
+}
+
+export interface FSRecover<S> extends FSAction {
+  readonly type: 'fs/recover'
   data: S
 }
 
-export const FSPersist = <S>(data: S): FSAction<S> => ({
-  type: 'fs/persist',
-  data
+export const fsPersist = (): FSPersist => ({
+  type: 'fs/persist'
 })
 
-export const FSRecover = <S>(data: S): FSAction<S> => ({
+export const fsRecover = <S>(data: S): FSRecover<S> => ({
   type: 'fs/recover',
   data
 })

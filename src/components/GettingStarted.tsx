@@ -60,7 +60,7 @@ export default function GettingStarted(): ReactElement {
         </li>
         <li>SSA-1099</li>
       </ul>
-      USTaxes can attach the following to your 1040:
+      UsTaxes can attach the following to your 1040:
       <ul>
         <li>Schedule 1 (as related to Schedule E only)</li>
         <li>Schedule 2</li>
@@ -71,6 +71,7 @@ export default function GettingStarted(): ReactElement {
         <li>Schedule E</li>
         <li>F1040-V</li>
         <li>F8889 (Health Savings Accounts)</li>
+        <li>F8949 (Uncovered Investment Transactions)</li>
         <li>F8959 (Additional Medicare Tax)</li>
         <li>F8960 (Net Investment Income Tax)</li>
       </ul>

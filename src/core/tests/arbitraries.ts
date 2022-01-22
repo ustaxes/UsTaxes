@@ -14,11 +14,11 @@ const upper: Arbitrary<string> = fc
   .integer({ min: 0x41, max: 0x5a })
   .map((n) => String.fromCharCode(n))
 
-const word: Arbitrary<string> = fc
+export const word: Arbitrary<string> = fc
   .array(fc.oneof(lower, upper))
   .map((xs) => xs.join(''))
 
-const words: Arbitrary<string> = fc.array(word).map((xs) => xs.join(' '))
+export const words: Arbitrary<string> = fc.array(word).map((xs) => xs.join(' '))
 
 const maxWords = (max: number): Arbitrary<string> =>
   fc
@@ -34,7 +34,9 @@ const numStr = (len: number): Arbitrary<string> =>
     .array(fc.nat({ max: 9 }), { minLength: len, maxLength: len })
     .map((x) => x.join(''))
 
-const state = fc.constantFrom(...locationPostalCodes.map(([, code]) => code))
+export const state = fc.constantFrom(
+  ...locationPostalCodes.map(([, code]) => code)
+)
 
 const concat = (
   as: Arbitrary<string>,

@@ -5,57 +5,104 @@ import {
   CombinedState
 } from 'redux'
 import logger from 'redux-logger'
-import rootReducer, { blankState } from './reducer'
+import rootReducer from './reducer'
 
-import { persistStore, persistReducer, createTransform } from 'redux-persist'
+import { persistStore, persistReducer, PersistedState } from 'redux-persist'
 import storage from 'redux-persist/lib/storage' // defaults to localStorage for web
-import { Information } from 'ustaxes/core/data'
+import { Information, Asset } from 'ustaxes/core/data'
 import { blankYearTaxesState, YearsTaxesState } from '.'
 import { Actions } from './actions'
 import { PersistPartial } from 'redux-persist/es/persistReducer'
+import { createTransform } from 'redux-persist'
 import { FSAction } from './fs/Actions'
 import fsReducer from './fs/FSReducer'
+import { migrateEachYear } from './migration'
+import { TaxYear } from 'ustaxes/data'
+import _ from 'lodash'
 
-const baseTransform = createTransform(
-  // transform state on its way to being serialized and persisted.
-  (inboundState: Information) => {
-    return inboundState
-  },
-  // transform state being rehydrated
-  // Just ensure the state has all requisite root members
-  (outboundState: Information): Information => {
-    return {
-      ...blankState,
-      ...outboundState
-    }
-  },
-  { whitelist: ['information'] }
+type SerializedState = { [K in TaxYear]: Information } & {
+  assets: Asset<string>[]
+  activeYear: TaxYear
+}
+
+export type USTSerializedState = NonNullable<PersistedState> & SerializedState
+export type USTState = NonNullable<PersistedState> & YearsTaxesState
+
+const positionTransformDS = (p: Asset): Asset<string> => ({
+  ...p,
+  openDate: p.openDate.toISOString(),
+  closeDate: p.closeDate?.toISOString(),
+  giftedDate: p.giftedDate?.toISOString()
+})
+
+const positionTransformSD = (p: Asset<string>): Asset => ({
+  ...p,
+  openDate: new Date(p.openDate),
+  closeDate: p.closeDate ? new Date(p.closeDate) : undefined,
+  giftedDate: p.giftedDate ? new Date(p.giftedDate) : undefined
+})
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
+/**
+ * Redux-persist calls the transform function not for
+ * the entire state, but for each reducer in our state.
+ */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
+export const serializeTransform = (s: any): any => {
+  // We're only looking for the assets array.
+  // Assuming for now that the only array as a value in the
+  // root of the state is the assets array.
+  if (!_.isArray(s)) {
+    return s
+  }
+  return (s as Asset[]).map((p) => positionTransformDS(p))
+}
+
+export const deserializeTransform = (s: any): any => {
+  // We're only looking for the assets array.
+  // Assuming for now that the only array as a value in the
+  // root of the state is the assets array.
+  if (!_.isArray(s)) {
+    return s
+  }
+  return (s as Asset<string>[]).map((p) => positionTransformSD(p))
+}
+/* eslint-enable @typescript-eslint/no-explicit-any */
+/* eslint-enable @typescript-eslint/explicit-module-boundary-types */
+
+const dateStringTransform = createTransform(
+  serializeTransform,
+  deserializeTransform
 )
 
-const persistConfig = {
-  key: 'root',
-  storage,
-  transforms: [baseTransform]
-}
+const migrate = async (state: USTState): Promise<USTState> =>
+  migrateEachYear(state)
 
 const persistedReducer = fsReducer(
   'ustaxes_save.json',
   persistReducer<CombinedState<YearsTaxesState>, Actions>(
-    persistConfig,
+    {
+      key: 'root',
+      storage,
+      migrate: async (state) =>
+        state === undefined
+          ? undefined
+          : await migrate({ ...blankYearTaxesState, ...state }),
+      transforms: [dateStringTransform]
+    },
     rootReducer
   )
 )
 
-export type InfoStore = Store<
-  YearsTaxesState,
-  FSAction<YearsTaxesState> & Actions
-> & {
+export type InfoStore = Store<YearsTaxesState, FSAction & Actions> & {
   dispatch: unknown
 }
 
 export type PersistedStore = Store<
   YearsTaxesState & PersistPartial,
-  FSAction<YearsTaxesState> & Actions
+  FSAction & Actions
 > & {
   dispatch: unknown
 }

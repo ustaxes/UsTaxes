@@ -13,11 +13,11 @@ const useStyles = makeStyles(() => ({
 }))
 
 export default function Currency(props: CurrencyProps): ReactElement {
-  const { prefix = '', value, plain } = props
+  const { prefix = '', value, plain = false } = props
   const classes = useStyles()
 
   const className: string | undefined = (() => {
-    if (plain !== undefined) {
+    if (plain) {
       return undefined
     }
     if (value > 0) {

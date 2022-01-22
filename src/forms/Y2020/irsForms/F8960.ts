@@ -69,7 +69,7 @@ export default class F8960 extends Form {
 
   l4c = (): number => sumFields([this.l4a(), this.l4b()])
 
-  // Line 5a-5d: Gains and Losses on the Dispositions of Property
+  // Line 5a-5d: Gains and Losses on the Disassets of Property
   l5a = (): number => sumFields([this.f1040.l7(), this.f1040.schedule1?.l4()])
   // TODO: implement line 5b and 5c from worksheet.
   l5b = (): number | undefined => undefined

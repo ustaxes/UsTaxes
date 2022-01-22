@@ -60,6 +60,7 @@ export const isText = (p: PatternConfig): p is TextPattern =>
   p.inputType === 'text'
 
 export const Patterns = {
+  number: numeric(/^\d+$/, 'Input should be a number'),
   year: numeric(
     /[12][0-9]{3}/,
     'Input should be a four digit year',
