@@ -430,3 +430,33 @@ export interface Information {
   stateResidencies: StateResidency[]
   healthSavingsAccounts: HealthSavingsAccount[]
 }
+
+/**
+ * An asset can be anything that is transactable, such as a stock,
+ * bond, mutual fund, real estate, or cryptocurrency, which is not reported
+ * on 1099-B. A position always has an open date. A position may
+ * be sold, at which time its gain or loss will be reported,
+ * or it may be gifted to another person, at which time its
+ * gain or loss will not be reported.
+ *
+ * An asset can be carried across multiple tax years,
+ * so it should not be a sibling rather than a member of `Information`.
+ *
+ * If a position is real estate, then it has a state, which will
+ * require state apportionment.
+ *
+ * "Closing an asset" can result in a long-term or short-term capital
+ * gain. An asset is closed when it gets a closeDate.
+ */
+export type AssetType = 'Security' | 'Real Estate'
+export interface Asset<DateType = Date> {
+  name: string
+  positionType: AssetType
+  openDate: DateType
+  closeDate?: DateType
+  giftedDate?: DateType
+  openPrice: number
+  closePrice?: number
+  quantity: number
+  state?: State
+}

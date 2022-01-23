@@ -71,6 +71,7 @@ export default function GettingStarted(): ReactElement {
         <li>Schedule E</li>
         <li>F1040-V</li>
         <li>F8889 (Health Savings Accounts)</li>
+        <li>F8949 (Uncovered Investment Transactions)</li>
         <li>F8959 (Additional Medicare Tax)</li>
         <li>F8960 (Net Investment Income Tax)</li>
       </ul>

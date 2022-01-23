@@ -14,7 +14,8 @@ import {
   Information,
   EstimatedTaxPayments,
   Responses,
-  HealthSavingsAccount
+  HealthSavingsAccount,
+  Asset
 } from 'ustaxes/core/data'
 
 import {
@@ -29,6 +30,7 @@ import {
 import ajv, * as validators from 'ustaxes/core/data/validate'
 import { TaxYear } from 'ustaxes/data'
 import { ValidateFunction } from 'ajv'
+import { EditAssetAction } from '.'
 
 const indexSchema = {
   type: 'number',
@@ -69,7 +71,10 @@ export enum ActionName {
   REMOVE_HSA = 'REMOVE_HSA',
   SET_INFO = 'SET_INFO',
   SET_ACTIVE_YEAR = 'SET_ACTIVE_YEAR',
-  PROPAGATE_YEAR_DATA = 'PROPAGATE_YEAR_DATA'
+  PROPAGATE_YEAR_DATA = 'PROPAGATE_YEAR_DATA',
+  ADD_ASSET = 'ASSETS/ADD',
+  EDIT_ASSET = 'ASSETS/EDIT',
+  REMOVE_ASSET = 'ASSETS/REMOVE'
 }
 
 interface Save<T, R> {
@@ -124,6 +129,9 @@ type Edit1098e = Save<typeof ActionName.EDIT_1098e, Edit1098eAction>
 type Remove1098e = Save<typeof ActionName.REMOVE_1098e, number>
 type SetInfo = Save<typeof ActionName.SET_INFO, Information>
 type SetActiveYear = Save<typeof ActionName.SET_ACTIVE_YEAR, TaxYear>
+type AddAsset = Save<typeof ActionName.ADD_ASSET, Asset<Date>>
+type EditAsset = Save<typeof ActionName.EDIT_ASSET, EditAssetAction>
+type RemoveAsset = Save<typeof ActionName.REMOVE_ASSET, number>
 
 export type Actions =
   | SaveRefundInfo
@@ -157,6 +165,9 @@ export type Actions =
   | RemoveHSA
   | SetInfo
   | SetActiveYear
+  | AddAsset
+  | EditAsset
+  | RemoveAsset
 
 export type SignalAction = (year: TaxYear) => Actions
 export type ActionCreator<A> = (formData: A) => SignalAction
@@ -372,4 +383,17 @@ export const setInfo: ActionCreator<Information> = makeActionCreator(
 export const setActiveYear: ActionCreator<TaxYear> = makeActionCreator(
   ActionName.SET_ACTIVE_YEAR,
   ajv.getSchema('#/definitions/TaxYear') as ValidateFunction<TaxYear>
+)
+
+export const addAsset: ActionCreator<Asset<Date>> = makeActionCreator(
+  ActionName.ADD_ASSET
+)
+
+export const editAsset: ActionCreator<EditAssetAction> = makeActionCreator(
+  ActionName.EDIT_ASSET
+)
+
+export const removeAsset: ActionCreator<number> = makeActionCreator(
+  ActionName.REMOVE_ASSET,
+  indexValidator
 )
