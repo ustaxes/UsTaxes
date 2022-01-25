@@ -16,13 +16,12 @@ NETLIFY_CLI="npx netlify"
 
 AUTH="$1"
 APP_ID="$2"
-NETLIFY_DEPLOY_TO_PROD=true
+NETLIFY_DEPLOY_TO_PROD=''
 BUILD_DIRECTORY='./build'
-FUNCTIONS_DIRECTORY=''
 DEPLOY_ALIAS=''
 DEPLOY_MESSAGE='Deployed from github'
 
-COMMAND="$NETLIFY_CLI deploy --auth $AUTH --site $APP_ID --dir $BUILD_DIRECTORY --functions $FUNCTIONS_DIRECTORY --message $DEPLOY_MESSAGE"
+COMMAND="$NETLIFY_CLI deploy --auth $AUTH --site $APP_ID --dir $BUILD_DIRECTORY --message $DEPLOY_MESSAGE"
 
 if [[ $NETLIFY_DEPLOY_TO_PROD == "true" ]]
 then
