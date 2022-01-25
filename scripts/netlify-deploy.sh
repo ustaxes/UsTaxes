@@ -14,8 +14,8 @@ npm i netlify-cli
 # Save its exec path to run later
 NETLIFY_CLI="npx netlify"
 
-AUTH="$1"
-APP_ID="$2"
+AUTH="$NETLIFY_AUTH_TOKEN"
+APP_ID="$NETLIFY_SITE_ID"
 NETLIFY_DEPLOY_TO_PROD=''
 BUILD_DIRECTORY='./build'
 DEPLOY_ALIAS=''
