@@ -24,22 +24,34 @@ jobs:
       uses: actions/setup-node@v2
       with:
         node-version: ${{ matrix.node-version }}
-      # installs dependencies
-    # - run: npm ci
-    #   # lint
+    # installs dependencies
+    - run: npm ci
+      # lint
     # - name: Run ESLint
     #   run: npm run lint
-    # - name: Ensure project builds
-    #   run: npm run build
-    #   # run tests
+    - name: Ensure project builds
+      run: npm run build
+      # run tests
     # - name: Run jest unit tests
     #   run: npm run test:report
     # - name: Upload coverage to Codecov
     #   uses: codecov/codecov-action@v2
-      # with:
-      #   token: ${{ secrets.CODECOV_TOKEN }}
-      #   directory: ./coverage
-      #   verbose: true
+    #   with:
+    #     token: ${{ secrets.CODECOV_TOKEN }}
+    #     directory: ./coverage
+    #     verbose: true
+    - name: Deploy to Netlify
+      run: ./scripts/netlify-deploy.sh ${{ secrets.NETLIFY_AUTH_TOKEN }} ${{ secrets.NETLIFY_APP_ID }}
+
+    # Creates a status check with link to preview
+    - name: Status check
+      uses: Sibz/github-status-action@v1.1.1
+      with:
+        authToken: ${{ secrets.GITHUB_TOKEN }}
+        context: Netlify preview
+        state: success
+        target_url: ${{ steps.deployment.outputs.deploy-url }}
+
 
   dependabot-auto-merge:
     needs: [test]
@@ -57,30 +69,3 @@ jobs:
         env:
           PR_URL: ${{github.event.pull_request.html_url}}
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-
-  deploy:
-    needs: [test]
-    runs-on: ubuntu-latest
-    name: 'Deploy to Netlify'
-    steps:
-      - uses: actions/checkout@v2
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
-        with:
-          node-version: ${{ matrix.node-version }}
-      # installs dependencies
-      - name: Install dependencies
-        run: npm ci
-      - name: Build
-        run: npm run build
-      - name: Deploy to Netlify
-        run: ./scripts/netlify-deploy.sh ${{ secrets.NETLIFY_AUTH_TOKEN }} ${{ secrets.NETLIFY_APP_ID }}
-
-      # Creates a status check with link to preview
-      - name: Status check
-        uses: Sibz/github-status-action@v1.1.1
-        with:
-          authToken: ${{ secrets.GITHUB_TOKEN }}
-          context: Netlify preview
-          state: success
-          target_url: ${{ steps.deployment.outputs.deploy-url }}
