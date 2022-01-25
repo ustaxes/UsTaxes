@@ -43,7 +43,7 @@ jobs:
     - name: Deploy to Netlify
       run: ./scripts/netlify-deploy.sh
       env:
-        NETLIFY_AUTH_TOKEN: ${{ scrents.NETLIFY_AUTH_TOKEN }}
+        NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
         NETLIFY_SITE_ID: ${{ secrets.NETLIFY_APP_ID }}
 
     # Creates a status check with link to preview
