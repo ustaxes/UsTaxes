@@ -26,7 +26,7 @@ jobs:
         node-version: ${{ matrix.node-version }}
       # installs dependencies
     # - run: npm ci
-    #   # build
+    #   # lint
     # - name: Run ESLint
     #   run: npm run lint
     # - name: Ensure project builds
@@ -63,6 +63,16 @@ jobs:
     runs-on: ubuntu-latest
     name: 'Deploy to Netlify'
     steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+      # installs dependencies
+      - name: Install dependencies
+        run: npm ci
+      - name: Build
+        run: npm run build
       - name: Deploy to Netlify
         run: ./scripts/netlify-deploy.sh
         env:
