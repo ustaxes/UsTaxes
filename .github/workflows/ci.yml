@@ -59,7 +59,7 @@ jobs:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
   deploy:
-    needs: [test]
+#    needs: [test]
     runs-on: ubuntu-latest
     name: 'Deploy to Netlify'
     steps:
