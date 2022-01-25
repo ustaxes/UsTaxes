@@ -57,3 +57,30 @@ jobs:
         env:
           PR_URL: ${{github.event.pull_request.html_url}}
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+
+  deploy:
+    needs: [test]
+    runs-on: ubuntu-latest
+    name: 'Deploy to Netlify'
+    steps:
+      - uses: nelonoel/branch-name@v1.0.1
+      - name: deployment
+        uses: jsmrcaga/action-netlify-deploy@v1.7.2
+        with:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{secrets.NETLIFY_APP_ID }}
+          NETLIFY_DEPLOY_TO_PROD: true
+          NETLIFY_DEPLOY_MESSAGE: "Prod deploy ${{ env.BRANCH_NAME }}"
+          deploy_alias: ${{ env.BRANCH_NAME }}
+          build_directory: build
+          install_command: npm ci
+          build_command: npm run build
+
+      # Creates a status check with link to preview
+      - name: Status check
+        uses: Sibz/github-status-action@v1.1.1
+        with:
+          authToken: ${{ secrets.GITHUB_TOKEN }}
+          context: Netlify preview
+          state: success
+          target_url: ${{ steps.deployment.outputs.NETLIFY_LIVE_URL }}
