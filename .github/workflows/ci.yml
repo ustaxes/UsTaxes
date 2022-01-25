@@ -63,18 +63,20 @@ jobs:
     runs-on: ubuntu-latest
     name: 'Deploy to Netlify'
     steps:
-      - uses: nelonoel/branch-name@v1.0.1
-      - name: deployment
-        uses: jsmrcaga/action-netlify-deploy@v1.7.2
+      - name: Deploy to Netlify
+        uses: nwtgck/actions-netlify@v1.2
         with:
+          publish-dir: './build'
+          production-branch: master
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          deploy-message: "Deploy from GitHub Actions"
+          enable-pull-request-comment: false
+          enable-commit-comment: true
+          overwrites-pull-request-comment: true
+        env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-          NETLIFY_SITE_ID: ${{secrets.NETLIFY_APP_ID }}
-          NETLIFY_DEPLOY_TO_PROD: true
-          NETLIFY_DEPLOY_MESSAGE: "Prod deploy ${{ env.BRANCH_NAME }}"
-          deploy_alias: ${{ env.BRANCH_NAME }}
-          build_directory: build
-          install_command: npm ci
-          build_command: npm run build
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+        timeout-minutes: 5
 
       # Creates a status check with link to preview
       - name: Status check
@@ -83,4 +85,4 @@ jobs:
           authToken: ${{ secrets.GITHUB_TOKEN }}
           context: Netlify preview
           state: success
-          target_url: ${{ steps.deployment.outputs.NETLIFY_LIVE_URL }}
+          target_url: ${{ steps.deployment.outputs.deploy-url }}
