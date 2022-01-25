@@ -25,21 +25,21 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
       # installs dependencies
-    - run: npm ci
-      # build
-    - name: Run ESLint
-      run: npm run lint
-    - name: Ensure project builds
-      run: npm run build
-      # run tests
-    - name: Run jest unit tests
-      run: npm run test:report
-    - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v2
-      with:
-        token: ${{ secrets.CODECOV_TOKEN }}
-        directory: ./coverage
-        verbose: true
+    # - run: npm ci
+    #   # build
+    # - name: Run ESLint
+    #   run: npm run lint
+    # - name: Ensure project builds
+    #   run: npm run build
+    #   # run tests
+    # - name: Run jest unit tests
+    #   run: npm run test:report
+    # - name: Upload coverage to Codecov
+    #   uses: codecov/codecov-action@v2
+      # with:
+      #   token: ${{ secrets.CODECOV_TOKEN }}
+      #   directory: ./coverage
+      #   verbose: true
 
   dependabot-auto-merge:
     needs: [test]
@@ -64,7 +64,7 @@ jobs:
     name: 'Deploy to Netlify'
     steps:
       - name: Deploy to Netlify
-        run: scripts/netlify-deploy.sh
+        run: ./scripts/netlify-deploy.sh
         env:
           NETLIFY_AUTH: ${{ secrets.NETLIFY_AUTH_TOKEN }} # Netlify Auth Token
           NETLIFY_APP_ID: ${{ secrets.NETLIFY_APP_ID }}     # Netlify App (Site) ID
