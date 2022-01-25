@@ -9,10 +9,10 @@
 set -e
 
 # Install netlify globally before NVM to prevent EACCESS issues
-npm i -g netlify-cli
+npm i netlify-cli
 
 # Save its exec path to run later
-NETLIFY_CLI=$(which netlify)
+NETLIFY_CLI="npx netlify"
 
 AUTH="$1"
 APP_ID="$2"
