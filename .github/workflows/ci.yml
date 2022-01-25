@@ -65,14 +65,9 @@ jobs:
     steps:
       - name: Deploy to Netlify
         run: scripts/netlify-deploy.sh
-        args:
-          - ${{ secrets.NETLIFY_AUTH_TOKEN }} # Netlify Auth Token
-          - ${{ secrets.NETLIFY_APP_ID }}     # Netlify App (Site) ID
-          - true                              # Deploy to production
-          - ./build                           # Build directory
-          - ''                                # Functions directory
-          - ''                                # Deploy alias
-          - 'Deploy from GitHub Actions'      # Deploy message
+        env:
+          NETLIFY_AUTH: ${{ secrets.NETLIFY_AUTH_TOKEN }} # Netlify Auth Token
+          NETLIFY_APP_ID: ${{ secrets.NETLIFY_APP_ID }}     # Netlify App (Site) ID
 
       # Creates a status check with link to preview
       - name: Status check
