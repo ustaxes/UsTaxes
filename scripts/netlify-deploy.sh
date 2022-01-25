@@ -14,13 +14,15 @@ npm i -g netlify-cli
 # Save its exec path to run later
 NETLIFY_CLI=$(which netlify)
 
+AUTH=$1
+APP_ID=$2
 NETLIFY_DEPLOY_TO_PROD=true
 BUILD_DIRECTORY='./build'
 FUNCTIONS_DIRECTORY=''
 DEPLOY_ALIAS=''
 DEPLOY_MESSAGE='Deployed from github'
 
-COMMAND="$NETLIFY_CLI deploy --dir=$BUILD_DIRECTORY --functions=$FUNCTIONS_DIRECTORY --message=$DEPLOY_MESSAGE"
+COMMAND="$NETLIFY_CLI deploy --auth=$AUTH --site=$APP_ID --dir=$BUILD_DIRECTORY --functions=$FUNCTIONS_DIRECTORY --message=$DEPLOY_MESSAGE"
 
 if [[ $NETLIFY_DEPLOY_TO_PROD == "true" ]]
 then
