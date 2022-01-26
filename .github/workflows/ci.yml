@@ -45,6 +45,7 @@ jobs:
       env:
         NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
         NETLIFY_SITE_ID: ${{ secrets.NETLIFY_APP_ID }}
+      timeout-minutes: 5
 
     # Creates a status check with link to preview
     - name: Status check

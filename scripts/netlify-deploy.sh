@@ -8,7 +8,6 @@
 
 set -e
 
-# Install netlify globally before NVM to prevent EACCESS issues
 npm i netlify-cli
 
 # Save its exec path to run later
