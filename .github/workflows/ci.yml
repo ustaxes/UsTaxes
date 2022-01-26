@@ -40,12 +40,13 @@ jobs:
     #     token: ${{ secrets.CODECOV_TOKEN }}
     #     directory: ./coverage
     #     verbose: true
+    - name: Install netlify cli
+      run: npm install netlify-cli
     - name: Deploy to Netlify
-      run: ./scripts/netlify-deploy.sh
+      run: npx netlify deploy --dir "./build" --message "Deployed from github" --alias $(git rev-parse --short "$GITHUB_SHA")
       env:
         NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
         NETLIFY_SITE_ID: ${{ secrets.NETLIFY_APP_ID }}
-      timeout-minutes: 5
 
     # Creates a status check with link to preview
     - name: Status check
@@ -54,7 +55,7 @@ jobs:
         authToken: ${{ secrets.GITHUB_TOKEN }}
         context: Netlify preview
         state: success
-        target_url: ${{ steps.deployment.outputs.deploy-url }}
+        target_url: https://$(git rev-parse --short "$GITHUB_SHA")--ustaxes.netlify.app
 
 
   dependabot-auto-merge:
