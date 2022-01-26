@@ -43,10 +43,7 @@ jobs:
     - name: Install netlify cli
       run: npm install netlify-cli
     - name: Deploy to Netlify
-      run: npx netlify deploy --dir "./build" --message "Deployed from github" --alias $(git rev-parse --short "$GITHUB_SHA")
-      env:
-        NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-        NETLIFY_SITE_ID: ${{ secrets.NETLIFY_APP_ID }}
+      run: npx netlify deploy --auth ${{ secrets.NETLIFY_AUTH_TOKEN }} --site  ${{ secrets.NETLIFY_APP_ID }} --dir "./build" --message "Deployed from github" --alias $(git rev-parse --short "$GITHUB_SHA")
 
     # Creates a status check with link to preview
     - name: Status check
