@@ -10,7 +10,7 @@ updates:
     directory: "/" # Location of package manifests
     schedule:
       interval: "daily"
-    target-branch: "dependabot-updates-minor"
+    target-branch: "master"
     ignore:
       - dependency-name: "*"
         update-types: ["version-update:semver-major"]
@@ -21,7 +21,7 @@ updates:
     directory: "/" # Location of package manifests
     schedule:
       interval: "daily"
-    target-branch: "dependabot-updates-major"
+    target-branch: "master"
     ignore:
       # We're holding react-router-dom, 
       # 5->6 is a big api change.
