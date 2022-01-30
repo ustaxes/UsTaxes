@@ -61,19 +61,20 @@ export class OR40 extends Form {
   f0 = (): string | undefined => this.ButtonClearform()
 
   /**
-   * Index 1: or-40-p1-1
+   * Index 1: Fiscal Year Ending Date
    */
-  or40p11 = (): string | undefined => {
+  FiscalYearEndingDate = (): string | undefined => {
+    // format: 'xx xx xxxx'
     return undefined
   }
 
-  f1 = (): string | undefined => this.or40p11()
+  f1 = (): string | undefined => this.FiscalYearEndingDate()
 
   /**
    * Index 2: or-40-p1-2
    */
   or40p12 = (): boolean | undefined => {
-    return undefined
+    return true
   }
 
   f2 = (): boolean | undefined => this.or40p12()
@@ -82,7 +83,7 @@ export class OR40 extends Form {
    * Index 3: or-40-p1-4
    */
   or40p14 = (): boolean | undefined => {
-    return undefined
+    return true
   }
 
   f3 = (): boolean | undefined => this.or40p14()
@@ -91,7 +92,7 @@ export class OR40 extends Form {
    * Index 4: or-40-p1-5
    */
   or40p15 = (): boolean | undefined => {
-    return undefined
+    return true
   }
 
   f4 = (): boolean | undefined => this.or40p15()
@@ -100,7 +101,7 @@ export class OR40 extends Form {
    * Index 5: or-40-p1-6
    */
   or40p16 = (): boolean | undefined => {
-    return undefined
+    return true
   }
 
   f5 = (): boolean | undefined => this.or40p16()
@@ -109,7 +110,7 @@ export class OR40 extends Form {
    * Index 6: or-40-p1-7
    */
   or40p17 = (): boolean | undefined => {
-    return undefined
+    return true
   }
 
   f6 = (): boolean | undefined => this.or40p17()
@@ -118,7 +119,7 @@ export class OR40 extends Form {
    * Index 7: or-40-p1-8
    */
   or40p18 = (): boolean | undefined => {
-    return undefined
+    return true
   }
 
   f7 = (): boolean | undefined => this.or40p18()
@@ -127,7 +128,7 @@ export class OR40 extends Form {
    * Index 8: or-40-p1-9
    */
   or40p19 = (): boolean | undefined => {
-    return undefined
+    return true
   }
 
   f8 = (): boolean | undefined => this.or40p19()
@@ -136,19 +137,19 @@ export class OR40 extends Form {
    * Index 9: or-40-p1-10
    */
   or40p110 = (): boolean | undefined => {
-    return undefined
+    return true
   }
 
   f9 = (): boolean | undefined => this.or40p110()
 
   /**
-   * Index 10: or-40-p1-11
+   * Index 10: First Name
    */
-  or40p111 = (): string | undefined => {
+  FirstName = (): string | undefined => {
     return undefined
   }
 
-  f10 = (): string | undefined => this.or40p111()
+  f10 = (): string | undefined => this.FirstName()
 
   /**
    * Index 11: or-40-p1-12
@@ -160,19 +161,20 @@ export class OR40 extends Form {
   f11 = (): string | undefined => this.or40p112()
 
   /**
-   * Index 12: or-40-p1-13
+   * Index 12: Date Of Birth
    */
-  or40p113 = (): string | undefined => {
+  DateOfBirth = (): string | undefined => {
+    // format: 'xx xx xxxx'
     return undefined
   }
 
-  f12 = (): string | undefined => this.or40p113()
+  f12 = (): string | undefined => this.DateOfBirth()
 
   /**
    * Index 13: or-40-p1-16
    */
   or40p116 = (): boolean | undefined => {
-    return undefined
+    return true
   }
 
   f13 = (): boolean | undefined => this.or40p116()
@@ -181,7 +183,7 @@ export class OR40 extends Form {
    * Index 14: or-40-p1-17
    */
   or40p117 = (): boolean | undefined => {
-    return undefined
+    return true
   }
 
   f14 = (): boolean | undefined => this.or40p117()
@@ -190,34 +192,35 @@ export class OR40 extends Form {
    * Index 15: or-40-p1-18
    */
   or40p118 = (): boolean | undefined => {
-    return undefined
+    return true
   }
 
   f15 = (): boolean | undefined => this.or40p118()
 
   /**
-   * Index 16: or-40-p1-14
+   * Index 16: Last Name
    */
-  or40p114 = (): string | undefined => {
+  LastName = (): string | undefined => {
     return undefined
   }
 
-  f16 = (): string | undefined => this.or40p114()
+  f16 = (): string | undefined => this.LastName()
 
   /**
-   * Index 17: or-40-p1-15
+   * Index 17: SSN
    */
-  or40p115 = (): string | undefined => {
+  SocialSecurityNumber = (): string | undefined => {
+    // format: 'xxx xx xxxx'
     return undefined
   }
 
-  f17 = (): string | undefined => this.or40p115()
+  f17 = (): string | undefined => this.SocialSecurityNumber()
 
   /**
    * Index 18: or-40-p2-2
    */
   or40p22 = (): boolean | undefined => {
-    return undefined
+    return true
   }
 
   f18 = (): boolean | undefined => this.or40p22()
@@ -226,7 +229,7 @@ export class OR40 extends Form {
    * Index 19: or-40-p2-3
    */
   or40p23 = (): boolean | undefined => {
-    return undefined
+    return true
   }
 
   f19 = (): boolean | undefined => this.or40p23()
@@ -235,25 +238,26 @@ export class OR40 extends Form {
    * Index 20: or-40-p2-4
    */
   or40p24 = (): boolean | undefined => {
-    return undefined
+    return true
   }
 
   f20 = (): boolean | undefined => this.or40p24()
 
   /**
-   * Index 21: or-40-p2-5
+   * Index 21: 6b
+   * Credits for your spouce
    */
-  or40p25 = (): string | undefined => {
+  Question6b = (): string | undefined => {
     return undefined
   }
 
-  f21 = (): string | undefined => this.or40p25()
+  f21 = (): string | undefined => this.Question6b()
 
   /**
    * Index 22: or-40-p2-9
    */
   or40p29 = (): boolean | undefined => {
-    return undefined
+    return true
   }
 
   f22 = (): boolean | undefined => this.or40p29()
@@ -268,49 +272,50 @@ export class OR40 extends Form {
   f23 = (): string | undefined => this.or40p212()
 
   /**
-   * Index 24: or-40-p2-13
+   * Index 24: Dependent 1 Last Name
    */
-  or40p213 = (): string | undefined => {
+  Dependent1LastName = (): string | undefined => {
     return undefined
   }
 
-  f24 = (): string | undefined => this.or40p213()
+  f24 = (): string | undefined => this.Dependent1LastName()
 
   /**
-   * Index 25: or-40-p2-14
+   * Index 25: Dependent 1 Date Of Birth
    */
-  or40p214 = (): string | undefined => {
+  Dependent1DateOfBirth = (): string | undefined => {
+    // format: 'xx xx xxxx'
     return undefined
   }
 
-  f25 = (): string | undefined => this.or40p214()
+  f25 = (): string | undefined => this.Dependent1DateOfBirth()
 
   /**
-   * Index 26: or-40-p2-15
+   * Index 26: Dependent 1 SSN
    */
-  or40p215 = (): string | undefined => {
+  Dependent1SocialSecurityNumber = (): string | undefined => {
     return undefined
   }
 
-  f26 = (): string | undefined => this.or40p215()
+  f26 = (): string | undefined => this.Dependent1SocialSecurityNumber()
 
   /**
    * Index 27: or-40-p2-17
    */
   or40p217 = (): boolean | undefined => {
-    return undefined
+    return true
   }
 
   f27 = (): boolean | undefined => this.or40p217()
 
   /**
-   * Index 28: or-40-p2-18
+   * Index 28: Dependent 2 First Name
    */
-  or40p218 = (): string | undefined => {
+  Dependent2FirstName = (): string | undefined => {
     return undefined
   }
 
-  f28 = (): string | undefined => this.or40p218()
+  f28 = (): string | undefined => this.Dependent2FirstName()
 
   /**
    * Index 29: or-40-p2-19
@@ -322,49 +327,51 @@ export class OR40 extends Form {
   f29 = (): string | undefined => this.or40p219()
 
   /**
-   * Index 30: or-40-p2-20
+   * Index 30: Dependent 2 Last Name
    */
-  or40p220 = (): string | undefined => {
+  Dependent2LastName = (): string | undefined => {
     return undefined
   }
 
-  f30 = (): string | undefined => this.or40p220()
+  f30 = (): string | undefined => this.Dependent2LastName()
 
   /**
-   * Index 31: or-40-p2-21
+   * Index 31: Dependent 2 Date Of Birth
    */
-  or40p221 = (): string | undefined => {
+  Dependent2DateOfBirth = (): string | undefined => {
+    // format: 'xx xx xxxx'
     return undefined
   }
 
-  f31 = (): string | undefined => this.or40p221()
+  f31 = (): string | undefined => this.Dependent2DateOfBirth()
 
   /**
-   * Index 32: or-40-p2-22
+   * Index 32: Dependent 2 SSN
    */
-  or40p222 = (): string | undefined => {
+  Dependent2SocialSecurityNumber = (): string | undefined => {
+    // format: 'xxx xx xxxx'
     return undefined
   }
 
-  f32 = (): string | undefined => this.or40p222()
+  f32 = (): string | undefined => this.Dependent2SocialSecurityNumber()
 
   /**
    * Index 33: or-40-p2-24
    */
   or40p224 = (): boolean | undefined => {
-    return undefined
+    return true
   }
 
   f33 = (): boolean | undefined => this.or40p224()
 
   /**
-   * Index 34: or-40-p2-25
+   * Index 34: Dependent 3 First Name
    */
-  or40p225 = (): string | undefined => {
+  Dependent3FirstName = (): string | undefined => {
     return undefined
   }
 
-  f34 = (): string | undefined => this.or40p225()
+  f34 = (): string | undefined => this.Dependent3FirstName()
 
   /**
    * Index 35: or-40-p2-26
@@ -376,55 +383,58 @@ export class OR40 extends Form {
   f35 = (): string | undefined => this.or40p226()
 
   /**
-   * Index 36: or-40-p2-27
+   * Index 36: Dependent 3 Last Name
    */
-  or40p227 = (): string | undefined => {
+  Dependent3LastName = (): string | undefined => {
     return undefined
   }
 
-  f36 = (): string | undefined => this.or40p227()
+  f36 = (): string | undefined => this.Dependent3LastName()
 
   /**
-   * Index 37: or-40-p2-29
+   * Index 37: Dependent 3 SSN
    */
-  or40p229 = (): string | undefined => {
+  Dependent3SocialSecurityNumber = (): string | undefined => {
+    // format: 'xxx xx xxxx'
     return undefined
   }
 
-  f37 = (): string | undefined => this.or40p229()
+  f37 = (): string | undefined => this.Dependent3SocialSecurityNumber()
 
   /**
    * Index 38: or-40-p2-31
    */
   or40p231 = (): boolean | undefined => {
-    return undefined
+    return true
   }
 
   f38 = (): boolean | undefined => this.or40p231()
 
   /**
-   * Index 39: or-40-p2-33
+   * Index 39: 6d
+   * # of dependent children with disability
    */
-  or40p233 = (): string | undefined => {
+  Question6d = (): string | undefined => {
     return undefined
   }
 
-  f39 = (): string | undefined => this.or40p233()
+  f39 = (): string | undefined => this.Question6d()
 
   /**
-   * Index 40: or-40-p2-34
+   * Index 40: Total Exemptions (6e)
+   * Sum 6a through 6d
    */
-  or40p234 = (): string | undefined => {
+  TotalExemptions6e = (): string | undefined => {
     return undefined
   }
 
-  f40 = (): string | undefined => this.or40p234()
+  f40 = (): string | undefined => this.TotalExemptions6e()
 
   /**
    * Index 41: or-40-p2-6
    */
   or40p26 = (): boolean | undefined => {
-    return undefined
+    return true
   }
 
   f41 = (): boolean | undefined => this.or40p26()
@@ -433,7 +443,7 @@ export class OR40 extends Form {
    * Index 42: or-40-p2-7
    */
   or40p27 = (): boolean | undefined => {
-    return undefined
+    return true
   }
 
   f42 = (): boolean | undefined => this.or40p27()
@@ -442,46 +452,49 @@ export class OR40 extends Form {
    * Index 43: or-40-p2-8
    */
   or40p28 = (): boolean | undefined => {
-    return undefined
+    return true
   }
 
   f43 = (): boolean | undefined => this.or40p28()
 
   /**
-   * Index 44: or-40-p2-32
+   * Index 44: 6c
+   * Number of dependents
    */
-  or40p232 = (): string | undefined => {
+  Question6c = (): string | undefined => {
     return undefined
   }
 
-  f44 = (): string | undefined => this.or40p232()
+  f44 = (): string | undefined => this.Question6c()
 
   /**
-   * Index 45: or-40-p2-1
+   * Index 45: 6a
+   * Credits for yourself
    */
-  or40p21 = (): string | undefined => {
+  Question6a = (): string | undefined => {
     return undefined
   }
 
-  f45 = (): string | undefined => this.or40p21()
+  f45 = (): string | undefined => this.Question6a()
 
   /**
-   * Index 46: or-40-p2-28
+   * Index 46: Dependent 3 Date Of Birth
    */
-  or40p228 = (): string | undefined => {
+  Dependent3DateOfBirth = (): string | undefined => {
+    // format 'xx xx xxxx'
     return undefined
   }
 
-  f46 = (): string | undefined => this.or40p228()
+  f46 = (): string | undefined => this.Dependent3DateOfBirth()
 
   /**
-   * Index 47: or-40-p1-19
+   * Index 47: Spouce's First Name
    */
-  or40p119 = (): string | undefined => {
+  SpouceFirstName = (): string | undefined => {
     return undefined
   }
 
-  f47 = (): string | undefined => this.or40p119()
+  f47 = (): string | undefined => this.SpouceFirstName()
 
   /**
    * Index 48: or-40-p1-20
@@ -493,37 +506,39 @@ export class OR40 extends Form {
   f48 = (): string | undefined => this.or40p120()
 
   /**
-   * Index 49: or-40-p1-21
+   * Index 49: Spouce's Date Of Birth
    */
-  or40p121 = (): string | undefined => {
+  SpouceDateOfBirth = (): string | undefined => {
+    // format: 'xx xx xxxx'
     return undefined
   }
 
-  f49 = (): string | undefined => this.or40p121()
+  f49 = (): string | undefined => this.SpouceDateOfBirth()
 
   /**
-   * Index 50: or-40-p1-22
+   * Index 50: Spouce's Last Name
    */
-  or40p122 = (): string | undefined => {
+  SpouceLastName = (): string | undefined => {
     return undefined
   }
 
-  f50 = (): string | undefined => this.or40p122()
+  f50 = (): string | undefined => this.SpouceLastName()
 
   /**
-   * Index 51: or-40-p1-23
+   * Index 51: Spouce's SSN
    */
-  or40p123 = (): string | undefined => {
+  SpouceSocialSecurityNumber = (): string | undefined => {
+    // format: 'xxx xx xxxx'
     return undefined
   }
 
-  f51 = (): string | undefined => this.or40p123()
+  f51 = (): string | undefined => this.SpouceSocialSecurityNumber()
 
   /**
    * Index 52: or-40-p1-24
    */
   or40p124 = (): boolean | undefined => {
-    return undefined
+    return true
   }
 
   f52 = (): boolean | undefined => this.or40p124()
@@ -532,7 +547,7 @@ export class OR40 extends Form {
    * Index 53: or-40-p1-25
    */
   or40p125 = (): boolean | undefined => {
-    return undefined
+    return true
   }
 
   f53 = (): boolean | undefined => this.or40p125()
@@ -541,70 +556,72 @@ export class OR40 extends Form {
    * Index 54: or-40-p1-26
    */
   or40p126 = (): boolean | undefined => {
-    return undefined
+    return true
   }
 
   f54 = (): boolean | undefined => this.or40p126()
 
   /**
-   * Index 55: or-40-p1-27
+   * Index 55: Current Address
    */
-  or40p127 = (): string | undefined => {
+  CurrentAddress = (): string | undefined => {
     return undefined
   }
 
-  f55 = (): string | undefined => this.or40p127()
+  f55 = (): string | undefined => this.CurrentAddress()
 
   /**
-   * Index 56: or-40-p1-28
+   * Index 56: City
    */
-  or40p128 = (): string | undefined => {
+  City = (): string | undefined => {
     return undefined
   }
 
-  f56 = (): string | undefined => this.or40p128()
+  f56 = (): string | undefined => this.City()
 
   /**
-   * Index 57: or-40-p1-31
+   * Index 57: Country
    */
-  or40p131 = (): string | undefined => {
+  Country = (): string | undefined => {
     return undefined
   }
 
-  f57 = (): string | undefined => this.or40p131()
+  f57 = (): string | undefined => this.Country()
 
   /**
-   * Index 58: or-40-p1-32
+   * Index 58: Phone
    */
-  or40p132 = (): string | undefined => {
+  Phone = (): string | undefined => {
+    // format: 'xxx xxx xxxx'
     return undefined
   }
 
-  f58 = (): string | undefined => this.or40p132()
+  f58 = (): string | undefined => this.Phone()
 
   /**
-   * Index 59: or-40-p1-3
+   * Index 59: Amended Return NOL Tax Year
    */
-  or40p13 = (): string | undefined => {
+  AmendedReturnNOLTaxYear = (): string | undefined => {
+    // format: 'xxxx'
     return undefined
   }
 
-  f59 = (): string | undefined => this.or40p13()
+  f59 = (): string | undefined => this.AmendedReturnNOLTaxYear()
 
   /**
-   * Index 60: or-40-p2-11
+   * Index 60: Dependent 1 First Name
    */
-  or40p211 = (): string | undefined => {
+   Dependent1FirstName = (): string | undefined => {
     return undefined
   }
 
-  f60 = (): string | undefined => this.or40p211()
+  f60 = (): string | undefined => this.Dependent1FirstName()
 
   /**
    * Index 61: or-40-p3-12
    */
   or40p312 = (): boolean | undefined => {
-    return undefined
+    return true
   }
 
   f61 = (): boolean | undefined => this.or40p312()
@@ -613,7 +630,7 @@ export class OR40 extends Form {
    * Index 62: or-40-p3-13
    */
   or40p313 = (): boolean | undefined => {
-    return undefined
+    return true
   }
 
   f62 = (): boolean | undefined => this.or40p313()
@@ -622,7 +639,7 @@ export class OR40 extends Form {
    * Index 63: or-40-p3-14
    */
   or40p314 = (): boolean | undefined => {
-    return undefined
+    return true
   }
 
   f63 = (): boolean | undefined => this.or40p314()
@@ -631,7 +648,7 @@ export class OR40 extends Form {
    * Index 64: or-40-p3-15
    */
   or40p315 = (): boolean | undefined => {
-    return undefined
+    return true
   }
 
   f64 = (): boolean | undefined => this.or40p315()
@@ -640,7 +657,7 @@ export class OR40 extends Form {
    * Index 65: or-40-p4-2
    */
   or40p42 = (): boolean | undefined => {
-    return undefined
+    return true
   }
 
   f65 = (): boolean | undefined => this.or40p42()
@@ -649,7 +666,7 @@ export class OR40 extends Form {
    * Index 66: or-40-p4-3
    */
   or40p43 = (): boolean | undefined => {
-    return undefined
+    return true
   }
 
   f66 = (): boolean | undefined => this.or40p43()
@@ -658,7 +675,7 @@ export class OR40 extends Form {
    * Index 67: or-40-p4-4
    */
   or40p44 = (): boolean | undefined => {
-    return undefined
+    return true
   }
 
   f67 = (): boolean | undefined => this.or40p44()
@@ -676,7 +693,7 @@ export class OR40 extends Form {
    * Index 69: or-40-p5-13
    */
   or40p513 = (): boolean | undefined => {
-    return undefined
+    return true
   }
 
   f69 = (): boolean | undefined => this.or40p513()
@@ -703,7 +720,7 @@ export class OR40 extends Form {
    * Index 72: or-40-p6-11
    */
   or40p611 = (): boolean | undefined => {
-    return undefined
+    return true
   }
 
   f72 = (): boolean | undefined => this.or40p611()
@@ -730,7 +747,7 @@ export class OR40 extends Form {
    * Index 75: or-40-p6-16
    */
   or40p616 = (): boolean | undefined => {
-    return undefined
+    return true
   }
 
   f75 = (): boolean | undefined => this.or40p616()
@@ -844,184 +861,205 @@ export class OR40 extends Form {
   f87 = (): string | undefined => this.or40p81()
 
   /**
-   * Index 88: or-40-p3-1
+   * Index 88: Fed. Adjusted Gross Income (7)
    */
-  or40p31 = (): string | undefined => {
+  FedAdjustedGrossIncome7 = (): string | undefined => {
+    // format: 'xxx xxx xxx'
     return undefined
   }
 
-  f88 = (): string | undefined => this.or40p31()
+  f88 = (): string | undefined => this.FedAdjustedGrossIncome7()
 
   /**
-   * Index 89: or-40-p3-2
+   * Index 89: Total Additions Schedule OR-ASC (8)
    */
-  or40p32 = (): string | undefined => {
+  TotalAdditionsScheduleASC8 = (): string | undefined => {
+    // format: 'xxx xxx xxx'
     return undefined
   }
 
-  f89 = (): string | undefined => this.or40p32()
+  f89 = (): string | undefined => this.TotalAdditionsScheduleASC8()
 
   /**
-   * Index 90: or-40-p3-3
+   * Index 90: Income and Additions (9)
+   * Sum 7 and 8
    */
-  or40p33 = (): string | undefined => {
+  IncomeAndAdditions9 = (): string | undefined => {
+    // format: 'xxx xxx xxx'
     return undefined
   }
 
-  f90 = (): string | undefined => this.or40p33()
+  f90 = (): string | undefined => this.IncomeAndAdditions9()
 
   /**
-   * Index 91: or-40-p3-10
+   * Index 91: Oregon Itemized Deductions (16)
+   * schedule OR-A line 23 or 0
    */
-  or40p310 = (): string | undefined => {
+  OregonItemizedDeductions16 = (): string | undefined => {
     return undefined
   }
 
-  f91 = (): string | undefined => this.or40p310()
+  f91 = (): string | undefined => this.OregonItemizedDeductions16()
 
   /**
-   * Index 92: or-40-p3-11
+   * Index 92: Standardized Deduction (17)
    */
-  or40p311 = (): string | undefined => {
+  StandardizedDeduction17 = (): string | undefined => {
     return undefined
   }
 
-  f92 = (): string | undefined => this.or40p311()
+  f92 = (): string | undefined => this.StandardizedDeduction17()
 
   /**
-   * Index 93: or-40-p3-16
+   * Index 93: Larger Deduction (18)
+   * larger of 16 and 17
    */
-  or40p316 = (): string | undefined => {
+  LargerDeduction18 = (): string | undefined => {
     return undefined
   }
 
-  f93 = (): string | undefined => this.or40p316()
+  f93 = (): string | undefined => this.LargerDeduction18()
 
   /**
-   * Index 94: or-40-p3-17
+   * Index 94: Oregon Taxable Income (19)
+   * line 15 - line 18, min 0
    */
-  or40p317 = (): string | undefined => {
+  OregonTaxableIncome19 = (): string | undefined => {
     return undefined
   }
 
-  f94 = (): string | undefined => this.or40p317()
+  f94 = (): string | undefined => this.OregonTaxableIncome19()
 
   /**
-   * Index 95: or-40-p3-4
+   * Index 95: Federal Tax Liability (10)
    */
-  or40p34 = (): string | undefined => {
+  FederalTaxLiability10 = (): string | undefined => {
+    // format: 'xxx xxx xxx'
     return undefined
   }
 
-  f95 = (): string | undefined => this.or40p34()
+  f95 = (): string | undefined => this.FederalTaxLiability10()
 
   /**
-   * Index 96: or-40-p3-5
+   * Index 96: Social Security Amount (11)
    */
-  or40p35 = (): string | undefined => {
+  SocialSecurityAmount11 = (): string | undefined => {
+    // format: 'xxx xxx xxx'
     return undefined
   }
 
-  f96 = (): string | undefined => this.or40p35()
+  f96 = (): string | undefined => this.SocialSecurityAmount11()
 
   /**
-   * Index 97: or-40-p3-6
+   * Index 97: OR Income Tax Refund (12)
    */
-  or40p36 = (): string | undefined => {
+  ORIncomeTaxRefund12 = (): string | undefined => {
+    // format: 'xxx xxx xxx'
     return undefined
   }
 
-  f97 = (): string | undefined => this.or40p36()
+  f97 = (): string | undefined => this.ORIncomeTaxRefund12()
 
   /**
-   * Index 98: or-40-p3-7
+   * Index 98: All Subtractions Schedule OR-ASC (13)
    */
-  or40p37 = (): string | undefined => {
+  AllSubtractionsScheduleASC13 = (): string | undefined => {
+    // format: 'xxx xxx xxx'
     return undefined
   }
 
-  f98 = (): string | undefined => this.or40p37()
+  f98 = (): string | undefined => this.AllSubtractionsScheduleASC13()
 
   /**
-   * Index 99: or-40-p3-8
+   * Index 99: Total Subtractions (14)
+   * Sum lines 10 - 13
    */
-  or40p38 = (): string | undefined => {
+  TotalSubtractions14 = (): string | undefined => {
+    // format: 'xxx xxx xxx'
     return undefined
   }
 
-  f99 = (): string | undefined => this.or40p38()
+  f99 = (): string | undefined => this.TotalSubtractions14()
 
   /**
-   * Index 100: or-40-p3-9
+   * Index 100: Income After Subtractions (15)
+   * line 9 - line 14
    */
-  or40p39 = (): string | undefined => {
+  IncomeAfterSubtractions15 = (): string | undefined => {
+    // format: 'xxx xxx xxx'
     return undefined
   }
 
-  f100 = (): string | undefined => this.or40p39()
+  f100 = (): string | undefined => this.IncomeAfterSubtractions15()
 
   /**
-   * Index 101: or-40-p4-1
+   * Index 101: Tax (20)
    */
-  or40p41 = (): string | undefined => {
+  Tax20 = (): string | undefined => {
     return undefined
   }
 
-  f101 = (): string | undefined => this.or40p41()
+  f101 = (): string | undefined => this.Tax20()
 
   /**
-   * Index 102: or-40-p4-5
+   * Index 102: Intrest On Certain Installments (21)
    */
-  or40p45 = (): string | undefined => {
+  IntrestOnCertainInstallments21 = (): string | undefined => {
     return undefined
   }
 
-  f102 = (): string | undefined => this.or40p45()
+  f102 = (): string | undefined => this.IntrestOnCertainInstallments21()
 
   /**
-   * Index 103: or-40-p4-6
+   * Index 103: Total Tax Before Credits (22)
+   * Sum lines 20, 21
    */
-  or40p46 = (): string | undefined => {
+  TotalTaxBeforeCredits22 = (): string | undefined => {
     return undefined
   }
 
-  f103 = (): string | undefined => this.or40p46()
+  f103 = (): string | undefined => this.TotalTaxBeforeCredits22()
 
   /**
-   * Index 104: or-40-p4-7
+   * Index 104: Exemption Credit (23)
+   * if the amount on line 7 is $100,000 or less,
+   * multiply your total exemptions on line 6e by $213.
+   * Otherwise, see instructions
    */
-  or40p47 = (): string | undefined => {
+  ExemptionCredit23 = (): string | undefined => {
     return undefined
   }
 
-  f104 = (): string | undefined => this.or40p47()
+  f104 = (): string | undefined => this.ExemptionCredit23()
 
   /**
-   * Index 105: or-40-p4-8
+   * Index 105: Political Contribution Credit (24)
    */
-  or40p48 = (): string | undefined => {
+  PoliticalContributionCredit24 = (): string | undefined => {
     return undefined
   }
 
-  f105 = (): string | undefined => this.or40p48()
+  f105 = (): string | undefined => this.PoliticalContributionCredit24()
 
   /**
-   * Index 106: or-40-p4-9
+   * Index 106: Standard Credits Schedule OR-ASC (25)
+   * Section C
    */
-  or40p49 = (): string | undefined => {
+  StandardCreditsScheduleASC25 = (): string | undefined => {
     return undefined
   }
 
-  f106 = (): string | undefined => this.or40p49()
+  f106 = (): string | undefined => this.StandardCreditsScheduleASC25()
 
   /**
-   * Index 107: or-40-p4-10
+   * Index 107: Total Standard Credits (26)
+   * Sum lines 23-25
    */
-  or40p410 = (): string | undefined => {
+  TotalStandardCredits26 = (): string | undefined => {
     return undefined
   }
 
-  f107 = (): string | undefined => this.or40p410()
+  f107 = (): string | undefined => this.TotalStandardCredits26()
 
   /**
    * Index 108: or-40-p5-1
@@ -1330,22 +1368,22 @@ export class OR40 extends Form {
   f141 = (): string | undefined => this.or40p714()
 
   /**
-   * Index 142: or-40-p1-30a
+   * Index 142: ZIP code
    */
-  or40p130a = (): string | undefined => {
+  ZipCode = (): string | undefined => {
     return undefined
   }
 
-  f142 = (): string | undefined => this.or40p130a()
+  f142 = (): string | undefined => this.ZipCode()
 
   /**
-   * Index 143: or-40-p1-30b
+   * Index 143: ZIP extension
    */
-  or40p130b = (): string | undefined => {
+  ZipExtension = (): string | undefined => {
     return undefined
   }
 
-  f143 = (): string | undefined => this.or40p130b()
+  f143 = (): string | undefined => this.ZipExtension()
 
   fields = (): Field[] => [
     this.f0(),
@@ -1493,6 +1531,17 @@ export class OR40 extends Form {
     this.f142(),
     this.f143()
   ]
+  // .map((value, i) => {
+  //   let ret = value
+  //   if (!ret) {
+  //     if (i === 11 || i === 23 || i === 29 || i === 35 || i === 48 || i === 68 || i === 82 || i === 135 || i === 136 || i === 137 || i === 138) {
+  //       ret = 'a'
+  //     } else {
+  //       ret = i.toString()
+  //     }
+  //   }
+  //   return ret
+  // })
 }
 
 const makeOR40 = (info: Information, f1040: F1040): OR40 =>

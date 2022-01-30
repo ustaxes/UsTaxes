@@ -5,6 +5,8 @@ import { Either } from 'ustaxes/core/util'
 import { createStateReturn as createStateReturnF } from '../../StateForms'
 import { StateFormError } from '../../StateForms'
 
+import OR40 from './OR/OR40'
+
 export const noFilingRequirementStates: State[] = [
   'AK',
   'TN',
@@ -14,12 +16,12 @@ export const noFilingRequirementStates: State[] = [
   'SD',
   'TX',
   'WA',
-  'NV'
+  'NV',
 ]
 
 export const stateForms: {
   [K in State]?: (info: Information, f1040: F1040) => StateForm
-} = {}
+} = { OR: OR40 }
 
 export const createStateReturn = (
   info: Information,
