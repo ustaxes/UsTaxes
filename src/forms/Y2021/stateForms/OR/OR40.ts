@@ -152,13 +152,13 @@ export class OR40 extends Form {
   f10 = (): string | undefined => this.FirstName()
 
   /**
-   * Index 11: or-40-p1-12
+   * Index 11: Tax Payer's Initial
    */
-  or40p112 = (): string | undefined => {
+  TaxPayerInitial = (): string | undefined => {
     return undefined
   }
 
-  f11 = (): string | undefined => this.or40p112()
+  f11 = (): string | undefined => this.TaxPayerInitial()
 
   /**
    * Index 12: Date Of Birth
@@ -198,23 +198,23 @@ export class OR40 extends Form {
   f15 = (): boolean | undefined => this.or40p118()
 
   /**
-   * Index 16: Last Name
+   * Index 16: LastName (53)
    */
-  LastName = (): string | undefined => {
-    return undefined
+  LastName53 = (): string | undefined => {
+    return this.info.taxPayer.primaryPerson?.lastName
   }
 
-  f16 = (): string | undefined => this.LastName()
+  f16 = (): string | undefined => this.LastName53()
 
   /**
-   * Index 17: SSN
+   * Index 17: SSN53
    */
-  SocialSecurityNumber = (): string | undefined => {
+  SocialSecurityNumber53 = (): string | undefined => {
     // format: 'xxx xx xxxx'
-    return undefined
+    return this.info.taxPayer.primaryPerson?.ssid
   }
 
-  f17 = (): string | undefined => this.SocialSecurityNumber()
+  f17 = (): string | undefined => this.SocialSecurityNumber53()
 
   /**
    * Index 18: or-40-p2-2
@@ -245,7 +245,7 @@ export class OR40 extends Form {
 
   /**
    * Index 21: 6b
-   * Credits for your spouce
+   * Credits for your spouse
    */
   Question6b = (): string | undefined => {
     return undefined
@@ -263,19 +263,19 @@ export class OR40 extends Form {
   f22 = (): boolean | undefined => this.or40p29()
 
   /**
-   * Index 23: or-40-p2-12
+   * Index 23: Dependant 1 Initial
    */
-  or40p212 = (): string | undefined => {
+   Dependant1Initial = (): string | undefined => {
     return undefined
   }
 
-  f23 = (): string | undefined => this.or40p212()
+  f23 = (): string | undefined => this.Dependant1Initial()
 
   /**
-   * Index 24: Dependent 1 Last Name
+   * Index 24: Dependent 1 LastName
    */
   Dependent1LastName = (): string | undefined => {
-    return undefined
+    return this.info.taxPayer.dependents[0]?.lastName
   }
 
   f24 = (): string | undefined => this.Dependent1LastName()
@@ -294,7 +294,7 @@ export class OR40 extends Form {
    * Index 26: Dependent 1 SSN
    */
   Dependent1SocialSecurityNumber = (): string | undefined => {
-    return undefined
+    return this.info.taxPayer.dependents[0]?.ssid
   }
 
   f26 = (): string | undefined => this.Dependent1SocialSecurityNumber()
@@ -312,25 +312,25 @@ export class OR40 extends Form {
    * Index 28: Dependent 2 First Name
    */
   Dependent2FirstName = (): string | undefined => {
-    return undefined
+    return this.info.taxPayer.dependents[1]?.firstName
   }
 
   f28 = (): string | undefined => this.Dependent2FirstName()
 
   /**
-   * Index 29: or-40-p2-19
+   * Index 29: Dependant 2 Initial
    */
-  or40p219 = (): string | undefined => {
+   Dependant2Initial = (): string | undefined => {
     return undefined
   }
 
-  f29 = (): string | undefined => this.or40p219()
+  f29 = (): string | undefined => this.Dependant2Initial()
 
   /**
-   * Index 30: Dependent 2 Last Name
+   * Index 30: Dependent2LastName
    */
   Dependent2LastName = (): string | undefined => {
-    return undefined
+    return this.info.taxPayer.dependents[1]?.lastName
   }
 
   f30 = (): string | undefined => this.Dependent2LastName()
@@ -346,11 +346,11 @@ export class OR40 extends Form {
   f31 = (): string | undefined => this.Dependent2DateOfBirth()
 
   /**
-   * Index 32: Dependent 2 SSN
+   * Index 32: Dependent2SSN
    */
   Dependent2SocialSecurityNumber = (): string | undefined => {
     // format: 'xxx xx xxxx'
-    return undefined
+    return this.info.taxPayer.dependents[1]?.ssid
   }
 
   f32 = (): string | undefined => this.Dependent2SocialSecurityNumber()
@@ -365,28 +365,28 @@ export class OR40 extends Form {
   f33 = (): boolean | undefined => this.or40p224()
 
   /**
-   * Index 34: Dependent 3 First Name
+   * Index 34: Dependent3FirstName
    */
   Dependent3FirstName = (): string | undefined => {
-    return undefined
+    return this.info.taxPayer.dependents[2]?.firstName
   }
 
   f34 = (): string | undefined => this.Dependent3FirstName()
 
   /**
-   * Index 35: or-40-p2-26
+   * Index 35: Dependant 3 Initial
    */
-  or40p226 = (): string | undefined => {
+  Dependant3Initial = (): string | undefined => {
     return undefined
   }
 
-  f35 = (): string | undefined => this.or40p226()
+  f35 = (): string | undefined => this.Dependant3Initial()
 
   /**
-   * Index 36: Dependent 3 Last Name
+   * Index 36: Dependent3LastName
    */
   Dependent3LastName = (): string | undefined => {
-    return undefined
+    return this.info.taxPayer.dependents[2]?.lastName
   }
 
   f36 = (): string | undefined => this.Dependent3LastName()
@@ -396,7 +396,7 @@ export class OR40 extends Form {
    */
   Dependent3SocialSecurityNumber = (): string | undefined => {
     // format: 'xxx xx xxxx'
-    return undefined
+    return this.info.taxPayer.dependents[2]?.ssid
   }
 
   f37 = (): string | undefined => this.Dependent3SocialSecurityNumber()
@@ -488,51 +488,51 @@ export class OR40 extends Form {
   f46 = (): string | undefined => this.Dependent3DateOfBirth()
 
   /**
-   * Index 47: Spouce's First Name
+   * Index 47: Spouse's First Name
    */
-  SpouceFirstName = (): string | undefined => {
+  SpouseFirstName = (): string | undefined => {
     return undefined
   }
 
-  f47 = (): string | undefined => this.SpouceFirstName()
+  f47 = (): string | undefined => this.SpouseFirstName()
 
   /**
-   * Index 48: or-40-p1-20
+   * Index 48: Spouse's Initial
    */
-  or40p120 = (): string | undefined => {
+   SpouseInitial = (): string | undefined => {
     return undefined
   }
 
-  f48 = (): string | undefined => this.or40p120()
+  f48 = (): string | undefined => this.SpouseInitial()
 
   /**
-   * Index 49: Spouce's Date Of Birth
+   * Index 49: Spouse's Date Of Birth
    */
-  SpouceDateOfBirth = (): string | undefined => {
+  SpouseDateOfBirth = (): string | undefined => {
     // format: 'xx xx xxxx'
     return undefined
   }
 
-  f49 = (): string | undefined => this.SpouceDateOfBirth()
+  f49 = (): string | undefined => this.SpouseDateOfBirth()
 
   /**
-   * Index 50: Spouce's Last Name
+   * Index 50: Spouse's Last Name
    */
-  SpouceLastName = (): string | undefined => {
+  SpouseLastName = (): string | undefined => {
     return undefined
   }
 
-  f50 = (): string | undefined => this.SpouceLastName()
+  f50 = (): string | undefined => this.SpouseLastName()
 
   /**
-   * Index 51: Spouce's SSN
+   * Index 51: Spouse's SSN
    */
-  SpouceSocialSecurityNumber = (): string | undefined => {
+  SpouseSocialSecurityNumber = (): string | undefined => {
     // format: 'xxx xx xxxx'
     return undefined
   }
 
-  f51 = (): string | undefined => this.SpouceSocialSecurityNumber()
+  f51 = (): string | undefined => this.SpouseSocialSecurityNumber()
 
   /**
    * Index 52: or-40-p1-24
@@ -609,10 +609,10 @@ export class OR40 extends Form {
   f59 = (): string | undefined => this.AmendedReturnNOLTaxYear()
 
   /**
-   * Index 60: Dependent 1 First Name
+   * Index 60: Dependent1 First Name
    */
-   Dependent1FirstName = (): string | undefined => {
-    return undefined
+  Dependent1FirstName = (): string | undefined => {
+    return this.info.taxPayer.dependents[0]?.firstName
   }
 
   f60 = (): string | undefined => this.Dependent1FirstName()
@@ -681,13 +681,13 @@ export class OR40 extends Form {
   f67 = (): boolean | undefined => this.or40p44()
 
   /**
-   * Index 68: or-40-p5-12
+   * Index 68: Exemption Number 42a
    */
-  or40p512 = (): string | undefined => {
+  ExemptionNumber42a = (): string | undefined => {
     return undefined
   }
 
-  f68 = (): string | undefined => this.or40p512()
+  f68 = (): string | undefined => this.ExemptionNumber42a()
 
   /**
    * Index 69: or-40-p5-13
@@ -699,22 +699,22 @@ export class OR40 extends Form {
   f69 = (): boolean | undefined => this.or40p513()
 
   /**
-   * Index 70: or-40-p6-6
+   * Index 70: Party Code You (48a)
    */
-  or40p66 = (): string | undefined => {
+  PartyCodeYou48a = (): string | undefined => {
     return undefined
   }
 
-  f70 = (): string | undefined => this.or40p66()
+  f70 = (): string | undefined => this.PartyCodeYou48a()
 
   /**
-   * Index 71: or-40-p6-7
+   * Index 71: Party Code Spouse (48b)
    */
-  or40p67 = (): string | undefined => {
+  PartyCodeSpouse48b = (): string | undefined => {
     return undefined
   }
 
-  f71 = (): string | undefined => this.or40p67()
+  f71 = (): string | undefined => this.PartyCodeSpouse48b()
 
   /**
    * Index 72: or-40-p6-11
@@ -726,22 +726,22 @@ export class OR40 extends Form {
   f72 = (): boolean | undefined => this.or40p611()
 
   /**
-   * Index 73: or-40-p6-14
+   * Index 73: Routing Number (52)
    */
-  or40p614 = (): string | undefined => {
+  RoutingNumber52 = (): string | undefined => {
     return undefined
   }
 
-  f73 = (): string | undefined => this.or40p614()
+  f73 = (): string | undefined => this.RoutingNumber52()
 
   /**
-   * Index 74: or-40-p6-15
+   * Index 74: Account Number (52)
    */
-  or40p615 = (): string | undefined => {
+  AccountNumber52 = (): string | undefined => {
     return undefined
   }
 
-  f74 = (): string | undefined => this.or40p615()
+  f74 = (): string | undefined => this.AccountNumber52()
 
   /**
    * Index 75: or-40-p6-16
@@ -753,112 +753,113 @@ export class OR40 extends Form {
   f75 = (): boolean | undefined => this.or40p616()
 
   /**
-   * Index 76: or-40-p7-1
+   * Index 76: Your Signature Date
    */
-  or40p71 = (): string | undefined => {
+  YourSignatureDate = (): string | undefined => {
     return undefined
   }
 
-  f76 = (): string | undefined => this.or40p71()
+  f76 = (): string | undefined => this.YourSignatureDate()
 
   /**
-   * Index 77: or-40-p7-2
+   * Index 77: Spouse Signature Date
    */
-  or40p72 = (): string | undefined => {
+  SpouseSignatureDate = (): string | undefined => {
     return undefined
   }
 
-  f77 = (): string | undefined => this.or40p72()
+  f77 = (): string | undefined => this.SpouseSignatureDate()
 
   /**
-   * Index 78: or-40-p7-3
+   * Index 78: Preparer Signature Date
    */
-  or40p73 = (): string | undefined => {
+   PreparerSignatureDate = (): string | undefined => {
     return undefined
   }
 
-  f78 = (): string | undefined => this.or40p73()
+  f78 = (): string | undefined => this.PreparerSignatureDate()
 
   /**
-   * Index 79: or-40-p7-4
+   * Index 79: Preparer Phone Number
    */
-  or40p74 = (): string | undefined => {
+   PreparerPhoneNumber = (): string | undefined => {
     return undefined
   }
 
-  f79 = (): string | undefined => this.or40p74()
+  f79 = (): string | undefined => this.PreparerPhoneNumber()
 
   /**
-   * Index 80: or-40-p7-5
+   * Index 80: Preparer License Number
    */
-  or40p75 = (): string | undefined => {
+   PreparerLicenseNumber = (): string | undefined => {
     return undefined
   }
 
-  f80 = (): string | undefined => this.or40p75()
+  f80 = (): string | undefined => this.PreparerLicenseNumber()
 
   /**
-   * Index 81: or-40-p7-6
+   * Index 81: Preparer First Name
    */
-  or40p76 = (): string | undefined => {
+  PreparerFirstName = (): string | undefined => {
     return undefined
   }
 
-  f81 = (): string | undefined => this.or40p76()
+  f81 = (): string | undefined => this.PreparerFirstName()
 
   /**
-   * Index 82: or-40-p7-7
+   * Index 82: Preparer's Initial
    */
-  or40p77 = (): string | undefined => {
+   PreparerInitial = (): string | undefined => {
     return undefined
   }
 
-  f82 = (): string | undefined => this.or40p77()
+  f82 = (): string | undefined => this.PreparerInitial()
 
   /**
-   * Index 83: or-40-p7-8
+   * Index 83: Preparer Last Name
    */
-  or40p78 = (): string | undefined => {
+   PreparerLastName = (): string | undefined => {
     return undefined
   }
 
-  f83 = (): string | undefined => this.or40p78()
+  f83 = (): string | undefined => this.PreparerLastName()
 
   /**
-   * Index 84: or-40-p7-9
+   * Index 84: Preparer Street Address
    */
-  or40p79 = (): string | undefined => {
+   PreparerStreetAddress = (): string | undefined => {
     return undefined
   }
 
-  f84 = (): string | undefined => this.or40p79()
+  f84 = (): string | undefined => this.PreparerStreetAddress()
 
   /**
-   * Index 85: or-40-p7-10
+   * Index 85: Preparer City
    */
-  or40p710 = (): string | undefined => {
+  PreparerCity = (): string | undefined => {
     return undefined
   }
 
-  f85 = (): string | undefined => this.or40p710()
+  f85 = (): string | undefined => this.PreparerCity()
 
   /**
-   * Index 86: or-40-p7-11
+   * Index 86: Preparer State
    */
-  or40p711 = (): string | undefined => {
+  PreparerState = (): string | undefined => {
     return undefined
   }
 
-  f86 = (): string | undefined => this.or40p711()
+  f86 = (): string | undefined => this.PreparerState()
 
   /**
-   * Index 87: or-40-p8-1
+   * Index 87: Former Identification Number
+   * If new SSN
    */
-  or40p81 = (): string | undefined => {
+  FormerIdentificationNumber = (): string | undefined => {
     return undefined
   }
 
-  f87 = (): string | undefined => this.or40p81()
+  f87 = (): string | undefined => this.FormerIdentificationNumber()
 
   /**
    * Index 88: Fed. Adjusted Gross Income (7)
@@ -1062,238 +1063,255 @@ export class OR40 extends Form {
   f107 = (): string | undefined => this.TotalStandardCredits26()
 
   /**
-   * Index 108: or-40-p5-1
+   * Index 108: OR Income Tax Withheld (32)
    */
-  or40p51 = (): string | undefined => {
+  ORIncomeTaxWithheld32 = (): string | undefined => {
     return undefined
   }
 
-  f108 = (): string | undefined => this.or40p51()
+  f108 = (): string | undefined => this.ORIncomeTaxWithheld32()
 
   /**
-   * Index 109: or-40-p5-2
+   * Index 109: Prior Year Tax Refund (33)
    */
-  or40p52 = (): string | undefined => {
+  PriorYearTaxRefund33 = (): string | undefined => {
     return undefined
   }
 
-  f109 = (): string | undefined => this.or40p52()
+  f109 = (): string | undefined => this.PriorYearTaxRefund33()
 
   /**
-   * Index 110: or-40-p5-3
+   * Index 110: Est. 2021 Tax Payments (34)
+   * Don't include line 33
    */
-  or40p53 = (): string | undefined => {
+  Est2021TaxPayments34 = (): string | undefined => {
     return undefined
   }
 
-  f110 = (): string | undefined => this.or40p53()
+  f110 = (): string | undefined => this.Est2021TaxPayments34()
 
   /**
-   * Index 111: or-40-p5-4
+   * Index 111: Earned Income Credit (35)
    */
-  or40p54 = (): string | undefined => {
+  EarnedIncomeCredit35 = (): string | undefined => {
     return undefined
   }
 
-  f111 = (): string | undefined => this.or40p54()
+  f111 = (): string | undefined => this.EarnedIncomeCredit35()
 
   /**
-   * Index 112: or-40-p5-5
+   * Index 112: Kicker Credit Amount (35)
+   * Enter 0 to donate to State School Fund, see line 53
    */
-  or40p55 = (): string | undefined => {
+   KickerCreditAmount36 = (): string | undefined => {
     return undefined
   }
 
-  f112 = (): string | undefined => this.or40p55()
+  f112 = (): string | undefined => this.KickerCreditAmount36()
 
   /**
-   * Index 113: or-40-p5-6
+   * Index 113: Total Refundable Credits Schedule OR-ASC (36)
+   * Section F
    */
-  or40p56 = (): string | undefined => {
+  TotalRefundableCreditsScheduleASC37 = (): string | undefined => {
     return undefined
   }
 
-  f113 = (): string | undefined => this.or40p56()
+  f113 = (): string | undefined => this.TotalRefundableCreditsScheduleASC37()
 
   /**
-   * Index 114: or-40-p5-7
+   * Index 114: Total Payments And Refund Credits (38)
+   * Sum lines 32 - 37
    */
-  or40p57 = (): string | undefined => {
+  TotalPaymentsAndRefundCredits38 = (): string | undefined => {
     return undefined
   }
 
-  f114 = (): string | undefined => this.or40p57()
+  f114 = (): string | undefined => this.TotalPaymentsAndRefundCredits38()
 
   /**
-   * Index 115: or-40-p5-8
+   * Index 115: Overpayment Of Tax (39)
+   * Line 38 - line 31, if line 31 is less than line 38
    */
-  or40p58 = (): string | undefined => {
+  OverpaymentOfTax39 = (): string | undefined => {
     return undefined
   }
 
-  f115 = (): string | undefined => this.or40p58()
+  f115 = (): string | undefined => this.OverpaymentOfTax39()
 
   /**
-   * Index 116: or-40-p5-9
+   * Index 116: Net Tax (40)
+   * Line 31 - line 38, if line 38 is less than line 31
    */
-  or40p59 = (): string | undefined => {
+  NetTax40 = (): string | undefined => {
     return undefined
   }
 
-  f116 = (): string | undefined => this.or40p59()
+  f116 = (): string | undefined => this.NetTax40()
 
   /**
-   * Index 117: or-40-p5-10
+   * Index 117: Late Filing Penalty And Interest (41)
    */
-  or40p510 = (): string | undefined => {
+  LateFilingPenaltyAndInterest41 = (): string | undefined => {
     return undefined
   }
 
-  f117 = (): string | undefined => this.or40p510()
+  f117 = (): string | undefined => this.LateFilingPenaltyAndInterest41()
 
   /**
-   * Index 118: or-40-p5-11
+   * Index 118: Intrest On Underpayment of Est. OR-10 Tax (42)
    */
-  or40p511 = (): string | undefined => {
+  IntrestOnUnderpaymentOfEstOR10Tax42 = (): string | undefined => {
     return undefined
   }
 
-  f118 = (): string | undefined => this.or40p511()
+  f118 = (): string | undefined => this.IntrestOnUnderpaymentOfEstOR10Tax42()
 
   /**
-   * Index 119: or-40-p5-14
+   * Index 119: Total Penalty + Intrest Due (43)
    */
-  or40p514 = (): string | undefined => {
+  TotalPenaltyIntrestDue43 = (): string | undefined => {
     return undefined
   }
 
-  f119 = (): string | undefined => this.or40p514()
+  f119 = (): string | undefined => this.TotalPenaltyIntrestDue43()
 
   /**
-   * Index 120: or-40-p4-11
+   * Index 120: Tax Minus Standard Credits (27)
+   * Line 22 - line 26, min 0
    */
-  or40p411 = (): string | undefined => {
+  TaxMinusStandardCredits27 = (): string | undefined => {
     return undefined
   }
 
-  f120 = (): string | undefined => this.or40p411()
+  f120 = (): string | undefined => this.TaxMinusStandardCredits27()
 
   /**
-   * Index 121: or-40-p4-12
+   * Index 121: Total Carryforward Credits Schedule OR-ASC (28)
+   * Section D, no larger than line 27
    */
-  or40p412 = (): string | undefined => {
+  TotalCarryforwardCreditsScheduleASC28 = (): string | undefined => {
     return undefined
   }
 
-  f121 = (): string | undefined => this.or40p412()
+  f121 = (): string | undefined => this.TotalCarryforwardCreditsScheduleASC28()
 
   /**
-   * Index 122: or-40-p4-13
+   * Index 122: Tax After Standard and Carryforward Credits (29)
+   * Line 27 - Line 28
    */
-  or40p413 = (): string | undefined => {
+  TaxAfterStandardCarryforwardCredits29 = (): string | undefined => {
     return undefined
   }
 
-  f122 = (): string | undefined => this.or40p413()
+  f122 = (): string | undefined => this.TaxAfterStandardCarryforwardCredits29()
 
   /**
-   * Index 123: or-40-p4-14
+   * Index 123: Total Credit Recaptures Schedule OR-ASC (30)
+   * OR-ASC, Section E
    */
-  or40p414 = (): string | undefined => {
+  TotalCreditRecapturesScheduleASC30 = (): string | undefined => {
     return undefined
   }
 
-  f123 = (): string | undefined => this.or40p414()
+  f123 = (): string | undefined => this.TotalCreditRecapturesScheduleASC30()
 
   /**
-   * Index 124: or-40-p4-15
+   * Index 124: Tax After Credit Recaptures (31)
+   * Line 29 + Line 30
    */
-  or40p415 = (): string | undefined => {
+  TaxAfterCreditRecaptures31 = (): string | undefined => {
     return undefined
   }
 
-  f124 = (): string | undefined => this.or40p415()
+  f124 = (): string | undefined => this.TaxAfterCreditRecaptures31()
 
   /**
-   * Index 125: or-40-p6-1
+   * Index 125: Net Tax Including Penalty and Interest (44)
+   * Line 40 - Line 43
    */
-  or40p61 = (): string | undefined => {
+  NetTaxInclPenaltyInterest44 = (): string | undefined => {
     return undefined
   }
 
-  f125 = (): string | undefined => this.or40p61()
+  f125 = (): string | undefined => this.NetTaxInclPenaltyInterest44()
 
   /**
-   * Index 126: or-40-p6-2
+   * Index 126: Overpayment Less Penalty and Interest (45)
+   * Line 39 - Line 43
    */
-  or40p62 = (): string | undefined => {
+  OverpaymentLessPenaltyInterest45 = (): string | undefined => {
     return undefined
   }
 
-  f126 = (): string | undefined => this.or40p62()
+  f126 = (): string | undefined => this.OverpaymentLessPenaltyInterest45()
 
   /**
-   * Index 127: or-40-p6-3
+   * Index 127: Estimated Tax (46)
+   * Portion of Line 45 appl. to open estimated tax acc
    */
-  or40p63 = (): string | undefined => {
+  EstimatedTax46 = (): string | undefined => {
     return undefined
   }
 
-  f127 = (): string | undefined => this.or40p63()
+  f127 = (): string | undefined => this.EstimatedTax46()
 
   /**
-   * Index 128: or-40-p6-4
+   * Index 128: Charitable Checkoff Donations Schedule OR-DONATE (47)
+   * Schedule OR-DONATE, Line 30
    */
-  or40p64 = (): string | undefined => {
+  CharitableCheckoffScheduleDONATE47 = (): string | undefined => {
     return undefined
   }
 
-  f128 = (): string | undefined => this.or40p64()
+  f128 = (): string | undefined => this.CharitableCheckoffScheduleDONATE47()
 
   /**
-   * Index 129: or-40-p6-5
+   * Index 129: Political Party $3 Checkoff (48)
    */
-  or40p65 = (): string | undefined => {
+  PoliticalPartyCheckoff48 = (): string | undefined => {
     return undefined
   }
 
-  f129 = (): string | undefined => this.or40p65()
+  f129 = (): string | undefined => this.PoliticalPartyCheckoff48()
 
   /**
-   * Index 130: or-40-p6-8
-   */
-  or40p68 = (): string | undefined => {
+   * Index 130: Oregon 529 College Savings Plan Deposits Schedule OR-529 (49)
+   */ 
+  CollegeSavingsPlanDepositSchedule52949 = (): string | undefined => {
     return undefined
   }
 
-  f130 = (): string | undefined => this.or40p68()
+  f130 = (): string | undefined => this.CollegeSavingsPlanDepositSchedule52949()
 
   /**
-   * Index 131: or-40-p6-9
+   * Index 131: Total (50)
+   * Add Lines 46 - 49, Line 50 < Line 45
    */
-  or40p69 = (): string | undefined => {
+  TotalTax50 = (): string | undefined => {
     return undefined
   }
 
-  f131 = (): string | undefined => this.or40p69()
+  f131 = (): string | undefined => this.TotalTax50()
 
   /**
-   * Index 132: or-40-p6-17
+   * Index 132: Kicker Donation (53b)
    */
-  or40p617 = (): string | undefined => {
+  KickerDonation53b = (): string | undefined => {
     return undefined
   }
 
-  f132 = (): string | undefined => this.or40p617()
+  f132 = (): string | undefined => this.KickerDonation53b()
 
   /**
-   * Index 133: or-40-p6-10
+   * Index 133: Net Refund (51)
+   * Line 45 - Line 50
    */
-  or40p610 = (): string | undefined => {
+  NetRefund51 = (): string | undefined => {
     return undefined
   }
 
-  f133 = (): string | undefined => this.or40p610()
+  f133 = (): string | undefined => this.NetRefund51()
 
   /**
    * Index 134: or-40_p1_33
@@ -1305,40 +1323,40 @@ export class OR40 extends Form {
   f134 = (): string | undefined => this.or40p133()
 
   /**
-   * Index 135: or-40-p1-29
+   * Index 135: Tax Payer's State
    */
-  or40p129 = (): string | undefined => {
+  TaxPayerState = (): string | undefined => {
     return undefined
   }
 
-  f135 = (): string | undefined => this.or40p129()
+  f135 = (): string | undefined => this.TaxPayerState()
 
   /**
-   * Index 136: or-40-p2-16
+   * Index 136: Dependant 1 Code
    */
-  or40p216 = (): string | undefined => {
+  Dependant1Code = (): string | undefined => {
     return undefined
   }
 
-  f136 = (): string | undefined => this.or40p216()
+  f136 = (): string | undefined => this.Dependant1Code()
 
   /**
-   * Index 137: or-40-p2-23
+   * Index 137: Dependant 2 Code
    */
-  or40p223 = (): string | undefined => {
+  Dependant2Code = (): string | undefined => {
     return undefined
   }
 
-  f137 = (): string | undefined => this.or40p223()
+  f137 = (): string | undefined => this.Dependant2Code()
 
   /**
-   * Index 138: or-40-p2-30
+   * Index 138: Dependant 3 Code
    */
-  or40p230 = (): string | undefined => {
+  Dependant3Code = (): string | undefined => {
     return undefined
   }
 
-  f138 = (): string | undefined => this.or40p230()
+  f138 = (): string | undefined => this.Dependant3Code()
 
   /**
    * Index 139: or-40-p6-12
@@ -1350,25 +1368,25 @@ export class OR40 extends Form {
   f139 = (): string | undefined => this.or40p612()
 
   /**
-   * Index 140: or-40-p7-13
+   * Index 140: Preparer ZIP 
    */
-  or40p713 = (): string | undefined => {
+  PreparerZip1 = (): string | undefined => {
     return undefined
   }
 
-  f140 = (): string | undefined => this.or40p713()
+  f140 = (): string | undefined => this.PreparerZip1()
 
   /**
-   * Index 141: or-40-p7-14
+   * Index 141: Preparer ZIP Area
    */
-  or40p714 = (): string | undefined => {
+  PreparerZip2 = (): string | undefined => {
     return undefined
   }
 
-  f141 = (): string | undefined => this.or40p714()
+  f141 = (): string | undefined => this.PreparerZip2()
 
   /**
-   * Index 142: ZIP code
+   * Index 142: ZIPCode ()
    */
   ZipCode = (): string | undefined => {
     return undefined
