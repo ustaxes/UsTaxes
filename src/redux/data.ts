@@ -34,7 +34,7 @@ export const blankYearTaxesState: YearsTaxesState = {
   Y2019: blankState,
   Y2020: blankState,
   Y2021: blankState,
-  activeYear: 'Y2021'
+  activeYear: 'Y2020'
 }
 
 export type EditDependentAction = ArrayItemEditAction<Dependent>
