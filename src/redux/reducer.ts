@@ -5,7 +5,7 @@ import { TaxYear } from 'ustaxes/data'
 import { YearsTaxesState } from '.'
 import { ActionName, Actions } from './actions'
 
-const DEFAULT_TAX_YEAR: TaxYear = 'Y2020'
+const DEFAULT_TAX_YEAR: TaxYear = 'Y2021'
 
 export const blankState: Information = {
   f1099s: [],
