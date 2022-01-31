@@ -491,10 +491,6 @@ export default class F1040 extends Form {
       result.push(F1040Error.filingStatusUndefined)
     }
 
-    if (this.medicareWages() > this.wages()) {
-      result.push(F1040Error.medicareWagesGreaterThanWages)
-    }
-
     const fs = this.info.taxPayer.filingStatus
     const numDependents = this.info.taxPayer.dependents.length
     const hasSpouse = this.info.taxPayer.spouse !== undefined
