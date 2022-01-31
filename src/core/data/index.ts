@@ -209,7 +209,7 @@ export const W2Box12CodeDescriptions: { [key in W2Box12Code]: string } = {
   HH: 'Aggregate deferrals under section 83(i) elections as of the close of the calendar year.'
 }
 
-export type W2Box12Info = { [key in W2Box12Code]?: number }
+export type W2Box12Info<A = number> = { [key in W2Box12Code]?: A }
 
 export interface HealthSavingsAccount<DateType = string> {
   label: string
