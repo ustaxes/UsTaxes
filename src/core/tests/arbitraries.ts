@@ -103,7 +103,7 @@ const w2: Arbitrary<types.IncomeW2> = wages.chain((income) =>
   fc
     .tuple(
       maxWords(2),
-      fc.nat({ max: income }),
+      fc.nat({ max: 2 * income }),
       fc.nat({ max: income }),
       fc.nat({ max: income }),
       fc.nat({ max: income }),
