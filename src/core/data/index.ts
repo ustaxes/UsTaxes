@@ -181,7 +181,7 @@ export const W2Box12CodeDescriptions: { [key in W2Box12Code]: string } = {
   A: 'Uncollected social security or RRTA tax on tips.',
   B: 'Uncollected Medicare tax on tips.',
   C: 'Taxable cost of group-term life insurance over $50,000.',
-  D: 'Elective deferrals under a section 401(k) cash or deferred arrangement (plan).',
+  D: 'Elective deferrals under a section 401(k) cash or deferred arrangement plan.',
   E: 'Elective deferrals under a section 403(b) salary reduction agreement.',
   F: 'Elective deferrals under a section 408(k)(6) salary reduction SEP.',
   G: 'Elective deferrals and employer contributions (including nonelective deferrals) to any governmental or nongovernmental section 457(b) deferred compensation plan.',
