@@ -1,4 +1,4 @@
-import { ReactElement, ReactNode, useState } from 'react'
+import { Fragment, ReactElement, ReactNode, useState } from 'react'
 import _ from 'lodash'
 import { useDispatch, useSelector, TaxesState } from 'ustaxes/redux'
 import { Helmet } from 'react-helmet'
@@ -109,18 +109,17 @@ const Box12Data = (): ReactElement => {
   const box12Fields = (
     <>
       {enumKeys(W2Box12Code).map((code) => (
-        <>
+        <Fragment key={`box-12-${code}`}>
           <p>
             <strong>Code {code}</strong>: {W2Box12CodeDescriptions[code]}
           </p>
           <LabeledInput
             label={code}
-            key={`box-12{$code}`}
             name={`box12.${code}`}
             patternConfig={Patterns.currency}
             required={false}
           />
-        </>
+        </Fragment>
       ))}
     </>
   )
@@ -270,7 +269,7 @@ export default function W2JobInfo(): ReactElement {
           sizes={{ xs: 12, lg: 6 }}
         />
         <USStateDropDown name="state" label={boxLabel('15', 'State')} />
-        <Grid item xs={12} spacing={2}>
+        <Grid item xs={12} lg={12}>
           <Box12Data />
         </Grid>
         <LabeledInput
