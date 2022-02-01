@@ -222,7 +222,7 @@ export default function W2JobInfo(): ReactElement {
         <LabeledInput
           autofocus={true}
           label="Employer name"
-          patternConfig={Patterns.name}
+          required={true}
           name="employer.employerName"
           sizes={{ xs: 12 }}
         />

@@ -86,7 +86,7 @@ const address: Arbitrary<types.Address> = fc
   }))
 
 const employer: Arbitrary<types.Employer> = fc
-  .tuple(ein, payerName, address)
+  .tuple(ein, fc.string({ minLength: 1 }), address)
   .map(([EIN, employerName, address]) => ({
     EIN,
     employerName,
