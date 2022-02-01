@@ -1,4 +1,5 @@
-import { ReactElement, ReactNode, useState } from 'react'
+import { Fragment, ReactElement, ReactNode, useState } from 'react'
+import _ from 'lodash'
 import { useDispatch, useSelector, TaxesState } from 'ustaxes/redux'
 import { Helmet } from 'react-helmet'
 import { FormProvider, useForm, useFormContext } from 'react-hook-form'
@@ -31,7 +32,11 @@ import { Grid, Box, Button, Paper } from '@material-ui/core'
 import { Work } from '@material-ui/icons'
 import { addW2, editW2, removeW2 } from 'ustaxes/redux/actions'
 import { Alert } from '@material-ui/lab'
-import { enumKeys, parseFormNumberOrThrow } from 'ustaxes/core/util'
+import {
+  enumKeys,
+  parseFormNumber,
+  parseFormNumberOrThrow
+} from 'ustaxes/core/util'
 
 interface IncomeW2UserInput {
   employer?: Employer
@@ -45,7 +50,7 @@ interface IncomeW2UserInput {
   state?: State
   stateWages: string
   stateWithholding: string
-  box12: W2Box12Info
+  box12: W2Box12Info<string>
 }
 
 const blankW2UserInput: IncomeW2UserInput = {
@@ -76,7 +81,8 @@ const toIncomeW2 = (formData: IncomeW2UserInput): IncomeW2 => ({
   state: formData.state,
   stateWages: parseFormNumberOrThrow(formData.stateWages),
   stateWithholding: parseFormNumberOrThrow(formData.stateWithholding),
-  personRole: formData.personRole ?? PersonRole.PRIMARY
+  personRole: formData.personRole ?? PersonRole.PRIMARY,
+  box12: _.mapValues(formData.box12, (v) => parseFormNumber(v))
 })
 
 const toIncomeW2UserInput = (data: IncomeW2): IncomeW2UserInput => ({
@@ -89,7 +95,8 @@ const toIncomeW2UserInput = (data: IncomeW2): IncomeW2UserInput => ({
   medicareWithholding: data.medicareWithholding.toString(),
   state: data.state,
   stateWages: data.stateWages?.toString() ?? '',
-  stateWithholding: data.stateWithholding?.toString() ?? ''
+  stateWithholding: data.stateWithholding?.toString() ?? '',
+  box12: _.mapValues(data.box12, (v) => v?.toString())
 })
 
 const Box12Data = (): ReactElement => {
@@ -102,18 +109,17 @@ const Box12Data = (): ReactElement => {
   const box12Fields = (
     <>
       {enumKeys(W2Box12Code).map((code) => (
-        <>
+        <Fragment key={`box-12-${code}`}>
           <p>
             <strong>Code {code}</strong>: {W2Box12CodeDescriptions[code]}
           </p>
           <LabeledInput
             label={code}
-            key={`box-12{$code}`}
             name={`box12.${code}`}
             patternConfig={Patterns.currency}
             required={false}
           />
-        </>
+        </Fragment>
       ))}
     </>
   )
@@ -135,8 +141,8 @@ const Box12Data = (): ReactElement => {
         .filter((code) => box12[code] !== undefined)
         .map((code) => (
           <li key={`box-12-data-${code}`}>
-            {code}: <Currency plain value={box12[code] as number} /> (
-            {W2Box12CodeDescriptions[code]})
+            {code}: <Currency plain value={parseFormNumber(box12[code]) ?? 0} />{' '}
+            ({W2Box12CodeDescriptions[code]})
           </li>
         ))}
     </ul>
@@ -263,7 +269,7 @@ export default function W2JobInfo(): ReactElement {
           sizes={{ xs: 12, lg: 6 }}
         />
         <USStateDropDown name="state" label={boxLabel('15', 'State')} />
-        <Grid item xs={12} spacing={2}>
+        <Grid item xs={12} lg={12}>
           <Box12Data />
         </Grid>
         <LabeledInput
