@@ -166,14 +166,14 @@ describe('W2JobInfo', () => {
       })
     })
 
-    it('Employer name', async () => {
+    it('Employer name can be any string', async () => {
       const { changeByLabelText, clickButton } = setup()
 
       clickButton('Add')
       changeByLabelText('Employer name', '123')
       clickButton('Save')
 
-      await waitFor(() => expect(errors.inputWordFormat()).toHaveLength(1))
+      await waitFor(() => expect(errors.inputWordFormat()).toHaveLength(0))
     })
 
     it('Employers Identification Number', async () => {
