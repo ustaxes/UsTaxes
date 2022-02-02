@@ -1,6 +1,6 @@
 {
   "name": "ustaxes",
-  "version": "0.1.15",
+  "version": "0.1.16",
   "private": true,
   "dependencies": {
     "@date-io/date-fns": "^1.3.13",
@@ -35,7 +35,7 @@
   },
   "scripts": {
     "start": "node ./notice.js && ts-node ./scripts/env.ts && ts-node ./scripts/setup.ts && concurrently npm:dev",
-    "dev": "craco start",
+    "dev": "craco --openssl-legacy-provider start",
     "build": "ts-node ./scripts/env.ts && ts-node ./scripts/setup.ts && craco build",
     "test": "ts-node ./scripts/env.ts && ts-node ./scripts/setup.ts && craco test",
     "eject": "craco eject",
