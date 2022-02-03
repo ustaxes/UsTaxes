@@ -11,6 +11,7 @@ updates:
     schedule:
       interval: "daily"
     target-branch: "master"
+    open-pull-requests-limit: 15
   - package-ecosystem: "cargo"
     directory: "/src-tauri/" # Location of package manifests
     schedule:
