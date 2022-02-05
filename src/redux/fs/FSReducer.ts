@@ -1,8 +1,15 @@
 import { AnyAction, Reducer } from 'redux'
 import { download } from '.'
 import { migrateEachYear } from '../migration'
-import { USTPersistedState } from '../store'
-import { FSAction } from './Actions'
+import {
+  deserializeTransform,
+  serializeTransform,
+  USTSerializedState,
+  USTState
+} from '../store'
+import { FSPersist, FSRecover } from './Actions'
+
+type PersistActions = FSPersist | FSRecover<USTSerializedState>
 
 /**
  * Extends a reducer to persist and load data
@@ -12,22 +19,26 @@ import { FSAction } from './Actions'
  * It will overwrite whatever state exists with whatever
  * state it finds, but needs none of its own state.
  */
-const fsReducer = <S extends USTPersistedState, A extends AnyAction>(
+const fsReducer = <S extends USTState, A extends AnyAction>(
   filename: string,
   reducer: Reducer<S, A>
-): Reducer<S, A & FSAction<S>> => {
-  return (state: S | undefined, action: A & FSAction<S>): S => {
-    const newState = { ...reducer(state, action as A) }
+): Reducer<S, A & PersistActions> => {
+  return (state: S | undefined, action: A & PersistActions): S => {
+    const newState = reducer(state, action)
 
     switch (action.type) {
       case 'fs/recover': {
+        // we know now that the action is a FSRecover,
+        // so we can safely cast it to a FSRecover<USTSerializedState>.
         return {
           ...newState,
-          ...migrateEachYear(action.data)
+          ...migrateEachYear(
+            deserializeTransform((action as FSRecover<USTSerializedState>).data)
+          )
         }
       }
       case 'fs/persist': {
-        download(filename, JSON.stringify(newState))
+        download(filename, JSON.stringify(serializeTransform(newState)))
         return newState
       }
       default: {

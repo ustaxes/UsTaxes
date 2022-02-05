@@ -20,11 +20,11 @@ const upper: Arbitrary<string> = fc
   .integer({ min: 0x41, max: 0x5a })
   .map((n) => String.fromCharCode(n))
 
-const word: Arbitrary<string> = fc
+export const word: Arbitrary<string> = fc
   .array(fc.oneof(lower, upper))
   .map((xs) => xs.join(''))
 
-const words: Arbitrary<string> = fc.array(word).map((xs) => xs.join(' '))
+export const words: Arbitrary<string> = fc.array(word).map((xs) => xs.join(' '))
 
 const maxWords = (max: number): Arbitrary<string> =>
   fc
@@ -40,7 +40,9 @@ const numStr = (len: number): Arbitrary<string> =>
     .array(fc.nat({ max: 9 }), { minLength: len, maxLength: len })
     .map((x) => x.join(''))
 
-const state = fc.constantFrom(...locationPostalCodes.map(([, code]) => code))
+export const state = fc.constantFrom(
+  ...locationPostalCodes.map(([, code]) => code)
+)
 
 const concat = (
   as: Arbitrary<string>,
@@ -90,7 +92,7 @@ const address: Arbitrary<types.Address> = fc
   }))
 
 const employer: Arbitrary<types.Employer> = fc
-  .tuple(ein, payerName, address)
+  .tuple(ein, fc.string({ minLength: 1 }), address)
   .map(([EIN, employerName, address]) => ({
     EIN,
     employerName,
@@ -107,7 +109,7 @@ const w2: Arbitrary<types.IncomeW2> = wages.chain((income) =>
   fc
     .tuple(
       maxWords(2),
-      fc.nat({ max: income }),
+      fc.nat({ max: 2 * income }),
       fc.nat({ max: income }),
       fc.nat({ max: income }),
       fc.nat({ max: income }),

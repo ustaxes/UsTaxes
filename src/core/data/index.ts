@@ -186,7 +186,7 @@ export const W2Box12CodeDescriptions: { [key in W2Box12Code]: string } = {
   A: 'Uncollected social security or RRTA tax on tips.',
   B: 'Uncollected Medicare tax on tips.',
   C: 'Taxable cost of group-term life insurance over $50,000.',
-  D: 'Elective deferrals under a section 401(k) cash or deferred arrangement (plan).',
+  D: 'Elective deferrals under a section 401(k) cash or deferred arrangement plan.',
   E: 'Elective deferrals under a section 403(b) salary reduction agreement.',
   F: 'Elective deferrals under a section 408(k)(6) salary reduction SEP.',
   G: 'Elective deferrals and employer contributions (including nonelective deferrals) to any governmental or nongovernmental section 457(b) deferred compensation plan.',
@@ -214,7 +214,7 @@ export const W2Box12CodeDescriptions: { [key in W2Box12Code]: string } = {
   HH: 'Aggregate deferrals under section 83(i) elections as of the close of the calendar year.'
 }
 
-export type W2Box12Info = { [key in W2Box12Code]?: number }
+export type W2Box12Info<A = number> = { [key in W2Box12Code]?: A }
 
 export interface HealthSavingsAccount<DateType = string> {
   label: string
@@ -481,4 +481,34 @@ export interface Information {
   stateResidencies: StateResidency[]
   healthSavingsAccounts: HealthSavingsAccount[]
   individualRetirementArrangements: Ira[]
+}
+
+/**
+ * An asset can be anything that is transactable, such as a stock,
+ * bond, mutual fund, real estate, or cryptocurrency, which is not reported
+ * on 1099-B. A position always has an open date. A position may
+ * be sold, at which time its gain or loss will be reported,
+ * or it may be gifted to another person, at which time its
+ * gain or loss will not be reported.
+ *
+ * An asset can be carried across multiple tax years,
+ * so it should not be a sibling rather than a member of `Information`.
+ *
+ * If a position is real estate, then it has a state, which will
+ * require state apportionment.
+ *
+ * "Closing an asset" can result in a long-term or short-term capital
+ * gain. An asset is closed when it gets a closeDate.
+ */
+export type AssetType = 'Security' | 'Real Estate'
+export interface Asset<DateType = Date> {
+  name: string
+  positionType: AssetType
+  openDate: DateType
+  closeDate?: DateType
+  giftedDate?: DateType
+  openPrice: number
+  closePrice?: number
+  quantity: number
+  state?: State
 }

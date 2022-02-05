@@ -1,9 +1,10 @@
-import { Information } from 'ustaxes/core/data'
+import { Information, Asset } from 'ustaxes/core/data'
 import Form from 'ustaxes/core/irsForms/Form'
 import { run } from 'ustaxes/core/util'
 import TestKit from './TestKit'
 
 interface FormTestInfo<A> {
+  getAssets: (a: A) => Asset<Date>[]
   getInfo: (a: A) => Information
   getErrors: (a: A) => string[]
 }
@@ -55,7 +56,8 @@ export default class CommonTests<F1040 extends Form> {
         expect(f1040).not.toBeUndefined()
         if (f1040 !== undefined) {
           const builder = this.testKit.builder.build(
-            this.formTestInfo.getInfo(f1040)
+            this.formTestInfo.getInfo(f1040),
+            this.formTestInfo.getAssets(f1040)
           )
           const pdfs = await builder.f1040Pdfs()
           run(pdfs).fold(

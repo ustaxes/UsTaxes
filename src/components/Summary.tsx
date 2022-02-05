@@ -78,8 +78,9 @@ const Summary = (): ReactElement => {
   const info: Information = useSelector(
     (state: YearsTaxesState) => state[state.activeYear]
   )
+  const assets = useSelector((state: YearsTaxesState) => state.assets)
 
-  const builder = yearFormBuilder(year, info)
+  const builder = yearFormBuilder(year, info, assets)
 
   const summaryBody = (() => {
     if (info.taxPayer.primaryPerson === undefined) {

@@ -5,7 +5,8 @@ import {
   IncomeW2,
   PersonRole,
   PlanType1099,
-  Information
+  Information,
+  Asset
 } from 'ustaxes/core/data'
 import federalBrackets from '../data/federal'
 import F1040V from './F1040v'
@@ -49,13 +50,14 @@ import StudentLoanInterestWorksheet from './worksheets/StudentLoanInterestWorksh
 import InformationMethods from 'ustaxes/core/data/methods'
 import _ from 'lodash'
 import { F1040Error } from 'ustaxes/forms/errors'
+import F8949 from './F8949'
 
 export default class F1040 extends Form {
   tag: FormTag = 'f1040'
   sequenceIndex = 0
-  // intentionally mirroring many fields from the state,
-  // trying to represent the fields that the 1040 requires
+
   info: InformationMethods
+  assets: Asset<Date>[]
 
   schedule1?: Schedule1
   schedule2?: Schedule2
@@ -83,6 +85,7 @@ export default class F1040 extends Form {
   f8889Spouse?: F8889
   f8910?: F8910
   f8936?: F8936
+  f8949: F8949[]
   f8959?: F8959
   f8960?: F8960
   f8962?: F8962
@@ -92,9 +95,11 @@ export default class F1040 extends Form {
 
   childTaxCreditWorksheet?: ChildTaxCreditWorksheet
 
-  constructor(info: Information) {
+  constructor(info: Information, assets: Asset<Date>[] = []) {
     super()
     this.info = new InformationMethods(info)
+    this.f8949 = []
+    this.assets = assets
     this.makeSchedules()
   }
 
@@ -124,6 +129,7 @@ export default class F1040 extends Form {
       this.f8889Spouse,
       this.f8910,
       this.f8936,
+      ...this.f8949,
       this.f8959,
       this.f8960,
       this.f8995,
@@ -149,8 +155,16 @@ export default class F1040 extends Form {
       this.scheduleB = new ScheduleB(this.info)
     }
 
-    if (f1099bs.length > 0) {
-      this.scheduleD = new ScheduleD(this.info)
+    if (this.assets.length > 0) {
+      const f8949 = new F8949(this.info.taxPayer, this.assets)
+      if (f8949.isNeeded()) {
+        // a F8949 may spawn more copies of itself.
+        this.f8949 = [f8949, ...f8949.copies]
+      }
+    }
+
+    if (f1099bs.length > 0 || this.f8949.length > 0) {
+      this.scheduleD = new ScheduleD(this.info, this.f8949)
     }
 
     if (f1099ssas.length > 0) {
@@ -486,10 +500,6 @@ export default class F1040 extends Form {
     const result: F1040Error[] = []
     if (this.info.taxPayer.filingStatus === undefined) {
       result.push(F1040Error.filingStatusUndefined)
-    }
-
-    if (this.medicareWages() > this.wages()) {
-      result.push(F1040Error.medicareWagesGreaterThanWages)
     }
 
     const fs = this.info.taxPayer.filingStatus

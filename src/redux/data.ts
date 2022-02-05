@@ -8,7 +8,8 @@ import {
   F1098e,
   Information,
   HealthSavingsAccount,
-  Ira
+  Ira,
+  Asset
 } from 'ustaxes/core/data'
 import { blankState } from './reducer'
 
@@ -25,10 +26,12 @@ export interface ArrayItemEditAction<A> {
 export type TaxesState = { information: Information }
 
 export type YearsTaxesState = { [K in TaxYear]: Information } & {
+  assets: Asset<Date>[]
   activeYear: TaxYear
 }
 
 export const blankYearTaxesState: YearsTaxesState = {
+  assets: [],
   Y2019: blankState,
   Y2020: blankState,
   Y2021: blankState,
@@ -43,3 +46,4 @@ export type EditPropertyAction = ArrayItemEditAction<Property>
 export type Edit1098eAction = ArrayItemEditAction<F1098e>
 export type EditHSAAction = ArrayItemEditAction<HealthSavingsAccount>
 export type EditIraAction = ArrayItemEditAction<Ira>
+export type EditAssetAction = ArrayItemEditAction<Asset<Date>>

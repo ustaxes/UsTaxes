@@ -99,4 +99,6 @@ export const healthSavingsAccounts = ajv.getSchema<types.HealthSavingsAccount>(
 export const individualRetirementArrangements =
   ajv.getSchema<types.Ira>('#/definitions/Ira')
 
+export const position = ajv.getSchema<types.Asset>('#/definitions/Asset')
+
 export default ajv

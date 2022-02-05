@@ -31,6 +31,7 @@ import Urls from 'ustaxes/data/urls'
 import { isMobile } from 'react-device-detect'
 import HealthSavingsAccounts from './savingsAccounts/healthSavingsAccounts'
 import IRA from './savingsAccounts/IRA'
+import OtherInvestments from './income/OtherInvestments'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -94,7 +95,12 @@ export const drawerSections: Section[] = [
     items: [
       item('Wages (W2)', Urls.income.w2s, <W2JobInfo />),
       item('Income (1099)', Urls.income.f1099s, <F1099Info />),
-      item('Real Estate', Urls.income.realEstate, <RealEstate />)
+      item('Rental income', Urls.income.realEstate, <RealEstate />),
+      item(
+        'Other investments',
+        Urls.income.otherInvestments,
+        <OtherInvestments />
+      )
     ]
   },
   {

@@ -15,7 +15,8 @@ import {
   EstimatedTaxPayments,
   Responses,
   HealthSavingsAccount,
-  Ira
+  Ira,
+  Asset
 } from 'ustaxes/core/data'
 
 import {
@@ -31,6 +32,7 @@ import {
 import ajv, * as validators from 'ustaxes/core/data/validate'
 import { TaxYear } from 'ustaxes/data'
 import { ValidateFunction } from 'ajv'
+import { EditAssetAction } from '.'
 
 const indexSchema = {
   type: 'number',
@@ -74,7 +76,10 @@ export enum ActionName {
   PROPAGATE_YEAR_DATA = 'PROPAGATE_YEAR_DATA',
   ADD_IRA = 'ADD_IRA',
   EDIT_IRA = 'EDIT_IRA',
-  REMOVE_IRA = 'REMOVE_IRA'
+  REMOVE_IRA = 'REMOVE_IRA',
+  ADD_ASSET = 'ASSETS/ADD',
+  EDIT_ASSET = 'ASSETS/EDIT',
+  REMOVE_ASSET = 'ASSETS/REMOVE'
 }
 
 interface Save<T, R> {
@@ -132,6 +137,9 @@ type SetActiveYear = Save<typeof ActionName.SET_ACTIVE_YEAR, TaxYear>
 type AddIRA = Save<typeof ActionName.ADD_IRA, Ira>
 type EditIRA = Save<typeof ActionName.EDIT_IRA, EditIraAction>
 type RemoveIRA = Save<typeof ActionName.REMOVE_IRA, number>
+type AddAsset = Save<typeof ActionName.ADD_ASSET, Asset<Date>>
+type EditAsset = Save<typeof ActionName.EDIT_ASSET, EditAssetAction>
+type RemoveAsset = Save<typeof ActionName.REMOVE_ASSET, number>
 
 export type Actions =
   | SaveRefundInfo
@@ -168,6 +176,9 @@ export type Actions =
   | AddIRA
   | EditIRA
   | RemoveIRA
+  | AddAsset
+  | EditAsset
+  | RemoveAsset
 
 export type SignalAction = (year: TaxYear) => Actions
 export type ActionCreator<A> = (formData: A) => SignalAction
@@ -399,5 +410,18 @@ export const editIRA: ActionCreator<EditIraAction> = makeActionCreator(
 
 export const removeIRA: ActionCreator<number> = makeActionCreator(
   ActionName.REMOVE_IRA,
+  indexValidator
+)
+
+export const addAsset: ActionCreator<Asset<Date>> = makeActionCreator(
+  ActionName.ADD_ASSET
+)
+
+export const editAsset: ActionCreator<EditAssetAction> = makeActionCreator(
+  ActionName.EDIT_ASSET
+)
+
+export const removeAsset: ActionCreator<number> = makeActionCreator(
+  ActionName.REMOVE_ASSET,
   indexValidator
 )
