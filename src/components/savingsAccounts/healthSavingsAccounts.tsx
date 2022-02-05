@@ -197,7 +197,9 @@ export default function HealthSavingsAccounts(): ReactElement {
     <FormProvider {...methods}>
       <form tabIndex={-1} onSubmit={handleSubmit(onAdvance)}>
         <Helmet>
-          <title>Health Savings Accounts (HSA) | Income | UsTaxes.org</title>
+          <title>
+            Health Savings Accounts (HSA) | Savings Accounts | UsTaxes.org
+          </title>
         </Helmet>
         <h2>Health Savings Accounts (HSA)</h2>
         {form}

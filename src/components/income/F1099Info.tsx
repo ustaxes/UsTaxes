@@ -114,7 +114,7 @@ const blankUserInput: F1099UserInput = {
   grossDistribution: '',
   taxableAmount: '',
   federalIncomeTaxWithheld: '',
-  RPlanType: PlanType1099.IRA,
+  RPlanType: PlanType1099.Pension,
   // SSA fields
   // benefitsPaid: '',
   // benefitsRepaid: '',
@@ -195,8 +195,7 @@ const toF1099 = (input: F1099UserInput): Supported1099 | undefined => {
           grossDistribution: Number(input.grossDistribution),
           taxableAmount: Number(input.taxableAmount),
           federalIncomeTaxWithheld: Number(input.federalIncomeTaxWithheld),
-          planType:
-            input.RPlanType == 'IRA' ? PlanType1099.IRA : PlanType1099.Pension
+          planType: PlanType1099.Pension
         }
       }
     }

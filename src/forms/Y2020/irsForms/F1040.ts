@@ -300,6 +300,18 @@ export default class F1040 extends Form {
   totalQualifiedDividends = (): number =>
     this.info.f1099Divs().reduce((sum, f) => sum + f.form.qualifiedDividends, 0)
 
+  totalGrossDistributionsFromIra = (): number =>
+    this.info.individualRetirementArrangements.reduce(
+      (res, i) => res + i.grossDistribution,
+      0
+    )
+
+  totalTaxableFromIra = (): number =>
+    this.info.individualRetirementArrangements.reduce(
+      (r, i) => r + i.taxableAmount,
+      0
+    )
+
   totalGrossDistributionsFrom1099R = (planType: PlanType1099): number =>
     this.info
       .f1099rs()
@@ -318,10 +330,9 @@ export default class F1040 extends Form {
   l3a = (): number | undefined => this.totalQualifiedDividends()
   l3b = (): number | undefined => this.scheduleB?.l6()
   // This is the value of box 1 in 1099-R forms coming from IRAs
-  l4a = (): number | undefined =>
-    this.totalGrossDistributionsFrom1099R(PlanType1099.IRA)
+  l4a = (): number | undefined => this.totalGrossDistributionsFromIra()
   // This should be the value of box 2a in 1099-R coming from IRAs
-  l4b = (): number | undefined => this.totalTaxableFrom1099R(PlanType1099.IRA)
+  l4b = (): number | undefined => this.totalTaxableFromIra()
   // This is the value of box 1 in 1099-R forms coming from pensions/annuities
   l5a = (): number | undefined =>
     this.totalGrossDistributionsFrom1099R(PlanType1099.Pension)

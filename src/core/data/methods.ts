@@ -1,4 +1,4 @@
-import { Responses } from '.'
+import { Ira, Responses } from '.'
 import {
   EstimatedTaxPayments,
   F1098e,
@@ -30,6 +30,7 @@ export default class InformationMethods implements Information {
   questions: Responses
   stateResidencies: StateResidency[]
   healthSavingsAccounts: HealthSavingsAccount[]
+  individualRetirementArrangements: Ira[]
 
   constructor(info: Information) {
     this.f1099s = info.f1099s
@@ -42,6 +43,8 @@ export default class InformationMethods implements Information {
     this.questions = info.questions
     this.stateResidencies = info.stateResidencies
     this.healthSavingsAccounts = info.healthSavingsAccounts
+    this.individualRetirementArrangements =
+      info.individualRetirementArrangements
   }
 
   f1099sByType = (ft: Income1099Type): Supported1099[] =>

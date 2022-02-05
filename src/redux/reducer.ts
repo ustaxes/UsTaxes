@@ -1,6 +1,7 @@
 /* eslint-disable indent */
 import { CombinedState, combineReducers, Reducer } from 'redux'
 import { FilingStatus, Information } from 'ustaxes/core/data'
+import { individualRetirementArrangements } from 'ustaxes/core/data/validate'
 import { TaxYear } from 'ustaxes/data'
 import { YearsTaxesState } from '.'
 import { ActionName, Actions } from './actions'
@@ -16,7 +17,8 @@ export const blankState: Information = {
   questions: {},
   f1098es: [],
   stateResidencies: [],
-  healthSavingsAccounts: []
+  healthSavingsAccounts: [],
+  individualRetirementArrangements: []
 }
 
 const formReducer = (
@@ -288,6 +290,31 @@ const formReducer = (
       return {
         ...newState,
         healthSavingsAccounts: newHsa
+      }
+    }
+    case ActionName.ADD_IRA: {
+      return {
+        ...newState,
+        individualRetirementArrangements: [
+          ...newState.individualRetirementArrangements,
+          action.formData
+        ]
+      }
+    }
+    case ActionName.EDIT_IRA: {
+      const newIra = [...newState.individualRetirementArrangements]
+      newIra.splice(action.formData.index, 1, action.formData.value)
+      return {
+        ...newState,
+        individualRetirementArrangements: newIra
+      }
+    }
+    case ActionName.REMOVE_IRA: {
+      const newIra = [...newState.individualRetirementArrangements]
+      newIra.splice(action.formData, 1)
+      return {
+        ...newState,
+        individualRetirementArrangements: newIra
       }
     }
     default: {

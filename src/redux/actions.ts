@@ -14,7 +14,8 @@ import {
   Information,
   EstimatedTaxPayments,
   Responses,
-  HealthSavingsAccount
+  HealthSavingsAccount,
+  Ira
 } from 'ustaxes/core/data'
 
 import {
@@ -24,7 +25,8 @@ import {
   EditW2Action,
   EditEstimatedTaxesAction,
   Edit1098eAction,
-  EditHSAAction
+  EditHSAAction,
+  EditIraAction
 } from './data'
 import ajv, * as validators from 'ustaxes/core/data/validate'
 import { TaxYear } from 'ustaxes/data'
@@ -69,7 +71,10 @@ export enum ActionName {
   REMOVE_HSA = 'REMOVE_HSA',
   SET_INFO = 'SET_INFO',
   SET_ACTIVE_YEAR = 'SET_ACTIVE_YEAR',
-  PROPAGATE_YEAR_DATA = 'PROPAGATE_YEAR_DATA'
+  PROPAGATE_YEAR_DATA = 'PROPAGATE_YEAR_DATA',
+  ADD_IRA = 'ADD_IRA',
+  EDIT_IRA = 'EDIT_IRA',
+  REMOVE_IRA = 'REMOVE_IRA'
 }
 
 interface Save<T, R> {
@@ -124,6 +129,9 @@ type Edit1098e = Save<typeof ActionName.EDIT_1098e, Edit1098eAction>
 type Remove1098e = Save<typeof ActionName.REMOVE_1098e, number>
 type SetInfo = Save<typeof ActionName.SET_INFO, Information>
 type SetActiveYear = Save<typeof ActionName.SET_ACTIVE_YEAR, TaxYear>
+type AddIRA = Save<typeof ActionName.ADD_IRA, Ira>
+type EditIRA = Save<typeof ActionName.EDIT_IRA, EditIraAction>
+type RemoveIRA = Save<typeof ActionName.REMOVE_IRA, number>
 
 export type Actions =
   | SaveRefundInfo
@@ -157,6 +165,9 @@ export type Actions =
   | RemoveHSA
   | SetInfo
   | SetActiveYear
+  | AddIRA
+  | EditIRA
+  | RemoveIRA
 
 export type SignalAction = (year: TaxYear) => Actions
 export type ActionCreator<A> = (formData: A) => SignalAction
@@ -372,4 +383,21 @@ export const setInfo: ActionCreator<Information> = makeActionCreator(
 export const setActiveYear: ActionCreator<TaxYear> = makeActionCreator(
   ActionName.SET_ACTIVE_YEAR,
   ajv.getSchema('#/definitions/TaxYear') as ValidateFunction<TaxYear>
+)
+
+export const addIRA: ActionCreator<Ira> = makeActionCreator(
+  ActionName.ADD_IRA,
+  validators.individualRetirementArrangements
+)
+
+export const editIRA: ActionCreator<EditIraAction> = makeActionCreator(
+  ActionName.EDIT_IRA,
+  ajv.getSchema(
+    '#/definitions/EditIraAction'
+  ) as ValidateFunction<EditIraAction>
+)
+
+export const removeIRA: ActionCreator<number> = makeActionCreator(
+  ActionName.REMOVE_IRA,
+  indexValidator
 )
