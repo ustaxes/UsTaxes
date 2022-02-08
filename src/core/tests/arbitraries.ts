@@ -86,7 +86,7 @@ const address: Arbitrary<types.Address> = fc
   }))
 
 const employer: Arbitrary<types.Employer> = fc
-  .tuple(ein, payerName, address)
+  .tuple(ein, fc.string({ minLength: 1 }), address)
   .map(([EIN, employerName, address]) => ({
     EIN,
     employerName,
@@ -103,7 +103,7 @@ const w2: Arbitrary<types.IncomeW2> = wages.chain((income) =>
   fc
     .tuple(
       maxWords(2),
-      fc.nat({ max: income }),
+      fc.nat({ max: 2 * income }),
       fc.nat({ max: income }),
       fc.nat({ max: income }),
       fc.nat({ max: income }),
