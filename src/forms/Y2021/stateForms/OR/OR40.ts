@@ -71,76 +71,76 @@ export class OR40 extends Form {
   f1 = (): string | undefined => this.FiscalYearEndingDate()
 
   /**
-   * Index 2: or-40-p1-2
+   * Index 2: Ammended Return
    */
-  or40p12 = (): boolean | undefined => {
+  AmmendedReturn = (): boolean | undefined => {
     return true
   }
 
-  f2 = (): boolean | undefined => this.or40p12()
+  f2 = (): boolean | undefined => this.AmmendedReturn()
 
   /**
-   * Index 3: or-40-p1-4
+   * Index 3: Calculated "As If" Federal Return
    */
-  or40p14 = (): boolean | undefined => {
+  CalcAsIfFedReturn = (): boolean | undefined => {
     return true
   }
 
-  f3 = (): boolean | undefined => this.or40p14()
+  f3 = (): boolean | undefined => this.CalcAsIfFedReturn()
 
   /**
-   * Index 4: or-40-p1-5
+   * Index 4: Short-Year Tax Election
    */
-  or40p15 = (): boolean | undefined => {
+  ShortYearTaxElection = (): boolean | undefined => {
     return true
   }
 
-  f4 = (): boolean | undefined => this.or40p15()
+  f4 = (): boolean | undefined => this.ShortYearTaxElection()
 
   /**
-   * Index 5: or-40-p1-6
+   * Index 5: Extension Field
    */
-  or40p16 = (): boolean | undefined => {
+  ExtensionField = (): boolean | undefined => {
     return true
   }
 
-  f5 = (): boolean | undefined => this.or40p16()
+  f5 = (): boolean | undefined => this.ExtensionField()
 
   /**
-   * Index 6: or-40-p1-7
+   * Index 6: Form OR-24
    */
-  or40p17 = (): boolean | undefined => {
+  FormOR24 = (): boolean | undefined => {
     return true
   }
 
-  f6 = (): boolean | undefined => this.or40p17()
+  f6 = (): boolean | undefined => this.FormOR24()
 
   /**
-   * Index 7: or-40-p1-8
+   * Index 7: Federal Form 8379
    */
-  or40p18 = (): boolean | undefined => {
+  FederalForm8379 = (): boolean | undefined => {
     return true
   }
 
-  f7 = (): boolean | undefined => this.or40p18()
+  f7 = (): boolean | undefined => this.FederalForm8379()
 
   /**
-   * Index 8: or-40-p1-9
+   * Index 8: Federal Form 8886
    */
-  or40p19 = (): boolean | undefined => {
+  FederalForm8886 = (): boolean | undefined => {
     return true
   }
 
-  f8 = (): boolean | undefined => this.or40p19()
+  f8 = (): boolean | undefined => this.FederalForm8886()
 
   /**
-   * Index 9: or-40-p1-10
+   * Index 9: Disaster Relief
    */
-  or40p110 = (): boolean | undefined => {
+  DisasterRelief = (): boolean | undefined => {
     return true
   }
 
-  f9 = (): boolean | undefined => this.or40p110()
+  f9 = (): boolean | undefined => this.DisasterRelief()
 
   /**
    * Index 10: First Name
@@ -171,31 +171,31 @@ export class OR40 extends Form {
   f12 = (): string | undefined => this.DateOfBirth()
 
   /**
-   * Index 13: or-40-p1-16
+   * Index 13: First Time Using This SSN
    */
-  or40p116 = (): boolean | undefined => {
+  FirstTimeUsingThisSSN = (): boolean | undefined => {
     return true
   }
 
-  f13 = (): boolean | undefined => this.or40p116()
+  f13 = (): boolean | undefined => this.FirstTimeUsingThisSSN()
 
   /**
-   * Index 14: or-40-p1-17
+   * Index 14: Applied for ITIN
    */
-  or40p117 = (): boolean | undefined => {
+  AppliedForITIN = (): boolean | undefined => {
     return true
   }
 
-  f14 = (): boolean | undefined => this.or40p117()
+  f14 = (): boolean | undefined => this.AppliedForITIN()
 
   /**
-   * Index 15: or-40-p1-18
+   * Index 15: Deceased
    */
-  or40p118 = (): boolean | undefined => {
+  Deceased = (): boolean | undefined => {
     return true
   }
 
-  f15 = (): boolean | undefined => this.or40p118()
+  f15 = (): boolean | undefined => this.Deceased()
 
   /**
    * Index 16: LastName (53)
@@ -217,31 +217,31 @@ export class OR40 extends Form {
   f17 = (): string | undefined => this.SocialSecurityNumber53()
 
   /**
-   * Index 18: or-40-p2-2
+   * Index 18: Regular (6a)
    */
-  or40p22 = (): boolean | undefined => {
+  Regular6a = (): boolean | undefined => {
     return true
   }
 
-  f18 = (): boolean | undefined => this.or40p22()
+  f18 = (): boolean | undefined => this.Regular6a()
 
   /**
-   * Index 19: or-40-p2-3
+   * Index 19: Severely Disabled (6a)
    */
-  or40p23 = (): boolean | undefined => {
+  SeverelyDisabled6a = (): boolean | undefined => {
     return true
   }
 
-  f19 = (): boolean | undefined => this.or40p23()
+  f19 = (): boolean | undefined => this.SeverelyDisabled6a()
 
   /**
-   * Index 20: or-40-p2-4
+   * Index 20: Claim As Dependent (6a)
    */
-  or40p24 = (): boolean | undefined => {
+  ClaimAsDependent6a = (): boolean | undefined => {
     return true
   }
 
-  f20 = (): boolean | undefined => this.or40p24()
+  f20 = (): boolean | undefined => this.ClaimAsDependent6a()
 
   /**
    * Index 21: 6b
@@ -254,13 +254,13 @@ export class OR40 extends Form {
   f21 = (): string | undefined => this.Question6b()
 
   /**
-   * Index 22: or-40-p2-9
+   * Index 22: More Than Three Dependents
    */
-  or40p29 = (): boolean | undefined => {
+  MoreThanThreeDependents = (): boolean | undefined => {
     return true
   }
 
-  f22 = (): boolean | undefined => this.or40p29()
+  f22 = (): boolean | undefined => this.MoreThanThreeDependents()
 
   /**
    * Index 23: Dependant 1 Initial
@@ -300,13 +300,13 @@ export class OR40 extends Form {
   f26 = (): string | undefined => this.Dependent1SocialSecurityNumber()
 
   /**
-   * Index 27: or-40-p2-17
+   * Index 27: Dependent 1 Has Disability
    */
-  or40p217 = (): boolean | undefined => {
+  Dependent1HasDisability = (): boolean | undefined => {
     return true
   }
 
-  f27 = (): boolean | undefined => this.or40p217()
+  f27 = (): boolean | undefined => this.Dependent1HasDisability()
 
   /**
    * Index 28: Dependent 2 First Name
@@ -320,7 +320,7 @@ export class OR40 extends Form {
   /**
    * Index 29: Dependant 2 Initial
    */
-   Dependant2Initial = (): string | undefined => {
+  Dependant2Initial = (): string | undefined => {
     return undefined
   }
 
@@ -356,13 +356,13 @@ export class OR40 extends Form {
   f32 = (): string | undefined => this.Dependent2SocialSecurityNumber()
 
   /**
-   * Index 33: or-40-p2-24
+   * Index 33: Dependent 2 Has Disability
    */
-  or40p224 = (): boolean | undefined => {
+  Dependent2HasDisability = (): boolean | undefined => {
     return true
   }
 
-  f33 = (): boolean | undefined => this.or40p224()
+  f33 = (): boolean | undefined => this.Dependent2HasDisability()
 
   /**
    * Index 34: Dependent3FirstName
@@ -402,13 +402,13 @@ export class OR40 extends Form {
   f37 = (): string | undefined => this.Dependent3SocialSecurityNumber()
 
   /**
-   * Index 38: or-40-p2-31
+   * Index 38: Dependent 3 Has Disability
    */
-  or40p231 = (): boolean | undefined => {
+  Dependent3HasDisability = (): boolean | undefined => {
     return true
   }
 
-  f38 = (): boolean | undefined => this.or40p231()
+  f38 = (): boolean | undefined => this.Dependent3HasDisability()
 
   /**
    * Index 39: 6d
@@ -431,31 +431,31 @@ export class OR40 extends Form {
   f40 = (): string | undefined => this.TotalExemptions6e()
 
   /**
-   * Index 41: or-40-p2-6
+   * Index 41: Spouse Regular (6b)
    */
-  or40p26 = (): boolean | undefined => {
+  SpouseRegular6b = (): boolean | undefined => {
     return true
   }
 
-  f41 = (): boolean | undefined => this.or40p26()
+  f41 = (): boolean | undefined => this.SpouseRegular6b()
 
   /**
-   * Index 42: or-40-p2-7
+   * Index 42: Spouse Severely Disabled (6b)
    */
-  or40p27 = (): boolean | undefined => {
+  SpouseSeverelyDisabled6b = (): boolean | undefined => {
     return true
   }
 
-  f42 = (): boolean | undefined => this.or40p27()
+  f42 = (): boolean | undefined => this.SpouseSeverelyDisabled6b()
 
   /**
-   * Index 43: or-40-p2-8
+   * Index 43: Spouse Claim As Dependent (6b)
    */
-  or40p28 = (): boolean | undefined => {
+  SpouseClaimAsDependent6b = (): boolean | undefined => {
     return true
   }
 
-  f43 = (): boolean | undefined => this.or40p28()
+  f43 = (): boolean | undefined => this.SpouseClaimAsDependent6b()
 
   /**
    * Index 44: 6c
@@ -535,31 +535,31 @@ export class OR40 extends Form {
   f51 = (): string | undefined => this.SpouseSocialSecurityNumber()
 
   /**
-   * Index 52: or-40-p1-24
+   * Index 52: Spouse First Time Using SSN
    */
-  or40p124 = (): boolean | undefined => {
+  SpouseFirstTimeUsingSSN = (): boolean | undefined => {
     return true
   }
 
-  f52 = (): boolean | undefined => this.or40p124()
+  f52 = (): boolean | undefined => this.SpouseFirstTimeUsingSSN()
 
   /**
-   * Index 53: or-40-p1-25
+   * Index 53: Spouse Applied For ITIN
    */
-  or40p125 = (): boolean | undefined => {
+  SpouseAppliedForITIN = (): boolean | undefined => {
     return true
   }
 
-  f53 = (): boolean | undefined => this.or40p125()
+  f53 = (): boolean | undefined => this.SpouseAppliedForITIN()
 
   /**
-   * Index 54: or-40-p1-26
+   * Index 54: Spouse Deceased
    */
-  or40p126 = (): boolean | undefined => {
+  SpouseDeceased = (): boolean | undefined => {
     return true
   }
 
-  f54 = (): boolean | undefined => this.or40p126()
+  f54 = (): boolean | undefined => this.SpouseDeceased()
 
   /**
    * Index 55: Current Address
@@ -618,67 +618,67 @@ export class OR40 extends Form {
   f60 = (): string | undefined => this.Dependent1FirstName()
 
   /**
-   * Index 61: or-40-p3-12
+   * Index 61: Standard Deduction 65 or older (17a)
    */
-  or40p312 = (): boolean | undefined => {
+  StandardDeduction65older17a = (): boolean | undefined => {
     return true
   }
 
-  f61 = (): boolean | undefined => this.or40p312()
+  f61 = (): boolean | undefined => this.StandardDeduction65older17a()
 
   /**
-   * Index 62: or-40-p3-13
+   * Index 62: Standard Deduction Blind (17b)
    */
-  or40p313 = (): boolean | undefined => {
+  StandardDeductionBlind17b = (): boolean | undefined => {
     return true
   }
 
-  f62 = (): boolean | undefined => this.or40p313()
+  f62 = (): boolean | undefined => this.StandardDeductionBlind17b()
 
   /**
-   * Index 63: or-40-p3-14
+   * Index 63: Standard Deduction Spouse 65 or older (17c)
    */
-  or40p314 = (): boolean | undefined => {
+  StandardDeductionSpouse65older17c = (): boolean | undefined => {
     return true
   }
 
-  f63 = (): boolean | undefined => this.or40p314()
+  f63 = (): boolean | undefined => this.StandardDeductionSpouse65older17c()
 
   /**
-   * Index 64: or-40-p3-15
+   * Index 64: Standard Deduction Spouse Blind (17d)
    */
-  or40p315 = (): boolean | undefined => {
+  StandardDeductionSpouseBlind17d = (): boolean | undefined => {
     return true
   }
 
-  f64 = (): boolean | undefined => this.or40p315()
+  f64 = (): boolean | undefined => this.StandardDeductionSpouseBlind17d()
 
   /**
-   * Index 65: or-40-p4-2
+   * Index 65: Schedule OR-FIA-40
    */
-  or40p42 = (): boolean | undefined => {
+  ScheduleORFIA40 = (): boolean | undefined => {
     return true
   }
 
-  f65 = (): boolean | undefined => this.or40p42()
+  f65 = (): boolean | undefined => this.ScheduleORFIA40()
 
   /**
-   * Index 66: or-40-p4-3
+   * Index 66: Worksheet FCG
    */
-  or40p43 = (): boolean | undefined => {
+  WorksheetFCG = (): boolean | undefined => {
     return true
   }
 
-  f66 = (): boolean | undefined => this.or40p43()
+  f66 = (): boolean | undefined => this.WorksheetFCG()
 
   /**
-   * Index 67: or-40-p4-4
+   * Index 67: Schedule OR-PTE-FY
    */
-  or40p44 = (): boolean | undefined => {
+  ScheduleORPTEFY = (): boolean | undefined => {
     return true
   }
 
-  f67 = (): boolean | undefined => this.or40p44()
+  f67 = (): boolean | undefined => this.ScheduleORPTEFY()
 
   /**
    * Index 68: Exemption Number 42a
@@ -690,13 +690,13 @@ export class OR40 extends Form {
   f68 = (): string | undefined => this.ExemptionNumber42a()
 
   /**
-   * Index 69: or-40-p5-13
+   * Index 69: Form OR-10 Anualized (42b)
    */
-  or40p513 = (): boolean | undefined => {
+  FormOR10Anualized42b = (): boolean | undefined => {
     return true
   }
 
-  f69 = (): boolean | undefined => this.or40p513()
+  f69 = (): boolean | undefined => this.FormOR10Anualized42b()
 
   /**
    * Index 70: Party Code You (48a)
@@ -717,13 +717,15 @@ export class OR40 extends Form {
   f71 = (): string | undefined => this.PartyCodeSpouse48b()
 
   /**
-   * Index 72: or-40-p6-11
+   * Index 72: Final Deposit Destination Outside US (52)
+   * 
+   * this section has a radio button question
    */
-  or40p611 = (): boolean | undefined => {
+  FinalDepositDestinationOutsideUS52 = (): boolean | undefined => {
     return true
   }
 
-  f72 = (): boolean | undefined => this.or40p611()
+  f72 = (): boolean | undefined => this.FinalDepositDestinationOutsideUS52()
 
   /**
    * Index 73: Routing Number (52)
@@ -744,13 +746,13 @@ export class OR40 extends Form {
   f74 = (): string | undefined => this.AccountNumber52()
 
   /**
-   * Index 75: or-40-p6-16
+   * Index 75: Kicker To State School Fund (53)
    */
-  or40p616 = (): boolean | undefined => {
+  KickerToStateSchoolFund53 = (): boolean | undefined => {
     return true
   }
 
-  f75 = (): boolean | undefined => this.or40p616()
+  f75 = (): boolean | undefined => this.KickerToStateSchoolFund53()
 
   /**
    * Index 76: Your Signature Date
