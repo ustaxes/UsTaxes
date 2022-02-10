@@ -75,7 +75,7 @@ export default function F1098eInfo(): ReactElement {
         <LabeledInput
           autofocus={true}
           label="Enter name of Lender"
-          patternConfig={Patterns.name}
+          required={true}
           name="lender"
         />
         <LabeledInput
