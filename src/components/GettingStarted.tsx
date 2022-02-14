@@ -10,7 +10,7 @@ const urls = {
   issues: 'https://github.com/ustaxes/ustaxes/issues',
   twitter: 'https://twitter.com/ustaxesorg',
   discord: 'https://discord.gg/xm5HmqX6',
-  aidan: 'https://github.com/aidangrimshaw',
+  aidan: 'https://github.com/thegrims',
   zak: 'https://github.com/zakpatterson',
   startPage: '/info'
 }
