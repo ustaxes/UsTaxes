@@ -90,7 +90,7 @@
     "eslint-plugin-react": "^7.28.0",
     "fast-check": "^2.21.0",
     "husky": "^7.0.4",
-    "lint-staged": "^12.3.3",
+    "lint-staged": "^12.3.4",
     "prettier": "2.5.1",
     "react-router-last-location": "^2.0.1",
     "ts-node": "^10.5.0",
