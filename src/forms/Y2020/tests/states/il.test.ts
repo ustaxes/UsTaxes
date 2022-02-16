@@ -15,7 +15,7 @@ const withStateReturn = (
   logContext: fc.ContextValue,
   test: (f1040Forms: [F1040, Form[]], stateForms: StateForm[]) => void
 ): void => {
-  const f1040Result = create1040(info)
+  const f1040Result = create1040(info, [])
 
   if (isLeft(f1040Result)) {
     // ignore error infos with no 1040

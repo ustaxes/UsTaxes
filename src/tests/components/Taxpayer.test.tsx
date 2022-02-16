@@ -2,7 +2,7 @@ import { waitFor } from '@testing-library/react'
 import { BrowserRouter as Router } from 'react-router-dom'
 import TaxPayer from 'ustaxes/components/TaxPayer'
 import { Information } from 'ustaxes/core/data'
-import { YearsTaxesState } from 'ustaxes/redux'
+import { blankYearTaxesState, YearsTaxesState } from 'ustaxes/redux'
 import { blankState } from 'ustaxes/redux/reducer'
 import { FakePagerProvider, PagerMethods } from '../common/FakePager'
 import TestPage from '../common/Page'
@@ -85,7 +85,12 @@ export const tests = {
 
 describe('Taxpayer', () => {
   const taxpayerComponent = (information: Information = blankState) =>
-    new TaxPayerTestPage({ Y2020: information, activeYear: 'Y2020' })
+    new TaxPayerTestPage({
+      ...blankYearTaxesState,
+      Y2020: information,
+      activeYear: 'Y2020',
+      assets: []
+    })
 
   it('should show errors if incomplete data is entered', async () => {
     const page = taxpayerComponent()

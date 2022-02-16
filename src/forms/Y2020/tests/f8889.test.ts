@@ -69,6 +69,8 @@ const baseInformation: Information = {
 
 describe('Health Savings Accounts', () => {
   it('shold not need form 8889 if there are no health savings accounts', () => {
+    expect(baseInformation.taxPayer.primaryPerson).not.toBeUndefined()
+    if (baseInformation.taxPayer.primaryPerson === undefined) return
     expect(
       needsF8889(baseInformation, baseInformation.taxPayer.primaryPerson)
     ).toEqual(false)
@@ -88,6 +90,9 @@ describe('Health Savings Accounts', () => {
         qualifiedDistributions: 500
       }
     ]
+
+    expect(information.taxPayer.primaryPerson).not.toBeUndefined()
+    if (information.taxPayer.primaryPerson === undefined) return
 
     const f8889 = new F8889(information, information.taxPayer.primaryPerson)
     expect(f8889.fullYearHsa()).toEqual(true)
@@ -123,6 +128,9 @@ describe('Health Savings Accounts', () => {
       }
     ]
 
+    expect(information.taxPayer.primaryPerson).not.toBeUndefined()
+    if (information.taxPayer.primaryPerson === undefined) return
+
     const f8889 = new F8889(information, information.taxPayer.primaryPerson)
     expect(f8889.fullYearHsa()).toEqual(true)
     expect(f8889.lastMonthCoverage()).toEqual('family')
@@ -146,6 +154,9 @@ describe('Health Savings Accounts', () => {
         qualifiedDistributions: 500
       }
     ]
+
+    expect(information.taxPayer.primaryPerson).not.toBeUndefined()
+    if (information.taxPayer.primaryPerson === undefined) return
 
     const f8889 = new F8889(information, information.taxPayer.primaryPerson)
     expect(f8889.fullYearHsa()).toEqual(false)
@@ -179,6 +190,9 @@ describe('Health Savings Accounts', () => {
         qualifiedDistributions: 500
       }
     ]
+
+    expect(information.taxPayer.primaryPerson).not.toBeUndefined()
+    if (information.taxPayer.primaryPerson === undefined) return
 
     const f8889 = new F8889(information, information.taxPayer.primaryPerson)
     expect(f8889.fullYearHsa()).toEqual(false)
@@ -216,6 +230,9 @@ describe('Health Savings Accounts', () => {
       }
     ]
 
+    expect(information.taxPayer.primaryPerson).not.toBeUndefined()
+    if (information.taxPayer.primaryPerson === undefined) return
+
     const f8889 = new F8889(information, information.taxPayer.primaryPerson)
     expect(f8889.fullYearHsa()).toEqual(false)
     expect(f8889.contributionLimit()).toEqual(
@@ -251,6 +268,9 @@ describe('Health Savings Accounts', () => {
         qualifiedDistributions: 500
       }
     ]
+
+    expect(information.taxPayer.primaryPerson).not.toBeUndefined()
+    if (information.taxPayer.primaryPerson === undefined) return
 
     const f8889 = new F8889(information, information.taxPayer.primaryPerson)
     expect(f8889.splitFamilyContributionLimit()).toEqual(3550)

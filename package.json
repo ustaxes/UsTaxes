@@ -37,7 +37,7 @@
     "start": "node ./notice.js && ts-node ./scripts/env.ts && ts-node ./scripts/setup.ts && concurrently npm:dev",
     "dev": "craco --openssl-legacy-provider start",
     "build": "ts-node ./scripts/env.ts && ts-node ./scripts/setup.ts && craco build",
-    "test": "ts-node ./scripts/env.ts && ts-node ./scripts/setup.ts && craco test",
+    "test": "ts-node ./scripts/env.ts && ts-node ./scripts/setup.ts && jest",
     "eject": "craco eject",
     "desktop-release": "ts-node ./scripts/env.ts && ts-node ./scripts/setup.ts && tauri build",
     "desktop": "node ./notice.js && ts-node ./scripts/env.ts && ts-node ./scripts/setup.ts && tauri dev",
@@ -93,20 +93,13 @@
     "lint-staged": "^12.3.3",
     "prettier": "2.5.1",
     "react-router-last-location": "^2.0.1",
+    "ts-jest": "^26.5.5",
     "ts-node": "^10.5.0",
     "typescript-eslint": "0.0.1-alpha.0"
   },
   "lint-staged": {
     "**/*": "prettier --write --ignore-unknown .",
     "*.{ts,js,tsx,jsx}": "eslint ./src --cache --fix"
-  },
-  "jest": {
-    "moduleNameMapper": {
-      "^ustaxes/(.*)": "<rootDir>/src/$1"
-    },
-    "transformIgnorePatterns": [
-      "/node_modules/(?!@tauri-apps)"
-    ]
   },
   "engines": {
     "yarn": "please-use-npm"

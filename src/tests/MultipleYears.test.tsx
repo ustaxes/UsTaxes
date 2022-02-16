@@ -2,7 +2,7 @@
 import * as fc from 'fast-check'
 import * as utarbitraries from './arbitraries'
 import { cleanup, waitFor } from '@testing-library/react'
-import { YearsTaxesState } from 'ustaxes/redux'
+import { blankYearTaxesState, YearsTaxesState } from 'ustaxes/redux'
 import { ReactElement } from 'react'
 import TaxPayer from 'ustaxes/components/TaxPayer'
 import { tests as TaxPayerTests } from './components/Taxpayer.test'
@@ -136,7 +136,11 @@ describe('years', () => {
             // Generating states can lead to long runtimes as the generator
             // tries to fiddle with all of state's parameters to induce a failure.
             // We're just testing the year part of the state now.
-            const state = { [startYear]: blankState, activeYear: startYear }
+            const state = {
+              ...blankYearTaxesState,
+              [startYear]: blankState,
+              activeYear: startYear
+            }
             await withForm(state)(async (form): Promise<boolean> => {
               await form.yearStatus.setYear(year)
 
@@ -177,7 +181,11 @@ describe('years', () => {
     ))
 
   it('selecting year should not impact taxpayer form error handling after changing year', async () => {
-    const form = new TestForm({ Y2020: blankState, activeYear: 'Y2020' })
+    const form = new TestForm({
+      ...blankYearTaxesState,
+      Y2020: blankState,
+      activeYear: 'Y2020'
+    })
 
     await TaxPayerTests.incompleteData(form)
 
