@@ -22,6 +22,7 @@ import {
 } from '@material-ui/icons'
 import { Alert } from '@material-ui/lab'
 import { TaxYears } from 'ustaxes/data'
+import { TransactionImporter } from './TransactionImporter'
 
 interface Show<A> {
   (a: A): string
@@ -245,6 +246,7 @@ export default function OtherInvestments(): ReactElement {
         {form}
         {navButtons}
       </form>
+      <TransactionImporter />
     </FormProvider>
   )
 }
