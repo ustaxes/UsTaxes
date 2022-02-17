@@ -3,15 +3,42 @@ import { isMobile } from 'react-device-detect'
 import { Grid, TextField } from '@material-ui/core'
 import { preflightCsv } from 'ustaxes/data/csvImport'
 import { LoadRaw } from 'ustaxes/redux/fs/Load'
-import DataTable from 'react-data-table-component'
+import DataTable, {
+  TableColumn,
+  ConditionalStyles
+} from 'react-data-table-component'
 import { Alert } from '@material-ui/lab'
 import useStyles from '../input/styles'
+import { createStyles, makeStyles } from '@material-ui/core'
+
+const useColumnStyles = makeStyles(() =>
+  createStyles({
+    column: {
+      '& .MuiFilledInput-input': {
+        fontSize: '.8rem',
+        fontWeight: 'bold',
+        padding: '0.9rem 0rem'
+      }
+    }
+  })
+)
+
+const useRowStyles = makeStyles(() =>
+  createStyles({
+    disabledRow: {
+      backgroundColor: '#aaaaaa',
+      color: 'black'
+    }
+  })
+)
 
 interface ConfigurableDataTableProps {
   fields: string[]
   fieldAssignments: (string | undefined)[]
   rows: string[][]
   assignField: (colIndex: number, field: string | undefined) => void
+  dropFirstNRows?: number
+  updateDropFirstNRows: (dropFirstNRows: number) => void
 }
 
 interface ColumnHeaderDropProps {
@@ -28,10 +55,11 @@ const ColumnHeaderDropDown = ({
   undefinedName = ''
 }: ColumnHeaderDropProps) => {
   const classes = useStyles()
+  const columnClasses = useColumnStyles()
 
   return (
     <TextField
-      className={classes.root}
+      className={`${classes.root} ${columnClasses.column}`}
       select
       fullWidth
       variant="filled"
@@ -58,11 +86,20 @@ export const ConfigurableDataTable = ({
   fieldAssignments,
   fields,
   assignField,
-  rows
+  rows,
+  dropFirstNRows = 0,
+  updateDropFirstNRows
 }: ConfigurableDataTableProps): ReactElement => {
   const firstRow = rows[0]
+  const classes = useStyles()
+  const rowClasses = useRowStyles()
 
-  const columns = firstRow.map((c, i) => ({
+  const conditionalRowStyles: ConditionalStyles<[number, string[]]> = {
+    when: ([index]) => index < dropFirstNRows,
+    classNames: [rowClasses.disabledRow]
+  }
+
+  const columns: TableColumn<[number, string[]]>[] = firstRow.map((c, i) => ({
     name: (
       <ColumnHeaderDropDown
         fields={fields}
@@ -71,7 +108,8 @@ export const ConfigurableDataTable = ({
         undefinedName={`Col ${i + 1}`}
       />
     ),
-    selector: (row: string[]) => row[i]
+    selector: ([, row]) => row[i],
+    conditionalCellStyles: [conditionalRowStyles]
   }))
 
   const unassignedColumns = fields.filter((c) => !fieldAssignments.includes(c))
@@ -99,18 +137,35 @@ export const ConfigurableDataTable = ({
       return (
         <Alert severity="warning">
           {errorColumns.join(', ') +
-            (errorColumns.length > 1 ? 'fields are' : 'field is')}{' '}
+            (errorColumns.length > 1 ? ' fields are' : ' field is')}{' '}
           assigned more than once:
         </Alert>
       )
     }
   })()
 
+  const dropFirstNRowsInput = (
+    <TextField
+      className={classes.root}
+      label="Drop first n rows"
+      value={dropFirstNRows}
+      onChange={(v) => {
+        try {
+          updateDropFirstNRows(parseInt(v.target.value))
+        } catch {}
+      }}
+    />
+  )
+
   return (
     <>
       {assignAlert}
       {errorAlert}
-      <DataTable data={rows} columns={columns} />
+      {dropFirstNRowsInput}
+      <DataTable<[number, string[]]>
+        data={rows.map((r, i) => [i, r])}
+        columns={columns}
+      />
     </>
   )
 }
@@ -123,6 +178,7 @@ export const TransactionImporter = (): ReactElement => {
   const [fieldAssignments, setFieldAssignments] = useState<
     (string | undefined)[]
   >([])
+  const [dropFirstNRows, setDropFirstNRows] = useState<number>(0)
 
   const assignField = (colIndex: number, field: string | undefined) => {
     const newFieldAssignments = [...fieldAssignments]
@@ -165,6 +221,8 @@ export const TransactionImporter = (): ReactElement => {
                 'Quantity'
               ]}
               rows={preflightTransactions}
+              updateDropFirstNRows={(num) => setDropFirstNRows(num)}
+              dropFirstNRows={dropFirstNRows}
             />
           )
         }
