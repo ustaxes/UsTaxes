@@ -6,7 +6,6 @@ import {
   processTransaction,
   Security
 } from 'ustaxes/data/transactions'
-import _ from 'lodash'
 
 describe('Transactions', () => {
   test('For any portfolio, selling a security not held throws', () => {
@@ -146,10 +145,6 @@ describe('Transactions', () => {
             }),
             {}
           )
-
-        if (!_.isEqual(transactionCounts, portfolioCounts)) {
-          console.info('hi')
-        }
 
         expect(transactionCounts).toEqual(portfolioCounts)
       })
