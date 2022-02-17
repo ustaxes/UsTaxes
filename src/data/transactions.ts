@@ -1,3 +1,5 @@
+import { Either, left, pure, right } from 'ustaxes/core/util'
+
 export interface Security {
   name: string
 }
@@ -119,3 +121,31 @@ export const processTransaction = (
     }
   }
 }
+
+export interface TransactionError {
+  message: string
+  previousPortfolio: Portfolio
+  errorTransaction: Transaction
+  errorIndex: number
+}
+
+export const processTransactions = (
+  initialPortfolio: Portfolio,
+  transactions: Transaction[]
+): Either<TransactionError, Portfolio> =>
+  transactions
+    .reduce((portfolio, transaction, i) => {
+      return portfolio.chain((p: Portfolio) => {
+        try {
+          return right(processTransaction(p, transaction))
+        } catch (e) {
+          return left({
+            message: (e as Error).message,
+            previousPortfolio: p,
+            errorTransaction: transaction,
+            errorIndex: i
+          })
+        }
+      })
+    }, pure<TransactionError, Portfolio>(initialPortfolio))
+    .value()

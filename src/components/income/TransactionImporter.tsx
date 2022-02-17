@@ -1,7 +1,6 @@
 import { ReactElement, useState } from 'react'
-import { isMobile } from 'react-device-detect'
-import { Grid, TextField } from '@material-ui/core'
-import { preflightCsv } from 'ustaxes/data/csvImport'
+import { Button, Grid, TextField } from '@material-ui/core'
+import { parseCsv, preflightCsv } from 'ustaxes/data/csvImport'
 import { LoadRaw } from 'ustaxes/redux/fs/Load'
 import DataTable, {
   TableColumn,
@@ -10,6 +9,14 @@ import DataTable, {
 import { Alert } from '@material-ui/lab'
 import useStyles from '../input/styles'
 import { createStyles, makeStyles } from '@material-ui/core'
+import {
+  Portfolio,
+  Position,
+  processTransactions,
+  Transaction,
+  TransactionError
+} from 'ustaxes/data/transactions'
+import { run } from 'ustaxes/core/util'
 
 const useColumnStyles = makeStyles(() =>
   createStyles({
@@ -161,13 +168,62 @@ export const ConfigurableDataTable = ({
     <>
       {assignAlert}
       {errorAlert}
-      {dropFirstNRowsInput}
+      <Grid item xs={12}>
+        {dropFirstNRowsInput}
+      </Grid>
       <DataTable<[number, string[]]>
         data={rows.map((r, i) => [i, r])}
         columns={columns}
       />
     </>
   )
+}
+
+interface PortfolioTableProps {
+  portfolio: Portfolio
+}
+
+export const PortfolioTable = ({
+  portfolio
+}: PortfolioTableProps): ReactElement => {
+  const columns: TableColumn<Position>[] = [
+    {
+      name: 'Security',
+      selector: (p) => p.security.name
+    },
+    {
+      name: 'Open Date',
+      selector: (p) => p.openDate
+    },
+    {
+      name: 'Quantity',
+      selector: (p) => p.quantity
+    },
+    {
+      name: 'Price per unit',
+      selector: (p) => p.price
+    },
+    {
+      name: 'Basis',
+      selector: (p) => p.price * p.quantity
+    },
+    {
+      name: 'Close Date',
+      selector: (p) => p.closeDate ?? ''
+    },
+    {
+      name: 'Proceeds',
+      selector: (p) =>
+        p.closePrice !== undefined ? p.quantity * p.closePrice : ''
+    },
+    {
+      name: 'Gain or Loss',
+      selector: (p) =>
+        p.closePrice !== undefined ? (p.closePrice - p.price) * p.quantity : ''
+    }
+  ]
+
+  return <DataTable columns={columns} data={portfolio.positions} />
 }
 
 export const TransactionImporter = (): ReactElement => {
@@ -179,6 +235,23 @@ export const TransactionImporter = (): ReactElement => {
     (string | undefined)[]
   >([])
   const [dropFirstNRows, setDropFirstNRows] = useState<number>(0)
+  const [rawContents, setRawContents] = useState<string>('')
+  const [portfolio, setPortfolio] = useState<Portfolio>({ positions: [] })
+  const [portfolioError, setPortfolioError] = useState<
+    TransactionError | undefined
+  >(undefined)
+
+  const fields = [
+    'Security Name',
+    'Transaction date',
+    'Buy or Sell',
+    'Price per unit',
+    'Quantity'
+  ]
+
+  const ready = () =>
+    Array.from(new Set(fieldAssignments.filter((f) => f !== undefined)))
+      .length === fields.length
 
   const assignField = (colIndex: number, field: string | undefined) => {
     const newFieldAssignments = [...fieldAssignments]
@@ -190,6 +263,7 @@ export const TransactionImporter = (): ReactElement => {
   }
 
   const onHandle = async (contents: string): Promise<void> => {
+    setRawContents(contents)
     const res = await preflightCsv(contents).catch((parseError) => {
       console.error("Couldn't parse CSV", parseError)
       return []
@@ -197,33 +271,129 @@ export const TransactionImporter = (): ReactElement => {
     setPreflightTransactions(res)
   }
 
+  const parseRow = (row: string[]): Transaction => {
+    const assignments = fieldAssignments as string[]
+    return {
+      security: {
+        name: row[assignments.indexOf('Security Name')]
+      },
+      date: new Date(row[assignments.indexOf('Transaction date')].slice(0, 10))
+        .toISOString()
+        .slice(0, 10),
+      quantity: parseFloat(row[assignments.indexOf('Quantity')]),
+      price: parseFloat(row[assignments.indexOf('Price per unit')]),
+      side:
+        row[assignments.indexOf('Buy or Sell')].toLowerCase() === 'buy'
+          ? 'BUY'
+          : 'SELL'
+    }
+  }
+
+  const addToPortfolio = async () => {
+    const transactions: Transaction[] = await parseCsv<Transaction>(
+      rawContents,
+      (row, num) => (num > dropFirstNRows ? [parseRow(row)] : [])
+    )
+
+    run(processTransactions({ positions: [] }, transactions)).fold(
+      setPortfolioError,
+      (portfolio) => {
+        setPortfolioError(undefined)
+        setPortfolio(portfolio)
+      }
+    )
+  }
+
+  const readyButton = (() => {
+    if (ready()) {
+      return (
+        <Button variant="contained" color="primary" onClick={addToPortfolio}>
+          Add to Portfolio
+        </Button>
+      )
+    }
+  })()
+
   return (
-    <Grid item xs={isMobile && 12}>
-      <LoadRaw
-        variant="contained"
-        color="primary"
-        handleData={async (contents: string) => await onHandle(contents)}
-      >
-        Load CSV File
-      </LoadRaw>
+    <Grid container spacing={2}>
+      <Grid item xs={12}>
+        <LoadRaw
+          variant="contained"
+          color="primary"
+          handleData={async (contents: string) => await onHandle(contents)}
+        >
+          Load CSV File
+        </LoadRaw>
+      </Grid>
 
       {(() => {
         if (preflightTransactions.length > 0) {
           return (
-            <ConfigurableDataTable
-              fieldAssignments={fieldAssignments}
-              assignField={assignField}
-              fields={[
-                'Security Name',
-                'Transaction date',
-                'Buy or Sell',
-                'Price per unit',
-                'Quantity'
-              ]}
-              rows={preflightTransactions}
-              updateDropFirstNRows={(num) => setDropFirstNRows(num)}
-              dropFirstNRows={dropFirstNRows}
-            />
+            <>
+              <Grid item xs={12}>
+                <h3>Import Transactions</h3>
+                {readyButton}
+              </Grid>
+              <Grid item xs={12}>
+                <ConfigurableDataTable
+                  fieldAssignments={fieldAssignments}
+                  assignField={assignField}
+                  fields={fields}
+                  rows={preflightTransactions}
+                  updateDropFirstNRows={(num) => setDropFirstNRows(num)}
+                  dropFirstNRows={dropFirstNRows}
+                />
+              </Grid>
+            </>
+          )
+        }
+      })()}
+      {(() => {
+        if (portfolioError) {
+          const {
+            errorTransaction: {
+              side,
+              security: { name },
+              quantity,
+              price
+            },
+            previousPortfolio
+          } = portfolioError
+
+          return (
+            <Grid item xs={12}>
+              <Alert severity="error">
+                <h3>Transaction List Import Failed</h3>
+                <h4>Erroneous transaction</h4>
+                <div>
+                  <ul>
+                    <li>Line {portfolioError.errorIndex + 1}</li>
+                    <li>Date: {portfolioError.errorTransaction.date}</li>
+                    <li>{`${side} ${name} ${quantity}@${price}`}</li>
+                  </ul>
+                </div>
+                <p>
+                  This usually means you have sell transactions in excess of
+                  securities you hold at the time of sale. Either these are
+                  short sales, which are not yet supported here, or buy
+                  transactions that predate these sales are missing. If this is
+                  the case, add the required positions as BUY transactions at
+                  the beginning of this CSV file and try again.
+                </p>
+              </Alert>
+              <h4>Portfolio before erroneous transaction</h4>
+              <PortfolioTable portfolio={previousPortfolio}></PortfolioTable>
+            </Grid>
+          )
+        }
+      })()}
+      {(() => {
+        if (portfolio.positions.length > 0) {
+          return (
+            <Grid item xs={12}>
+              <h3>Portfolio</h3>
+              <PortfolioTable portfolio={portfolio} />
+            </Grid>
           )
         }
       })()}

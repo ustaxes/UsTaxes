@@ -50,8 +50,8 @@ export const preflightCsv = async (
 
 export const parseCsv = async <A>(
   contents: string,
-  parseRow: (r: string[]) => A
+  parseRow: (r: string[], rowNum: number) => A[]
 ): Promise<A[]> => {
   const res = await preflightCsvAll(contents)
-  return res.map((r) => parseRow(r))
+  return res.flatMap((r, i) => parseRow(r, i))
 }
