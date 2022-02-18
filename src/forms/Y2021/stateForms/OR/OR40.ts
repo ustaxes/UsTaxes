@@ -1317,6 +1317,7 @@ export class OR40 extends Form {
 
   /**
    * Index 134: Checking Or Savings (52)
+   * format: Choice1, Choice2
    */
   CheckingOrSavings52 = (): string | undefined => {
     return undefined
@@ -1362,6 +1363,7 @@ export class OR40 extends Form {
 
   /**
    * Index 139: Filing Status (1, 2, 3, 4, 5)
+   * Format: Choice1, Choice2, Choice3, Choice4, Choice5
    */
   FilingStatus12345 = (): string | undefined => {
     return undefined
@@ -1562,6 +1564,8 @@ export class OR40 extends Form {
   //   }
   //   return ret
   // })
+
+  // 134, 139 -> radio button idx's
 }
 
 const makeOR40 = (info: Information, f1040: F1040): OR40 =>
