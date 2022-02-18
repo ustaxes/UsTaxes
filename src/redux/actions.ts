@@ -73,6 +73,7 @@ export enum ActionName {
   SET_ACTIVE_YEAR = 'SET_ACTIVE_YEAR',
   PROPAGATE_YEAR_DATA = 'PROPAGATE_YEAR_DATA',
   ADD_ASSET = 'ASSETS/ADD',
+  ADD_ASSETS = 'ASSETS/ADD_MANY',
   EDIT_ASSET = 'ASSETS/EDIT',
   REMOVE_ASSET = 'ASSETS/REMOVE'
 }
@@ -130,6 +131,7 @@ type Remove1098e = Save<typeof ActionName.REMOVE_1098e, number>
 type SetInfo = Save<typeof ActionName.SET_INFO, Information>
 type SetActiveYear = Save<typeof ActionName.SET_ACTIVE_YEAR, TaxYear>
 type AddAsset = Save<typeof ActionName.ADD_ASSET, Asset<Date>>
+type AddAssets = Save<typeof ActionName.ADD_ASSETS, Asset<Date>[]>
 type EditAsset = Save<typeof ActionName.EDIT_ASSET, EditAssetAction>
 type RemoveAsset = Save<typeof ActionName.REMOVE_ASSET, number>
 
@@ -166,6 +168,7 @@ export type Actions =
   | SetInfo
   | SetActiveYear
   | AddAsset
+  | AddAssets
   | EditAsset
   | RemoveAsset
 
@@ -387,6 +390,10 @@ export const setActiveYear: ActionCreator<TaxYear> = makeActionCreator(
 
 export const addAsset: ActionCreator<Asset<Date>> = makeActionCreator(
   ActionName.ADD_ASSET
+)
+
+export const addAssets: ActionCreator<Asset<Date>[]> = makeActionCreator(
+  ActionName.ADD_ASSETS
 )
 
 export const editAsset: ActionCreator<EditAssetAction> = makeActionCreator(

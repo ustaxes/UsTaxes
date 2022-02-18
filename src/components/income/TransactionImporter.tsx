@@ -1,5 +1,7 @@
 import { ReactElement, useState } from 'react'
 import { Button, Grid, TextField } from '@material-ui/core'
+import { useDispatch } from 'ustaxes/redux'
+import * as actions from 'ustaxes/redux/actions'
 import { parseCsv, preflightCsv } from 'ustaxes/data/csvImport'
 import { LoadRaw } from 'ustaxes/redux/fs/Load'
 import DataTable, {
@@ -17,6 +19,7 @@ import {
   TransactionError
 } from 'ustaxes/data/transactions'
 import { run } from 'ustaxes/core/util'
+import { Asset } from 'ustaxes/core/data'
 
 const useColumnStyles = makeStyles(() =>
   createStyles({
@@ -159,7 +162,9 @@ export const ConfigurableDataTable = ({
       onChange={(v) => {
         try {
           updateDropFirstNRows(parseInt(v.target.value))
-        } catch {}
+        } catch {
+          updateDropFirstNRows(0)
+        }
       }}
     />
   )
@@ -171,10 +176,12 @@ export const ConfigurableDataTable = ({
       <Grid item xs={12}>
         {dropFirstNRowsInput}
       </Grid>
-      <DataTable<[number, string[]]>
-        data={rows.map((r, i) => [i, r])}
-        columns={columns}
-      />
+      <Grid item xs={12}>
+        <DataTable<[number, string[]]>
+          data={rows.map((r, i) => [i, r])}
+          columns={columns}
+        />
+      </Grid>
     </>
   )
 }
@@ -241,6 +248,8 @@ export const TransactionImporter = (): ReactElement => {
     TransactionError | undefined
   >(undefined)
 
+  const dispatch = useDispatch()
+
   const fields = [
     'Security Name',
     'Transaction date',
@@ -292,7 +301,7 @@ export const TransactionImporter = (): ReactElement => {
   const addToPortfolio = async () => {
     const transactions: Transaction[] = await parseCsv<Transaction>(
       rawContents,
-      (row, num) => (num > dropFirstNRows ? [parseRow(row)] : [])
+      (row, num) => (num >= dropFirstNRows ? [parseRow(row)] : [])
     )
 
     run(processTransactions({ positions: [] }, transactions)).fold(
@@ -305,10 +314,63 @@ export const TransactionImporter = (): ReactElement => {
   }
 
   const readyButton = (() => {
-    if (ready()) {
+    if (ready() && portfolio.positions.length === 0) {
       return (
         <Button variant="contained" color="primary" onClick={addToPortfolio}>
-          Add to Portfolio
+          Build Portfolio
+        </Button>
+      )
+    }
+  })()
+
+  const importable = () =>
+    portfolio.positions.length > 0 && portfolioError === undefined
+
+  const resetPortfolioBuildingState = () => {
+    setPortfolio({ positions: [] })
+    setRawContents('')
+    setDropFirstNRows(0)
+    setFieldAssignments([])
+    setPreflightTransactions([])
+  }
+
+  const addAssets = () => {
+    const assets: Asset[] = portfolio.positions.map((position) => ({
+      name: position.security.name,
+      openDate: new Date(position.openDate),
+      openPrice: position.price,
+      positionType: 'Security',
+      quantity: position.quantity,
+      closeDate:
+        position.closeDate !== undefined
+          ? new Date(position.closeDate)
+          : undefined,
+      closePrice: position.closePrice
+    }))
+
+    dispatch(actions.addAssets(assets))
+    resetPortfolioBuildingState()
+  }
+
+  const addAssetsButton = (() => {
+    if (importable()) {
+      return (
+        <Button variant="contained" color="primary" onClick={addAssets}>
+          Add Sales and Assets
+        </Button>
+      )
+    }
+  })()
+
+  const resetButton = (() => {
+    if (ready() && portfolio.positions.length > 0) {
+      return (
+        <Button
+          variant="contained"
+          color="secondary"
+          onClick={resetPortfolioBuildingState}
+        >
+          Reset
         </Button>
       )
     }
@@ -332,7 +394,6 @@ export const TransactionImporter = (): ReactElement => {
             <>
               <Grid item xs={12}>
                 <h3>Import Transactions</h3>
-                {readyButton}
               </Grid>
               <Grid item xs={12}>
                 <ConfigurableDataTable
@@ -344,6 +405,9 @@ export const TransactionImporter = (): ReactElement => {
                   dropFirstNRows={dropFirstNRows}
                 />
               </Grid>
+              {readyButton}
+              {resetButton}
+              {addAssetsButton}
             </>
           )
         }
