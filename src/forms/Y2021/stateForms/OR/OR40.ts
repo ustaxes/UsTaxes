@@ -1316,13 +1316,13 @@ export class OR40 extends Form {
   f133 = (): string | undefined => this.NetRefund51()
 
   /**
-   * Index 134: or-40_p1_33
+   * Index 134: Checking Or Savings (52)
    */
-  or40p133 = (): string | undefined => {
+  CheckingOrSavings52 = (): string | undefined => {
     return undefined
   }
 
-  f134 = (): string | undefined => this.or40p133()
+  f134 = (): string | undefined => this.CheckingOrSavings52()
 
   /**
    * Index 135: Tax Payer's State
@@ -1361,13 +1361,13 @@ export class OR40 extends Form {
   f138 = (): string | undefined => this.Dependant3Code()
 
   /**
-   * Index 139: or-40-p6-12
+   * Index 139: Filing Status (1, 2, 3, 4, 5)
    */
-  or40p612 = (): string | undefined => {
+  FilingStatus12345 = (): string | undefined => {
     return undefined
   }
 
-  f139 = (): string | undefined => this.or40p612()
+  f139 = (): string | undefined => this.FilingStatus12345()
 
   /**
    * Index 140: Preparer ZIP 
