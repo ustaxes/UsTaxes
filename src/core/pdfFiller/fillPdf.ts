@@ -1,4 +1,4 @@
-import { PDFDocument, PDFCheckBox, PDFTextField } from 'pdf-lib'
+import { PDFDocument, PDFCheckBox, PDFTextField, PDFRadioGroup } from 'pdf-lib'
 import { Field } from '.'
 import { displayRound } from '../irsForms/util'
 
@@ -34,6 +34,15 @@ export function fillPDF(pdf: PDFDocument, fieldValues: Field[]): PDFDocument {
         pdfField.setText(showValue)
       } catch (err) {
         throw error('text field')
+      }
+    } else if (pdfField instanceof PDFRadioGroup) {
+      // debug:
+      //console.log('radio group options ' + pdfField.getOptions())
+      //pdfField.select('Choice1')
+      try {
+        pdfField.select(value?.toString() || '')
+      } catch (err) {
+        throw error('radio group')
       }
     }
     pdfField.enableReadOnly()
