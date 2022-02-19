@@ -332,6 +332,7 @@ export const TransactionImporter = (): ReactElement => {
     setDropFirstNRows(0)
     setFieldAssignments([])
     setPreflightTransactions([])
+    setPortfolioError(undefined)
   }
 
   const addAssets = () => {
@@ -363,7 +364,11 @@ export const TransactionImporter = (): ReactElement => {
   })()
 
   const resetButton = (() => {
-    if (ready() && portfolio.positions.length > 0) {
+    if (
+      preflightTransactions.length > 0 ||
+      portfolioError !== undefined ||
+      portfolio.positions.length > 0
+    ) {
       return (
         <Button
           variant="contained"
