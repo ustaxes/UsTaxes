@@ -1,4 +1,4 @@
-import { parse } from 'csv-parse/dist/esm'
+import { parse } from 'csv-parse'
 import { reject } from 'lodash'
 
 export type DateFormat =
