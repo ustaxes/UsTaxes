@@ -1,5 +1,4 @@
 import { parse } from 'csv-parse'
-import { reject } from 'lodash'
 
 export type DateFormat =
   | 'YYYY-MM-DD'
@@ -18,7 +17,7 @@ export interface CsvConfig<K> {
 }
 
 export const preflightCsvAll = (contents: string): Promise<string[][]> =>
-  new Promise((resolve) => {
+  new Promise((resolve, reject) => {
     const parser = parse({ delimiter: ',' })
     const records: string[][] = []
     parser.on('readable', () => {
