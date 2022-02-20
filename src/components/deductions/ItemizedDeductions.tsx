@@ -75,7 +75,7 @@ const toItemizedDeductions = (
   }
 }
 
-export default function ItemizedDeductionsInfo(): ReactElement {
+export const ItemizedDeductionsInfo = (): ReactElement => {
   const itemizedDeductions: ItemizedDeductions | undefined = useSelector(
     (state: TaxesState) => {
       return state.information.itemizedDeductions
@@ -230,3 +230,5 @@ export default function ItemizedDeductionsInfo(): ReactElement {
     </form>
   )
 }
+
+export default ItemizedDeductions
