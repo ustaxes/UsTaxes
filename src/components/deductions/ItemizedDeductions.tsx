@@ -126,6 +126,10 @@ export const ItemizedDeductionsInfo = (): ReactElement => {
     }
   })()
 
+  // Limit charity to $500
+  const currencyMax500Pattern = Object.assign({}, Patterns.currency)
+  currencyMax500Pattern.max = 500
+
   const form: ReactElement | undefined = (
     <div>
       <p>Medical and Dental Expenses</p>
@@ -205,8 +209,8 @@ export const ItemizedDeductionsInfo = (): ReactElement => {
         />
         {charityWarning}
         <LabeledInput
-          label="Other than Cash of Check"
-          patternConfig={Patterns.currency}
+          label="Other than Cash of Check (Limit $500)"
+          patternConfig={currencyMax500Pattern}
           name="charityOther"
           required={false}
         />
@@ -216,7 +220,11 @@ export const ItemizedDeductionsInfo = (): ReactElement => {
 
   return (
     <form tabIndex={-1} onSubmit={handleSubmit(onSubmit)}>
-      <p>If you do not wish to itemize, you can skip this form.</p>
+      <p>
+        If you do not wish to itemize, you can skip this form. The itemized
+        deductions will only be used if they result in a higher deduction than
+        the standard deduction.
+      </p>
       <FormProvider {...methods}>
         <Helmet>
           <title>
