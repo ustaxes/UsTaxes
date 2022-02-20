@@ -231,4 +231,4 @@ export const ItemizedDeductionsInfo = (): ReactElement => {
   )
 }
 
-export default ItemizedDeductions
+export default ItemizedDeductionsInfo
