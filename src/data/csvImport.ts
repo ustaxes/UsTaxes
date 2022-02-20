@@ -1,4 +1,4 @@
-import { parse } from 'csv-parse'
+import { parse } from 'csv-parse/lib'
 
 export type DateFormat =
   | 'YYYY-MM-DD'

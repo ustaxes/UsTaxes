@@ -105,7 +105,8 @@
   },
   "jest": {
     "moduleNameMapper": {
-      "^ustaxes/(.*)": "<rootDir>/src/$1"
+      "^ustaxes/(.*)": "<rootDir>/src/$1",
+      "csv-parse/lib": "<rootDir>/node_modules/csv-parse/dist/cjs/index.cjs"
     },
     "transformIgnorePatterns": [
       "/node_modules/(?!@tauri-apps)"
