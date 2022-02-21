@@ -189,35 +189,35 @@ export default function IRA(): ReactElement {
         />
         <LabeledInput
           name="rolloverContributions"
-          label={boxLabel('2', 'Rollover contributions')}
+          label={boxLabel('2 - 5498', 'Rollover contributions')}
           patternConfig={Patterns.currency}
           required={false}
           sizes={{ xs: 12, lg: 6 }}
         />
         <LabeledInput
           name="rothIraConversion"
-          label={boxLabel('3', 'Amount converted to Roth IRA')}
+          label={boxLabel('3 - 5498', 'Amount converted to Roth IRA')}
           patternConfig={Patterns.currency}
           required={false}
           sizes={{ xs: 12, lg: 6 }}
         />
         <LabeledInput
           name="recharacterizedContributions"
-          label={boxLabel('4', 'Recharacterized contributions')}
+          label={boxLabel('4 - 5498', 'Recharacterized contributions')}
           patternConfig={Patterns.currency}
           required={false}
           sizes={{ xs: 12, lg: 6 }}
         />
         <LabeledInput
           name="lateContributions"
-          label={boxLabel('13a', 'Late contributions')}
+          label={boxLabel('13a - 5498', 'Late contributions')}
           patternConfig={Patterns.currency}
           required={false}
           sizes={{ xs: 12, lg: 6 }}
         />
         <LabeledInput
           name="repayments"
-          label={boxLabel('14a', 'Repayments to this account')}
+          label={boxLabel('14a - 5498', 'Repayments to this account')}
           patternConfig={Patterns.currency}
           required={false}
           sizes={{ xs: 12, lg: 6 }}
@@ -231,7 +231,7 @@ export default function IRA(): ReactElement {
         />
         <LabeledInput
           name="grossDistribution"
-          label={boxLabel('1', 'Total distributions')}
+          label={boxLabel('1 - 1099R', 'Total distributions')}
           patternConfig={Patterns.currency}
           required={false}
           sizes={{ xs: 12, lg: 6 }}
@@ -239,7 +239,7 @@ export default function IRA(): ReactElement {
         <LabeledInput
           name="taxableAmount"
           label={boxLabel(
-            '2a',
+            '2a - 1099R',
             'This part of the distribution is generally taxable'
           )}
           patternConfig={Patterns.currency}
@@ -248,21 +248,18 @@ export default function IRA(): ReactElement {
         />
         <LabeledInput
           name="federalIncomeTaxWithheld"
-          label={boxLabel('4a', 'Federal income tax withheld')}
+          label={boxLabel('4a - 1099R', 'Federal income tax withheld')}
           patternConfig={Patterns.currency}
           required={false}
           sizes={{ xs: 12, lg: 6 }}
         />
         <LabeledCheckbox
           name="taxableAmountNotDetermined"
-          label={boxLabel(
-            '2b',
-            'Check if the payer was unable to determine the taxable amount'
-          )}
+          label="Check if the payer was unable to determine the taxable amount"
         />
         <LabeledCheckbox
           name="totalDistribution"
-          label={boxLabel('2b', 'This distribution closed out your account')}
+          label="This distribution closed out your account"
         />
       </Grid>
     </FormListContainer>
