@@ -1,5 +1,11 @@
 import { ReactElement, useState } from 'react'
-import { Button, Grid, TextField } from '@material-ui/core'
+import {
+  Button,
+  Grid,
+  TextField,
+  Theme,
+  useMediaQuery
+} from '@material-ui/core'
 import { useDispatch } from 'ustaxes/redux'
 import * as actions from 'ustaxes/redux/actions'
 import { parseCsv, preflightCsv } from 'ustaxes/data/csvImport'
@@ -21,24 +27,39 @@ import {
 import { run } from 'ustaxes/core/util'
 import { Asset } from 'ustaxes/core/data'
 
-const useColumnStyles = makeStyles(() =>
+const baseCellStyle = (prefersDarkMode = false) => ({
+  color: prefersDarkMode ? 'white' : 'rgba(0, 0, 0, 0.54)',
+  backgroundColor: prefersDarkMode ? '#303030' : 'white'
+})
+
+const forceHeadCells = (prefersDarkMode = false) => ({
+  headCells: { style: baseCellStyle(prefersDarkMode) }
+})
+
+type Props = {
+  prefersDarkMode: boolean
+}
+
+const useColumnStyles = makeStyles<Theme, Props>(() =>
   createStyles({
-    column: {
+    column: ({ prefersDarkMode }) => ({
       '& .MuiFilledInput-input': {
         fontSize: '.8rem',
         fontWeight: 'bold',
-        padding: '0.9rem 0rem'
+        padding: '0.9rem 0rem',
+        ...baseCellStyle(prefersDarkMode)
       }
-    }
+    })
   })
 )
 
-const useRowStyles = makeStyles(() =>
+const useRowStyles = makeStyles<Theme, Props>(() =>
   createStyles({
     disabledRow: {
       backgroundColor: '#aaaaaa',
       color: 'black'
-    }
+    },
+    normal: ({ prefersDarkMode }) => baseCellStyle(prefersDarkMode)
   })
 )
 
@@ -64,8 +85,9 @@ const ColumnHeaderDropDown = ({
   onChange,
   undefinedName = ''
 }: ColumnHeaderDropProps) => {
-  const classes = useStyles()
-  const columnClasses = useColumnStyles()
+  const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)')
+  const classes = useStyles({ prefersDarkMode })
+  const columnClasses = useColumnStyles({ prefersDarkMode })
 
   return (
     <TextField
@@ -100,14 +122,21 @@ export const ConfigurableDataTable = ({
   dropFirstNRows = 0,
   updateDropFirstNRows
 }: ConfigurableDataTableProps): ReactElement => {
+  const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)')
   const firstRow = rows[0]
   const classes = useStyles()
-  const rowClasses = useRowStyles()
+  const rowClasses = useRowStyles({ prefersDarkMode })
 
-  const conditionalRowStyles: ConditionalStyles<[number, string[]]> = {
-    when: ([index]) => index < dropFirstNRows,
-    classNames: [rowClasses.disabledRow]
-  }
+  const conditionalCellStyles: ConditionalStyles<[number, string[]]>[] = [
+    {
+      when: ([index]) => index < dropFirstNRows,
+      classNames: [rowClasses.disabledRow]
+    },
+    {
+      when: ([index]) => index >= dropFirstNRows,
+      classNames: [rowClasses.normal]
+    }
+  ]
 
   const columns: TableColumn<[number, string[]]>[] = firstRow.map((c, i) => ({
     name: (
@@ -119,7 +148,7 @@ export const ConfigurableDataTable = ({
       />
     ),
     selector: ([, row]) => row[i],
-    conditionalCellStyles: [conditionalRowStyles]
+    conditionalCellStyles
   }))
 
   const unassignedColumns = fields.filter((c) => !fieldAssignments.includes(c))
@@ -177,6 +206,7 @@ export const ConfigurableDataTable = ({
         <DataTable<[number, string[]]>
           data={rows.map((r, i) => [i, r])}
           columns={columns}
+          customStyles={forceHeadCells(prefersDarkMode)}
         />
       </Grid>
     </>
@@ -190,44 +220,60 @@ interface PortfolioTableProps {
 export const PortfolioTable = ({
   portfolio
 }: PortfolioTableProps): ReactElement => {
+  const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)')
+
   const columns: TableColumn<Position>[] = [
     {
       name: 'Security',
-      selector: (p) => p.security.name
+      selector: (p) => p.security.name,
+      style: baseCellStyle(prefersDarkMode)
     },
     {
       name: 'Open Date',
-      selector: (p) => p.openDate
+      selector: (p) => p.openDate,
+      style: baseCellStyle(prefersDarkMode)
     },
     {
       name: 'Quantity',
-      selector: (p) => p.quantity
+      selector: (p) => p.quantity,
+      style: baseCellStyle(prefersDarkMode)
     },
     {
       name: 'Price per unit',
-      selector: (p) => p.price
+      selector: (p) => p.price,
+      style: baseCellStyle(prefersDarkMode)
     },
     {
       name: 'Basis',
-      selector: (p) => p.price * p.quantity
+      selector: (p) => p.price * p.quantity,
+      style: baseCellStyle(prefersDarkMode)
     },
     {
       name: 'Close Date',
-      selector: (p) => p.closeDate ?? ''
+      selector: (p) => p.closeDate ?? '',
+      style: baseCellStyle(prefersDarkMode)
     },
     {
       name: 'Proceeds',
       selector: (p) =>
-        p.closePrice !== undefined ? p.quantity * p.closePrice : ''
+        p.closePrice !== undefined ? p.quantity * p.closePrice : '',
+      style: baseCellStyle(prefersDarkMode)
     },
     {
       name: 'Gain or Loss',
       selector: (p) =>
-        p.closePrice !== undefined ? (p.closePrice - p.price) * p.quantity : ''
+        p.closePrice !== undefined ? (p.closePrice - p.price) * p.quantity : '',
+      style: baseCellStyle(prefersDarkMode)
     }
   ]
 
-  return <DataTable columns={columns} data={portfolio.positions} />
+  return (
+    <DataTable
+      columns={columns}
+      data={portfolio.positions}
+      customStyles={forceHeadCells(prefersDarkMode)}
+    />
+  )
 }
 
 export const TransactionImporter = (): ReactElement => {
