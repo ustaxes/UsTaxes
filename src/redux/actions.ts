@@ -16,7 +16,8 @@ import {
   Responses,
   HealthSavingsAccount,
   Ira,
-  Asset
+  Asset,
+  ItemizedDeductions
 } from 'ustaxes/core/data'
 
 import {
@@ -68,6 +69,7 @@ export enum ActionName {
   ADD_1098e = 'ADD_1098e',
   EDIT_1098e = 'EDIT_1098e',
   REMOVE_1098e = 'REMOVE_1098e',
+  SET_ITEMIZED_DEDUCTIONS = 'SET_ITEMIZED_DEDUCTIONS',
   ADD_HSA = 'ADD_HSA',
   EDIT_HSA = 'EDIT_HSA',
   REMOVE_HSA = 'REMOVE_HSA',
@@ -132,6 +134,10 @@ type AnswerQuestion = Save<typeof ActionName.ANSWER_QUESTION, Responses>
 type Add1098e = Save<typeof ActionName.ADD_1098e, F1098e>
 type Edit1098e = Save<typeof ActionName.EDIT_1098e, Edit1098eAction>
 type Remove1098e = Save<typeof ActionName.REMOVE_1098e, number>
+type SetItemizedDeductions = Save<
+  typeof ActionName.SET_ITEMIZED_DEDUCTIONS,
+  ItemizedDeductions
+>
 type SetInfo = Save<typeof ActionName.SET_INFO, Information>
 type SetActiveYear = Save<typeof ActionName.SET_ACTIVE_YEAR, TaxYear>
 type AddIRA = Save<typeof ActionName.ADD_IRA, Ira>
@@ -168,6 +174,7 @@ export type Actions =
   | Add1098e
   | Edit1098e
   | Remove1098e
+  | SetItemizedDeductions
   | AddHSA
   | EditHSA
   | RemoveHSA
@@ -384,6 +391,12 @@ export const remove1098e: ActionCreator<number> = makeActionCreator(
   ActionName.REMOVE_1098e,
   indexValidator
 )
+
+export const setItemizedDeductions: ActionCreator<ItemizedDeductions> =
+  makeActionCreator(
+    ActionName.SET_ITEMIZED_DEDUCTIONS,
+    validators.itemizedDeductions
+  )
 
 // debugging purposes only, leaving unchecked.
 export const setInfo: ActionCreator<Information> = makeActionCreator(

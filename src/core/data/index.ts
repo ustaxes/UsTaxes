@@ -381,6 +381,20 @@ export interface F1098e {
   lender: string
   interest: number
 }
+export interface ItemizedDeductions {
+  medicalAndDental: string | number
+  stateAndLocalTaxes: string | number
+  isSalesTax: boolean
+  stateAndLocalRealEstateTaxes: string | number
+  stateAndLocalPropertyTaxes: string | number
+  interest8a: string | number
+  interest8b: string | number
+  interest8c: string | number
+  interest8d: string | number
+  investmentInterest: string | number
+  charityCashCheck: string | number
+  charityOther: string | number
+}
 
 export type State =
   | 'AL'
@@ -475,6 +489,7 @@ export interface Information {
   realEstate: Property[]
   estimatedTaxes: EstimatedTaxPayments[]
   f1098es: F1098e[]
+  itemizedDeductions: ItemizedDeductions | undefined
   refund?: Refund
   taxPayer: TaxPayer
   questions: Responses

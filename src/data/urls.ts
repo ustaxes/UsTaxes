@@ -23,7 +23,8 @@ const Urls = {
     ira: '/savingsaccounts/ira'
   },
   deductions: {
-    f1098es: '/deductions/studentloaninterest'
+    f1098es: '/deductions/studentloaninterest',
+    itemized: '/deductions/itemized'
   },
   credits: {
     main: '/credits',

@@ -43,10 +43,10 @@ export function LabeledInput(props: LabeledInputProps): ReactElement {
     }
     if (patternConfig !== undefined && isNumeric(patternConfig)) {
       if (error?.type === 'max' && patternConfig.max !== undefined) {
-        return `Input must be less than or equal to ${patternConfig.max}`
+        return `Input must be less than or equal to ${patternConfig.prefix}${patternConfig.max}`
       }
       if (error?.type === 'min' && patternConfig.min !== undefined) {
-        return `Input must be greater than or equal to ${patternConfig.min}`
+        return `Input must be greater than or equal to ${patternConfig.prefix}${patternConfig.min}`
       }
     }
   })()

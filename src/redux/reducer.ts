@@ -15,6 +15,7 @@ export const blankState: Information = {
   taxPayer: { dependents: [] },
   questions: {},
   f1098es: [],
+  itemizedDeductions: undefined,
   stateResidencies: [],
   healthSavingsAccounts: [],
   individualRetirementArrangements: []
@@ -258,6 +259,12 @@ const formReducer = (
       return {
         ...newState,
         f1098es: new1098es
+      }
+    }
+    case ActionName.SET_ITEMIZED_DEDUCTIONS: {
+      return {
+        ...newState,
+        itemizedDeductions: action.formData
       }
     }
     case ActionName.SET_INFO: {

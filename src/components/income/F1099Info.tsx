@@ -439,7 +439,7 @@ export default function F1099Info(): ReactElement {
 
         <LabeledInput
           label="Enter name of bank, broker firm, or other payer"
-          patternConfig={Patterns.name}
+          required={true}
           name="payer"
         />
       </Grid>

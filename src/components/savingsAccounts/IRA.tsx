@@ -16,7 +16,8 @@ import {
   LabeledInput,
   GenericLabeledDropdown,
   formatSSID,
-  LabeledCheckbox
+  LabeledCheckbox,
+  boxLabel
 } from 'ustaxes/components/input'
 import { Patterns } from 'ustaxes/components/Patterns'
 import { FormListContainer } from 'ustaxes/components/FormContainer'
@@ -187,36 +188,36 @@ export default function IRA(): ReactElement {
           sizes={{ xs: 12, lg: 6 }}
         />
         <LabeledInput
-          name="rothIraConversion"
-          label="Amount converted to Roth IRA"
+          name="rolloverContributions"
+          label={boxLabel('2', 'Rollover contributions')}
           patternConfig={Patterns.currency}
           required={false}
           sizes={{ xs: 12, lg: 6 }}
         />
         <LabeledInput
-          name="rolloverContributions"
-          label="Rollover contributions"
+          name="rothIraConversion"
+          label={boxLabel('3', 'Amount converted to Roth IRA')}
           patternConfig={Patterns.currency}
           required={false}
           sizes={{ xs: 12, lg: 6 }}
         />
         <LabeledInput
           name="recharacterizedContributions"
-          label="Recharacterized contributions"
+          label={boxLabel('4', 'Recharacterized contributions')}
           patternConfig={Patterns.currency}
           required={false}
           sizes={{ xs: 12, lg: 6 }}
         />
         <LabeledInput
           name="lateContributions"
-          label="Late contributions"
+          label={boxLabel('13a', 'Late contributions')}
           patternConfig={Patterns.currency}
           required={false}
           sizes={{ xs: 12, lg: 6 }}
         />
         <LabeledInput
           name="repayments"
-          label="Repayments to this account"
+          label={boxLabel('14a', 'Repayments to this account')}
           patternConfig={Patterns.currency}
           required={false}
           sizes={{ xs: 12, lg: 6 }}
@@ -230,32 +231,38 @@ export default function IRA(): ReactElement {
         />
         <LabeledInput
           name="grossDistribution"
-          label="Total distributions"
+          label={boxLabel('1', 'Total distributions')}
           patternConfig={Patterns.currency}
           required={false}
           sizes={{ xs: 12, lg: 6 }}
         />
         <LabeledInput
           name="taxableAmount"
-          label="This part of the distribution is generally taxable"
+          label={boxLabel(
+            '2a',
+            'This part of the distribution is generally taxable'
+          )}
           patternConfig={Patterns.currency}
           required={false}
           sizes={{ xs: 12, lg: 6 }}
         />
         <LabeledInput
           name="federalIncomeTaxWithheld"
-          label="Federal income tax withheld"
+          label={boxLabel('4a', 'Federal income tax withheld')}
           patternConfig={Patterns.currency}
           required={false}
           sizes={{ xs: 12, lg: 6 }}
         />
         <LabeledCheckbox
           name="taxableAmountNotDetermined"
-          label="Check if the payer was unable to determine the taxable amount"
+          label={boxLabel(
+            '2b',
+            'Check if the payer was unable to determine the taxable amount'
+          )}
         />
         <LabeledCheckbox
           name="totalDistribution"
-          label="This distribution closed out your account"
+          label={boxLabel('2b', 'This distribution closed out your account')}
         />
       </Grid>
     </FormListContainer>
