@@ -160,11 +160,8 @@ export const ConfigurableDataTable = ({
       label="Drop first n rows"
       value={dropFirstNRows}
       onChange={(v) => {
-        try {
-          updateDropFirstNRows(parseInt(v.target.value))
-        } catch {
-          updateDropFirstNRows(0)
-        }
+        const newv = parseInt(v.target.value)
+        updateDropFirstNRows(isNaN(newv) ? 0 : newv)
       }}
     />
   )
