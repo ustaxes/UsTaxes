@@ -1,3 +1,5 @@
+import { enumKeys } from '../util'
+
 export enum PersonRole {
   PRIMARY = 'PRIMARY',
   SPOUSE = 'SPOUSE',
@@ -244,14 +246,13 @@ export const IraPlanTypeTexts = {
 
 export type IraPlanName = keyof typeof IraPlanType
 
-// Typescript provides no way to access
-// keys of an interface at runtime.
-export const iraPlanNames: IraPlanName[] = [
-  'IRA',
-  'RothIRA',
-  'SepIRA',
-  'SimpleIRA'
-]
+export const iraPlanNames: IraPlanName[] = enumKeys(IraPlanType)
+// export const iraPlanNames: IraPlanName[] = [
+//   'IRA',
+//   'RothIRA',
+//   'SepIRA',
+//   'SimpleIRA'
+// ]
 
 export interface Ira {
   payer: string
