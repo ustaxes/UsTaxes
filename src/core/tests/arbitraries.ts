@@ -229,6 +229,52 @@ const f1098e: Arbitrary<types.F1098e> = fc
     interest
   }))
 
+const itemizedDeductions: Arbitrary<types.ItemizedDeductions> = fc
+  .tuple(
+    posCurrency(2500),
+    posCurrency(12500),
+    fc.boolean(),
+    posCurrency(10000),
+    posCurrency(5000),
+    posCurrency(10000),
+    posCurrency(10000),
+    posCurrency(10000),
+    posCurrency(10000),
+    posCurrency(10000),
+    posCurrency(7500),
+    posCurrency(2500),
+    posCurrency(1000)
+  )
+  .map(
+    ([
+      medicalAndDental,
+      stateAndLocalTaxes,
+      isSalesTax,
+      stateAndLocalRealEstateTaxes,
+      stateAndLocalPropertyTaxes,
+      interest8a,
+      interest8b,
+      interest8c,
+      interest8d,
+      investmentInterest,
+      charityCashCheck,
+      charityOther
+    ]) => ({
+      medicalAndDental,
+      stateAndLocalTaxes,
+      isSalesTax,
+      stateAndLocalRealEstateTaxes,
+      stateAndLocalPropertyTaxes,
+      interest8a,
+      interest8b,
+      interest8c,
+      interest8d,
+      investmentInterest,
+      charityCashCheck,
+      charityOther
+    })
+  )
+
 const estTax: Arbitrary<types.EstimatedTaxPayments> = fc
   .tuple(maxWords(5), payment)
   .map(([label, payment]) => ({
@@ -459,6 +505,7 @@ export class Arbitraries {
         fc.array(this.property()),
         fc.array(estTax),
         fc.array(f1098e),
+        itemizedDeductions,
         refund,
         this.taxPayer(),
         questions,
@@ -472,6 +519,7 @@ export class Arbitraries {
           realEstate,
           estimatedTaxes,
           f1098es,
+          itemizedDeductions,
           refund,
           taxPayer,
           questions,
@@ -483,6 +531,7 @@ export class Arbitraries {
           realEstate,
           estimatedTaxes,
           f1098es,
+          itemizedDeductions,
           refund,
           taxPayer,
           questions,

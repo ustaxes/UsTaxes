@@ -159,6 +159,13 @@ export default class F1040 extends Form {
     if (f1099ints.length > 0) {
       this.scheduleB = new ScheduleB(this.info)
     }
+    if (this.info.itemizedDeductions) {
+      const scheduleA = new ScheduleA(this)
+      const standardDeduction = this.standardDeduction()
+      const itemizedAmount = scheduleA.deductions()
+      if (standardDeduction === undefined || itemizedAmount > standardDeduction)
+        this.scheduleA = new ScheduleA(this)
+    }
 
     if (this.assets.length > 0) {
       const f8949 = new F8949(this.info.taxPayer, this.assets)

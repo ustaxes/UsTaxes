@@ -85,6 +85,9 @@ export const propertyType = ajv.getSchema<types.PropertyType>(
   '#/definitions/PropertyType'
 )
 export const f1098e = ajv.getSchema<types.F1098e>('#/definitions/F1098e')
+export const itemizedDeductions = ajv.getSchema<types.ItemizedDeductions>(
+  '#/definitions/ItemizedDeductions'
+)
 export const responses = ajv.getSchema<types.Responses>(
   '#/definitions/Responses'
 )
