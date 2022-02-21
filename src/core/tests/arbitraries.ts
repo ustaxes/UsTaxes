@@ -4,8 +4,8 @@ import locationPostalCodes from '../data/locationPostalCodes'
 import {
   QuestionTagName,
   questionTagNames,
-  IraPlanName,
-  iraPlanNames,
+  // IraPlanName,
+  // iraPlanNames,
   Responses
 } from '../data'
 import * as types from '../data'
@@ -351,7 +351,7 @@ export const questions: Arbitrary<Responses> = fc
       .map((kvs) => Object.fromEntries(kvs))
   )
 
-const iraPlan: Arbitrary<IraPlanName> = fc.constantFrom(...iraPlanNames)
+// const iraPlan: Arbitrary<IraPlanName> = fc.constantFrom(...iraPlanNames)
 
 export class Arbitraries {
   currentYear: number
