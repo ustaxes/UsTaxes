@@ -1,5 +1,7 @@
 import { ReactElement } from 'react'
 import { Helmet } from 'react-helmet'
+import { Link } from 'react-router-dom'
+import Alert from '@material-ui/lab/Alert'
 import { useForm, FormProvider } from 'react-hook-form'
 import { Icon, Grid } from '@material-ui/core'
 import { useDispatch, useSelector, TaxesState } from 'ustaxes/redux'
@@ -17,7 +19,8 @@ import {
   Currency,
   formatSSID,
   GenericLabeledDropdown,
-  LabeledInput
+  LabeledInput,
+  boxLabel
 } from 'ustaxes/components/input'
 import { Patterns } from 'ustaxes/components/Patterns'
 import { FormListContainer } from 'ustaxes/components/FormContainer'
@@ -315,30 +318,23 @@ export default function F1099Info(): ReactElement {
 
   const rFields = (
     <Grid container spacing={2}>
+      <Alert severity="warning">
+        Use this form only for 1099-R forms related to your 401(k) or other
+        retirement plans. If you have 1099-R forms from IRA accounts please see
+        the <Link to="/savingsaccounts/ira">IRA page</Link>
+      </Alert>
       <LabeledInput
-        label={
-          <>
-            <strong>Box 1</strong> - Gross Distribution
-          </>
-        }
+        label={boxLabel('1', 'Gross Distribution')}
         patternConfig={Patterns.currency}
         name="grossDistribution"
       />
       <LabeledInput
-        label={
-          <>
-            <strong>Box 2a</strong> - Taxable Amount
-          </>
-        }
+        label={boxLabel('2a', 'Taxable Amount')}
         patternConfig={Patterns.currency}
         name="taxableAmount"
       />
       <LabeledInput
-        label={
-          <>
-            <strong>Box 4</strong> - Federal Income Tax Withheld
-          </>
-        }
+        label={boxLabel('4', 'Federal Income Tax Withheld')}
         patternConfig={Patterns.currency}
         name="federalIncomeTaxWithheld"
       />
