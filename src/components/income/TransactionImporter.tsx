@@ -8,7 +8,7 @@ import {
 } from '@material-ui/core'
 import { useDispatch } from 'ustaxes/redux'
 import * as actions from 'ustaxes/redux/actions'
-import { parseCsv, preflightCsv } from 'ustaxes/data/csvImport'
+import { preflightCsv, preflightCsvAll } from 'ustaxes/data/csvImport'
 import { LoadRaw } from 'ustaxes/redux/fs/Load'
 import DataTable, {
   TableColumn,
@@ -24,7 +24,7 @@ import {
   Transaction,
   TransactionError
 } from 'ustaxes/data/transactions'
-import { run } from 'ustaxes/core/util'
+import { Either, isLeft, left, right, run } from 'ustaxes/core/util'
 import { Asset } from 'ustaxes/core/data'
 
 const baseCellStyle = (prefersDarkMode = false) => ({
@@ -323,37 +323,110 @@ export const TransactionImporter = (): ReactElement => {
     setPreflightTransactions(res)
   }
 
-  const parseRow = (row: string[]): Transaction => {
+  const parseRow = (row: string[]): Either<string[], Transaction> => {
     const assignments = fieldAssignments as string[]
-    return {
+
+    const errors: string[] = []
+
+    const date: string | undefined = (() => {
+      const dateStr = row[assignments.indexOf('Transaction date')]
+      try {
+        return new Date(dateStr.slice(0, 10)).toISOString().slice(0, 10)
+      } catch (e) {
+        errors.push(
+          `Parsing transaction date value (${
+            row[assignments.indexOf('Transaction date')]
+          }) as date failed`
+        )
+        return undefined
+      }
+    })()
+
+    const quantity: number | undefined = (() => {
+      const quantityStr = row[assignments.indexOf('Quantity')]
+      const v = parseFloat(quantityStr)
+      if (isNaN(v)) {
+        return errors.push(
+          `Could not parse quantity value (${quantityStr}) as number`
+        )
+      } else {
+        return v
+      }
+    })()
+
+    const price: number | undefined = (() => {
+      const priceStr = row[assignments.indexOf('Price per unit')]
+      const v = parseFloat(priceStr)
+      if (isNaN(v)) {
+        errors.push(`Could not parse price value (${priceStr}) as number`)
+      } else {
+        return v
+      }
+    })()
+
+    if (quantity === undefined || price === undefined || date === undefined) {
+      return left(errors)
+    }
+
+    return right({
       security: {
         name: row[assignments.indexOf('Security Name')]
       },
-      date: new Date(row[assignments.indexOf('Transaction date')].slice(0, 10))
-        .toISOString()
-        .slice(0, 10),
-      quantity: parseFloat(row[assignments.indexOf('Quantity')]),
-      price: parseFloat(row[assignments.indexOf('Price per unit')]),
+      date,
+      quantity,
+      price,
       side:
         row[assignments.indexOf('Buy or Sell')].toLowerCase() === 'buy'
           ? 'BUY'
           : 'SELL'
-    }
+    })
   }
 
   const addToPortfolio = async () => {
-    const transactions: Transaction[] = await parseCsv<Transaction>(
-      rawContents,
-      (row, num) => (num >= dropFirstNRows ? [parseRow(row)] : [])
-    )
+    const csv = await preflightCsvAll(rawContents)
+    let errorResult: TransactionError | undefined
 
-    run(processTransactions({ positions: [] }, transactions)).fold(
-      setPortfolioError,
-      (portfolio) => {
-        setPortfolioError(undefined)
-        setPortfolio(portfolio)
+    const transactions: Transaction[] = csv.flatMap((row, idx) => {
+      if (idx < dropFirstNRows) {
+        return []
       }
-    )
+
+      const parsedRow = parseRow(row)
+      if (errorResult !== undefined) {
+        return []
+      }
+      if (isLeft(parsedRow)) {
+        errorResult = {
+          errorIndex: idx,
+          messages: parsedRow.left,
+          errorTransaction: undefined,
+          previousPortfolio: undefined
+        }
+        return []
+      } else {
+        return [parsedRow.right]
+      }
+    })
+
+    if (errorResult !== undefined) {
+      // First deal with parsing errors, if any
+      setPortfolioError(errorResult)
+    } else {
+      // Then deal with portfolio generating errors, if any.
+      run(processTransactions({ positions: [] }, transactions)).fold(
+        (e) =>
+          setPortfolioError({
+            ...e,
+            messages: [
+              'This usually means you have sell transactions in excess of securities you hold at the time of sale. Either these are short sales, which are not yet supported here, or buy transactions that predate these sales are missing. If this is the case, add the required positions as BUY transactions at the beginning of this CSV file and try again.'
+            ]
+          }),
+        (portfolio) => {
+          setPortfolioError(undefined)
+          setPortfolio(portfolio)
+        }
+      )
+    }
   }
 
   const readyButton = (() => {
@@ -462,39 +535,56 @@ export const TransactionImporter = (): ReactElement => {
       })()}
       {(() => {
         if (portfolioError) {
-          const {
-            errorTransaction: {
-              side,
-              security: { name },
-              quantity,
-              price
-            },
-            previousPortfolio
-          } = portfolioError
+          const { errorTransaction, previousPortfolio } = portfolioError
+
+          const errorTransactionMessage = (() => {
+            if (errorTransaction !== undefined) {
+              const {
+                side,
+                security: { name },
+                quantity,
+                price,
+                date
+              } = errorTransaction
+
+              return (
+                <>
+                  <h4>Erroneous transaction</h4>
+                  <div>
+                    <ul>
+                      <li>Line {portfolioError.errorIndex + 1}</li>
+                      <li>Date: {date}</li>
+                      <li>{`${side} ${name} ${quantity}@${price}`}</li>
+                    </ul>
+                  </div>
+                </>
+              )
+            }
+          })()
+
+          const prevPortfolioMessage = (() => {
+            if (previousPortfolio !== undefined) {
+              return (
+                <>
+                  <h4>Portfolio before erroneous transaction</h4>
+                  <PortfolioTable
+                    portfolio={previousPortfolio}
+                  ></PortfolioTable>
+                </>
+              )
+            }
+          })()
 
           return (
             <Grid item xs={12}>
               <Alert severity="error">
                 <h3>Transaction List Import Failed</h3>
-                <h4>Erroneous transaction</h4>
-                <div>
-                  <ul>
-                    <li>Line {portfolioError.errorIndex + 1}</li>
-                    <li>Date: {portfolioError.errorTransaction.date}</li>
-                    <li>{`${side} ${name} ${quantity}@${price}`}</li>
-                  </ul>
-                </div>
-                <p>
-                  This usually means you have sell transactions in excess of
-                  securities you hold at the time of sale. Either these are
-                  short sales, which are not yet supported here, or buy
-                  transactions that predate these sales are missing. If this is
-                  the case, add the required positions as BUY transactions at
-                  the beginning of this CSV file and try again.
-                </p>
+                {errorTransactionMessage}
+                {portfolioError.messages.map((message, i) => (
+                  <p key={i}>{message}</p>
+                ))}
               </Alert>
-              <h4>Portfolio before erroneous transaction</h4>
-              <PortfolioTable portfolio={previousPortfolio}></PortfolioTable>
+              {prevPortfolioMessage}
             </Grid>
           )
         }

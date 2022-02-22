@@ -123,9 +123,9 @@ export const processTransaction = (
 }
 
 export interface TransactionError {
-  message: string
-  previousPortfolio: Portfolio
-  errorTransaction: Transaction
+  messages: string[]
+  previousPortfolio?: Portfolio
+  errorTransaction?: Transaction
   errorIndex: number
 }
 
@@ -140,7 +140,7 @@ export const processTransactions = (
           return right(processTransaction(p, transaction))
         } catch (e) {
           return left({
-            message: (e as Error).message,
+            messages: [(e as Error).message],
             previousPortfolio: p,
             errorTransaction: transaction,
             errorIndex: i
