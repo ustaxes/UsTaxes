@@ -158,7 +158,7 @@ export default function IRA(): ReactElement {
           name="payer"
           label="payer for this account"
           patternConfig={Patterns.plain}
-          sizes={{ xs: 12, lg: 6 }}
+          sizes={{ xs: 12, lg: 12 }}
         />
         <GenericLabeledDropdown<IraPlanType>
           label="IRA Type"
@@ -180,6 +180,13 @@ export default function IRA(): ReactElement {
             `${p.firstName} ${p.lastName} (${formatSSID(p.ssid)})`
           }
         />
+      </Grid>
+      <h3>Contributions (Form 5498)</h3>
+      <p>
+        If you made no contributions you may not have received form 5498 for
+        this account and may leave these fields blank.
+      </p>
+      <Grid container spacing={2}>
         <LabeledInput
           name="contributions"
           label="Contributions"
@@ -189,49 +196,57 @@ export default function IRA(): ReactElement {
         />
         <LabeledInput
           name="rolloverContributions"
-          label={boxLabel('2 - 5498', 'Rollover contributions')}
+          label={boxLabel('2', 'Rollover contributions')}
           patternConfig={Patterns.currency}
           required={false}
           sizes={{ xs: 12, lg: 6 }}
         />
         <LabeledInput
           name="rothIraConversion"
-          label={boxLabel('3 - 5498', 'Amount converted to Roth IRA')}
+          label={boxLabel('3', 'Amount converted to Roth IRA')}
           patternConfig={Patterns.currency}
           required={false}
           sizes={{ xs: 12, lg: 6 }}
         />
         <LabeledInput
           name="recharacterizedContributions"
-          label={boxLabel('4 - 5498', 'Recharacterized contributions')}
-          patternConfig={Patterns.currency}
-          required={false}
-          sizes={{ xs: 12, lg: 6 }}
-        />
-        <LabeledInput
-          name="lateContributions"
-          label={boxLabel('13a - 5498', 'Late contributions')}
-          patternConfig={Patterns.currency}
-          required={false}
-          sizes={{ xs: 12, lg: 6 }}
-        />
-        <LabeledInput
-          name="repayments"
-          label={boxLabel('14a - 5498', 'Repayments to this account')}
+          label={boxLabel('4', 'Recharacterized contributions')}
           patternConfig={Patterns.currency}
           required={false}
           sizes={{ xs: 12, lg: 6 }}
         />
         <LabeledInput
           name="requiredMinimumDistributions"
-          label="Required minimum distributions"
+          label={boxLabel('12b', 'Required minimum distributions')}
           patternConfig={Patterns.currency}
           required={false}
           sizes={{ xs: 12, lg: 6 }}
         />
         <LabeledInput
+          name="lateContributions"
+          label={boxLabel('13a', 'Late contributions')}
+          patternConfig={Patterns.currency}
+          required={false}
+          sizes={{ xs: 12, lg: 6 }}
+        />
+        <LabeledInput
+          name="repayments"
+          label={boxLabel('14a', 'Repayments to this account')}
+          patternConfig={Patterns.currency}
+          required={false}
+          sizes={{ xs: 12, lg: 6 }}
+        />
+      </Grid>
+      <h3>Distributions (Form 1099-R)</h3>
+      <p>
+        If you have no distributions from this account then you may not have
+        received form 1099-R and may leave these fields blank.
+      </p>
+
+      <Grid container spacing={2}>
+        <LabeledInput
           name="grossDistribution"
-          label={boxLabel('1 - 1099R', 'Total distributions')}
+          label={boxLabel('1', 'Total distributions')}
           patternConfig={Patterns.currency}
           required={false}
           sizes={{ xs: 12, lg: 6 }}
@@ -239,7 +254,7 @@ export default function IRA(): ReactElement {
         <LabeledInput
           name="taxableAmount"
           label={boxLabel(
-            '2a - 1099R',
+            '2a',
             'This part of the distribution is generally taxable'
           )}
           patternConfig={Patterns.currency}
@@ -248,7 +263,7 @@ export default function IRA(): ReactElement {
         />
         <LabeledInput
           name="federalIncomeTaxWithheld"
-          label={boxLabel('4a - 1099R', 'Federal income tax withheld')}
+          label={boxLabel('4a', 'Federal income tax withheld')}
           patternConfig={Patterns.currency}
           required={false}
           sizes={{ xs: 12, lg: 6 }}
