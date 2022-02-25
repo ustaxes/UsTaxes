@@ -87,7 +87,7 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-prettier": "^4.0.0",
     "eslint-plugin-promise": "^6.0.0",
-    "eslint-plugin-react": "^7.28.0",
+    "eslint-plugin-react": "^7.29.0",
     "fast-check": "^2.22.0",
     "husky": "^7.0.4",
     "lint-staged": "^12.3.4",
