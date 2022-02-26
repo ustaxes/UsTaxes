@@ -10,6 +10,7 @@ const baseInformation: Information = {
   f3921s: [
     {
       name: 'Stock Option',
+      personRole: PersonRole.PRIMARY,
       exercisePricePerShare: 1,
       fmv: 101,
       numShares: 1000

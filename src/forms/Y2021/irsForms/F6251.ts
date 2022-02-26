@@ -1,4 +1,4 @@
-import { FilingStatus, Information } from 'ustaxes/core/data'
+import { FilingStatus, Information, PersonRole } from 'ustaxes/core/data'
 import TaxPayer from 'ustaxes/core/data/TaxPayer'
 import Form, { FormTag } from 'ustaxes/core/irsForms/Form'
 import F1040 from './F1040'
@@ -98,11 +98,16 @@ export default class F6251 extends Form {
   l2h = (): number | undefined => undefined
 
   // Exercise of incentive stock options (excess of AMT income over regular tax income)
-  l2i = (): number | undefined =>
-    this.state.f3921s.reduce(
+  l2i = (): number | undefined => {
+    let f3921s = this.state.f3921s
+    if (this.f1040.info.taxPayer.filingStatus === FilingStatus.MFS) {
+      f3921s = f3921s.filter((w2) => w2.personRole === PersonRole.PRIMARY)
+    }
+    return f3921s.reduce(
       (amount, f) => (f.fmv - f.exercisePricePerShare) * f.numShares + amount,
       0
     )
+  }
 
   // TODO: Estates and trusts (amount from Schedule K-1 (Form 1041), box 12, code A)
   l2j = (): number | undefined => undefined

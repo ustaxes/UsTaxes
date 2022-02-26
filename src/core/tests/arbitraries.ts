@@ -235,6 +235,7 @@ const f3921: Arbitrary<types.F3921> = fc
     const fmv = exercisePricePerShare + 1
     return {
       name,
+      personRole: types.PersonRole.PRIMARY,
       exercisePricePerShare,
       fmv,
       numShares

@@ -333,6 +333,7 @@ export interface F1098e {
 
 export interface F3921 {
   name: string
+  personRole: PersonRole.PRIMARY | PersonRole.SPOUSE
   exercisePricePerShare: number
   fmv: number
   numShares: number
