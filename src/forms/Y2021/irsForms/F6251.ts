@@ -284,8 +284,13 @@ export default class F6251 extends Form {
       }
     }
 
-    const wksht = new SDQualifiedAndCapGains(this.f1040)
-    return wksht.l4()
+    const filingStatus = this.f1040.info.taxPayer.filingStatus
+    if (filingStatus !== undefined) {
+      const wksht = new SDQualifiedAndCapGains(this.f1040)
+      return wksht.l4()
+    }
+
+    return undefined
   }
 
   l14 = (): number | undefined => {
