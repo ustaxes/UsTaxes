@@ -9,7 +9,7 @@ import Form, { FormTag } from 'ustaxes/core/irsForms/Form'
 import TaxPayer from 'ustaxes/core/data/TaxPayer'
 import F6168 from './F6168'
 import F8582 from './F8582'
-import { displayNegPos, sumFields, sumFields } from 'ustaxes/core/irsForms/util'
+import { displayNegPos, sumFields } from 'ustaxes/core/irsForms/util'
 import log from 'ustaxes/core/log'
 import _ from 'lodash'
 
