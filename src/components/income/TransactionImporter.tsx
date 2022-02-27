@@ -432,9 +432,11 @@ export const TransactionImporter = (): ReactElement => {
   const readyButton = (() => {
     if (ready() && portfolio.positions.length === 0) {
       return (
-        <Button variant="contained" color="primary" onClick={addToPortfolio}>
-          Build Portfolio
-        </Button>
+        <Grid item>
+          <Button variant="contained" color="primary" onClick={addToPortfolio}>
+            Build Portfolio
+          </Button>
+        </Grid>
       )
     }
   })()
@@ -472,9 +474,11 @@ export const TransactionImporter = (): ReactElement => {
   const addAssetsButton = (() => {
     if (importable()) {
       return (
-        <Button variant="contained" color="primary" onClick={addAssets}>
-          Add Sales and Assets
-        </Button>
+        <Grid item>
+          <Button variant="contained" color="primary" onClick={addAssets}>
+            Add Sales and Assets
+          </Button>
+        </Grid>
       )
     }
   })()
@@ -486,13 +490,15 @@ export const TransactionImporter = (): ReactElement => {
       portfolio.positions.length > 0
     ) {
       return (
-        <Button
-          variant="contained"
-          color="secondary"
-          onClick={resetPortfolioBuildingState}
-        >
-          Reset
-        </Button>
+        <Grid item>
+          <Button
+            variant="contained"
+            color="secondary"
+            onClick={resetPortfolioBuildingState}
+          >
+            Reset
+          </Button>
+        </Grid>
       )
     }
   })()
@@ -526,9 +532,11 @@ export const TransactionImporter = (): ReactElement => {
                   dropFirstNRows={dropFirstNRows}
                 />
               </Grid>
-              {readyButton}
-              {resetButton}
-              {addAssetsButton}
+              <Grid container spacing={2} direction="row">
+                {readyButton}
+                {resetButton}
+                {addAssetsButton}
+              </Grid>
             </>
           )
         }
