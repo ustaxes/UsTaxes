@@ -162,7 +162,7 @@ describe('W2JobInfo', () => {
       clickButton('Save')
 
       await waitFor(() => {
-        expect(errors.inputRequired()).toHaveLength(10)
+        expect(errors.inputRequired()).toHaveLength(11)
         expect(errors.selectionRequired()).toHaveLength(2)
       })
     })
