@@ -1,5 +1,5 @@
 import { Information } from 'ustaxes/core/data'
-import { sumRoundedFields } from 'ustaxes/core/irsForms/util'
+import { sumFields } from 'ustaxes/core/irsForms/util'
 import TaxPayer from 'ustaxes/core/data/TaxPayer'
 import Form, { FormTag } from 'ustaxes/core/irsForms/Form'
 import F4137 from './F4137'
@@ -57,7 +57,7 @@ export default class F8959 extends Form {
 
   l2 = (): number | undefined => this.f4137?.l6()
   l3 = (): number | undefined => this.f8919?.l6()
-  l4 = (): number => sumRoundedFields([this.l1(), this.l2(), this.l3()])
+  l4 = (): number => sumFields([this.l1(), this.l2(), this.l3()])
 
   l5 = (): number => this.thresholdFromFilingStatus()
   l6 = (): number => Math.max(0, this.l4() - this.l5())
@@ -84,7 +84,7 @@ export default class F8959 extends Form {
   l17 = (): number => this.computeAdditionalMedicareTax(this.l12())
 
   // Part IV: Total Medicare Tax
-  l18 = (): number => sumRoundedFields([this.l7(), this.l3(), this.l17()])
+  l18 = (): number => sumFields([this.l7(), this.l3(), this.l17()])
 
   // Part V: Withholding Reconciliation
   l19 = (): number =>
@@ -100,7 +100,7 @@ export default class F8959 extends Form {
   l22 = (): number => Math.max(0, this.l19() - this.l21())
 
   l23 = (): number | undefined => 0 // TODO: RRTA
-  l24 = (): number => sumRoundedFields([this.l22(), this.l23()])
+  l24 = (): number => sumFields([this.l22(), this.l23()])
 
   toSchedule2l11 = (): number => this.l18()
   to1040l25c = (): number => this.l24()

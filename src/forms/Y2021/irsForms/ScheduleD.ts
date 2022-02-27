@@ -1,7 +1,7 @@
 import { Information, F1099BData, FilingStatus } from 'ustaxes/core/data'
 import Form, { FormTag } from 'ustaxes/core/irsForms/Form'
 import TaxPayer from 'ustaxes/core/data/TaxPayer'
-import { sumRoundedFields } from 'ustaxes/core/irsForms/util'
+import { sumFields } from 'ustaxes/core/irsForms/util'
 import SDRateGainWorksheet from './worksheets/SDRateGainWorksheet'
 import SDUnrecaptured1250 from './worksheets/SDUnrecaptured1250'
 import InformationMethods from 'ustaxes/core/data/methods'
@@ -48,7 +48,7 @@ export default class ScheduleD extends Form {
   l1ae = (): number | undefined => this.aggregated.shortTermCostBasis
   // This field is greyed out, but fillable
   l1ag = (): number | undefined => undefined
-  l1ah = (): number => sumRoundedFields([this.l1ad(), 0 - (this.l1ae() ?? 0)])
+  l1ah = (): number => sumFields([this.l1ad(), 0 - (this.l1ae() ?? 0)])
 
   l1bd = (): number | undefined => undefined
   l1be = (): number | undefined => undefined
@@ -70,7 +70,7 @@ export default class ScheduleD extends Form {
   l6 = (): number | undefined => undefined
 
   l7 = (): number =>
-    sumRoundedFields([
+    sumFields([
       this.l1ah(),
       this.l1bh(),
       this.l2h(),
@@ -85,49 +85,49 @@ export default class ScheduleD extends Form {
   // This field is greyed out, but fillable
   l8ag = (): number | undefined => undefined
   l8ah = (): number | undefined =>
-    sumRoundedFields([this.l8ad(), 0 - (this.l8ae() ?? 0)])
+    sumFields([this.l8ad(), 0 - (this.l8ae() ?? 0)])
 
   l8f8949s = (): F8949[] => this.f8949.filter((f) => f.part2BoxD())
 
   l8bd = (): number =>
-    sumRoundedFields(this.l8f8949s().map((f) => f.longTermTotalProceeds()))
+    sumFields(this.l8f8949s().map((f) => f.longTermTotalProceeds()))
 
   l8be = (): number =>
-    sumRoundedFields(this.l8f8949s().map((f) => f.longTermTotalCost()))
+    sumFields(this.l8f8949s().map((f) => f.longTermTotalCost()))
 
   l8bg = (): number =>
-    sumRoundedFields(this.l8f8949s().map((f) => f.longTermTotalAdjustments()))
+    sumFields(this.l8f8949s().map((f) => f.longTermTotalAdjustments()))
 
   l8bh = (): number =>
-    sumRoundedFields(this.l8f8949s().map((f) => f.longTermTotalGain()))
+    sumFields(this.l8f8949s().map((f) => f.longTermTotalGain()))
 
   l9f8949s = (): F8949[] => this.f8949.filter((f) => f.part2BoxE())
 
   l9d = (): number =>
-    sumRoundedFields(this.l9f8949s().map((f) => f.longTermTotalProceeds()))
+    sumFields(this.l9f8949s().map((f) => f.longTermTotalProceeds()))
 
   l9e = (): number =>
-    sumRoundedFields(this.l9f8949s().map((f) => f.longTermTotalCost()))
+    sumFields(this.l9f8949s().map((f) => f.longTermTotalCost()))
 
   l9g = (): number =>
-    sumRoundedFields(this.l9f8949s().map((f) => f.longTermTotalAdjustments()))
+    sumFields(this.l9f8949s().map((f) => f.longTermTotalAdjustments()))
 
   l9h = (): number =>
-    sumRoundedFields(this.l9f8949s().map((f) => f.longTermTotalGain()))
+    sumFields(this.l9f8949s().map((f) => f.longTermTotalGain()))
 
   l10f8949s = (): F8949[] => this.f8949.filter((f) => f.part2BoxF())
 
   l10d = (): number =>
-    sumRoundedFields(this.l10f8949s().map((f) => f.longTermTotalProceeds()))
+    sumFields(this.l10f8949s().map((f) => f.longTermTotalProceeds()))
 
   l10e = (): number =>
-    sumRoundedFields(this.l10f8949s().map((f) => f.longTermTotalCost()))
+    sumFields(this.l10f8949s().map((f) => f.longTermTotalCost()))
 
   l10g = (): number =>
-    sumRoundedFields(this.l10f8949s().map((f) => f.longTermTotalAdjustments()))
+    sumFields(this.l10f8949s().map((f) => f.longTermTotalAdjustments()))
 
   l10h = (): number =>
-    sumRoundedFields(this.l10f8949s().map((f) => f.longTermTotalGain()))
+    sumFields(this.l10f8949s().map((f) => f.longTermTotalGain()))
 
   l11 = (): number | undefined => undefined
 
@@ -141,7 +141,7 @@ export default class ScheduleD extends Form {
   l14 = (): number | undefined => undefined
 
   l15 = (): number =>
-    sumRoundedFields([
+    sumFields([
       this.l8ah(),
       this.l8bh(),
       this.l9h(),
@@ -156,7 +156,7 @@ export default class ScheduleD extends Form {
   // If +, enter on L16 of F1040
   // If -, go to L21
   // If 0, go to L22
-  l16 = (): number => sumRoundedFields([this.l7(), this.l15()])
+  l16 = (): number => sumFields([this.l7(), this.l15()])
 
   // Are L15 and L16 both gains?
   l17 = (): boolean => (this.l15() ?? 0) > 0 && (this.l16() ?? 0) > 0

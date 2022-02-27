@@ -10,6 +10,3 @@ export const displayNegPos = (n: number | undefined): string => {
 
 export const sumFields = (fs: Array<number | undefined>): number =>
   fs.reduce<number>((l, r) => l + (r ?? 0), 0)
-
-export const sumRoundedFields = (fs: Array<number | undefined>): number =>
-  fs.reduce<number>((l, r) => l + Math.round(r ?? 0), 0)

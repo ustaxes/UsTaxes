@@ -1,5 +1,5 @@
 import { Information } from 'ustaxes/core/data'
-import { sumRoundedFields } from 'ustaxes/core/irsForms/util'
+import { sumFields } from 'ustaxes/core/irsForms/util'
 import TaxPayer from 'ustaxes/core/data/TaxPayer'
 import Form, { FormTag } from 'ustaxes/core/irsForms/Form'
 import { netInvestmentIncomeTax } from '../data/federal'
@@ -69,15 +69,14 @@ export default class F8960 extends Form {
 
   l4b = (): number | undefined => undefined
 
-  l4c = (): number => sumRoundedFields([this.l4a(), this.l4b()])
+  l4c = (): number => sumFields([this.l4a(), this.l4b()])
 
   // Line 5a-5d: Gains and Losses on the Disassets of Property
-  l5a = (): number =>
-    sumRoundedFields([this.f1040.l7(), this.f1040.schedule1?.l4()])
+  l5a = (): number => sumFields([this.f1040.l7(), this.f1040.schedule1?.l4()])
   // TODO: implement line 5b and 5c from worksheet.
   l5b = (): number | undefined => undefined
   l5c = (): number | undefined => undefined
-  l5d = (): number => sumRoundedFields([this.l5a(), this.l5b(), this.l5c()])
+  l5d = (): number => sumFields([this.l5a(), this.l5b(), this.l5c()])
 
   // TODO: Line 6: Adjustments to Investment Income for Certain CFCs and PFICs
   l6 = (): number | undefined => undefined
@@ -86,7 +85,7 @@ export default class F8960 extends Form {
   l7 = (): number | undefined => undefined
 
   l8 = (): number =>
-    sumRoundedFields([
+    sumFields([
       this.l1(),
       this.l2(),
       this.l3(),
@@ -106,9 +105,9 @@ export default class F8960 extends Form {
     return Math.round((totalStateWithholding * this.l8()) / this.f1040.l11())
   }
   l9c = (): number | undefined => undefined
-  l9d = (): number => sumRoundedFields([this.l9a(), this.l9b(), this.l9c()])
+  l9d = (): number => sumFields([this.l9a(), this.l9b(), this.l9c()])
   l10 = (): number | undefined => undefined
-  l11 = (): number => sumRoundedFields([this.l9d(), this.l10()])
+  l11 = (): number => sumFields([this.l9d(), this.l10()])
 
   l12 = (): number => Math.max(0, this.l8() - this.l11())
 

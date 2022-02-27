@@ -1,7 +1,7 @@
 import Form, { FormTag } from 'ustaxes/core/irsForms/Form'
 import F1040 from './F1040'
 import TaxPayer from 'ustaxes/core/data/TaxPayer'
-import { sumRoundedFields } from 'ustaxes/core/irsForms/util'
+import { sumFields } from 'ustaxes/core/irsForms/util'
 
 export default class ScheduleSE extends Form {
   tag: FormTag = 'f1040sse'
@@ -46,7 +46,7 @@ export default class ScheduleSE extends Form {
     return schFL34 + k1B14
   }
 
-  l3 = (): number => sumRoundedFields([this.l1a(), this.l1b(), this.l2()])
+  l3 = (): number => sumFields([this.l1a(), this.l1b(), this.l2()])
 
   l4a = (): number => {
     const l3 = this.l3()
@@ -58,7 +58,7 @@ export default class ScheduleSE extends Form {
 
   l4b = (): number | undefined => undefined
 
-  l4c = (): number => sumRoundedFields([this.l4a(), this.l4b()])
+  l4c = (): number => sumFields([this.l4a(), this.l4b()])
 
   l5a = (): number | undefined => this.postL4Field(() => 0)
   l5b = (): number | undefined =>
@@ -71,7 +71,7 @@ export default class ScheduleSE extends Form {
     })
 
   l6 = (): number | undefined =>
-    this.postL4Field((): number => sumRoundedFields([this.l4c(), this.l5b()]))
+    this.postL4Field((): number => sumFields([this.l4c(), this.l5b()]))
 
   l7 = (): number => 142800
 
@@ -86,7 +86,7 @@ export default class ScheduleSE extends Form {
     this.l8aRelatedField((): number | undefined => undefined)
   l8d = (): number | undefined =>
     this.l8aRelatedField((): number =>
-      sumRoundedFields([this.l8a(), this.l8b(), this.l8c()])
+      sumFields([this.l8a(), this.l8b(), this.l8c()])
     )
 
   l9 = (): number | undefined =>
@@ -101,7 +101,7 @@ export default class ScheduleSE extends Form {
     this.postL4Field((): number => (this.l6() ?? 0) * 0.029)
 
   l12 = (): number | undefined =>
-    this.postL4Field((): number => sumRoundedFields([this.l10(), this.l11()]))
+    this.postL4Field((): number => sumFields([this.l10(), this.l11()]))
 
   l13 = (): number | undefined =>
     this.postL4Field((): number => (this.l12() ?? 0) * 0.5)

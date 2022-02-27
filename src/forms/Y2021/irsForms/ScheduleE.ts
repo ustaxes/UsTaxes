@@ -9,11 +9,7 @@ import Form, { FormTag } from 'ustaxes/core/irsForms/Form'
 import TaxPayer from 'ustaxes/core/data/TaxPayer'
 import F6168 from './F6168'
 import F8582 from './F8582'
-import {
-  displayNegPos,
-  sumFields,
-  sumRoundedFields
-} from 'ustaxes/core/irsForms/util'
+import { displayNegPos, sumFields, sumFields } from 'ustaxes/core/irsForms/util'
 import log from 'ustaxes/core/log'
 import _ from 'lodash'
 
@@ -210,10 +206,10 @@ export default class ScheduleE extends Form {
     )
   l29bj = (): number | undefined => undefined
 
-  l30 = (): number | undefined => sumRoundedFields([this.l29ah(), this.l29ak()])
+  l30 = (): number | undefined => sumFields([this.l29ah(), this.l29ak()])
   l31 = (): number | undefined =>
-    sumRoundedFields([this.l29bg(), this.l29bi(), this.l29bj()])
-  l32 = (): number | undefined => sumRoundedFields([this.l30(), this.l31()])
+    sumFields([this.l29bg(), this.l29bi(), this.l29bj()])
+  l32 = (): number | undefined => sumFields([this.l30(), this.l31()])
 
   l34ad = (): number | undefined => undefined
   l34af = (): number | undefined => undefined
@@ -236,13 +232,7 @@ export default class ScheduleE extends Form {
   }
 
   l41 = (): number =>
-    sumRoundedFields([
-      this.l26(),
-      this.l32(),
-      this.l37(),
-      this.l39(),
-      this.l40()
-    ])
+    sumFields([this.l26(), this.l32(), this.l37(), this.l39(), this.l40()])
 
   fields = (): Array<string | number | boolean | undefined> => {
     const tp = new TaxPayer(this.state.taxPayer)

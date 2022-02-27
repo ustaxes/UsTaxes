@@ -3,7 +3,7 @@ import F8995, { getF8995PhaseOutIncome } from './F8995'
 import TaxPayer from 'ustaxes/core/data/TaxPayer'
 import { FormTag } from 'ustaxes/core/irsForms/Form'
 import { FilingStatus } from 'ustaxes/core/data'
-import { sumRoundedFields } from 'ustaxes/core/irsForms/util'
+import { sumFields } from 'ustaxes/core/irsForms/util'
 
 function ifNumber(
   num: number | undefined,
@@ -101,7 +101,7 @@ export default class F8995A extends F8995 {
   l15c = (): number | undefined =>
     ifNumber(this.l13c(), (num) => num - (this.l14c() ?? 0))
 
-  l16 = (): number => sumRoundedFields([this.l15a(), this.l15b(), this.l15c()])
+  l16 = (): number => sumFields([this.l15a(), this.l15b(), this.l15c()])
 
   l17a = (): number | undefined => ifNumber(this.l3a(), (num) => num)
   l17b = (): number | undefined => ifNumber(this.l3b(), (num) => num)
