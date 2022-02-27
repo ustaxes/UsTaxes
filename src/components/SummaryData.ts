@@ -12,6 +12,8 @@ interface Credit {
 
 export interface SummaryData {
   credits: Credit[]
+  refundAmount?: number
+  amountOwed?: number
 }
 
 interface SummaryCreator<A> {
@@ -35,7 +37,9 @@ export const SummaryCreatorFor2020: SummaryCreator<F1040For2020> = {
         value: f.childTaxCreditWorksheet?.credit(),
         allowed: f.childTaxCreditWorksheet?.isAllowed() ?? false
       }
-    ]
+    ],
+    refundAmount: f.l35a(),
+    amountOwed: f.l37()
   })
 }
 
@@ -47,7 +51,9 @@ export const SummaryCreatorFor2021: SummaryCreator<F1040For2021> = {
         value: f.scheduleEIC?.credit(f),
         allowed: f.scheduleEIC?.allowed(f) ?? false
       }
-    ]
+    ],
+    refundAmount: f.l35a(),
+    amountOwed: f.l37()
   })
 }
 

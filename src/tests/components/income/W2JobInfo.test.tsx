@@ -32,6 +32,7 @@ const testW2sSpouse: IncomeW2 = {
   income: 111,
   medicareIncome: 222,
   fedWithholding: 333,
+  ssWages: 111,
   ssWithholding: 444,
   medicareWithholding: 555,
   stateWages: 666,

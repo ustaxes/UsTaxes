@@ -3,12 +3,11 @@ import Form, { FormTag } from 'ustaxes/core/irsForms/Form'
 import TaxPayer from 'ustaxes/core/data/TaxPayer'
 import F1040 from './F1040'
 
-// Not yet implemented
 export default class ScheduleA extends Form {
   tag: FormTag = 'f1040sa'
   f1040: F1040
   itemizedDeductions: ItemizedDeductions
-  sequenceIndex = 999
+  sequenceIndex = 7
 
   constructor(f1040: F1040) {
     super()

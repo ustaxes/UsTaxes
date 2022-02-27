@@ -44,6 +44,7 @@ interface IncomeW2UserInput {
   income: string
   medicareIncome: string
   fedWithholding: string
+  ssWages: string | undefined
   ssWithholding: string
   medicareWithholding: string
   personRole?: PersonRole.PRIMARY | PersonRole.SPOUSE
@@ -61,6 +62,7 @@ const blankW2UserInput: IncomeW2UserInput = {
   income: '',
   medicareIncome: '',
   fedWithholding: '',
+  ssWages: '',
   ssWithholding: '',
   medicareWithholding: '',
   stateWages: '',
@@ -76,6 +78,7 @@ const toIncomeW2 = (formData: IncomeW2UserInput): IncomeW2 => ({
   income: parseFormNumberOrThrow(formData.income),
   medicareIncome: parseFormNumberOrThrow(formData.medicareIncome),
   fedWithholding: parseFormNumberOrThrow(formData.fedWithholding),
+  ssWages: parseFormNumberOrThrow(formData.ssWages ?? '0'),
   ssWithholding: parseFormNumberOrThrow(formData.ssWithholding),
   medicareWithholding: parseFormNumberOrThrow(formData.medicareWithholding),
   state: formData.state,
@@ -91,6 +94,7 @@ const toIncomeW2UserInput = (data: IncomeW2): IncomeW2UserInput => ({
   income: data.income.toString(),
   medicareIncome: data.medicareIncome.toString(),
   fedWithholding: data.fedWithholding.toString(),
+  ssWages: data.ssWages === undefined ? undefined : data.ssWages.toString(),
   ssWithholding: data.ssWithholding.toString(),
   medicareWithholding: data.medicareWithholding.toString(),
   state: data.state,
@@ -247,6 +251,12 @@ export default function W2JobInfo(): ReactElement {
         <LabeledInput
           name="fedWithholding"
           label={boxLabel('2', 'Federal income tax withheld')}
+          patternConfig={Patterns.currency}
+          sizes={{ xs: 12, lg: 6 }}
+        />
+        <LabeledInput
+          name="ssWages"
+          label={boxLabel('3', 'Social security wages')}
           patternConfig={Patterns.currency}
           sizes={{ xs: 12, lg: 6 }}
         />

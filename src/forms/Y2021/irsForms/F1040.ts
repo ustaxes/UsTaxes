@@ -17,7 +17,7 @@ import F8889, { needsF8889 } from './F8889'
 import F8910 from './F8910'
 import F8936 from './F8936'
 import F8959, { needsF8959 } from './F8959'
-import F8995 from './F8995'
+import F8995, { getF8995PhaseOutIncome } from './F8995'
 import F8995A from './F8995A'
 import Schedule1 from './Schedule1'
 import Schedule2 from './Schedule2'
@@ -26,10 +26,11 @@ import Schedule8812 from './Schedule8812'
 import ScheduleA from './ScheduleA'
 import ScheduleD from './ScheduleD'
 import ScheduleE from './ScheduleE'
+import ScheduleSE from './ScheduleSE'
 import ScheduleEIC from './ScheduleEIC'
 import ScheduleR from './ScheduleR'
 import Form, { FormTag } from 'ustaxes/core/irsForms/Form'
-import { sumFields } from 'ustaxes/core/irsForms/util'
+import { displayRound, sumRoundedFields } from 'ustaxes/core/irsForms/util'
 import ScheduleB from './ScheduleB'
 import { computeOrdinaryTax } from './TaxTable'
 import SDQualifiedAndCapGains from './worksheets/SDQualifiedAndCapGains'
@@ -69,6 +70,7 @@ export default class F1040 extends Form {
   scheduleC?: ScheduleC
   scheduleD?: ScheduleD
   scheduleE?: ScheduleE
+  scheduleSE?: ScheduleSE
   scheduleEIC?: ScheduleEIC
   scheduleR?: ScheduleR
   schedule8812?: Schedule8812
@@ -123,6 +125,7 @@ export default class F1040 extends Form {
       this.scheduleB,
       this.scheduleD,
       this.scheduleE,
+      this.scheduleSE,
       this.scheduleR,
       this.scheduleEIC,
       this.schedule8812,
@@ -187,8 +190,16 @@ export default class F1040 extends Form {
       this.socialSecurityBenefitsWorksheet = ssws
     }
 
-    if (this.info.realEstate.length > 0) {
+    if (
+      this.info.realEstate.length > 0 ||
+      this.info.scheduleK1Form1065s.length > 0
+    ) {
       this.scheduleE = new ScheduleE(this.info)
+    }
+
+    if (this.info.scheduleK1Form1065s.length > 0) {
+      const scheduleSE = new ScheduleSE(this)
+      this.scheduleSE = scheduleSE
     }
 
     if (this.info.f1098es.length > 0) {
@@ -238,7 +249,7 @@ export default class F1040 extends Form {
 
     if (needsF8959(this.info)) {
       if (this.f8959 === undefined) {
-        this.f8959 = new F8959(this.info, undefined, undefined, undefined)
+        this.f8959 = new F8959(this.info, undefined, undefined, this.scheduleSE)
       }
     }
 
@@ -280,6 +291,21 @@ export default class F1040 extends Form {
     const f6251 = new F6251(this.info, this)
     if (f6251.isNeeded()) {
       this.f6251 = f6251
+    }
+
+    // Form 8995
+    const totalQbi = this.info.scheduleK1Form1065s
+      .map((k1) => k1.section199AQBI)
+      .reduce((c, a) => c + a, 0)
+    if (totalQbi > 0 && this.info.taxPayer.filingStatus !== undefined) {
+      const formAMinAmount = getF8995PhaseOutIncome(
+        this.info.taxPayer.filingStatus
+      )
+      if (this.l11() - this.l12c() >= formAMinAmount) {
+        this.f8995 = new F8995A(this)
+      } else {
+        this.f8995 = new F8995(this)
+      }
     }
 
     const ws = new ChildTaxCreditWorksheet(this)
@@ -380,7 +406,7 @@ export default class F1040 extends Form {
   l7 = (): number | undefined => this.scheduleD?.to1040()
   l8 = (): number | undefined => this.schedule1?.l10()
   l9 = (): number =>
-    sumFields([
+    sumRoundedFields([
       this.l1(),
       this.l2b(),
       this.l3b(),
@@ -391,9 +417,10 @@ export default class F1040 extends Form {
       this.l8()
     ])
 
-  l10 = (): number | undefined => this.schedule1?.to1040Line10()
+  l10 = (): number | undefined => displayRound(this.schedule1?.to1040Line10())
 
-  l11 = (): number => Math.max(0, this.l9() - (this.l10() ?? 0))
+  l11 = (): number =>
+    Math.max(0, displayRound(this.l9() - (this.l10() ?? 0)) ?? 0)
 
   l12a = (): number | undefined => {
     if (this.scheduleA !== undefined) {
@@ -404,10 +431,10 @@ export default class F1040 extends Form {
 
   // TODO: Charitable contributions with standard deduction
   l12b = (): number | undefined => undefined
-  l12c = (): number => sumFields([this.l12a(), this.l12b()])
+  l12c = (): number => sumRoundedFields([this.l12a(), this.l12b()])
 
   l13 = (): number | undefined => this.f8995?.deductions()
-  l14 = (): number => sumFields([this.l12c(), this.l13()])
+  l14 = (): number => sumRoundedFields([this.l12c(), this.l13()])
 
   l15 = (): number => Math.max(0, this.l11() - this.l14())
 
@@ -432,20 +459,20 @@ export default class F1040 extends Form {
   }
 
   l16 = (): number | undefined =>
-    sumFields([this.f8814?.tax(), this.f4972?.tax(), this.computeTax()])
+    sumRoundedFields([this.f8814?.tax(), this.f4972?.tax(), this.computeTax()])
 
   l17 = (): number | undefined => this.schedule2?.l3()
-  l18 = (): number => sumFields([this.l16(), this.l17()])
+  l18 = (): number => sumRoundedFields([this.l16(), this.l17()])
 
   l19 = (): number | undefined => this.childTaxCreditWorksheet?.l12()
   l20 = (): number | undefined => this.schedule3?.l7()
-  l21 = (): number => sumFields([this.l19(), this.l20()])
+  l21 = (): number => sumRoundedFields([this.l19(), this.l20()])
 
   l22 = (): number => Math.max(0, (this.l18() ?? 0) - this.l21())
 
   l23 = (): number | undefined => this.schedule2?.l21()
 
-  l24 = (): number => sumFields([this.l22(), this.l23()])
+  l24 = (): number => sumRoundedFields([this.l22(), this.l23()])
 
   l25a = (): number =>
     this.validW2s().reduce((res, w2) => res + (w2.fedWithholding ?? 0), 0)
@@ -462,7 +489,7 @@ export default class F1040 extends Form {
   // TODO: form(s) W-2G box 4, schedule K-1, form 1042-S, form 8805, form 8288-A
   l25c = (): number | undefined => this.f8959?.l24()
 
-  l25d = (): number => sumFields([this.l25a(), this.l25b(), this.l25c()])
+  l25d = (): number => sumRoundedFields([this.l25a(), this.l25b(), this.l25c()])
 
   l26 = (): number =>
     this.info.estimatedTaxes.reduce((res, et) => res + et.payment, 0)
@@ -489,9 +516,15 @@ export default class F1040 extends Form {
   l31 = (): number | undefined => this.schedule3?.l15()
 
   l32 = (): number =>
-    sumFields([this.l27a(), this.l28(), this.l29(), this.l30(), this.l31()])
+    sumRoundedFields([
+      this.l27a(),
+      this.l28(),
+      this.l29(),
+      this.l30(),
+      this.l31()
+    ])
 
-  l33 = (): number => sumFields([this.l25d(), this.l26(), this.l32()])
+  l33 = (): number => sumRoundedFields([this.l25d(), this.l26(), this.l32()])
 
   l34 = (): number => Math.max(0, this.l33() - (this.l24() ?? 0))
 

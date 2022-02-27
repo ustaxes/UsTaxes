@@ -9,7 +9,8 @@ import {
   Information,
   HealthSavingsAccount,
   Asset,
-  F3921
+  F3921,
+  ScheduleK1Form1065
 } from 'ustaxes/core/data'
 import { blankState } from './reducer'
 
@@ -47,3 +48,5 @@ export type Edit1098eAction = ArrayItemEditAction<F1098e>
 export type EditHSAAction = ArrayItemEditAction<HealthSavingsAccount>
 export type EditAssetAction = ArrayItemEditAction<Asset<Date>>
 export type EditF3921Action = ArrayItemEditAction<F3921>
+export type EditScheduleK1Form1065Action =
+  ArrayItemEditAction<ScheduleK1Form1065>

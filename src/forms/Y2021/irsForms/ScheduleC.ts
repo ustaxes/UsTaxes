@@ -8,7 +8,7 @@ import Form, { FormTag } from 'ustaxes/core/irsForms/Form'
 export default class ScheduleC extends Form {
   tp: TaxPayer
   tag: FormTag = 'f1040sc'
-  sequenceIndex = 999
+  sequenceIndex = 9
 
   constructor(tp: TaxPayer) {
     super()

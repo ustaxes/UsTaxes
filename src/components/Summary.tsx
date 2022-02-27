@@ -44,6 +44,27 @@ interface F1040SummaryProps {
 
 const F1040Summary = ({ summary }: F1040SummaryProps): ReactElement => (
   <>
+    {(() => {
+      if (summary.amountOwed !== undefined && summary.amountOwed > 0) {
+        return (
+          <div>
+            <Typography variant="body2" color="textSecondary">
+              Amount Owed: <Currency value={-summary.amountOwed} />
+            </Typography>
+          </div>
+        )
+      }
+      if (summary.refundAmount !== undefined && summary.refundAmount > 0) {
+        return (
+          <div>
+            <Typography variant="body2" color="textSecondary">
+              Refund Amount: <Currency value={summary.refundAmount} />
+            </Typography>
+          </div>
+        )
+      }
+    })()}
+
     <h3>Credits</h3>
     <Grid container>
       <Grid item zeroMinWidth>

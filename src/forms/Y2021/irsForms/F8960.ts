@@ -1,5 +1,5 @@
 import { Information } from 'ustaxes/core/data'
-import { sumFields } from 'ustaxes/core/irsForms/util'
+import { sumRoundedFields } from 'ustaxes/core/irsForms/util'
 import TaxPayer from 'ustaxes/core/data/TaxPayer'
 import Form, { FormTag } from 'ustaxes/core/irsForms/Form'
 import { netInvestmentIncomeTax } from '../data/federal'
@@ -69,14 +69,15 @@ export default class F8960 extends Form {
 
   l4b = (): number | undefined => undefined
 
-  l4c = (): number => sumFields([this.l4a(), this.l4b()])
+  l4c = (): number => sumRoundedFields([this.l4a(), this.l4b()])
 
   // Line 5a-5d: Gains and Losses on the Disassets of Property
-  l5a = (): number => sumFields([this.f1040.l7(), this.f1040.schedule1?.l4()])
+  l5a = (): number =>
+    sumRoundedFields([this.f1040.l7(), this.f1040.schedule1?.l4()])
   // TODO: implement line 5b and 5c from worksheet.
   l5b = (): number | undefined => undefined
   l5c = (): number | undefined => undefined
-  l5d = (): number => sumFields([this.l5a(), this.l5b(), this.l5c()])
+  l5d = (): number => sumRoundedFields([this.l5a(), this.l5b(), this.l5c()])
 
   // TODO: Line 6: Adjustments to Investment Income for Certain CFCs and PFICs
   l6 = (): number | undefined => undefined
@@ -85,7 +86,7 @@ export default class F8960 extends Form {
   l7 = (): number | undefined => undefined
 
   l8 = (): number =>
-    sumFields([
+    sumRoundedFields([
       this.l1(),
       this.l2(),
       this.l3(),
@@ -96,11 +97,18 @@ export default class F8960 extends Form {
     ])
   // Todo: Implement Schedule A
   l9a = (): number | undefined => this.f1040.scheduleA?.l9()
-  l9b = (): number | undefined => undefined
+  // Line 9b Reasonable method: Total state tax from W2 * Form 8960 Line 8 / 1040 Line 11, Adjusted gross income
+  l9b = (): number | undefined => {
+    const totalStateWithholding = this.f1040
+      .validW2s()
+      .map((w2) => w2.stateWithholding ?? 0)
+      .reduce((l, r) => l + r, 0)
+    return Math.round((totalStateWithholding * this.l8()) / this.f1040.l11())
+  }
   l9c = (): number | undefined => undefined
-  l9d = (): number => sumFields([this.l9a(), this.l9b(), this.l9c()])
+  l9d = (): number => sumRoundedFields([this.l9a(), this.l9b(), this.l9c()])
   l10 = (): number | undefined => undefined
-  l11 = (): number => sumFields([this.l9d(), this.l10()])
+  l11 = (): number => sumRoundedFields([this.l9d(), this.l10()])
 
   l12 = (): number => Math.max(0, this.l8() - this.l11())
 
@@ -134,7 +142,7 @@ export default class F8960 extends Form {
   l20 = (): number | undefined => undefined // this.l19c() < this.l18c()? this.l19c() : this.l18c()
   l21 = (): number | undefined => undefined // Math.round(this.l20() * netInvestmentIncomeTax.taxRate)
 
-  toSchedule2l12 = (): number | undefined => this.l21()
+  toSchedule2l12 = (): number | undefined => this.l17()
 
   fields = (): Array<string | number | boolean | undefined> => {
     const tp = new TaxPayer(this.state.taxPayer)

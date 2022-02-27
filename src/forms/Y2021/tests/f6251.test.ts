@@ -16,6 +16,7 @@ const baseInformation: Information = {
       numShares: 1000
     }
   ],
+  scheduleK1Form1065s: [],
   itemizedDeductions: undefined,
   w2s: [
     {
@@ -26,6 +27,7 @@ const baseInformation: Information = {
       income: 100000,
       medicareIncome: 0,
       fedWithholding: 0,
+      ssWages: 100000,
       ssWithholding: 0,
       medicareWithholding: 0,
       stateWages: 100000,

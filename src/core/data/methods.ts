@@ -1,4 +1,4 @@
-import { F3921, ItemizedDeductions, Responses } from '.'
+import { F3921, ItemizedDeductions, Responses, ScheduleK1Form1065 } from '.'
 import {
   EstimatedTaxPayments,
   F1098e,
@@ -26,6 +26,7 @@ export default class InformationMethods implements Information {
   realEstate: Property[]
   f1098es: F1098e[]
   f3921s: F3921[]
+  scheduleK1Form1065s: ScheduleK1Form1065[]
   itemizedDeductions: ItemizedDeductions | undefined
   refund?: Refund
   taxPayer: TaxPayer
@@ -40,6 +41,7 @@ export default class InformationMethods implements Information {
     this.realEstate = info.realEstate
     this.f1098es = info.f1098es
     this.f3921s = info.f3921s
+    this.scheduleK1Form1065s = info.scheduleK1Form1065s
     this.itemizedDeductions = info.itemizedDeductions
     this.refund = info.refund
     this.taxPayer = info.taxPayer
