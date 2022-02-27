@@ -293,7 +293,7 @@ export default function IRA(): ReactElement {
         </Helmet>
         <h2>Individual Retirement Arrangements (IRA)</h2>
         {form}
-        {navButtons}`
+        {navButtons}
       </form>
     </FormProvider>
   )
