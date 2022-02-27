@@ -254,7 +254,7 @@ export default class ScheduleE extends Form {
       const k1 = k1s[i]
       l28Fields.push(
         k1.partnershipName,
-        'P', // TODO k1.partnerOrSCorp,
+        k1.partnerOrSCorp,
         k1.isForeign ?? false,
         k1.partnershipEin,
         false,
