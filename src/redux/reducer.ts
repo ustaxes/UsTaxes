@@ -15,6 +15,7 @@ export const blankState: Information = {
   taxPayer: { dependents: [] },
   questions: {},
   f1098es: [],
+  f3921s: [],
   itemizedDeductions: undefined,
   stateResidencies: [],
   healthSavingsAccounts: []
@@ -258,6 +259,28 @@ const formReducer = (
       return {
         ...newState,
         f1098es: new1098es
+      }
+    }
+    case ActionName.ADD_F3921: {
+      return {
+        ...newState,
+        f3921s: [...newState.f3921s, action.formData]
+      }
+    }
+    case ActionName.EDIT_F3921: {
+      const newf3921s = [...newState.f3921s]
+      newf3921s.splice(action.formData.index, 1, action.formData.value)
+      return {
+        ...newState,
+        f3921s: newf3921s
+      }
+    }
+    case ActionName.REMOVE_F3921: {
+      const newf3921s = [...newState.f3921s]
+      newf3921s.splice(action.formData, 1)
+      return {
+        ...newState,
+        f3921s: newf3921s
       }
     }
     case ActionName.SET_ITEMIZED_DEDUCTIONS: {

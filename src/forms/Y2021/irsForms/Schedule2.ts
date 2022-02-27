@@ -17,7 +17,7 @@ export default class Schedule2 extends Form {
   }
 
   // Part I: Tax
-  l1 = (): number | undefined => undefined // TODO: Alternative Minimum Tax (form 6251)
+  l1 = (): number | undefined => this.f1040.f6251?.l11()
   l2 = (): number | undefined => undefined // TODO: excess advance premium tax credit repayment (form 8962)
   l3 = (): number => sumFields([this.l1(), this.l2()])
 

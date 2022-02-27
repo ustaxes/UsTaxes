@@ -229,6 +229,19 @@ const f1098e: Arbitrary<types.F1098e> = fc
     interest
   }))
 
+const f3921: Arbitrary<types.F3921> = fc
+  .tuple(maxWords(2), posCurrency(100), fc.integer({ min: 1, max: 500 }))
+  .map(([name, exercisePricePerShare, numShares]) => {
+    const fmv = exercisePricePerShare + 1
+    return {
+      name,
+      personRole: types.PersonRole.PRIMARY,
+      exercisePricePerShare,
+      fmv,
+      numShares
+    }
+  })
+
 const itemizedDeductions: Arbitrary<types.ItemizedDeductions> = fc
   .tuple(
     posCurrency(2500),
@@ -505,6 +518,7 @@ export class Arbitraries {
         fc.array(this.property()),
         fc.array(estTax),
         fc.array(f1098e),
+        fc.array(f3921),
         itemizedDeductions,
         refund,
         this.taxPayer(),
@@ -519,6 +533,7 @@ export class Arbitraries {
           realEstate,
           estimatedTaxes,
           f1098es,
+          f3921s,
           itemizedDeductions,
           refund,
           taxPayer,
@@ -531,6 +546,7 @@ export class Arbitraries {
           realEstate,
           estimatedTaxes,
           f1098es,
+          f3921s,
           itemizedDeductions,
           refund,
           taxPayer,

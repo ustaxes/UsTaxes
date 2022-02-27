@@ -15,10 +15,16 @@ export default class F2555 extends Form {
     this.tp = tp
   }
 
+  // TODO - required from 6251
+  l36 = (): number => 0
+
+  // TODO - required from 6251
+  l42 = (): number => 0
+
   // TODO - required from 8812
   l45 = (): number => 0
 
-  // TODO - required from 8812
+  // TODO - required from 6251 & 8812
   l50 = (): number => 0
 
   fields = (): Field[] => []
