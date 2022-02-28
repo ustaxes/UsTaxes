@@ -1,8 +1,12 @@
 import Form from 'ustaxes/core/stateForms/Form'
 import F1040 from '../../irsForms/F1040'
 import { Field } from 'ustaxes/core/pdfFiller'
-import { Dependent, Information, State } from 'ustaxes/core/data'
-import parameters from './Parameters'
+import {
+  // Dependent,
+  Information,
+  State
+} from 'ustaxes/core/data'
+// import parameters from './Parameters'
 
 export class ORWFHDC extends Form {
   info: Information

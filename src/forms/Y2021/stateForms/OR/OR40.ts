@@ -1,14 +1,15 @@
 import Form, { FormMethods } from 'ustaxes/core/stateForms/Form'
 import F1040 from '../../irsForms/F1040'
 import { Field } from 'ustaxes/core/pdfFiller'
-import { sumFields } from 'ustaxes/core/irsForms/util'
+// import { sumFields } from 'ustaxes/core/irsForms/util'
 import {
   AccountType,
   FilingStatus,
   Information,
+  // PersonRole,
   State
 } from 'ustaxes/core/data'
-import parameters from './Parameters'
+// import parameters from './Parameters'
 import { ORWFHDC } from './ORWFHDC'
 import OR40V from './OR40V'
 
@@ -49,6 +50,21 @@ export class OR40 extends Form {
     // }
 
     return result
+  }
+
+  formatSocialSecurity(ssid: string | undefined): string | undefined {
+    ssid = ssid?.replace(/\D/g, '')
+    ssid = ssid?.replace(/^(\d{3})/, '$1 ')
+    ssid = ssid?.replace(/ (\d{2})/, ' $1 ')
+    ssid = ssid?.replace(/(\d) (\d{4}).*/, '$1 $2')
+    return ssid
+  }
+
+  formatDollarAmount(amount: number | undefined): string | undefined {
+    let result: string | undefined = amount?.toString()
+    result = result?.replace(/.{3}$/, ' $&')
+    result = result?.replace(/.{7}$/, ' $&')
+    return result?.padStart(11)
   }
 
   /**
@@ -211,7 +227,7 @@ export class OR40 extends Form {
    */
   SocialSecurityNumber53 = (): string | undefined => {
     // format: 'xxx xx xxxx'
-    return this.info.taxPayer.primaryPerson?.ssid
+    return this.formatSocialSecurity(this.info.taxPayer.primaryPerson?.ssid)
   }
 
   f17 = (): string | undefined => this.SocialSecurityNumber53()
@@ -220,7 +236,8 @@ export class OR40 extends Form {
    * Index 18: Regular (6a)
    */
   Regular6a = (): boolean | undefined => {
-    return true
+    // If taxpayer can be claimed as a dependent then don't check the box.
+    return !this.ClaimAsDependent6a()
   }
 
   f18 = (): boolean | undefined => this.Regular6a()
@@ -238,7 +255,7 @@ export class OR40 extends Form {
    * Index 20: Claim As Dependent (6a)
    */
   ClaimAsDependent6a = (): boolean | undefined => {
-    return true
+    return this.info.taxPayer.primaryPerson?.isTaxpayerDependent
   }
 
   f20 = (): boolean | undefined => this.ClaimAsDependent6a()
@@ -248,7 +265,10 @@ export class OR40 extends Form {
    * Credits for your spouse
    */
   Question6b = (): string | undefined => {
-    return undefined
+    const regularCredit: number = this.SpouseRegular6b() ? 1 : 0
+    const disabledCredit: number = this.SpouseSeverelyDisabled6b() ? 1 : 0
+    // TODO: Fix one digit text alignment - should be right justified
+    return (regularCredit + disabledCredit).toString().padStart(2)
   }
 
   f21 = (): string | undefined => this.Question6b()
@@ -257,19 +277,19 @@ export class OR40 extends Form {
    * Index 22: More Than Three Dependents
    */
   MoreThanThreeDependents = (): boolean | undefined => {
-    return true
+    return this.info.taxPayer.dependents.length > 3
   }
 
   f22 = (): boolean | undefined => this.MoreThanThreeDependents()
 
   /**
-   * Index 23: Dependant 1 Initial
+   * Index 23: Dependent 1 Initial
    */
-   Dependant1Initial = (): string | undefined => {
+  Dependent1Initial = (): string | undefined => {
     return undefined
   }
 
-  f23 = (): string | undefined => this.Dependant1Initial()
+  f23 = (): string | undefined => this.Dependent1Initial()
 
   /**
    * Index 24: Dependent 1 LastName
@@ -294,7 +314,7 @@ export class OR40 extends Form {
    * Index 26: Dependent 1 SSN
    */
   Dependent1SocialSecurityNumber = (): string | undefined => {
-    return this.info.taxPayer.dependents[0]?.ssid
+    return this.formatSocialSecurity(this.info.taxPayer.dependents[0]?.ssid)
   }
 
   f26 = (): string | undefined => this.Dependent1SocialSecurityNumber()
@@ -318,13 +338,13 @@ export class OR40 extends Form {
   f28 = (): string | undefined => this.Dependent2FirstName()
 
   /**
-   * Index 29: Dependant 2 Initial
+   * Index 29: Dependent 2 Initial
    */
-  Dependant2Initial = (): string | undefined => {
+  Dependent2Initial = (): string | undefined => {
     return undefined
   }
 
-  f29 = (): string | undefined => this.Dependant2Initial()
+  f29 = (): string | undefined => this.Dependent2Initial()
 
   /**
    * Index 30: Dependent2LastName
@@ -350,7 +370,7 @@ export class OR40 extends Form {
    */
   Dependent2SocialSecurityNumber = (): string | undefined => {
     // format: 'xxx xx xxxx'
-    return this.info.taxPayer.dependents[1]?.ssid
+    return this.formatSocialSecurity(this.info.taxPayer.dependents[1]?.ssid)
   }
 
   f32 = (): string | undefined => this.Dependent2SocialSecurityNumber()
@@ -374,13 +394,13 @@ export class OR40 extends Form {
   f34 = (): string | undefined => this.Dependent3FirstName()
 
   /**
-   * Index 35: Dependant 3 Initial
+   * Index 35: Dependent 3 Initial
    */
-  Dependant3Initial = (): string | undefined => {
+  Dependent3Initial = (): string | undefined => {
     return undefined
   }
 
-  f35 = (): string | undefined => this.Dependant3Initial()
+  f35 = (): string | undefined => this.Dependent3Initial()
 
   /**
    * Index 36: Dependent3LastName
@@ -396,7 +416,7 @@ export class OR40 extends Form {
    */
   Dependent3SocialSecurityNumber = (): string | undefined => {
     // format: 'xxx xx xxxx'
-    return this.info.taxPayer.dependents[2]?.ssid
+    return this.formatSocialSecurity(this.info.taxPayer.dependents[2]?.ssid)
   }
 
   f37 = (): string | undefined => this.Dependent3SocialSecurityNumber()
@@ -425,7 +445,15 @@ export class OR40 extends Form {
    * Sum 6a through 6d
    */
   TotalExemptions6e = (): string | undefined => {
-    return undefined
+    // TODO: Fix one digit text alignment - should be right justified
+    return (
+      parseInt(this.Question6a() ?? '0') +
+      parseInt(this.Question6b() ?? '0') +
+      parseInt(this.Question6c() ?? '0') +
+      parseInt(this.Question6d() ?? '0')
+    )
+      .toString()
+      .padStart(2)
   }
 
   f40 = (): string | undefined => this.TotalExemptions6e()
@@ -434,7 +462,7 @@ export class OR40 extends Form {
    * Index 41: Spouse Regular (6b)
    */
   SpouseRegular6b = (): boolean | undefined => {
-    return true
+    return this.info.taxPayer.spouse ? !this.SpouseClaimAsDependent6b() : false
   }
 
   f41 = (): boolean | undefined => this.SpouseRegular6b()
@@ -452,7 +480,7 @@ export class OR40 extends Form {
    * Index 43: Spouse Claim As Dependent (6b)
    */
   SpouseClaimAsDependent6b = (): boolean | undefined => {
-    return true
+    return this.info.taxPayer.spouse?.isTaxpayerDependent ?? false
   }
 
   f43 = (): boolean | undefined => this.SpouseClaimAsDependent6b()
@@ -462,7 +490,8 @@ export class OR40 extends Form {
    * Number of dependents
    */
   Question6c = (): string | undefined => {
-    return undefined
+    // TODO: Fix one digit text alignment - should be right justified
+    return this.info.taxPayer.dependents.length.toString().padStart(2)
   }
 
   f44 = (): string | undefined => this.Question6c()
@@ -472,7 +501,10 @@ export class OR40 extends Form {
    * Credits for yourself
    */
   Question6a = (): string | undefined => {
-    return undefined
+    const regularCredit: number = this.Regular6a() ? 1 : 0
+    const disabledCredit: number = this.SeverelyDisabled6a() ? 1 : 0
+    // TODO: Fix one digit text alignment - should be right justified
+    return (regularCredit + disabledCredit).toString().padStart(2)
   }
 
   f45 = (): string | undefined => this.Question6a()
@@ -499,7 +531,7 @@ export class OR40 extends Form {
   /**
    * Index 48: Spouse's Initial
    */
-   SpouseInitial = (): string | undefined => {
+  SpouseInitial = (): string | undefined => {
     return undefined
   }
 
@@ -718,7 +750,7 @@ export class OR40 extends Form {
 
   /**
    * Index 72: Final Deposit Destination Outside US (52)
-   * 
+   *
    * this section has a radio button question
    */
   FinalDepositDestinationOutsideUS52 = (): boolean | undefined => {
@@ -731,7 +763,7 @@ export class OR40 extends Form {
    * Index 73: Routing Number (52)
    */
   RoutingNumber52 = (): string | undefined => {
-    return undefined
+    return this.info.refund?.routingNumber
   }
 
   f73 = (): string | undefined => this.RoutingNumber52()
@@ -740,7 +772,8 @@ export class OR40 extends Form {
    * Index 74: Account Number (52)
    */
   AccountNumber52 = (): string | undefined => {
-    return undefined
+    // TODO: Fix text alignment - should be right justified
+    return this.info.refund?.accountNumber.padStart(17)
   }
 
   f74 = (): string | undefined => this.AccountNumber52()
@@ -775,7 +808,7 @@ export class OR40 extends Form {
   /**
    * Index 78: Preparer Signature Date
    */
-   PreparerSignatureDate = (): string | undefined => {
+  PreparerSignatureDate = (): string | undefined => {
     return undefined
   }
 
@@ -784,7 +817,7 @@ export class OR40 extends Form {
   /**
    * Index 79: Preparer Phone Number
    */
-   PreparerPhoneNumber = (): string | undefined => {
+  PreparerPhoneNumber = (): string | undefined => {
     return undefined
   }
 
@@ -793,7 +826,7 @@ export class OR40 extends Form {
   /**
    * Index 80: Preparer License Number
    */
-   PreparerLicenseNumber = (): string | undefined => {
+  PreparerLicenseNumber = (): string | undefined => {
     return undefined
   }
 
@@ -811,7 +844,7 @@ export class OR40 extends Form {
   /**
    * Index 82: Preparer's Initial
    */
-   PreparerInitial = (): string | undefined => {
+  PreparerInitial = (): string | undefined => {
     return undefined
   }
 
@@ -820,7 +853,7 @@ export class OR40 extends Form {
   /**
    * Index 83: Preparer Last Name
    */
-   PreparerLastName = (): string | undefined => {
+  PreparerLastName = (): string | undefined => {
     return undefined
   }
 
@@ -829,7 +862,7 @@ export class OR40 extends Form {
   /**
    * Index 84: Preparer Street Address
    */
-   PreparerStreetAddress = (): string | undefined => {
+  PreparerStreetAddress = (): string | undefined => {
     return undefined
   }
 
@@ -1068,7 +1101,13 @@ export class OR40 extends Form {
    * Index 108: OR Income Tax Withheld (32)
    */
   ORIncomeTaxWithheld32 = (): string | undefined => {
-    return undefined
+    // Filter on w2s in Oregon, then sum state withholding from each w2
+    return this.formatDollarAmount(
+      this.info.w2s
+        .filter((w2) => w2.state === 'OR')
+        .map((w2) => w2.stateWithholding)
+        .reduce((prev, curr) => (prev ?? 0) + (curr ?? 0), 0)
+    )
   }
 
   f108 = (): string | undefined => this.ORIncomeTaxWithheld32()
@@ -1087,6 +1126,7 @@ export class OR40 extends Form {
    * Don't include line 33
    */
   Est2021TaxPayments34 = (): string | undefined => {
+    // TODO: Use this.info.estimatedTaxes - but which label(s) to filter on?
     return undefined
   }
 
@@ -1105,7 +1145,7 @@ export class OR40 extends Form {
    * Index 112: Kicker Credit Amount (35)
    * Enter 0 to donate to State School Fund, see line 53
    */
-   KickerCreditAmount36 = (): string | undefined => {
+  KickerCreditAmount36 = (): string | undefined => {
     return undefined
   }
 
@@ -1126,7 +1166,16 @@ export class OR40 extends Form {
    * Sum lines 32 - 37
    */
   TotalPaymentsAndRefundCredits38 = (): string | undefined => {
-    return undefined
+    return this.formatDollarAmount(
+      parseInt(this.ORIncomeTaxWithheld32()?.replace(/\s/g, '') ?? '0') +
+        parseInt(this.PriorYearTaxRefund33()?.replace(/\s/g, '') ?? '0') +
+        parseInt(this.Est2021TaxPayments34()?.replace(/\s/g, '') ?? '0') +
+        parseInt(this.EarnedIncomeCredit35()?.replace(/\s/g, '') ?? '0') +
+        parseInt(this.KickerCreditAmount36()?.replace(/\s/g, '') ?? '0') +
+        parseInt(
+          this.TotalRefundableCreditsScheduleASC37()?.replace(/\s/g, '') ?? '0'
+        )
+    )
   }
 
   f114 = (): string | undefined => this.TotalPaymentsAndRefundCredits38()
@@ -1136,7 +1185,16 @@ export class OR40 extends Form {
    * Line 38 - line 31, if line 31 is less than line 38
    */
   OverpaymentOfTax39 = (): string | undefined => {
-    return undefined
+    const line31 = parseInt(
+      this.TaxAfterCreditRecaptures31()?.replace(/\s/g, '') ?? '0'
+    )
+    const line38 = parseInt(
+      this.TotalPaymentsAndRefundCredits38()?.replace(/\s/g, '') ?? '0'
+    )
+
+    const result = line31 < line38 ? line38 - line31 : 0
+
+    return this.formatDollarAmount(result)
   }
 
   f115 = (): string | undefined => this.OverpaymentOfTax39()
@@ -1146,7 +1204,16 @@ export class OR40 extends Form {
    * Line 31 - line 38, if line 38 is less than line 31
    */
   NetTax40 = (): string | undefined => {
-    return undefined
+    const line31 = parseInt(
+      this.TaxAfterCreditRecaptures31()?.replace(/\s/g, '') ?? '0'
+    )
+    const line38 = parseInt(
+      this.TotalPaymentsAndRefundCredits38()?.replace(/\s/g, '') ?? '0'
+    )
+
+    const result = line38 < line31 ? line31 - line38 : 0
+
+    return this.formatDollarAmount(result)
   }
 
   f116 = (): string | undefined => this.NetTax40()
@@ -1173,7 +1240,14 @@ export class OR40 extends Form {
    * Index 119: Total Penalty + Intrest Due (43)
    */
   TotalPenaltyIntrestDue43 = (): string | undefined => {
-    return undefined
+    return this.formatDollarAmount(
+      parseInt(
+        this.LateFilingPenaltyAndInterest41()?.replace(/\s/g, '') ?? '0'
+      ) +
+        parseInt(
+          this.IntrestOnUnderpaymentOfEstOR10Tax42()?.replace(/\s/g, '') ?? '0'
+        )
+    )
   }
 
   f119 = (): string | undefined => this.TotalPenaltyIntrestDue43()
@@ -1230,10 +1304,23 @@ export class OR40 extends Form {
 
   /**
    * Index 125: Net Tax Including Penalty and Interest (44)
-   * Line 40 - Line 43
+   * Line 40 + Line 43
    */
   NetTaxInclPenaltyInterest44 = (): string | undefined => {
-    return undefined
+    const netTax = parseInt(this.NetTax40()?.replace(/\s/g, '') ?? '0')
+    const overpayment = parseInt(
+      this.OverpaymentOfTax39()?.replace(/\s/g, '') ?? '0'
+    )
+    const penaltiesAndInterest = parseInt(
+      this.TotalPenaltyIntrestDue43()?.replace(/\s/g, '') ?? '0'
+    )
+
+    // See: OR-40-FY Amount due (44)
+    if (overpayment > 0 && penaltiesAndInterest > overpayment) {
+      return this.formatDollarAmount(penaltiesAndInterest - overpayment)
+    } else {
+      return this.formatDollarAmount(netTax + penaltiesAndInterest)
+    }
   }
 
   f125 = (): string | undefined => this.NetTaxInclPenaltyInterest44()
@@ -1243,7 +1330,18 @@ export class OR40 extends Form {
    * Line 39 - Line 43
    */
   OverpaymentLessPenaltyInterest45 = (): string | undefined => {
-    return undefined
+    const overpayment = parseInt(
+      this.OverpaymentOfTax39()?.replace(/\s/g, '') ?? '0'
+    )
+    const penaltiesAndInterest = parseInt(
+      this.TotalPenaltyIntrestDue43()?.replace(/\s/g, '') ?? '0'
+    )
+
+    if (overpayment > 0 && overpayment > penaltiesAndInterest) {
+      return this.formatDollarAmount(overpayment - penaltiesAndInterest)
+    } else {
+      return this.formatDollarAmount(0)
+    }
   }
 
   f126 = (): string | undefined => this.OverpaymentLessPenaltyInterest45()
@@ -1279,7 +1377,7 @@ export class OR40 extends Form {
 
   /**
    * Index 130: Oregon 529 College Savings Plan Deposits Schedule OR-529 (49)
-   */ 
+   */
   CollegeSavingsPlanDepositSchedule52949 = (): string | undefined => {
     return undefined
   }
@@ -1288,10 +1386,27 @@ export class OR40 extends Form {
 
   /**
    * Index 131: Total (50)
-   * Add Lines 46 - 49, Line 50 < Line 45
+   * Add Lines 46 - 49, Line 50 <= Line 45
    */
   TotalTax50 = (): string | undefined => {
-    return undefined
+    const total =
+      parseInt(this.EstimatedTax46()?.replace(/\s/g, '') ?? '0') +
+      parseInt(
+        this.CharitableCheckoffScheduleDONATE47()?.replace(/\s/g, '') ?? '0'
+      ) +
+      parseInt(this.PoliticalPartyCheckoff48()?.replace(/\s/g, '') ?? '0') +
+      parseInt(
+        this.CollegeSavingsPlanDepositSchedule52949()?.replace(/\s/g, '') ?? '0'
+      )
+    const refund = parseInt(
+      this.OverpaymentLessPenaltyInterest45()?.replace(/\s/g, '') ?? '0'
+    )
+
+    if (total > refund) {
+      return this.formatDollarAmount(refund)
+    } else {
+      return this.formatDollarAmount(total)
+    }
   }
 
   f131 = (): string | undefined => this.TotalTax50()
@@ -1310,20 +1425,44 @@ export class OR40 extends Form {
    * Line 45 - Line 50
    */
   NetRefund51 = (): string | undefined => {
-    return undefined
+    return this.formatDollarAmount(
+      parseInt(
+        this.OverpaymentLessPenaltyInterest45()?.replace(/\s/g, '') ?? '0'
+      ) - parseInt(this.TotalTax50()?.replace(/\s/g, '') ?? '0')
+    )
   }
 
   f133 = (): string | undefined => this.NetRefund51()
 
   /**
-   * Index 134: Checking Or Savings (52)
-   * format: Choice1, Choice2
+   * Index 134: Filing Status (1, 2, 3, 4, 5)
+   * Format: Choice1, Choice2, Choice3, Choice4, Choice5
    */
-  CheckingOrSavings52 = (): string | undefined => {
-    return undefined
+  FilingStatus12345 = (): string | undefined => {
+    let filingStatus: string | undefined
+    switch (this.info.taxPayer.filingStatus) {
+      case FilingStatus.S:
+        filingStatus = 'Choice1'
+        break
+      case FilingStatus.MFJ:
+        filingStatus = 'Choice2'
+        break
+      case FilingStatus.MFS:
+        filingStatus = 'Choice3'
+        break
+      case FilingStatus.HOH:
+        filingStatus = 'Choice4'
+        break
+      case FilingStatus.W:
+        filingStatus = 'Choice5'
+        break
+      default:
+        break
+    }
+    return filingStatus
   }
 
-  f134 = (): string | undefined => this.CheckingOrSavings52()
+  f134 = (): string | undefined => this.FilingStatus12345()
 
   /**
    * Index 135: Tax Payer's State
@@ -1335,44 +1474,47 @@ export class OR40 extends Form {
   f135 = (): string | undefined => this.TaxPayerState()
 
   /**
-   * Index 136: Dependant 1 Code
+   * Index 136: Dependent 1 Code
    */
-  Dependant1Code = (): string | undefined => {
-    return undefined
+  Dependent1Code = (): string | undefined => {
+    //TODO: Dependent.relationship should return relationship code (see OR-40-FY)
+    return this.info.taxPayer.dependents[0]?.relationship.slice(0, 2)
   }
 
-  f136 = (): string | undefined => this.Dependant1Code()
+  f136 = (): string | undefined => this.Dependent1Code()
 
   /**
-   * Index 137: Dependant 2 Code
+   * Index 137: Dependent 2 Code
    */
-  Dependant2Code = (): string | undefined => {
-    return undefined
+  Dependent2Code = (): string | undefined => {
+    return this.info.taxPayer.dependents[1]?.relationship.slice(0, 2)
   }
 
-  f137 = (): string | undefined => this.Dependant2Code()
+  f137 = (): string | undefined => this.Dependent2Code()
 
   /**
-   * Index 138: Dependant 3 Code
+   * Index 138: Dependent 3 Code
    */
-  Dependant3Code = (): string | undefined => {
-    return undefined
+  Dependent3Code = (): string | undefined => {
+    return this.info.taxPayer.dependents[2]?.relationship.slice(0, 2)
   }
 
-  f138 = (): string | undefined => this.Dependant3Code()
+  f138 = (): string | undefined => this.Dependent3Code()
 
   /**
-   * Index 139: Filing Status (1, 2, 3, 4, 5)
-   * Format: Choice1, Choice2, Choice3, Choice4, Choice5
+   * Index 139: Checking Or Savings (52)
+   * format: Choice1, Choice2
    */
-  FilingStatus12345 = (): string | undefined => {
-    return undefined
+  CheckingOrSavings52 = (): string | undefined => {
+    return this.info.refund?.accountType === AccountType.checking
+      ? 'Choice1'
+      : 'Choice2'
   }
 
-  f139 = (): string | undefined => this.FilingStatus12345()
+  f139 = (): string | undefined => this.CheckingOrSavings52()
 
   /**
-   * Index 140: Preparer ZIP 
+   * Index 140: Preparer ZIP
    */
   PreparerZip1 = (): string | undefined => {
     return undefined
