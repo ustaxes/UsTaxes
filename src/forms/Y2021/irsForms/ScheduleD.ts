@@ -50,18 +50,43 @@ export default class ScheduleD extends Form {
   l1ag = (): number | undefined => undefined
   l1ah = (): number => sumFields([this.l1ad(), 0 - (this.l1ae() ?? 0)])
 
-  l1bd = (): number | undefined => undefined
-  l1be = (): number | undefined => undefined
-  l1bg = (): number | undefined => undefined
-  l1bh = (): number | undefined => undefined
-  l2d = (): number | undefined => undefined
-  l2e = (): number | undefined => undefined
-  l2g = (): number | undefined => undefined
-  l2h = (): number | undefined => undefined
-  l3d = (): number | undefined => undefined
-  l3e = (): number | undefined => undefined
-  l3g = (): number | undefined => undefined
-  l3h = (): number | undefined => undefined
+  l1f8949s = (): F8949[] => this.f8949.filter((f) => f.part1BoxA())
+
+  l1bd = (): number =>
+    sumFields(this.l1f8949s().map((f) => f.shortTermTotalProceeds()))
+  l1be = (): number =>
+    sumFields(this.l1f8949s().map((f) => f.shortTermTotalCost()))
+
+  l1bg = (): number =>
+    sumFields(this.l1f8949s().map((f) => f.shortTermTotalAdjustments()))
+  l1bh = (): number =>
+    sumFields(this.l1f8949s().map((f) => f.shortTermTotalGain()))
+
+  l2f8949s = (): F8949[] => this.f8949.filter((f) => f.part1BoxB())
+  l2d = (): number =>
+    sumFields(this.l2f8949s().map((f) => f.shortTermTotalProceeds()))
+
+  l2e = (): number =>
+    sumFields(this.l2f8949s().map((f) => f.shortTermTotalCost()))
+
+  l2g = (): number =>
+    sumFields(this.l2f8949s().map((f) => f.shortTermTotalAdjustments()))
+
+  l2h = (): number =>
+    sumFields(this.l2f8949s().map((f) => f.shortTermTotalGain()))
+
+  l3f8949s = (): F8949[] => this.f8949.filter((f) => f.part1BoxC())
+  l3d = (): number =>
+    sumFields(this.l3f8949s().map((f) => f.shortTermTotalProceeds()))
+
+  l3e = (): number =>
+    sumFields(this.l3f8949s().map((f) => f.shortTermTotalCost()))
+
+  l3g = (): number =>
+    sumFields(this.l3f8949s().map((f) => f.shortTermTotalAdjustments()))
+
+  l3h = (): number =>
+    sumFields(this.l3f8949s().map((f) => f.shortTermTotalGain()))
 
   l4 = (): number | undefined => undefined
 
