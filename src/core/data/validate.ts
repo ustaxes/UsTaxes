@@ -31,7 +31,12 @@ export const checkType = <A>(data: A, validate: ValidateFunction<A>): A => {
   return data
 }
 
-const ajv = new Ajv().addSchema(schema)
+// See this doc for a complete list of available options:
+// ajv.js.org/options.html#option-defaults
+const ajv = new Ajv({
+  allowDate: true,
+  allowUnionTypes: true
+}).addSchema(schema)
 
 // Doing this seems to be necessary so that recursive self
 // links (ref fields) are created properly. Without it we get
@@ -85,6 +90,9 @@ export const propertyType = ajv.getSchema<types.PropertyType>(
   '#/definitions/PropertyType'
 )
 export const f1098e = ajv.getSchema<types.F1098e>('#/definitions/F1098e')
+export const itemizedDeductions = ajv.getSchema<types.ItemizedDeductions>(
+  '#/definitions/ItemizedDeductions'
+)
 export const responses = ajv.getSchema<types.Responses>(
   '#/definitions/Responses'
 )

@@ -15,7 +15,9 @@ import {
   EstimatedTaxPayments,
   Responses,
   HealthSavingsAccount,
-  Asset
+  Asset,
+  ItemizedDeductions,
+  F3921
 } from 'ustaxes/core/data'
 
 import {
@@ -30,7 +32,7 @@ import {
 import ajv, * as validators from 'ustaxes/core/data/validate'
 import { TaxYear } from 'ustaxes/data'
 import { ValidateFunction } from 'ajv'
-import { EditAssetAction } from '.'
+import { EditAssetAction, EditF3921Action } from '.'
 
 const indexSchema = {
   type: 'number',
@@ -66,6 +68,7 @@ export enum ActionName {
   ADD_1098e = 'ADD_1098e',
   EDIT_1098e = 'EDIT_1098e',
   REMOVE_1098e = 'REMOVE_1098e',
+  SET_ITEMIZED_DEDUCTIONS = 'SET_ITEMIZED_DEDUCTIONS',
   ADD_HSA = 'ADD_HSA',
   EDIT_HSA = 'EDIT_HSA',
   REMOVE_HSA = 'REMOVE_HSA',
@@ -75,7 +78,10 @@ export enum ActionName {
   ADD_ASSET = 'ASSETS/ADD',
   ADD_ASSETS = 'ASSETS/ADD_MANY',
   EDIT_ASSET = 'ASSETS/EDIT',
-  REMOVE_ASSET = 'ASSETS/REMOVE'
+  REMOVE_ASSET = 'ASSETS/REMOVE',
+  ADD_F3921 = 'F3921/ADD',
+  EDIT_F3921 = 'F3921/EDIT',
+  REMOVE_F3921 = 'F3921/REMOVE'
 }
 
 interface Save<T, R> {
@@ -128,12 +134,19 @@ type AnswerQuestion = Save<typeof ActionName.ANSWER_QUESTION, Responses>
 type Add1098e = Save<typeof ActionName.ADD_1098e, F1098e>
 type Edit1098e = Save<typeof ActionName.EDIT_1098e, Edit1098eAction>
 type Remove1098e = Save<typeof ActionName.REMOVE_1098e, number>
+type SetItemizedDeductions = Save<
+  typeof ActionName.SET_ITEMIZED_DEDUCTIONS,
+  ItemizedDeductions
+>
 type SetInfo = Save<typeof ActionName.SET_INFO, Information>
 type SetActiveYear = Save<typeof ActionName.SET_ACTIVE_YEAR, TaxYear>
 type AddAsset = Save<typeof ActionName.ADD_ASSET, Asset<Date>>
 type AddAssets = Save<typeof ActionName.ADD_ASSETS, Asset<Date>[]>
 type EditAsset = Save<typeof ActionName.EDIT_ASSET, EditAssetAction>
 type RemoveAsset = Save<typeof ActionName.REMOVE_ASSET, number>
+type AddF3921 = Save<typeof ActionName.ADD_F3921, F3921>
+type EditF3921 = Save<typeof ActionName.EDIT_F3921, EditF3921Action>
+type RemoveF3921 = Save<typeof ActionName.REMOVE_F3921, number>
 
 export type Actions =
   | SaveRefundInfo
@@ -162,6 +175,7 @@ export type Actions =
   | Add1098e
   | Edit1098e
   | Remove1098e
+  | SetItemizedDeductions
   | AddHSA
   | EditHSA
   | RemoveHSA
@@ -171,6 +185,9 @@ export type Actions =
   | AddAssets
   | EditAsset
   | RemoveAsset
+  | AddF3921
+  | EditF3921
+  | RemoveF3921
 
 export type SignalAction = (year: TaxYear) => Actions
 export type ActionCreator<A> = (formData: A) => SignalAction
@@ -377,6 +394,12 @@ export const remove1098e: ActionCreator<number> = makeActionCreator(
   indexValidator
 )
 
+export const setItemizedDeductions: ActionCreator<ItemizedDeductions> =
+  makeActionCreator(
+    ActionName.SET_ITEMIZED_DEDUCTIONS,
+    validators.itemizedDeductions
+  )
+
 // debugging purposes only, leaving unchecked.
 export const setInfo: ActionCreator<Information> = makeActionCreator(
   ActionName.SET_INFO,
@@ -402,5 +425,18 @@ export const editAsset: ActionCreator<EditAssetAction> = makeActionCreator(
 
 export const removeAsset: ActionCreator<number> = makeActionCreator(
   ActionName.REMOVE_ASSET,
+  indexValidator
+)
+
+export const addF3921: ActionCreator<F3921> = makeActionCreator(
+  ActionName.ADD_F3921
+)
+
+export const editF3921: ActionCreator<EditF3921Action> = makeActionCreator(
+  ActionName.EDIT_F3921
+)
+
+export const removeF3921: ActionCreator<number> = makeActionCreator(
+  ActionName.REMOVE_F3921,
   indexValidator
 )

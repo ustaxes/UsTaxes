@@ -13,7 +13,8 @@ const Urls = {
     w2s: '/income/w2jobinfo',
     f1099s: '/income/f1099s',
     realEstate: '/income/realestate',
-    otherInvestments: '/income/otherinvestments'
+    otherInvestments: '/income/otherinvestments',
+    stockOptions: '/income/stockoptions'
   },
   payments: {
     estimatedTaxes: '/payments/estimatedtaxes'
@@ -22,7 +23,8 @@ const Urls = {
     healthSavingsAccounts: '/savingsaccounts/hsa'
   },
   deductions: {
-    f1098es: '/deductions/studentloaninterest'
+    f1098es: '/deductions/studentloaninterest',
+    itemized: '/deductions/itemized'
   },
   credits: {
     main: '/credits',

@@ -1,4 +1,4 @@
-import { Responses } from '.'
+import { F3921, ItemizedDeductions, Responses } from '.'
 import {
   EstimatedTaxPayments,
   F1098e,
@@ -25,6 +25,8 @@ export default class InformationMethods implements Information {
   estimatedTaxes: EstimatedTaxPayments[]
   realEstate: Property[]
   f1098es: F1098e[]
+  f3921s: F3921[]
+  itemizedDeductions: ItemizedDeductions | undefined
   refund?: Refund
   taxPayer: TaxPayer
   questions: Responses
@@ -37,6 +39,8 @@ export default class InformationMethods implements Information {
     this.estimatedTaxes = info.estimatedTaxes
     this.realEstate = info.realEstate
     this.f1098es = info.f1098es
+    this.f3921s = info.f3921s
+    this.itemizedDeductions = info.itemizedDeductions
     this.refund = info.refund
     this.taxPayer = info.taxPayer
     this.questions = info.questions

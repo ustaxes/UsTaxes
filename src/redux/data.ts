@@ -8,7 +8,8 @@ import {
   F1098e,
   Information,
   HealthSavingsAccount,
-  Asset
+  Asset,
+  F3921
 } from 'ustaxes/core/data'
 import { blankState } from './reducer'
 
@@ -45,3 +46,4 @@ export type EditPropertyAction = ArrayItemEditAction<Property>
 export type Edit1098eAction = ArrayItemEditAction<F1098e>
 export type EditHSAAction = ArrayItemEditAction<HealthSavingsAccount>
 export type EditAssetAction = ArrayItemEditAction<Asset<Date>>
+export type EditF3921Action = ArrayItemEditAction<F3921>

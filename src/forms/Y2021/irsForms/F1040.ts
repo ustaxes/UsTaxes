@@ -52,6 +52,7 @@ import F2441 from './F2441'
 import ScheduleC from './ScheduleC'
 import { F1040Error } from 'ustaxes/forms/errors'
 import F8949 from './F8949'
+import F6251 from './F6251'
 
 export default class F1040 extends Form {
   tag: FormTag = 'f1040'
@@ -80,6 +81,7 @@ export default class F1040 extends Form {
   f4952?: F4952
   f4972?: F4972
   f5695?: F5695
+  f6251?: F6251
   f8814?: F8814
   f8863?: F8863
   f8888?: F8888
@@ -128,6 +130,7 @@ export default class F1040 extends Form {
       this.f4952,
       this.f4972,
       this.f5695,
+      this.f6251,
       this.f8814,
       this.f8888,
       this.f8889,
@@ -158,6 +161,13 @@ export default class F1040 extends Form {
     const f1099ssas = this.info.f1099ssas()
     if (f1099ints.length > 0) {
       this.scheduleB = new ScheduleB(this.info)
+    }
+    if (this.info.itemizedDeductions) {
+      const scheduleA = new ScheduleA(this)
+      const standardDeduction = this.standardDeduction()
+      const itemizedAmount = scheduleA.deductions()
+      if (standardDeduction === undefined || itemizedAmount > standardDeduction)
+        this.scheduleA = new ScheduleA(this)
     }
 
     if (this.assets.length > 0) {
@@ -265,6 +275,11 @@ export default class F1040 extends Form {
         // a F8949 may spawn more copies of itself.
         this.f8949 = [f8949, ...f8949.copies]
       }
+    }
+
+    const f6251 = new F6251(this.info, this)
+    if (f6251.isNeeded()) {
+      this.f6251 = f6251
     }
 
     const ws = new ChildTaxCreditWorksheet(this)

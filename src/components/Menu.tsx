@@ -25,12 +25,14 @@ import EstimatedTaxes from './payments/EstimatedTaxes'
 import RealEstate from './income/RealEstate'
 import GettingStarted from './GettingStarted'
 import F1098eInfo from './deductions/F1098eInfo'
+import ItemizedDeductions from './deductions/ItemizedDeductions'
 import Questions from './Questions'
 import Urls from 'ustaxes/data/urls'
 
 import { isMobile } from 'react-device-detect'
 import HealthSavingsAccounts from './savingsAccounts/healthSavingsAccounts'
 import OtherInvestments from './income/OtherInvestments'
+import { StockOptions } from './income/StockOptions'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -99,7 +101,8 @@ export const drawerSections: Section[] = [
         'Other investments',
         Urls.income.otherInvestments,
         <OtherInvestments />
-      )
+      ),
+      item('Stock options', Urls.income.stockOptions, <StockOptions />)
     ]
   },
   {
@@ -111,7 +114,12 @@ export const drawerSections: Section[] = [
   {
     title: 'Deductions',
     items: [
-      item('Student Loan Interest', Urls.deductions.f1098es, <F1098eInfo />)
+      item('Student Loan Interest', Urls.deductions.f1098es, <F1098eInfo />),
+      item(
+        'Itemized Deductions',
+        Urls.deductions.itemized,
+        <ItemizedDeductions />
+      )
     ]
   },
   {

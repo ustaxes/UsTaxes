@@ -32,9 +32,10 @@ describe('f1040', () => {
       const f1040 = commonTests.findF1040(forms)
       expect(f1040).not.toBeUndefined()
       if (f1040 !== undefined) {
-        expect(displayRound(f1040.l24()) ?? 0).toBeLessThanOrEqual(
-          displayRound(Math.max(0, f1040.l9() ?? 0)) ?? 0
-        )
+        // Remove line 7 for AMT
+        expect(
+          displayRound(f1040.l24() - (f1040.l17() ?? 0)) ?? 0
+        ).toBeLessThanOrEqual(displayRound(Math.max(0, f1040.l9() ?? 0)) ?? 0)
       }
     })
   })
