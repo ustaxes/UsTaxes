@@ -31,7 +31,12 @@ export const checkType = <A>(data: A, validate: ValidateFunction<A>): A => {
   return data
 }
 
-const ajv = new Ajv().addSchema(schema)
+// See this doc for a complete list of available options:
+// ajv.js.org/options.html#option-defaults
+const ajv = new Ajv({
+  allowDate: true,
+  allowUnionTypes: true
+}).addSchema(schema)
 
 // Doing this seems to be necessary so that recursive self
 // links (ref fields) are created properly. Without it we get
