@@ -382,6 +382,15 @@ export interface F1098e {
   lender: string
   interest: number
 }
+
+export interface F3921 {
+  name: string
+  personRole: PersonRole.PRIMARY | PersonRole.SPOUSE
+  exercisePricePerShare: number
+  fmv: number
+  numShares: number
+}
+
 export interface ItemizedDeductions {
   medicalAndDental: string | number
   stateAndLocalTaxes: string | number
@@ -490,6 +499,7 @@ export interface Information {
   realEstate: Property[]
   estimatedTaxes: EstimatedTaxPayments[]
   f1098es: F1098e[]
+  f3921s: F3921[]
   itemizedDeductions: ItemizedDeductions | undefined
   refund?: Refund
   taxPayer: TaxPayer
