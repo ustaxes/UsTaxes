@@ -56,7 +56,8 @@ const baseInformation: Information = {
   questions: {},
   f1098es: [],
   stateResidencies: [{ state: 'AL' }],
-  healthSavingsAccounts: []
+  healthSavingsAccounts: [],
+  individualRetirementArrangements: []
 }
 
 describe('AMT', () => {
@@ -65,8 +66,8 @@ describe('AMT', () => {
     const f1040 = new F1040(information, [])
     const f6251 = new F6251(information, f1040)
     expect(f6251.isNeeded()).toEqual(true)
-    expect(Math.round(f6251.l1())).toEqual(87450)
-    expect(Math.round(f6251.l7())).toEqual(32864)
+    expect(Math.round(f6251.l1() ?? 0)).toEqual(87450)
+    expect(Math.round(f6251.l7() ?? 0)).toEqual(32864)
     expect(Math.round(f6251.l10())).toEqual(15009)
     expect(Math.round(f6251.l11())).toEqual(17855)
   })
@@ -78,8 +79,8 @@ describe('AMT', () => {
     const f1040 = new F1040(information, [])
     const f6251 = new F6251(information, f1040)
     expect(f6251.isNeeded()).toEqual(false)
-    expect(Math.round(f6251.l1())).toEqual(87450)
-    expect(Math.round(f6251.l7())).toEqual(7124)
+    expect(Math.round(f6251.l1() ?? 0)).toEqual(87450)
+    expect(Math.round(f6251.l7() ?? 0)).toEqual(7124)
     expect(Math.round(f6251.l10())).toEqual(15009)
     expect(Math.round(f6251.l11())).toEqual(0)
   })
