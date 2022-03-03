@@ -83,14 +83,26 @@ export const PortfolioTable = ({
   )
 }
 
+// The fields that must be set by the user after importing a CSV file
+const fields = [
+  'Security Name',
+  'Transaction date',
+  'Buy or Sell',
+  'Price per unit',
+  'Quantity'
+]
+
 export const TransactionImporter = (): ReactElement => {
-  //  const [portfolio, createPortfolio] = useState<Portfolio>({ positions: [] })
   const [preflightTransactions, setPreflightTransactions] = useState<
     string[][]
   >([])
+
+  // FieldAssignements will be an array of column indices in the imported CSV
+  // to the string name of the field we want to assign to that column.
   const [fieldAssignments, setFieldAssignments] = useState<
     (string | undefined)[]
   >([])
+
   const [dropFirstNRows, setDropFirstNRows] = useState<number>(0)
   const [rawContents, setRawContents] = useState<string>('')
   const [portfolio, setPortfolio] = useState<Portfolio>({ positions: [] })
@@ -100,17 +112,8 @@ export const TransactionImporter = (): ReactElement => {
 
   const dispatch = useDispatch()
 
-  const fields = [
-    'Security Name',
-    'Transaction date',
-    'Buy or Sell',
-    'Price per unit',
-    'Quantity'
-  ]
-
   const ready = () =>
-    Array.from(new Set(fieldAssignments.filter((f) => f !== undefined)))
-      .length === fields.length
+    fields.every((f) => fieldAssignments.filter((a) => a === f).length === 1)
 
   const assignField = (colIndex: number, field: string | undefined) => {
     const newFieldAssignments = [...fieldAssignments]
