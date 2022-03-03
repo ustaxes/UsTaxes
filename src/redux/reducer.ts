@@ -387,6 +387,9 @@ const assetReducer = (
     case ActionName.ADD_ASSET: {
       return [...newState, action.formData]
     }
+    case ActionName.ADD_ASSETS: {
+      return [...newState, ...action.formData]
+    }
     case ActionName.EDIT_ASSET: {
       const newAssets = [...newState]
       newAssets.splice(action.formData.index, 1, action.formData.value)

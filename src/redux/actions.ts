@@ -81,6 +81,7 @@ export enum ActionName {
   EDIT_IRA = 'EDIT_IRA',
   REMOVE_IRA = 'REMOVE_IRA',
   ADD_ASSET = 'ASSETS/ADD',
+  ADD_ASSETS = 'ASSETS/ADD_MANY',
   EDIT_ASSET = 'ASSETS/EDIT',
   REMOVE_ASSET = 'ASSETS/REMOVE',
   ADD_F3921 = 'F3921/ADD',
@@ -148,6 +149,7 @@ type AddIRA = Save<typeof ActionName.ADD_IRA, Ira>
 type EditIRA = Save<typeof ActionName.EDIT_IRA, EditIraAction>
 type RemoveIRA = Save<typeof ActionName.REMOVE_IRA, number>
 type AddAsset = Save<typeof ActionName.ADD_ASSET, Asset<Date>>
+type AddAssets = Save<typeof ActionName.ADD_ASSETS, Asset<Date>[]>
 type EditAsset = Save<typeof ActionName.EDIT_ASSET, EditAssetAction>
 type RemoveAsset = Save<typeof ActionName.REMOVE_ASSET, number>
 type AddF3921 = Save<typeof ActionName.ADD_F3921, F3921>
@@ -191,6 +193,7 @@ export type Actions =
   | EditIRA
   | RemoveIRA
   | AddAsset
+  | AddAssets
   | EditAsset
   | RemoveAsset
   | AddF3921
@@ -438,6 +441,10 @@ export const removeIRA: ActionCreator<number> = makeActionCreator(
 
 export const addAsset: ActionCreator<Asset<Date>> = makeActionCreator(
   ActionName.ADD_ASSET
+)
+
+export const addAssets: ActionCreator<Asset<Date>[]> = makeActionCreator(
+  ActionName.ADD_ASSETS
 )
 
 export const editAsset: ActionCreator<EditAssetAction> = makeActionCreator(
