@@ -156,7 +156,7 @@ export default function IRA(): ReactElement {
       <Grid container spacing={2}>
         <LabeledInput
           name="payer"
-          label="payer for this account"
+          label="Payer for this account"
           patternConfig={Patterns.plain}
           sizes={{ xs: 12, lg: 12 }}
         />
