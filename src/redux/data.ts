@@ -8,6 +8,7 @@ import {
   F1098e,
   Information,
   HealthSavingsAccount,
+  Ira,
   Asset,
   F3921,
   ScheduleK1Form1065
@@ -46,6 +47,7 @@ export type Edit1099Action = ArrayItemEditAction<Supported1099>
 export type EditPropertyAction = ArrayItemEditAction<Property>
 export type Edit1098eAction = ArrayItemEditAction<F1098e>
 export type EditHSAAction = ArrayItemEditAction<HealthSavingsAccount>
+export type EditIraAction = ArrayItemEditAction<Ira>
 export type EditAssetAction = ArrayItemEditAction<Asset<Date>>
 export type EditF3921Action = ArrayItemEditAction<F3921>
 export type EditScheduleK1Form1065Action =

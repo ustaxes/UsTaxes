@@ -21,7 +21,8 @@ const Urls = {
     estimatedTaxes: '/payments/estimatedtaxes'
   },
   savingsAccounts: {
-    healthSavingsAccounts: '/savingsaccounts/hsa'
+    healthSavingsAccounts: '/savingsaccounts/hsa',
+    ira: '/savingsaccounts/ira'
   },
   deductions: {
     f1098es: '/deductions/studentloaninterest',

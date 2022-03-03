@@ -1,7 +1,13 @@
 import * as fc from 'fast-check'
 import { Arbitrary } from 'fast-check'
 import locationPostalCodes from '../data/locationPostalCodes'
-import { QuestionTagName, questionTagNames, Responses } from '../data'
+import {
+  QuestionTagName,
+  questionTagNames,
+  // IraPlanName,
+  // iraPlanNames,
+  Responses
+} from '../data'
 import * as types from '../data'
 import * as util from '../util'
 import _ from 'lodash'
@@ -410,6 +416,8 @@ export const questions: Arbitrary<Responses> = fc
       .map((kvs) => Object.fromEntries(kvs))
   )
 
+// const iraPlan: Arbitrary<IraPlanName> = fc.constantFrom(...iraPlanNames)
+
 export class Arbitraries {
   currentYear: number
 
@@ -562,6 +570,68 @@ export class Arbitraries {
         })
       )
 
+  ira = (): Arbitrary<types.Ira> =>
+    fc
+      .tuple(
+        words, //payer
+        fc.constantFrom<types.PersonRole.PRIMARY | types.PersonRole.SPOUSE>(
+          types.PersonRole.PRIMARY,
+          types.PersonRole.SPOUSE
+        ),
+        fc.nat({ max: 100000 }), // gross distribution
+        fc.nat({ max: 100000 }), // taxable amount
+        fc.boolean(), // taxable amount not determined
+        fc.boolean(), // total distribution
+        fc.nat({ max: 100000 }), // federal income tax withheld
+        fc.constantFrom<types.IraPlanType>(
+          types.IraPlanType.IRA,
+          types.IraPlanType.SepIRA,
+          types.IraPlanType.SimpleIRA,
+          types.IraPlanType.RothIRA
+        ), // plan type
+        fc.nat({ max: 100000 }), // contributions
+        fc.nat({ max: 100000 }), // rollover contributions
+        fc.nat({ max: 100000 }), // roth IRA conversion
+        fc.nat({ max: 100000 }), // recharacterized contributions
+        fc.nat({ max: 100000 }), // required minimum distributions
+        fc.nat({ max: 100000 }), // late contributions
+        fc.nat({ max: 100000 })
+      )
+      .map(
+        ([
+          payer,
+          personRole,
+          grossDistribution,
+          taxableAmount,
+          taxableAmountNotDetermined,
+          totalDistribution,
+          federalIncomeTaxWithheld,
+          planType,
+          contributions,
+          rolloverContributions,
+          rothIraConversion,
+          recharacterizedContributions,
+          requiredMinimumDistributions,
+          lateContributions,
+          repayments
+        ]) => ({
+          payer,
+          personRole,
+          grossDistribution,
+          taxableAmount,
+          taxableAmountNotDetermined,
+          totalDistribution,
+          federalIncomeTaxWithheld,
+          planType,
+          contributions,
+          rolloverContributions,
+          rothIraConversion,
+          recharacterizedContributions,
+          requiredMinimumDistributions,
+          lateContributions,
+          repayments
+        })
+      )
   information = (): Arbitrary<types.Information> =>
     fc
       .tuple(
@@ -577,7 +647,8 @@ export class Arbitraries {
         this.taxPayer(),
         questions,
         state,
-        fc.array(this.healthSavingsAccount())
+        fc.array(this.healthSavingsAccount()),
+        fc.array(this.ira())
       )
       .map(
         ([
@@ -593,7 +664,8 @@ export class Arbitraries {
           taxPayer,
           questions,
           state,
-          healthSavingsAccounts
+          healthSavingsAccounts,
+          individualRetirementArrangements
         ]) => ({
           f1099s,
           w2s,
@@ -607,7 +679,8 @@ export class Arbitraries {
           taxPayer,
           questions,
           stateResidencies: [{ state }],
-          healthSavingsAccounts
+          healthSavingsAccounts,
+          individualRetirementArrangements
         })
       )
 }

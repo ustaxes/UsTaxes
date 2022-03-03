@@ -1,3 +1,5 @@
+import { enumKeys } from '../util'
+
 export enum PersonRole {
   PRIMARY = 'PRIMARY',
   SPOUSE = 'SPOUSE',
@@ -115,15 +117,20 @@ export enum PlanType1099 {
    * simplified employee pension (SEP) IRA,
    * and a savings incentive match plan for employees (SIMPLE) IRA
    */
-  IRA = 'IRA',
+  // IRA = 'IRA',
+  // RothIRA = 'RothIRA',
+  // SepIRA = 'SepIRA',
+  // SimpleIRA = 'SimpleIRA',
   /* Pension and annuity payments include distributions from 401(k), 403(b), and governmental 457(b) plans.
    */
   Pension = 'Pension'
 }
 
 export const PlanType1099Texts = {
-  [PlanType1099.IRA]:
-    'traditional IRA, Roth IRA, simplified employee pension (SEP) IRA, or savings incentive match plan for employees (SIMPLE) IRA',
+  // [PlanType1099.IRA]:'traditional IRA',
+  // [PlanType1099.RothIRA]: 'Roth IRA',
+  // [PlanType1099.SepIRA]: 'simplified employee pension (SEP) IRA',
+  // [PlanType1099.SimpleIRA]: 'savings incentive match plan for employees (SIMPLE) IRA',
   [PlanType1099.Pension]: '401(k), 403(b), or 457(b) plan'
 }
 
@@ -222,6 +229,51 @@ export interface HealthSavingsAccount<DateType = string> {
   endDate: DateType
   totalDistributions: number
   qualifiedDistributions: number
+}
+
+export enum IraPlanType {
+  IRA = 'IRA',
+  RothIRA = 'RothIRA',
+  SepIRA = 'SepIRA',
+  SimpleIRA = 'SimpleIRA'
+}
+
+export const IraPlanTypeTexts = {
+  [IraPlanType.IRA]: 'Traditional IRA',
+  [IraPlanType.RothIRA]: 'Roth IRA',
+  [IraPlanType.SepIRA]: 'Simplified employee pension (SEP) IRA',
+  [IraPlanType.SimpleIRA]:
+    'Savings incentive match plan for employees (SIMPLE) IRA'
+}
+
+export type IraPlanName = keyof typeof IraPlanType
+
+export const iraPlanNames: IraPlanName[] = enumKeys(IraPlanType)
+// export const iraPlanNames: IraPlanName[] = [
+//   'IRA',
+//   'RothIRA',
+//   'SepIRA',
+//   'SimpleIRA'
+// ]
+
+export interface Ira {
+  payer: string
+  personRole: PersonRole.PRIMARY | PersonRole.SPOUSE
+  // fields about distributions from form 1099-R
+  grossDistribution: number // 1099-R box 1
+  taxableAmount: number // 1099-R box 2a
+  taxableAmountNotDetermined: boolean // 1099-R box 2b
+  totalDistribution: boolean // 1099-R box 2b
+  federalIncomeTaxWithheld: number // 1099-R box 4
+  planType: IraPlanType
+  // fields about contributions from form 5498
+  contributions: number // contributions depending on the plan type
+  rolloverContributions: number // 5498 box 2
+  rothIraConversion: number // 5498 box 3
+  recharacterizedContributions: number // 5498 box 4
+  requiredMinimumDistributions: number // 5498 box 12b
+  lateContributions: number // 5498 box 13a
+  repayments: number // 5498 box 14a
 }
 
 export enum FilingStatus {
@@ -475,6 +527,7 @@ export interface Information {
   questions: Responses
   stateResidencies: StateResidency[]
   healthSavingsAccounts: HealthSavingsAccount[]
+  individualRetirementArrangements: Ira[]
 }
 
 /**
