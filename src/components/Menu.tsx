@@ -31,6 +31,7 @@ import Urls from 'ustaxes/data/urls'
 
 import { isMobile } from 'react-device-detect'
 import HealthSavingsAccounts from './savingsAccounts/healthSavingsAccounts'
+import IRA from './savingsAccounts/IRA'
 import OtherInvestments from './income/OtherInvestments'
 import { StockOptions } from './income/StockOptions'
 
@@ -129,6 +130,11 @@ export const drawerSections: Section[] = [
         'Health Savings Account (HSA)',
         Urls.savingsAccounts.healthSavingsAccounts,
         <HealthSavingsAccounts />
+      ),
+      item(
+        'Individual Retirement Arrangements (IRA)',
+        Urls.savingsAccounts.ira,
+        <IRA />
       )
     ]
   },

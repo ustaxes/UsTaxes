@@ -15,6 +15,7 @@ import {
   EstimatedTaxPayments,
   Responses,
   HealthSavingsAccount,
+  Ira,
   Asset,
   ItemizedDeductions,
   F3921
@@ -27,7 +28,8 @@ import {
   EditW2Action,
   EditEstimatedTaxesAction,
   Edit1098eAction,
-  EditHSAAction
+  EditHSAAction,
+  EditIraAction
 } from './data'
 import ajv, * as validators from 'ustaxes/core/data/validate'
 import { TaxYear } from 'ustaxes/data'
@@ -75,6 +77,9 @@ export enum ActionName {
   SET_INFO = 'SET_INFO',
   SET_ACTIVE_YEAR = 'SET_ACTIVE_YEAR',
   PROPAGATE_YEAR_DATA = 'PROPAGATE_YEAR_DATA',
+  ADD_IRA = 'ADD_IRA',
+  EDIT_IRA = 'EDIT_IRA',
+  REMOVE_IRA = 'REMOVE_IRA',
   ADD_ASSET = 'ASSETS/ADD',
   EDIT_ASSET = 'ASSETS/EDIT',
   REMOVE_ASSET = 'ASSETS/REMOVE',
@@ -139,6 +144,9 @@ type SetItemizedDeductions = Save<
 >
 type SetInfo = Save<typeof ActionName.SET_INFO, Information>
 type SetActiveYear = Save<typeof ActionName.SET_ACTIVE_YEAR, TaxYear>
+type AddIRA = Save<typeof ActionName.ADD_IRA, Ira>
+type EditIRA = Save<typeof ActionName.EDIT_IRA, EditIraAction>
+type RemoveIRA = Save<typeof ActionName.REMOVE_IRA, number>
 type AddAsset = Save<typeof ActionName.ADD_ASSET, Asset<Date>>
 type EditAsset = Save<typeof ActionName.EDIT_ASSET, EditAssetAction>
 type RemoveAsset = Save<typeof ActionName.REMOVE_ASSET, number>
@@ -179,6 +187,9 @@ export type Actions =
   | RemoveHSA
   | SetInfo
   | SetActiveYear
+  | AddIRA
+  | EditIRA
+  | RemoveIRA
   | AddAsset
   | EditAsset
   | RemoveAsset
@@ -406,6 +417,23 @@ export const setInfo: ActionCreator<Information> = makeActionCreator(
 export const setActiveYear: ActionCreator<TaxYear> = makeActionCreator(
   ActionName.SET_ACTIVE_YEAR,
   ajv.getSchema('#/definitions/TaxYear') as ValidateFunction<TaxYear>
+)
+
+export const addIRA: ActionCreator<Ira> = makeActionCreator(
+  ActionName.ADD_IRA,
+  validators.individualRetirementArrangements
+)
+
+export const editIRA: ActionCreator<EditIraAction> = makeActionCreator(
+  ActionName.EDIT_IRA,
+  ajv.getSchema(
+    '#/definitions/EditIraAction'
+  ) as ValidateFunction<EditIraAction>
+)
+
+export const removeIRA: ActionCreator<number> = makeActionCreator(
+  ActionName.REMOVE_IRA,
+  indexValidator
 )
 
 export const addAsset: ActionCreator<Asset<Date>> = makeActionCreator(
