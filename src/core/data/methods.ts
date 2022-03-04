@@ -1,4 +1,10 @@
-import { F3921, Ira, ItemizedDeductions, Responses, ScheduleK1Form1065 } from '.'
+import {
+  F3921,
+  Ira,
+  ItemizedDeductions,
+  Responses,
+  ScheduleK1Form1065
+} from '.'
 import {
   EstimatedTaxPayments,
   F1098e,
