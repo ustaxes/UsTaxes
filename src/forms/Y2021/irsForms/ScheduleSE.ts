@@ -77,7 +77,7 @@ export default class ScheduleSE extends Form {
 
   l8a = (): number | undefined =>
     this.postL4Field((): number =>
-      this.f1040.validW2s().reduce((c, w2) => c + (w2.ssWages ?? 0), 0)
+      this.f1040.validW2s().reduce((c, w2) => c + w2.ssWages, 0)
     )
 
   l8b = (): number | undefined =>
