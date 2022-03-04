@@ -90,7 +90,9 @@ export default class ScheduleSE extends Form {
     )
 
   l9 = (): number | undefined =>
-    this.l8aRelatedField((): number => this.l7() - (this.l8d() ?? 0))
+    this.l8aRelatedField((): number =>
+      Math.max(0, this.l7() - (this.l8d() ?? 0))
+    )
 
   l10 = (): number | undefined =>
     this.l8aRelatedField(

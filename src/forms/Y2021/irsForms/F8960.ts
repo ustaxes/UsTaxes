@@ -102,7 +102,7 @@ export default class F8960 extends Form {
       .validW2s()
       .map((w2) => w2.stateWithholding ?? 0)
       .reduce((l, r) => l + r, 0)
-    return Math.round((totalStateWithholding * this.l8()) / this.f1040.l11())
+    return (totalStateWithholding * this.l8()) / this.f1040.l11()
   }
   l9c = (): number | undefined => undefined
   l9d = (): number => sumFields([this.l9a(), this.l9b(), this.l9c()])

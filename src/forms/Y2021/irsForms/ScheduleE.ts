@@ -238,41 +238,40 @@ export default class ScheduleE extends Form {
     const tp = new TaxPayer(this.state.taxPayer)
     const [p0, p1, p2] = [0, 1, 2].map((i) => this.propForRow(i))
 
+    // TODO: Support more than 4 K1s
     const k1s = this.state.scheduleK1Form1065s
     const l28Fields: Array<string | number | boolean | undefined> = []
-    for (let i = 0; i < k1s.length && i < 4; i++) {
-      const k1 = k1s[i]
-      l28Fields.push(
-        k1.partnershipName,
-        k1.partnerOrSCorp,
-        k1.isForeign ?? false,
-        k1.partnershipEin,
-        false,
-        false
-      )
-    }
-    for (let i = k1s.length; i < 4; i++) {
-      l28Fields.push(...Array(6).fill(undefined))
-    }
-    for (let i = 0; i < k1s.length && i < 4; i++) {
-      const k1 = k1s[i]
-      if (k1.isPassive) {
-        if (k1.ordinaryBusinessIncome < 0) {
-          l28Fields.push(k1.ordinaryBusinessIncome, 0, 0, 0, 0)
+    l28Fields.push(
+      ...k1s
+        .slice(0, 4)
+        .flatMap((k1) => [
+          k1.partnershipName,
+          k1.partnerOrSCorp,
+          k1.isForeign ?? false,
+          k1.partnershipEin,
+          false,
+          false
+        ])
+    )
+    l28Fields.push(...Array(6 * Math.max(0, 4 - k1s.length)).fill(undefined))
+    l28Fields.push(
+      ...k1s.slice(0, 4).flatMap((k1) => {
+        if (k1.isPassive) {
+          if (k1.ordinaryBusinessIncome < 0) {
+            return [k1.ordinaryBusinessIncome, 0, 0, 0, 0]
+          } else {
+            return [0, k1.ordinaryBusinessIncome, 0, 0, 0]
+          }
         } else {
-          l28Fields.push(0, k1.ordinaryBusinessIncome, 0, 0, 0)
+          if (k1.ordinaryBusinessIncome < 0) {
+            return [0, 0, k1.ordinaryBusinessIncome, 0, 0]
+          } else {
+            return [0, 0, 0, 0, k1.ordinaryBusinessIncome]
+          }
         }
-      } else {
-        if (k1.ordinaryBusinessIncome < 0) {
-          l28Fields.push(0, 0, k1.ordinaryBusinessIncome, 0, 0)
-        } else {
-          l28Fields.push(0, 0, 0, 0, k1.ordinaryBusinessIncome)
-        }
-      }
-    }
-    for (let i = k1s.length; i < 4; i++) {
-      l28Fields.push(...Array(5).fill(undefined))
-    }
+      })
+    )
+    l28Fields.push(...Array(5 * Math.max(0, 4 - k1s.length)).fill(undefined))
 
     return [
       tp.namesString(),

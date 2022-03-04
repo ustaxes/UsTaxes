@@ -47,31 +47,27 @@ export default class F8995 extends Form {
   }
 
   l2 = (): number | undefined =>
-    Math.round(
-      this.applicableK1s()
-        .map((k1) => k1.section199AQBI)
-        .reduce((c, a) => c + a, 0)
-    )
+    this.applicableK1s()
+      .map((k1) => k1.section199AQBI)
+      .reduce((c, a) => c + a, 0)
   l3 = (): number | undefined => undefined
   l4 = (): number | undefined =>
     ifNumber(this.l2(), (num) => num + (this.l3() ?? 0))
-  l5 = (): number | undefined =>
-    ifNumber(this.l4(), (num) => Math.round(num * 0.2))
+  l5 = (): number | undefined => ifNumber(this.l4(), (num) => num * 0.2)
 
   // TODO: REIT
   l6 = (): number => 0
   l7 = (): number => 0
   l8 = (): number | undefined =>
     ifNumber(this.l6(), (num) => num + (this.l7() ?? 0))
-  l9 = (): number | undefined =>
-    ifNumber(this.l8(), (num) => Math.round(num * 0.2))
+  l9 = (): number | undefined => ifNumber(this.l8(), (num) => num * 0.2)
 
   l10 = (): number | undefined =>
     ifNumber(this.l5(), (num) => num + (this.l9() ?? 0))
   l11 = (): number => this.f1040.l11() - this.f1040.l12c()
   l12 = (): number => this.netCapitalGains()
   l13 = (): number => Math.max(0, this.l11() - this.l12())
-  l14 = (): number => Math.round(this.l13() * 0.2)
+  l14 = (): number => this.l13() * 0.2
   l15 = (): number => Math.min(this.l10() ?? 0, this.l14())
   l16 = (): number => Math.min(0, (this.l2() ?? 0) + (this.l3() ?? 0))
   l17 = (): number => Math.min(0, this.l6() + this.l7())

@@ -30,7 +30,7 @@ import ScheduleSE from './ScheduleSE'
 import ScheduleEIC from './ScheduleEIC'
 import ScheduleR from './ScheduleR'
 import Form, { FormTag } from 'ustaxes/core/irsForms/Form'
-import { displayRound, sumFields } from 'ustaxes/core/irsForms/util'
+import { sumFields } from 'ustaxes/core/irsForms/util'
 import ScheduleB from './ScheduleB'
 import { computeOrdinaryTax } from './TaxTable'
 import SDQualifiedAndCapGains from './worksheets/SDQualifiedAndCapGains'
@@ -428,10 +428,9 @@ export default class F1040 extends Form {
       this.l8()
     ])
 
-  l10 = (): number | undefined => displayRound(this.schedule1?.to1040Line10())
+  l10 = (): number | undefined => this.schedule1?.to1040Line10()
 
-  l11 = (): number =>
-    Math.max(0, displayRound(this.l9() - (this.l10() ?? 0)) ?? 0)
+  l11 = (): number => Math.max(0, this.l9() - (this.l10() ?? 0)) ?? 0
 
   l12a = (): number | undefined => {
     if (this.scheduleA !== undefined) {
