@@ -7,6 +7,8 @@ import Schedule3 from '../irsForms/Schedule3'
 import { displayRound } from 'ustaxes/core/irsForms/util'
 import { testKit, commonTests } from '.'
 
+jest.setTimeout(40000)
+
 function hasSSRefund(f1040: F1040): boolean {
   const s3 = f1040.schedule3
   const l10 = s3?.l10()

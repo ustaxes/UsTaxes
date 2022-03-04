@@ -341,7 +341,8 @@ export default class F1040 extends Form {
 
   wages = (): number => this.validW2s().reduce((res, w2) => res + w2.income, 0)
   medicareWages = (): number =>
-    this.validW2s().reduce((res, w2) => res + w2.medicareIncome, 0)
+    this.validW2s().reduce((res, w2) => res + w2.medicareIncome, 0) +
+    (this.scheduleSE?.l6() ?? 0)
 
   occupation = (r: PersonRole): string | undefined =>
     this.info.w2s.find((w2) => w2.personRole === r && w2.occupation !== '')
