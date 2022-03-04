@@ -40,6 +40,7 @@ const testW2sSpouse: IncomeW2 = {
 }
 
 const testInfo: Information = {
+  ...blankState,
   f1099s: [
     {
       payer: 'payer-name',
@@ -76,10 +77,7 @@ const testInfo: Information = {
     dependents: [],
     filingStatus: FilingStatus.MFS
   },
-  questions: {},
-  f1098es: [],
-  stateResidencies: [{ state: 'AL' }],
-  healthSavingsAccounts: []
+  stateResidencies: [{ state: 'AL' }]
 }
 
 const errors = {
@@ -214,8 +212,9 @@ describe('W2JobInfo', () => {
     changeByLabelText('Employer name', 'test employer')
     changeByLabelText(/Employer's Identification Number/, '111111111')
     changeByLabelText('Occupation', 'test occupation')
-    changeByLabelText(/Wages, tips, other compensation/, '2222')
+    changeByLabelText(/Wages, tips, other compensation/, '123456')
     changeByLabelText(/Federal income tax withheld/, '3333')
+    changeByLabelText(/Social security wages/, '12345')
     changeByLabelText(/Social security tax withheld/, '4444')
     changeByLabelText(/Medicare Income/, '5555')
     changeByLabelText(/Medicare tax withheld/, '6666')
@@ -228,7 +227,7 @@ describe('W2JobInfo', () => {
 
     await waitFor(() => {
       expect(screen.getByText('test employer')).toBeInTheDocument()
-      expect(screen.getByText('$2,222')).toBeInTheDocument()
+      expect(screen.getByText('$123,456')).toBeInTheDocument()
     })
   })
 
