@@ -139,7 +139,7 @@ describe('fica', () => {
             displayRound(additionalWithheld)
           )
         } else {
-          expect(displayRound(f1040.l25c())).toBeUndefined()
+          expect(displayRound(f1040.l25c()) ?? 0).toEqual(0)
         }
       }
     })
