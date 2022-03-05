@@ -8,14 +8,18 @@ import ScheduleSE from './ScheduleSE'
 import { fica } from '../data/federal'
 import F1040 from './F1040'
 
-export const needsF8959 = (state: Information): boolean => {
+export const needsF8959 = (
+  state: Information,
+  scheduleSE: ScheduleSE | undefined
+): boolean => {
   const filingStatus = state.taxPayer.filingStatus
   const totalW2Income = state.w2s
     .map((w2) => w2.medicareIncome)
     .reduce((l, r) => l + r, 0)
   return (
     filingStatus !== undefined &&
-    fica.additionalMedicareTaxThreshold(filingStatus) < totalW2Income
+    fica.additionalMedicareTaxThreshold(filingStatus) <
+      totalW2Income + (scheduleSE?.l6() ?? 0)
   )
 }
 
@@ -50,8 +54,7 @@ export default class F8959 extends Form {
   }
 
   // Part I: Additional Medicare Tax on Medicare Wages
-  l1 = (): number =>
-    this.f1040.medicareWages()
+  l1 = (): number => this.f1040.medicareWages()
 
   l2 = (): number | undefined => this.f4137?.l6()
   l3 = (): number | undefined => this.f8919?.l6()

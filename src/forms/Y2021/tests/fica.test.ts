@@ -103,8 +103,12 @@ describe('fica', () => {
         expect(hasAttachment(forms, Schedule2)).toEqual(true)
         expect(hasAttachment(forms, F8959)).toEqual(true)
       } else {
-        expect(hasAdditionalMedicareTax(f1040)).toEqual(false)
-        expect(hasAttachment(forms, F8959)).toEqual(false)
+        const selfEmploymentWages = f1040.scheduleSE?.l6() ?? 0
+        const hasTax =
+          f1040.medicareWages() + selfEmploymentWages >
+          fica.additionalMedicareTaxThreshold(filingStatus)
+        expect(hasAdditionalMedicareTax(f1040)).toEqual(hasTax)
+        expect(hasAttachment(forms, F8959)).toEqual(hasTax)
       }
     })
   })
@@ -117,8 +121,10 @@ describe('fica', () => {
       }
       if (hasAdditionalMedicareTax(f1040)) {
         const filingStatus = f1040.info.taxPayer.filingStatus
+        const selfEmploymentWages = f1040.scheduleSE?.l6() ?? 0
         const incomeOverThreshold =
-          f1040.medicareWages() -
+          f1040.medicareWages() +
+          selfEmploymentWages -
           fica.additionalMedicareTaxThreshold(filingStatus)
         expect(incomeOverThreshold).toBeGreaterThan(0)
 
