@@ -54,6 +54,8 @@ import ScheduleC from './ScheduleC'
 import { F1040Error } from 'ustaxes/forms/errors'
 import F8949 from './F8949'
 import F6251 from './F6251'
+import F4137 from './F4137'
+import F8919 from './F8919'
 
 export default class F1040 extends Form {
   tag: FormTag = 'f1040'
@@ -78,6 +80,7 @@ export default class F1040 extends Form {
   f2441?: F2441
   f2555?: F2555
   f4136?: F4136
+  f4137?: F4137
   f4563?: F4563
   f4797?: F4797
   f4952?: F4952
@@ -90,6 +93,7 @@ export default class F1040 extends Form {
   f8889?: F8889
   f8889Spouse?: F8889
   f8910?: F8910
+  f8919?: F8919
   f8936?: F8936
   f8949: F8949[]
   f8959?: F8959
@@ -249,7 +253,7 @@ export default class F1040 extends Form {
 
     if (needsF8959(this.info)) {
       if (this.f8959 === undefined) {
-        this.f8959 = new F8959(this.info, undefined, undefined, this.scheduleSE)
+        this.f8959 = new F8959(this)
       }
     }
 

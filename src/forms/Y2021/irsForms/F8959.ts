@@ -6,6 +6,7 @@ import F4137 from './F4137'
 import F8919 from './F8919'
 import ScheduleSE from './ScheduleSE'
 import { fica } from '../data/federal'
+import F1040 from './F1040'
 
 export const needsF8959 = (state: Information): boolean => {
   const filingStatus = state.taxPayer.filingStatus
@@ -22,21 +23,18 @@ export default class F8959 extends Form {
   tag: FormTag = 'f8959'
   sequenceIndex = 71
   state: Information
+  f1040: F1040
   f4137?: F4137
   f8919?: F8919
   scheduleSE?: ScheduleSE
 
-  constructor(
-    state: Information,
-    f4137?: F4137,
-    f8919?: F8919,
-    scheduleSE?: ScheduleSE
-  ) {
+  constructor(f1040: F1040) {
     super()
-    this.state = state
-    this.f4137 = f4137
-    this.f8919 = f8919
-    this.scheduleSE = scheduleSE
+    this.state = f1040.info
+    this.f1040 = f1040
+    this.f4137 = f1040.f4137
+    this.f8919 = f1040.f8919
+    this.scheduleSE = f1040.scheduleSE
   }
 
   thresholdFromFilingStatus = (): number => {
@@ -53,7 +51,7 @@ export default class F8959 extends Form {
 
   // Part I: Additional Medicare Tax on Medicare Wages
   l1 = (): number =>
-    this.state.w2s.map((w2) => w2.medicareIncome).reduce((l, r) => l + r, 0)
+    this.f1040.medicareWages()
 
   l2 = (): number | undefined => this.f4137?.l6()
   l3 = (): number | undefined => this.f8919?.l6()
@@ -81,18 +79,17 @@ export default class F8959 extends Form {
   l15 = (): number => this.thresholdFromFilingStatus()
   l16 = (): number => Math.max(0, (this.l14() ?? 0) - this.l15())
 
-  l17 = (): number => this.computeAdditionalMedicareTax(this.l12())
+  l17 = (): number => this.computeAdditionalMedicareTax(this.l16())
 
   // Part IV: Total Medicare Tax
-  l18 = (): number => sumFields([this.l7(), this.l3(), this.l17()])
+  l18 = (): number => sumFields([this.l7(), this.l13(), this.l17()])
 
   // Part V: Withholding Reconciliation
   l19 = (): number =>
-    Math.round(
-      this.state.w2s
-        .map((w2) => w2.medicareWithholding)
-        .reduce((l, r) => l + r, 0)
-    )
+    this.f1040
+      .validW2s()
+      .map((w2) => w2.medicareWithholding)
+      .reduce((l, r) => l + r, 0)
 
   l20 = (): number => this.l1()
   l21 = (): number => fica.regularMedicareTaxRate * this.l20()

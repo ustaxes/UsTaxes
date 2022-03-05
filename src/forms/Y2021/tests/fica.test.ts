@@ -7,7 +7,13 @@ import Schedule3 from '../irsForms/Schedule3'
 import { displayRound } from 'ustaxes/core/irsForms/util'
 import { testKit, commonTests } from '.'
 
-jest.setTimeout(40000)
+jest.setTimeout(100000)
+
+beforeAll(() => {
+  jest.spyOn(console, 'warn').mockImplementation(() => {
+    // do nothing
+  })
+})
 
 function hasSSRefund(f1040: F1040): boolean {
   const s3 = f1040.schedule3
@@ -128,9 +134,10 @@ describe('fica', () => {
           .validW2s()
           .map((w2) => w2.medicareWithholding)
           .reduce((l, r) => l + r, 0)
-        const regularWithholding = Math.round(
+
+        const regularWithholding =
           fica.regularMedicareTaxRate * f1040.medicareWages()
-        )
+
         if (medicareWithheld > regularWithholding) {
           const f1040l25c = f1040.l25c()
           expect(f1040l25c).not.toBeUndefined()
