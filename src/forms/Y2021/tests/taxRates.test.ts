@@ -1,253 +1,135 @@
 import { FilingStatus } from 'ustaxes/core/data'
 import { CURRENT_YEAR } from '../data/federal'
 import { computeOrdinaryTax } from '../irsForms/TaxTable'
+import fs from 'fs/promises'
+import { parseCsv } from 'ustaxes/data/csvImport'
+import { parseFormNumber } from 'ustaxes/core/util'
+
+async function getTaxTable() {
+  const path = './src/forms/Y2021/tests/taxTable.csv'
+  const taxTableCsv = (await fs.readFile(path)).toString('utf-8')
+  const rows: Array<number[]> = []
+  await parseCsv(taxTableCsv, (r: string[]) => {
+    rows.push(r.map((s) => parseFormNumber(s) ?? 0))
+    return []
+  })
+
+  // Remove heading row
+  rows.shift()
+
+  return rows
+}
+
+function expectTax(status: FilingStatus, amount: number, tax: number) {
+  const computedTax = Math.round(computeOrdinaryTax(status, amount))
+  // Add a prefix so it's easy to see which one was wrong
+  const prefix = 'Tax on ' + amount + ' = '
+  expect(prefix + computedTax).toEqual(prefix + tax)
+}
+
+function expectTaxUnder100KRange(
+  status: FilingStatus,
+  min: number,
+  max: number,
+  tax: number
+) {
+  const diff = max - min
+  const quarter = Math.round((diff / 4) * 100) / 100
+  expectTax(status, min, tax)
+  expectTax(status, min + quarter, tax)
+  expectTax(status, min + 2 * quarter, tax)
+  expectTax(status, min + 3 * quarter, tax)
+  expectTax(status, max, tax)
+}
 
 describe('Tax rates', () => {
   it('test should be updated for new year', async () => {
-    // WARNING! Do not just chagne the year. Also update the expected tax amounts below!
+    // WARNING! Do not just change the year. Also update the CSV and expected tax amounts below!
     expect(CURRENT_YEAR).toEqual(2021)
   })
   it('ordinary taxes for single status should be correct', async () => {
-    expect(Math.round(computeOrdinaryTax(FilingStatus.S, 5))).toEqual(1)
-    expect(Math.round(computeOrdinaryTax(FilingStatus.S, 14))).toEqual(1)
-    expect(Math.round(computeOrdinaryTax(FilingStatus.S, 2075))).toEqual(209)
-    expect(Math.round(computeOrdinaryTax(FilingStatus.S, 2099))).toEqual(209)
-    expect(Math.round(computeOrdinaryTax(FilingStatus.S, 9949))).toEqual(993)
-    expect(Math.round(computeOrdinaryTax(FilingStatus.S, 9950))).toEqual(998)
-    expect(Math.round(computeOrdinaryTax(FilingStatus.S, 10000))).toEqual(1004)
-    expect(Math.round(computeOrdinaryTax(FilingStatus.S, 13700))).toEqual(1448)
-    expect(Math.round(computeOrdinaryTax(FilingStatus.S, 13749))).toEqual(1448)
-    expect(Math.round(computeOrdinaryTax(FilingStatus.S, 37000))).toEqual(4244)
-    expect(Math.round(computeOrdinaryTax(FilingStatus.S, 37049))).toEqual(4244)
-    expect(Math.round(computeOrdinaryTax(FilingStatus.S, 50000))).toEqual(6754)
-    expect(Math.round(computeOrdinaryTax(FilingStatus.S, 50049))).toEqual(6754)
-    expect(Math.round(computeOrdinaryTax(FilingStatus.S, 75000))).toEqual(12254)
-    expect(Math.round(computeOrdinaryTax(FilingStatus.S, 75049))).toEqual(12254)
-    expect(Math.round(computeOrdinaryTax(FilingStatus.S, 99950))).toEqual(18015)
-    expect(Math.round(computeOrdinaryTax(FilingStatus.S, 99999))).toEqual(18015)
+    const rows = await getTaxTable()
+    rows.forEach(([min, lessThan, tax]) => {
+      expectTaxUnder100KRange(FilingStatus.S, min, lessThan - 0.01, tax)
+    })
 
     // Over $100,000
-    expect(Math.round(computeOrdinaryTax(FilingStatus.S, 100000))).toEqual(
-      18021
-    )
-    expect(Math.round(computeOrdinaryTax(FilingStatus.S, 164925))).toEqual(
-      33603
-    )
-    expect(Math.round(computeOrdinaryTax(FilingStatus.S, 164926))).toEqual(
-      33603
-    )
-    expect(Math.round(computeOrdinaryTax(FilingStatus.S, 209425))).toEqual(
-      47843
-    )
-    expect(Math.round(computeOrdinaryTax(FilingStatus.S, 209426))).toEqual(
-      47843
-    )
-    expect(Math.round(computeOrdinaryTax(FilingStatus.S, 523600))).toEqual(
-      157804
-    )
-    expect(Math.round(computeOrdinaryTax(FilingStatus.S, 523601))).toEqual(
-      157805
-    )
+    const amounts = [
+      [100000, 18021],
+      [164925, 33603],
+      [164926, 33603],
+      [209425, 47843],
+      [209426, 47843],
+      [523600, 157804],
+      [523601, 157805]
+    ]
+    amounts.forEach(([amount, tax]) => {
+      expectTax(FilingStatus.S, amount, tax)
+    })
   })
 
   it('ordinary taxes for married filing jointly status should be correct', async () => {
-    expect(Math.round(computeOrdinaryTax(FilingStatus.MFJ, 5))).toEqual(1)
-    expect(Math.round(computeOrdinaryTax(FilingStatus.MFJ, 14))).toEqual(1)
-    expect(Math.round(computeOrdinaryTax(FilingStatus.MFJ, 2075))).toEqual(209)
-    expect(Math.round(computeOrdinaryTax(FilingStatus.MFJ, 2099))).toEqual(209)
-    expect(Math.round(computeOrdinaryTax(FilingStatus.MFJ, 9949))).toEqual(993)
-    expect(Math.round(computeOrdinaryTax(FilingStatus.MFJ, 9950))).toEqual(998)
-    expect(Math.round(computeOrdinaryTax(FilingStatus.MFJ, 10000))).toEqual(
-      1003
-    )
-    expect(Math.round(computeOrdinaryTax(FilingStatus.MFJ, 13700))).toEqual(
-      1373
-    )
-    expect(Math.round(computeOrdinaryTax(FilingStatus.MFJ, 13749))).toEqual(
-      1373
-    )
-    expect(Math.round(computeOrdinaryTax(FilingStatus.MFJ, 37000))).toEqual(
-      4045
-    )
-    expect(Math.round(computeOrdinaryTax(FilingStatus.MFJ, 37049))).toEqual(
-      4045
-    )
-    expect(Math.round(computeOrdinaryTax(FilingStatus.MFJ, 50000))).toEqual(
-      5605
-    )
-    expect(Math.round(computeOrdinaryTax(FilingStatus.MFJ, 50049))).toEqual(
-      5605
-    )
-    expect(Math.round(computeOrdinaryTax(FilingStatus.MFJ, 75000))).toEqual(
-      8605
-    )
-    expect(Math.round(computeOrdinaryTax(FilingStatus.MFJ, 75049))).toEqual(
-      8605
-    )
-    expect(Math.round(computeOrdinaryTax(FilingStatus.MFJ, 99950))).toEqual(
-      13492
-    )
-    expect(Math.round(computeOrdinaryTax(FilingStatus.MFJ, 99999))).toEqual(
-      13492
-    )
+    const rows = await getTaxTable()
+    rows.forEach(([min, lessThan, , tax]) => {
+      expectTaxUnder100KRange(FilingStatus.MFJ, min, lessThan - 0.01, tax)
+    })
 
     // Over $100,000
-    expect(Math.round(computeOrdinaryTax(FilingStatus.MFJ, 100000))).toEqual(
-      13497
-    )
-    expect(Math.round(computeOrdinaryTax(FilingStatus.MFJ, 172750))).toEqual(
-      29502
-    )
-    expect(Math.round(computeOrdinaryTax(FilingStatus.MFJ, 172751))).toEqual(
-      29502
-    )
-    expect(Math.round(computeOrdinaryTax(FilingStatus.MFJ, 329850))).toEqual(
-      67206
-    )
-    expect(Math.round(computeOrdinaryTax(FilingStatus.MFJ, 329851))).toEqual(
-      67206
-    )
-    expect(Math.round(computeOrdinaryTax(FilingStatus.MFJ, 418850))).toEqual(
-      95686
-    )
-    expect(Math.round(computeOrdinaryTax(FilingStatus.MFJ, 418851))).toEqual(
-      95686
-    )
-    expect(Math.round(computeOrdinaryTax(FilingStatus.MFJ, 628300))).toEqual(
-      168994
-    )
-    expect(Math.round(computeOrdinaryTax(FilingStatus.MFJ, 628301))).toEqual(
-      168994
-    )
+    const amounts = [
+      [100000, 13497],
+      [172750, 29502],
+      [172751, 29502],
+      [329850, 67206],
+      [329851, 67206],
+      [418850, 95686],
+      [418851, 95686],
+      [628300, 168994],
+      [628301, 168994]
+    ]
+    amounts.forEach(([amount, tax]) => {
+      expectTax(FilingStatus.MFJ, amount, tax)
+    })
   })
 
   it('ordinary taxes for married filing separately status should be correct', async () => {
-    expect(Math.round(computeOrdinaryTax(FilingStatus.MFS, 5))).toEqual(1)
-    expect(Math.round(computeOrdinaryTax(FilingStatus.MFS, 14))).toEqual(1)
-    expect(Math.round(computeOrdinaryTax(FilingStatus.MFS, 2075))).toEqual(209)
-    expect(Math.round(computeOrdinaryTax(FilingStatus.MFS, 2099))).toEqual(209)
-    expect(Math.round(computeOrdinaryTax(FilingStatus.MFS, 9949))).toEqual(993)
-    expect(Math.round(computeOrdinaryTax(FilingStatus.MFS, 9950))).toEqual(998)
-    expect(Math.round(computeOrdinaryTax(FilingStatus.MFS, 10000))).toEqual(
-      1004
-    )
-    expect(Math.round(computeOrdinaryTax(FilingStatus.MFS, 13700))).toEqual(
-      1448
-    )
-    expect(Math.round(computeOrdinaryTax(FilingStatus.MFS, 13749))).toEqual(
-      1448
-    )
-    expect(Math.round(computeOrdinaryTax(FilingStatus.MFS, 37000))).toEqual(
-      4244
-    )
-    expect(Math.round(computeOrdinaryTax(FilingStatus.MFS, 37049))).toEqual(
-      4244
-    )
-    expect(Math.round(computeOrdinaryTax(FilingStatus.MFS, 50000))).toEqual(
-      6754
-    )
-    expect(Math.round(computeOrdinaryTax(FilingStatus.MFS, 50049))).toEqual(
-      6754
-    )
-    expect(Math.round(computeOrdinaryTax(FilingStatus.MFS, 75000))).toEqual(
-      12254
-    )
-    expect(Math.round(computeOrdinaryTax(FilingStatus.MFS, 75049))).toEqual(
-      12254
-    )
-    expect(Math.round(computeOrdinaryTax(FilingStatus.MFS, 99950))).toEqual(
-      18015
-    )
-    expect(Math.round(computeOrdinaryTax(FilingStatus.MFS, 99999))).toEqual(
-      18015
-    )
+    const rows = await getTaxTable()
+    rows.forEach(([min, lessThan, , , tax]) => {
+      expectTaxUnder100KRange(FilingStatus.MFS, min, lessThan - 0.01, tax)
+    })
 
     // Over $100,000
-    expect(Math.round(computeOrdinaryTax(FilingStatus.MFS, 100000))).toEqual(
-      18021
-    )
-    expect(Math.round(computeOrdinaryTax(FilingStatus.MFS, 164925))).toEqual(
-      33603
-    )
-    expect(Math.round(computeOrdinaryTax(FilingStatus.MFS, 164926))).toEqual(
-      33603
-    )
-    expect(Math.round(computeOrdinaryTax(FilingStatus.MFS, 209425))).toEqual(
-      47843
-    )
-    expect(Math.round(computeOrdinaryTax(FilingStatus.MFS, 209426))).toEqual(
-      47843
-    )
-    expect(Math.round(computeOrdinaryTax(FilingStatus.MFS, 314150))).toEqual(
-      84497
-    )
-    expect(Math.round(computeOrdinaryTax(FilingStatus.MFS, 314151))).toEqual(
-      84497
-    )
+    const amounts = [
+      [100000, 18021],
+      [164925, 33603],
+      [164926, 33603],
+      [209425, 47843],
+      [209426, 47843],
+      [314150, 84497],
+      [314151, 84497]
+    ]
+    amounts.forEach(([amount, tax]) => {
+      expectTax(FilingStatus.MFS, amount, tax)
+    })
   })
 
   it('ordinary taxes for head of household status should be correct', async () => {
-    expect(Math.round(computeOrdinaryTax(FilingStatus.HOH, 5))).toEqual(1)
-    expect(Math.round(computeOrdinaryTax(FilingStatus.HOH, 14))).toEqual(1)
-    expect(Math.round(computeOrdinaryTax(FilingStatus.HOH, 2075))).toEqual(209)
-    expect(Math.round(computeOrdinaryTax(FilingStatus.HOH, 2099))).toEqual(209)
-    expect(Math.round(computeOrdinaryTax(FilingStatus.HOH, 9949))).toEqual(993)
-    expect(Math.round(computeOrdinaryTax(FilingStatus.HOH, 9950))).toEqual(998)
-    expect(Math.round(computeOrdinaryTax(FilingStatus.HOH, 10000))).toEqual(
-      1003
-    )
-    expect(Math.round(computeOrdinaryTax(FilingStatus.HOH, 13700))).toEqual(
-      1373
-    )
-    expect(Math.round(computeOrdinaryTax(FilingStatus.HOH, 13749))).toEqual(
-      1373
-    )
-    expect(Math.round(computeOrdinaryTax(FilingStatus.HOH, 37000))).toEqual(
-      4159
-    )
-    expect(Math.round(computeOrdinaryTax(FilingStatus.HOH, 37049))).toEqual(
-      4159
-    )
-    expect(Math.round(computeOrdinaryTax(FilingStatus.HOH, 50000))).toEqual(
-      5719
-    )
-    expect(Math.round(computeOrdinaryTax(FilingStatus.HOH, 50049))).toEqual(
-      5719
-    )
-    expect(Math.round(computeOrdinaryTax(FilingStatus.HOH, 75000))).toEqual(
-      10802
-    )
-    expect(Math.round(computeOrdinaryTax(FilingStatus.HOH, 75049))).toEqual(
-      10802
-    )
-    expect(Math.round(computeOrdinaryTax(FilingStatus.HOH, 99950))).toEqual(
-      16563
-    )
-    expect(Math.round(computeOrdinaryTax(FilingStatus.HOH, 99999))).toEqual(
-      16563
-    )
+    const rows = await getTaxTable()
+    rows.forEach(([min, lessThan, , , , tax]) => {
+      expectTaxUnder100KRange(FilingStatus.HOH, min, lessThan - 0.01, tax)
+    })
 
     // Over $100,000
-    expect(Math.round(computeOrdinaryTax(FilingStatus.HOH, 100000))).toEqual(
-      16569
-    )
-    expect(Math.round(computeOrdinaryTax(FilingStatus.HOH, 164900))).toEqual(
-      32145
-    )
-    expect(Math.round(computeOrdinaryTax(FilingStatus.HOH, 164901))).toEqual(
-      32145
-    )
-    expect(Math.round(computeOrdinaryTax(FilingStatus.HOH, 209400))).toEqual(
-      46385
-    )
-    expect(Math.round(computeOrdinaryTax(FilingStatus.HOH, 209401))).toEqual(
-      46385
-    )
-    expect(Math.round(computeOrdinaryTax(FilingStatus.HOH, 523600))).toEqual(
-      156355
-    )
-    expect(Math.round(computeOrdinaryTax(FilingStatus.HOH, 523601))).toEqual(
-      156355
-    )
+    const amounts = [
+      [100000, 16569],
+      [164900, 32145],
+      [164901, 32145],
+      [209400, 46385],
+      [209401, 46385],
+      [523600, 156355],
+      [523601, 156355]
+    ]
+    amounts.forEach(([amount, tax]) => {
+      expectTax(FilingStatus.HOH, amount, tax)
+    })
   })
 })
