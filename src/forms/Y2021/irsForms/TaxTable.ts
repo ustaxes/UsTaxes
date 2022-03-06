@@ -16,13 +16,26 @@ const computeTax =
           } else if (high === undefined) {
             // This is the top bracket
             return Math.max(0, income - low) * rate
-          } else if (income > high) {
+          } else if (income >= high) {
             // Taxable income is above the top of this bracket
             // so add the max tax for this bracket
             return (high - low) * rate
           }
           // Otherwise max income is inside this bracket,
           // add the tax on the amount falling in this bracket
+
+          // If income is between $25 and $3,000, tax table computes rate at midpoint of $25 ranges
+          if (income >= 25 && income < 3000) {
+            income = Math.round(income)
+            const over25 = income % 25
+            income += 12.5 - over25
+          }
+          // If income is between $3,000 and $100,000, tax table computes rate at midpoint of $50 ranges
+          else if (income >= 3000 && income < 100000) {
+            income = Math.round(income)
+            const over50 = income % 50
+            income += 25 - over50
+          }
           return (income - low) * rate
         }
       )
