@@ -3495,7 +3495,7 @@ dependencies = [
 
 [[package]]
 name = "us-taxes"
-version = "0.1.16"
+version = "0.1.17"
 dependencies = [
  "serde",
  "serde_json",
