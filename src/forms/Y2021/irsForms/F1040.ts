@@ -100,6 +100,7 @@ export default class F1040 extends Form {
   f8960?: F8960
   f8962?: F8962
   f8995?: F8995 | F8995A
+  qualifiedAndCapGainsWorksheet?: SDQualifiedAndCapGains
   studentLoanInterestWorksheet?: StudentLoanInterestWorksheet
   socialSecurityBenefitsWorksheet?: SocialSecurityBenefitsWorksheet
 
@@ -463,8 +464,8 @@ export default class F1040 extends Form {
       this.scheduleD?.computeTaxOnQDWorksheet() ??
       this.totalQualifiedDividends() > 0
     ) {
-      const wksht = new SDQualifiedAndCapGains(this)
-      return wksht.tax()
+      this.qualifiedAndCapGainsWorksheet = new SDQualifiedAndCapGains(this)
+      return this.qualifiedAndCapGainsWorksheet.tax()
     }
 
     if (this.info.taxPayer.filingStatus !== undefined) {

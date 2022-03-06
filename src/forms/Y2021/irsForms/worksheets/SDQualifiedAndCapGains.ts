@@ -1,4 +1,5 @@
 // Reference implementation for ltcg and cap gains worksheet
+import { WorksheetData } from 'ustaxes/components/SummaryData'
 import { FilingStatus } from 'ustaxes/core/data'
 import federalBrackets from '../../data/federal'
 import { computeOrdinaryTax } from '../../irsForms/TaxTable'
@@ -18,15 +19,15 @@ export interface TestData {
 type Bracket = [number, number]
 type Cutoffs = { [key in FilingStatus]: Bracket }
 const cutoffAmounts: Cutoffs = {
-  [FilingStatus.S]: [40000, 441450],
-  [FilingStatus.MFJ]: [80000, 496600],
-  [FilingStatus.MFS]: [40000, 441450],
-  [FilingStatus.W]: [80000, 496600],
-  [FilingStatus.HOH]: [53600, 469050]
+  [FilingStatus.S]: [40400, 445850],
+  [FilingStatus.MFJ]: [80800, 501600],
+  [FilingStatus.MFS]: [40400, 250800],
+  [FilingStatus.W]: [80800, 501600],
+  [FilingStatus.HOH]: [54100, 473750]
 }
 
 export default class QualDivAndCGWorksheetReference {
-  [k: string]: TestData | (() => number)
+  [k: string]: TestData | (() => number) | (() => WorksheetData)
   data: TestData
 
   constructor(f1040: F1040) {
@@ -111,4 +112,112 @@ export default class QualDivAndCGWorksheetReference {
   l25 = (): number => Math.min(this.l23(), this.l24())
 
   tax = (): number => this.l25()
+
+  getSummaryData = (): WorksheetData => {
+    return {
+      name: 'Qualified Dividends and Capital Gains Worksheet — Line 16',
+      lines: [
+        {
+          line: 1,
+          value: this.l1()
+        },
+        {
+          line: 2,
+          value: this.l2()
+        },
+        {
+          line: 3,
+          value: this.l3()
+        },
+        {
+          line: 4,
+          value: this.l4()
+        },
+        {
+          line: 5,
+          value: this.l5()
+        },
+        {
+          line: 6,
+          value: this.l6()
+        },
+        {
+          line: 7,
+          value: this.l7()
+        },
+        {
+          line: 8,
+          value: this.l8()
+        },
+        {
+          line: 9,
+          value: this.l9()
+        },
+        {
+          line: 10,
+          value: this.l10()
+        },
+        {
+          line: 11,
+          value: this.l11()
+        },
+        {
+          line: 12,
+          value: this.l12()
+        },
+        {
+          line: 13,
+          value: this.l13()
+        },
+        {
+          line: 14,
+          value: this.l14()
+        },
+        {
+          line: 15,
+          value: this.l15()
+        },
+        {
+          line: 16,
+          value: this.l16()
+        },
+        {
+          line: 17,
+          value: this.l17()
+        },
+        {
+          line: 18,
+          value: this.l18()
+        },
+        {
+          line: 19,
+          value: this.l19()
+        },
+        {
+          line: 20,
+          value: this.l20()
+        },
+        {
+          line: 21,
+          value: this.l21()
+        },
+        {
+          line: 22,
+          value: this.l22()
+        },
+        {
+          line: 23,
+          value: this.l23()
+        },
+        {
+          line: 24,
+          value: this.l24()
+        },
+        {
+          line: 25,
+          value: this.l25()
+        }
+      ]
+    }
+  }
 }

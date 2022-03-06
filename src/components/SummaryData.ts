@@ -10,8 +10,18 @@ interface Credit {
   allowed: boolean
 }
 
+export interface WorksheetLine {
+  line: number | string
+  value: string | number | undefined
+}
+export interface WorksheetData {
+  name: string
+  lines: WorksheetLine[]
+}
+
 export interface SummaryData {
   credits: Credit[]
+  worksheets: WorksheetData[]
   refundAmount?: number
   amountOwed?: number
 }
@@ -21,7 +31,8 @@ interface SummaryCreator<A> {
 }
 
 const emptySummary = {
-  credits: []
+  credits: [],
+  worksheets: []
 }
 
 export const SummaryCreatorFor2020: SummaryCreator<F1040For2020> = {
@@ -38,6 +49,7 @@ export const SummaryCreatorFor2020: SummaryCreator<F1040For2020> = {
         allowed: f.childTaxCreditWorksheet?.isAllowed() ?? false
       }
     ],
+    worksheets: [],
     refundAmount: f.l35a(),
     amountOwed: f.l37()
   })
@@ -51,6 +63,11 @@ export const SummaryCreatorFor2021: SummaryCreator<F1040For2021> = {
         value: f.scheduleEIC?.credit(f),
         allowed: f.scheduleEIC?.allowed(f) ?? false
       }
+    ],
+    worksheets: [
+      ...(f.qualifiedAndCapGainsWorksheet !== undefined
+        ? [f.qualifiedAndCapGainsWorksheet.getSummaryData()]
+        : [])
     ],
     refundAmount: f.l35a(),
     amountOwed: f.l37()
