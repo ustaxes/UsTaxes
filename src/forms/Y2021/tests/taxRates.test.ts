@@ -1,7 +1,12 @@
 import { FilingStatus } from 'ustaxes/core/data'
+import { CURRENT_YEAR } from '../data/federal'
 import { computeOrdinaryTax } from '../irsForms/TaxTable'
 
 describe('Tax rates', () => {
+  it('test should be updated for new year', async () => {
+    // WARNING! Do not just chagne the year. Also update the expected tax amounts below!
+    expect(CURRENT_YEAR).toEqual(2021)
+  })
   it('ordinary taxes for single status should be correct', async () => {
     expect(Math.round(computeOrdinaryTax(FilingStatus.S, 5))).toEqual(1)
     expect(Math.round(computeOrdinaryTax(FilingStatus.S, 14))).toEqual(1)
