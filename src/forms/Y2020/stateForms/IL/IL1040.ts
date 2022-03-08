@@ -1,6 +1,6 @@
 import Form, { FormMethods } from 'ustaxes/core/stateForms/Form'
 import F1040 from '../../irsForms/F1040'
-import { Field } from 'ustaxes/core/pdfFiller'
+import { Field, RadioSelect } from 'ustaxes/core/pdfFiller'
 import { sumFields } from 'ustaxes/core/irsForms/util'
 import {
   AccountType,
@@ -226,11 +226,25 @@ export class IL1040 extends Form {
 
   /**
    * Index 22: Check Box1
+   * This is actually a radio group, so indicate the correct selection
+   * by index.
    */
-  CheckBox1 = (): boolean | undefined =>
-    this.info.taxPayer.filingStatus === FilingStatus.S
-
-  f22 = (): boolean | undefined => this.CheckBox1()
+  CheckBox1 = (): RadioSelect | undefined => {
+    const fs = this.info.taxPayer.filingStatus
+    if (fs === undefined) {
+      throw new Error('Filing Status is undefined')
+    }
+    return {
+      select: [
+        FilingStatus.S,
+        FilingStatus.MFJ,
+        FilingStatus.MFS,
+        FilingStatus.W,
+        FilingStatus.HOH
+      ].findIndex((x) => x === fs)
+    }
+  }
+  f22 = (): RadioSelect | undefined => this.CheckBox1()
 
   /**
    * Index 23: Check Box1c
