@@ -30,6 +30,11 @@ export function fillPDF(pdf: PDFDocument, fieldValues: Field[]): PDFDocument {
     // instead of a PDFRadioGroup.
     if (_.isObject(value)) {
       const children = pdfField.acroField.getWidgets()
+      if (value.select >= children.length) {
+        throw new Error(
+          `Error in field ${index}, expected to select child at index ${value.select} but this node has only ${children.length} children.`
+        )
+      }
       const setValue = children[value.select].getOnValue()
       if (setValue !== undefined) {
         pdfField.acroField.dict.set(PDFName.of('V'), setValue)
