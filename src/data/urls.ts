@@ -12,8 +12,7 @@ const Urls = {
   income: {
     w2s: '/income/w2jobinfo',
     f1099s: '/income/f1099s',
-    realEstate: '/income/realestate',
-    otherInvestments: '/income/otherinvestments'
+    realEstate: '/income/realestate'
   },
   payments: {
     estimatedTaxes: '/payments/estimatedtaxes'
@@ -30,7 +29,11 @@ const Urls = {
   },
   createPdf: '/createpdf',
   settings: '/settings',
-  default: ''
+  default: '',
+  orforms: {
+    or40: '/state/oregon/or40',
+    orwfhdc: '/state/oregon/orwfhdc'
+  }
 }
 
 Urls.default = Urls.usTaxes.start

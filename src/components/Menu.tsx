@@ -28,9 +28,10 @@ import F1098eInfo from './deductions/F1098eInfo'
 import Questions from './Questions'
 import Urls from 'ustaxes/data/urls'
 
+import ORWFHDCInput from './stateForms/OR/ORWFHDC'
+
 import { isMobile } from 'react-device-detect'
 import HealthSavingsAccounts from './savingsAccounts/healthSavingsAccounts'
-import OtherInvestments from './income/OtherInvestments'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -94,12 +95,7 @@ export const drawerSections: Section[] = [
     items: [
       item('Wages (W2)', Urls.income.w2s, <W2JobInfo />),
       item('Income (1099)', Urls.income.f1099s, <F1099Info />),
-      item('Rental income', Urls.income.realEstate, <RealEstate />),
-      item(
-        'Other investments',
-        Urls.income.otherInvestments,
-        <OtherInvestments />
-      )
+      item('Real Estate', Urls.income.realEstate, <RealEstate />)
     ]
   },
   {
@@ -123,6 +119,10 @@ export const drawerSections: Section[] = [
         <HealthSavingsAccounts />
       )
     ]
+  },
+  {
+    title: 'OR Forms',
+    items: [item('OR-WFHDC', Urls.orforms.orwfhdc, <ORWFHDCInput />)]
   },
   {
     title: 'Results',
