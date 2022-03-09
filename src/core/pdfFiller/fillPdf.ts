@@ -25,6 +25,9 @@ export function fillPDF(pdf: PDFDocument, fieldValues: Field[]): PDFDocument {
     // has children, and check the correct box given the index value.
     // Idea taken from this comment:
     // https://github.com/Hopding/pdf-lib/issues/780#issuecomment-771453157
+    // Note, this is for cases such as the 2021 IL-1040 where the field
+    // behaves as a radio group, but the pdfField is a PDFCheckbox
+    // instead of a PDFRadioGroup.
     if (_.isObject(value)) {
       const children = pdfField.acroField.getWidgets()
       const setValue = children[value.select].getOnValue()
