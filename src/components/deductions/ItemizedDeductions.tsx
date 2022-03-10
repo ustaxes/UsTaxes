@@ -202,14 +202,14 @@ export const ItemizedDeductionsInfo = (): ReactElement => {
       <p>Gifts To Charity</p>
       <Grid container spacing={2}>
         <LabeledInput
-          label="Gifts by Cash of Check"
+          label="Gifts by Cash or Check"
           patternConfig={Patterns.currency}
           name="charityCashCheck"
           required={false}
         />
         {charityWarning}
         <LabeledInput
-          label="Other than Cash of Check (Limit $500)"
+          label="Other than Cash or Check (Limit $500)"
           patternConfig={currencyMax500Pattern}
           name="charityOther"
           required={false}
