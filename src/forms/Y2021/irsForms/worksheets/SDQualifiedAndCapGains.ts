@@ -65,8 +65,8 @@ export default class QualDivAndCGWorksheetReference {
   // 5. Subtract line 4 from line 1. If zero or less, enter -0-
   l5 = (): number => Math.max(this.l1() - this.l4(), 0)
   // 6. Enter:
-  // $40,000 if single or married filing separately,
-  // $80,000 if married filing jointly or qualifying widow(er),$53,600 if head of household.
+  // $40,400 if single or married filing separately,
+  // $80,800 if married filing jointly or qualifying widow(er), $54,100 if head of household.
   l6 = (): number => cutoffAmounts[this.data.filingStatus][0]
   // 7. Enter the smaller of line 1 or line 6
   l7 = (): number => Math.min(this.l1(), this.l6())
@@ -81,7 +81,7 @@ export default class QualDivAndCGWorksheetReference {
   // 12. Subtract line 11 from line 10
   l12 = (): number => this.l10() - this.l11()
   // 13. Enter:
-  // $441,450 if single,$248,300 if married filing separately,$496,600 if married filing jointly or qualifying widow(er),$469,050 if head of household.
+  // $445,850 if single, $250,800 if married filing separately, $501,600 if married filing jointly or qualifying widow(er), $473,750 if head of household.
   //
   l13 = (): number => cutoffAmounts[this.data.filingStatus][1]
   // 14. Enter the smaller of line 1 or line 13
