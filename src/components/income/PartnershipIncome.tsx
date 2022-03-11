@@ -190,7 +190,7 @@ export const PartnershipIncome = (): ReactElement => {
         />
         <GenericLabeledDropdown
           dropDownData={['Partnership', 'S Corporation']}
-          label="Partnership or S Corporate"
+          label="Partnership or S Corporation"
           required={true}
           valueMapping={(t) => t.substring(0, 1)}
           name="partnerOrSCorp"
