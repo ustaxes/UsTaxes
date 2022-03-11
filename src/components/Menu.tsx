@@ -66,10 +66,10 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 )
 
-const getTitleAndPage = (sections: Section[], currentUrl: string): string => {
+const getTitleAndPage = (currentUrl: string): string => {
   if (currentUrl == '/settings') return 'Settings'
 
-  const page = sections
+  const page = drawerSections
     .flatMap(({ title: sectionTitle, items }) =>
       items.map(({ title, url }) => ({ sectionTitle, title, url }))
     )
@@ -175,7 +175,7 @@ const Menu = (): ReactElement => {
           </Slide>
           <Slide in={!isOpen} direction={'left'}>
             <Typography className={classes.title}>
-              {getTitleAndPage(drawerSections, useLocation().pathname)}
+              {getTitleAndPage(useLocation().pathname)}
             </Typography>
           </Slide>
         </Toolbar>
