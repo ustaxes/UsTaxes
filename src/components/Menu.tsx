@@ -67,7 +67,7 @@ const useStyles = makeStyles((theme: Theme) =>
 )
 
 const getTitleAndPage = (currentUrl: string): string => {
-  if (currentUrl == '/settings') return 'Settings'
+  if (currentUrl == Urls.settings) return 'Settings'
 
   const page = drawerSections
     .flatMap(({ title: sectionTitle, items }) =>
