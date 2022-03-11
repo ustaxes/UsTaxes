@@ -7,7 +7,7 @@ import {
   ReactNode
 } from 'react'
 import { useMediaQuery, Button, Grid } from '@material-ui/core'
-import { isMobile } from 'react-device-detect'
+import { isMobileOnly as isMobile } from 'react-device-detect'
 import { Link, useHistory } from 'react-router-dom'
 
 export interface PagerProps {
