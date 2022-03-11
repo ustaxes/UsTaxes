@@ -67,6 +67,8 @@ const useStyles = makeStyles((theme: Theme) =>
 )
 
 const getTitleAndPage = (sections: Section[], currentUrl: string): string => {
+  if (currentUrl == '/settings') return 'Settings'
+
   const page = sections
     .flatMap(({ title: sectionTitle, items }) =>
       items.map(({ title, url }) => ({ sectionTitle, title, url }))
