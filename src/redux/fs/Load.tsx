@@ -35,7 +35,7 @@ export const LoadRaw = (
 }
 
 const Load = <S,>(
-  props: PropsWithChildren<LoadProps<S> & ButtonProps>
+  props: PropsWithChildren<LoadProps<S> & ButtonProps & Accept>
 ): ReactElement => {
   const { children, handleData, ...rest } = props
 
