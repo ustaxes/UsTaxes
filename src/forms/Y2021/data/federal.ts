@@ -1,7 +1,7 @@
 import { FilingStatus } from 'ustaxes/core/data'
 import { linear, Piecewise } from 'ustaxes/core/util'
 
-export const CURRENT_YEAR = 2020
+export const CURRENT_YEAR = 2021
 
 interface TaggedAmount {
   name: string

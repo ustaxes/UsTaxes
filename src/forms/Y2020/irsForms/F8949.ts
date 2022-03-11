@@ -70,8 +70,8 @@ export default class F8949 extends Form {
     if (index === 0) {
       const extraCopiesNeeded = Math.round(
         Math.max(
-          this.shortTermSales().length / NUM_SHORT_LINES,
-          this.longTermSales().length / NUM_LONG_LINES
+          this.thisYearShortTermSales().length / NUM_SHORT_LINES,
+          this.thisYearLongTermSales().length / NUM_LONG_LINES
         )
       )
       this.copies = Array.from(Array(extraCopiesNeeded)).map(
@@ -98,6 +98,16 @@ export default class F8949 extends Form {
       (p) => p.closeDate !== undefined && p.closeDate.getFullYear() === 2020
     )
 
+  thisYearLongTermSales = (): Asset<Date>[] =>
+    this.thisYearSales().filter(
+      (p) => p.closeDate !== undefined && this.isLongTerm(p)
+    )
+
+  thisYearShortTermSales = (): Asset<Date>[] =>
+    this.thisYearSales().filter(
+      (p) => p.closeDate !== undefined && !this.isLongTerm(p)
+    )
+
   // in milliseconds
   oneDay = 1000 * 60 * 60 * 24
 
@@ -111,18 +121,19 @@ export default class F8949 extends Form {
    * Take the short term transactions that fit on this copy of the 8949
    */
   shortTermSales = (): Asset<Date>[] =>
-    this.thisYearSales()
-      .filter((p) => p.closeDate !== undefined && !this.isLongTerm(p))
-      .slice(this.index * NUM_SHORT_LINES, (this.index + 1) * NUM_SHORT_LINES)
+    this.thisYearShortTermSales().slice(
+      this.index * NUM_SHORT_LINES,
+      (this.index + 1) * NUM_SHORT_LINES
+    )
 
   /**
    * Take the long term transactions that fit on this copy of the 8949
    */
   longTermSales = (): Asset<Date>[] =>
-    this.thisYearSales()
-      .filter((p) => p.closeDate !== undefined && this.isLongTerm(p))
-      .slice(this.index * NUM_LONG_LINES, (this.index + 1) * NUM_LONG_LINES)
-
+    this.thisYearLongTermSales().slice(
+      this.index * NUM_LONG_LINES,
+      (this.index + 1) * NUM_LONG_LINES
+    )
   shortTermLines = (): Line[] =>
     padUntil(
       this.shortTermSales().map((p) => toLine(p)),

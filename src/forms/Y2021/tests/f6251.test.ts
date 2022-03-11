@@ -70,8 +70,8 @@ describe('AMT', () => {
     expect(f6251.isNeeded()).toEqual(true)
     expect(Math.round(f6251.l1() ?? 0)).toEqual(87450)
     expect(Math.round(f6251.l7() ?? 0)).toEqual(32864)
-    expect(Math.round(f6251.l10())).toEqual(15009)
-    expect(Math.round(f6251.l11())).toEqual(17855)
+    expect(Math.round(f6251.l10())).toEqual(15015)
+    expect(Math.round(f6251.l11())).toEqual(17849)
   })
 
   it('small stock options should NOT trigger AMT', () => {
@@ -83,7 +83,7 @@ describe('AMT', () => {
     expect(f6251.isNeeded()).toEqual(false)
     expect(Math.round(f6251.l1() ?? 0)).toEqual(87450)
     expect(Math.round(f6251.l7() ?? 0)).toEqual(7124)
-    expect(Math.round(f6251.l10())).toEqual(15009)
+    expect(Math.round(f6251.l10())).toEqual(15015)
     expect(Math.round(f6251.l11())).toEqual(0)
   })
 })

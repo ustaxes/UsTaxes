@@ -22,26 +22,25 @@ import {
 } from '@material-ui/icons'
 import { Alert } from '@material-ui/lab'
 import { TaxYears } from 'ustaxes/data'
+import { TransactionImporter } from './TransactionImporter'
 
 interface Show<A> {
   (a: A): string
 }
-
-const toShow = <A,>(f: (a: A) => string): Show<A> => f
 
 const show =
   <A,>(shows: Show<A>) =>
   (a: A): string =>
     shows(a)
 
-const showAssetType: Show<AssetType> = toShow((p) => {
+const showAssetType: Show<AssetType> = (p) => {
   switch (p) {
     case 'Security':
       return 'Security (Stock, bond, option, mutual fund, etc.)'
     case 'Real Estate':
       return 'Real Estate'
   }
-})
+}
 
 interface AssetUserInput {
   name: string
@@ -245,6 +244,7 @@ export default function OtherInvestments(): ReactElement {
         {form}
         {navButtons}
       </form>
+      <TransactionImporter />
     </FormProvider>
   )
 }
