@@ -309,17 +309,17 @@ export default function F1099Info(): ReactElement {
   const divFields = (
     <Grid container spacing={2}>
       <LabeledInput
-        label="Total Dividends"
+        label={boxLabel('1a', 'Total Dividends')}
         patternConfig={Patterns.currency}
         name="dividends"
       />
       <LabeledInput
-        label="Qualified Dividends"
+        label={boxLabel('1b', 'Qualified Dividends')}
         patternConfig={Patterns.currency}
         name="qualifiedDividends"
       />
       <LabeledInput
-        label="Total capital gains distributions"
+        label={boxLabel('2b', 'Total capital gains distributions')}
         patternConfig={Patterns.currency}
         name="totalCapitalGainsDistributions"
       />
