@@ -266,6 +266,7 @@ const scheduleK1Form1065: Arbitrary<types.ScheduleK1Form1065> = fc
     posCurrency(100000),
     posCurrency(100000),
     posCurrency(100000),
+    posCurrency(100000),
     posCurrency(100000)
   )
   .map(
@@ -273,6 +274,7 @@ const scheduleK1Form1065: Arbitrary<types.ScheduleK1Form1065> = fc
       partnershipName,
       ein,
       ordinaryBusinessIncome,
+      interestIncome,
       guaranteedPaymentsForServices,
       guaranteedPaymentsForCapital,
       selfEmploymentEarningsA,
@@ -289,6 +291,7 @@ const scheduleK1Form1065: Arbitrary<types.ScheduleK1Form1065> = fc
         isForeign: false,
         isPassive: false,
         ordinaryBusinessIncome,
+        interestIncome,
         guaranteedPaymentsForServices,
         guaranteedPaymentsForCapital,
         selfEmploymentEarningsA,

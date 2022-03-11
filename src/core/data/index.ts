@@ -402,6 +402,7 @@ export interface ScheduleK1Form1065 {
   isForeign: boolean
   isPassive: boolean
   ordinaryBusinessIncome: number // Schedule E (Form 1040), line 28, column (i) or (k).
+  interestIncome: number // Form 1040, line 2b
   guaranteedPaymentsForServices: number // Schedule E (Form 1040), line 28, column (k)
   guaranteedPaymentsForCapital: number // Schedule E (Form 1040), line 28, column (k)
   selfEmploymentEarningsA: number // Schedule SE (Form 1040)
