@@ -16,13 +16,12 @@ import { StateLoader } from './debug'
 import NoMatchPage from './NoMatchPage'
 import SkipToLinks from './SkipToLinks'
 import ScrollTop from './ScrollTop'
-import Menu, { drawerSections } from './Menu'
+import Menu, { drawerSections, backPages } from './Menu'
 import { Section, SectionItem } from './ResponsiveDrawer'
 
 import { useFocus } from 'ustaxes/hooks/Focus'
 import Urls from 'ustaxes/data/urls'
 import DataPropagator from './DataPropagator'
-import UserSettings from './UserSettings'
 import YearStatusBar from './YearStatusBar'
 
 type Props = {
@@ -88,14 +87,6 @@ export default function Main(): ReactElement {
   )
 
   const classes = useStyles({ isMobile })
-
-  const backPages: SectionItem[] = [
-    {
-      title: 'User settings',
-      url: Urls.settings,
-      element: <UserSettings />
-    }
-  ]
 
   const steps: SectionItem[] = drawerSections.flatMap(
     (section: Section) => section.items

@@ -13,7 +13,11 @@ import {
 } from '@material-ui/core'
 import CloseIcon from '@material-ui/icons/Close'
 import MenuIcon from '@material-ui/icons/Menu'
-import ResponsiveDrawer, { item, Section } from './ResponsiveDrawer'
+import ResponsiveDrawer, {
+  item,
+  Section,
+  SectionItem
+} from './ResponsiveDrawer'
 
 import W2JobInfo from './income/W2JobInfo'
 import CreatePDF from './CreatePDF'
@@ -27,6 +31,7 @@ import GettingStarted from './GettingStarted'
 import F1098eInfo from './deductions/F1098eInfo'
 import ItemizedDeductions from './deductions/ItemizedDeductions'
 import Questions from './Questions'
+import UserSettings from './UserSettings'
 import Urls from 'ustaxes/data/urls'
 
 import { isMobile } from 'react-device-detect'
@@ -67,8 +72,11 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 )
 
-const getTitleAndPage = (sections: Section[], currentUrl: string): string => {
-  const page = sections
+const getTitleAndPage = (currentUrl: string): string => {
+  const backPage = backPages.find(({ url }) => url === currentUrl)
+  if (backPage) return backPage.title
+
+  const page = drawerSections
     .flatMap(({ title: sectionTitle, items }) =>
       items.map(({ title, url }) => ({ sectionTitle, title, url }))
     )
@@ -76,6 +84,14 @@ const getTitleAndPage = (sections: Section[], currentUrl: string): string => {
 
   return `${page?.sectionTitle} - ${page?.title}`
 }
+
+export const backPages: SectionItem[] = [
+  {
+    title: 'User Settings',
+    url: Urls.settings,
+    element: <UserSettings />
+  }
+]
 
 export const drawerSections: Section[] = [
   {
@@ -179,7 +195,7 @@ const Menu = (): ReactElement => {
           </Slide>
           <Slide in={!isOpen} direction={'left'}>
             <Typography className={classes.title}>
-              {getTitleAndPage(drawerSections, useLocation().pathname)}
+              {getTitleAndPage(useLocation().pathname)}
             </Typography>
           </Slide>
         </Toolbar>
