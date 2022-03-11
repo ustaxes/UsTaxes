@@ -39,6 +39,7 @@ import HealthSavingsAccounts from './savingsAccounts/healthSavingsAccounts'
 import IRA from './savingsAccounts/IRA'
 import OtherInvestments from './income/OtherInvestments'
 import { StockOptions } from './income/StockOptions'
+import { PartnershipIncome } from './income/PartnershipIncome'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -119,7 +120,12 @@ export const drawerSections: Section[] = [
         Urls.income.otherInvestments,
         <OtherInvestments />
       ),
-      item('Stock options', Urls.income.stockOptions, <StockOptions />)
+      item('Stock options', Urls.income.stockOptions, <StockOptions />),
+      item(
+        'Partnership Income',
+        Urls.income.partnershipIncome,
+        <PartnershipIncome />
+      )
     ]
   },
   {

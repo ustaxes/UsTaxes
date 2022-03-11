@@ -7,6 +7,14 @@ import Schedule3 from '../irsForms/Schedule3'
 import { displayRound } from 'ustaxes/core/irsForms/util'
 import { testKit, commonTests } from '.'
 
+jest.setTimeout(100000)
+
+beforeAll(() => {
+  jest.spyOn(console, 'warn').mockImplementation(() => {
+    // do nothing
+  })
+})
+
 function hasSSRefund(f1040: F1040): boolean {
   const s3 = f1040.schedule3
   const l10 = s3?.l10()
@@ -95,8 +103,12 @@ describe('fica', () => {
         expect(hasAttachment(forms, Schedule2)).toEqual(true)
         expect(hasAttachment(forms, F8959)).toEqual(true)
       } else {
-        expect(hasAdditionalMedicareTax(f1040)).toEqual(false)
-        expect(hasAttachment(forms, F8959)).toEqual(false)
+        const selfEmploymentWages = f1040.scheduleSE?.l6() ?? 0
+        const hasTax =
+          f1040.medicareWages() + selfEmploymentWages >
+          fica.additionalMedicareTaxThreshold(filingStatus)
+        expect(hasAdditionalMedicareTax(f1040)).toEqual(hasTax)
+        expect(hasAttachment(forms, F8959)).toEqual(hasTax)
       }
     })
   })
@@ -109,8 +121,10 @@ describe('fica', () => {
       }
       if (hasAdditionalMedicareTax(f1040)) {
         const filingStatus = f1040.info.taxPayer.filingStatus
+        const selfEmploymentWages = f1040.scheduleSE?.l6() ?? 0
         const incomeOverThreshold =
-          f1040.medicareWages() -
+          f1040.medicareWages() +
+          selfEmploymentWages -
           fica.additionalMedicareTaxThreshold(filingStatus)
         expect(incomeOverThreshold).toBeGreaterThan(0)
 
@@ -126,9 +140,10 @@ describe('fica', () => {
           .validW2s()
           .map((w2) => w2.medicareWithholding)
           .reduce((l, r) => l + r, 0)
-        const regularWithholding = Math.round(
+
+        const regularWithholding =
           fica.regularMedicareTaxRate * f1040.medicareWages()
-        )
+
         if (medicareWithheld > regularWithholding) {
           const f1040l25c = f1040.l25c()
           expect(f1040l25c).not.toBeUndefined()
@@ -137,7 +152,7 @@ describe('fica', () => {
             displayRound(additionalWithheld)
           )
         } else {
-          expect(displayRound(f1040.l25c())).toBeUndefined()
+          expect(displayRound(f1040.l25c()) ?? 0).toEqual(0)
         }
       }
     })

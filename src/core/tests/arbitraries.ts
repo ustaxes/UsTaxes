@@ -113,6 +113,7 @@ const w2: Arbitrary<types.IncomeW2> = wages.chain((income) =>
       fc.nat({ max: income }),
       fc.nat({ max: income }),
       fc.nat({ max: income }),
+      fc.nat({ max: income }),
       employer,
       w2Box12Info(income),
       state,
@@ -124,6 +125,7 @@ const w2: Arbitrary<types.IncomeW2> = wages.chain((income) =>
         occupation,
         medicareIncome,
         fedWithholding,
+        ssWages,
         ssWithholding,
         medicareWithholding,
         employer,
@@ -138,6 +140,7 @@ const w2: Arbitrary<types.IncomeW2> = wages.chain((income) =>
         fedWithholding,
         employer,
         personRole: types.PersonRole.PRIMARY,
+        ssWages,
         ssWithholding,
         medicareWithholding,
         state,
@@ -155,8 +158,12 @@ export const f1099IntData: Arbitrary<types.F1099IntData> = fc
 export const f1099DivData: Arbitrary<types.F1099DivData> = interest.chain(
   (dividends) =>
     fc
-      .nat({ max: Math.round(dividends * 100) })
-      .map((qdiv) => ({ dividends, qualifiedDividends: qdiv / 100 }))
+      .tuple(fc.nat({ max: Math.round(dividends * 100) }), posCurrency(100000))
+      .map(([qdiv, totalCapitalGainsDistributions]) => ({
+        dividends,
+        qualifiedDividends: qdiv / 100,
+        totalCapitalGainsDistributions
+      }))
 )
 
 export const f1099BData: Arbitrary<types.F1099BData> = fc
@@ -247,6 +254,51 @@ const f3921: Arbitrary<types.F3921> = fc
       numShares
     }
   })
+
+const scheduleK1Form1065: Arbitrary<types.ScheduleK1Form1065> = fc
+  .tuple(
+    maxWords(2),
+    ein,
+    posCurrency(1000000),
+    posCurrency(100000),
+    posCurrency(100000),
+    posCurrency(100000),
+    posCurrency(100000),
+    posCurrency(100000),
+    posCurrency(100000),
+    posCurrency(100000)
+  )
+  .map(
+    ([
+      partnershipName,
+      ein,
+      ordinaryBusinessIncome,
+      guaranteedPaymentsForServices,
+      guaranteedPaymentsForCapital,
+      selfEmploymentEarningsA,
+      selfEmploymentEarningsB,
+      selfEmploymentEarningsC,
+      distributionsCodeAAmount,
+      section199AQBI
+    ]) => {
+      return {
+        personRole: types.PersonRole.PRIMARY,
+        partnershipName,
+        partnershipEin: ein,
+        partnerOrSCorp: 'P',
+        isForeign: false,
+        isPassive: false,
+        ordinaryBusinessIncome,
+        guaranteedPaymentsForServices,
+        guaranteedPaymentsForCapital,
+        selfEmploymentEarningsA,
+        selfEmploymentEarningsB,
+        selfEmploymentEarningsC,
+        distributionsCodeAAmount,
+        section199AQBI
+      }
+    }
+  )
 
 const itemizedDeductions: Arbitrary<types.ItemizedDeductions> = fc
   .tuple(
@@ -589,6 +641,7 @@ export class Arbitraries {
         fc.array(estTax),
         fc.array(f1098e),
         fc.array(f3921),
+        fc.array(scheduleK1Form1065),
         itemizedDeductions,
         refund,
         this.taxPayer(),
@@ -605,6 +658,7 @@ export class Arbitraries {
           estimatedTaxes,
           f1098es,
           f3921s,
+          scheduleK1Form1065s,
           itemizedDeductions,
           refund,
           taxPayer,
@@ -619,6 +673,7 @@ export class Arbitraries {
           estimatedTaxes,
           f1098es,
           f3921s,
+          scheduleK1Form1065s,
           itemizedDeductions,
           refund,
           taxPayer,
