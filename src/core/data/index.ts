@@ -67,6 +67,7 @@ export interface IncomeW2 {
   income: number
   medicareIncome: number
   fedWithholding: number
+  ssWages: number
   ssWithholding: number
   medicareWithholding: number
   employer?: Employer
@@ -104,6 +105,7 @@ export interface F1099IntData {
 export interface F1099DivData {
   dividends: number
   qualifiedDividends: number
+  totalCapitalGainsDistributions: number
 }
 /*
  TODO: Add in logic for various different distributions
@@ -391,6 +393,24 @@ export interface F3921 {
   numShares: number
 }
 
+// See https://www.irs.gov/instructions/i1065sk1
+export interface ScheduleK1Form1065 {
+  personRole: PersonRole.PRIMARY | PersonRole.SPOUSE
+  partnershipName: string
+  partnershipEin: string
+  partnerOrSCorp: 'P' | 'S'
+  isForeign: boolean
+  isPassive: boolean
+  ordinaryBusinessIncome: number // Schedule E (Form 1040), line 28, column (i) or (k).
+  guaranteedPaymentsForServices: number // Schedule E (Form 1040), line 28, column (k)
+  guaranteedPaymentsForCapital: number // Schedule E (Form 1040), line 28, column (k)
+  selfEmploymentEarningsA: number // Schedule SE (Form 1040)
+  selfEmploymentEarningsB: number // Schedule SE (Form 1040)
+  selfEmploymentEarningsC: number // Schedule SE (Form 1040)
+  distributionsCodeAAmount: number // If the amount shown as code A exceeds the adjusted basis of your partnership interest immediately before the distribution, the excess is treated as gain from the sale or exchange of your partnership interest. Generally, this gain is treated as gain from the sale of a capital asset and should be reported on Form 8949 and the Schedule D for your return.
+  section199AQBI: number // Form 8995 or 8995-A
+}
+
 export interface ItemizedDeductions {
   medicalAndDental: string | number
   stateAndLocalTaxes: string | number
@@ -500,6 +520,7 @@ export interface Information {
   estimatedTaxes: EstimatedTaxPayments[]
   f1098es: F1098e[]
   f3921s: F3921[]
+  scheduleK1Form1065s: ScheduleK1Form1065[]
   itemizedDeductions: ItemizedDeductions | undefined
   refund?: Refund
   taxPayer: TaxPayer

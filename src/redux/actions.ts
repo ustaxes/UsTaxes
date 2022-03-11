@@ -18,7 +18,8 @@ import {
   Ira,
   Asset,
   ItemizedDeductions,
-  F3921
+  F3921,
+  ScheduleK1Form1065
 } from 'ustaxes/core/data'
 
 import {
@@ -34,7 +35,11 @@ import {
 import ajv, * as validators from 'ustaxes/core/data/validate'
 import { TaxYear } from 'ustaxes/data'
 import { ValidateFunction } from 'ajv'
-import { EditAssetAction, EditF3921Action } from '.'
+import {
+  EditAssetAction,
+  EditF3921Action,
+  EditScheduleK1Form1065Action
+} from '.'
 
 const indexSchema = {
   type: 'number',
@@ -86,7 +91,10 @@ export enum ActionName {
   REMOVE_ASSET = 'ASSETS/REMOVE',
   ADD_F3921 = 'F3921/ADD',
   EDIT_F3921 = 'F3921/EDIT',
-  REMOVE_F3921 = 'F3921/REMOVE'
+  REMOVE_F3921 = 'F3921/REMOVE',
+  ADD_SCHEDULE_K1_F1065 = 'SCHEDULE_K1_F1065/ADD',
+  EDIT_SCHEDULE_K1_F1065 = 'SCHEDULE_K1_F1065/EDIT',
+  REMOVE_SCHEDULE_K1_F1065 = 'SCHEDULE_K1_F1065/REMOVE'
 }
 
 interface Save<T, R> {
@@ -155,6 +163,18 @@ type RemoveAsset = Save<typeof ActionName.REMOVE_ASSET, number>
 type AddF3921 = Save<typeof ActionName.ADD_F3921, F3921>
 type EditF3921 = Save<typeof ActionName.EDIT_F3921, EditF3921Action>
 type RemoveF3921 = Save<typeof ActionName.REMOVE_F3921, number>
+type AddScheduleK1Form1065 = Save<
+  typeof ActionName.ADD_SCHEDULE_K1_F1065,
+  ScheduleK1Form1065
+>
+type EditScheduleK1Form1065 = Save<
+  typeof ActionName.EDIT_SCHEDULE_K1_F1065,
+  EditScheduleK1Form1065Action
+>
+type RemoveScheduleK1Form1065 = Save<
+  typeof ActionName.REMOVE_SCHEDULE_K1_F1065,
+  number
+>
 
 export type Actions =
   | SaveRefundInfo
@@ -199,6 +219,9 @@ export type Actions =
   | AddF3921
   | EditF3921
   | RemoveF3921
+  | AddScheduleK1Form1065
+  | EditScheduleK1Form1065
+  | RemoveScheduleK1Form1065
 
 export type SignalAction = (year: TaxYear) => Actions
 export type ActionCreator<A> = (formData: A) => SignalAction
@@ -468,3 +491,12 @@ export const removeF3921: ActionCreator<number> = makeActionCreator(
   ActionName.REMOVE_F3921,
   indexValidator
 )
+
+export const addScheduleK1Form1065: ActionCreator<ScheduleK1Form1065> =
+  makeActionCreator(ActionName.ADD_SCHEDULE_K1_F1065)
+
+export const editScheduleK1Form1065: ActionCreator<EditScheduleK1Form1065Action> =
+  makeActionCreator(ActionName.EDIT_SCHEDULE_K1_F1065)
+
+export const removeScheduleK1Form1065: ActionCreator<number> =
+  makeActionCreator(ActionName.REMOVE_SCHEDULE_K1_F1065, indexValidator)

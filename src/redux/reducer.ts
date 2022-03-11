@@ -16,6 +16,7 @@ export const blankState: Information = {
   questions: {},
   f1098es: [],
   f3921s: [],
+  scheduleK1Form1065s: [],
   itemizedDeductions: undefined,
   stateResidencies: [],
   healthSavingsAccounts: [],
@@ -282,6 +283,28 @@ const formReducer = (
       return {
         ...newState,
         f3921s: newf3921s
+      }
+    }
+    case ActionName.ADD_SCHEDULE_K1_F1065: {
+      return {
+        ...newState,
+        scheduleK1Form1065s: [...newState.scheduleK1Form1065s, action.formData]
+      }
+    }
+    case ActionName.EDIT_SCHEDULE_K1_F1065: {
+      const newK1s = [...newState.scheduleK1Form1065s]
+      newK1s.splice(action.formData.index, 1, action.formData.value)
+      return {
+        ...newState,
+        scheduleK1Form1065s: newK1s
+      }
+    }
+    case ActionName.REMOVE_SCHEDULE_K1_F1065: {
+      const newK1s = [...newState.scheduleK1Form1065s]
+      newK1s.splice(action.formData, 1)
+      return {
+        ...newState,
+        scheduleK1Form1065s: newK1s
       }
     }
     case ActionName.SET_ITEMIZED_DEDUCTIONS: {

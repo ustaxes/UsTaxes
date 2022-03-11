@@ -8,13 +8,19 @@ import { USTState } from './store'
  * @returns state
  */
 export const migrateEachYear = <S extends USTState>(state: S): S =>
-  enumKeys(TaxYears).reduce(
-    (acc, year) => ({
+  enumKeys(TaxYears).reduce((acc, year) => {
+    // Make sure SS wages are set on W2s
+    acc[year].w2s.forEach((w2) => {
+      if (w2.ssWages === undefined) {
+        w2.ssWages = 0
+      }
+    })
+
+    return {
       ...acc,
       [year]: {
         ...blankState,
         ...acc[year]
       }
-    }),
-    state
-  )
+    }
+  }, state)
