@@ -319,7 +319,7 @@ export default function F1099Info(): ReactElement {
         name="qualifiedDividends"
       />
       <LabeledInput
-        label={boxLabel('2b', 'Total capital gains distributions')}
+        label={boxLabel('2a', 'Total capital gains distributions')}
         patternConfig={Patterns.currency}
         name="totalCapitalGainsDistributions"
       />
