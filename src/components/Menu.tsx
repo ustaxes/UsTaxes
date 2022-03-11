@@ -29,6 +29,8 @@ import ItemizedDeductions from './deductions/ItemizedDeductions'
 import Questions from './Questions'
 import Urls from 'ustaxes/data/urls'
 
+import ORWFHDCInput from './stateForms/OR/ORWFHDC'
+
 import { isMobile } from 'react-device-detect'
 import HealthSavingsAccounts from './savingsAccounts/healthSavingsAccounts'
 import IRA from './savingsAccounts/IRA'
@@ -143,6 +145,10 @@ export const drawerSections: Section[] = [
         <IRA />
       )
     ]
+  },
+  {
+    title: 'OR Forms',
+    items: [item('OR-WFHDC', Urls.orforms.orwfhdc, <ORWFHDCInput />)]
   },
   {
     title: 'Results',

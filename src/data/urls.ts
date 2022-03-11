@@ -34,7 +34,11 @@ const Urls = {
   },
   createPdf: '/createpdf',
   settings: '/settings',
-  default: ''
+  default: '',
+  orforms: {
+    or40: '/state/oregon/or40',
+    orwfhdc: '/state/oregon/orwfhdc'
+  }
 }
 
 Urls.default = Urls.usTaxes.start
