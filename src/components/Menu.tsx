@@ -87,7 +87,7 @@ const getTitleAndPage = (currentUrl: string): string => {
 
 export const backPages: SectionItem[] = [
   {
-    title: 'User settings',
+    title: 'User Settings',
     url: Urls.settings,
     element: <UserSettings />
   }
