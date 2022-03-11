@@ -25,6 +25,7 @@ const UserSettings = (): ReactElement => {
       </p>
       <Load<USTSerializedState>
         startIcon={done ? <Check /> : undefined}
+        accept="*.json"
         handleData={(state) => {
           if (!done) {
             dispatch(fsRecover(state))
