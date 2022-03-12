@@ -18,7 +18,7 @@ const download = (filename: string, text: string): void => {
   document.body.removeChild(element)
 }
 
-const loadFile = async <S>(file: File): Promise<S> => {
+const loadFile = async (file: File): Promise<string> => {
   const fileReader: FileReader = new FileReader()
 
   return new Promise((resolve, reject) => {
@@ -31,8 +31,7 @@ const loadFile = async <S>(file: File): Promise<S> => {
       if (contents === null) {
         reject('file contents were null')
       }
-      const state: S = JSON.parse(contents)
-      resolve(state)
+      resolve(contents)
     }
     fileReader.readAsText(file)
   })

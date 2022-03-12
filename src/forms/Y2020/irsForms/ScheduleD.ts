@@ -158,7 +158,10 @@ export default class ScheduleD extends Form {
 
   l12 = (): number | undefined => undefined
 
-  l13 = (): number | undefined => undefined
+  l13 = (): number | undefined =>
+    this.state
+      .f1099Divs()
+      .reduce((s, f) => s + (f.form.totalCapitalGainsDistributions ?? 0), 0)
 
   l14 = (): number | undefined => undefined
 
@@ -204,7 +207,8 @@ export default class ScheduleD extends Form {
     return (this.l18() ?? 0) === 0 && (this.l19() ?? 0) === 0
   }
 
-  fillL21 = (): boolean => (this.l16() > 0 && this.l17()) || this.l16() < 0
+  fillL21 = (): boolean =>
+    !this.l20() && ((this.l16() > 0 && this.l17()) || this.l16() < 0)
 
   l21 = (): number | undefined => {
     if (this.fillL21()) {

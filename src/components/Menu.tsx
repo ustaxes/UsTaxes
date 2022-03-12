@@ -13,7 +13,11 @@ import {
 } from '@material-ui/core'
 import CloseIcon from '@material-ui/icons/Close'
 import MenuIcon from '@material-ui/icons/Menu'
-import ResponsiveDrawer, { item, Section } from './ResponsiveDrawer'
+import ResponsiveDrawer, {
+  item,
+  Section,
+  SectionItem
+} from './ResponsiveDrawer'
 
 import W2JobInfo from './income/W2JobInfo'
 import CreatePDF from './CreatePDF'
@@ -25,14 +29,19 @@ import EstimatedTaxes from './payments/EstimatedTaxes'
 import RealEstate from './income/RealEstate'
 import GettingStarted from './GettingStarted'
 import F1098eInfo from './deductions/F1098eInfo'
+import ItemizedDeductions from './deductions/ItemizedDeductions'
 import Questions from './Questions'
+import UserSettings from './UserSettings'
 import Urls from 'ustaxes/data/urls'
 
 import ORWFHDCInput from './stateForms/OR/ORWFHDC'
 
-import { isMobile } from 'react-device-detect'
+import { isMobileOnly as isMobile } from 'react-device-detect'
 import HealthSavingsAccounts from './savingsAccounts/healthSavingsAccounts'
+import IRA from './savingsAccounts/IRA'
 import OtherInvestments from './income/OtherInvestments'
+import { StockOptions } from './income/StockOptions'
+import { PartnershipIncome } from './income/PartnershipIncome'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -65,8 +74,11 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 )
 
-const getTitleAndPage = (sections: Section[], currentUrl: string): string => {
-  const page = sections
+const getTitleAndPage = (currentUrl: string): string => {
+  const backPage = backPages.find(({ url }) => url === currentUrl)
+  if (backPage) return backPage.title
+
+  const page = drawerSections
     .flatMap(({ title: sectionTitle, items }) =>
       items.map(({ title, url }) => ({ sectionTitle, title, url }))
     )
@@ -74,6 +86,14 @@ const getTitleAndPage = (sections: Section[], currentUrl: string): string => {
 
   return `${page?.sectionTitle} - ${page?.title}`
 }
+
+export const backPages: SectionItem[] = [
+  {
+    title: 'User Settings',
+    url: Urls.settings,
+    element: <UserSettings />
+  }
+]
 
 export const drawerSections: Section[] = [
   {
@@ -101,6 +121,12 @@ export const drawerSections: Section[] = [
         'Other investments',
         Urls.income.otherInvestments,
         <OtherInvestments />
+      ),
+      item('Stock options', Urls.income.stockOptions, <StockOptions />),
+      item(
+        'Partnership Income',
+        Urls.income.partnershipIncome,
+        <PartnershipIncome />
       )
     ]
   },
@@ -113,7 +139,12 @@ export const drawerSections: Section[] = [
   {
     title: 'Deductions',
     items: [
-      item('Student Loan Interest', Urls.deductions.f1098es, <F1098eInfo />)
+      item('Student Loan Interest', Urls.deductions.f1098es, <F1098eInfo />),
+      item(
+        'Itemized Deductions',
+        Urls.deductions.itemized,
+        <ItemizedDeductions />
+      )
     ]
   },
   {
@@ -123,6 +154,11 @@ export const drawerSections: Section[] = [
         'Health Savings Account (HSA)',
         Urls.savingsAccounts.healthSavingsAccounts,
         <HealthSavingsAccounts />
+      ),
+      item(
+        'Individual Retirement Arrangements (IRA)',
+        Urls.savingsAccounts.ira,
+        <IRA />
       )
     ]
   },
@@ -165,7 +201,7 @@ const Menu = (): ReactElement => {
           </Slide>
           <Slide in={!isOpen} direction={'left'}>
             <Typography className={classes.title}>
-              {getTitleAndPage(drawerSections, useLocation().pathname)}
+              {getTitleAndPage(useLocation().pathname)}
             </Typography>
           </Slide>
         </Toolbar>

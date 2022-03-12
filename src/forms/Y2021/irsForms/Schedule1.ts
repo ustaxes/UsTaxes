@@ -102,7 +102,7 @@ export default class Schedule1 extends Form {
   l13 = (): number | undefined =>
     sumFields([this.f1040.f8889?.l13(), this.f1040.f8889Spouse?.l13()])
   l14 = (): number | undefined => undefined
-  l15 = (): number | undefined => undefined
+  l15 = (): number | undefined => this.f1040.scheduleSE?.l13()
   l16 = (): number | undefined => undefined
   l17 = (): number | undefined => undefined
   l18 = (): number | undefined => undefined

@@ -30,4 +30,9 @@ export class FormMethods {
       (withholding, w2) => withholding + (w2.stateWithholding ?? 0),
       0
     )
+
+  witholdingForState = (state: State) =>
+    this.stateW2s()
+      .filter((w2) => w2.state === state)
+      .reduce((withholding, w2) => withholding + (w2.stateWithholding ?? 0), 0)
 }

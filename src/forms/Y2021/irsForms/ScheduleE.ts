@@ -16,8 +16,15 @@ import _ from 'lodash'
 type Cell = number | undefined
 export type MatrixRow = [Cell, Cell, Cell]
 
-const unimplemented = (message: string): void =>
-  log.warn(`[Schedule E] unimplemented ${message}`)
+let suppressedLogMessages: string[] = []
+
+const unimplemented = (message: string): void => {
+  // Excessive logging can hang the dev tools, so limit messages
+  if (suppressedLogMessages.indexOf(message) === -1) {
+    suppressedLogMessages.push(message)
+    log.warn(`[Schedule E] unimplemented ${message}`)
+  }
+}
 
 const fill = (values: number[]): MatrixRow => {
   const realValues = (values as Cell[]).slice(0, 3).map((v) => {
@@ -54,6 +61,9 @@ export default class ScheduleE extends Form {
     this.state = info
     this.f6168 = new F6168(info.taxPayer, this)
     this.f8582 = new F8582(info.taxPayer, this)
+
+    // Reset suppressed messages
+    suppressedLogMessages = []
   }
 
   addressString = (address: Address): string =>
@@ -173,17 +183,33 @@ export default class ScheduleE extends Form {
   l26 = (): number => sumFields([this.l24(), this.l25()])
 
   // TODO: required from Pub 596
-  l29ah = (): number | undefined => undefined
-  l29ak = (): number | undefined => undefined
+  l29ah = (): number | undefined =>
+    this.state.scheduleK1Form1065s.reduce(
+      (t, k1) => t + Math.max(0, k1.isPassive ? k1.ordinaryBusinessIncome : 0),
+      0
+    )
+  l29ak = (): number | undefined =>
+    this.state.scheduleK1Form1065s.reduce(
+      (t, k1) => t + Math.max(0, k1.isPassive ? 0 : k1.ordinaryBusinessIncome),
+      0
+    )
 
-  l29bg = (): number | undefined => undefined
-  l29bi = (): number | undefined => undefined
+  l29bg = (): number | undefined =>
+    this.state.scheduleK1Form1065s.reduce(
+      (t, k1) => t + Math.min(0, k1.isPassive ? k1.ordinaryBusinessIncome : 0),
+      0
+    )
+  l29bi = (): number | undefined =>
+    this.state.scheduleK1Form1065s.reduce(
+      (t, k1) => t + Math.min(0, k1.isPassive ? 0 : k1.ordinaryBusinessIncome),
+      0
+    )
   l29bj = (): number | undefined => undefined
 
-  l32 = (): number | undefined => {
-    unimplemented('Partnership and S corporation income or loss')
-    return undefined
-  }
+  l30 = (): number | undefined => sumFields([this.l29ah(), this.l29ak()])
+  l31 = (): number | undefined =>
+    sumFields([this.l29bg(), this.l29bi(), this.l29bj()])
+  l32 = (): number | undefined => sumFields([this.l30(), this.l31()])
 
   l34ad = (): number | undefined => undefined
   l34af = (): number | undefined => undefined
@@ -211,6 +237,41 @@ export default class ScheduleE extends Form {
   fields = (): Array<string | number | boolean | undefined> => {
     const tp = new TaxPayer(this.state.taxPayer)
     const [p0, p1, p2] = [0, 1, 2].map((i) => this.propForRow(i))
+
+    // TODO: Support more than 4 K1s
+    const k1s = this.state.scheduleK1Form1065s
+    const l28Fields: Array<string | number | boolean | undefined> = []
+    l28Fields.push(
+      ...k1s
+        .slice(0, 4)
+        .flatMap((k1) => [
+          k1.partnershipName,
+          k1.partnerOrSCorp,
+          k1.isForeign ?? false,
+          k1.partnershipEin,
+          false,
+          false
+        ])
+    )
+    l28Fields.push(...Array(6 * Math.max(0, 4 - k1s.length)).fill(undefined))
+    l28Fields.push(
+      ...k1s.slice(0, 4).flatMap((k1) => {
+        if (k1.isPassive) {
+          if (k1.ordinaryBusinessIncome < 0) {
+            return [k1.ordinaryBusinessIncome, 0, 0, 0, 0]
+          } else {
+            return [0, k1.ordinaryBusinessIncome, 0, 0, 0]
+          }
+        } else {
+          if (k1.ordinaryBusinessIncome < 0) {
+            return [0, 0, k1.ordinaryBusinessIncome, 0, 0]
+          } else {
+            return [0, 0, 0, 0, k1.ordinaryBusinessIncome]
+          }
+        }
+      })
+    )
+    l28Fields.push(...Array(5 * Math.max(0, 4 - k1s.length)).fill(undefined))
 
     return [
       tp.namesString(),
@@ -257,11 +318,11 @@ export default class ScheduleE extends Form {
       this.l24(),
       Math.abs(this.l25()),
       displayNegPos(this.l26()),
-      // Page 2 - TODO: completely unimplemented
+      // Page 2 - TODO: Only part II implemented
       tp.namesString(),
       tp.tp.primaryPerson?.ssid,
       ...[false, false], // l27
-      ...Array(6 * 4 + 5 * 4).fill(undefined), // l28
+      ...l28Fields,
       undefined, // grey
       this.l29ah(),
       undefined, // grey
@@ -272,24 +333,22 @@ export default class ScheduleE extends Form {
       this.l29bi(),
       this.l29bj(),
       undefined, // grey
-      undefined, // l30
-      undefined, // l31
+      this.l30(),
+      this.l31(),
       this.l32(), // l32
-      ...Array(2 * 4).fill(undefined), // l33
+      ...Array(2 * 6).fill(undefined), // l33
       undefined,
       this.l34ad(),
       undefined,
       this.l34af(),
-      ...Array(4).fill(undefined),
       this.l34bc(),
       undefined, // grey
       this.l34be(),
       undefined, // grey
-      // l34b
       undefined, // l35
       undefined, // l36
       this.l37(), // l37
-      ...Array(5 + 4).fill(undefined), // l38
+      ...Array(5).fill(undefined), // l38
       this.l39(), // l39
       this.l40(), // l40
       this.l41(), // l41

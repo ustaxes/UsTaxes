@@ -96,7 +96,18 @@ export default class F8960 extends Form {
     ])
   // Todo: Implement Schedule A
   l9a = (): number | undefined => this.f1040.scheduleA?.l9()
-  l9b = (): number | undefined => undefined
+  // Line 9b Reasonable method: Total state tax from W2 * Form 8960 Line 8 / 1040 Line 11, Adjusted gross income
+  l9b = (): number | undefined => {
+    const totalStateWithholding = this.f1040
+      .validW2s()
+      .map((w2) => w2.stateWithholding ?? 0)
+      .reduce((l, r) => l + r, 0)
+    const f1040L11 = this.f1040.l11()
+    if (f1040L11 === 0) {
+      return 0
+    }
+    return (totalStateWithholding * this.l8()) / f1040L11
+  }
   l9c = (): number | undefined => undefined
   l9d = (): number => sumFields([this.l9a(), this.l9b(), this.l9c()])
   l10 = (): number | undefined => undefined
@@ -134,7 +145,7 @@ export default class F8960 extends Form {
   l20 = (): number | undefined => undefined // this.l19c() < this.l18c()? this.l19c() : this.l18c()
   l21 = (): number | undefined => undefined // Math.round(this.l20() * netInvestmentIncomeTax.taxRate)
 
-  toSchedule2l12 = (): number | undefined => this.l21()
+  toSchedule2l12 = (): number | undefined => this.l17()
 
   fields = (): Array<string | number | boolean | undefined> => {
     const tp = new TaxPayer(this.state.taxPayer)

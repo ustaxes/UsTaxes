@@ -1,5 +1,7 @@
 import { ReactElement } from 'react'
 import { Helmet } from 'react-helmet'
+import { Link } from 'react-router-dom'
+import Alert from '@material-ui/lab/Alert'
 import { useForm, FormProvider } from 'react-hook-form'
 import { Icon, Grid } from '@material-ui/core'
 import { useDispatch, useSelector, TaxesState } from 'ustaxes/redux'
@@ -17,7 +19,8 @@ import {
   Currency,
   formatSSID,
   GenericLabeledDropdown,
-  LabeledInput
+  LabeledInput,
+  boxLabel
 } from 'ustaxes/components/input'
 import { Patterns } from 'ustaxes/components/Patterns'
 import { FormListContainer } from 'ustaxes/components/FormContainer'
@@ -85,6 +88,7 @@ interface F1099UserInput {
   // Div fields
   dividends: string | number
   qualifiedDividends: string | number
+  totalCapitalGainsDistributions: string | number
   personRole: PersonRole.PRIMARY | PersonRole.SPOUSE
   // R fields
   grossDistribution: string | number
@@ -110,11 +114,12 @@ const blankUserInput: F1099UserInput = {
   // Div fields
   dividends: '',
   qualifiedDividends: '',
+  totalCapitalGainsDistributions: '',
   // R fields
   grossDistribution: '',
   taxableAmount: '',
   federalIncomeTaxWithheld: '',
-  RPlanType: PlanType1099.IRA,
+  RPlanType: PlanType1099.Pension,
   // SSA fields
   // benefitsPaid: '',
   // benefitsRepaid: '',
@@ -182,7 +187,10 @@ const toF1099 = (input: F1099UserInput): Supported1099 | undefined => {
         type: input.formType,
         form: {
           dividends: Number(input.dividends),
-          qualifiedDividends: Number(input.qualifiedDividends)
+          qualifiedDividends: Number(input.qualifiedDividends),
+          totalCapitalGainsDistributions: Number(
+            input.totalCapitalGainsDistributions
+          )
         }
       }
     }
@@ -195,8 +203,7 @@ const toF1099 = (input: F1099UserInput): Supported1099 | undefined => {
           grossDistribution: Number(input.grossDistribution),
           taxableAmount: Number(input.taxableAmount),
           federalIncomeTaxWithheld: Number(input.federalIncomeTaxWithheld),
-          planType:
-            input.RPlanType == 'IRA' ? PlanType1099.IRA : PlanType1099.Pension
+          planType: PlanType1099.Pension
         }
       }
     }
@@ -302,44 +309,42 @@ export default function F1099Info(): ReactElement {
   const divFields = (
     <Grid container spacing={2}>
       <LabeledInput
-        label="Total Dividends"
+        label={boxLabel('1a', 'Total Dividends')}
         patternConfig={Patterns.currency}
         name="dividends"
       />
       <LabeledInput
-        label="Qualified Dividends"
+        label={boxLabel('1b', 'Qualified Dividends')}
         patternConfig={Patterns.currency}
         name="qualifiedDividends"
+      />
+      <LabeledInput
+        label={boxLabel('2a', 'Total capital gains distributions')}
+        patternConfig={Patterns.currency}
+        name="totalCapitalGainsDistributions"
       />
     </Grid>
   )
 
   const rFields = (
     <Grid container spacing={2}>
+      <Alert severity="warning">
+        Use this form only for 1099-R forms related to your 401(k) or other
+        retirement plans. If you have 1099-R forms from IRA accounts please see
+        the <Link to="/savingsaccounts/ira">IRA page</Link>
+      </Alert>
       <LabeledInput
-        label={
-          <>
-            <strong>Box 1</strong> - Gross Distribution
-          </>
-        }
+        label={boxLabel('1', 'Gross Distribution')}
         patternConfig={Patterns.currency}
         name="grossDistribution"
       />
       <LabeledInput
-        label={
-          <>
-            <strong>Box 2a</strong> - Taxable Amount
-          </>
-        }
+        label={boxLabel('2a', 'Taxable Amount')}
         patternConfig={Patterns.currency}
         name="taxableAmount"
       />
       <LabeledInput
-        label={
-          <>
-            <strong>Box 4</strong> - Federal Income Tax Withheld
-          </>
-        }
+        label={boxLabel('4', 'Federal Income Tax Withheld')}
         patternConfig={Patterns.currency}
         name="federalIncomeTaxWithheld"
       />
@@ -440,7 +445,7 @@ export default function F1099Info(): ReactElement {
 
         <LabeledInput
           label="Enter name of bank, broker firm, or other payer"
-          patternConfig={Patterns.name}
+          required={true}
           name="payer"
         />
       </Grid>

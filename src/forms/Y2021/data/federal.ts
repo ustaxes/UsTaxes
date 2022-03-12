@@ -1,7 +1,7 @@
 import { FilingStatus } from 'ustaxes/core/data'
 import { linear, Piecewise } from 'ustaxes/core/util'
 
-export const CURRENT_YEAR = 2020
+export const CURRENT_YEAR = 2021
 
 interface TaggedAmount {
   name: string
@@ -31,7 +31,7 @@ const federalBrackets: FederalBrackets = {
     rates: [10, 12, 22, 24, 32, 35, 37],
     status: {
       [FilingStatus.S]: {
-        brackets: [9875, 40125, 85525, 163300, 207350, 510300],
+        brackets: [9950, 40525, 86375, 164925, 209425, 523600],
         deductions: [
           {
             name: 'Standard Deduction (Single)',
@@ -46,7 +46,7 @@ const federalBrackets: FederalBrackets = {
         ]
       },
       [FilingStatus.MFJ]: {
-        brackets: [19750, 80250, 171050, 326600, 414700, 622050],
+        brackets: [19900, 81050, 172750, 329850, 418850, 628300],
         deductions: [
           {
             name: 'Standard Deduction (Married)',
@@ -61,7 +61,7 @@ const federalBrackets: FederalBrackets = {
         ]
       },
       [FilingStatus.W]: {
-        brackets: [19750, 80250, 171050, 326600, 414700, 622050],
+        brackets: [19900, 81050, 172750, 329850, 418850, 628300],
         deductions: [
           {
             name: 'Standard Deduction (Widowed)',
@@ -76,7 +76,7 @@ const federalBrackets: FederalBrackets = {
         ]
       },
       [FilingStatus.MFS]: {
-        brackets: [9875, 40125, 85525, 163300, 207350, 510300],
+        brackets: [9950, 40525, 86375, 164925, 209425, 314150],
         deductions: [
           {
             name: 'Standard Deduction (Married Filing Separately)',
@@ -91,7 +91,7 @@ const federalBrackets: FederalBrackets = {
         ]
       },
       [FilingStatus.HOH]: {
-        brackets: [19750, 80250, 171050, 326600, 414700, 622050],
+        brackets: [14200, 54200, 86350, 164900, 209400, 523600],
         deductions: [
           {
             name: 'Standard Deduction (Head of Household)',
@@ -111,19 +111,19 @@ const federalBrackets: FederalBrackets = {
     rates: [0, 15, 20],
     status: {
       [FilingStatus.S]: {
-        brackets: [40400, 164925, 441450]
+        brackets: [40400, 445850]
       },
       [FilingStatus.MFJ]: {
-        brackets: [80800, 329850, 496600]
+        brackets: [80800, 501600]
       },
       [FilingStatus.W]: {
-        brackets: [80800, 329850, 496600]
+        brackets: [80800, 501600]
       },
       [FilingStatus.MFS]: {
-        brackets: [40400, 164925, 250800]
+        brackets: [40400, 250800]
       },
       [FilingStatus.HOH]: {
-        brackets: [54100, 164900, 473750]
+        brackets: [54100, 473750]
       }
     }
   }
