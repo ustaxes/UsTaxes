@@ -88,6 +88,7 @@ interface F1099UserInput {
   // Div fields
   dividends: string | number
   qualifiedDividends: string | number
+  totalCapitalGainsDistributions: string | number
   personRole: PersonRole.PRIMARY | PersonRole.SPOUSE
   // R fields
   grossDistribution: string | number
@@ -113,6 +114,7 @@ const blankUserInput: F1099UserInput = {
   // Div fields
   dividends: '',
   qualifiedDividends: '',
+  totalCapitalGainsDistributions: '',
   // R fields
   grossDistribution: '',
   taxableAmount: '',
@@ -185,7 +187,10 @@ const toF1099 = (input: F1099UserInput): Supported1099 | undefined => {
         type: input.formType,
         form: {
           dividends: Number(input.dividends),
-          qualifiedDividends: Number(input.qualifiedDividends)
+          qualifiedDividends: Number(input.qualifiedDividends),
+          totalCapitalGainsDistributions: Number(
+            input.totalCapitalGainsDistributions
+          )
         }
       }
     }
@@ -304,14 +309,19 @@ export default function F1099Info(): ReactElement {
   const divFields = (
     <Grid container spacing={2}>
       <LabeledInput
-        label="Total Dividends"
+        label={boxLabel('1a', 'Total Dividends')}
         patternConfig={Patterns.currency}
         name="dividends"
       />
       <LabeledInput
-        label="Qualified Dividends"
+        label={boxLabel('1b', 'Qualified Dividends')}
         patternConfig={Patterns.currency}
         name="qualifiedDividends"
+      />
+      <LabeledInput
+        label={boxLabel('2a', 'Total capital gains distributions')}
+        patternConfig={Patterns.currency}
+        name="totalCapitalGainsDistributions"
       />
     </Grid>
   )

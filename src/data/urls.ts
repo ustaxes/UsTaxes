@@ -14,7 +14,8 @@ const Urls = {
     f1099s: '/income/f1099s',
     realEstate: '/income/realestate',
     otherInvestments: '/income/otherinvestments',
-    stockOptions: '/income/stockoptions'
+    stockOptions: '/income/stockoptions',
+    partnershipIncome: '/income/partnershipincome'
   },
   payments: {
     estimatedTaxes: '/payments/estimatedtaxes'

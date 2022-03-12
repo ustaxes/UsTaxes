@@ -22,7 +22,7 @@ export default class Schedule2 extends Form {
   l3 = (): number => sumFields([this.l1(), this.l2()])
 
   // Part II: Other Tax
-  l4 = (): number | undefined => undefined // TODO: self-employment tax (schedule SE)
+  l4 = (): number | undefined => this.f1040.scheduleSE?.l12() // self-employment tax (schedule SE)
   l5 = (): number | undefined => undefined // TODO: unreported FICA tax
   l6 = (): number | undefined => undefined // TODO: additional tax on retirement accounts
   l7 = (): number | undefined => undefined // TODO: total additional ss and medicare tax

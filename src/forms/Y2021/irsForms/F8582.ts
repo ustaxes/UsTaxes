@@ -2,8 +2,14 @@ import { TaxPayer } from 'ustaxes/core/data'
 import ScheduleE, { MatrixRow } from './ScheduleE'
 import log from 'ustaxes/core/log'
 
+let suppressedLogMessages: string[] = []
+
 const unimplemented = (message: string): void => {
-  log.warn(`[Form 8582]: ${message}`)
+  // Excessive logging can hang the dev tools, so limit messages
+  if (suppressedLogMessages.indexOf(message) === -1) {
+    suppressedLogMessages.push(message)
+    log.warn(`[Form 8582]: ${message}`)
+  }
 }
 
 /**
@@ -16,6 +22,9 @@ export default class F8582 {
   constructor(tp: TaxPayer, scheduleE: ScheduleE) {
     this.tp = tp
     this.scheduleE = scheduleE
+
+    // Reset suppressed messages
+    suppressedLogMessages = []
   }
 
   deductibleRealEstateLossAfterLimitation = (): MatrixRow => {
