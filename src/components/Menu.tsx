@@ -174,39 +174,37 @@ const Menu = (): ReactElement => {
   const classes = useStyles()
   const [isOpen, setOpen] = useState(!isMobile)
 
-  return (
-    <>
-      <AppBar position="fixed" className={classes.root}>
-        <Toolbar
-          className={classes.toolbar}
-          classes={{ gutters: classes.gutters }}
-        >
-          <IconButton
-            color="inherit"
-            aria-label={`${isOpen ? 'close' : 'open'} drawer`}
-            edge="start"
-            onClick={() => setOpen((isOpen) => !isOpen)}
-            className={classes.menuButton}
-          >
-            {isOpen ? <CloseIcon /> : <MenuIcon />}
-          </IconButton>
-          <Slide in={isOpen} direction={'right'}>
-            <Typography className={classes.title}>Menu</Typography>
-          </Slide>
-          <Slide in={!isOpen} direction={'left'}>
-            <Typography className={classes.title}>
-              {getTitleAndPage(useLocation().pathname)}
-            </Typography>
-          </Slide>
-        </Toolbar>
-      </AppBar>
-      <ResponsiveDrawer
-        sections={drawerSections}
-        isOpen={isOpen}
-        setOpen={setOpen}
-      />
-    </>
-  )
+  return <>
+    <AppBar position="fixed" className={classes.root}>
+      <Toolbar
+        className={classes.toolbar}
+        classes={{ gutters: classes.gutters }}
+      >
+        <IconButton
+          color="inherit"
+          aria-label={`${isOpen ? 'close' : 'open'} drawer`}
+          edge="start"
+          onClick={() => setOpen((isOpen) => !isOpen)}
+          className={classes.menuButton}
+          size="large">
+          {isOpen ? <CloseIcon /> : <MenuIcon />}
+        </IconButton>
+        <Slide in={isOpen} direction={'right'}>
+          <Typography className={classes.title}>Menu</Typography>
+        </Slide>
+        <Slide in={!isOpen} direction={'left'}>
+          <Typography className={classes.title}>
+            {getTitleAndPage(useLocation().pathname)}
+          </Typography>
+        </Slide>
+      </Toolbar>
+    </AppBar>
+    <ResponsiveDrawer
+      sections={drawerSections}
+      isOpen={isOpen}
+      setOpen={setOpen}
+    />
+  </>;
 }
 
 export default Menu

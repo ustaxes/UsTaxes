@@ -40,10 +40,10 @@ export const StateLoader = (): ReactElement => {
       <IconButton
         className={classes.button}
         onClick={() => dispatch(setInfo(generator()))}
-      >
+        size="large">
         <Star />
         Seed random state
       </IconButton>
     </div>
-  )
+  );
 }

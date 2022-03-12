@@ -92,11 +92,11 @@ export const MutableListItem = ({
     if (canEdit) {
       return (
         <ListItemIcon>
-          <IconButton onClick={onEdit} edge="end" aria-label="edit">
+          <IconButton onClick={onEdit} edge="end" aria-label="edit" size="large">
             <Edit />
           </IconButton>
         </ListItemIcon>
-      )
+      );
     }
   })()
 
@@ -104,11 +104,11 @@ export const MutableListItem = ({
     if (canDelete) {
       return (
         <ListItemSecondaryAction>
-          <IconButton onClick={remove} edge="end" aria-label="delete">
+          <IconButton onClick={remove} edge="end" aria-label="delete" size="large">
             <Delete />
           </IconButton>
         </ListItemSecondaryAction>
-      )
+      );
     }
   })()
 
@@ -152,7 +152,7 @@ enum FormState {
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     buttonList: {
-      margin: `${theme.spacing(2)}px 0 ${theme.spacing(3)}px`
+      margin: `${theme.spacing(2)} 0 ${theme.spacing(3)}`
     }
   })
 )

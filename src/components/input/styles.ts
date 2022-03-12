@@ -1,6 +1,6 @@
 import { createStyles, makeStyles, Theme } from '@mui/material'
 
-const useStyles = makeStyles(({ palette: { type: themeType } }: Theme) =>
+const useStyles = makeStyles(({ palette: { mode: themeType } }: Theme) =>
   createStyles({
     root: {
       '& .MuiFormLabel-root': {

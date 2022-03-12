@@ -135,7 +135,7 @@ function ResponsiveDrawer(props: DrawerItemsProps): ReactElement {
             href={`https://github.com/ustaxes/UsTaxes`}
             target="_blank"
             rel="noreferrer noopener"
-          >
+            size="large">
             <GitHubIcon />
           </IconButton>
         </ListItem>
@@ -147,13 +147,13 @@ function ResponsiveDrawer(props: DrawerItemsProps): ReactElement {
             href={`https://www.twitter.com/ustaxesorg`}
             target="_blank"
             rel="noreferrer noopener"
-          >
+            size="large">
             <TwitterIcon />
           </IconButton>
         </ListItem>
         <ListItem className={classes.listItemSocial}>
           <Link to={Urls.settings}>
-            <IconButton color="secondary" aria-label="site user settings">
+            <IconButton color="secondary" aria-label="site user settings" size="large">
               <Settings />
             </IconButton>
           </Link>

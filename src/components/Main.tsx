@@ -1,4 +1,5 @@
 import { useMemo, PropsWithChildren, ReactElement, ReactNode } from 'react'
+import { adaptV4Theme } from '@mui/material/styles';
 import {
   createStyles,
   makeStyles,
@@ -7,8 +8,9 @@ import {
   CssBaseline,
   Grid,
   Theme,
-  ThemeProvider
-} from '@mui/material'
+  ThemeProvider,
+  StyledEngineProvider,
+} from '@mui/material';
 import { Switch, Route, Redirect, useLocation } from 'react-router-dom'
 import { isMobileOnly as isMobile } from 'react-device-detect'
 import { PagerProvider } from './pager'
@@ -23,6 +25,13 @@ import { useFocus } from 'ustaxes/hooks/Focus'
 import Urls from 'ustaxes/data/urls'
 import DataPropagator from './DataPropagator'
 import YearStatusBar from './YearStatusBar'
+
+
+declare module '@mui/styles/defaultTheme' {
+  // eslint-disable-next-line @typescript-eslint/no-empty-interface
+  interface DefaultTheme extends Theme {}
+}
+
 
 type Props = {
   isMobile: boolean
@@ -59,9 +68,9 @@ export default function Main(): ReactElement {
   const isStartPage = useLocation().pathname === '/start'
   const theme = useMemo(
     () =>
-      createMuiTheme({
+      createMuiTheme(adaptV4Theme({
         palette: {
-          type: prefersDarkMode ? 'dark' : 'light',
+          mode: prefersDarkMode ? 'dark' : 'light',
           secondary: prefersDarkMode
             ? {
                 light: '#4f5b62',
@@ -82,7 +91,7 @@ export default function Main(): ReactElement {
             contrastText: '#000000'
           }
         }
-      }),
+      })),
     [prefersDarkMode]
   )
 
@@ -118,33 +127,35 @@ export default function Main(): ReactElement {
   )
 
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <SkipToLinks />
-      {isMobile && !isStartPage && <div className={classes.toolbar} />}
-      <div className={classes.container}>
-        <StateLoader />
-        <PagerProvider pages={steps}>
-          <Switch>
-            <Redirect path="/" to={Urls.default} exact />
-            {allItems.map((item) => (
-              <Route key={item.title} exact path={item.url}>
-                {!isStartPage && <Menu />}
+    <StyledEngineProvider injectFirst>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <SkipToLinks />
+        {isMobile && !isStartPage && <div className={classes.toolbar} />}
+        <div className={classes.container}>
+          <StateLoader />
+          <PagerProvider pages={steps}>
+            <Switch>
+              <Redirect path="/" to={Urls.default} exact />
+              {allItems.map((item) => (
+                <Route key={item.title} exact path={item.url}>
+                  {!isStartPage && <Menu />}
+                  <Layout>
+                    {!isStartPage && <DataPropagator />}
+                    {item.element}
+                  </Layout>
+                </Route>
+              ))}
+              <Route>
                 <Layout>
-                  {!isStartPage && <DataPropagator />}
-                  {item.element}
+                  <NoMatchPage />
                 </Layout>
               </Route>
-            ))}
-            <Route>
-              <Layout>
-                <NoMatchPage />
-              </Layout>
-            </Route>
-          </Switch>
-        </PagerProvider>
-        {!isMobile && <ScrollTop />}
-      </div>
-    </ThemeProvider>
-  )
+            </Switch>
+          </PagerProvider>
+          {!isMobile && <ScrollTop />}
+        </div>
+      </ThemeProvider>
+    </StyledEngineProvider>
+  );
 }
