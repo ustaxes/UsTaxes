@@ -1,5 +1,4 @@
 import { useMemo, PropsWithChildren, ReactElement, ReactNode } from 'react'
-import { adaptV4Theme } from '@mui/material/styles';
 import {
   createStyles,
   makeStyles,
@@ -9,8 +8,8 @@ import {
   Grid,
   Theme,
   ThemeProvider,
-  StyledEngineProvider,
-} from '@mui/material';
+  StyledEngineProvider
+} from '@mui/material'
 import { Switch, Route, Redirect, useLocation } from 'react-router-dom'
 import { isMobileOnly as isMobile } from 'react-device-detect'
 import { PagerProvider } from './pager'
@@ -26,23 +25,12 @@ import Urls from 'ustaxes/data/urls'
 import DataPropagator from './DataPropagator'
 import YearStatusBar from './YearStatusBar'
 
-
-declare module '@mui/styles/defaultTheme' {
-  // eslint-disable-next-line @typescript-eslint/no-empty-interface
-  interface DefaultTheme extends Theme {}
-}
-
-
-type Props = {
-  isMobile: boolean
-}
-
-const useStyles = makeStyles<Theme, Props>((theme: Theme) =>
+const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     container: {
       display: 'flex'
     },
-    content: ({ isMobile }) => ({
+    content: {
       padding: '1em 2em',
       [theme.breakpoints.up('sm')]: {
         borderRadius: '5px',
@@ -51,7 +39,7 @@ const useStyles = makeStyles<Theme, Props>((theme: Theme) =>
         padding: '1em 2em'
       },
       width: isMobile ? '100%' : undefined
-    }),
+    },
     // necessary for content to be below app bar
     toolbar: {
       ...theme.mixins.toolbar,
@@ -68,7 +56,7 @@ export default function Main(): ReactElement {
   const isStartPage = useLocation().pathname === '/start'
   const theme = useMemo(
     () =>
-      createMuiTheme(adaptV4Theme({
+      createMuiTheme({
         palette: {
           mode: prefersDarkMode ? 'dark' : 'light',
           secondary: prefersDarkMode
@@ -91,7 +79,7 @@ export default function Main(): ReactElement {
             contrastText: '#000000'
           }
         }
-      })),
+      }),
     [prefersDarkMode]
   )
 
@@ -157,5 +145,5 @@ export default function Main(): ReactElement {
         </div>
       </ThemeProvider>
     </StyledEngineProvider>
-  );
+  )
 }

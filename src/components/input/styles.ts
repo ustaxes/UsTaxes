@@ -1,4 +1,5 @@
-import { createStyles, makeStyles, Theme } from '@mui/material'
+import { Theme } from '@mui/material'
+import { createStyles, makeStyles } from '@mui/styles'
 
 const useStyles = makeStyles(({ palette: { mode: themeType } }: Theme) =>
   createStyles({
