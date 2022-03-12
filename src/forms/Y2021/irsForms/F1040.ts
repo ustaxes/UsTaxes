@@ -202,7 +202,16 @@ export default class F1040 extends Form {
       this.scheduleE = new ScheduleE(this.info)
     }
 
-    if (this.info.scheduleK1Form1065s.length > 0) {
+    if (
+      this.info.scheduleK1Form1065s
+        .map(
+          (k1) =>
+            k1.selfEmploymentEarningsA +
+            k1.selfEmploymentEarningsB +
+            k1.selfEmploymentEarningsC
+        )
+        .reduce((a, b) => a + b, 0) > 0
+    ) {
       const scheduleSE = new ScheduleSE(this)
       this.scheduleSE = scheduleSE
     }

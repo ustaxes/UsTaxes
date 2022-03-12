@@ -13,7 +13,8 @@ import {
   LabeledInput,
   GenericLabeledDropdown,
   formatSSID,
-  LabeledCheckbox
+  LabeledCheckbox,
+  formatEIN
 } from 'ustaxes/components/input'
 import { Patterns } from 'ustaxes/components/Patterns'
 import { FormListContainer } from 'ustaxes/components/FormContainer'
@@ -176,7 +177,7 @@ export const PartnershipIncome = (): ReactElement => {
       secondary={(k1) => {
         const scheduleK1Form1065 = toScheduleK1Form1065(k1)
         if (scheduleK1Form1065 === undefined) return ''
-        return <span>{scheduleK1Form1065.partnershipName}</span>
+        return <span>{formatEIN(scheduleK1Form1065.partnershipEin)}</span>
       }}
     >
       {' '}
