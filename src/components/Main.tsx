@@ -10,7 +10,7 @@ import {
   ThemeProvider
 } from '@material-ui/core'
 import { Switch, Route, Redirect, useLocation } from 'react-router-dom'
-import { isMobile } from 'react-device-detect'
+import { isMobileOnly as isMobile } from 'react-device-detect'
 import { PagerProvider } from './pager'
 import { StateLoader } from './debug'
 import NoMatchPage from './NoMatchPage'

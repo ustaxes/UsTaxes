@@ -1,6 +1,6 @@
 import { Dispatch, Fragment, ReactElement, SetStateAction } from 'react'
 import { useLocation, NavLink, Link } from 'react-router-dom'
-import { isMobile } from 'react-device-detect'
+import { isMobileOnly as isMobile } from 'react-device-detect'
 import {
   createStyles,
   makeStyles,

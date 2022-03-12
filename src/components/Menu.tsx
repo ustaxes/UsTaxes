@@ -34,7 +34,7 @@ import Questions from './Questions'
 import UserSettings from './UserSettings'
 import Urls from 'ustaxes/data/urls'
 
-import { isMobile } from 'react-device-detect'
+import { isMobileOnly as isMobile } from 'react-device-detect'
 import HealthSavingsAccounts from './savingsAccounts/healthSavingsAccounts'
 import IRA from './savingsAccounts/IRA'
 import OtherInvestments from './income/OtherInvestments'
