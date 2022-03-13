@@ -6,7 +6,7 @@ import {
   ReactElement,
   ReactNode
 } from 'react'
-import { useMediaQuery, Button, Grid } from '@material-ui/core'
+import { useMediaQuery, Button, Grid } from '@mui/material'
 import { isMobileOnly as isMobile } from 'react-device-detect'
 import { Link, useHistory } from 'react-router-dom'
 

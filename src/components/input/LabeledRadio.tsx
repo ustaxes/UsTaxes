@@ -6,7 +6,7 @@ import {
   Grid,
   Radio,
   RadioGroup
-} from '@material-ui/core'
+} from '@mui/material'
 import { Controller, useFormContext } from 'react-hook-form'
 import { LabeledRadioProps } from './types'
 import useStyles from './styles'

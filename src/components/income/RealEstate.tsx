@@ -29,9 +29,9 @@ import {
 } from 'ustaxes/components/input'
 import { Patterns } from 'ustaxes/components/Patterns'
 import { daysInYear, enumKeys } from 'ustaxes/core/util'
-import { HouseOutlined } from '@material-ui/icons'
+import { HouseOutlined } from '@mui/icons-material'
 import { FormListContainer } from 'ustaxes/components/FormContainer'
-import { Grid } from '@material-ui/core'
+import { Grid } from '@mui/material'
 import _ from 'lodash'
 import { TaxYear, TaxYears } from 'ustaxes/data'
 

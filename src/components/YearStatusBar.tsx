@@ -1,4 +1,4 @@
-import { Link } from '@material-ui/core'
+import { Link } from '@mui/material'
 import { ReactElement, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { YearsTaxesState } from 'ustaxes/redux'

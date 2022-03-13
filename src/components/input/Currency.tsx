@@ -1,7 +1,7 @@
 import { ReactElement } from 'react'
 import { CurrencyProps } from './types'
 import NumberFormat from 'react-number-format'
-import { makeStyles } from '@material-ui/core/styles'
+import { makeStyles } from '@mui/material/styles'
 
 const useStyles = makeStyles(() => ({
   positive: {

@@ -27,7 +27,7 @@ import {
 } from 'ustaxes/components/input'
 import { Prompt } from 'ustaxes/components/Prompt'
 import AddressFields from './Address'
-import { Grid } from '@material-ui/core'
+import { Grid } from '@mui/material'
 import { Patterns } from 'ustaxes/components/Patterns'
 
 interface TaxPayerUserForm {

@@ -1,6 +1,6 @@
 import { useEffect, useRef, KeyboardEvent, ReactElement } from 'react'
 import { useForkRef } from 'rooks'
-import { InputAdornment, Grid, TextField } from '@material-ui/core'
+import { InputAdornment, Grid, TextField } from '@mui/material'
 import { LabeledInputProps } from './types'
 import NumberFormat from 'react-number-format'
 import { Controller, useFormContext } from 'react-hook-form'

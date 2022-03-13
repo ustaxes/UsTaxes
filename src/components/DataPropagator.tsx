@@ -6,8 +6,8 @@ import _ from 'lodash'
 import { enumKeys } from 'ustaxes/core/util'
 import { useDispatch } from 'ustaxes/redux'
 import { setInfo } from 'ustaxes/redux/actions'
-import { Button } from '@material-ui/core'
-import { Alert } from '@material-ui/lab'
+import { Button } from '@mui/material'
+import { Alert } from '@mui/lab'
 import { TaxYears } from 'ustaxes/data'
 
 const DataPropagator = (): ReactElement => {

@@ -5,16 +5,16 @@ import {
   ListItem,
   ListItemIcon,
   ListItemSecondaryAction
-} from '@material-ui/core'
+} from '@mui/material'
 import { useDispatch, useSelector, TaxesState } from 'ustaxes/redux'
 import { formatSSID, LabeledInput } from 'ustaxes/components/input'
 import { Patterns } from 'ustaxes/components/Patterns'
 import { removeDependent } from 'ustaxes/redux/actions'
 import { Person } from 'ustaxes/core/data'
-import DeleteIcon from '@material-ui/icons/Delete'
-import EditIcon from '@material-ui/icons/Edit'
-import ListItemText from '@material-ui/core/ListItemText'
-import PersonIcon from '@material-ui/icons/Person'
+import DeleteIcon from '@mui/icons-material/Delete'
+import EditIcon from '@mui/icons-material/Edit'
+import ListItemText from '@mui/material/ListItemText'
+import PersonIcon from '@mui/icons-material/Person'
 
 export const labels = {
   fname: 'First Name and Initial',

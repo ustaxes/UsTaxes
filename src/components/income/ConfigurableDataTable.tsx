@@ -5,8 +5,8 @@ import {
   TextField,
   Theme,
   useMediaQuery
-} from '@material-ui/core'
-import { Alert } from '@material-ui/lab'
+} from '@mui/material'
+import { Alert } from '@mui/lab'
 import { ReactElement } from 'react'
 import DataTable, {
   ConditionalStyles,

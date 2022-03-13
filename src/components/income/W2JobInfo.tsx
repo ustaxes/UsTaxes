@@ -28,10 +28,10 @@ import {
 } from 'ustaxes/components/input'
 import { Patterns } from 'ustaxes/components/Patterns'
 import { FormListContainer } from 'ustaxes/components/FormContainer'
-import { Grid, Box, Button, Paper } from '@material-ui/core'
-import { Work } from '@material-ui/icons'
+import { Grid, Box, Button, Paper } from '@mui/material'
+import { Work } from '@mui/icons-material'
 import { addW2, editW2, removeW2 } from 'ustaxes/redux/actions'
-import { Alert } from '@material-ui/lab'
+import { Alert } from '@mui/lab'
 import {
   enumKeys,
   parseFormNumber,

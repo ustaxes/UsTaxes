@@ -8,7 +8,7 @@ import {
   Grid,
   Theme,
   ThemeProvider
-} from '@material-ui/core'
+} from '@mui/material'
 import { Switch, Route, Redirect, useLocation } from 'react-router-dom'
 import { isMobileOnly as isMobile } from 'react-device-detect'
 import { PagerProvider } from './pager'

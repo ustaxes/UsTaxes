@@ -1,6 +1,6 @@
 import { ReactElement } from 'react'
-import { makeStyles, useScrollTrigger, Fab, Zoom } from '@material-ui/core'
-import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp'
+import { makeStyles, useScrollTrigger, Fab, Zoom } from '@mui/material'
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
 
 const useStyles = makeStyles((theme) => ({
   root: {

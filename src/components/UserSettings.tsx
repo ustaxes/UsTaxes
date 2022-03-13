@@ -1,4 +1,4 @@
-import { Check } from '@material-ui/icons'
+import { Check } from '@mui/icons-material'
 import { ReactElement, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { Load } from 'ustaxes/redux/fs'

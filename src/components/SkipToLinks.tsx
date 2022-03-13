@@ -5,7 +5,7 @@ import {
   Theme,
   Typography,
   useMediaQuery
-} from '@material-ui/core'
+} from '@mui/material'
 
 type Props = {
   prefersDarkMode: boolean

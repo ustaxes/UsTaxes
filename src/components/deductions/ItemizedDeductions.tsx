@@ -7,8 +7,8 @@ import { usePager } from 'ustaxes/components/pager'
 import { LabeledInput, LabeledCheckbox } from 'ustaxes/components/input'
 import { ItemizedDeductions } from 'ustaxes/core/data'
 import { Patterns } from 'ustaxes/components/Patterns'
-import { Grid, Box } from '@material-ui/core'
-import { Alert } from '@material-ui/lab'
+import { Grid, Box } from '@mui/material'
+import { Alert } from '@mui/lab'
 
 interface ItemizedDeductionUserInput {
   medicalAndDental: string | number

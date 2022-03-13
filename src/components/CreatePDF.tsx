@@ -1,7 +1,7 @@
 import { FormEvent, ReactElement, useEffect, useState } from 'react'
 import { Helmet } from 'react-helmet'
 import { usePager } from './pager'
-import Alert from '@material-ui/lab/Alert'
+import Alert from '@mui/lab/Alert'
 import { useSelector } from 'react-redux'
 import { Information, Asset, State } from 'ustaxes/core/data'
 import { YearsTaxesState } from 'ustaxes/redux'
@@ -9,7 +9,7 @@ import { TaxYear } from 'ustaxes/data'
 
 import yearFormBuilder from 'ustaxes/forms/YearForms'
 import { isLeft, runAsync } from 'ustaxes/core/util'
-import { Box, Button } from '@material-ui/core'
+import { Box, Button } from '@mui/material'
 import Summary from './Summary'
 
 import { store } from 'ustaxes/redux/store'

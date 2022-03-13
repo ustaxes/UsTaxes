@@ -1,6 +1,6 @@
 import { ReactElement } from 'react'
 import { Helmet } from 'react-helmet'
-import { Link, useMediaQuery } from '@material-ui/core'
+import { Link, useMediaQuery } from '@mui/material'
 import { StartButtons, SingleButtons } from './pager'
 import { isWeb } from 'ustaxes/core/util'
 

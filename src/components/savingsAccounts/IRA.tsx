@@ -21,8 +21,8 @@ import {
 } from 'ustaxes/components/input'
 import { Patterns } from 'ustaxes/components/Patterns'
 import { FormListContainer } from 'ustaxes/components/FormContainer'
-import { Grid } from '@material-ui/core'
-import { Work } from '@material-ui/icons'
+import { Grid } from '@mui/material'
+import { Work } from '@mui/icons-material'
 import { TaxesState } from 'ustaxes/redux'
 import { addIRA, editIRA, removeIRA } from 'ustaxes/redux/actions'
 

@@ -5,7 +5,7 @@ import {
   FormControlLabel,
   FormGroup,
   Grid
-} from '@material-ui/core'
+} from '@mui/material'
 import { Controller, useFormContext } from 'react-hook-form'
 import { LabeledCheckboxProps } from './types'
 import ConditionallyWrap from 'ustaxes/components/ConditionallyWrap'

@@ -12,8 +12,8 @@ import {
   Box,
   Button,
   Theme
-} from '@material-ui/core'
-import { Delete, Edit } from '@material-ui/icons'
+} from '@mui/material'
+import { Delete, Edit } from '@mui/icons-material'
 import { SubmitHandler, useFormContext } from 'react-hook-form'
 import _ from 'lodash'
 import { ReactNode } from 'react'

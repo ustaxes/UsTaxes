@@ -1,4 +1,4 @@
-import { Button } from '@material-ui/core'
+import { Button } from '@mui/material'
 import { within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { PropsWithChildren, ReactElement } from 'react'

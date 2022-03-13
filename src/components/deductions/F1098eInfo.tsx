@@ -1,7 +1,7 @@
 import { ReactElement } from 'react'
 import { Helmet } from 'react-helmet'
 import { FormProvider, useForm } from 'react-hook-form'
-import SchoolIcon from '@material-ui/icons/School'
+import SchoolIcon from '@mui/icons-material/School'
 import { useDispatch, useSelector, TaxesState } from 'ustaxes/redux'
 import { add1098e, edit1098e, remove1098e } from 'ustaxes/redux/actions'
 import { usePager } from 'ustaxes/components/pager'
@@ -9,7 +9,7 @@ import { Currency, LabeledInput } from 'ustaxes/components/input'
 import { F1098e } from 'ustaxes/core/data'
 import { Patterns } from 'ustaxes/components/Patterns'
 import { FormListContainer } from 'ustaxes/components/FormContainer'
-import { Grid } from '@material-ui/core'
+import { Grid } from '@mui/material'
 
 const showInterest = (a: F1098e): ReactElement => {
   return <Currency value={a.interest} />

@@ -13,10 +13,10 @@ import {
   ListItemText,
   ListSubheader,
   Theme
-} from '@material-ui/core'
-import GitHubIcon from '@material-ui/icons/GitHub'
-import TwitterIcon from '@material-ui/icons/Twitter'
-import { Settings } from '@material-ui/icons'
+} from '@mui/material'
+import GitHubIcon from '@mui/icons-material/GitHub'
+import TwitterIcon from '@mui/icons-material/Twitter'
+import { Settings } from '@mui/icons-material'
 import Urls from 'ustaxes/data/urls'
 
 const drawerWidth = 240

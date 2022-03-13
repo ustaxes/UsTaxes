@@ -10,9 +10,9 @@ import {
   Theme,
   Toolbar,
   Typography
-} from '@material-ui/core'
-import CloseIcon from '@material-ui/icons/Close'
-import MenuIcon from '@material-ui/icons/Menu'
+} from '@mui/material'
+import CloseIcon from '@mui/icons-material/Close'
+import MenuIcon from '@mui/icons-material/Menu'
 import ResponsiveDrawer, {
   item,
   Section,
