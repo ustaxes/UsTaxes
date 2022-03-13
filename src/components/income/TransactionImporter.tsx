@@ -13,12 +13,13 @@ import {
   Transaction,
   TransactionError
 } from 'ustaxes/data/transactions'
-import { Either, isLeft, left, right, run } from 'ustaxes/core/util'
+import { Either, left, right, run } from 'ustaxes/core/util'
 import { Asset } from 'ustaxes/core/data'
 import ConfigurableDataTable, {
   baseCellStyle,
   forceHeadCells
 } from './ConfigurableDataTable'
+import { ParseError } from 'papaparse'
 
 interface PortfolioTableProps {
   portfolio: Portfolio
@@ -126,11 +127,15 @@ export const TransactionImporter = (): ReactElement => {
 
   const onHandle = async (contents: string): Promise<void> => {
     setRawContents(contents)
-    const res = await preflightCsv(contents).catch((parseError) => {
-      console.error("Couldn't parse CSV", parseError)
-      return []
-    })
-    setPreflightTransactions(res)
+    run(preflightCsv(contents)).fold(
+      (e) => {
+        console.error("Couldn't parse CSV", e)
+        return []
+      },
+      (res) => {
+        setPreflightTransactions(res)
+      }
+    )
   }
 
   const parseRow = (row: string[]): Either<string[], Transaction> => {
@@ -192,52 +197,54 @@ export const TransactionImporter = (): ReactElement => {
     })
   }
 
-  const addToPortfolio = async () => {
-    const csv = await preflightCsvAll(rawContents)
-    let errorResult: TransactionError | undefined
+  const addToPortfolio = () =>
+    run(preflightCsvAll(rawContents))
+      .map<Transaction[]>((rows) => {
+        let errorResult: TransactionError
 
-    const transactions: Transaction[] = csv.flatMap((row, idx) => {
-      if (idx < dropFirstNRows) {
-        return []
-      }
+        return rows.flatMap<Transaction>((row, idx) => {
+          if (idx < dropFirstNRows) {
+            return []
+          }
 
-      const parsedRow = parseRow(row)
-      if (errorResult !== undefined) {
-        return []
-      }
-      if (isLeft(parsedRow)) {
-        errorResult = {
-          errorIndex: idx,
-          messages: parsedRow.left,
-          errorTransaction: undefined,
-          previousPortfolio: undefined
-        }
-        return []
-      } else {
-        return [parsedRow.right]
-      }
-    })
-
-    if (errorResult !== undefined) {
-      // First deal with parsing errors, if any
-      setPortfolioError(errorResult)
-    } else {
-      // Then deal with portfolio generating errors, if any.
-      run(processTransactions({ positions: [] }, transactions)).fold(
-        (e) =>
+          if (errorResult !== undefined) {
+            return []
+          }
+          return run(parseRow(row)).fold(
+            (e) => {
+              errorResult = {
+                errorIndex: idx,
+                messages: e
+              }
+              return []
+            },
+            (res) => [res]
+          )
+        })
+      })
+      .mapLeft<TransactionError>((e: ParseError[]) => ({
+        messages: [
+          'Error occurred in parsing csv from imported file',
+          e[0].message
+        ],
+        errorIndex: e[0].row
+      }))
+      .chain((transactions) => processTransactions(portfolio, transactions))
+      .fold(
+        (e) => {
+          e.messages.forEach(console.error)
           setPortfolioError({
             ...e,
             messages: [
               'This usually means you have sell transactions in excess of securities you hold at the time of sale. Either these are short sales, which are not yet supported here, or buy transactions that predate these sales are missing. If this is the case, add the required positions as BUY transactions at the beginning of this CSV file and try again.'
             ]
-          }),
+          })
+        },
         (portfolio) => {
           setPortfolioError(undefined)
           setPortfolio(portfolio)
         }
       )
-    }
-  }
 
   const readyButton = (() => {
     if (ready() && portfolio.positions.length === 0) {

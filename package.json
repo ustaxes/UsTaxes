@@ -12,11 +12,10 @@
     "@tauri-apps/cli": "^1.0.0-rc.7",
     "ajv": "^8.10.0",
     "ajv-formats": "^2.1.1",
-    "csv": "^6.0.5",
-    "csv-parse": "^5.0.4",
     "date-fns": "^2.28.0",
     "lodash": "^4.17.21",
     "loglevel": "^1.8.0",
+    "papaparse": "^5.3.1",
     "pdf-lib": "^1.17.1",
     "react": "^17.0.2",
     "react-data-table-component": "^7.4.7",
@@ -76,6 +75,7 @@
     "@types/jest": "^27.4.1",
     "@types/lodash": "^4.14.179",
     "@types/node": "^17.0.21",
+    "@types/papaparse": "^5.3.2",
     "@types/react": "^17.0.40",
     "@types/react-dom": "^17.0.13",
     "@types/react-helmet": "^6.1.5",
@@ -105,8 +105,7 @@
   },
   "jest": {
     "moduleNameMapper": {
-      "^ustaxes/(.*)": "<rootDir>/src/$1",
-      "csv-parse/lib": "<rootDir>/node_modules/csv-parse/dist/cjs/index.cjs"
+      "^ustaxes/(.*)": "<rootDir>/src/$1"
     },
     "transformIgnorePatterns": [
       "/node_modules/(?!@tauri-apps)"
