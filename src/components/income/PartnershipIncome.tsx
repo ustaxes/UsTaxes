@@ -39,6 +39,7 @@ interface ScheduleK1Form1065UserInput {
   isForeign: boolean
   isPassive: boolean
   ordinaryBusinessIncome: string
+  interestIncome: string
   guaranteedPaymentsForServices: string
   guaranteedPaymentsForCapital: string
   selfEmploymentEarningsA: string
@@ -56,6 +57,7 @@ const blankUserInput: ScheduleK1Form1065UserInput = {
   isForeign: false,
   isPassive: false,
   ordinaryBusinessIncome: '',
+  interestIncome: '',
   guaranteedPaymentsForServices: '',
   guaranteedPaymentsForCapital: '',
   selfEmploymentEarningsA: '',
@@ -74,6 +76,7 @@ const toUserInput = (k1: ScheduleK1Form1065): ScheduleK1Form1065UserInput => ({
   isForeign: k1.isForeign,
   isPassive: k1.isPassive,
   ordinaryBusinessIncome: k1.ordinaryBusinessIncome.toString(),
+  interestIncome: k1.interestIncome.toString(),
   guaranteedPaymentsForServices: k1.guaranteedPaymentsForServices.toString(),
   guaranteedPaymentsForCapital: k1.guaranteedPaymentsForCapital.toString(),
   selfEmploymentEarningsA: k1.selfEmploymentEarningsA.toString(),
@@ -94,6 +97,7 @@ const toScheduleK1Form1065 = (
     isForeign,
     isPassive,
     ordinaryBusinessIncome,
+    interestIncome,
     guaranteedPaymentsForServices,
     guaranteedPaymentsForCapital,
     selfEmploymentEarningsA,
@@ -113,6 +117,7 @@ const toScheduleK1Form1065 = (
     isForeign: isForeign,
     isPassive: isPassive,
     ordinaryBusinessIncome: Number(ordinaryBusinessIncome),
+    interestIncome: Number(interestIncome),
     guaranteedPaymentsForServices: Number(guaranteedPaymentsForServices),
     guaranteedPaymentsForCapital: Number(guaranteedPaymentsForCapital),
     selfEmploymentEarningsA: Number(selfEmploymentEarningsA),
@@ -220,6 +225,11 @@ export const PartnershipIncome = (): ReactElement => {
           label={boxLabel('4b', 'Guaranteed payments for capital')}
           patternConfig={Patterns.currency}
           name="guaranteedPaymentsForCapital"
+        />
+        <LabeledInput
+          label={boxLabel('5', 'Interest Income')}
+          patternConfig={Patterns.currency}
+          name="interestIncome"
         />
         <LabeledInput
           label={boxLabel('14', 'Self-employment earnings (loss) - Code A')}

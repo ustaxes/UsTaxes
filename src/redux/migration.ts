@@ -16,6 +16,13 @@ export const migrateEachYear = <S extends USTState>(state: S): S =>
       }
     })
 
+    // Ensure interestIncome on K1s
+    acc[year].scheduleK1Form1065s.forEach((k1) => {
+      if (k1.interestIncome === undefined) {
+        k1.interestIncome = 0
+      }
+    })
+
     return {
       ...acc,
       [year]: {

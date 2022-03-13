@@ -59,6 +59,9 @@ export default class InformationMethods implements Information {
       info.individualRetirementArrangements
   }
 
+  k1sWithInterest = (): ScheduleK1Form1065[] =>
+    this.scheduleK1Form1065s.filter((k1) => k1.interestIncome > 0)
+
   f1099sByType = (ft: Income1099Type): Supported1099[] =>
     this.f1099s.filter((f1099) => f1099.type === ft)
 

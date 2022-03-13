@@ -22,10 +22,18 @@ export default class ScheduleB extends Form {
   }
 
   l1Fields = (): PayerAmount[] =>
-    this.state.f1099Ints().map((v) => ({
-      payer: v.payer,
-      amount: v.form.income
-    }))
+    this.state
+      .f1099Ints()
+      .map((v) => ({
+        payer: v.payer,
+        amount: v.form.income
+      }))
+      .concat(
+        this.state.k1sWithInterest().map((v) => ({
+          payer: v.partnershipName,
+          amount: v.interestIncome
+        }))
+      )
 
   l1 = (): Array<string | undefined> => {
     const payerValues = this.l1Fields()
