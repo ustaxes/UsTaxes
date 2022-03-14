@@ -6,7 +6,6 @@ import NumberFormat from 'react-number-format'
 import { Controller, useFormContext } from 'react-hook-form'
 import { isNumeric, Patterns } from 'ustaxes/components/Patterns'
 import ConditionallyWrap from 'ustaxes/components/ConditionallyWrap'
-import useStyles from './styles'
 import _ from 'lodash'
 import { useFormContainer } from 'ustaxes/components/FormContainer/Context'
 
@@ -20,7 +19,6 @@ export function LabeledInput(props: LabeledInputProps): ReactElement {
     useGrid = true,
     sizes = { xs: 12 }
   } = props
-  const classes = useStyles()
   const inputRef = useRef<HTMLElement | null>(null)
 
   useEffect(() => {
@@ -63,7 +61,7 @@ export function LabeledInput(props: LabeledInputProps): ReactElement {
               inputRef={autofocus ? useForkRef(ref, inputRef) : ref}
               id={name}
               name={name}
-              className={classes.root}
+              className="form-root"
               label={label}
               mask={patternConfig.mask}
               thousandSeparator={patternConfig.thousandSeparator}
@@ -130,7 +128,7 @@ export function LabeledInput(props: LabeledInputProps): ReactElement {
             inputRef={autofocus ? useForkRef(ref, inputRef) : ref}
             id={name}
             name={name}
-            className={classes.root}
+            className="form-root"
             label={label}
             value={value ?? ''}
             onChange={onChange}

@@ -1,8 +1,12 @@
 import { ReactElement, useMemo } from 'react'
 import Main from './components/Main'
 import './App.css'
-import { createTheme, StyledEngineProvider, useMediaQuery } from '@mui/material'
-import { ThemeProvider } from '@mui/styles'
+import {
+  createTheme,
+  StyledEngineProvider,
+  ThemeProvider
+} from '@mui/material/styles'
+import { useMediaQuery } from '@mui/material'
 
 const App = (): ReactElement => {
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)')

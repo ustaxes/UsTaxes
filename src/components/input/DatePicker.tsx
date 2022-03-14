@@ -4,6 +4,7 @@ import { Controller, useFormContext } from 'react-hook-form'
 import ConditionallyWrap from 'ustaxes/components/ConditionallyWrap'
 import { DatePickerProps } from './types'
 import { DesktopDateTimePicker as MuiDatePicker } from '@mui/lab'
+import FormRoot from './styles'
 
 export function DatePicker(props: DatePickerProps): ReactElement {
   const {
@@ -15,7 +16,6 @@ export function DatePicker(props: DatePickerProps): ReactElement {
     sizes = { xs: 12 }
   } = props
 
-  const classes = useStyles()
   const { control } = useFormContext()
 
   return (
@@ -30,7 +30,7 @@ export function DatePicker(props: DatePickerProps): ReactElement {
       <Controller
         name={name}
         render={({ field: { value = null, onChange } }) => (
-          <div className={classes.root}>
+          <FormRoot className="form-root">
             <FormControl component="fieldset">
               <FormLabel>{label}</FormLabel>
               <MuiDatePicker
@@ -42,7 +42,7 @@ export function DatePicker(props: DatePickerProps): ReactElement {
                 renderInput={(params) => <TextField {...params} />}
               />
             </FormControl>
-          </div>
+          </FormRoot>
         )}
         control={control}
       />

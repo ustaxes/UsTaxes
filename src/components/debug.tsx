@@ -1,6 +1,6 @@
 import { ReactElement } from 'react'
+import { styled } from '@mui/material/styles'
 import { IconButton } from '@mui/material'
-import { makeStyles } from '@mui/styles'
 import { Star } from '@mui/icons-material'
 import fc from 'fast-check'
 import { useDispatch, YearsTaxesState } from 'ustaxes/redux'
@@ -11,13 +11,21 @@ import * as prand from 'pure-rand'
 import { useSelector } from 'react-redux'
 import { TaxYears } from 'ustaxes/data'
 
-const useStyles = makeStyles(() => ({
-  root: {
+const PREFIX = 'StateLoader'
+
+const classes = {
+  root: `${PREFIX}-root`,
+  button: `${PREFIX}-button`
+}
+
+const Root = styled('div')(() => ({
+  [`&.${classes.root}`]: {
     position: 'absolute',
     top: '0px',
     right: '30px'
   },
-  button: {}
+
+  [`& .${classes.button}`]: {}
 }))
 
 export const StateLoader = (): ReactElement => {
@@ -27,8 +35,6 @@ export const StateLoader = (): ReactElement => {
   const dispatch = useDispatch()
   const year = useSelector((state: YearsTaxesState) => state.activeYear)
 
-  const classes = useStyles()
-
   const gen = new fc.Random(prand.mersenne(new Date().getMilliseconds()))
 
   const information = arbitraries.forYear(TaxYears[year]).information()
@@ -37,7 +43,7 @@ export const StateLoader = (): ReactElement => {
     information.noShrink().generate(gen).value
 
   return (
-    <div className={classes.root}>
+    <Root className={classes.root}>
       <IconButton
         className={classes.button}
         onClick={() => dispatch(setInfo(generator()))}
@@ -46,6 +52,6 @@ export const StateLoader = (): ReactElement => {
         <Star />
         Seed random state
       </IconButton>
-    </div>
+    </Root>
   )
 }

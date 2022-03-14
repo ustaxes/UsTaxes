@@ -9,9 +9,8 @@ import {
   ListItemText,
   Box,
   Button,
-  Theme
+  styled
 } from '@mui/material'
-import { createStyles, makeStyles } from '@mui/styles'
 import { Delete, Edit } from '@mui/icons-material'
 import { SubmitHandler, useFormContext } from 'react-hook-form'
 import _ from 'lodash'
@@ -158,19 +157,20 @@ enum FormState {
   Closed
 }
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    buttonList: {
-      margin: `${theme.spacing(2)} 0 ${theme.spacing(3)}`
-    }
-  })
-)
+const classes = {
+  buttonList: 'FormContainer-buttonList'
+}
+
+const ButtonList = styled('div')(({ theme }) => ({
+  [`&.${classes.buttonList}`]: {
+    margin: theme.spacing(2, 0, 3)
+  }
+}))
 
 const FormListContainer = <A,>(
   props: PropsWithChildren<FormListContainerProps<A>>
 ): ReactElement => {
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)')
-  const classes = useStyles()
   const {
     children,
     items,
@@ -291,7 +291,7 @@ const FormListContainer = <A,>(
           )
         } else if (max === undefined || items.length < max) {
           return (
-            <div className={classes.buttonList}>
+            <ButtonList className={classes.buttonList}>
               <Button
                 type="button"
                 onClick={openAddForm}
@@ -300,7 +300,7 @@ const FormListContainer = <A,>(
               >
                 Add
               </Button>
-            </div>
+            </ButtonList>
           )
         }
       })()}

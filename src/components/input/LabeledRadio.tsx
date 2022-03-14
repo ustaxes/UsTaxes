@@ -9,13 +9,11 @@ import {
 } from '@mui/material'
 import { Controller, useFormContext } from 'react-hook-form'
 import { LabeledRadioProps } from './types'
-import useStyles from './styles'
 import ConditionallyWrap from 'ustaxes/components/ConditionallyWrap'
 
 export function LabeledRadio(props: LabeledRadioProps): ReactElement {
   const { label, name, values, useGrid = true, sizes = { xs: 12 } } = props
 
-  const classes = useStyles()
   const { control } = useFormContext()
 
   return (
@@ -30,7 +28,7 @@ export function LabeledRadio(props: LabeledRadioProps): ReactElement {
       <Controller
         name={name}
         render={({ field: { value, onChange } }) => (
-          <div className={classes.root}>
+          <div className="form-root">
             <FormControl component="fieldset">
               <FormLabel>{label}</FormLabel>
               <RadioGroup name={name} value={value} onChange={onChange}>

@@ -25,8 +25,8 @@ import {
 } from 'ustaxes/core/util'
 import { Asset } from 'ustaxes/core/data'
 import ConfigurableDataTable, {
-  baseCellStyle,
-  forceHeadCells
+  baseDark,
+  baseLight
 } from './ConfigurableDataTable'
 
 interface PortfolioTableProps {
@@ -42,44 +42,44 @@ export const PortfolioTable = ({
     {
       name: 'Security',
       selector: (p) => p.security.name,
-      style: baseCellStyle(prefersDarkMode)
+      style: prefersDarkMode ? baseDark : baseLight
     },
     {
       name: 'Open Date',
       selector: (p) => p.openDate,
-      style: baseCellStyle(prefersDarkMode)
+      style: prefersDarkMode ? baseDark : baseLight
     },
     {
       name: 'Quantity',
       selector: (p) => p.quantity,
-      style: baseCellStyle(prefersDarkMode)
+      style: prefersDarkMode ? baseDark : baseLight
     },
     {
       name: 'Price per unit',
       selector: (p) => p.price,
-      style: baseCellStyle(prefersDarkMode)
+      style: prefersDarkMode ? baseDark : baseLight
     },
     {
       name: 'Basis',
       selector: (p) => p.price * p.quantity,
-      style: baseCellStyle(prefersDarkMode)
+      style: prefersDarkMode ? baseDark : baseLight
     },
     {
       name: 'Close Date',
       selector: (p) => p.closeDate ?? '',
-      style: baseCellStyle(prefersDarkMode)
+      style: prefersDarkMode ? baseDark : baseLight
     },
     {
       name: 'Proceeds',
       selector: (p) =>
         p.closePrice !== undefined ? p.quantity * p.closePrice : '',
-      style: baseCellStyle(prefersDarkMode)
+      style: prefersDarkMode ? baseDark : baseLight
     },
     {
       name: 'Gain or Loss',
       selector: (p) =>
         p.closePrice !== undefined ? (p.closePrice - p.price) * p.quantity : '',
-      style: baseCellStyle(prefersDarkMode)
+      style: prefersDarkMode ? baseDark : baseLight
     }
   ]
 
@@ -87,7 +87,9 @@ export const PortfolioTable = ({
     <DataTable
       columns={columns}
       data={portfolio.positions}
-      customStyles={forceHeadCells(prefersDarkMode)}
+      customStyles={{
+        headCells: { style: prefersDarkMode ? baseDark : baseLight }
+      }}
     />
   )
 }

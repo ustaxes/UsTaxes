@@ -1,10 +1,16 @@
 import { ReactElement } from 'react'
+import { styled } from '@mui/material/styles'
 import { useScrollTrigger, Fab, Zoom } from '@mui/material'
-import { makeStyles } from '@mui/styles'
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
 
-const useStyles = makeStyles(() => ({
-  root: {
+const PREFIX = 'ScrollTop'
+
+const classes = {
+  root: `${PREFIX}-root`
+}
+
+const StyledZoom = styled(Zoom)(() => ({
+  [`& .${classes.root}`]: {
     position: 'fixed',
     bottom: 2,
     right: 2
@@ -12,7 +18,6 @@ const useStyles = makeStyles(() => ({
 }))
 
 const ScrollTop = (): ReactElement => {
-  const classes = useStyles()
   const trigger = useScrollTrigger({
     target: window,
     disableHysteresis: true,
@@ -24,13 +29,13 @@ const ScrollTop = (): ReactElement => {
   }
 
   return (
-    <Zoom in={trigger}>
+    <StyledZoom in={trigger}>
       <div onClick={handleClick} role="presentation" className={classes.root}>
         <Fab color="default" size="small" aria-label="scroll back to top">
           <KeyboardArrowUpIcon />
         </Fab>
       </div>
-    </Zoom>
+    </StyledZoom>
   )
 }
 
