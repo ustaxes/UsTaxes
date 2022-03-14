@@ -125,16 +125,11 @@ export const TransactionImporter = (): ReactElement => {
     setFieldAssignments(newFieldAssignments)
   }
 
-  const onHandle = async (contents: string): Promise<void> => {
+  const onHandle = (contents: string): void => {
     setRawContents(contents)
     run(preflightCsv(contents)).fold(
-      (e) => {
-        console.error("Couldn't parse CSV", e)
-        return []
-      },
-      (res) => {
-        setPreflightTransactions(res)
-      }
+      (e) => console.error("Couldn't parse CSV", e),
+      setPreflightTransactions
     )
   }
 
@@ -326,7 +321,7 @@ export const TransactionImporter = (): ReactElement => {
         <LoadRaw
           variant="contained"
           color="primary"
-          handleData={async (contents: string) => await onHandle(contents)}
+          handleData={(contents: string) => onHandle(contents)}
         >
           Load CSV File
         </LoadRaw>
