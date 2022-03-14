@@ -134,18 +134,20 @@ export const processTransactions = (
   transactions: Transaction[]
 ): Either<TransactionError, Portfolio> =>
   transactions
-    .reduce((portfolio, transaction, i) => {
-      return portfolio.chain((p: Portfolio) => {
-        try {
-          return right(processTransaction(p, transaction))
-        } catch (e) {
-          return left({
-            messages: [(e as Error).message],
-            previousPortfolio: p,
-            errorTransaction: transaction,
-            errorIndex: i
-          })
-        }
-      })
-    }, pure<TransactionError, Portfolio>(initialPortfolio))
+    .reduce(
+      (portfolio, transaction, i) =>
+        portfolio.chain((p: Portfolio) => {
+          try {
+            return right(processTransaction(p, transaction))
+          } catch (e) {
+            return left({
+              messages: [(e as Error).message],
+              previousPortfolio: p,
+              errorTransaction: transaction,
+              errorIndex: i
+            })
+          }
+        }),
+      pure<TransactionError, Portfolio>(initialPortfolio)
+    )
     .value()

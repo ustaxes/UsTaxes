@@ -76,7 +76,7 @@ export const isRight = <E, A>(e: Either<E, A>): e is Right<A> =>
   e._tag === 'right'
 
 // FP style Either type that also handles promises.
-class EitherMethods<E, A> {
+export class EitherMethods<E, A> {
   e: Either<E, A>
 
   constructor(e: Either<E, A>) {

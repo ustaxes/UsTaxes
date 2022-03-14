@@ -13,13 +13,21 @@ import {
   Transaction,
   TransactionError
 } from 'ustaxes/data/transactions'
-import { Either, left, right, run } from 'ustaxes/core/util'
+import {
+  Either,
+  EitherMethods,
+  isLeft,
+  left,
+  pure,
+  pureLeft,
+  right,
+  run
+} from 'ustaxes/core/util'
 import { Asset } from 'ustaxes/core/data'
 import ConfigurableDataTable, {
   baseCellStyle,
   forceHeadCells
 } from './ConfigurableDataTable'
-import { ParseError } from 'papaparse'
 
 interface PortfolioTableProps {
   portfolio: Portfolio
@@ -136,110 +144,131 @@ export const TransactionImporter = (): ReactElement => {
   const parseRow = (row: string[]): Either<string[], Transaction> => {
     const assignments = fieldAssignments as string[]
 
-    const errors: string[] = []
-
-    const date: string | undefined = (() => {
+    const date: Either<string, Date> = (() => {
       const dateStr = row[assignments.indexOf('Transaction date')]
       try {
-        return new Date(dateStr.slice(0, 10)).toISOString().slice(0, 10)
+        return right(new Date(dateStr.slice(0, 10)))
       } catch (e) {
-        errors.push(
+        return left(
           `Parsing transaction date value (${
             row[assignments.indexOf('Transaction date')]
           }) as date failed`
         )
-        return undefined
       }
     })()
 
-    const quantity: number | undefined = (() => {
+    const quantity: Either<string, number> = (() => {
       const quantityStr = row[assignments.indexOf('Quantity')]
       const v = parseFloat(quantityStr)
       if (isNaN(v)) {
-        return errors.push(
-          `Could not parse quantity value (${quantityStr}) as number`
-        )
+        return left(`Could not parse quantity value (${quantityStr}) as number`)
       } else {
-        return v
+        return right(v)
       }
     })()
 
-    const price: number | undefined = (() => {
+    const price: Either<string, number> = (() => {
       const priceStr = row[assignments.indexOf('Price per unit')]
       const v = parseFloat(priceStr)
       if (isNaN(v)) {
-        errors.push(`Could not parse price value (${priceStr}) as number`)
+        return left(`Could not parse price value (${priceStr}) as number`)
       } else {
-        return v
+        return right(v)
       }
     })()
 
-    if (quantity === undefined || price === undefined || date === undefined) {
-      return left(errors)
+    // Either is a fail-fast construct, so
+    // we dont (yet) have a way to nicely combine
+    // errors.
+    const errors = []
+
+    if (isLeft(date)) {
+      errors.push(date.left)
+    }
+    if (isLeft(quantity)) {
+      errors.push(quantity.left)
+    }
+    if (isLeft(price)) {
+      errors.push(price.left)
     }
 
-    return right({
-      security: {
-        name: row[assignments.indexOf('Security Name')]
-      },
-      date,
-      quantity,
-      price,
-      side:
-        row[assignments.indexOf('Buy or Sell')].toLowerCase() === 'buy'
-          ? 'BUY'
-          : 'SELL'
-    })
+    // bad if condition necessary for typechecking below.
+    if (isLeft(date) || isLeft(quantity) || isLeft(price)) {
+      return left(errors)
+    } else {
+      return right({
+        security: {
+          name: row[assignments.indexOf('Security Name')]
+        },
+        date: date.right.toISOString().slice(0, 10),
+        quantity: quantity.right,
+        price: price.right,
+        side:
+          row[assignments.indexOf('Buy or Sell')].toLowerCase() === 'buy'
+            ? 'BUY'
+            : 'SELL'
+      })
+    }
   }
 
   const addToPortfolio = () =>
-    run(preflightCsvAll(rawContents))
-      .map<Transaction[]>((rows) => {
-        let errorResult: TransactionError
-
-        return rows.flatMap<Transaction>((row, idx) => {
+    run(preflightCsvAll(rawContents)).fold(
+      (csvReadErrors) => {
+        setPortfolioError({
+          messages: ['Could not parse CSV', csvReadErrors[0].message],
+          errorIndex: csvReadErrors[0].row
+        })
+      },
+      (rows) => {
+        const accumulatedErrors = rows.reduce((acc, row, idx) => {
+          // Skip configured header rows
           if (idx < dropFirstNRows) {
-            return []
-          }
-
-          if (errorResult !== undefined) {
-            return []
+            return acc
           }
           return run(parseRow(row)).fold(
-            (e) => {
-              errorResult = {
-                errorIndex: idx,
-                messages: e
-              }
-              return []
-            },
-            (res) => [res]
+            (e) =>
+              acc.fold(
+                (errors) =>
+                  pureLeft(errors.concat({ errorIndex: idx, messages: e })),
+                () =>
+                  pureLeft([
+                    {
+                      errorIndex: idx,
+                      messages: e
+                    }
+                  ])
+              ),
+            (res) => acc.map((ts) => ts.concat(res))
           )
-        })
-      })
-      .mapLeft<TransactionError>((e: ParseError[]) => ({
-        messages: [
-          'Error occurred in parsing csv from imported file',
-          e[0].message
-        ],
-        errorIndex: e[0].row
-      }))
-      .chain((transactions) => processTransactions(portfolio, transactions))
-      .fold(
-        (e) => {
-          e.messages.forEach(console.error)
-          setPortfolioError({
-            ...e,
-            messages: [
-              'This usually means you have sell transactions in excess of securities you hold at the time of sale. Either these are short sales, which are not yet supported here, or buy transactions that predate these sales are missing. If this is the case, add the required positions as BUY transactions at the beginning of this CSV file and try again.'
-            ]
-          })
-        },
-        (portfolio) => {
-          setPortfolioError(undefined)
-          setPortfolio(portfolio)
-        }
-      )
+        }, pure<TransactionError[], Transaction[]>([]))
+
+        const processedTransactions: EitherMethods<
+          TransactionError[],
+          Portfolio
+        > = accumulatedErrors.chain((transactions) =>
+          run(processTransactions(portfolio, transactions))
+            .mapLeft((e) => [
+              {
+                ...e,
+                messages: [
+                  'This usually means you have sell transactions in excess of securities you hold at the time of sale. Either these are short sales, which are not yet supported here, or buy transactions that predate these sales are missing. If this is the case, add the required positions as BUY transactions at the beginning of this CSV file and try again.'
+                ]
+              }
+            ])
+            .value()
+        )
+
+        processedTransactions.fold(
+          (errors) => {
+            setPortfolioError(errors[0])
+          },
+          (portfolio) => {
+            setPortfolioError(undefined)
+            setPortfolio(portfolio)
+          }
+        )
+      }
+    )
 
   const readyButton = (() => {
     if (ready() && portfolio.positions.length === 0) {
