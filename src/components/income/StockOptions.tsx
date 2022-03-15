@@ -13,7 +13,7 @@ import { Patterns } from 'ustaxes/components/Patterns'
 import { FormListContainer } from 'ustaxes/components/FormContainer'
 import { Currency } from 'ustaxes/components/input'
 import { Grid, Box } from '@mui/material'
-import { Alert } from '@mui/lab'
+import { Alert } from '@mui/material'
 import { ShowChartOutlined as StockIcon } from '@mui/icons-material'
 import {
   F3921,

@@ -31,7 +31,7 @@ import { FormListContainer } from 'ustaxes/components/FormContainer'
 import { usePager } from 'ustaxes/components/pager'
 import { Box, Grid } from '@mui/material'
 import { Person } from '@mui/icons-material'
-import { Alert } from '@mui/lab'
+import { Alert } from '@mui/material'
 
 interface UserPersonForm {
   firstName: string

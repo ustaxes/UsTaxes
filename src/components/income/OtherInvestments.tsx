@@ -20,7 +20,7 @@ import {
   HouseOutlined as RealEstateIcon,
   ShowChartOutlined as StockIcon
 } from '@mui/icons-material'
-import { Alert } from '@mui/lab'
+import { Alert } from '@mui/material'
 import { TaxYears } from 'ustaxes/data'
 import { TransactionImporter } from './TransactionImporter'
 

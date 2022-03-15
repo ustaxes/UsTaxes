@@ -16,7 +16,7 @@ import {
 import { YearsTaxesState } from 'ustaxes/redux'
 import { Information } from 'ustaxes/core/data'
 import { Check, Close, ExpandMore } from '@mui/icons-material'
-import Alert from '@mui/lab/Alert'
+import Alert from '@mui/material/Alert'
 import { run } from 'ustaxes/core/util'
 import yearFormBuilder from 'ustaxes/forms/YearForms'
 import { TaxYear } from 'ustaxes/data'

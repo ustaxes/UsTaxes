@@ -31,7 +31,7 @@ import { FormListContainer } from 'ustaxes/components/FormContainer'
 import { Grid, Box, Button, Paper } from '@mui/material'
 import { Work } from '@mui/icons-material'
 import { addW2, editW2, removeW2 } from 'ustaxes/redux/actions'
-import { Alert } from '@mui/lab'
+import { Alert } from '@mui/material'
 import {
   enumKeys,
   parseFormNumber,

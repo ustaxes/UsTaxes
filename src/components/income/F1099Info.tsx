@@ -1,7 +1,7 @@
 import { ReactElement } from 'react'
 import { Helmet } from 'react-helmet'
 import { Link } from 'react-router-dom'
-import Alert from '@mui/lab/Alert'
+import Alert from '@mui/material/Alert'
 import { useForm, FormProvider } from 'react-hook-form'
 import { Icon, Grid } from '@mui/material'
 import { useDispatch, useSelector, TaxesState } from 'ustaxes/redux'

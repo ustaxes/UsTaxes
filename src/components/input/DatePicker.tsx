@@ -1,7 +1,7 @@
 import { ReactElement } from 'react'
 import { FormControl, FormLabel, Grid, TextField } from '@mui/material'
 import { Controller, useFormContext } from 'react-hook-form'
-import useStyles from './styles'
+import { DesktopDatePicker as MuiDatePicker } from '@mui/material'
 import ConditionallyWrap from 'ustaxes/components/ConditionallyWrap'
 import {
   MuiPickersUtilsProvider,

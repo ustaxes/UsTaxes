@@ -1,7 +1,7 @@
 import { FormEvent, ReactElement, useEffect, useState } from 'react'
 import { Helmet } from 'react-helmet'
 import { usePager } from './pager'
-import Alert from '@mui/lab/Alert'
+import Alert from '@mui/material/Alert'
 import { useSelector } from 'react-redux'
 import { Information, Asset, State } from 'ustaxes/core/data'
 import { YearsTaxesState } from 'ustaxes/redux'

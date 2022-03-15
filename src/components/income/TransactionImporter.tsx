@@ -5,7 +5,7 @@ import * as actions from 'ustaxes/redux/actions'
 import { preflightCsv, preflightCsvAll } from 'ustaxes/data/csvImport'
 import { LoadRaw } from 'ustaxes/redux/fs/Load'
 import DataTable, { TableColumn } from 'react-data-table-component'
-import { Alert } from '@mui/lab'
+import { Alert } from '@mui/material'
 import {
   Portfolio,
   Position,

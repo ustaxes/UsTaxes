@@ -8,7 +8,7 @@ import { LabeledInput, LabeledCheckbox } from 'ustaxes/components/input'
 import { ItemizedDeductions } from 'ustaxes/core/data'
 import { Patterns } from 'ustaxes/components/Patterns'
 import { Grid, Box } from '@mui/material'
-import { Alert } from '@mui/lab'
+import { Alert } from '@mui/material'
 
 interface ItemizedDeductionUserInput {
   medicalAndDental: string | number

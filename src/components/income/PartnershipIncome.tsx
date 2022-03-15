@@ -19,7 +19,7 @@ import {
 import { Patterns } from 'ustaxes/components/Patterns'
 import { FormListContainer } from 'ustaxes/components/FormContainer'
 import { Grid, Box } from '@mui/material'
-import { Alert } from '@mui/lab'
+import { Alert } from '@mui/material'
 import { Business } from '@mui/icons-material'
 import {
   ScheduleK1Form1065,
