@@ -2,37 +2,30 @@ import { FilingStatus } from 'ustaxes/core/data'
 import { CURRENT_YEAR } from '../data/federal'
 import { computeOrdinaryTax } from '../irsForms/TaxTable'
 import fs from 'fs/promises'
-import { parseCsv } from 'ustaxes/data/csvImport'
-import { parseFormNumber } from 'ustaxes/core/util'
+import { parseCsvOrThrow } from 'ustaxes/data/csvImport'
 
-async function getTaxTable() {
+const getTaxTable = async (): Promise<number[][]> => {
   const path = './src/forms/Y2021/tests/taxTable.csv'
   const taxTableCsv = (await fs.readFile(path)).toString('utf-8')
-  const rows: Array<number[]> = []
-  await parseCsv(taxTableCsv, (r: string[]) => {
-    rows.push(r.map((s) => parseFormNumber(s) ?? 0))
-    return []
-  })
-
-  // Remove heading row
-  rows.shift()
-
-  return rows
+  return parseCsvOrThrow(taxTableCsv, (r: string[], rowNum) =>
+    // ignore heading row.
+    rowNum > 0 ? [r.map((s) => Number(s))] : []
+  )
 }
 
-function expectTax(status: FilingStatus, amount: number, tax: number) {
+const expectTax = (status: FilingStatus, amount: number, tax: number) => {
   const computedTax = Math.round(computeOrdinaryTax(status, amount))
   // Add a prefix so it's easy to see which one was wrong
   const prefix = 'Tax on ' + amount + ' = '
   expect(prefix + computedTax).toEqual(prefix + tax)
 }
 
-function expectTaxUnder100KRange(
+const expectTaxUnder100KRange = (
   status: FilingStatus,
   min: number,
   max: number,
   tax: number
-) {
+) => {
   const diff = max - min
   const quarter = Math.round((diff / 4) * 100) / 100
   expectTax(status, min, tax)
