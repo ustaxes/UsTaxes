@@ -1,4 +1,4 @@
-import { useMemo, PropsWithChildren, ReactElement, ReactNode } from 'react'
+import { useMemo, PropsWithChildren, ReactElement } from 'react'
 import {
   createStyles,
   makeStyles,
@@ -9,7 +9,7 @@ import {
   Theme,
   ThemeProvider
 } from '@material-ui/core'
-import { Switch, Route, Redirect, useLocation } from 'react-router-dom'
+import { Routes, Route, Navigate } from 'react-router-dom'
 import { isMobileOnly as isMobile } from 'react-device-detect'
 import { PagerProvider } from './pager'
 import { StateLoader } from './debug'
@@ -19,7 +19,6 @@ import ScrollTop from './ScrollTop'
 import Menu, { drawerSections, backPages } from './Menu'
 import { Section, SectionItem } from './ResponsiveDrawer'
 
-import { useFocus } from 'ustaxes/hooks/Focus'
 import Urls from 'ustaxes/data/urls'
 import DataPropagator from './DataPropagator'
 import YearStatusBar from './YearStatusBar'
@@ -54,9 +53,7 @@ const useStyles = makeStyles<Theme, Props>((theme: Theme) =>
 )
 
 export default function Main(): ReactElement {
-  const [ref] = useFocus()
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)')
-  const isStartPage = useLocation().pathname === '/start'
   const theme = useMemo(
     () =>
       createMuiTheme({
@@ -94,54 +91,67 @@ export default function Main(): ReactElement {
 
   const allItems: SectionItem[] = [...steps, ...backPages]
 
-  const Layout = ({ children }: PropsWithChildren<{ children: ReactNode }>) => (
-    <Grid
-      ref={ref}
-      component="main"
-      tabIndex={-1}
-      container
-      justifyContent="center"
-      direction="row"
-    >
-      <Grid item sm={12} md={8} lg={6}>
-        {!isStartPage && (
+  const Layout = ({
+    showMenu = true,
+    children
+  }: PropsWithChildren<{ showMenu?: boolean }>) => (
+    <>
+      {showMenu ? <Menu /> : undefined}
+      <Grid
+        component="main"
+        tabIndex={-1}
+        container
+        justifyContent="center"
+        direction="row"
+      >
+        <Grid item sm={12} md={8} lg={6}>
+          {showMenu ? (
+            <Grid item className={classes.content}>
+              {' '}
+              <YearStatusBar />
+            </Grid>
+          ) : undefined}
           <Grid item className={classes.content}>
-            {' '}
-            <YearStatusBar />
+            {isMobile && showMenu ? (
+              <div className={classes.toolbar} />
+            ) : undefined}
+            {children}
           </Grid>
-        )}
-        <Grid item className={classes.content}>
-          {children}
         </Grid>
       </Grid>
-    </Grid>
+    </>
   )
 
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <SkipToLinks />
-      {isMobile && !isStartPage && <div className={classes.toolbar} />}
       <div className={classes.container}>
         <StateLoader />
         <PagerProvider pages={steps}>
-          <Switch>
-            <Redirect path="/" to={Urls.default} exact />
+          <Routes>
+            <Route path="/" element={<Navigate to={Urls.default} />} />
             {allItems.map((item) => (
-              <Route key={item.title} exact path={item.url}>
-                {!isStartPage && <Menu />}
-                <Layout>
-                  {!isStartPage && <DataPropagator />}
-                  {item.element}
-                </Layout>
-              </Route>
+              <Route
+                key={item.title}
+                path={item.url}
+                element={
+                  <Layout showMenu={!item.url.includes('start')}>
+                    <DataPropagator />
+                    {item.element}
+                  </Layout>
+                }
+              />
             ))}
-            <Route>
-              <Layout>
-                <NoMatchPage />
-              </Layout>
-            </Route>
-          </Switch>
+            <Route
+              path="*"
+              element={
+                <Layout>
+                  <NoMatchPage />
+                </Layout>
+              }
+            />
+          </Routes>
         </PagerProvider>
         {!isMobile && <ScrollTop />}
       </div>

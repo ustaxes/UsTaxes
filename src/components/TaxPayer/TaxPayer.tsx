@@ -25,7 +25,6 @@ import {
   USStateDropDown,
   LabeledInput
 } from 'ustaxes/components/input'
-import { Prompt } from 'ustaxes/components/Prompt'
 import AddressFields from './Address'
 import { Grid } from '@material-ui/core'
 import { Patterns } from 'ustaxes/components/Patterns'
@@ -116,7 +115,7 @@ export default function PrimaryTaxpayer(): ReactElement {
     handleSubmit,
     getValues,
     reset,
-    formState: { errors, isDirty }
+    formState: { isDirty }
   } = methods
 
   // This form can be rerendered because the global state was modified by
@@ -138,7 +137,6 @@ export default function PrimaryTaxpayer(): ReactElement {
 
   const page = (
     <form tabIndex={-1} onSubmit={handleSubmit(onSubmit)}>
-      <Prompt when={!_.isEmpty(errors)} />
       <Helmet>
         <title>Primary Taxpayer Information | Personal | UsTaxes.org</title>
       </Helmet>

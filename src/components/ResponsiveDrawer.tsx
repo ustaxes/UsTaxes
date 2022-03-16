@@ -1,5 +1,5 @@
 import { Dispatch, Fragment, ReactElement, SetStateAction } from 'react'
-import { useLocation, NavLink, Link } from 'react-router-dom'
+import { NavLink, Link } from 'react-router-dom'
 import { isMobileOnly as isMobile } from 'react-device-detect'
 import {
   createStyles,
@@ -92,7 +92,6 @@ export interface DrawerItemsProps {
 }
 
 function ResponsiveDrawer(props: DrawerItemsProps): ReactElement {
-  const location = useLocation()
   const classes = useStyles({ isMobile })
   const theme = useTheme()
 
@@ -109,15 +108,12 @@ function ResponsiveDrawer(props: DrawerItemsProps): ReactElement {
           >
             {items.map((item) => (
               <ListItem
-                key={item.title}
-                className={classes.listItem}
                 button
+                classes={{}}
+                key={item.title}
                 component={NavLink}
-                exact
-                activeClassName="current"
-                to={item.url}
                 selected={location.pathname === item.url}
-                disabled={location.pathname === item.url}
+                to={item.url}
               >
                 <ListItemText primary={`${item.title}`} />
               </ListItem>
