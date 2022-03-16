@@ -95,7 +95,6 @@
     "husky": "^7.0.4",
     "lint-staged": "^12.3.6",
     "prettier": "2.6.0",
-    "react-router-last-location": "^2.0.1",
     "ts-node": "^10.7.0",
     "typescript-eslint": "0.0.1-alpha.0"
   },
