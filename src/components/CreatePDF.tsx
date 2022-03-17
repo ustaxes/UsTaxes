@@ -1,4 +1,4 @@
-import { FormEvent, ReactElement, useEffect, useState } from 'react'
+import { FormEvent, ReactElement, ReactNode, useEffect, useState } from 'react'
 import { Helmet } from 'react-helmet'
 import { usePager } from './pager'
 import Alert from '@material-ui/lab/Alert'
@@ -82,6 +82,53 @@ export default function CreatePDF(): ReactElement {
     }
   }
 
+  const printActions: ReactNode = (() => {
+    if (irsErrors.length === 0) {
+      return (
+        <>
+          <h2>Print Copy to File</h2>
+          <h3>Federal</h3>
+          <Box marginBottom={2}>
+            <Button
+              type="button"
+              onClick={federalReturn}
+              variant="contained"
+              color="primary"
+            >
+              Create Federal 1040
+            </Button>
+          </Box>
+          {(() => {
+            if (info?.stateResidencies[0]?.state !== undefined) {
+              return <h3>State: {info.stateResidencies[0].state} </h3>
+            }
+          })()}
+          <Box marginBottom={2}>
+            {(() => {
+              if (stateErrors.length === 0) {
+                return (
+                  <Button
+                    type="button"
+                    onClick={stateReturn}
+                    variant="contained"
+                    color="primary"
+                  >
+                    Create {residency} Return
+                  </Button>
+                )
+              }
+              return stateErrors.map((e) => (
+                <Alert key={e} severity="info">
+                  {e}
+                </Alert>
+              ))
+            })()}
+          </Box>
+        </>
+      )
+    }
+  })()
+
   return (
     <div>
       <Summary />
@@ -89,55 +136,7 @@ export default function CreatePDF(): ReactElement {
         <Helmet>
           <title>Print Copy to File | Results | UsTaxes.org</title>
         </Helmet>
-        <h2>Print Copy to File</h2>
-        <h3>Federal</h3>
-        <Box marginBottom={2}>
-          {(() => {
-            if (irsErrors.length === 0) {
-              return (
-                <Button
-                  type="button"
-                  onClick={federalReturn}
-                  variant="contained"
-                  color="primary"
-                >
-                  Create Federal 1040
-                </Button>
-              )
-            }
-            return irsErrors.map((e) => (
-              <Alert key={e} severity="info">
-                {e}
-              </Alert>
-            ))
-          })()}
-        </Box>
-        {(() => {
-          if (info?.stateResidencies[0]?.state !== undefined) {
-            return <h3>State: {info.stateResidencies[0].state} </h3>
-          }
-        })()}
-        <Box marginBottom={2}>
-          {(() => {
-            if (stateErrors.length === 0) {
-              return (
-                <Button
-                  type="button"
-                  onClick={stateReturn}
-                  variant="contained"
-                  color="primary"
-                >
-                  Create {residency} Return
-                </Button>
-              )
-            }
-            return stateErrors.map((e) => (
-              <Alert key={e} severity="info">
-                {e}
-              </Alert>
-            ))
-          })()}
-        </Box>
+        {printActions}
         {navButtons}
       </form>
     </div>

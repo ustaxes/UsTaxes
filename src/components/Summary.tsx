@@ -1,6 +1,7 @@
 import { ReactElement } from 'react'
 import {
   Avatar,
+  Box,
   Grid,
   List,
   Typography,
@@ -174,13 +175,13 @@ const Summary = (): ReactElement => {
           <h3>Federal</h3>
           {run(f1040Result).fold(
             (errors) => (
-              <>
+              <Box marginBottom={2}>
                 {errors.map((error, i) => (
                   <Alert key={i} severity="warning">
                     {error}
                   </Alert>
                 ))}
-              </>
+              </Box>
             ),
             (forms) => {
               const summary = createSummary(year, forms)
