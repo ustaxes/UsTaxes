@@ -114,6 +114,7 @@ export default class F1040 extends Form {
       this,
       this.scheduleA,
       this.scheduleB,
+      ...(this.scheduleB?.copies ?? []),
       this.scheduleD,
       this.scheduleE,
       this.scheduleR,
@@ -149,10 +150,13 @@ export default class F1040 extends Form {
 
   makeSchedules = (): void => {
     const f1099bs = this.info.f1099Bs()
-    const f1099ints = this.info.f1099Ints()
+
     const f1099ssas = this.info.f1099ssas()
-    if (f1099ints.length > 0) {
-      this.scheduleB = new ScheduleB(this.info)
+
+    const scheduleB = new ScheduleB(this.info)
+
+    if (scheduleB.formRequired()) {
+      this.scheduleB = scheduleB
     }
 
     if (this.assets.length > 0) {
@@ -340,9 +344,9 @@ export default class F1040 extends Form {
 
   l1 = (): number => this.wages()
   l2a = (): number | undefined => this.scheduleB?.l3()
-  l2b = (): number | undefined => this.scheduleB?.l4()
+  l2b = (): number | undefined => this.scheduleB?.to1040l2b()
   l3a = (): number | undefined => this.totalQualifiedDividends()
-  l3b = (): number | undefined => this.scheduleB?.l6()
+  l3b = (): number | undefined => this.scheduleB?.to1040l3b()
   // This is the value of box 1 in 1099-R forms coming from IRAs
   l4a = (): number | undefined => this.totalGrossDistributionsFromIra()
   // This should be the value of box 2a in 1099-R coming from IRAs
