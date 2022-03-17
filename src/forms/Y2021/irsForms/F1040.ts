@@ -474,6 +474,13 @@ export default class F1040 extends Form {
 
   computeTax = (): number | undefined => {
     if (
+      this.errors().length > 0 ||
+      this.info.taxPayer.filingStatus === undefined
+    ) {
+      return undefined
+    }
+
+    if (
       this.scheduleD?.computeTaxOnQDWorksheet() ??
       this.totalQualifiedDividends() > 0
     ) {
@@ -481,9 +488,7 @@ export default class F1040 extends Form {
       return this.qualifiedAndCapGainsWorksheet.tax()
     }
 
-    if (this.info.taxPayer.filingStatus !== undefined) {
-      return computeOrdinaryTax(this.info.taxPayer.filingStatus, this.l15())
-    }
+    return computeOrdinaryTax(this.info.taxPayer.filingStatus, this.l15())
   }
 
   l16 = (): number | undefined =>
