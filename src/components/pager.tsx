@@ -102,7 +102,7 @@ export const PagerButtons = ({
             component={Link}
             to={previousUrl}
             variant="contained"
-            color={prefersDarkMode ? 'default' : 'secondary'}
+            color={prefersDarkMode ? 'primary' : 'secondary'}
             fullWidth
           >
             Previous
@@ -171,7 +171,7 @@ export const StartButtons = ({
           href={secondUrl}
           variant="contained"
           fullWidth
-          color={prefersDarkMode ? 'default' : 'secondary'}
+          color={prefersDarkMode ? 'primary' : 'secondary'}
         >
           {secondText}
         </Button>

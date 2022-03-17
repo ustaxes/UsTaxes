@@ -132,7 +132,7 @@ const Box12Data = (): ReactElement => {
     <Button
       type="button"
       variant="contained"
-      color={editBox12 ? 'secondary' : 'default'}
+      color={editBox12 ? 'secondary' : 'primary'}
       onClick={() => setEditBox12(!editBox12)}
     >
       {editBox12 ? 'Done' : 'Edit'}

@@ -2,8 +2,6 @@ import { Dispatch, Fragment, ReactElement, SetStateAction } from 'react'
 import { useLocation, NavLink, Link } from 'react-router-dom'
 import { isMobileOnly as isMobile } from 'react-device-detect'
 import {
-  createStyles,
-  makeStyles,
   useTheme,
   Divider,
   SwipeableDrawer,
@@ -12,8 +10,10 @@ import {
   ListItem,
   ListItemText,
   ListSubheader,
-  Theme
+  Theme,
+  ListItemButton
 } from '@mui/material'
+import { createStyles, makeStyles } from '@mui/styles'
 import GitHubIcon from '@mui/icons-material/GitHub'
 import TwitterIcon from '@mui/icons-material/Twitter'
 import { Settings } from '@mui/icons-material'
@@ -108,19 +108,15 @@ function ResponsiveDrawer(props: DrawerItemsProps): ReactElement {
             className={classes.list}
           >
             {items.map((item) => (
-              <ListItem
+              <ListItemButton
                 key={item.title}
                 className={classes.listItem}
-                button
-                component={NavLink}
-                exact
-                activeClassName="current"
-                to={item.url}
+                href={item.url}
                 selected={location.pathname === item.url}
                 disabled={location.pathname === item.url}
               >
                 <ListItemText primary={`${item.title}`} />
-              </ListItem>
+              </ListItemButton>
             ))}
           </List>
           <Divider />
@@ -135,7 +131,8 @@ function ResponsiveDrawer(props: DrawerItemsProps): ReactElement {
             href={`https://github.com/ustaxes/UsTaxes`}
             target="_blank"
             rel="noreferrer noopener"
-            size="large">
+            size="large"
+          >
             <GitHubIcon />
           </IconButton>
         </ListItem>
@@ -147,13 +144,18 @@ function ResponsiveDrawer(props: DrawerItemsProps): ReactElement {
             href={`https://www.twitter.com/ustaxesorg`}
             target="_blank"
             rel="noreferrer noopener"
-            size="large">
+            size="large"
+          >
             <TwitterIcon />
           </IconButton>
         </ListItem>
         <ListItem className={classes.listItemSocial}>
           <Link to={Urls.settings}>
-            <IconButton color="secondary" aria-label="site user settings" size="large">
+            <IconButton
+              color="secondary"
+              aria-label="site user settings"
+              size="large"
+            >
               <Settings />
             </IconButton>
           </Link>

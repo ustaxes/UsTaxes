@@ -1,7 +1,5 @@
 import { PropsWithChildren, ReactElement, useState } from 'react'
 import {
-  createStyles,
-  makeStyles,
   useMediaQuery,
   IconButton,
   List,
@@ -13,6 +11,7 @@ import {
   Button,
   Theme
 } from '@mui/material'
+import { createStyles, makeStyles } from '@mui/styles'
 import { Delete, Edit } from '@mui/icons-material'
 import { SubmitHandler, useFormContext } from 'react-hook-form'
 import _ from 'lodash'
@@ -56,7 +55,7 @@ const FormContainer = ({
         <Button
           type="button"
           onClick={onCancel}
-          color={prefersDarkMode ? 'default' : 'secondary'}
+          color={prefersDarkMode ? 'primary' : 'secondary'}
           variant="contained"
         >
           Discard
@@ -92,11 +91,16 @@ export const MutableListItem = ({
     if (canEdit) {
       return (
         <ListItemIcon>
-          <IconButton onClick={onEdit} edge="end" aria-label="edit" size="large">
+          <IconButton
+            onClick={onEdit}
+            edge="end"
+            aria-label="edit"
+            size="large"
+          >
             <Edit />
           </IconButton>
         </ListItemIcon>
-      );
+      )
     }
   })()
 
@@ -104,11 +108,16 @@ export const MutableListItem = ({
     if (canDelete) {
       return (
         <ListItemSecondaryAction>
-          <IconButton onClick={remove} edge="end" aria-label="delete" size="large">
+          <IconButton
+            onClick={remove}
+            edge="end"
+            aria-label="delete"
+            size="large"
+          >
             <Delete />
           </IconButton>
         </ListItemSecondaryAction>
-      );
+      )
     }
   })()
 
@@ -286,7 +295,7 @@ const FormListContainer = <A,>(
               <Button
                 type="button"
                 onClick={openAddForm}
-                color={prefersDarkMode ? 'default' : 'secondary'}
+                color={prefersDarkMode ? 'primary' : 'secondary'}
                 variant="contained"
               >
                 Add

@@ -1,16 +1,7 @@
-import { useMemo, PropsWithChildren, ReactElement, ReactNode } from 'react'
-import {
-  createStyles,
-  makeStyles,
-  unstable_createMuiStrictModeTheme as createMuiTheme,
-  useMediaQuery,
-  CssBaseline,
-  Grid,
-  Theme,
-  ThemeProvider,
-  StyledEngineProvider
-} from '@mui/material'
 import { Switch, Route, Redirect, useLocation } from 'react-router-dom'
+import { PropsWithChildren, ReactElement } from 'react'
+import { CssBaseline, Grid, Theme } from '@mui/material'
+import { createStyles, makeStyles } from '@mui/styles'
 import { isMobileOnly as isMobile } from 'react-device-detect'
 import { PagerProvider } from './pager'
 import { StateLoader } from './debug'
@@ -51,38 +42,6 @@ const useStyles = makeStyles((theme: Theme) =>
 )
 
 export default function Main(): ReactElement {
-  const [ref] = useFocus()
-  const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)')
-  const isStartPage = useLocation().pathname === '/start'
-  const theme = useMemo(
-    () =>
-      createMuiTheme({
-        palette: {
-          mode: prefersDarkMode ? 'dark' : 'light',
-          secondary: prefersDarkMode
-            ? {
-                light: '#4f5b62',
-                main: '#d5d5d5',
-                dark: '#000a12',
-                contrastText: '#ffffff'
-              }
-            : {
-                light: '#4f5b62',
-                main: '#263238',
-                dark: '#000a12',
-                contrastText: '#ffffff'
-              },
-          primary: {
-            light: '#66ffa6',
-            main: '#00e676',
-            dark: '#00b248',
-            contrastText: '#000000'
-          }
-        }
-      }),
-    [prefersDarkMode]
-  )
-
   const classes = useStyles({ isMobile })
 
   const steps: SectionItem[] = drawerSections.flatMap(
@@ -91,27 +50,35 @@ export default function Main(): ReactElement {
 
   const allItems: SectionItem[] = [...steps, ...backPages]
 
-  const Layout = ({ children }: PropsWithChildren<{ children: ReactNode }>) => (
-    <Grid
-      ref={ref}
-      component="main"
-      tabIndex={-1}
-      container
-      justifyContent="center"
-      direction="row"
-    >
-      <Grid item sm={12} md={8} lg={6}>
-        {!isStartPage && (
+  const Layout = ({
+    showMenu = true,
+    children
+  }: PropsWithChildren<{ showMenu?: boolean }>) => (
+    <>
+      {showMenu ? <Menu /> : undefined}
+      <Grid
+        component="main"
+        tabIndex={-1}
+        container
+        justifyContent="center"
+        direction="row"
+      >
+        <Grid item sm={12} md={8} lg={6}>
+          {showMenu ? (
+            <Grid item className={classes.content}>
+              {' '}
+              <YearStatusBar />
+            </Grid>
+          ) : undefined}
           <Grid item className={classes.content}>
-            {' '}
-            <YearStatusBar />
+            {isMobile && showMenu ? (
+              <div className={classes.toolbar} />
+            ) : undefined}
+            {children}
           </Grid>
-        )}
-        <Grid item className={classes.content}>
-          {children}
         </Grid>
       </Grid>
-    </Grid>
+    </>
   )
 
   return (

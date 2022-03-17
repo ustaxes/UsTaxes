@@ -108,7 +108,7 @@ export function LabeledInput(props: LabeledInputProps): ReactElement {
             }
           }}
         />
-      );
+      )
     }
 
     return (
@@ -150,7 +150,7 @@ export function LabeledInput(props: LabeledInputProps): ReactElement {
           />
         )}
       />
-    );
+    )
   })()
 
   return (

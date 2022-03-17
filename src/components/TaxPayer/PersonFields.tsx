@@ -70,11 +70,16 @@ export const PersonListItem = ({
       if (editing !== undefined) {
         return (
           <ListItemIcon>
-            <IconButton onClick={onEdit} edge="end" aria-label="edit" size="large">
+            <IconButton
+              onClick={onEdit}
+              edge="end"
+              aria-label="edit"
+              size="large"
+            >
               <EditIcon />
             </IconButton>
           </ListItemIcon>
-        );
+        )
       }
     })()}
     <ListItemSecondaryAction>

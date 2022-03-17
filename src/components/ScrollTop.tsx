@@ -1,12 +1,13 @@
 import { ReactElement } from 'react'
-import { makeStyles, useScrollTrigger, Fab, Zoom } from '@mui/material'
+import { useScrollTrigger, Fab, Zoom } from '@mui/material'
+import { makeStyles } from '@mui/styles'
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   root: {
     position: 'fixed',
-    bottom: theme.spacing(2),
-    right: theme.spacing(2)
+    bottom: 2,
+    right: 2
   }
 }))
 

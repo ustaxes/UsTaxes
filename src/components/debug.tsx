@@ -1,5 +1,6 @@
 import { ReactElement } from 'react'
-import { IconButton, makeStyles } from '@mui/material'
+import { IconButton } from '@mui/material'
+import { makeStyles } from '@mui/styles'
 import { Star } from '@mui/icons-material'
 import fc from 'fast-check'
 import { useDispatch, YearsTaxesState } from 'ustaxes/redux'
@@ -40,10 +41,11 @@ export const StateLoader = (): ReactElement => {
       <IconButton
         className={classes.button}
         onClick={() => dispatch(setInfo(generator()))}
-        size="large">
+        size="large"
+      >
         <Star />
         Seed random state
       </IconButton>
     </div>
-  );
+  )
 }
