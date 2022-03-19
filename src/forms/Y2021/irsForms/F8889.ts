@@ -230,7 +230,9 @@ export default class F8889 extends Form {
   l8 = (): number => sumFields([this.l6(), this.l7()])
   // Employer contributions are listed in W2 box 12 with code W
   l9 = (): number =>
-    this.state.w2s.reduce((res, w2) => res + (w2.box12?.W ?? 0), 0)
+    this.state.w2s
+      .filter((w2) => w2.personRole == this.person.role)
+      .reduce((res, w2) => res + (w2.box12?.W ?? 0), 0)
   l10 = (): number | undefined => undefined
   l11 = (): number => sumFields([this.l9(), this.l10()])
   l12 = (): number => {
