@@ -1,58 +1,49 @@
-import {
-  createStyles,
-  Grid,
-  makeStyles,
-  TextField,
-  Theme,
-  useMediaQuery
-} from '@material-ui/core'
-import { Alert } from '@material-ui/lab'
+import { Alert, Grid, TextField, useMediaQuery } from '@mui/material'
 import { ReactElement } from 'react'
 import DataTable, {
   ConditionalStyles,
   TableColumn
 } from 'react-data-table-component'
-import useStyles from '../input/styles'
+import { styled } from '@mui/material/styles'
 
-type DarkModeProps = {
-  prefersDarkMode: boolean
+const PREFIX = 'ConfigurableDataTable'
+
+const classes = {
+  root: `${PREFIX}-root`,
+  column: `${PREFIX}-column`,
+  normal: `${PREFIX}-normal`,
+  disabledRow: `${PREFIX}-disabledRow`
 }
 
-const useRowStyles = makeStyles<Theme, DarkModeProps>(() =>
-  createStyles({
-    disabledRow: {
-      backgroundColor: '#aaaaaa',
-      color: 'black'
-    },
-    normal: ({ prefersDarkMode }) => baseCellStyle(prefersDarkMode)
-  })
-)
+export const baseLight = {
+  color: 'rgba(0, 0, 0, 0.54)',
+  backgroundColor: 'white'
+}
 
-export const baseCellStyle = (
-  prefersDarkMode = false
-): { [k: string]: string } => ({
-  color: prefersDarkMode ? 'white' : 'rgba(0, 0, 0, 0.54)',
-  backgroundColor: prefersDarkMode ? '#303030' : 'white'
-})
+export const baseDark = {
+  color: 'white',
+  backgroundColor: '#303030'
+}
 
-const useColumnStyles = makeStyles<Theme, DarkModeProps>(() =>
-  createStyles({
-    column: ({ prefersDarkMode }) => ({
-      '& .MuiFilledInput-input': {
-        fontSize: '.8rem',
-        fontWeight: 'bold',
-        padding: '0.9rem 0rem',
-        ...baseCellStyle(prefersDarkMode)
-      }
-    })
-  })
-)
-
-export const forceHeadCells = (
-  prefersDarkMode = false
-): { headCells: { style: { [k: string]: string } } } => ({
-  headCells: { style: baseCellStyle(prefersDarkMode) }
-})
+const Root = styled('div')(() => ({
+  [`${PREFIX}-disabledRow`]: {
+    backgroundColor: '#aaaaaa',
+    color: 'black'
+  },
+  [`${PREFIX}-normal`]: baseLight,
+  [`${PREFIX}-normal .dark`]: baseDark,
+  [`${PREFIX}-column`]: {
+    '& .MuiFilledInput-input': {
+      fontSize: '.8rem',
+      fontWeight: 'bold',
+      padding: '0.9rem 0rem',
+      ...baseLight
+    }
+  },
+  [`${PREFIX}-column .dark`]: {
+    '& .MuiFilledInput-input': baseDark
+  }
+}))
 
 interface ColumnHeaderDropProps {
   fields: string[]
@@ -68,12 +59,12 @@ const ColumnHeaderDropDown = ({
   undefinedName = ''
 }: ColumnHeaderDropProps) => {
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)')
-  const classes = useStyles({ prefersDarkMode })
-  const columnClasses = useColumnStyles({ prefersDarkMode })
 
   return (
     <TextField
-      className={`${classes.root} ${columnClasses.column}`}
+      className={`${classes.root} ${classes.column} ${
+        prefersDarkMode ? '.dark' : ''
+      }`}
       select
       fullWidth
       variant="filled"
@@ -115,17 +106,15 @@ export const ConfigurableDataTable = ({
 }: ConfigurableDataTableProps): ReactElement => {
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)')
   const firstRow = rows[0]
-  const classes = useStyles()
-  const rowClasses = useRowStyles({ prefersDarkMode })
 
   const conditionalCellStyles: ConditionalStyles<[number, string[]]>[] = [
     {
       when: ([index]) => index < dropFirstNRows,
-      classNames: [rowClasses.disabledRow]
+      classNames: [classes.disabledRow]
     },
     {
       when: ([index]) => index >= dropFirstNRows,
-      classNames: [rowClasses.normal]
+      classNames: [classes.normal]
     }
   ]
 
@@ -187,7 +176,7 @@ export const ConfigurableDataTable = ({
   )
 
   return (
-    <>
+    <Root>
       {assignAlert}
       {errorAlert}
       <Grid item xs={12}>
@@ -197,10 +186,12 @@ export const ConfigurableDataTable = ({
         <DataTable<[number, string[]]>
           data={rows.map((r, i) => [i, r])}
           columns={columns}
-          customStyles={forceHeadCells(prefersDarkMode)}
+          customStyles={{
+            headCells: { style: prefersDarkMode ? baseDark : baseLight }
+          }}
         />
       </Grid>
-    </>
+    </Root>
   )
 }
 

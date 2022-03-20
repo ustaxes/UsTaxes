@@ -1,18 +1,9 @@
 import { ReactElement, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 
-import {
-  createStyles,
-  makeStyles,
-  AppBar,
-  IconButton,
-  Slide,
-  Theme,
-  Toolbar,
-  Typography
-} from '@material-ui/core'
-import CloseIcon from '@material-ui/icons/Close'
-import MenuIcon from '@material-ui/icons/Menu'
+import { AppBar, IconButton, Slide, Toolbar, Typography } from '@mui/material'
+import { styled } from '@mui/material/styles'
+import { Close as CloseIcon, Menu as MenuIcon } from '@mui/icons-material'
 import ResponsiveDrawer, {
   item,
   Section,
@@ -41,36 +32,53 @@ import OtherInvestments from './income/OtherInvestments'
 import { StockOptions } from './income/StockOptions'
 import { PartnershipIncome } from './income/PartnershipIncome'
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      flexGrow: 1,
-      zIndex: theme.zIndex.drawer + 1,
-      [theme.breakpoints.up('sm')]: {
-        display: 'none'
-      }
-    },
-    toolbar: {
-      alignItems: 'center'
-    },
-    title: {
-      position: 'absolute',
-      width: '100%',
-      textAlign: 'center',
-      pointerEvents: 'none'
-    },
-    menuButton: {
-      marginRight: theme.spacing(2),
-      [theme.breakpoints.up('sm')]: {
-        display: 'none'
-      }
-    },
-    gutters: {
-      margin: '0 12px',
-      padding: 0
+const PREFIX = 'Menu'
+
+const classes = {
+  root: `${PREFIX}-root`,
+  toolbar: `${PREFIX}-toolbar`,
+  title: `${PREFIX}-title`,
+  menuButton: `${PREFIX}-menuButton`,
+  gutter: `${PREFIX}-gutter`
+}
+
+const StyledAppBar = styled(AppBar)(({ theme }) => ({
+  [`&.${classes.root}`]: {
+    flexGrow: 1,
+    zIndex: theme.zIndex.drawer + 1,
+    [theme.breakpoints.up('sm')]: {
+      display: 'none'
     }
-  })
-)
+  }
+}))
+
+const StyledToolbar = styled(Toolbar)(({ theme }) => ({
+  [`&.${classes.toolbar}`]: {
+    alignItems: 'center'
+  },
+  [`&.${classes.gutter}`]: {
+    margin: theme.spacing(0, 2),
+    padding: 0
+  }
+}))
+
+const Title = styled(Typography)(() => ({
+  [`&.${classes.title}`]: {
+    position: 'absolute',
+    width: '100%',
+    textAlign: 'center',
+    pointerEvents: 'none'
+  }
+}))
+
+const StyledIconButton = styled(IconButton)(({ theme }) => ({
+  [`&.${classes.menuButton}`]: {
+    marginRight: theme.spacing(2),
+    [theme.breakpoints.up('sm')]: {
+      display: 'none'
+    }
+  }
+}))
 
 const getTitleAndPage = (currentUrl: string): string => {
   const backPage = backPages.find(({ url }) => url === currentUrl)
@@ -171,35 +179,35 @@ export const drawerSections: Section[] = [
 ]
 
 const Menu = (): ReactElement => {
-  const classes = useStyles()
   const [isOpen, setOpen] = useState(!isMobile)
 
   return (
     <>
-      <AppBar position="fixed" className={classes.root}>
-        <Toolbar
+      <StyledAppBar position="fixed" className={classes.root}>
+        <StyledToolbar
           className={classes.toolbar}
-          classes={{ gutters: classes.gutters }}
+          classes={{ gutters: classes.gutter }}
         >
-          <IconButton
+          <StyledIconButton
             color="inherit"
             aria-label={`${isOpen ? 'close' : 'open'} drawer`}
             edge="start"
             onClick={() => setOpen((isOpen) => !isOpen)}
             className={classes.menuButton}
+            size="large"
           >
             {isOpen ? <CloseIcon /> : <MenuIcon />}
-          </IconButton>
+          </StyledIconButton>
           <Slide in={isOpen} direction={'right'}>
-            <Typography className={classes.title}>Menu</Typography>
+            <Title className={classes.title}>Menu</Title>
           </Slide>
           <Slide in={!isOpen} direction={'left'}>
             <Typography className={classes.title}>
               {getTitleAndPage(useLocation().pathname)}
             </Typography>
           </Slide>
-        </Toolbar>
-      </AppBar>
+        </StyledToolbar>
+      </StyledAppBar>
       <ResponsiveDrawer
         sections={drawerSections}
         isOpen={isOpen}

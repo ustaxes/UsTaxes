@@ -1,14 +1,10 @@
 import { ReactElement } from 'react'
-import { FormControl, FormLabel, Grid } from '@material-ui/core'
+import { FormControl, FormLabel, Grid, TextField } from '@mui/material'
 import { Controller, useFormContext } from 'react-hook-form'
-import useStyles from './styles'
 import ConditionallyWrap from 'ustaxes/components/ConditionallyWrap'
-import {
-  MuiPickersUtilsProvider,
-  KeyboardDatePicker as MuiDatePicker
-} from '@material-ui/pickers'
-import DateFnsUtils from '@date-io/date-fns'
 import { DatePickerProps } from './types'
+import { DesktopDateTimePicker as MuiDatePicker } from '@mui/lab'
+import FormRoot from './styles'
 
 export function DatePicker(props: DatePickerProps): ReactElement {
   const {
@@ -20,7 +16,6 @@ export function DatePicker(props: DatePickerProps): ReactElement {
     sizes = { xs: 12 }
   } = props
 
-  const classes = useStyles()
   const { control } = useFormContext()
 
   return (
@@ -35,21 +30,19 @@ export function DatePicker(props: DatePickerProps): ReactElement {
       <Controller
         name={name}
         render={({ field: { value = null, onChange } }) => (
-          <div className={classes.root}>
+          <FormRoot className="form-root">
             <FormControl component="fieldset">
               <FormLabel>{label}</FormLabel>
-              <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                <MuiDatePicker
-                  minDate={minDate}
-                  maxDate={maxDate}
-                  value={value}
-                  onChange={onChange}
-                  format="MM/dd/yyyy"
-                  emptyLabel="mm/dd/yyyy"
-                />
-              </MuiPickersUtilsProvider>
+              <MuiDatePicker
+                minDate={minDate}
+                maxDate={maxDate}
+                value={value}
+                onChange={onChange}
+                inputFormat="MM/dd/yyyy"
+                renderInput={(params) => <TextField {...params} />}
+              />
             </FormControl>
-          </div>
+          </FormRoot>
         )}
         control={control}
       />

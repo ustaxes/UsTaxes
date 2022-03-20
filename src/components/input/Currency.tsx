@@ -1,20 +1,26 @@
 import { ReactElement } from 'react'
+import { styled } from '@mui/material/styles'
 import { CurrencyProps } from './types'
 import NumberFormat from 'react-number-format'
-import { makeStyles } from '@material-ui/core/styles'
+const PREFIX = 'Currency'
 
-const useStyles = makeStyles(() => ({
-  positive: {
+const classes = {
+  positive: `${PREFIX}-positive`,
+  negative: `${PREFIX}-negative`
+}
+
+const StyledNumberFormat = styled(NumberFormat)(() => ({
+  [`& .${classes.positive}`]: {
     color: 'green'
   },
-  negative: {
+
+  [`& .${classes.negative}`]: {
     color: 'red'
   }
 }))
 
 export default function Currency(props: CurrencyProps): ReactElement {
   const { prefix = '', value, plain = false } = props
-  const classes = useStyles()
 
   const className: string | undefined = (() => {
     if (plain) {
@@ -35,7 +41,7 @@ export default function Currency(props: CurrencyProps): ReactElement {
   })()
 
   return (
-    <NumberFormat
+    <StyledNumberFormat
       className={className}
       thousandSeparator={true}
       prefix={`${prefix}  $`}

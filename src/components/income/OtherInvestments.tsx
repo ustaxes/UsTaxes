@@ -15,12 +15,12 @@ import { Patterns } from 'ustaxes/components/Patterns'
 import { FormListContainer } from 'ustaxes/components/FormContainer'
 import { Currency } from 'ustaxes/components/input'
 import { DatePicker } from '../input/DatePicker'
-import { Grid } from '@material-ui/core'
+import { Grid } from '@mui/material'
 import {
   HouseOutlined as RealEstateIcon,
   ShowChartOutlined as StockIcon
-} from '@material-ui/icons'
-import { Alert } from '@material-ui/lab'
+} from '@mui/icons-material'
+import { Alert } from '@mui/material'
 import { TaxYears } from 'ustaxes/data'
 import { TransactionImporter } from './TransactionImporter'
 

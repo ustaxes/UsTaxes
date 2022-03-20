@@ -13,11 +13,11 @@ import {
   Accordion,
   AccordionSummary,
   AccordionDetails
-} from '@material-ui/core'
+} from '@mui/material'
 import { YearsTaxesState } from 'ustaxes/redux'
 import { Information } from 'ustaxes/core/data'
-import { Check, Close, ExpandMore } from '@material-ui/icons'
-import Alert from '@material-ui/lab/Alert'
+import { Check, Close, ExpandMore } from '@mui/icons-material'
+import Alert from '@mui/material/Alert'
 import { run } from 'ustaxes/core/util'
 import yearFormBuilder from 'ustaxes/forms/YearForms'
 import { TaxYear } from 'ustaxes/data'

@@ -1,19 +1,17 @@
 import { useEffect, useRef, ReactElement } from 'react'
 import _ from 'lodash'
 import { useForkRef } from 'rooks'
-import { Grid, TextField } from '@material-ui/core'
+import { Grid, TextField } from '@mui/material'
 import { Controller, useFormContext } from 'react-hook-form'
 import locationPostalCodes from 'ustaxes/core/data/locationPostalCodes'
 import countries from 'ustaxes/core/data/countries'
 import { State } from 'ustaxes/core/data'
-import useStyles from './styles'
 import { BaseDropdownProps, LabeledDropdownProps } from './types'
 import ConditionallyWrap from 'ustaxes/components/ConditionallyWrap'
 
 export function GenericLabeledDropdown<A>(
   props: LabeledDropdownProps<A>
 ): ReactElement {
-  const classes = useStyles()
   const {
     control,
     formState: { errors }
@@ -54,7 +52,7 @@ export function GenericLabeledDropdown<A>(
             inputRef={autofocus ? useForkRef(ref, inputRef) : ref}
             id={name}
             name={name}
-            className={classes.root}
+            className="form-root"
             label={label}
             select
             fullWidth

@@ -6,7 +6,7 @@ import {
   ReactElement,
   ReactNode
 } from 'react'
-import { useMediaQuery, Button, Grid } from '@material-ui/core'
+import { useMediaQuery, Button, Grid } from '@mui/material'
 import { isMobileOnly as isMobile } from 'react-device-detect'
 import { Link, useHistory } from 'react-router-dom'
 
@@ -102,7 +102,7 @@ export const PagerButtons = ({
             component={Link}
             to={previousUrl}
             variant="contained"
-            color={prefersDarkMode ? 'default' : 'secondary'}
+            color={prefersDarkMode ? 'primary' : 'secondary'}
             fullWidth
           >
             Previous
@@ -171,7 +171,7 @@ export const StartButtons = ({
           href={secondUrl}
           variant="contained"
           fullWidth
-          color={prefersDarkMode ? 'default' : 'secondary'}
+          color={prefersDarkMode ? 'primary' : 'secondary'}
         >
           {secondText}
         </Button>

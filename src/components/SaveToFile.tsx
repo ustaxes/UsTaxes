@@ -1,4 +1,4 @@
-import { Button, ButtonProps } from '@material-ui/core'
+import { Button, ButtonProps } from '@mui/material'
 import { PropsWithChildren, ReactElement } from 'react'
 import { useDispatch } from 'react-redux'
 import { fsPersist } from 'ustaxes/redux/fs/Actions'

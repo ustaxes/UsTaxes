@@ -1,7 +1,5 @@
 import { PropsWithChildren, ReactElement, useState } from 'react'
 import {
-  createStyles,
-  makeStyles,
   useMediaQuery,
   IconButton,
   List,
@@ -11,9 +9,9 @@ import {
   ListItemText,
   Box,
   Button,
-  Theme
-} from '@material-ui/core'
-import { Delete, Edit } from '@material-ui/icons'
+  styled
+} from '@mui/material'
+import { Delete, Edit } from '@mui/icons-material'
 import { SubmitHandler, useFormContext } from 'react-hook-form'
 import _ from 'lodash'
 import { ReactNode } from 'react'
@@ -56,7 +54,7 @@ const FormContainer = ({
         <Button
           type="button"
           onClick={onCancel}
-          color={prefersDarkMode ? 'default' : 'secondary'}
+          color={prefersDarkMode ? 'primary' : 'secondary'}
           variant="contained"
         >
           Discard
@@ -92,7 +90,12 @@ export const MutableListItem = ({
     if (canEdit) {
       return (
         <ListItemIcon>
-          <IconButton onClick={onEdit} edge="end" aria-label="edit">
+          <IconButton
+            onClick={onEdit}
+            edge="end"
+            aria-label="edit"
+            size="large"
+          >
             <Edit />
           </IconButton>
         </ListItemIcon>
@@ -104,7 +107,12 @@ export const MutableListItem = ({
     if (canDelete) {
       return (
         <ListItemSecondaryAction>
-          <IconButton onClick={remove} edge="end" aria-label="delete">
+          <IconButton
+            onClick={remove}
+            edge="end"
+            aria-label="delete"
+            size="large"
+          >
             <Delete />
           </IconButton>
         </ListItemSecondaryAction>
@@ -149,19 +157,20 @@ enum FormState {
   Closed
 }
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    buttonList: {
-      margin: `${theme.spacing(2)}px 0 ${theme.spacing(3)}px`
-    }
-  })
-)
+const classes = {
+  buttonList: 'FormContainer-buttonList'
+}
+
+const ButtonList = styled('div')(({ theme }) => ({
+  [`&.${classes.buttonList}`]: {
+    margin: theme.spacing(2, 0, 3)
+  }
+}))
 
 const FormListContainer = <A,>(
   props: PropsWithChildren<FormListContainerProps<A>>
 ): ReactElement => {
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)')
-  const classes = useStyles()
   const {
     children,
     items,
@@ -282,16 +291,16 @@ const FormListContainer = <A,>(
           )
         } else if (max === undefined || items.length < max) {
           return (
-            <div className={classes.buttonList}>
+            <ButtonList className={classes.buttonList}>
               <Button
                 type="button"
                 onClick={openAddForm}
-                color={prefersDarkMode ? 'default' : 'secondary'}
+                color={prefersDarkMode ? 'primary' : 'secondary'}
                 variant="contained"
               >
                 Add
               </Button>
-            </div>
+            </ButtonList>
           )
         }
       })()}

@@ -1,6 +1,6 @@
 import { ReactElement, useEffect } from 'react'
 import { Helmet } from 'react-helmet'
-import { Grid, List, ListItem } from '@material-ui/core'
+import { Grid, List, ListItem } from '@mui/material'
 import { useDispatch, useSelector, TaxesState } from 'ustaxes/redux'
 import { QuestionTagName, Responses } from 'ustaxes/core/data'
 import { getRequiredQuestions } from 'ustaxes/core/data/questions'

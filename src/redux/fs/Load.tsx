@@ -1,4 +1,4 @@
-import { Button, ButtonProps } from '@material-ui/core'
+import { Button, ButtonProps } from '@mui/material'
 import { ChangeEvent, PropsWithChildren, ReactElement } from 'react'
 import { loadFile } from '.'
 

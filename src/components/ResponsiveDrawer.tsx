@@ -2,8 +2,6 @@ import { Dispatch, Fragment, ReactElement, SetStateAction } from 'react'
 import { useLocation, NavLink, Link } from 'react-router-dom'
 import { isMobileOnly as isMobile } from 'react-device-detect'
 import {
-  createStyles,
-  makeStyles,
   useTheme,
   Divider,
   SwipeableDrawer,
@@ -12,57 +10,70 @@ import {
   ListItem,
   ListItemText,
   ListSubheader,
-  Theme
-} from '@material-ui/core'
-import GitHubIcon from '@material-ui/icons/GitHub'
-import TwitterIcon from '@material-ui/icons/Twitter'
-import { Settings } from '@material-ui/icons'
+  ListItemButton
+} from '@mui/material'
+import GitHubIcon from '@mui/icons-material/GitHub'
+import TwitterIcon from '@mui/icons-material/Twitter'
+import { Settings } from '@mui/icons-material'
+import { styled } from '@mui/material/styles'
 import Urls from 'ustaxes/data/urls'
 
 const drawerWidth = 240
 
-const useStyles = makeStyles<Theme, { isMobile: boolean }>((theme) =>
-  createStyles({
-    drawer: {
-      [theme.breakpoints.up('sm')]: {
-        width: drawerWidth,
-        flexShrink: 0
-      }
-    },
-    drawerBackdrop: ({ isMobile }) => ({
-      top: isMobile ? '56px !important' : undefined,
-      height: isMobile ? 'calc(100% - 56px)' : undefined
-    }),
-    drawerContainer: ({ isMobile }) => ({
-      top: isMobile ? '56px !important' : 0
-    }),
-    drawerPaper: ({ isMobile }) => ({
-      top: isMobile ? '56px !important' : undefined,
-      width: isMobile ? '100%' : drawerWidth,
-      height: isMobile ? 'calc(100% - 56px)' : undefined
-    }),
-    listSocial: {
-      display: 'flex',
-      justifyContent: 'flex-end',
-      marginRight: theme.spacing(2)
-    },
-    listItemSocial: {
-      flex: 0,
-      padding: 0
-    },
-    list: {
-      marginLeft: theme.spacing(0),
-      paddingLeft: theme.spacing(0)
-    },
-    listItem: {
-      marginLeft: theme.spacing(0),
-      paddingLeft: theme.spacing(2)
-    },
-    sectionHeader: {
-      marginLeft: theme.spacing(2)
+const PREFIX = 'ResponsiveDrawer'
+
+const classes = {
+  drawer: `${PREFIX}-drawer`,
+  drawerBackdrop: `${PREFIX}-drawerBackdrop`,
+  drawerContainer: `${PREFIX}-drawerContainer`,
+  drawerPaper: `${PREFIX}-drawerPaper`,
+  listSocial: `${PREFIX}-listSocial`,
+  listItemSocial: `${PREFIX}-listItemSocial`,
+  list: `${PREFIX}-list`,
+  listItem: `${PREFIX}-listItem`,
+  sectionHeader: `${PREFIX}-sectionHeader`
+}
+
+const Nav = styled('nav')(({ theme }) => ({
+  [classes.drawer]: {
+    [theme.breakpoints.up('sm')]: {
+      width: drawerWidth,
+      flexShrink: 0
     }
-  })
-)
+  },
+  [classes.drawerBackdrop]: {
+    top: isMobile ? '56px !important' : undefined,
+    height: isMobile ? 'calc(100% - 56px)' : undefined
+  },
+  [classes.drawerContainer]: {
+    top: isMobile ? '56px !important' : 0
+  },
+  [classes.drawerPaper]: {
+    top: isMobile ? '56px !important' : undefined,
+    width: isMobile ? '100%' : drawerWidth,
+    height: isMobile ? 'calc(100% - 56px)' : undefined
+  },
+  [classes.listSocial]: {
+    display: 'flex',
+    justifyContent: 'flex-end',
+    marginRight: theme.spacing(2)
+  },
+  [classes.listItemSocial]: {
+    flex: 0,
+    padding: 0
+  },
+  [classes.list]: {
+    marginLeft: theme.spacing(0),
+    paddingLeft: theme.spacing(0)
+  },
+  [classes.listItem]: {
+    marginLeft: theme.spacing(0),
+    paddingLeft: theme.spacing(2)
+  },
+  [classes.sectionHeader]: {
+    marginLeft: theme.spacing(2)
+  }
+}))
 
 export interface Section {
   title: string
@@ -93,7 +104,6 @@ export interface DrawerItemsProps {
 
 function ResponsiveDrawer(props: DrawerItemsProps): ReactElement {
   const location = useLocation()
-  const classes = useStyles({ isMobile })
   const theme = useTheme()
 
   const { sections, isOpen, setOpen } = props
@@ -108,19 +118,15 @@ function ResponsiveDrawer(props: DrawerItemsProps): ReactElement {
             className={classes.list}
           >
             {items.map((item) => (
-              <ListItem
+              <ListItemButton
                 key={item.title}
                 className={classes.listItem}
-                button
-                component={NavLink}
-                exact
-                activeClassName="current"
-                to={item.url}
+                href={item.url}
                 selected={location.pathname === item.url}
                 disabled={location.pathname === item.url}
               >
                 <ListItemText primary={`${item.title}`} />
-              </ListItem>
+              </ListItemButton>
             ))}
           </List>
           <Divider />
@@ -135,6 +141,7 @@ function ResponsiveDrawer(props: DrawerItemsProps): ReactElement {
             href={`https://github.com/ustaxes/UsTaxes`}
             target="_blank"
             rel="noreferrer noopener"
+            size="large"
           >
             <GitHubIcon />
           </IconButton>
@@ -147,13 +154,18 @@ function ResponsiveDrawer(props: DrawerItemsProps): ReactElement {
             href={`https://www.twitter.com/ustaxesorg`}
             target="_blank"
             rel="noreferrer noopener"
+            size="large"
           >
             <TwitterIcon />
           </IconButton>
         </ListItem>
         <ListItem className={classes.listItemSocial}>
           <Link to={Urls.settings}>
-            <IconButton color="secondary" aria-label="site user settings">
+            <IconButton
+              color="secondary"
+              aria-label="site user settings"
+              size="large"
+            >
               <Settings />
             </IconButton>
           </Link>
@@ -163,7 +175,7 @@ function ResponsiveDrawer(props: DrawerItemsProps): ReactElement {
   )
 
   return (
-    <nav className={classes.drawer} aria-label="primary">
+    <Nav className={classes.drawer} aria-label="primary">
       <SwipeableDrawer
         variant={!isMobile ? 'persistent' : undefined}
         anchor={theme.direction === 'rtl' ? 'right' : 'left'}
@@ -184,7 +196,7 @@ function ResponsiveDrawer(props: DrawerItemsProps): ReactElement {
       >
         {drawer}
       </SwipeableDrawer>
-    </nav>
+    </Nav>
   )
 }
 

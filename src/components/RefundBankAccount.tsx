@@ -9,7 +9,7 @@ import _ from 'lodash'
 
 import { Refund } from 'ustaxes/core/data'
 import { usePager } from './pager'
-import { Grid } from '@material-ui/core'
+import { Grid } from '@mui/material'
 
 const blankFormData: Partial<Refund> = {
   routingNumber: '',

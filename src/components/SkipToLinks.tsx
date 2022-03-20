@@ -1,30 +1,30 @@
 import { ReactElement } from 'react'
-import {
-  makeStyles,
-  Link,
-  Theme,
-  Typography,
-  useMediaQuery
-} from '@material-ui/core'
+import { styled } from '@mui/material/styles'
+import { Link, Typography, useMediaQuery } from '@mui/material'
+const PREFIX = 'SkipToLinks'
 
-type Props = {
-  prefersDarkMode: boolean
+const classes = {
+  root: `${PREFIX}-root`,
+  container: `${PREFIX}-container`,
+  main: `${PREFIX}-main`
 }
 
-const useStyles = makeStyles<Theme, Props>((theme: Theme) => ({
-  root: {
+const Root = styled('div')(({ theme }) => ({
+  [`&.${classes.root}`]: {
     position: 'absolute',
     display: 'flex',
     top: 0,
     left: 0,
     zIndex: 1201
   },
-  container: {
+
+  [`& .${classes.container}`]: {
     alignItems: 'center',
     display: 'flex',
     overflow: 'hidden'
   },
-  main: ({ prefersDarkMode }) => ({
+
+  [`& .${classes.main}`]: {
     '&:not(:focus)': {
       position: 'absolute',
       clip: 'rect(1px, 1px, 1px, 1px)',
@@ -33,8 +33,8 @@ const useStyles = makeStyles<Theme, Props>((theme: Theme) => ({
     },
     '&:focus': {
       borderRadius: 2,
-      color: prefersDarkMode ? 'white' : 'rgba(0, 0, 0, 0.54)',
-      backgroundColor: prefersDarkMode ? '#303030' : 'white',
+      color: 'rgba(0, 0, 0, 0.54)',
+      backgroundColor: 'white',
       border: `1px solid ${theme.palette.primary.main}`,
       cursor: 'pointer',
       display: 'inline-block',
@@ -44,16 +44,20 @@ const useStyles = makeStyles<Theme, Props>((theme: Theme) => ({
       width: 130,
       padding: 12
     }
-  })
+  },
+  [`& .${classes.main} .dark`]: {
+    '&:focus': {
+      color: 'white',
+      backgroundColor: '#303030'
+    }
+  }
 }))
 
 const SkipToLinks = (): ReactElement => {
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)')
 
-  const classes = useStyles({ prefersDarkMode })
-
   return (
-    <div className={classes.root}>
+    <Root className={`${classes.root} ${prefersDarkMode ? 'dark' : ''}`}>
       <div className={classes.container}>
         <Link
           className={classes.main}
@@ -70,7 +74,7 @@ const SkipToLinks = (): ReactElement => {
           <Typography>Skip to main content</Typography>
         </Link>
       </div>
-    </div>
+    </Root>
   )
 }
 

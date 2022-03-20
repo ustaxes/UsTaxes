@@ -29,9 +29,9 @@ import {
 import { PersonFields } from './PersonFields'
 import { FormListContainer } from 'ustaxes/components/FormContainer'
 import { usePager } from 'ustaxes/components/pager'
-import { Box, Grid } from '@material-ui/core'
-import { Person } from '@material-ui/icons'
-import { Alert } from '@material-ui/lab'
+import { Box, Grid } from '@mui/material'
+import { Person } from '@mui/icons-material'
+import { Alert } from '@mui/material'
 
 interface UserPersonForm {
   firstName: string

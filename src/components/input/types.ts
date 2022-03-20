@@ -1,7 +1,7 @@
 import { ReactElement } from 'react'
 import { RegisterOptions } from 'react-hook-form'
 import { PatternConfig } from 'ustaxes/components/Patterns'
-import { GridSize } from '@material-ui/core/Grid'
+import { GridSize } from '@mui/material/Grid'
 export interface BaseDropdownProps {
   label: string | ReactElement
   required?: boolean
