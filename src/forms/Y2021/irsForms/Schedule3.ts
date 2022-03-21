@@ -164,6 +164,7 @@ export default class Schedule3 extends Form {
       this.l6f(),
       this.l6g(),
       this.l6h(),
+      this.l6i(),
       this.l6j(),
       this.l6k(),
       this.l6l(),
@@ -182,7 +183,7 @@ export default class Schedule3 extends Form {
       this.l13b(),
       this.l13c(),
       this.l13d(),
-      this.l13e(),
+      //this.l13e(),  // this field is left for future use and is not fillable
       this.l13f(),
       this.l13g(),
       this.l13h(),
