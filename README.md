@@ -120,6 +120,7 @@ nvm use 16
 your environment will be set up every time you enter the project directory.
 
 #### Docker
+
 If preferred, a Docker alternative is available:
 
 ```sh
