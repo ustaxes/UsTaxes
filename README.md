@@ -85,7 +85,7 @@ To ensure the project is fun for every contributor, please review:
 
 ## Get Started
 
-This application can be run as either a web application or a standalone desktop application.
+This application can be run as either a web application or a [standalone desktop application](#user-content-desktop-application)
 
 ### Web application
 
@@ -93,21 +93,21 @@ This project runs on Node 16. To ensure you're on the proper version, we recomme
 
 With `nvm` installed, you may select a version 16 node using:
 
-```
+```sh
 nvm install 16
 nvm use 16
 ```
 
 To run,
 
-```
+```sh
 npm ci          # install package dependencies
 npm run start   # run app
 ```
 
-Note: To avoid having to set your node versions, we suggest using a tool like [direnv](https://direnv.net). For example, with the following configuration:
+Note: To avoid having to set your node versions, we suggest using a tool like [direnv](https://direnv.net). With the following configuration file as `.envrc` in project root:
 
-```
+```sh
 export NVM_DIR="$HOME/.nvm"
 
 . "$NVM_DIR/nvm.sh"  # This loads nvm
@@ -119,9 +119,10 @@ nvm use 16
 
 your environment will be set up every time you enter the project directory.
 
+#### Docker
 If preferred, a Docker alternative is available:
 
-```
+```sh
 docker-compose build
 docker-compose up
 ```
@@ -132,7 +133,7 @@ To stop and remove running containers, run `docker-compose down`.
 
 ### Desktop application
 
-The desktop application is built with [Tauri][tauri-root]. In addition to the above steps, please [follow this reference for setting up your environment for Tauri](https://tauri.studio/en/docs/getting-started/intro/#setting-up-your-environment).
+The desktop application is built with [Tauri][tauri-root]. In addition to the above steps, please [follow this reference for setting up your environment for Tauri][tauri-setup].
 
 Once your environment is set up for tauri, run, `npm run desktop`. To avoid a browser window being spawned in addition to the desktop window, just set the BROWSER environment variable as in: `BROWSER=none npm run desktop`.
 
@@ -151,3 +152,5 @@ Please reach out to us on our [discord][discord-url] if you run into any problem
 [release-badge]: https://badgen.net/github/release/ustaxes/ustaxes
 [desktop-releases]: https://github.com/ustaxes/UsTaxes/releases/
 [github-issues]: https://github.com/ustaxes/ustaxes/issues
+[tauri-setup]: https://tauri.studio/en/docs/getting-started/intro/#setting-up-your-environment
+[tauri-root]: https://tauri.studio
