@@ -40,6 +40,7 @@ import IRA from './savingsAccounts/IRA'
 import OtherInvestments from './income/OtherInvestments'
 import { StockOptions } from './income/StockOptions'
 import { PartnershipIncome } from './income/PartnershipIncome'
+import Editor from 'ustaxes/formgen/components/Form'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -167,6 +168,10 @@ export const drawerSections: Section[] = [
       item('Informational Questions', Urls.questions, <Questions />),
       item('Review and Print', Urls.createPdf, <CreatePDF />)
     ]
+  },
+  {
+    title: 'Editor',
+    items: [item('Editor', Urls.editor, <Editor />)]
   }
 ]
 

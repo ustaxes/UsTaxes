@@ -1,7 +1,10 @@
 import { Button, ButtonProps } from '@material-ui/core'
 import { ChangeEvent, PropsWithChildren, ReactElement } from 'react'
-import { loadFile } from '.'
+import { loadFile, loadFileBinary } from '.'
 
+interface LoadFileProps<S> {
+  load: (file: File) => Promise<S>
+}
 interface LoadProps<S> {
   handleData: (s: S) => void
 }
@@ -10,10 +13,12 @@ interface Accept {
   accept?: string
 }
 
-export const LoadRaw = (
-  props: PropsWithChildren<LoadProps<string> & Accept & ButtonProps>
+export const LoadF = <S,>(
+  props: PropsWithChildren<
+    LoadProps<S> & LoadFileProps<S> & Accept & ButtonProps
+  >
 ): ReactElement => {
-  const { children, handleData, accept = '.*,text', ...rest } = props
+  const { children, load, handleData, accept = '.*,text', ...rest } = props
 
   const onClick = async (e: ChangeEvent<HTMLInputElement>): Promise<void> => {
     e.preventDefault()
@@ -23,7 +28,7 @@ export const LoadRaw = (
     }
     const file = files[0]
 
-    handleData(await loadFile(file))
+    handleData(await load(file))
   }
 
   return (
@@ -34,19 +39,25 @@ export const LoadRaw = (
   )
 }
 
-const Load = <S,>(
-  props: PropsWithChildren<LoadProps<S> & ButtonProps & Accept>
+export const LoadRaw = (
+  props: PropsWithChildren<LoadProps<string> & Accept & ButtonProps>
+): ReactElement => <LoadF<string> {...props} load={loadFile} />
+
+export const Load = <S,>(
+  props: PropsWithChildren<LoadProps<S> & Accept & ButtonProps>
 ): ReactElement => {
-  const { children, handleData, ...rest } = props
+  const { handleData, ...rest } = props
 
   return (
     <LoadRaw
       {...rest}
       handleData={(contents: string) => handleData(JSON.parse(contents) as S)}
-    >
-      {children}
-    </LoadRaw>
+    />
   )
 }
+
+export const LoadBinary = (
+  props: PropsWithChildren<LoadProps<ArrayBuffer> & Accept & ButtonProps>
+): ReactElement => <LoadF<ArrayBuffer> load={loadFileBinary} {...props} />
 
 export default Load

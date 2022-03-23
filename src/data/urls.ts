@@ -32,6 +32,7 @@ const Urls = {
     main: '/credits',
     eic: '/credits/eic'
   },
+  editor: '/editor',
   createPdf: '/createpdf',
   settings: '/settings',
   default: ''

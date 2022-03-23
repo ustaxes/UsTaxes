@@ -5,6 +5,7 @@ import { YearsTaxesState } from 'ustaxes/redux'
 import { TaxYear, TaxYears } from 'ustaxes/data'
 import prand from 'pure-rand'
 import { Asset, AssetType } from 'ustaxes/core/data'
+import { blankState as blankForms } from 'ustaxes/formgen/reducer'
 
 export const taxYear: fc.Arbitrary<TaxYear> = fc.constantFrom(
   ...util.enumKeys(TaxYears)
@@ -68,6 +69,7 @@ export const taxesState: fc.Arbitrary<YearsTaxesState> = taxYear.chain(
       .tuple(fc.array(positionDate), information, information, information)
       .map(([assets, Y2019, Y2020, Y2021]) => ({
         assets,
+        forms: blankForms,
         Y2019,
         Y2020,
         Y2021,
