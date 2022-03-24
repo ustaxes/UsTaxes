@@ -28,8 +28,7 @@ import { FieldType, FormField } from '../data'
 import { FixedSizeList } from 'react-window'
 import AutoSizer from 'react-virtualized-auto-sizer'
 
-// https://github.com/wojtekmaj/react-pdf#create-react-app
-import { Document, Page } from 'react-pdf/dist/esm/entry.webpack'
+import { Document, Page } from 'react-pdf'
 
 // 0-1 indexed colors for PDF lib
 
