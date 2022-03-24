@@ -40,9 +40,6 @@ const Editor = (): ReactElement => {
   const [pageNumber, setPageNumber] = useState<number | undefined>()
   const [numPages, setNumPages] = useState<number | undefined>()
   const [displayingPDF, setDisplayingPDF] = useState<Uint8Array | undefined>()
-  const [selectedFieldIndex, setSelectedFieldIndex] = useState<
-    number | undefined
-  >()
 
   const handler = async (data: ArrayBuffer) => {
     const pdf = await PDFDocument.load(data)
@@ -125,41 +122,19 @@ const Editor = (): ReactElement => {
     field.needsAppearancesUpdate()
   }
 
-  const clearFieldHighlight = (field: PDFField): void => {
-    const ac = field.acroField
-      .getWidgets()[0]
-      .getOrCreateAppearanceCharacteristics()
-    ac.setBackgroundColor(colors['white'])
-    const b = field.acroField.getWidgets()[0].getOrCreateBorderStyle()
-    b.setWidth(0)
-    ac.setBorderColor(colors['white'])
-  }
-
   const highlightField = async (fieldIndex: number): Promise<void> => {
     if (selectedIndex !== undefined) {
       const doc = await PDFDocument.load(prelimDocs[selectedIndex].doc)
-
-      if (selectedFieldIndex !== undefined) {
-        const field = doc.getForm().getFields()[selectedFieldIndex]
-        clearFieldHighlight(field)
-        if (field instanceof PDFTextField) {
-          field.setText('')
-        } else if (field instanceof PDFCheckBox) {
-          field.uncheck()
-        }
-      }
 
       const field = doc.getForm().getFields()[fieldIndex]
 
       if (field !== undefined) {
         highlightFieldColor(field, 'yellow')
       }
-      setSelectedFieldIndex(fieldIndex)
       doc.getForm().updateFieldAppearances()
 
       const newDoc = await doc.save()
       setDisplayingPDF(newDoc)
-      setSelectedFieldIndex(fieldIndex)
     }
   }
 
@@ -173,7 +148,6 @@ const Editor = (): ReactElement => {
         .getFields()
         .forEach((field, index) => f(field, index))
 
-      setSelectedFieldIndex(undefined)
       setDisplayingPDF(await doc.save())
     }
   }

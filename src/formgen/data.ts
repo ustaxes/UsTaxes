@@ -1,6 +1,6 @@
 import { TaxYear } from 'ustaxes/data'
 
-export type FieldType = 'string' | 'numeric' | 'boolean' | 'choice' 
+export type FieldType = 'string' | 'numeric' | 'boolean' | 'choice'
 
 interface IFormField<T, A = undefined> {
   formName?: string
