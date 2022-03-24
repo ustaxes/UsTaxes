@@ -6,7 +6,15 @@ import {
   Grid,
   ListItem
 } from '@material-ui/core'
-import { ArrowLeft, ArrowRight, ExpandMore } from '@material-ui/icons'
+import {
+  ArrowLeft,
+  ArrowRight,
+  ExpandMore,
+  TextFields as StringIcon,
+  PlusOneRounded as NumericIcon,
+  CheckBoxRounded as BooleanIcon,
+  PlaylistAddCheck as ChoiceIcon
+} from '@material-ui/icons'
 import {
   PDFCheckBox,
   PDFDocument,
@@ -16,7 +24,7 @@ import {
 } from 'pdf-lib'
 import { ChangeEvent, ReactElement, useState } from 'react'
 import { LoadBinary } from 'ustaxes/redux/fs/Load'
-import { FormField } from '../data'
+import { FieldType, FormField } from '../data'
 import { FixedSizeList } from 'react-window'
 import AutoSizer from 'react-virtualized-auto-sizer'
 
@@ -171,6 +179,19 @@ const Editor = (): ReactElement => {
     })
   }
 
+  const fieldIcon = (fieldType: FieldType): ReactElement => {
+    switch (fieldType) {
+      case 'string':
+        return <StringIcon />
+      case 'numeric':
+        return <NumericIcon />
+      case 'boolean':
+        return <BooleanIcon />
+      case 'choice':
+        return <ChoiceIcon />
+    }
+  }
+
   return (
     <div>
       <h1>Editor</h1>
@@ -201,6 +222,7 @@ const Editor = (): ReactElement => {
                           style={{ ...style, cursor: 'pointer' }}
                           onClick={() => highlightField(index)}
                         >
+                          {fieldIcon(fields[index].type)}
                           Field {index + 1}:{' '}
                           <strong>{fields[index].name}</strong>
                         </ListItem>
