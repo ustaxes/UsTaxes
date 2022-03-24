@@ -1,4 +1,6 @@
-export type FieldType = 'string' | 'numeric' | 'boolean' | 'choice'
+import { TaxYear } from 'ustaxes/data'
+
+export type FieldType = 'string' | 'numeric' | 'boolean' | 'choice' 
 
 interface IFormField<T, A = undefined> {
   formName?: string
@@ -9,12 +11,16 @@ interface IFormField<T, A = undefined> {
   extra: A
 }
 
+interface TextLikeExtra {
+  maxLength?: number
+}
+
 export interface ChoiceExtra {
   choices: string[]
 }
 
-export type StringFormField = IFormField<'string'>
-export type NumericFormField = IFormField<'numeric'>
+export type StringFormField = IFormField<'string', TextLikeExtra>
+export type NumericFormField = IFormField<'numeric', TextLikeExtra>
 export type BooleanFormField = IFormField<'boolean'>
 export type ChoiceFormField = IFormField<'choice', ChoiceExtra>
 
@@ -87,4 +93,6 @@ export interface Form {
 export interface Assignment {
   formName: string
   fields: Field[]
+  year: TaxYear
+  category: string
 }

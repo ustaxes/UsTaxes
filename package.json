@@ -86,6 +86,7 @@
     "@types/react-pdf": "^5.0.9",
     "@types/react-redux": "^7.1.23",
     "@types/react-router-dom": "^5.3.3",
+    "@types/react-virtualized-auto-sizer": "^1.0.1",
     "@types/react-window": "^1.8.5",
     "@types/redux-logger": "^3.0.9",
     "@typescript-eslint/eslint-plugin": "^5.14.0",
