@@ -47,6 +47,7 @@ const Editor = (): ReactElement => {
   const [pageNumber, setPageNumber] = useState<number | undefined>()
   const [numPages, setNumPages] = useState<number | undefined>()
   const [displayingPDF, setDisplayingPDF] = useState<Uint8Array | undefined>()
+  const [selectedFieldIndex, selectFieldIndex] = useState<number | undefined>()
 
   const handler = async (data: ArrayBuffer) => {
     const pdf = await PDFDocument.load(data)
@@ -138,6 +139,7 @@ const Editor = (): ReactElement => {
       if (field !== undefined) {
         highlightFieldColor(field, 'yellow')
       }
+
       doc.getForm().updateFieldAppearances()
 
       const newDoc = await doc.save()
@@ -176,6 +178,11 @@ const Editor = (): ReactElement => {
         field.setText(field.getName().toString() ?? `index: ${index + 1}`)
       }
     })
+  }
+
+  const selectField = (fieldIndex: number): void => {
+    selectFieldIndex(fieldIndex)
+    highlightField(fieldIndex)
   }
 
   const fieldIcon = (fieldType: FieldType): ReactElement => {
@@ -219,7 +226,8 @@ const Editor = (): ReactElement => {
                       {({ index, style }) => (
                         <ListItem
                           style={{ ...style, cursor: 'pointer' }}
-                          onClick={() => highlightField(index)}
+                          selected={selectedFieldIndex === index}
+                          onClick={() => selectField(index)}
                         >
                           {fieldIcon(fields[index].type)}
                           Field {index + 1}:{' '}
