@@ -14,6 +14,7 @@ import {
   ScheduleK1Form1065
 } from 'ustaxes/core/data'
 import { blankState } from './reducer'
+import { FormsState } from 'ustaxes/formgen/reducer'
 
 export interface ArrayItemEditAction<A> {
   index: number
@@ -30,6 +31,7 @@ export type TaxesState = { information: Information }
 export type YearsTaxesState = { [K in TaxYear]: Information } & {
   assets: Asset<Date>[]
   activeYear: TaxYear
+  forms: FormsState
 }
 
 export const blankYearTaxesState: YearsTaxesState = {
@@ -37,7 +39,11 @@ export const blankYearTaxesState: YearsTaxesState = {
   Y2019: blankState,
   Y2020: blankState,
   Y2021: blankState,
-  activeYear: 'Y2020'
+  activeYear: 'Y2020',
+  forms: {
+    forms: [],
+    assignments: []
+  }
 }
 
 export type EditDependentAction = ArrayItemEditAction<Dependent>

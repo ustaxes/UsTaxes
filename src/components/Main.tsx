@@ -103,7 +103,7 @@ export default function Main(): ReactElement {
       justifyContent="center"
       direction="row"
     >
-      <Grid item sm={12} md={8} lg={6}>
+      <Grid item sm={12} md={12} lg={12}>
         {!isStartPage && (
           <Grid item className={classes.content}>
             {' '}

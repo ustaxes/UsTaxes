@@ -2,7 +2,7 @@
 
 import Load from './Load'
 
-const download = (filename: string, text: string): void => {
+export const download = (filename: string, text: string): void => {
   const element = document.createElement('a')
   element.setAttribute(
     'href',
@@ -18,7 +18,7 @@ const download = (filename: string, text: string): void => {
   document.body.removeChild(element)
 }
 
-const loadFile = async (file: File): Promise<string> => {
+export const loadFile = async (file: File): Promise<string> => {
   const fileReader: FileReader = new FileReader()
 
   return new Promise((resolve, reject) => {
@@ -37,4 +37,23 @@ const loadFile = async (file: File): Promise<string> => {
   })
 }
 
-export { download, loadFile, Load }
+export const loadFileBinary = async (file: File): Promise<ArrayBuffer> => {
+  const fileReader: FileReader = new FileReader()
+
+  return new Promise((resolve, reject) => {
+    fileReader.onload = function (
+      this: FileReader,
+      e: ProgressEvent<FileReader>
+    ): any {
+      e.preventDefault()
+      const contents: ArrayBuffer = fileReader.result as ArrayBuffer
+      if (contents === null) {
+        reject('file contents were null')
+      }
+      resolve(contents)
+    }
+    fileReader.readAsArrayBuffer(file)
+  })
+}
+
+export { Load }

@@ -14,3 +14,10 @@ const schemaString = JSON.stringify(schema, null, 2)
 fs.writeFile(outputPath, schemaString, (err): void => {
   if (err) throw err
 })
+
+// Copy pdf worker to public directory
+
+fs.copyFileSync(
+  'node_modules/pdfjs-dist/build/pdf.worker.js',
+  'public/pdf.worker.js'
+)

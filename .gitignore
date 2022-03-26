@@ -33,3 +33,4 @@ yarn-error.log*
 
 /src/core/data/validation.json
 /logs/
+/public/pdf.worker.js
