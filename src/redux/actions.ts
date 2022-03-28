@@ -31,7 +31,7 @@ import {
   EditEstimatedTaxesAction,
   Edit1098eAction,
   EditHSAAction,
-  EditIraAction
+  EditIraAction,
 } from './data'
 import ajv, * as validators from 'ustaxes/core/data/validate'
 import { ValidateFunction } from 'ajv'
