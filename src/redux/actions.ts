@@ -19,7 +19,8 @@ import {
   Asset,
   ItemizedDeductions,
   F3921,
-  ScheduleK1Form1065
+  ScheduleK1Form1065,
+  TaxYear
 } from 'ustaxes/core/data'
 
 import {
@@ -33,7 +34,6 @@ import {
   EditIraAction
 } from './data'
 import ajv, * as validators from 'ustaxes/core/data/validate'
-import { TaxYear } from 'ustaxes/data'
 import { ValidateFunction } from 'ajv'
 import {
   EditAssetAction,

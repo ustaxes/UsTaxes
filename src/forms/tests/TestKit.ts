@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 
 import fc, { Parameters } from 'fast-check'
-import { Information, Asset } from 'ustaxes/core/data'
+import { Information, Asset, TaxYear, TaxYears } from 'ustaxes/core/data'
 import Form from 'ustaxes/core/irsForms/Form'
 import { run } from 'ustaxes/core/util'
 import * as arbitraries from 'ustaxes/core/tests/arbitraries'
@@ -11,7 +11,6 @@ import fs from 'fs/promises'
 import path from 'path'
 import { PDFDocument } from 'pdf-lib'
 import { insertFormDataToPdfs } from 'ustaxes/core/irsForms'
-import { TaxYear, TaxYears } from 'ustaxes/data'
 import { CreateForms, yearFormBuilder } from '../YearForms'
 import { PDFDownloader } from 'ustaxes/core/pdfFiller/pdfHandler'
 

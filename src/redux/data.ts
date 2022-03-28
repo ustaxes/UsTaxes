@@ -1,4 +1,3 @@
-import { TaxYear } from 'ustaxes/data'
 import {
   Dependent,
   IncomeW2,
@@ -11,7 +10,8 @@ import {
   Ira,
   Asset,
   F3921,
-  ScheduleK1Form1065
+  ScheduleK1Form1065,
+  TaxYear
 } from 'ustaxes/core/data'
 import { blankState } from './reducer'
 

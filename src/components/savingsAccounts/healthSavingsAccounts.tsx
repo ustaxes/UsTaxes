@@ -4,7 +4,13 @@ import { useSelector } from 'react-redux'
 import { useYearSelector, useYearDispatch } from 'ustaxes/redux/yearDispatch'
 import { FormProvider, useForm } from 'react-hook-form'
 import { usePager } from 'ustaxes/components/pager'
-import { HealthSavingsAccount, Person, PersonRole } from 'ustaxes/core/data'
+import {
+  HealthSavingsAccount,
+  Person,
+  PersonRole,
+  TaxYear,
+  TaxYears
+} from 'ustaxes/core/data'
 
 import {
   Currency,
@@ -21,7 +27,6 @@ import { Work } from '@material-ui/icons'
 import { TaxesState } from 'ustaxes/redux'
 import { addHSA, editHSA, removeHSA } from 'ustaxes/redux/actions'
 import { YearsTaxesState } from 'ustaxes/redux'
-import { TaxYear, TaxYears } from 'ustaxes/data'
 
 import { format } from 'date-fns'
 

@@ -1,6 +1,6 @@
 import { Information, Asset } from 'ustaxes/core/data'
 import { Either, isRight, left, run, runAsync } from 'ustaxes/core/util'
-import { TaxYear } from 'ustaxes/data'
+import { TaxYear } from 'ustaxes/core/data'
 import { create1040 as create1040For2020 } from 'ustaxes/forms/Y2020/irsForms/Main'
 import { create1040 as create1040For2021 } from 'ustaxes/forms/Y2021/irsForms/Main'
 

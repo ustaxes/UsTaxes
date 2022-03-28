@@ -15,12 +15,11 @@ import {
   AccordionDetails
 } from '@material-ui/core'
 import { YearsTaxesState } from 'ustaxes/redux'
-import { Information } from 'ustaxes/core/data'
+import { Information, TaxYear } from 'ustaxes/core/data'
 import { Check, Close, ExpandMore } from '@material-ui/icons'
 import Alert from '@material-ui/lab/Alert'
 import { run } from 'ustaxes/core/util'
 import yearFormBuilder from 'ustaxes/forms/YearForms'
-import { TaxYear } from 'ustaxes/data'
 import { useSelector } from 'react-redux'
 import { createSummary, SummaryData } from './SummaryData'
 import { Currency } from './input'
