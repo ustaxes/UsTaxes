@@ -1,1 +1,4 @@
 serviceWorker.js
+
+# don't worry about generated files
+/src/core/data/validate-fns.js

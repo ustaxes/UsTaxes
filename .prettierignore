@@ -32,10 +32,12 @@ yarn-error.log*
 /.vscode
 /.devcontainer/
 /.husky/
-/src/core/data/validation.json
 tsconfig.json
 .codecov.yml
 
 # don't worry about src-tauri (rust code)
 
 /src-tauri
+
+# don't worry about generated files
+/src/core/data/validate-fns.js
