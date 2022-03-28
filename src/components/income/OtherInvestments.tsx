@@ -5,7 +5,7 @@ import { useDispatch, YearsTaxesState } from 'ustaxes/redux'
 import { useSelector } from 'react-redux'
 import { addAsset, editAsset, removeAsset } from 'ustaxes/redux/actions'
 import { usePager } from 'ustaxes/components/pager'
-import { Asset, AssetType, State } from 'ustaxes/core/data'
+import { Asset, AssetType, State, TaxYears } from 'ustaxes/core/data'
 import {
   GenericLabeledDropdown,
   USStateDropDown,
@@ -21,7 +21,6 @@ import {
   ShowChartOutlined as StockIcon
 } from '@material-ui/icons'
 import { Alert } from '@material-ui/lab'
-import { TaxYears } from 'ustaxes/data'
 import { TransactionImporter } from './TransactionImporter'
 
 interface Show<A> {

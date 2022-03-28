@@ -2,7 +2,7 @@ import { Dispatch } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Actions, SignalAction } from './actions'
 import { YearsTaxesState } from '.'
-import { TaxYear } from 'ustaxes/data'
+import { TaxYear } from 'ustaxes/core/data'
 import { TaxesState } from '.'
 
 /**

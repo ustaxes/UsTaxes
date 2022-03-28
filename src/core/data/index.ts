@@ -1,5 +1,13 @@
 import { enumKeys } from '../util'
 
+export enum TaxYears {
+  Y2019 = 2019,
+  Y2020 = 2020,
+  Y2021 = 2021
+}
+
+export type TaxYear = keyof typeof TaxYears
+
 export enum PersonRole {
   PRIMARY = 'PRIMARY',
   SPOUSE = 'SPOUSE',
@@ -560,3 +568,25 @@ export interface Asset<DateType = Date> {
   quantity: number
   state?: State
 }
+
+export type AssetString = Asset<string>
+
+// Validated action types:
+
+export interface ArrayItemEditAction<A> {
+  index: number
+  value: A
+}
+
+export type EditDependentAction = ArrayItemEditAction<Dependent>
+export type EditW2Action = ArrayItemEditAction<IncomeW2>
+export type EditEstimatedTaxesAction = ArrayItemEditAction<EstimatedTaxPayments>
+export type Edit1099Action = ArrayItemEditAction<Supported1099>
+export type EditPropertyAction = ArrayItemEditAction<Property>
+export type Edit1098eAction = ArrayItemEditAction<F1098e>
+export type EditHSAAction = ArrayItemEditAction<HealthSavingsAccount>
+export type EditIraAction = ArrayItemEditAction<Ira>
+export type EditAssetAction = ArrayItemEditAction<Asset<Date>>
+export type EditF3921Action = ArrayItemEditAction<F3921>
+export type EditScheduleK1Form1065Action =
+  ArrayItemEditAction<ScheduleK1Form1065>

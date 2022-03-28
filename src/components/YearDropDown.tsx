@@ -6,7 +6,7 @@ import { setActiveYear } from 'ustaxes/redux/actions'
 import { YearsTaxesState, useDispatch } from 'ustaxes/redux'
 import { enumKeys } from 'ustaxes/core/util'
 import { GenericLabeledDropdown } from './input'
-import { TaxYear, TaxYears } from 'ustaxes/data'
+import { TaxYear, TaxYears } from 'ustaxes/core/data'
 
 interface YearForm {
   year: TaxYear

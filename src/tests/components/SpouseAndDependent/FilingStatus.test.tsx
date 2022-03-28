@@ -1,12 +1,11 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain */
 
-import { TaxYear } from 'ustaxes/data'
 import log from 'ustaxes/core/log'
 
 import * as yarbitraries from '../../arbitraries'
 import { SpouseAndDependentTestPage } from './Pages'
-import { filingStatuses, TaxPayer } from 'ustaxes/core/data'
+import { filingStatuses, TaxPayer, TaxYear } from 'ustaxes/core/data'
 import { waitFor } from '@testing-library/react'
 
 beforeEach(() => {

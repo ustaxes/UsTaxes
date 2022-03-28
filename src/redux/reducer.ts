@@ -1,7 +1,6 @@
 /* eslint-disable indent */
 import { CombinedState, combineReducers, Reducer } from 'redux'
-import { Asset, FilingStatus, Information } from 'ustaxes/core/data'
-import { TaxYear } from 'ustaxes/data'
+import { Asset, FilingStatus, Information, TaxYear } from 'ustaxes/core/data'
 import { YearsTaxesState } from '.'
 import { ActionName, Actions } from './actions'
 

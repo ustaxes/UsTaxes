@@ -4,11 +4,10 @@ import { Star } from '@material-ui/icons'
 import fc from 'fast-check'
 import { useDispatch, YearsTaxesState } from 'ustaxes/redux'
 import { setInfo } from 'ustaxes/redux/actions'
-import { Information } from 'ustaxes/core/data'
+import { Information, TaxYears } from 'ustaxes/core/data'
 import * as arbitraries from 'ustaxes/core/tests/arbitraries'
 import * as prand from 'pure-rand'
 import { useSelector } from 'react-redux'
-import { TaxYears } from 'ustaxes/data'
 
 const useStyles = makeStyles(() => ({
   root: {
