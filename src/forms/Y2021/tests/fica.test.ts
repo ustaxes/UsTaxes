@@ -4,8 +4,10 @@ import F8959 from '../irsForms/F8959'
 import Form from 'ustaxes/core/irsForms/Form'
 import Schedule2 from '../irsForms/Schedule2'
 import Schedule3 from '../irsForms/Schedule3'
+import { claimableExcessSSTaxWithholding } from 'ustaxes/forms/Y2021/irsForms/Schedule3'
 import { displayRound } from 'ustaxes/core/irsForms/util'
 import { testKit, commonTests } from '.'
+import { PersonRole } from 'ustaxes/core/data'
 
 jest.setTimeout(100000)
 
@@ -17,8 +19,8 @@ beforeAll(() => {
 
 function hasSSRefund(f1040: F1040): boolean {
   const s3 = f1040.schedule3
-  const l10 = s3?.l10()
-  return l10 !== undefined && l10 > 0
+  const ssRefund = s3?.l11()
+  return ssRefund !== undefined && ssRefund > 0
 }
 
 function hasAdditionalMedicareTax(f1040: F1040): boolean {
@@ -72,16 +74,113 @@ describe('fica', () => {
     await testKit.with1040Assert(async (forms) => {
       const f1040 = commonTests.findF1040OrFail(forms)
       if (hasSSRefund(f1040)) {
-        const s3l10 = f1040.schedule3?.l10()
-        expect(displayRound(s3l10)).not.toBeUndefined()
-        expect(s3l10).toBeGreaterThan(0)
+        const ssRefund = f1040.schedule3?.l11()
+        expect(displayRound(ssRefund)).not.toBeUndefined()
+        expect(ssRefund).toBeGreaterThan(0)
 
-        const ssWithheld = f1040
-          .validW2s()
-          .map((w2) => w2.ssWithholding)
-          .reduce((l, r) => l + r, 0)
-        expect(s3l10).toEqual(ssWithheld - fica.maxSSTax)
+        const ssWithheld =
+          f1040
+            .validW2s()
+            .filter((w2) => w2.personRole == PersonRole.PRIMARY)
+            .map((w2) => w2.ssWithholding)
+            .reduce((l, r) => l + r, 0) +
+          f1040
+            .validW2s()
+            .filter((w2) => w2.personRole == PersonRole.SPOUSE)
+            .map((w2) => w2.ssWithholding)
+            .reduce((l, r) => l + r, 0)
+
+        expect(ssRefund).toEqual(ssWithheld - fica.maxSSTax)
       }
+    })
+  })
+
+  it('should not give a refund if each person has less than the max', async () => {
+    await testKit.with1040Assert(async (forms) => {
+      const f1040 = commonTests.findF1040OrFail(forms)
+      f1040.info.w2s = [
+        {
+          employer: { EIN: '111111111', employerName: 'w2s employer name' },
+          personRole: PersonRole.SPOUSE,
+          occupation: 'w2s-occupation',
+          state: 'AL',
+          income: 111,
+          medicareIncome: 222,
+          fedWithholding: 333,
+          ssWages: 111,
+          ssWithholding: fica.maxSSTax,
+          medicareWithholding: 555,
+          stateWages: 666,
+          stateWithholding: 777
+        },
+        {
+          employer: { EIN: '111111111', employerName: 'w2s employer name' },
+          personRole: PersonRole.PRIMARY,
+          occupation: 'w2s-occupation',
+          state: 'AL',
+          income: 111,
+          medicareIncome: 222,
+          fedWithholding: 333,
+          ssWages: 111,
+          ssWithholding: fica.maxSSTax,
+          medicareWithholding: 555,
+          stateWages: 666,
+          stateWithholding: 777
+        }
+      ]
+      expect(claimableExcessSSTaxWithholding(f1040.info.w2s)).toEqual(0)
+    })
+  })
+
+  it('should give a refund if a person has more than the max if they have two w2s', async () => {
+    await testKit.with1040Assert(async (forms) => {
+      const f1040 = commonTests.findF1040OrFail(forms)
+      f1040.info.w2s = [
+        {
+          employer: { EIN: '111111111', employerName: 'w2s employer name' },
+          personRole: PersonRole.SPOUSE,
+          occupation: 'w2s-occupation',
+          state: 'AL',
+          income: 111,
+          medicareIncome: 222,
+          fedWithholding: 333,
+          ssWages: 111,
+          ssWithholding: fica.maxSSTax,
+          medicareWithholding: 555,
+          stateWages: 666,
+          stateWithholding: 777
+        },
+        {
+          employer: { EIN: '111111111', employerName: 'w2s employer name' },
+          personRole: PersonRole.SPOUSE,
+          occupation: 'w2s-occupation',
+          state: 'AL',
+          income: 111,
+          medicareIncome: 222,
+          fedWithholding: 333,
+          ssWages: 111,
+          // This person has already contributed to the max for their other w2 so the refund should equal this amount
+          ssWithholding: 1000,
+          medicareWithholding: 555,
+          stateWages: 666,
+          stateWithholding: 777
+        },
+        {
+          employer: { EIN: '111111111', employerName: 'w2s employer name' },
+          personRole: PersonRole.PRIMARY,
+          occupation: 'w2s-occupation',
+          state: 'AL',
+          income: 111,
+          medicareIncome: 222,
+          fedWithholding: 333,
+          ssWages: 111,
+          ssWithholding: fica.maxSSTax,
+          medicareWithholding: 555,
+          stateWages: 666,
+          stateWithholding: 777
+        }
+      ]
+      expect(claimableExcessSSTaxWithholding(f1040.info.w2s)).toEqual(1000)
     })
   })
 
