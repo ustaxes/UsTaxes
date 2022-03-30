@@ -45,24 +45,22 @@ const Library = (): ReactElement => {
     }
   }
 
-  const fillIndices = async (): Promise<void> =>
-    fillAllFields((field, index) => {
-      if (field instanceof PDFTextField) {
-        field.setText(`${index + 1}`)
-      }
-    })
-
-  const fillNames = async (): Promise<void> => {
-    fillAllFields((field, index) => {
-      if (field instanceof PDFTextField) {
-        if (field.getMaxLength() ?? 0 < field.getName().length) {
-          field.setText('')
-          field.setMaxLength(field.getName().length)
-        }
-        field.setText(field.getName().toString() ?? `index: ${index + 1}`)
-      }
-    })
+  const changeFieldText = (field: PDFField, value: string | number): void => {
+    if (field instanceof PDFTextField) {
+      const toFill = value.toString()
+      field.setText('')
+      field.setMaxLength(toFill.length)
+      field.setText(toFill)
+    }
   }
+
+  const fillIndices = async (): Promise<void> =>
+    fillAllFields((field, index) => changeFieldText(field, index + 1))
+
+  const fillNames = async (): Promise<void> =>
+    fillAllFields((field, index) =>
+      changeFieldText(field, field.getName().toString() ?? index + 1)
+    )
 
   return (
     <>
