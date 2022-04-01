@@ -17,7 +17,9 @@ import {
   PropertyExpenseType,
   PropertyExpenseTypeName,
   PropertyType,
-  PropertyTypeName
+  PropertyTypeName,
+  TaxYear,
+  TaxYears
 } from 'ustaxes/core/data'
 import { YearsTaxesState } from 'ustaxes/redux'
 import AddressFields from 'ustaxes/components/TaxPayer/Address'
@@ -33,7 +35,6 @@ import { HouseOutlined } from '@material-ui/icons'
 import { FormListContainer } from 'ustaxes/components/FormContainer'
 import { Grid } from '@material-ui/core'
 import _ from 'lodash'
-import { TaxYear, TaxYears } from 'ustaxes/data'
 
 interface PropertyAddForm {
   address?: Address

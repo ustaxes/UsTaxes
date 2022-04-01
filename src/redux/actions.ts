@@ -15,7 +15,12 @@ import {
   EstimatedTaxPayments,
   Responses,
   HealthSavingsAccount,
-  Asset
+  Ira,
+  Asset,
+  ItemizedDeductions,
+  F3921,
+  ScheduleK1Form1065,
+  TaxYear
 } from 'ustaxes/core/data'
 
 import {
@@ -25,19 +30,15 @@ import {
   EditW2Action,
   EditEstimatedTaxesAction,
   Edit1098eAction,
-  EditHSAAction
-} from './data'
-import ajv, * as validators from 'ustaxes/core/data/validate'
-import { TaxYear } from 'ustaxes/data'
+  EditHSAAction,
+  EditIraAction,
+  EditAssetAction,
+  EditF3921Action,
+  EditScheduleK1Form1065Action
+} from 'ustaxes/core/data'
+import * as validators from 'ustaxes/core/data/validate'
+import { index as indexValidator } from 'ustaxes/core/data/validate'
 import { ValidateFunction } from 'ajv'
-import { EditAssetAction } from '.'
-
-const indexSchema = {
-  type: 'number',
-  minimum: 0
-}
-
-const indexValidator: ValidateFunction<number> = ajv.compile(indexSchema)
 
 export enum ActionName {
   SAVE_REFUND_INFO = 'SAVE_REFUND_INFO',
@@ -66,15 +67,26 @@ export enum ActionName {
   ADD_1098e = 'ADD_1098e',
   EDIT_1098e = 'EDIT_1098e',
   REMOVE_1098e = 'REMOVE_1098e',
+  SET_ITEMIZED_DEDUCTIONS = 'SET_ITEMIZED_DEDUCTIONS',
   ADD_HSA = 'ADD_HSA',
   EDIT_HSA = 'EDIT_HSA',
   REMOVE_HSA = 'REMOVE_HSA',
   SET_INFO = 'SET_INFO',
   SET_ACTIVE_YEAR = 'SET_ACTIVE_YEAR',
   PROPAGATE_YEAR_DATA = 'PROPAGATE_YEAR_DATA',
+  ADD_IRA = 'ADD_IRA',
+  EDIT_IRA = 'EDIT_IRA',
+  REMOVE_IRA = 'REMOVE_IRA',
   ADD_ASSET = 'ASSETS/ADD',
+  ADD_ASSETS = 'ASSETS/ADD_MANY',
   EDIT_ASSET = 'ASSETS/EDIT',
-  REMOVE_ASSET = 'ASSETS/REMOVE'
+  REMOVE_ASSET = 'ASSETS/REMOVE',
+  ADD_F3921 = 'F3921/ADD',
+  EDIT_F3921 = 'F3921/EDIT',
+  REMOVE_F3921 = 'F3921/REMOVE',
+  ADD_SCHEDULE_K1_F1065 = 'SCHEDULE_K1_F1065/ADD',
+  EDIT_SCHEDULE_K1_F1065 = 'SCHEDULE_K1_F1065/EDIT',
+  REMOVE_SCHEDULE_K1_F1065 = 'SCHEDULE_K1_F1065/REMOVE'
 }
 
 interface Save<T, R> {
@@ -127,11 +139,34 @@ type AnswerQuestion = Save<typeof ActionName.ANSWER_QUESTION, Responses>
 type Add1098e = Save<typeof ActionName.ADD_1098e, F1098e>
 type Edit1098e = Save<typeof ActionName.EDIT_1098e, Edit1098eAction>
 type Remove1098e = Save<typeof ActionName.REMOVE_1098e, number>
+type SetItemizedDeductions = Save<
+  typeof ActionName.SET_ITEMIZED_DEDUCTIONS,
+  ItemizedDeductions
+>
 type SetInfo = Save<typeof ActionName.SET_INFO, Information>
 type SetActiveYear = Save<typeof ActionName.SET_ACTIVE_YEAR, TaxYear>
+type AddIRA = Save<typeof ActionName.ADD_IRA, Ira>
+type EditIRA = Save<typeof ActionName.EDIT_IRA, EditIraAction>
+type RemoveIRA = Save<typeof ActionName.REMOVE_IRA, number>
 type AddAsset = Save<typeof ActionName.ADD_ASSET, Asset<Date>>
+type AddAssets = Save<typeof ActionName.ADD_ASSETS, Asset<Date>[]>
 type EditAsset = Save<typeof ActionName.EDIT_ASSET, EditAssetAction>
 type RemoveAsset = Save<typeof ActionName.REMOVE_ASSET, number>
+type AddF3921 = Save<typeof ActionName.ADD_F3921, F3921>
+type EditF3921 = Save<typeof ActionName.EDIT_F3921, EditF3921Action>
+type RemoveF3921 = Save<typeof ActionName.REMOVE_F3921, number>
+type AddScheduleK1Form1065 = Save<
+  typeof ActionName.ADD_SCHEDULE_K1_F1065,
+  ScheduleK1Form1065
+>
+type EditScheduleK1Form1065 = Save<
+  typeof ActionName.EDIT_SCHEDULE_K1_F1065,
+  EditScheduleK1Form1065Action
+>
+type RemoveScheduleK1Form1065 = Save<
+  typeof ActionName.REMOVE_SCHEDULE_K1_F1065,
+  number
+>
 
 export type Actions =
   | SaveRefundInfo
@@ -160,14 +195,25 @@ export type Actions =
   | Add1098e
   | Edit1098e
   | Remove1098e
+  | SetItemizedDeductions
   | AddHSA
   | EditHSA
   | RemoveHSA
   | SetInfo
   | SetActiveYear
+  | AddIRA
+  | EditIRA
+  | RemoveIRA
   | AddAsset
+  | AddAssets
   | EditAsset
   | RemoveAsset
+  | AddF3921
+  | EditF3921
+  | RemoveF3921
+  | AddScheduleK1Form1065
+  | EditScheduleK1Form1065
+  | RemoveScheduleK1Form1065
 
 export type SignalAction = (year: TaxYear) => Actions
 export type ActionCreator<A> = (formData: A) => SignalAction
@@ -313,14 +359,12 @@ export const removeEstimatedPayment: ActionCreator<number> = makeActionCreator(
 
 export const addHSA: ActionCreator<HealthSavingsAccount> = makeActionCreator(
   ActionName.ADD_HSA,
-  validators.healthSavingsAccounts
+  validators.healthSavingsAccount
 )
 
 export const editHSA: ActionCreator<EditHSAAction> = makeActionCreator(
   ActionName.EDIT_HSA,
-  ajv.getSchema(
-    '#/definitions/EditHSAAction'
-  ) as ValidateFunction<EditHSAAction>
+  validators.editHSAAction
 )
 
 export const removeHSA: ActionCreator<number> = makeActionCreator(
@@ -374,6 +418,12 @@ export const remove1098e: ActionCreator<number> = makeActionCreator(
   indexValidator
 )
 
+export const setItemizedDeductions: ActionCreator<ItemizedDeductions> =
+  makeActionCreator(
+    ActionName.SET_ITEMIZED_DEDUCTIONS,
+    validators.itemizedDeductions
+  )
+
 // debugging purposes only, leaving unchecked.
 export const setInfo: ActionCreator<Information> = makeActionCreator(
   ActionName.SET_INFO,
@@ -382,11 +432,30 @@ export const setInfo: ActionCreator<Information> = makeActionCreator(
 
 export const setActiveYear: ActionCreator<TaxYear> = makeActionCreator(
   ActionName.SET_ACTIVE_YEAR,
-  ajv.getSchema('#/definitions/TaxYear') as ValidateFunction<TaxYear>
+  validators.taxYear
+)
+
+export const addIRA: ActionCreator<Ira> = makeActionCreator(
+  ActionName.ADD_IRA,
+  validators.ira
+)
+
+export const editIRA: ActionCreator<EditIraAction> = makeActionCreator(
+  ActionName.EDIT_IRA,
+  validators.editIraAction
+)
+
+export const removeIRA: ActionCreator<number> = makeActionCreator(
+  ActionName.REMOVE_IRA,
+  indexValidator
 )
 
 export const addAsset: ActionCreator<Asset<Date>> = makeActionCreator(
   ActionName.ADD_ASSET
+)
+
+export const addAssets: ActionCreator<Asset<Date>[]> = makeActionCreator(
+  ActionName.ADD_ASSETS
 )
 
 export const editAsset: ActionCreator<EditAssetAction> = makeActionCreator(
@@ -397,3 +466,25 @@ export const removeAsset: ActionCreator<number> = makeActionCreator(
   ActionName.REMOVE_ASSET,
   indexValidator
 )
+
+export const addF3921: ActionCreator<F3921> = makeActionCreator(
+  ActionName.ADD_F3921
+)
+
+export const editF3921: ActionCreator<EditF3921Action> = makeActionCreator(
+  ActionName.EDIT_F3921
+)
+
+export const removeF3921: ActionCreator<number> = makeActionCreator(
+  ActionName.REMOVE_F3921,
+  indexValidator
+)
+
+export const addScheduleK1Form1065: ActionCreator<ScheduleK1Form1065> =
+  makeActionCreator(ActionName.ADD_SCHEDULE_K1_F1065)
+
+export const editScheduleK1Form1065: ActionCreator<EditScheduleK1Form1065Action> =
+  makeActionCreator(ActionName.EDIT_SCHEDULE_K1_F1065)
+
+export const removeScheduleK1Form1065: ActionCreator<number> =
+  makeActionCreator(ActionName.REMOVE_SCHEDULE_K1_F1065, indexValidator)

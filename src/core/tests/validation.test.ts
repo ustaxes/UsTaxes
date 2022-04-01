@@ -2,7 +2,6 @@ import * as arbitraries from './arbitraries'
 import * as fc from 'fast-check'
 import { Address } from '../data'
 import log from '../log'
-import ajv from '../data/validate'
 import * as validators from '../data/validate'
 
 /* eslint-disable @typescript-eslint/no-empty-function */
@@ -14,10 +13,6 @@ beforeAll(() => {
 })
 
 describe('validation', () => {
-  it('should validate json', () => {
-    expect(ajv.errors ?? undefined).toEqual(undefined)
-  })
-
   it('should validate some data', () => {
     fc.assert(
       fc.property(arbitraries.primaryPerson, (data) => {

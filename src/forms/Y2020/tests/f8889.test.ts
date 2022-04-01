@@ -28,6 +28,7 @@ const baseInformation: Information = {
       income: 111,
       medicareIncome: 222,
       fedWithholding: 333,
+      ssWages: 111,
       ssWithholding: 444,
       medicareWithholding: 555,
       stateWages: 666,
@@ -255,5 +256,38 @@ describe('Health Savings Accounts', () => {
     const f8889 = new F8889(information, information.taxPayer.primaryPerson)
     expect(f8889.splitFamilyContributionLimit()).toEqual(3550)
     expect(f8889.calculatedCoverageType).toEqual('self-only')
+  })
+
+  it('Should apply employer contributions to only the form belonging to the right person', () => {
+    const information = cloneDeep(baseInformation)
+    information.w2s[0].box12 = { W: 4000 } // The w2 belongs to the spouse
+    information.healthSavingsAccounts = [
+      {
+        coverageType: 'self-only',
+        contributions: 3550,
+        personRole: PersonRole.PRIMARY,
+        startDate: new Date(CURRENT_YEAR, 0, 1).toISOString(),
+        endDate: new Date(CURRENT_YEAR, 11, 31).toISOString(),
+        label: 'test',
+        totalDistributions: 500,
+        qualifiedDistributions: 500
+      },
+      {
+        coverageType: 'self-only',
+        contributions: 3550,
+        personRole: PersonRole.SPOUSE,
+        startDate: new Date(CURRENT_YEAR, 0, 1).toISOString(),
+        endDate: new Date(CURRENT_YEAR, 11, 31).toISOString(),
+        label: 'test',
+        totalDistributions: 500,
+        qualifiedDistributions: 500
+      }
+    ]
+
+    const f8889 = new F8889(information, information.taxPayer.primaryPerson)
+    expect(f8889.l9()).toEqual(0)
+
+    const f8889spouse = new F8889(information, information.taxPayer.spouse)
+    expect(f8889spouse.l9()).toEqual(4000)
   })
 })

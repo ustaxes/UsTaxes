@@ -1,3 +1,13 @@
+import { enumKeys } from '../util'
+
+export enum TaxYears {
+  Y2019 = 2019,
+  Y2020 = 2020,
+  Y2021 = 2021
+}
+
+export type TaxYear = keyof typeof TaxYears
+
 export enum PersonRole {
   PRIMARY = 'PRIMARY',
   SPOUSE = 'SPOUSE',
@@ -65,6 +75,7 @@ export interface IncomeW2 {
   income: number
   medicareIncome: number
   fedWithholding: number
+  ssWages: number
   ssWithholding: number
   medicareWithholding: number
   employer?: Employer
@@ -102,6 +113,7 @@ export interface F1099IntData {
 export interface F1099DivData {
   dividends: number
   qualifiedDividends: number
+  totalCapitalGainsDistributions: number
 }
 /*
  TODO: Add in logic for various different distributions
@@ -113,15 +125,20 @@ export enum PlanType1099 {
    * simplified employee pension (SEP) IRA,
    * and a savings incentive match plan for employees (SIMPLE) IRA
    */
-  IRA = 'IRA',
+  // IRA = 'IRA',
+  // RothIRA = 'RothIRA',
+  // SepIRA = 'SepIRA',
+  // SimpleIRA = 'SimpleIRA',
   /* Pension and annuity payments include distributions from 401(k), 403(b), and governmental 457(b) plans.
    */
   Pension = 'Pension'
 }
 
 export const PlanType1099Texts = {
-  [PlanType1099.IRA]:
-    'traditional IRA, Roth IRA, simplified employee pension (SEP) IRA, or savings incentive match plan for employees (SIMPLE) IRA',
+  // [PlanType1099.IRA]:'traditional IRA',
+  // [PlanType1099.RothIRA]: 'Roth IRA',
+  // [PlanType1099.SepIRA]: 'simplified employee pension (SEP) IRA',
+  // [PlanType1099.SimpleIRA]: 'savings incentive match plan for employees (SIMPLE) IRA',
   [PlanType1099.Pension]: '401(k), 403(b), or 457(b) plan'
 }
 
@@ -220,6 +237,51 @@ export interface HealthSavingsAccount<DateType = string> {
   endDate: DateType
   totalDistributions: number
   qualifiedDistributions: number
+}
+
+export enum IraPlanType {
+  IRA = 'IRA',
+  RothIRA = 'RothIRA',
+  SepIRA = 'SepIRA',
+  SimpleIRA = 'SimpleIRA'
+}
+
+export const IraPlanTypeTexts = {
+  [IraPlanType.IRA]: 'Traditional IRA',
+  [IraPlanType.RothIRA]: 'Roth IRA',
+  [IraPlanType.SepIRA]: 'Simplified employee pension (SEP) IRA',
+  [IraPlanType.SimpleIRA]:
+    'Savings incentive match plan for employees (SIMPLE) IRA'
+}
+
+export type IraPlanName = keyof typeof IraPlanType
+
+export const iraPlanNames: IraPlanName[] = enumKeys(IraPlanType)
+// export const iraPlanNames: IraPlanName[] = [
+//   'IRA',
+//   'RothIRA',
+//   'SepIRA',
+//   'SimpleIRA'
+// ]
+
+export interface Ira {
+  payer: string
+  personRole: PersonRole.PRIMARY | PersonRole.SPOUSE
+  // fields about distributions from form 1099-R
+  grossDistribution: number // 1099-R box 1
+  taxableAmount: number // 1099-R box 2a
+  taxableAmountNotDetermined: boolean // 1099-R box 2b
+  totalDistribution: boolean // 1099-R box 2b
+  federalIncomeTaxWithheld: number // 1099-R box 4
+  planType: IraPlanType
+  // fields about contributions from form 5498
+  contributions: number // contributions depending on the plan type
+  rolloverContributions: number // 5498 box 2
+  rothIraConversion: number // 5498 box 3
+  recharacterizedContributions: number // 5498 box 4
+  requiredMinimumDistributions: number // 5498 box 12b
+  lateContributions: number // 5498 box 13a
+  repayments: number // 5498 box 14a
 }
 
 export enum FilingStatus {
@@ -331,6 +393,48 @@ export interface F1098e {
   interest: number
 }
 
+export interface F3921 {
+  name: string
+  personRole: PersonRole.PRIMARY | PersonRole.SPOUSE
+  exercisePricePerShare: number
+  fmv: number
+  numShares: number
+}
+
+// See https://www.irs.gov/instructions/i1065sk1
+export interface ScheduleK1Form1065 {
+  personRole: PersonRole.PRIMARY | PersonRole.SPOUSE
+  partnershipName: string
+  partnershipEin: string
+  partnerOrSCorp: 'P' | 'S'
+  isForeign: boolean
+  isPassive: boolean
+  ordinaryBusinessIncome: number // Schedule E (Form 1040), line 28, column (i) or (k).
+  interestIncome: number // Form 1040, line 2b
+  guaranteedPaymentsForServices: number // Schedule E (Form 1040), line 28, column (k)
+  guaranteedPaymentsForCapital: number // Schedule E (Form 1040), line 28, column (k)
+  selfEmploymentEarningsA: number // Schedule SE (Form 1040)
+  selfEmploymentEarningsB: number // Schedule SE (Form 1040)
+  selfEmploymentEarningsC: number // Schedule SE (Form 1040)
+  distributionsCodeAAmount: number // If the amount shown as code A exceeds the adjusted basis of your partnership interest immediately before the distribution, the excess is treated as gain from the sale or exchange of your partnership interest. Generally, this gain is treated as gain from the sale of a capital asset and should be reported on Form 8949 and the Schedule D for your return.
+  section199AQBI: number // Form 8995 or 8995-A
+}
+
+export interface ItemizedDeductions {
+  medicalAndDental: string | number
+  stateAndLocalTaxes: string | number
+  isSalesTax: boolean
+  stateAndLocalRealEstateTaxes: string | number
+  stateAndLocalPropertyTaxes: string | number
+  interest8a: string | number
+  interest8b: string | number
+  interest8c: string | number
+  interest8d: string | number
+  investmentInterest: string | number
+  charityCashCheck: string | number
+  charityOther: string | number
+}
+
 export type State =
   | 'AL'
   | 'AK'
@@ -424,11 +528,15 @@ export interface Information {
   realEstate: Property[]
   estimatedTaxes: EstimatedTaxPayments[]
   f1098es: F1098e[]
+  f3921s: F3921[]
+  scheduleK1Form1065s: ScheduleK1Form1065[]
+  itemizedDeductions: ItemizedDeductions | undefined
   refund?: Refund
   taxPayer: TaxPayer
   questions: Responses
   stateResidencies: StateResidency[]
   healthSavingsAccounts: HealthSavingsAccount[]
+  individualRetirementArrangements: Ira[]
 }
 
 /**
@@ -460,3 +568,25 @@ export interface Asset<DateType = Date> {
   quantity: number
   state?: State
 }
+
+export type AssetString = Asset<string>
+
+// Validated action types:
+
+export interface ArrayItemEditAction<A> {
+  index: number
+  value: A
+}
+
+export type EditDependentAction = ArrayItemEditAction<Dependent>
+export type EditW2Action = ArrayItemEditAction<IncomeW2>
+export type EditEstimatedTaxesAction = ArrayItemEditAction<EstimatedTaxPayments>
+export type Edit1099Action = ArrayItemEditAction<Supported1099>
+export type EditPropertyAction = ArrayItemEditAction<Property>
+export type Edit1098eAction = ArrayItemEditAction<F1098e>
+export type EditHSAAction = ArrayItemEditAction<HealthSavingsAccount>
+export type EditIraAction = ArrayItemEditAction<Ira>
+export type EditAssetAction = ArrayItemEditAction<Asset<Date>>
+export type EditF3921Action = ArrayItemEditAction<F3921>
+export type EditScheduleK1Form1065Action =
+  ArrayItemEditAction<ScheduleK1Form1065>

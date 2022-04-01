@@ -52,8 +52,9 @@ export default class Schedule1 extends Form {
   l8q = (): number | undefined => undefined
   l8z = (): number => {
     if (
-      this.f1040.f8889?.l20() !== undefined ||
-      this.f1040.f8889Spouse?.l20() != undefined
+      (this.f1040.f8889?.l20() !== undefined && this.f1040.f8889?.l20() > 0) ||
+      (this.f1040.f8889Spouse?.l20() !== undefined &&
+        this.f1040.f8889Spouse?.l20() > 0)
     ) {
       this.otherIncomeStrings.add('HSA')
     }
@@ -102,7 +103,7 @@ export default class Schedule1 extends Form {
   l13 = (): number | undefined =>
     sumFields([this.f1040.f8889?.l13(), this.f1040.f8889Spouse?.l13()])
   l14 = (): number | undefined => undefined
-  l15 = (): number | undefined => undefined
+  l15 = (): number | undefined => this.f1040.scheduleSE?.l13()
   l16 = (): number | undefined => undefined
   l17 = (): number | undefined => undefined
   l18 = (): number | undefined => undefined
@@ -126,6 +127,7 @@ export default class Schedule1 extends Form {
   l24j = (): number | undefined => undefined
   l24k = (): number | undefined => undefined
   l24zDesc = (): string | undefined => undefined
+  l24zDesc2 = (): string | undefined => undefined
   l24z = (): number | undefined => undefined
 
   l25 = (): number =>
@@ -225,6 +227,7 @@ export default class Schedule1 extends Form {
       this.l24j(),
       this.l24k(),
       this.l24zDesc(),
+      this.l24zDesc2(),
       this.l24z(),
       this.l25(),
       this.l26()

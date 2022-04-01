@@ -1,4 +1,4 @@
-import { Information, IncomeW2 } from 'ustaxes/core/data'
+import { Information, IncomeW2, PersonRole } from 'ustaxes/core/data'
 import { sumFields } from 'ustaxes/core/irsForms/util'
 import Form, { FormTag } from 'ustaxes/core/irsForms/Form'
 import TaxPayer from 'ustaxes/core/data/TaxPayer'
@@ -6,25 +6,39 @@ import { fica } from '../data/federal'
 import F1040 from './F1040'
 
 export const claimableExcessSSTaxWithholding = (w2s: IncomeW2[]): number => {
-  // 1040 instructions:
-  // If you had more than one employer and total wages of more than $137,700, too
-  // much SS or RRTA tax may have been withheld. You can take a credit for the amount
-  // withtheld in excess of $8,537.40.
-  // If any one employer withheld more than $8,537.40, you can't claim the excess on
-  // your return.
+  /* Excess FICA taxes are calculated per person. If an individual person
+     has greater than the applicable amount then they are entitled to a refund
+     of that amount
+   */
+  let claimableExcessFica = 0
+  const primaryFica = w2s
+    .filter((w2) => w2.personRole == PersonRole.PRIMARY)
+    .map((w2) => w2.ssWithholding)
+    .reduce((l, r) => l + r, 0)
+  const spouseFica = w2s
+    .filter((w2) => w2.personRole == PersonRole.SPOUSE)
+    .map((w2) => w2.ssWithholding)
+    .reduce((l, r) => l + r, 0)
+
   if (
-    w2s.length > 1 &&
-    w2s.map((w2) => w2.income).reduce((l, r) => l + r, 0) >
-      fica.maxIncomeSSTaxApplies &&
-    w2s.every((w2) => w2.ssWithholding <= fica.maxSSTax)
+    primaryFica > fica.maxSSTax &&
+    w2s
+      .filter((w2) => w2.personRole == PersonRole.PRIMARY)
+      .every((w2) => w2.ssWithholding <= fica.maxSSTax)
   ) {
-    return (
-      w2s.map((w2) => w2.ssWithholding).reduce((l, r) => l + r, 0) -
-      fica.maxSSTax
-    )
-  } else {
-    return 0 // Cannot claim credit for excess SS tax
+    claimableExcessFica += primaryFica - fica.maxSSTax
   }
+
+  if (
+    spouseFica > fica.maxSSTax &&
+    w2s
+      .filter((w2) => w2.personRole == PersonRole.SPOUSE)
+      .every((w2) => w2.ssWithholding <= fica.maxSSTax)
+  ) {
+    claimableExcessFica += spouseFica - fica.maxSSTax
+  }
+
+  return claimableExcessFica
 }
 
 export default class Schedule3 extends Form {
@@ -164,6 +178,7 @@ export default class Schedule3 extends Form {
       this.l6f(),
       this.l6g(),
       this.l6h(),
+      this.l6i(),
       this.l6j(),
       this.l6k(),
       this.l6l(),
@@ -182,7 +197,7 @@ export default class Schedule3 extends Form {
       this.l13b(),
       this.l13c(),
       this.l13d(),
-      this.l13e(),
+      //this.l13e(),  // this field is left for future use and is not fillable
       this.l13f(),
       this.l13g(),
       this.l13h(),

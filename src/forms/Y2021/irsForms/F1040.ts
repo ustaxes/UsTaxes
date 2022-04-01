@@ -17,7 +17,7 @@ import F8889, { needsF8889 } from './F8889'
 import F8910 from './F8910'
 import F8936 from './F8936'
 import F8959, { needsF8959 } from './F8959'
-import F8995 from './F8995'
+import F8995, { getF8995PhaseOutIncome } from './F8995'
 import F8995A from './F8995A'
 import Schedule1 from './Schedule1'
 import Schedule2 from './Schedule2'
@@ -26,6 +26,7 @@ import Schedule8812 from './Schedule8812'
 import ScheduleA from './ScheduleA'
 import ScheduleD from './ScheduleD'
 import ScheduleE from './ScheduleE'
+import ScheduleSE from './ScheduleSE'
 import ScheduleEIC from './ScheduleEIC'
 import ScheduleR from './ScheduleR'
 import Form, { FormTag } from 'ustaxes/core/irsForms/Form'
@@ -52,6 +53,9 @@ import F2441 from './F2441'
 import ScheduleC from './ScheduleC'
 import { F1040Error } from 'ustaxes/forms/errors'
 import F8949 from './F8949'
+import F6251 from './F6251'
+import F4137 from './F4137'
+import F8919 from './F8919'
 
 export default class F1040 extends Form {
   tag: FormTag = 'f1040'
@@ -68,6 +72,7 @@ export default class F1040 extends Form {
   scheduleC?: ScheduleC
   scheduleD?: ScheduleD
   scheduleE?: ScheduleE
+  scheduleSE?: ScheduleSE
   scheduleEIC?: ScheduleEIC
   scheduleR?: ScheduleR
   schedule8812?: Schedule8812
@@ -75,23 +80,27 @@ export default class F1040 extends Form {
   f2441?: F2441
   f2555?: F2555
   f4136?: F4136
+  f4137?: F4137
   f4563?: F4563
   f4797?: F4797
   f4952?: F4952
   f4972?: F4972
   f5695?: F5695
+  f6251?: F6251
   f8814?: F8814
   f8863?: F8863
   f8888?: F8888
   f8889?: F8889
   f8889Spouse?: F8889
   f8910?: F8910
+  f8919?: F8919
   f8936?: F8936
   f8949: F8949[]
   f8959?: F8959
   f8960?: F8960
   f8962?: F8962
   f8995?: F8995 | F8995A
+  qualifiedAndCapGainsWorksheet?: SDQualifiedAndCapGains
   studentLoanInterestWorksheet?: StudentLoanInterestWorksheet
   socialSecurityBenefitsWorksheet?: SocialSecurityBenefitsWorksheet
 
@@ -119,8 +128,10 @@ export default class F1040 extends Form {
       this,
       this.scheduleA,
       this.scheduleB,
+      ...(this.scheduleB?.copies ?? []),
       this.scheduleD,
       this.scheduleE,
+      this.scheduleSE,
       this.scheduleR,
       this.scheduleEIC,
       this.schedule8812,
@@ -128,6 +139,7 @@ export default class F1040 extends Form {
       this.f4952,
       this.f4972,
       this.f5695,
+      this.f6251,
       this.f8814,
       this.f8888,
       this.f8889,
@@ -154,10 +166,20 @@ export default class F1040 extends Form {
 
   makeSchedules = (): void => {
     const f1099bs = this.info.f1099Bs()
-    const f1099ints = this.info.f1099Ints()
     const f1099ssas = this.info.f1099ssas()
-    if (f1099ints.length > 0) {
-      this.scheduleB = new ScheduleB(this.info)
+
+    const scheduleB = new ScheduleB(this.info)
+
+    if (scheduleB.formRequired()) {
+      this.scheduleB = scheduleB
+    }
+
+    if (this.info.itemizedDeductions) {
+      const scheduleA = new ScheduleA(this)
+      const standardDeduction = this.standardDeduction()
+      const itemizedAmount = scheduleA.deductions()
+      if (standardDeduction === undefined || itemizedAmount > standardDeduction)
+        this.scheduleA = new ScheduleA(this)
     }
 
     if (this.assets.length > 0) {
@@ -177,8 +199,25 @@ export default class F1040 extends Form {
       this.socialSecurityBenefitsWorksheet = ssws
     }
 
-    if (this.info.realEstate.length > 0) {
+    if (
+      this.info.realEstate.length > 0 ||
+      this.info.scheduleK1Form1065s.length > 0
+    ) {
       this.scheduleE = new ScheduleE(this.info)
+    }
+
+    if (
+      this.info.scheduleK1Form1065s
+        .map(
+          (k1) =>
+            k1.selfEmploymentEarningsA +
+            k1.selfEmploymentEarningsB +
+            k1.selfEmploymentEarningsC
+        )
+        .reduce((a, b) => a + b, 0) > 0
+    ) {
+      const scheduleSE = new ScheduleSE(this)
+      this.scheduleSE = scheduleSE
     }
 
     if (this.info.f1098es.length > 0) {
@@ -226,9 +265,9 @@ export default class F1040 extends Form {
       }
     }
 
-    if (needsF8959(this.info)) {
+    if (needsF8959(this.info, this.scheduleSE)) {
       if (this.f8959 === undefined) {
-        this.f8959 = new F8959(this.info, undefined, undefined, undefined)
+        this.f8959 = new F8959(this)
       }
     }
 
@@ -264,6 +303,26 @@ export default class F1040 extends Form {
       if (f8949.isNeeded()) {
         // a F8949 may spawn more copies of itself.
         this.f8949 = [f8949, ...f8949.copies]
+      }
+    }
+
+    const f6251 = new F6251(this.info, this)
+    if (f6251.isNeeded()) {
+      this.f6251 = f6251
+    }
+
+    // Form 8995
+    const totalQbi = this.info.scheduleK1Form1065s
+      .map((k1) => k1.section199AQBI)
+      .reduce((c, a) => c + a, 0)
+    if (totalQbi > 0 && this.info.taxPayer.filingStatus !== undefined) {
+      const formAMinAmount = getF8995PhaseOutIncome(
+        this.info.taxPayer.filingStatus
+      )
+      if (this.l11() - this.l12c() >= formAMinAmount) {
+        this.f8995 = new F8995A(this)
+      } else {
+        this.f8995 = new F8995(this)
       }
     }
 
@@ -328,6 +387,18 @@ export default class F1040 extends Form {
       .map((f) => f.form.qualifiedDividends)
       .reduce((l, r) => l + r, 0)
 
+  totalGrossDistributionsFromIra = (): number =>
+    this.info.individualRetirementArrangements.reduce(
+      (res, i) => res + i.grossDistribution,
+      0
+    )
+
+  totalTaxableFromIra = (): number =>
+    this.info.individualRetirementArrangements.reduce(
+      (r, i) => r + i.taxableAmount,
+      0
+    )
+
   totalGrossDistributionsFrom1099R = (planType: PlanType1099): number =>
     this.info
       .f1099rs()
@@ -342,14 +413,13 @@ export default class F1040 extends Form {
 
   l1 = (): number => this.wages()
   l2a = (): number | undefined => this.scheduleB?.l3()
-  l2b = (): number | undefined => this.scheduleB?.l4()
+  l2b = (): number | undefined => this.scheduleB?.to1040l2b()
   l3a = (): number | undefined => this.totalQualifiedDividends()
-  l3b = (): number | undefined => this.scheduleB?.l6()
+  l3b = (): number | undefined => this.scheduleB?.to1040l3b()
   // This is the value of box 1 in 1099-R forms coming from IRAs
-  l4a = (): number | undefined =>
-    this.totalGrossDistributionsFrom1099R(PlanType1099.IRA)
+  l4a = (): number | undefined => this.totalGrossDistributionsFromIra()
   // This should be the value of box 2a in 1099-R coming from IRAs
-  l4b = (): number | undefined => this.totalTaxableFrom1099R(PlanType1099.IRA)
+  l4b = (): number | undefined => this.totalTaxableFromIra()
   // This is the value of box 1 in 1099-R forms coming from pensions/annuities
   l5a = (): number | undefined =>
     this.totalGrossDistributionsFrom1099R(PlanType1099.Pension)
@@ -378,7 +448,7 @@ export default class F1040 extends Form {
 
   l10 = (): number | undefined => this.schedule1?.to1040Line10()
 
-  l11 = (): number => Math.max(0, this.l9() - (this.l10() ?? 0))
+  l11 = (): number => Math.max(0, this.l9() - (this.l10() ?? 0)) ?? 0
 
   l12a = (): number | undefined => {
     if (this.scheduleA !== undefined) {
@@ -404,16 +474,21 @@ export default class F1040 extends Form {
 
   computeTax = (): number | undefined => {
     if (
+      this.errors().length > 0 ||
+      this.info.taxPayer.filingStatus === undefined
+    ) {
+      return undefined
+    }
+
+    if (
       this.scheduleD?.computeTaxOnQDWorksheet() ??
       this.totalQualifiedDividends() > 0
     ) {
-      const wksht = new SDQualifiedAndCapGains(this)
-      return wksht.tax()
+      this.qualifiedAndCapGainsWorksheet = new SDQualifiedAndCapGains(this)
+      return this.qualifiedAndCapGainsWorksheet.tax()
     }
 
-    if (this.info.taxPayer.filingStatus !== undefined) {
-      return computeOrdinaryTax(this.info.taxPayer.filingStatus, this.l15())
-    }
+    return computeOrdinaryTax(this.info.taxPayer.filingStatus, this.l15())
   }
 
   l16 = (): number | undefined =>

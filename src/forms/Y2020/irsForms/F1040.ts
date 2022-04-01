@@ -114,6 +114,7 @@ export default class F1040 extends Form {
       this,
       this.scheduleA,
       this.scheduleB,
+      ...(this.scheduleB?.copies ?? []),
       this.scheduleD,
       this.scheduleE,
       this.scheduleR,
@@ -149,10 +150,13 @@ export default class F1040 extends Form {
 
   makeSchedules = (): void => {
     const f1099bs = this.info.f1099Bs()
-    const f1099ints = this.info.f1099Ints()
+
     const f1099ssas = this.info.f1099ssas()
-    if (f1099ints.length > 0) {
-      this.scheduleB = new ScheduleB(this.info)
+
+    const scheduleB = new ScheduleB(this.info)
+
+    if (scheduleB.formRequired()) {
+      this.scheduleB = scheduleB
     }
 
     if (this.assets.length > 0) {
@@ -314,6 +318,18 @@ export default class F1040 extends Form {
   totalQualifiedDividends = (): number =>
     this.info.f1099Divs().reduce((sum, f) => sum + f.form.qualifiedDividends, 0)
 
+  totalGrossDistributionsFromIra = (): number =>
+    this.info.individualRetirementArrangements.reduce(
+      (res, i) => res + i.grossDistribution,
+      0
+    )
+
+  totalTaxableFromIra = (): number =>
+    this.info.individualRetirementArrangements.reduce(
+      (r, i) => r + i.taxableAmount,
+      0
+    )
+
   totalGrossDistributionsFrom1099R = (planType: PlanType1099): number =>
     this.info
       .f1099rs()
@@ -328,14 +344,13 @@ export default class F1040 extends Form {
 
   l1 = (): number => this.wages()
   l2a = (): number | undefined => this.scheduleB?.l3()
-  l2b = (): number | undefined => this.scheduleB?.l4()
+  l2b = (): number | undefined => this.scheduleB?.to1040l2b()
   l3a = (): number | undefined => this.totalQualifiedDividends()
-  l3b = (): number | undefined => this.scheduleB?.l6()
+  l3b = (): number | undefined => this.scheduleB?.to1040l3b()
   // This is the value of box 1 in 1099-R forms coming from IRAs
-  l4a = (): number | undefined =>
-    this.totalGrossDistributionsFrom1099R(PlanType1099.IRA)
+  l4a = (): number | undefined => this.totalGrossDistributionsFromIra()
   // This should be the value of box 2a in 1099-R coming from IRAs
-  l4b = (): number | undefined => this.totalTaxableFrom1099R(PlanType1099.IRA)
+  l4b = (): number | undefined => this.totalTaxableFromIra()
   // This is the value of box 1 in 1099-R forms coming from pensions/annuities
   l5a = (): number | undefined =>
     this.totalGrossDistributionsFrom1099R(PlanType1099.Pension)
@@ -381,6 +396,13 @@ export default class F1040 extends Form {
 
   computeTax = (): number | undefined => {
     if (
+      this.errors().length > 0 ||
+      this.info.taxPayer.filingStatus === undefined
+    ) {
+      return undefined
+    }
+
+    if (
       this.scheduleD?.computeTaxOnQDWorksheet() ??
       this.totalQualifiedDividends() > 0
     ) {
@@ -388,9 +410,7 @@ export default class F1040 extends Form {
       return wksht.tax()
     }
 
-    if (this.info.taxPayer.filingStatus !== undefined) {
-      return computeOrdinaryTax(this.info.taxPayer.filingStatus, this.l15())
-    }
+    return computeOrdinaryTax(this.info.taxPayer.filingStatus, this.l15())
   }
 
   l16 = (): number | undefined =>

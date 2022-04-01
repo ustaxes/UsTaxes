@@ -9,7 +9,7 @@ import rootReducer from './reducer'
 
 import { persistStore, persistReducer, PersistedState } from 'redux-persist'
 import storage from 'redux-persist/lib/storage' // defaults to localStorage for web
-import { Information, Asset } from 'ustaxes/core/data'
+import { Asset, Information, TaxYear } from 'ustaxes/core/data'
 import { blankYearTaxesState, YearsTaxesState } from '.'
 import { Actions } from './actions'
 import { PersistPartial } from 'redux-persist/es/persistReducer'
@@ -17,7 +17,6 @@ import { createTransform } from 'redux-persist'
 import { FSAction } from './fs/Actions'
 import fsReducer from './fs/FSReducer'
 import { migrateEachYear } from './migration'
-import { TaxYear } from 'ustaxes/data'
 import _ from 'lodash'
 
 type SerializedState = { [K in TaxYear]: Information } & {
