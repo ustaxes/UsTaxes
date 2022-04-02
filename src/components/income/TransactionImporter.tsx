@@ -27,7 +27,7 @@ import { Asset } from 'ustaxes/core/data'
 import ConfigurableDataTable, {
   baseCellStyle,
   forceHeadCells
-} from './ConfigurableDataTable'
+} from './assets/ConfigurableDataTable'
 
 interface PortfolioTableProps {
   portfolio: Portfolio

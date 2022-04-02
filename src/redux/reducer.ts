@@ -422,6 +422,9 @@ const assetReducer = (
       newAssets.splice(action.formData, 1)
       return newAssets
     }
+    case ActionName.REMOVE_ASSETS: {
+      return newState.filter((_, i) => !action.formData.includes(i))
+    }
     default: {
       return newState
     }

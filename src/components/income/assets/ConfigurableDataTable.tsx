@@ -12,7 +12,7 @@ import DataTable, {
   ConditionalStyles,
   TableColumn
 } from 'react-data-table-component'
-import useStyles from '../input/styles'
+import useStyles from '../../input/styles'
 
 type DarkModeProps = {
   prefersDarkMode: boolean

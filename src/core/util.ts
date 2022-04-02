@@ -168,3 +168,11 @@ export const parseFormNumberOrThrow = (x: string | undefined): number => {
   }
   return res
 }
+
+export const numberOfDaysBetween = (d1: Date, d2: Date): number => {
+  const [start, end] = [d1, d2].map((d) =>
+    // Ignore time part if it exists.
+    new Date(d.toISOString().slice(0, 10)).getTime()
+  )
+  return Math.abs(end - start) / 1000 / 60 / 60 / 24
+}
