@@ -37,12 +37,16 @@ interface UserPersonForm {
   firstName: string
   lastName: string
   ssid: string
+  isBlind: boolean
+  dateOfBirth: Date
 }
 
 const blankUserPersonForm: UserPersonForm = {
   firstName: '',
   lastName: '',
-  ssid: ''
+  ssid: '',
+  isBlind: false,
+  dateOfBirth: new Date()
 }
 
 interface UserDependentForm extends UserPersonForm {
@@ -70,7 +74,8 @@ const toDependent = (formData: UserDependentForm): Dependent => {
       birthYear: parseInt(birthYear),
       numberOfMonths: parseInt(numberOfMonths),
       isStudent
-    }
+    },
+    dateOfBirth: rest.dateOfBirth.toISOString()
   }
 }
 
@@ -81,7 +86,8 @@ const toDependentForm = (dependent: Dependent): UserDependentForm => {
     ...rest,
     birthYear: qualifyingInfo?.birthYear.toString() ?? '',
     numberOfMonths: qualifyingInfo?.numberOfMonths.toString() ?? '',
-    isStudent: qualifyingInfo?.isStudent ?? false
+    isStudent: qualifyingInfo?.isStudent ?? false,
+    dateOfBirth: new Date(rest.dateOfBirth)
   }
 }
 
@@ -96,11 +102,13 @@ const blankUserSpouseForm = {
 
 const toSpouse = (formData: UserSpouseForm): Spouse => ({
   ...formData,
-  role: PersonRole.SPOUSE
+  role: PersonRole.SPOUSE,
+  dateOfBirth: formData.dateOfBirth.toISOString()
 })
 
 const toSpouseForm = (spouse: Spouse): UserSpouseForm => ({
-  ...spouse
+  ...spouse,
+  dateOfBirth: new Date(spouse.dateOfBirth)
 })
 
 export const AddDependentForm = (): ReactElement => {

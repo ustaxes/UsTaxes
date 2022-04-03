@@ -41,6 +41,8 @@ interface TaxPayerUserForm {
   isForeignCountry: boolean
   isTaxpayerDependent: boolean
   stateResidency?: State
+  isBlind: boolean
+  dateOfBirth: Date
 }
 
 const defaultTaxpayerUserForm: TaxPayerUserForm = {
@@ -58,7 +60,9 @@ const defaultTaxpayerUserForm: TaxPayerUserForm = {
     state: undefined,
     zip: undefined
   },
-  isTaxpayerDependent: false
+  isTaxpayerDependent: false,
+  isBlind: false,
+  dateOfBirth: new Date()
 }
 
 const asPrimaryPerson = (formData: TaxPayerUserForm): PrimaryPerson => ({
@@ -67,7 +71,9 @@ const asPrimaryPerson = (formData: TaxPayerUserForm): PrimaryPerson => ({
   lastName: formData.lastName,
   ssid: formData.ssid.replace(/-/g, ''),
   isTaxpayerDependent: formData.isTaxpayerDependent,
-  role: PersonRole.PRIMARY
+  role: PersonRole.PRIMARY,
+  dateOfBirth: formData.dateOfBirth.toISOString(),
+  isBlind: formData.isBlind
 })
 
 const asContactInfo = (formData: TaxPayerUserForm): ContactInfo => ({
@@ -78,7 +84,8 @@ const asContactInfo = (formData: TaxPayerUserForm): ContactInfo => ({
 const asTaxPayerUserForm = (person: PrimaryPerson): TaxPayerUserForm => ({
   ...person,
   isForeignCountry: person.address.foreignCountry !== undefined,
-  role: PersonRole.PRIMARY
+  role: PersonRole.PRIMARY,
+  dateOfBirth: new Date(person.dateOfBirth)
 })
 
 export default function PrimaryTaxpayer(): ReactElement {

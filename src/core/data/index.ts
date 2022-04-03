@@ -20,6 +20,8 @@ export interface Person {
   lastName: string
   ssid: string
   role: PersonRole
+  dateOfBirth: string
+  isBlind: boolean
 }
 
 export interface QualifyingInformation {

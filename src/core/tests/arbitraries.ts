@@ -374,11 +374,22 @@ export const filingStatus: Arbitrary<types.FilingStatus> = fc.constantFrom(
 )
 
 export const person: Arbitrary<types.Person> = fc
-  .tuple(word, word, ein)
-  .map(([firstName, lastName, ssid]) => ({
+  .tuple(
+    word,
+    word,
+    ein,
+    fc.date({
+      min: new Date(1900, 0, 1),
+      max: new Date()
+    }),
+    fc.boolean()
+  )
+  .map(([firstName, lastName, ssid, dateOfBirth, isBlind]) => ({
     firstName,
     lastName,
     ssid,
+    dateOfBirth: dateOfBirth.toISOString(),
+    isBlind,
     role: types.PersonRole.PRIMARY
   }))
 
