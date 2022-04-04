@@ -10,6 +10,7 @@ import {
   Portfolio,
   Position,
   processTransactions,
+  Side,
   Transaction,
   TransactionError
 } from 'ustaxes/data/transactions'
@@ -177,6 +178,17 @@ export const TransactionImporter = (): ReactElement => {
       }
     })()
 
+    const side: Either<string, Side> = (() => {
+      const cell = row[assignments.indexOf('Buy or Sell')].toLowerCase()
+      if (cell === 'buy') {
+        return right('BUY')
+      }
+      if (cell === 'sell') {
+        return right('SELL')
+      }
+      return left('Could not parse value ${cell} as buy or sell')
+    })()
+
     // Either is a fail-fast construct, so
     // we dont (yet) have a way to nicely combine
     // errors.
@@ -191,9 +203,12 @@ export const TransactionImporter = (): ReactElement => {
     if (isLeft(price)) {
       errors.push(price.left)
     }
+    if (isLeft(side)) {
+      errors.push(side.left)
+    }
 
     // bad if condition necessary for typechecking below.
-    if (isLeft(date) || isLeft(quantity) || isLeft(price)) {
+    if (isLeft(date) || isLeft(quantity) || isLeft(price) || isLeft(side)) {
       return left(errors)
     } else {
       return right({
@@ -203,10 +218,7 @@ export const TransactionImporter = (): ReactElement => {
         date: date.right.toISOString().slice(0, 10),
         quantity: quantity.right,
         price: price.right,
-        side:
-          row[assignments.indexOf('Buy or Sell')].toLowerCase() === 'buy'
-            ? 'BUY'
-            : 'SELL'
+        side: side.right
       })
     }
   }
