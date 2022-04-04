@@ -15,7 +15,7 @@ import { Patterns } from 'ustaxes/components/Patterns'
 import { OpenableFormContainer } from 'ustaxes/components/FormContainer'
 import { Grid } from '@material-ui/core'
 import { Alert } from '@material-ui/lab'
-import { TransactionImporter } from './TransactionImporter'
+import { TransactionImporter } from './assets/TransactionImporter'
 import FilteredAssetsTable from './assets/FilteredAssetsTable'
 import { DatePicker } from '../input/DatePicker'
 
