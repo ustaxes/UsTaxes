@@ -171,34 +171,49 @@ const FilteredAssetsTable = (): ReactElement => {
     .flat()
     .join(' ')
 
+  const filterForm = (() => {
+    // Show filter if there are any assets to filter from
+    if (assets.length > 0) {
+      return (
+        <FormProvider {...methods}>
+          <Grid container direction="row" spacing={2}>
+            <LabeledInput
+              sizes={{ xs: 6 }}
+              label="Security"
+              name="securityName"
+            />
+            <GenericLabeledDropdown<[string, CloseYear]>
+              sizes={{ xs: 6 }}
+              label="Sale Year"
+              name="closeYear"
+              dropDownData={[
+                ['All', 'all'],
+                ['Still open', 'none'],
+                ...enumKeys(TaxYears).map<[string, TaxYear]>((x) => [
+                  TaxYears[x].toString(),
+                  x
+                ])
+              ]}
+              keyMapping={(x) => x[1].toString()}
+              valueMapping={(x) => x[1] ?? 'all'}
+              textMapping={(x) => x[0]}
+            />
+          </Grid>
+        </FormProvider>
+      )
+    }
+  })()
+
+  const assetSummary = (() => {
+    if (assets.length > 0) {
+      return <AssetSummary title={title} assets={displayAssets} />
+    }
+  })()
+
   return (
     <>
-      <FormProvider {...methods}>
-        <Grid container direction="row" spacing={2}>
-          <LabeledInput
-            sizes={{ xs: 6 }}
-            label="Security"
-            name="securityName"
-          />
-          <GenericLabeledDropdown<[string, CloseYear]>
-            sizes={{ xs: 6 }}
-            label="Sale Year"
-            name="closeYear"
-            dropDownData={[
-              ['All', 'all'],
-              ['Still open', 'none'],
-              ...enumKeys(TaxYears).map<[string, TaxYear]>((x) => [
-                TaxYears[x].toString(),
-                x
-              ])
-            ]}
-            keyMapping={(x) => x[1].toString()}
-            valueMapping={(x) => x[1] ?? 'all'}
-            textMapping={(x) => x[0]}
-          />
-        </Grid>
-      </FormProvider>
-      <AssetSummary title={title} assets={displayAssets} />
+      {filterForm}
+      {assetSummary}
       <DisplayAssets
         assets={displayAssets}
         deleteRows={(rows) => dispatch(actions.removeAssets(rows)(activeYear))}
