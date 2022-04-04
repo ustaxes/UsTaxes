@@ -264,6 +264,17 @@ const FormListContainer = <A,>(
   // existing form context from the parent.
   const { reset } = useFormContext()
 
+  const close = (): void => {
+    setEditing(undefined)
+    setOpen(false)
+    reset()
+  }
+
+  const cancel = (): void => {
+    close()
+    onCancel()
+  }
+
   const onSave: SubmitHandler<A> = (formData): void => {
     if (editing !== undefined) {
       onSubmitEdit(editing)(formData)
@@ -323,7 +334,7 @@ const FormListContainer = <A,>(
         onSave={onSave}
         isOpen={isOpen}
         onOpenStateChange={setOpen}
-        onCancel={onCancel}
+        onCancel={cancel}
       >
         {children}
       </OpenableFormContainer>
