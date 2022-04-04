@@ -174,19 +174,19 @@ export const OpenableFormContainer = <A,>(
     formState: { isDirty, errors }
   } = useFormContext()
 
-  const close = (): void => {
+  const closeForm = (): void => {
     props.onOpenStateChange(false)
     reset({})
   }
 
   const onClose = (): void => {
     if (props.onCancel !== undefined) props.onCancel()
-    close()
+    closeForm()
   }
 
   const onSave: SubmitHandler<A> = (formData): void => {
     props.onSave(formData)
-    close()
+    closeForm()
   }
 
   const openAddForm = () => {
@@ -264,14 +264,14 @@ const FormListContainer = <A,>(
   // existing form context from the parent.
   const { reset } = useFormContext()
 
-  const close = (): void => {
+  const closeForm = (): void => {
     setEditing(undefined)
     setOpen(false)
     reset()
   }
 
   const cancel = (): void => {
-    close()
+    closeForm()
     onCancel()
   }
 
@@ -281,7 +281,7 @@ const FormListContainer = <A,>(
     } else {
       onSubmitAdd(formData)
     }
-    close()
+    closeForm()
   }
 
   const openEditForm = (n: number): (() => void) | undefined => {
