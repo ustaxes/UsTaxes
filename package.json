@@ -110,8 +110,5 @@
     "transformIgnorePatterns": [
       "/node_modules/(?!@tauri-apps)"
     ]
-  },
-  "engines": {
-    "yarn": "please-use-npm"
   }
 }
