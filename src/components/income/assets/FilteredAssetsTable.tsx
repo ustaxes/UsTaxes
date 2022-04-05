@@ -210,10 +210,72 @@ const FilteredAssetsTable = (): ReactElement => {
     }
   })()
 
+  const asCsv = (): string[] =>
+    [
+      [
+        'Security',
+        'Quantity',
+        'Open Date',
+        'Open Price',
+        'Open Fee',
+        'Cost basis',
+        'Close Date',
+        'Close Price',
+        'Close Fee',
+        'Proceeds',
+        'Gain / Loss'
+      ],
+      ...displayAssets.map((a) => [
+        a.name,
+        a.quantity,
+        a.openDate.toISOString().slice(0, 10),
+        a.openPrice,
+        a.openFee,
+        a.openPrice * a.quantity + a.openFee,
+        a.closeDate?.toISOString().slice(0, 10) ?? '',
+        a.closePrice,
+        a.closeFee,
+        a.closePrice === undefined
+          ? ''
+          : a.closePrice * a.quantity - (a.closeFee ?? 0),
+        a.closePrice === undefined
+          ? ''
+          : (a.closePrice - a.openPrice) * a.quantity -
+            (a.closeFee ?? 0) -
+            a.openFee
+      ])
+    ].map((line) => line.join(','))
+
+  const exportView = (() => {
+    if (displayAssets.length > 0) {
+      return (
+        <Button
+          color="secondary"
+          variant="contained"
+          onClick={() => {
+            const csv = asCsv().join('\n')
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' })
+            const url = URL.createObjectURL(blob)
+            const link = document.createElement('a')
+            link.setAttribute('href', url)
+            link.setAttribute('download', 'assets.csv')
+            document.body.appendChild(link)
+            link.click()
+            document.body.removeChild(link)
+          }}
+        >
+          Export {displayAssets.length} Assets
+        </Button>
+      )
+    }
+  })()
+
   return (
     <>
       {filterForm}
       {assetSummary}
+
+      {exportView}
       <DisplayAssets
         assets={displayAssets}
         deleteRows={(rows) => dispatch(actions.removeAssets(rows)(activeYear))}

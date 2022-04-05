@@ -96,8 +96,13 @@ const ColumnHeaderDropDown = ({
   )
 }
 
+export interface ColumnDef {
+  name: string
+  required?: boolean
+}
+
 interface ConfigurableDataTableProps {
-  fields: string[]
+  fields: ColumnDef[]
   fieldAssignments: (string | undefined)[]
   rows: string[][]
   assignField: (colIndex: number, field: string | undefined) => void
@@ -132,7 +137,7 @@ export const ConfigurableDataTable = ({
   const columns: TableColumn<[number, string[]]>[] = firstRow.map((c, i) => ({
     name: (
       <ColumnHeaderDropDown
-        fields={fields}
+        fields={fields.map((f) => f.name)}
         onChange={(field) => assignField(i, field)}
         value={fieldAssignments[i]}
         undefinedName={`Col ${i + 1}`}
@@ -142,9 +147,11 @@ export const ConfigurableDataTable = ({
     conditionalCellStyles
   }))
 
-  const unassignedColumns = fields.filter((c) => !fieldAssignments.includes(c))
+  const unassignedColumns = fields.filter(
+    (c) => c.required && !fieldAssignments.includes(c.name)
+  )
   const errorColumns = fields.filter(
-    (c) => fieldAssignments.filter((f) => f === c).length > 1
+    (c) => c.required && fieldAssignments.filter((f) => f === c.name).length > 1
   )
 
   const assignAlert = (() => {
@@ -154,7 +161,7 @@ export const ConfigurableDataTable = ({
           Assign the following fields:
           <ul>
             {unassignedColumns.map((c) => (
-              <li key={c}>{c}</li>
+              <li key={c.name}>{c.name}</li>
             ))}
           </ul>
         </Alert>
@@ -166,9 +173,9 @@ export const ConfigurableDataTable = ({
     if (errorColumns.length > 0) {
       return (
         <Alert severity="warning">
-          {errorColumns.join(', ') +
+          {errorColumns.map((c) => c.name).join(', ') +
             (errorColumns.length > 1 ? ' fields are' : ' field is')}{' '}
-          assigned more than once:
+          assigned more than once.
         </Alert>
       )
     }

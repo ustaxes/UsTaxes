@@ -22,23 +22,27 @@ const AssetSummary = ({ title, assets }: AssetSummaryProps): ReactElement => {
         ...acc,
         longTermCostBasis:
           isLongTerm && a.closePrice !== undefined
-            ? acc.longTermCostBasis + a.openPrice * a.quantity
+            ? acc.longTermCostBasis + a.openPrice * a.quantity + a.openFee
             : acc.longTermCostBasis,
         shortTermCostBasis:
           !isLongTerm && a.closePrice !== undefined
-            ? acc.shortTermCostBasis + a.openPrice * a.quantity
+            ? acc.shortTermCostBasis + a.openPrice * a.quantity + a.openFee
             : acc.shortTermCostBasis,
         longTermProceeds:
           isLongTerm && a.closePrice !== undefined
-            ? acc.longTermProceeds + a.closePrice * a.quantity
+            ? acc.longTermProceeds +
+              a.closePrice * a.quantity -
+              (a.closeFee ?? 0)
             : acc.longTermProceeds,
         shortTermProceeds:
           !isLongTerm && a.closePrice !== undefined
-            ? acc.shortTermProceeds + a.closePrice * a.quantity
+            ? acc.shortTermProceeds +
+              a.closePrice * a.quantity -
+              (a.closeFee ?? 0)
             : acc.shortTermProceeds,
         openCostBasis:
           a.closeDate === undefined
-            ? acc.openCostBasis + a.openPrice * a.quantity
+            ? acc.openCostBasis + a.openPrice * a.quantity + a.openFee
             : acc.openCostBasis
       }
     },
@@ -94,7 +98,26 @@ const AssetSummary = ({ title, assets }: AssetSummaryProps): ReactElement => {
     }
   ]
 
-  return <DataTable title={title} columns={columns} data={data} />
+  const totalFees = assets.reduce(
+    (acc, a) => acc + a.openFee + (a.closeFee ?? 0),
+    0
+  )
+
+  return (
+    <>
+      <DataTable title={title} columns={columns} data={data} />
+      {(() => {
+        if (totalFees > 0) {
+          return (
+            <p>
+              Cost basis and proceeds include{' '}
+              <Currency plain value={totalFees} /> in fees.
+            </p>
+          )
+        }
+      })()}
+    </>
+  )
 }
 
 export default AssetSummary

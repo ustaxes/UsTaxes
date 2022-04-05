@@ -51,16 +51,30 @@ export const position = (securities?: Security[]): Arbitrary<Position> =>
         fc.integer({ min: 1, max: 100 }),
         fc.float({ min: 0 }),
         dateStr(),
+        fc.float({ min: 0 }),
+        fc.float({ min: 0 }),
         fc.float({ min: 0 })
       )
-      .map(([security, quantity, price, openDate, closePrice]) => ({
-        security,
-        quantity,
-        price,
-        openDate,
-        closeDate,
-        closePrice: closeDate === undefined ? undefined : closePrice
-      }))
+      .map(
+        ([
+          security,
+          quantity,
+          price,
+          openDate,
+          closePrice,
+          openFee,
+          closeFee
+        ]) => ({
+          security,
+          quantity,
+          price,
+          openDate,
+          closeDate,
+          closePrice: closeDate === undefined ? undefined : closePrice,
+          openFee,
+          closeFee: closeDate === undefined ? undefined : closeFee
+        })
+      )
   )
 
 export const portfolio = (securities?: Security[]): Arbitrary<Portfolio> =>

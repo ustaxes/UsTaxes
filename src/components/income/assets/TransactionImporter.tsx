@@ -27,6 +27,7 @@ import {
 import { Asset } from 'ustaxes/core/data'
 import ConfigurableDataTable, {
   baseCellStyle,
+  ColumnDef,
   forceHeadCells
 } from './ConfigurableDataTable'
 
@@ -71,6 +72,11 @@ export const PortfolioTable = ({
       style: baseCellStyle(prefersDarkMode)
     },
     {
+      name: 'Close Fee',
+      selector: (p) => (p.closeDate === undefined ? '' : p.closeFee ?? 0),
+      style: baseCellStyle(prefersDarkMode)
+    },
+    {
       name: 'Proceeds',
       selector: (p) =>
         p.closePrice !== undefined ? p.quantity * p.closePrice : '',
@@ -93,13 +99,16 @@ export const PortfolioTable = ({
   )
 }
 
+const field = (name: string, required = true): ColumnDef => ({ name, required })
+
 // The fields that must be set by the user after importing a CSV file
-const fields = [
-  'Security Name',
-  'Transaction date',
-  'Buy or Sell',
-  'Price per unit',
-  'Quantity'
+const fields: ColumnDef[] = [
+  field('Security Name'),
+  field('Transaction date'),
+  field('Buy or Sell'),
+  field('Price per unit'),
+  field('Quantity'),
+  field('Fee / commissions', false)
 ]
 
 export const TransactionImporter = (): ReactElement => {
@@ -123,7 +132,9 @@ export const TransactionImporter = (): ReactElement => {
   const dispatch = useDispatch()
 
   const ready = () =>
-    fields.every((f) => fieldAssignments.filter((a) => a === f).length === 1)
+    fields.every(
+      (f) => fieldAssignments.filter((a) => a === f.name).length === 1
+    )
 
   const assignField = (colIndex: number, field: string | undefined) => {
     const newFieldAssignments = [...fieldAssignments]
@@ -189,6 +200,21 @@ export const TransactionImporter = (): ReactElement => {
       return left('Could not parse value ${cell} as buy or sell')
     })()
 
+    const feeIdx = assignments.indexOf('Fee / commissions')
+
+    const fee: Either<string, number | undefined> = (() => {
+      if (feeIdx < 0) {
+        return right(undefined)
+      }
+      const feeStr = row[feeIdx]
+      const v = parseFloat(feeStr)
+      if (isNaN(v)) {
+        return left(`Could not parse fee value (${feeStr}) as number`)
+      } else {
+        return right(v)
+      }
+    })()
+
     // Either is a fail-fast construct, so
     // we dont (yet) have a way to nicely combine
     // errors.
@@ -208,7 +234,13 @@ export const TransactionImporter = (): ReactElement => {
     }
 
     // bad if condition necessary for typechecking below.
-    if (isLeft(date) || isLeft(quantity) || isLeft(price) || isLeft(side)) {
+    if (
+      isLeft(date) ||
+      isLeft(quantity) ||
+      isLeft(price) ||
+      isLeft(side) ||
+      isLeft(fee)
+    ) {
       return left(errors)
     } else {
       return right({
@@ -218,7 +250,8 @@ export const TransactionImporter = (): ReactElement => {
         date: date.right.toISOString().slice(0, 10),
         quantity: quantity.right,
         price: price.right,
-        side: side.right
+        side: side.right,
+        fee: fee.right
       })
     }
   }
@@ -313,6 +346,8 @@ export const TransactionImporter = (): ReactElement => {
       openPrice: position.price,
       positionType: 'Security',
       quantity: position.quantity,
+      openFee: position.openFee,
+      closeFee: position.closeFee,
       closeDate:
         position.closeDate !== undefined
           ? new Date(position.closeDate)

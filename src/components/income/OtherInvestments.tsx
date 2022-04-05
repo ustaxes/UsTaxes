@@ -35,6 +35,8 @@ interface AssetUserInput {
   closeDate?: Date
   openPrice: string
   closePrice?: string
+  openFee: string
+  closeFee: string
   quantity: string
   state?: State
 }
@@ -48,6 +50,8 @@ const toAsset = (input: AssetUserInput): Asset<Date> | undefined => {
     closePrice,
     quantity,
     state,
+    openFee,
+    closeFee,
     positionType
   } = input
   if (name === '' || openDate === undefined) {
@@ -58,6 +62,8 @@ const toAsset = (input: AssetUserInput): Asset<Date> | undefined => {
     name,
     openDate,
     closeDate,
+    openFee: Number(openFee),
+    closeFee: Number(closeFee),
     openPrice: Number(openPrice),
     closePrice: Number(closePrice),
     quantity: input.positionType === 'Real Estate' ? 1 : Number(quantity),
@@ -134,7 +140,7 @@ export const OtherInvestments = (): ReactElement => {
             return (
               <>
                 <LabeledInput
-                  label="Cost basis per unit"
+                  label="Price per unit"
                   patternConfig={Patterns.currency}
                   name="openPrice"
                 />
@@ -144,9 +150,19 @@ export const OtherInvestments = (): ReactElement => {
                   name="quantity"
                 />
                 <LabeledInput
+                  label="Fee / comissions at purchase"
+                  patternConfig={Patterns.number}
+                  name="openFee"
+                />
+                <LabeledInput
                   label="Proceeds (sales price)"
                   patternConfig={Patterns.currency}
                   name="closePrice"
+                />
+                <LabeledInput
+                  label="Fee / comissions at sale"
+                  patternConfig={Patterns.number}
+                  name="closeFee"
                 />
               </>
             )
