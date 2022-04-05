@@ -149,12 +149,15 @@ export default class F8949 extends Form {
 
   shortTermTotalProceeds = (): number =>
     this.shortTermSales().reduce(
-      (acc, p) => acc + p.closePrice! * p.quantity,
+      (acc, p) => acc + p.closePrice! * p.quantity - (p.closeFee ?? 0),
       0
     )
 
   shortTermTotalCost = (): number =>
-    this.shortTermSales().reduce((acc, p) => acc + p.openPrice! * p.quantity, 0)
+    this.shortTermSales().reduce(
+      (acc, p) => acc + p.openPrice! * p.quantity + p.openFee,
+      0
+    )
 
   shortTermTotalGain = (): number =>
     this.shortTermTotalProceeds() - this.shortTermTotalCost()
@@ -163,10 +166,16 @@ export default class F8949 extends Form {
   shortTermTotalAdjustments = (): number | undefined => undefined
 
   longTermTotalProceeds = (): number =>
-    this.longTermSales().reduce((acc, p) => acc + p.closePrice! * p.quantity, 0)
+    this.longTermSales().reduce(
+      (acc, p) => acc + p.closePrice! * p.quantity - (p.closeFee ?? 0),
+      0
+    )
 
   longTermTotalCost = (): number =>
-    this.longTermSales().reduce((acc, p) => acc + p.openPrice! * p.quantity, 0)
+    this.longTermSales().reduce(
+      (acc, p) => acc + p.openPrice! * p.quantity + (p.openFee ?? 0),
+      0
+    )
 
   longTermTotalGain = (): number =>
     this.longTermTotalProceeds() - this.longTermTotalCost()
