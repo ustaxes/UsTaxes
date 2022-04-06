@@ -8,6 +8,7 @@ import {
   Asset
 } from 'ustaxes/core/data'
 import federalBrackets from '../data/federal'
+import { CURRENT_YEAR } from '../data/federal'
 import F4972 from './F4972'
 import F5695 from './F5695'
 import F8814 from './F8814'
@@ -342,16 +343,18 @@ export default class F1040 extends Form {
     }
   }
 
-  // TODO -> born before 1956/01/02
-  bornBeforeDate = (): boolean => false
-  // TODO
-  blind = (): boolean => false
+  // born before 1957/01/02
+  bornBeforeDate = (): boolean =>
+    (this.tp.primaryPerson?.dateOfBirth ?? new Date()) <
+    new Date(CURRENT_YEAR - 64, 0, 2)
 
-  // TODO
-  spouseBeforeDate = (): boolean => false
+  blind = (): boolean => this.tp.primaryPerson?.isBlind ?? false
 
-  // TODO
-  spouseBlind = (): boolean => false
+  spouseBeforeDate = (): boolean =>
+    (this.tp.spouse?.dateOfBirth ?? new Date()) <
+    new Date(CURRENT_YEAR - 64, 0, 2)
+
+  spouseBlind = (): boolean => this.tp.spouse?.isBlind ?? false
 
   validW2s = (): IncomeW2[] => {
     if (this.info.taxPayer.filingStatus === FilingStatus.MFS) {
