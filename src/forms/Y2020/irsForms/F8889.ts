@@ -1,8 +1,10 @@
 import { Information, Person, HealthSavingsAccount } from 'ustaxes/core/data'
 import { sumFields } from 'ustaxes/core/irsForms/util'
-import Form, { FormTag } from 'ustaxes/core/irsForms/Form'
-import F8853 from './F8853'
+import { FormTag } from 'ustaxes/core/irsForms/Form'
 import { CURRENT_YEAR, healthSavingsAccounts } from '../data/federal'
+import F1040Attachment from './F1040Attachment'
+import F1040 from './F1040'
+import { Field } from 'ustaxes/core/pdfFiller'
 
 export const needsF8889 = (state: Information, person: Person): boolean => {
   return state.healthSavingsAccounts.some(
@@ -15,27 +17,23 @@ type PerMonthContributionType = {
   type: Array<'self-only' | 'family'>
 }
 
-export default class F8889 extends Form {
+export default class F8889 extends F1040Attachment {
   tag: FormTag = 'f8889'
   sequenceIndex = 52
   // these should only be the HSAs that belong to this person
   // the person can be either the primary person or the spouse
   hsas: HealthSavingsAccount<Date>[]
-  f8853?: F8853
   person: Person
-  state: Information
   calculatedCoverageType: 'self-only' | 'family'
   perMonthContributions: PerMonthContributionType
   readonly firstDayOfLastMonth: Date
 
-  constructor(state: Information, person: Person, f8853?: F8853) {
-    super()
-    this.f8853 = f8853
+  constructor(f1040: F1040, person: Person) {
+    super(f1040)
     this.person = person
-    this.state = state
     // The relevant HSAs are the ones either for this person or any that
     // have family coverage.
-    this.hsas = state.healthSavingsAccounts
+    this.hsas = this.f1040.info.healthSavingsAccounts
       .filter((h) => {
         if (h.personRole == person.role || h.coverageType == 'family') {
           return true
@@ -102,10 +100,10 @@ export default class F8889 extends Form {
     }
   }
 
-  /* If you are an eligible individual on the first day of the last month of your tax year 
-     (December 1 for most taxpayers), you are considered to be an eligible individual 
-     for the entire year.
-    */
+  /* If you are an eligible individual on the first day of the last month of your tax year
+   * (December 1 for most taxpayers), you are considered to be an eligible individual
+   * for the entire year.
+   */
   lastMonthRule = (): boolean => {
     return this.hsas.some((hsa) => hsa.endDate >= this.firstDayOfLastMonth)
   }
@@ -222,7 +220,7 @@ export default class F8889 extends Form {
     this.hsas.reduce((total, hsa) => hsa.contributions + total, 0)
 
   l3 = (): number => this.contributionLimit()
-  l4 = (): number => sumFields([this.f8853?.l1(), this.f8853?.l2()])
+  l4 = (): number => sumFields([this.f1040.f8853?.l1(), this.f1040.f8853?.l2()])
   l5 = (): number => (this.l3() ?? 0) - this.l4()
   l6 = (): number | undefined => this.splitFamilyContributionLimit()
   // TODO: Additional contirbution amount. Need to know the age of the user
@@ -230,7 +228,7 @@ export default class F8889 extends Form {
   l8 = (): number => sumFields([this.l6(), this.l7()])
   // Employer contributions are listed in W2 box 12 with code W
   l9 = (): number =>
-    this.state.w2s
+    this.f1040.info.w2s
       .filter((w2) => w2.personRole == this.person.role)
       .reduce((res, w2) => res + (w2.box12?.W ?? 0), 0)
   l10 = (): number | undefined => undefined
@@ -257,35 +255,33 @@ export default class F8889 extends Form {
   l20 = (): number => sumFields([this.l18(), this.l19()])
   l21 = (): number => Math.round(this.l20() * 0.1)
 
-  fields = (): Array<string | number | boolean | undefined> => {
-    return [
-      `${this.person.firstName} ${this.person.lastName}`,
-      this.person.ssid,
-      this.calculatedCoverageType === 'self-only', // line 1: self-only check box
-      this.calculatedCoverageType === 'family', // line 1: family checkbox
-      this.l2(),
-      this.l3(),
-      this.l4(),
-      this.l5(),
-      this.l6(),
-      this.l7(),
-      this.l8(),
-      this.l9(),
-      this.l10(),
-      this.l11(),
-      this.l12(),
-      this.l13(),
-      this.l14a(),
-      this.l14b(),
-      this.l14c(),
-      this.l15(),
-      this.l16(),
-      this.l17a(),
-      this.l17b(),
-      this.l18(),
-      this.l19(),
-      this.l20(),
-      this.l21()
-    ]
-  }
+  fields = (): Field[] => [
+    `${this.person.firstName} ${this.person.lastName}`,
+    this.person.ssid,
+    this.calculatedCoverageType === 'self-only', // line 1: self-only check box
+    this.calculatedCoverageType === 'family', // line 1: family checkbox
+    this.l2(),
+    this.l3(),
+    this.l4(),
+    this.l5(),
+    this.l6(),
+    this.l7(),
+    this.l8(),
+    this.l9(),
+    this.l10(),
+    this.l11(),
+    this.l12(),
+    this.l13(),
+    this.l14a(),
+    this.l14b(),
+    this.l14c(),
+    this.l15(),
+    this.l16(),
+    this.l17a(),
+    this.l17b(),
+    this.l18(),
+    this.l19(),
+    this.l20(),
+    this.l21()
+  ]
 }

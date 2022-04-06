@@ -1,24 +1,12 @@
-import { FilingStatus, Information, PersonRole } from 'ustaxes/core/data'
-import TaxPayer from 'ustaxes/core/data/TaxPayer'
-import Form, { FormTag } from 'ustaxes/core/irsForms/Form'
-import F1040 from './F1040'
+import F1040Attachment from './F1040Attachment'
+import { FilingStatus, PersonRole } from 'ustaxes/core/data'
+import { FormTag } from 'ustaxes/core/irsForms/Form'
 import SDQualifiedAndCapGains from './worksheets/SDQualifiedAndCapGains'
-import log from 'ustaxes/core/log'
+import { Field } from 'ustaxes/core/pdfFiller'
 
-const unimplemented = (message: string): void =>
-  log.warn(`[F6251] unimplemented ${message}`)
-
-export default class F6251 extends Form {
+export default class F6251 extends F1040Attachment {
   tag: FormTag = 'f6251'
   sequenceIndex = 72
-  state: Information
-  f1040: F1040
-
-  constructor(state: Information, f1040: F1040) {
-    super()
-    this.state = state
-    this.f1040 = f1040
-  }
 
   isNeeded = (): boolean => {
     // See https://www.irs.gov/instructions/i6251
@@ -99,7 +87,7 @@ export default class F6251 extends Form {
 
   // Exercise of incentive stock options (excess of AMT income over regular tax income)
   l2i = (): number | undefined => {
-    let f3921s = this.state.f3921s
+    let f3921s = this.f1040.info.f3921s
     if (this.f1040.info.taxPayer.filingStatus === FilingStatus.MFS) {
       f3921s = f3921s.filter((w2) => w2.personRole === PersonRole.PRIMARY)
     }
@@ -182,7 +170,6 @@ export default class F6251 extends Form {
         break
     }
     // TODO: Handle "Exemption Worksheet"
-    unimplemented('Exception amount worksheet')
     return undefined
   }
 
@@ -217,7 +204,7 @@ export default class F6251 extends Form {
       f2555 !== undefined &&
       (f2555.l36() > 0 || f2555.l42() > 0 || f2555.l50() > 0)
     ) {
-      unimplemented('Foreign Earned Income Tax Worksheet—Line 7')
+      // TODO: Foreign Earned Income Tax Worksheet—Line 7
     }
 
     // Use line 40 if Part III is required
@@ -578,73 +565,70 @@ export default class F6251 extends Form {
     return Math.min(this.l38() ?? 0, this.l39() ?? 0)
   }
 
-  fields = (): Array<string | number | boolean | undefined> => {
-    const tp = new TaxPayer(this.state.taxPayer)
-    return [
-      tp.namesString(),
-      tp.tp.primaryPerson?.ssid,
-      // Part I
-      this.l1(),
-      this.l2a(),
-      this.l2b(),
-      this.l2c(),
-      this.l2d(),
-      this.l2e(),
-      this.l2f(),
-      this.l2g(),
-      this.l2h(),
-      this.l2i(),
-      this.l2j(),
-      this.l2k(),
-      this.l2l(),
-      this.l2m(),
-      this.l2n(),
-      this.l2o(),
-      this.l2p(),
-      this.l2q(),
-      this.l2r(),
-      this.l2s(),
-      this.l2t(),
-      this.l3(),
-      this.l4(),
-      // Part II
-      this.l5(),
-      this.l6(),
-      this.l7(),
-      this.l8(),
-      this.l9(),
-      this.l10(),
-      this.l11(),
-      // Part III
-      this.l12(),
-      this.l13(),
-      this.l14(),
-      this.l15(),
-      this.l16(),
-      this.l17(),
-      this.l18(),
-      this.l19(),
-      this.l20(),
-      this.l21(),
-      this.l22(),
-      this.l23(),
-      this.l24(),
-      this.l25(),
-      this.l26(),
-      this.l27(),
-      this.l28(),
-      this.l29(),
-      this.l30(),
-      this.l31(),
-      this.l32(),
-      this.l33(),
-      this.l34(),
-      this.l35(),
-      this.l36(),
-      this.l37(),
-      this.l38(),
-      this.l39(),
-      this.l40()
-    ]
-  }
+  fields = (): Field[] => [
+    this.f1040.info.namesString(),
+    this.f1040.info.taxPayer.primaryPerson?.ssid,
+    // Part I
+    this.l1(),
+    this.l2a(),
+    this.l2b(),
+    this.l2c(),
+    this.l2d(),
+    this.l2e(),
+    this.l2f(),
+    this.l2g(),
+    this.l2h(),
+    this.l2i(),
+    this.l2j(),
+    this.l2k(),
+    this.l2l(),
+    this.l2m(),
+    this.l2n(),
+    this.l2o(),
+    this.l2p(),
+    this.l2q(),
+    this.l2r(),
+    this.l2s(),
+    this.l2t(),
+    this.l3(),
+    this.l4(),
+    // Part II
+    this.l5(),
+    this.l6(),
+    this.l7(),
+    this.l8(),
+    this.l9(),
+    this.l10(),
+    this.l11(),
+    // Part III
+    this.l12(),
+    this.l13(),
+    this.l14(),
+    this.l15(),
+    this.l16(),
+    this.l17(),
+    this.l18(),
+    this.l19(),
+    this.l20(),
+    this.l21(),
+    this.l22(),
+    this.l23(),
+    this.l24(),
+    this.l25(),
+    this.l26(),
+    this.l27(),
+    this.l28(),
+    this.l29(),
+    this.l30(),
+    this.l31(),
+    this.l32(),
+    this.l33(),
+    this.l34(),
+    this.l35(),
+    this.l36(),
+    this.l37(),
+    this.l38(),
+    this.l39(),
+    this.l40()
+  ]
 }

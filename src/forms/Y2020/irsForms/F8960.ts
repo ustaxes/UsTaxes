@@ -1,9 +1,9 @@
 import { Information } from 'ustaxes/core/data'
 import { sumFields } from 'ustaxes/core/irsForms/util'
-import TaxPayer from 'ustaxes/core/data/TaxPayer'
 import Form, { FormTag } from 'ustaxes/core/irsForms/Form'
 import { netInvestmentIncomeTax } from '../data/federal'
 import F1040 from './F1040'
+import { Field } from 'ustaxes/core/pdfFiller'
 
 export const needsF8960 = (state: Information): boolean => {
   const filingStatus = state.taxPayer.filingStatus
@@ -132,47 +132,44 @@ export default class F8960 extends Form {
   l20 = (): number | undefined => undefined // this.l19c() < this.l18c()? this.l19c() : this.l18c()
   l21 = (): number | undefined => undefined // Math.round(this.l20() * netInvestmentIncomeTax.taxRate)
 
-  fields = (): Array<string | number | boolean | undefined> => {
-    const tp = new TaxPayer(this.state.taxPayer)
-    return [
-      tp.namesString(),
-      tp.tp.primaryPerson?.ssid,
-      undefined, // Section 6013(g) election checkbox
-      undefined, // Section 6013(h) election checkbox
-      undefined, // Regulations section 1.1411-10(g) election checkbox
-      this.l1(),
-      this.l2(),
-      this.l3(),
-      this.l4a(),
-      this.l4b(),
-      this.l4c(),
-      this.l5a(),
-      this.l5b(),
-      this.l5c(),
-      this.l5d(),
-      this.l6(),
-      this.l7(),
-      this.l8(),
-      this.l9a(),
-      this.l9b(),
-      this.l9c(),
-      this.l9d(),
-      this.l10(),
-      this.l11(),
-      this.l12(),
-      this.l13(),
-      this.l14(),
-      this.l15(),
-      this.l16(),
-      this.l17(),
-      this.l18a(),
-      this.l18b(),
-      this.l18c(),
-      this.l19a(),
-      this.l19b(),
-      this.l19c(),
-      this.l20(),
-      this.l21()
-    ]
-  }
+  fields = (): Field[] => [
+    this.f1040.info.namesString(),
+    this.f1040.info.taxPayer.primaryPerson?.ssid,
+    undefined, // Section 6013(g) election checkbox
+    undefined, // Section 6013(h) election checkbox
+    undefined, // Regulations section 1.1411-10(g) election checkbox
+    this.l1(),
+    this.l2(),
+    this.l3(),
+    this.l4a(),
+    this.l4b(),
+    this.l4c(),
+    this.l5a(),
+    this.l5b(),
+    this.l5c(),
+    this.l5d(),
+    this.l6(),
+    this.l7(),
+    this.l8(),
+    this.l9a(),
+    this.l9b(),
+    this.l9c(),
+    this.l9d(),
+    this.l10(),
+    this.l11(),
+    this.l12(),
+    this.l13(),
+    this.l14(),
+    this.l15(),
+    this.l16(),
+    this.l17(),
+    this.l18a(),
+    this.l18b(),
+    this.l18c(),
+    this.l19a(),
+    this.l19b(),
+    this.l19c(),
+    this.l20(),
+    this.l21()
+  ]
 }

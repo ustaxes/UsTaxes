@@ -1,22 +1,13 @@
-import { Information } from 'ustaxes/core/data'
-import F1040 from './F1040'
-import Form, { FormTag } from 'ustaxes/core/irsForms/Form'
+import F1040Attachment from './F1040Attachment'
+import { FormTag } from 'ustaxes/core/irsForms/Form'
+import { Field } from 'ustaxes/core/pdfFiller'
 
-export default class F1040V extends Form {
+export default class F1040V extends F1040Attachment {
   tag: FormTag = 'f1040v'
   sequenceIndex = -1
-  state: Information
-  f1040: F1040
 
-  constructor(info: Information, f1040: F1040) {
-    super()
-    this.state = info
-    this.f1040 = f1040
-  }
-
-  fields = (): Array<string | number | boolean | undefined> => {
-    const tp = this.state.taxPayer
-
+  fields = (): Field[] => {
+    const tp = this.f1040.info.taxPayer
     const taxOwed = this.f1040.l37()
 
     if (taxOwed === undefined) {

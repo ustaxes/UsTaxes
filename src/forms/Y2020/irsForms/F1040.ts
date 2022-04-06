@@ -51,6 +51,11 @@ import InformationMethods from 'ustaxes/core/data/methods'
 import _ from 'lodash'
 import { F1040Error } from 'ustaxes/forms/errors'
 import F8949 from './F8949'
+import F4137 from './F4137'
+import F8919 from './F8919'
+import F8582 from './F8582'
+import { Field } from 'ustaxes/core/pdfFiller'
+import Form8853 from './F8853'
 
 export default class F1040 extends Form {
   tag: FormTag = 'f1040'
@@ -73,17 +78,22 @@ export default class F1040 extends Form {
   f2441?: F2441
   f2555?: F2555
   f4136?: F4136
+
+  f4137?: F4137
   f4563?: F4563
   f4797?: F4797
   f4952?: F4952
   f4972?: F4972
   f5695?: F5695
+  f8582?: F8582
   f8814?: F8814
+  f8853?: Form8853
   f8863?: F8863
   f8888?: F8888
   f8889?: F8889
   f8889Spouse?: F8889
   f8910?: F8910
+  f8919?: F8919
   f8936?: F8936
   f8949: F8949[]
   f8959?: F8959
@@ -142,7 +152,7 @@ export default class F1040 extends Form {
 
     // Attach payment voucher to front if there is a payment due
     if ((this.l37() ?? 0) > 0) {
-      res.push(new F1040V(this.info, this))
+      res.push(new F1040V(this))
     }
 
     return res.sort((a, b) => a.sequenceIndex - b.sequenceIndex)
@@ -153,14 +163,14 @@ export default class F1040 extends Form {
 
     const f1099ssas = this.info.f1099ssas()
 
-    const scheduleB = new ScheduleB(this.info)
+    const scheduleB = new ScheduleB(this)
 
     if (scheduleB.formRequired()) {
       this.scheduleB = scheduleB
     }
 
     if (this.assets.length > 0) {
-      const f8949 = new F8949(this.info.taxPayer, this.assets)
+      const f8949 = new F8949(this)
       if (f8949.isNeeded()) {
         // a F8949 may spawn more copies of itself.
         this.f8949 = [f8949, ...f8949.copies]
@@ -168,7 +178,7 @@ export default class F1040 extends Form {
     }
 
     if (f1099bs.length > 0 || this.f8949.length > 0) {
-      this.scheduleD = new ScheduleD(this.info, this.f8949)
+      this.scheduleD = new ScheduleD(this)
     }
 
     if (f1099ssas.length > 0) {
@@ -177,7 +187,7 @@ export default class F1040 extends Form {
     }
 
     if (this.info.realEstate.length > 0) {
-      this.scheduleE = new ScheduleE(this.info)
+      this.scheduleE = new ScheduleE(this)
     }
 
     if (this.info.f1098es.length > 0) {
@@ -192,7 +202,7 @@ export default class F1040 extends Form {
         this.studentLoanInterestWorksheet.notMFS() &&
         this.studentLoanInterestWorksheet.isNotDependent()
       ) {
-        this.schedule1 = new Schedule1(this.info, this)
+        this.schedule1 = new Schedule1(this)
       }
     }
 
@@ -200,13 +210,13 @@ export default class F1040 extends Form {
       this.info.taxPayer.primaryPerson &&
       needsF8889(this.info, this.info.taxPayer.primaryPerson)
     ) {
-      this.f8889 = new F8889(this.info, this.info.taxPayer.primaryPerson)
+      this.f8889 = new F8889(this, this.info.taxPayer.primaryPerson)
       if (this.schedule1 === undefined) {
-        this.schedule1 = new Schedule1(this.info, this)
+        this.schedule1 = new Schedule1(this)
       }
 
       if (this.schedule2 === undefined) {
-        this.schedule2 = new Schedule2(this.info.taxPayer, this)
+        this.schedule2 = new Schedule2(this)
       }
       this.schedule1.addF8889(this.f8889)
     }
@@ -216,20 +226,20 @@ export default class F1040 extends Form {
       needsF8889(this.info, this.info.taxPayer.spouse)
     ) {
       // add in separate form 8889 for the spouse
-      this.f8889Spouse = new F8889(this.info, this.info.taxPayer.spouse)
+      this.f8889Spouse = new F8889(this, this.info.taxPayer.spouse)
       if (this.schedule1 === undefined) {
-        this.schedule1 = new Schedule1(this.info, this)
+        this.schedule1 = new Schedule1(this)
       }
 
       if (this.schedule2 === undefined) {
-        this.schedule2 = new Schedule2(this.info.taxPayer, this)
+        this.schedule2 = new Schedule2(this)
       }
       this.schedule1.addF8889Spouse(this.f8889Spouse)
     }
 
     if (needsF8959(this.info)) {
       if (this.f8959 === undefined) {
-        this.f8959 = new F8959(this.info, undefined, undefined, undefined)
+        this.f8959 = new F8959(this)
       }
     }
 
@@ -238,25 +248,25 @@ export default class F1040 extends Form {
     }
 
     if (this.f8959 !== undefined || this.f8960 !== undefined) {
-      this.schedule2 = new Schedule2(this.info.taxPayer, this)
+      this.schedule2 = new Schedule2(this)
     }
 
     if (
       claimableExcessSSTaxWithholding(this.info.w2s) > 0 &&
       this.schedule3 === undefined
     ) {
-      this.schedule3 = new Schedule3(this.info, this)
+      this.schedule3 = new Schedule3(this)
     }
 
     if (this.scheduleE !== undefined) {
       if (this.schedule1 === undefined) {
-        this.schedule1 = new Schedule1(this.info, this)
+        this.schedule1 = new Schedule1(this)
       }
       this.schedule1.addScheduleE(this.scheduleE)
     }
 
-    const eic = new ScheduleEIC(this.info.taxPayer, this)
-    if (eic.allowed(this)) {
+    const eic = new ScheduleEIC(this)
+    if (eic.allowed()) {
       this.scheduleEIC = eic
     }
 
@@ -449,7 +459,7 @@ export default class F1040 extends Form {
   l26 = (): number =>
     this.info.estimatedTaxes.reduce((res, et) => res + et.payment, 0)
 
-  l27 = (): number | undefined => this.scheduleEIC?.credit(this) ?? 0
+  l27 = (): number | undefined => this.scheduleEIC?.credit() ?? 0
   l28 = (): number | undefined => this.schedule8812?.l15()
 
   l29 = (): number | undefined => this.f8863?.l8()
@@ -527,7 +537,7 @@ export default class F1040 extends Form {
     return result
   }
 
-  fields = (): Array<string | number | boolean | undefined> =>
+  fields = (): Field[] =>
     [
       this.info.taxPayer.filingStatus === FilingStatus.S,
       this.info.taxPayer.filingStatus === FilingStatus.MFJ,

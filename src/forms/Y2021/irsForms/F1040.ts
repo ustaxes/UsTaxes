@@ -56,6 +56,8 @@ import F8949 from './F8949'
 import F6251 from './F6251'
 import F4137 from './F4137'
 import F8919 from './F8919'
+import F8853 from './F8853'
+import F8582 from './F8582'
 
 export default class F1040 extends Form {
   tag: FormTag = 'f1040'
@@ -88,6 +90,8 @@ export default class F1040 extends Form {
   f5695?: F5695
   f6251?: F6251
   f8814?: F8814
+  f8582?: F8582
+  f8853?: F8853
   f8863?: F8863
   f8888?: F8888
   f8889?: F8889
@@ -158,7 +162,7 @@ export default class F1040 extends Form {
 
     // Attach payment voucher to front if there is a payment due
     if ((this.l37() ?? 0) > 0) {
-      res.push(new F1040V(this.info, this))
+      res.push(new F1040V(this))
     }
 
     return res.sort((a, b) => a.sequenceIndex - b.sequenceIndex)
@@ -168,7 +172,7 @@ export default class F1040 extends Form {
     const f1099bs = this.info.f1099Bs()
     const f1099ssas = this.info.f1099ssas()
 
-    const scheduleB = new ScheduleB(this.info)
+    const scheduleB = new ScheduleB(this)
 
     if (scheduleB.formRequired()) {
       this.scheduleB = scheduleB
@@ -183,7 +187,7 @@ export default class F1040 extends Form {
     }
 
     if (this.assets.length > 0) {
-      const f8949 = new F8949(this.info.taxPayer, this.assets)
+      const f8949 = new F8949(this)
       if (f8949.isNeeded()) {
         // a F8949 may spawn more copies of itself.
         this.f8949 = [f8949, ...f8949.copies]
@@ -191,7 +195,7 @@ export default class F1040 extends Form {
     }
 
     if (f1099bs.length > 0 || this.f8949.length > 0) {
-      this.scheduleD = new ScheduleD(this.info, this.f8949)
+      this.scheduleD = new ScheduleD(this)
     }
 
     if (f1099ssas.length > 0) {
@@ -203,7 +207,7 @@ export default class F1040 extends Form {
       this.info.realEstate.length > 0 ||
       this.info.scheduleK1Form1065s.length > 0
     ) {
-      this.scheduleE = new ScheduleE(this.info)
+      this.scheduleE = new ScheduleE(this)
     }
 
     if (
@@ -232,7 +236,7 @@ export default class F1040 extends Form {
         this.studentLoanInterestWorksheet.notMFS() &&
         this.studentLoanInterestWorksheet.isNotDependent()
       ) {
-        this.schedule1 = new Schedule1(this.info, this)
+        this.schedule1 = new Schedule1(this)
       }
     }
 
@@ -240,13 +244,13 @@ export default class F1040 extends Form {
       this.info.taxPayer.primaryPerson &&
       needsF8889(this.info, this.info.taxPayer.primaryPerson)
     ) {
-      this.f8889 = new F8889(this.info, this.info.taxPayer.primaryPerson)
+      this.f8889 = new F8889(this, this.info.taxPayer.primaryPerson)
       if (this.schedule1 === undefined) {
-        this.schedule1 = new Schedule1(this.info, this)
+        this.schedule1 = new Schedule1(this)
       }
 
       if (this.schedule2 === undefined) {
-        this.schedule2 = new Schedule2(this.info.taxPayer, this)
+        this.schedule2 = new Schedule2(this)
       }
     }
 
@@ -255,13 +259,13 @@ export default class F1040 extends Form {
       needsF8889(this.info, this.info.taxPayer.spouse)
     ) {
       // add in separate form 8889 for the spouse
-      this.f8889Spouse = new F8889(this.info, this.info.taxPayer.spouse)
+      this.f8889Spouse = new F8889(this, this.info.taxPayer.spouse)
       if (this.schedule1 === undefined) {
-        this.schedule1 = new Schedule1(this.info, this)
+        this.schedule1 = new Schedule1(this)
       }
 
       if (this.schedule2 === undefined) {
-        this.schedule2 = new Schedule2(this.info.taxPayer, this)
+        this.schedule2 = new Schedule2(this)
       }
     }
 
@@ -272,41 +276,40 @@ export default class F1040 extends Form {
     }
 
     if (needsF8960(this.info)) {
-      this.f8960 = new F8960(this.info, this)
+      this.f8960 = new F8960(this)
     }
 
     if (this.f8959 !== undefined || this.f8960 !== undefined) {
-      this.schedule2 = new Schedule2(this.info.taxPayer, this)
+      this.schedule2 = new Schedule2(this)
     }
 
     if (
       claimableExcessSSTaxWithholding(this.info.w2s) > 0 &&
       this.schedule3 === undefined
     ) {
-      this.schedule3 = new Schedule3(this.info, this)
+      this.schedule3 = new Schedule3(this)
     }
 
     if (this.scheduleE !== undefined) {
       if (this.schedule1 === undefined) {
-        this.schedule1 = new Schedule1(this.info, this)
+        this.schedule1 = new Schedule1(this)
       }
-      this.schedule1.addScheduleE(this.scheduleE)
     }
 
-    const eic = new ScheduleEIC(this.info.taxPayer, this)
+    const eic = new ScheduleEIC(this)
     if (eic.allowed(this)) {
       this.scheduleEIC = eic
     }
 
     if (this.assets.length > 0) {
-      const f8949 = new F8949(this.info.taxPayer, this.assets)
+      const f8949 = new F8949(this)
       if (f8949.isNeeded()) {
         // a F8949 may spawn more copies of itself.
         this.f8949 = [f8949, ...f8949.copies]
       }
     }
 
-    const f6251 = new F6251(this.info, this)
+    const f6251 = new F6251(this)
     if (f6251.isNeeded()) {
       this.f6251 = f6251
     }
@@ -616,7 +619,7 @@ export default class F1040 extends Form {
     return result
   }
 
-  fields = (): Array<string | number | boolean | undefined> =>
+  fields = (): Field[] =>
     [
       this.info.taxPayer.filingStatus === FilingStatus.S,
       this.info.taxPayer.filingStatus === FilingStatus.MFJ,
