@@ -1,9 +1,12 @@
 import { Grid, TextField, useMediaQuery } from '@material-ui/core'
 import { Alert } from '@material-ui/lab'
 import { ReactElement } from 'react'
-import DataTable, { TableColumn } from 'react-data-table-component'
+import DataTable, {
+  ConditionalStyles,
+  TableColumn
+} from 'react-data-table-component'
 import useStyles from '../../input/styles'
-import { columnInputStyles } from './DataTableStyle'
+import { columnInputStyles, useRowStyles } from './DataTableStyle'
 
 interface ColumnHeaderDropProps {
   fields: string[]
@@ -71,6 +74,19 @@ export const ConfigurableDataTable = ({
   const firstRow = rows[0]
   const classes = useStyles()
 
+  const rowClasses = useRowStyles({ prefersDarkMode })
+
+  const conditionalCellStyles: ConditionalStyles<[number, string[]]>[] = [
+    {
+      when: ([index]) => index < dropFirstNRows,
+      classNames: [rowClasses.disabledRow]
+    },
+    {
+      when: ([index]) => index >= dropFirstNRows,
+      classNames: [rowClasses.normal]
+    }
+  ]
+
   const columns: TableColumn<[number, string[]]>[] = firstRow.map((c, i) => ({
     name: (
       <ColumnHeaderDropDown
@@ -80,7 +96,8 @@ export const ConfigurableDataTable = ({
         undefinedName={`Col ${i + 1}`}
       />
     ),
-    selector: ([, row]) => row[i]
+    selector: ([, row]) => row[i],
+    conditionalCellStyles
   }))
 
   const unassignedColumns = fields.filter(
@@ -130,9 +147,11 @@ export const ConfigurableDataTable = ({
   )
 
   return (
-    <>
-      {assignAlert}
-      {errorAlert}
+    <Grid container spacing={2} direction="column">
+      <Grid item>
+        {assignAlert}
+        {errorAlert}
+      </Grid>
       <Grid item xs={12}>
         {dropFirstNRowsInput}
       </Grid>
@@ -143,7 +162,7 @@ export const ConfigurableDataTable = ({
           theme={prefersDarkMode ? 'dark' : 'normal'}
         />
       </Grid>
-    </>
+    </Grid>
   )
 }
 

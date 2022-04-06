@@ -1,5 +1,9 @@
-import { createStyles, makeStyles } from '@material-ui/core'
+import { createStyles, makeStyles, Theme } from '@material-ui/core'
 import { createTheme } from 'react-data-table-component'
+
+type DarkModeProps = {
+  prefersDarkMode: boolean
+}
 
 createTheme('normal', {
   backgroundColor: 'white',
@@ -23,6 +27,23 @@ createTheme(
     }
   },
   'normal'
+)
+
+export const baseCellStyle = (
+  prefersDarkMode = false
+): { [k: string]: string } => ({
+  color: prefersDarkMode ? 'white' : 'rgba(0, 0, 0, 0.54)',
+  backgroundColor: prefersDarkMode ? '#303030' : 'white'
+})
+
+export const useRowStyles = makeStyles<Theme, DarkModeProps>(() =>
+  createStyles({
+    disabledRow: {
+      backgroundColor: '#aaaaaa',
+      color: 'black'
+    },
+    normal: ({ prefersDarkMode }) => baseCellStyle(prefersDarkMode)
+  })
 )
 
 export const columnInputStyles = makeStyles(() =>
