@@ -187,6 +187,7 @@ const FilteredAssetsTable = (): ReactElement => {
               name="securityName"
             />
             <GenericLabeledDropdown<[string, CloseYear]>
+              noUndefined
               sizes={{ xs: 6 }}
               label="Sale Year"
               name="closeYear"
@@ -253,38 +254,40 @@ const FilteredAssetsTable = (): ReactElement => {
   const exportView = (() => {
     if (displayAssets.length > 0) {
       return (
-        <Button
-          color={prefersDarkMode ? 'default' : 'secondary'}
-          variant="contained"
-          onClick={() => {
-            const csv = asCsv().join('\n')
-            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' })
-            const url = URL.createObjectURL(blob)
-            const link = document.createElement('a')
-            link.setAttribute('href', url)
-            link.setAttribute('download', 'assets.csv')
-            document.body.appendChild(link)
-            link.click()
-            document.body.removeChild(link)
-          }}
-        >
-          Export {displayAssets.length} Assets
-        </Button>
+        <Grid item>
+          <Button
+            color={prefersDarkMode ? 'default' : 'secondary'}
+            variant="contained"
+            onClick={() => {
+              const csv = asCsv().join('\n')
+              const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' })
+              const url = URL.createObjectURL(blob)
+              const link = document.createElement('a')
+              link.setAttribute('href', url)
+              link.setAttribute('download', 'assets.csv')
+              document.body.appendChild(link)
+              link.click()
+              document.body.removeChild(link)
+            }}
+          >
+            Export {displayAssets.length} Assets
+          </Button>
+        </Grid>
       )
     }
   })()
 
   return (
-    <>
-      {filterForm}
-      {assetSummary}
-
+    <Grid container spacing={2} direction="column">
+      <Grid item>{filterForm}</Grid>
+      <Grid item>{assetSummary}</Grid>
       {exportView}
+
       <DisplayAssets
         assets={displayAssets}
         deleteRows={(rows) => dispatch(actions.removeAssets(rows)(activeYear))}
       />
-    </>
+    </Grid>
   )
 }
 
