@@ -185,7 +185,7 @@ export const TransactionImporter = (): ReactElement => {
       if (cell === 'sell') {
         return right('SELL')
       }
-      return left('Could not parse value ${cell} as buy or sell')
+      return left(`Could not parse value ${cell} as buy or sell`)
     })()
 
     const feeIdx = assignments.indexOf('Fee / commissions')
