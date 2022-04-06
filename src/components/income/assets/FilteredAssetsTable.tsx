@@ -1,4 +1,4 @@
-import { Button, Grid } from '@material-ui/core'
+import { Button, Grid, useMediaQuery } from '@material-ui/core'
 import { ReactElement, useMemo, useState } from 'react'
 import DataTable, { TableColumn } from 'react-data-table-component'
 import { FormProvider, useForm } from 'react-hook-form'
@@ -85,6 +85,8 @@ const DisplayAssets = ({
   assets,
   deleteRows
 }: DisplayAssetsProps): ReactElement => {
+  const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)')
+
   const [selectedRows, setSelectedRows] = useState<number[]>([])
   const [cleared, setCleared] = useState(false)
 
@@ -125,11 +127,13 @@ const DisplayAssets = ({
       onSelectedRowsChange={handleRowSelected}
       contextActions={contextActions}
       clearSelectedRows={cleared}
+      theme={prefersDarkMode ? 'dark' : 'normal'}
     />
   )
 }
 
 const FilteredAssetsTable = (): ReactElement => {
+  const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)')
   const activeYear: TaxYear = useSelector(
     (state: YearsTaxesState) => state.activeYear
   )
@@ -250,7 +254,7 @@ const FilteredAssetsTable = (): ReactElement => {
     if (displayAssets.length > 0) {
       return (
         <Button
-          color="secondary"
+          color={prefersDarkMode ? 'default' : 'secondary'}
           variant="contained"
           onClick={() => {
             const csv = asCsv().join('\n')

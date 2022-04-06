@@ -1,58 +1,9 @@
-import {
-  createStyles,
-  Grid,
-  makeStyles,
-  TextField,
-  Theme,
-  useMediaQuery
-} from '@material-ui/core'
+import { Grid, TextField, useMediaQuery } from '@material-ui/core'
 import { Alert } from '@material-ui/lab'
 import { ReactElement } from 'react'
-import DataTable, {
-  ConditionalStyles,
-  TableColumn
-} from 'react-data-table-component'
+import DataTable, { TableColumn } from 'react-data-table-component'
 import useStyles from '../../input/styles'
-
-type DarkModeProps = {
-  prefersDarkMode: boolean
-}
-
-const useRowStyles = makeStyles<Theme, DarkModeProps>(() =>
-  createStyles({
-    disabledRow: {
-      backgroundColor: '#aaaaaa',
-      color: 'black'
-    },
-    normal: ({ prefersDarkMode }) => baseCellStyle(prefersDarkMode)
-  })
-)
-
-export const baseCellStyle = (
-  prefersDarkMode = false
-): { [k: string]: string } => ({
-  color: prefersDarkMode ? 'white' : 'rgba(0, 0, 0, 0.54)',
-  backgroundColor: prefersDarkMode ? '#303030' : 'white'
-})
-
-const useColumnStyles = makeStyles<Theme, DarkModeProps>(() =>
-  createStyles({
-    column: ({ prefersDarkMode }) => ({
-      '& .MuiFilledInput-input': {
-        fontSize: '.8rem',
-        fontWeight: 'bold',
-        padding: '0.9rem 0rem',
-        ...baseCellStyle(prefersDarkMode)
-      }
-    })
-  })
-)
-
-export const forceHeadCells = (
-  prefersDarkMode = false
-): { headCells: { style: { [k: string]: string } } } => ({
-  headCells: { style: baseCellStyle(prefersDarkMode) }
-})
+import { columnInputStyles } from './DataTableStyle'
 
 interface ColumnHeaderDropProps {
   fields: string[]
@@ -67,13 +18,11 @@ const ColumnHeaderDropDown = ({
   onChange,
   undefinedName = ''
 }: ColumnHeaderDropProps) => {
-  const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)')
-  const classes = useStyles({ prefersDarkMode })
-  const columnClasses = useColumnStyles({ prefersDarkMode })
+  const columnClasses = columnInputStyles()
 
   return (
     <TextField
-      className={`${classes.root} ${columnClasses.column}`}
+      className={columnClasses.column}
       select
       fullWidth
       variant="filled"
@@ -121,18 +70,6 @@ export const ConfigurableDataTable = ({
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)')
   const firstRow = rows[0]
   const classes = useStyles()
-  const rowClasses = useRowStyles({ prefersDarkMode })
-
-  const conditionalCellStyles: ConditionalStyles<[number, string[]]>[] = [
-    {
-      when: ([index]) => index < dropFirstNRows,
-      classNames: [rowClasses.disabledRow]
-    },
-    {
-      when: ([index]) => index >= dropFirstNRows,
-      classNames: [rowClasses.normal]
-    }
-  ]
 
   const columns: TableColumn<[number, string[]]>[] = firstRow.map((c, i) => ({
     name: (
@@ -143,8 +80,7 @@ export const ConfigurableDataTable = ({
         undefinedName={`Col ${i + 1}`}
       />
     ),
-    selector: ([, row]) => row[i],
-    conditionalCellStyles
+    selector: ([, row]) => row[i]
   }))
 
   const unassignedColumns = fields.filter(
@@ -204,7 +140,7 @@ export const ConfigurableDataTable = ({
         <DataTable<[number, string[]]>
           data={rows.map((r, i) => [i, r])}
           columns={columns}
-          customStyles={forceHeadCells(prefersDarkMode)}
+          theme={prefersDarkMode ? 'dark' : 'normal'}
         />
       </Grid>
     </>

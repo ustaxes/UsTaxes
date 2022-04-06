@@ -1,3 +1,4 @@
+import { useMediaQuery } from '@material-ui/core'
 import { ReactElement } from 'react'
 import DataTable, { TableColumn } from 'react-data-table-component'
 import { Currency } from 'ustaxes/components/input'
@@ -9,7 +10,15 @@ interface AssetSummaryProps {
   assets: Asset<Date>[]
 }
 
+type Row = {
+  name: string
+  shortTerm: number
+  longTerm: number
+}
+
 const AssetSummary = ({ title, assets }: AssetSummaryProps): ReactElement => {
+  const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)')
+
   const totals = assets.reduce(
     (acc, a) => {
       const isLongTerm =
@@ -55,11 +64,7 @@ const AssetSummary = ({ title, assets }: AssetSummaryProps): ReactElement => {
     }
   )
 
-  const columns: TableColumn<{
-    name: string
-    shortTerm: number
-    longTerm: number
-  }>[] = [
+  const columns: TableColumn<Row>[] = [
     {
       name: '',
       selector: ({ name }) => name
@@ -105,7 +110,12 @@ const AssetSummary = ({ title, assets }: AssetSummaryProps): ReactElement => {
 
   return (
     <>
-      <DataTable title={title} columns={columns} data={data} />
+      <DataTable
+        title={title}
+        columns={columns}
+        data={data}
+        theme={prefersDarkMode ? 'dark' : 'normal'}
+      />
       {(() => {
         if (totalFees > 0) {
           return (

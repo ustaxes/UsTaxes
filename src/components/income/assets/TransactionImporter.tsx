@@ -25,11 +25,7 @@ import {
   run
 } from 'ustaxes/core/util'
 import { Asset } from 'ustaxes/core/data'
-import ConfigurableDataTable, {
-  baseCellStyle,
-  ColumnDef,
-  forceHeadCells
-} from './ConfigurableDataTable'
+import ConfigurableDataTable, { ColumnDef } from './ConfigurableDataTable'
 
 interface PortfolioTableProps {
   portfolio: Portfolio
@@ -43,50 +39,41 @@ export const PortfolioTable = ({
   const columns: TableColumn<Position>[] = [
     {
       name: 'Security',
-      selector: (p) => p.security.name,
-      style: baseCellStyle(prefersDarkMode)
+      selector: (p) => p.security.name
     },
     {
       name: 'Open Date',
-      selector: (p) => p.openDate,
-      style: baseCellStyle(prefersDarkMode)
+      selector: (p) => p.openDate
     },
     {
       name: 'Quantity',
-      selector: (p) => p.quantity,
-      style: baseCellStyle(prefersDarkMode)
+      selector: (p) => p.quantity
     },
     {
       name: 'Price per unit',
-      selector: (p) => p.price,
-      style: baseCellStyle(prefersDarkMode)
+      selector: (p) => p.price
     },
     {
       name: 'Basis',
-      selector: (p) => p.price * p.quantity,
-      style: baseCellStyle(prefersDarkMode)
+      selector: (p) => p.price * p.quantity
     },
     {
       name: 'Close Date',
-      selector: (p) => p.closeDate ?? '',
-      style: baseCellStyle(prefersDarkMode)
+      selector: (p) => p.closeDate ?? ''
     },
     {
       name: 'Close Fee',
-      selector: (p) => (p.closeDate === undefined ? '' : p.closeFee ?? 0),
-      style: baseCellStyle(prefersDarkMode)
+      selector: (p) => (p.closeDate === undefined ? '' : p.closeFee ?? 0)
     },
     {
       name: 'Proceeds',
       selector: (p) =>
-        p.closePrice !== undefined ? p.quantity * p.closePrice : '',
-      style: baseCellStyle(prefersDarkMode)
+        p.closePrice !== undefined ? p.quantity * p.closePrice : ''
     },
     {
       name: 'Gain or Loss',
       selector: (p) =>
-        p.closePrice !== undefined ? (p.closePrice - p.price) * p.quantity : '',
-      style: baseCellStyle(prefersDarkMode)
+        p.closePrice !== undefined ? (p.closePrice - p.price) * p.quantity : ''
     }
   ]
 
@@ -94,7 +81,7 @@ export const PortfolioTable = ({
     <DataTable
       columns={columns}
       data={portfolio.positions}
-      customStyles={forceHeadCells(prefersDarkMode)}
+      theme={prefersDarkMode ? 'dark' : 'normal'}
     />
   )
 }
