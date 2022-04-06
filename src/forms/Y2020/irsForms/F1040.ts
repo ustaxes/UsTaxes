@@ -1,6 +1,5 @@
 import {
   AccountType,
-  Dependent,
   FilingStatus,
   IncomeW2,
   PersonRole,
@@ -51,12 +50,15 @@ import InformationMethods from 'ustaxes/core/data/methods'
 import _ from 'lodash'
 import { F1040Error } from 'ustaxes/forms/errors'
 import F8949 from './F8949'
+import TaxPayer from 'ustaxes/core/data/TaxPayer'
+import { Dependent } from 'ustaxes/core/data/TaxPayer'
 
 export default class F1040 extends Form {
   tag: FormTag = 'f1040'
   sequenceIndex = 0
 
   info: InformationMethods
+  tp: TaxPayer
   assets: Asset<Date>[]
 
   schedule1?: Schedule1
@@ -98,6 +100,7 @@ export default class F1040 extends Form {
   constructor(info: Information, assets: Asset<Date>[] = []) {
     super()
     this.info = new InformationMethods(info)
+    this.tp = new TaxPayer(info.taxPayer)
     this.f8949 = []
     this.assets = assets
     this.makeSchedules()
@@ -153,14 +156,14 @@ export default class F1040 extends Form {
 
     const f1099ssas = this.info.f1099ssas()
 
-    const scheduleB = new ScheduleB(this.info)
+    const scheduleB = new ScheduleB(this.info, this.tp)
 
     if (scheduleB.formRequired()) {
       this.scheduleB = scheduleB
     }
 
     if (this.assets.length > 0) {
-      const f8949 = new F8949(this.info.taxPayer, this.assets)
+      const f8949 = new F8949(this.tp, this.assets)
       if (f8949.isNeeded()) {
         // a F8949 may spawn more copies of itself.
         this.f8949 = [f8949, ...f8949.copies]
@@ -245,7 +248,7 @@ export default class F1040 extends Form {
       claimableExcessSSTaxWithholding(this.info.w2s) > 0 &&
       this.schedule3 === undefined
     ) {
-      this.schedule3 = new Schedule3(this.info, this)
+      this.schedule3 = new Schedule3(this)
     }
 
     if (this.scheduleE !== undefined) {
@@ -255,7 +258,7 @@ export default class F1040 extends Form {
       this.schedule1.addScheduleE(this.scheduleE)
     }
 
-    const eic = new ScheduleEIC(this.info.taxPayer, this)
+    const eic = new ScheduleEIC(this)
     if (eic.allowed(this)) {
       this.scheduleEIC = eic
     }
@@ -264,7 +267,7 @@ export default class F1040 extends Form {
     const schedule8812 = new Schedule8812(this)
 
     if (
-      this.info.taxPayer.dependents.some(
+      this.tp.dependents.some(
         (dep) => ws.qualifiesChild(dep) || ws.qualifiesOther(dep)
       )
     ) {
@@ -477,7 +480,7 @@ export default class F1040 extends Form {
   l38 = (): number | undefined => undefined
 
   _depField = (idx: number): string | boolean => {
-    const deps: Dependent[] = this.info.taxPayer.dependents
+    const deps: Dependent[] = this.tp.dependents
 
     // Based on the PDF row we are on, select correct dependent
     const depIdx = Math.floor(idx / 5)

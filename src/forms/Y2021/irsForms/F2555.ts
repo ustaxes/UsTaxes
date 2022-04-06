@@ -1,6 +1,6 @@
 import { Field } from 'ustaxes/core/pdfFiller'
 import Form, { FormTag } from 'ustaxes/core/irsForms/Form'
-import { TaxPayer } from 'ustaxes/core/data'
+import TaxPayer from 'ustaxes/core/data/TaxPayer'
 
 /**
  * Impacts EIC, 1040 instructions L27 step 1 squestion 4

@@ -1,4 +1,3 @@
-import { Information } from 'ustaxes/core/data'
 import InformationMethods from 'ustaxes/core/data/methods'
 import TaxPayer from 'ustaxes/core/data/TaxPayer'
 import Form, { FormTag } from 'ustaxes/core/irsForms/Form'
@@ -13,15 +12,17 @@ export default class ScheduleB extends Form {
   tag: FormTag = 'f1040sb'
   sequenceIndex = 8
   state: InformationMethods
+  tp: TaxPayer
   readonly interestPayersLimit = 14
   readonly dividendPayersLimit = 16
 
   index = 0
   copies: ScheduleB[] = []
 
-  constructor(info: Information, index = 0) {
+  constructor(info: InformationMethods, tp: TaxPayer, index = 0) {
     super()
-    this.state = new InformationMethods(info)
+    this.state = info
+    this.tp = tp
 
     this.index = index
 
@@ -37,7 +38,7 @@ export default class ScheduleB extends Form {
       )
 
       this.copies = Array.from(Array(extraCopiesNeeded)).map(
-        (_, i) => new ScheduleB(info, i + 1)
+        (_, i) => new ScheduleB(info, tp, i + 1)
       )
     }
   }
@@ -124,11 +125,9 @@ export default class ScheduleB extends Form {
   l8 = (): [boolean, boolean] => [this.foreignTrust(), !this.foreignTrust()]
 
   fields = (): Array<string | number | boolean | undefined> => {
-    const tp = new TaxPayer(this.state.taxPayer)
-
     const result = [
-      tp.namesString(),
-      tp.tp.primaryPerson?.ssid ?? '',
+      this.tp.namesString(),
+      this.tp.primaryPerson?.ssid ?? '',
       ...this.l1(),
       this.l2(),
       this.l3(),

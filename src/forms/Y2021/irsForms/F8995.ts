@@ -1,5 +1,4 @@
 import F1040 from './F1040'
-import TaxPayer from 'ustaxes/core/data/TaxPayer'
 import Form, { FormTag } from 'ustaxes/core/irsForms/Form'
 import { FilingStatus } from 'ustaxes/core/data'
 
@@ -75,11 +74,11 @@ export default class F8995 extends Form {
   deductions = (): number => this.l15()
 
   fields = (): Array<string | number | boolean | undefined> => {
-    const tp = new TaxPayer(this.f1040.info.taxPayer)
+    const tp = this.f1040.tp
 
     const result = [
       tp.namesString(),
-      tp.tp.primaryPerson?.ssid ?? '',
+      tp.primaryPerson?.ssid ?? '',
       this.applicableK1s()[0]?.partnershipName,
       this.applicableK1s()[0]?.partnershipEin,
       this.applicableK1s()[0]?.section199AQBI,

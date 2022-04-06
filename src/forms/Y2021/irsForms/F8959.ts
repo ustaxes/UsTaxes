@@ -109,7 +109,7 @@ export default class F8959 extends Form {
     const tp = new TaxPayer(this.state.taxPayer)
     return [
       tp.namesString(),
-      tp.tp.primaryPerson?.ssid,
+      tp.primaryPerson?.ssid,
       this.l1(),
       this.l2(),
       this.l3(),

@@ -1,6 +1,7 @@
 import _ from 'lodash'
-import { Dependent, FilingStatus, TaxPayer as TP } from 'ustaxes/core/data'
+import { FilingStatus } from 'ustaxes/core/data'
 import TaxPayer from 'ustaxes/core/data/TaxPayer'
+import { Dependent } from 'ustaxes/core/data/TaxPayer'
 import Form, { FormTag } from 'ustaxes/core/irsForms/Form'
 import { evaluatePiecewise, Piecewise } from 'ustaxes/core/util'
 import { sumFields } from 'ustaxes/core/irsForms/util'
@@ -52,25 +53,25 @@ export default class ScheduleEIC extends Form {
   f4797?: F4797
   f8814?: F8814
   pub596Worksheet1: Pub596Worksheet1
-  qualifyingStudentCutoffYear = 1996
-  qualifyingCutoffYear = 2001
+  qualifyingStudentCutoffYear = new Date(1996, 0, 1)
+  qualifyingCutoffYear = new Date(2001, 0, 1)
   investmentIncomeLimit = 3650
   f1040: F1040
 
-  constructor(tp: TP, f1040: F1040) {
+  constructor(f1040: F1040) {
     super()
-    this.tp = new TaxPayer(tp)
-    this.f2555 = new F2555(tp)
-    this.f4797 = new F4797(tp)
-    this.f8814 = new F8814(tp)
+    this.tp = f1040.tp
+    this.f2555 = new F2555(this.tp)
+    this.f4797 = new F4797(this.tp)
+    this.f8814 = new F8814(this.tp)
     this.f1040 = f1040
-    this.pub596Worksheet1 = new Pub596Worksheet1(tp, f1040)
+    this.pub596Worksheet1 = new Pub596Worksheet1(this.tp, f1040)
   }
 
   // instructions step 1.1
   passIncomeLimit = (f1040: F1040): boolean => {
-    if (this.tp.tp.filingStatus !== undefined) {
-      const incomeLimits = federal.EIC.caps[this.tp.tp.filingStatus]
+    if (this.tp.filingStatus !== undefined) {
+      const incomeLimits = federal.EIC.caps[this.tp.filingStatus]
       if (incomeLimits !== undefined) {
         const limit =
           incomeLimits[
@@ -93,8 +94,7 @@ export default class ScheduleEIC extends Form {
   }
 
   // Step 1.3
-  allowedFilingStatus = (): boolean =>
-    this.tp.tp.filingStatus !== FilingStatus.MFS
+  allowedFilingStatus = (): boolean => this.tp.filingStatus !== FilingStatus.MFS
 
   // Step 1.4
   allowedFilling2555 = (): boolean => !precludesEIC(checks2555)(this.f2555)
@@ -145,7 +145,7 @@ export default class ScheduleEIC extends Form {
   atLeastOneChild = (): boolean => this.qualifyingDependents().length > 0
 
   // 3.2, 4.4
-  jointReturn = (): boolean => this.tp.tp.filingStatus === FilingStatus.MFJ
+  jointReturn = (): boolean => this.tp.filingStatus === FilingStatus.MFJ
 
   // 3.3, 4.5
   qualifyingChildOfAnother = (): boolean => {
@@ -170,8 +170,8 @@ export default class ScheduleEIC extends Form {
   // 4.5 covered above
   // 4.6 dependent of another
   dependentOfAnother = (): boolean =>
-    (this.tp.tp.primaryPerson?.isTaxpayerDependent ?? false) ||
-    (this.tp.tp.spouse?.isTaxpayerDependent ?? false)
+    (this.tp.primaryPerson?.isTaxpayerDependent ?? false) ||
+    (this.tp.spouse?.isTaxpayerDependent ?? false)
 
   // 5.1 - Filing schedule SE for church
   filingSEChurchIncome = (): boolean => {
@@ -264,11 +264,11 @@ export default class ScheduleEIC extends Form {
    * @returns
    */
   calculateEICForIncome = (income: number): number => {
-    if (this.tp.tp.filingStatus === undefined) {
+    if (this.tp.filingStatus === undefined) {
       return 0
     }
     const f: Piecewise[] | undefined =
-      federal.EIC.formulas[this.tp.tp.filingStatus]
+      federal.EIC.formulas[this.tp.filingStatus]
     if (f === undefined) {
       return 0
     }
@@ -321,26 +321,22 @@ export default class ScheduleEIC extends Form {
         this.passPub596()) &&
       !(
         // Step 4
-        (
-          this.tp.tp.filingStatus !== FilingStatus.MFJ &&
-          this.dependentOfAnother()
-        )
+        (this.tp.filingStatus !== FilingStatus.MFJ && this.dependentOfAnother())
       ) &&
       this.credit(f1040) > 0
     )
   }
 
   qualifyingDependents = (): Dependent[] =>
-    this.tp.tp.dependents
+    this.tp.dependents
       .filter(
         (d) =>
-          d.qualifyingInfo?.birthYear !== undefined &&
-          ((d.qualifyingInfo?.birthYear !== undefined &&
-            d.qualifyingInfo?.birthYear >= this.qualifyingCutoffYear) ||
-            ((d.qualifyingInfo?.isStudent ?? false) &&
-              d.qualifyingInfo?.birthYear >= this.qualifyingStudentCutoffYear))
+          (d.dateOfBirth !== undefined &&
+            d.dateOfBirth >= this.qualifyingCutoffYear) ||
+          ((d.qualifyingInfo?.isStudent ?? false) &&
+            d.dateOfBirth >= this.qualifyingStudentCutoffYear)
       )
-      .sort((d) => d.qualifyingInfo?.birthYear as number)
+      .sort((d) => d.dateOfBirth.getFullYear())
       .slice(0, 3)
 
   qualifyingDependentsFilled = (): Array<Dependent | undefined> => {
@@ -359,7 +355,7 @@ export default class ScheduleEIC extends Form {
     this.qualifyingDependentsFilled().map((d) => d?.ssid)
 
   years = (): Array<number | undefined> =>
-    this.qualifyingDependentsFilled().map((d) => d?.qualifyingInfo?.birthYear)
+    this.qualifyingDependentsFilled().map((d) => d?.dateOfBirth?.getFullYear())
 
   // EIC line 3
   birthYearFields = (): Array<string | undefined> =>
@@ -383,7 +379,10 @@ export default class ScheduleEIC extends Form {
   // TODO: disability
   disabledFields = (): Array<boolean | undefined> =>
     this.years().flatMap((year) => {
-      if (year === undefined || year < this.qualifyingCutoffYear) {
+      if (
+        year === undefined ||
+        year < this.qualifyingCutoffYear.getFullYear()
+      ) {
         return [undefined, undefined]
       }
       return [undefined, undefined]
@@ -400,7 +399,7 @@ export default class ScheduleEIC extends Form {
 
   fields = (): Array<string | number | boolean | undefined> => [
     this.tp.namesString(),
-    this.tp.tp.primaryPerson?.ssid,
+    this.tp.primaryPerson?.ssid,
     ...this.nameFields(), // 6
     ...this.ssnFields(), // 3
     ...this.birthYearFields(), // 12

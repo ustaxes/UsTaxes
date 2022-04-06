@@ -1,5 +1,4 @@
 import { Information } from 'ustaxes/core/data'
-import TaxPayer from 'ustaxes/core/data/TaxPayer'
 import Form, { FormTag } from 'ustaxes/core/irsForms/Form'
 import ScheduleE from './ScheduleE'
 import { sumFields } from 'ustaxes/core/irsForms/util'
@@ -166,11 +165,11 @@ export default class Schedule1 extends Form {
   to1040Line10 = (): number => this.l26()
 
   fields = (): Array<string | number | boolean | undefined> => {
-    const tp = new TaxPayer(this.state.taxPayer)
+    const tp = this.f1040.tp
 
     return [
       tp.namesString(),
-      tp.tp.primaryPerson?.ssid,
+      tp.primaryPerson?.ssid,
       this.l1(),
       this.l2a(),
       this.l2b(),

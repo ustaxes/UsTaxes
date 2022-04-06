@@ -113,7 +113,7 @@ export default class ScheduleSE extends Form {
 
     const result = [
       tp.namesString(),
-      tp.tp.primaryPerson?.ssid ?? '',
+      tp.primaryPerson?.ssid ?? '',
       false, // Minister
       this.l1a(),
       this.l1b(),

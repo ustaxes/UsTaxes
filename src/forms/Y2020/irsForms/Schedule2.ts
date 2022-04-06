@@ -13,7 +13,7 @@ export default class Schedule2 extends Form {
 
   constructor(tp: TP, f1040: F1040) {
     super()
-    this.tp = new TaxPayer(tp)
+    this.tp = f1040.tp
     this.f1040 = f1040
     this.otherIncomeStrings = new Set<string>()
   }
@@ -70,7 +70,7 @@ export default class Schedule2 extends Form {
   fields = (): Array<string | number | boolean | undefined> => {
     return [
       this.tp.namesString(),
-      this.tp.tp.primaryPerson?.ssid,
+      this.tp.primaryPerson?.ssid,
 
       this.l1(),
       this.l2(),

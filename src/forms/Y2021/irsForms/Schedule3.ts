@@ -1,7 +1,6 @@
 import { Information, IncomeW2, PersonRole } from 'ustaxes/core/data'
 import { sumFields } from 'ustaxes/core/irsForms/util'
 import Form, { FormTag } from 'ustaxes/core/irsForms/Form'
-import TaxPayer from 'ustaxes/core/data/TaxPayer'
 import { fica } from '../data/federal'
 import F1040 from './F1040'
 
@@ -161,10 +160,10 @@ export default class Schedule3 extends Form {
   // Credit for child and dependent care expenses form 2441, line 10
 
   fields = (): Array<string | number | boolean | undefined> => {
-    const tp = new TaxPayer(this.state.taxPayer)
+    const tp = this.f1040.tp
     return [
       tp.namesString(),
-      tp.tp.primaryPerson?.ssid,
+      tp.primaryPerson?.ssid,
       this.l1(),
       this.l2(),
       this.l3(),

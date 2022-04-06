@@ -1,5 +1,6 @@
 import F1040 from '../../irsForms/F1040'
-import { Dependent, FilingStatus } from 'ustaxes/core/data'
+import { FilingStatus } from 'ustaxes/core/data'
+import { Dependent } from 'ustaxes/core/data/TaxPayer'
 import { sumFields } from 'ustaxes/core/irsForms/util'
 import { QualifyingDependents } from '../../data/federal'
 
@@ -13,19 +14,19 @@ export default class ChildTaxCreditWorksheet {
 
   qualifiesChild = (d: Dependent): boolean =>
     d.qualifyingInfo !== undefined &&
-    this.year - d.qualifyingInfo.birthYear < QualifyingDependents.childMaxAge
+    this.year - d.dateOfBirth.getFullYear() < QualifyingDependents.childMaxAge
 
   qualifiesOther = (d: Dependent): boolean =>
     d.qualifyingInfo !== undefined &&
     !this.qualifiesChild(d) &&
-    this.year - d.qualifyingInfo.birthYear <
+    this.year - d.dateOfBirth.getFullYear() <
       (d.qualifyingInfo.isStudent
         ? QualifyingDependents.qualifyingDependentMaxAge
         : QualifyingDependents.qualifyingStudentMaxAge)
 
   // worksheet line 1
   numberQualifyingChildren = (): number =>
-    this.f1040.info.taxPayer.dependents.reduce(
+    this.f1040.tp.dependents.reduce(
       (total, dependent) =>
         this.qualifiesChild(dependent) ? total + 1 : total,
       0
@@ -35,7 +36,7 @@ export default class ChildTaxCreditWorksheet {
 
   // worksheet line 2
   numberQualifyingOtherDependents = (): number =>
-    this.f1040.info.taxPayer.dependents.reduce(
+    this.f1040.tp.dependents.reduce(
       (total, dependent) =>
         this.qualifiesOther(dependent) ? total : total + 1,
       0

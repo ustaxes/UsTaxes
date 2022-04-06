@@ -158,7 +158,7 @@ export default class F8995A extends F8995 {
 
     const result = [
       tp.namesString(),
-      tp.tp.primaryPerson?.ssid ?? '',
+      tp.primaryPerson?.ssid ?? '',
       this.applicableK1s()[0]?.partnershipName,
       false, // 1Ab
       false, // 1Ac

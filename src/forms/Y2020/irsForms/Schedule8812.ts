@@ -11,7 +11,7 @@ export default class Schedule8812 extends Form {
 
   constructor(f1040: F1040) {
     super()
-    this.tp = new TaxPayer(f1040.info.taxPayer)
+    this.tp = f1040.tp
     this.f1040 = f1040
   }
 
@@ -101,7 +101,7 @@ export default class Schedule8812 extends Form {
   fields = (): Array<string | number | boolean | undefined> => {
     return [
       this.tp.namesString(),
-      this.tp.tp.primaryPerson?.ssid,
+      this.tp.primaryPerson?.ssid,
       this.l1(),
       this.l2(),
       this.l3(),

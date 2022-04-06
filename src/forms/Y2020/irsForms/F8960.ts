@@ -1,6 +1,5 @@
 import { Information } from 'ustaxes/core/data'
 import { sumFields } from 'ustaxes/core/irsForms/util'
-import TaxPayer from 'ustaxes/core/data/TaxPayer'
 import Form, { FormTag } from 'ustaxes/core/irsForms/Form'
 import { netInvestmentIncomeTax } from '../data/federal'
 import F1040 from './F1040'
@@ -133,10 +132,10 @@ export default class F8960 extends Form {
   l21 = (): number | undefined => undefined // Math.round(this.l20() * netInvestmentIncomeTax.taxRate)
 
   fields = (): Array<string | number | boolean | undefined> => {
-    const tp = new TaxPayer(this.state.taxPayer)
+    const tp = this.f1040.tp
     return [
       tp.namesString(),
-      tp.tp.primaryPerson?.ssid,
+      tp.primaryPerson?.ssid,
       undefined, // Section 6013(g) election checkbox
       undefined, // Section 6013(h) election checkbox
       undefined, // Regulations section 1.1411-10(g) election checkbox

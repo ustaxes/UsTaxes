@@ -214,7 +214,7 @@ export default class ScheduleE extends Form {
 
     return [
       tp.namesString(),
-      tp.tp.primaryPerson?.ssid,
+      tp.primaryPerson?.ssid,
       false,
       false,
       false,
@@ -259,7 +259,7 @@ export default class ScheduleE extends Form {
       displayNegPos(this.l26()),
       // Page 2 - TODO: completely unimplemented
       tp.namesString(),
-      tp.tp.primaryPerson?.ssid,
+      tp.primaryPerson?.ssid,
       ...[false, false], // l27
       ...Array(6 * 4 + 5 * 4).fill(undefined), // l28
       undefined, // grey

@@ -1,6 +1,5 @@
 import { FilingStatus, ItemizedDeductions } from 'ustaxes/core/data'
 import Form, { FormTag } from 'ustaxes/core/irsForms/Form'
-import TaxPayer from 'ustaxes/core/data/TaxPayer'
 import F1040 from './F1040'
 
 export default class ScheduleA extends Form {
@@ -115,11 +114,11 @@ export default class ScheduleA extends Form {
   l18 = (): boolean => false
 
   fields = (): Array<string | number | boolean | undefined> => {
-    const tp = new TaxPayer(this.f1040.info.taxPayer)
+    const tp = this.f1040.tp
 
     const result = [
       tp.namesString(),
-      tp.tp.primaryPerson?.ssid ?? '',
+      tp.primaryPerson?.ssid ?? '',
       this.l1(),
       this.l2(),
       this.l3(),

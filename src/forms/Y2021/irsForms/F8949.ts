@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
 import Form, { FormTag } from 'ustaxes/core/irsForms/Form'
-import { Asset, TaxPayer as TP } from 'ustaxes/core/data'
+import { Asset } from 'ustaxes/core/data'
 import TaxPayer from 'ustaxes/core/data/TaxPayer'
 
 type EmptyLine = [
@@ -57,13 +57,13 @@ export default class F8949 extends Form {
   tag: FormTag = 'f8949'
   sequenceIndex = 12.1
   assets: Asset<Date>[]
-  tp: TP
+  tp: TaxPayer
 
   index = 0
 
   copies: F8949[] = []
 
-  constructor(tp: TP, assets: Asset<Date>[], index = 0) {
+  constructor(tp: TaxPayer, assets: Asset<Date>[], index = 0) {
     super()
     this.assets = assets
     this.tp = tp
@@ -176,9 +176,8 @@ export default class F8949 extends Form {
   longTermTotalAdjustments = (): number | undefined => undefined
 
   fields = (): Array<string | number | boolean | undefined> => {
-    const tp = new TaxPayer(this.tp)
     return [
-      tp.namesString(),
+      this.tp.namesString(),
       this.tp.primaryPerson?.ssid,
       this.part1BoxA(),
       this.part1BoxB(),
@@ -189,7 +188,7 @@ export default class F8949 extends Form {
       undefined, // greyed out field
       this.shortTermTotalAdjustments(),
       this.shortTermTotalGain(),
-      tp.namesString(),
+      this.tp.namesString(),
       this.tp.primaryPerson?.ssid,
       this.part2BoxD(),
       this.part2BoxE(),

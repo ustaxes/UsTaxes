@@ -1,7 +1,6 @@
-import { Information, IncomeW2, PersonRole } from 'ustaxes/core/data'
+import { IncomeW2, PersonRole } from 'ustaxes/core/data'
 import { sumFields } from 'ustaxes/core/irsForms/util'
 import Form, { FormTag } from 'ustaxes/core/irsForms/Form'
-import TaxPayer from 'ustaxes/core/data/TaxPayer'
 import { fica } from '../data/federal'
 import F1040 from './F1040'
 
@@ -44,12 +43,10 @@ export const claimableExcessSSTaxWithholding = (w2s: IncomeW2[]): number => {
 export default class Schedule3 extends Form {
   tag: FormTag = 'f1040s3'
   sequenceIndex = 3
-  state: Information
   f1040: F1040
 
-  constructor(state: Information, f1040: F1040) {
+  constructor(f1040: F1040) {
     super()
-    this.state = state
     this.f1040 = f1040
   }
 
@@ -85,10 +82,10 @@ export default class Schedule3 extends Form {
     sumFields([this.l8(), this.l9(), this.l10(), this.l11(), this.l12f()])
 
   fields = (): Array<string | number | boolean | undefined> => {
-    const tp = new TaxPayer(this.state.taxPayer)
+    const tp = this.f1040.tp
     return [
       tp.namesString(),
-      tp.tp.primaryPerson?.ssid,
+      tp.primaryPerson?.ssid,
       this.l1(),
       this.l2(),
       this.l3(),

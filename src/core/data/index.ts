@@ -25,7 +25,6 @@ export interface Person {
 }
 
 export interface QualifyingInformation {
-  birthYear: number
   numberOfMonths: number
   isStudent: boolean
 }

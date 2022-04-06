@@ -1,4 +1,4 @@
-import { TaxPayer } from 'ustaxes/core/data'
+import TaxPayer from 'ustaxes/core/data/TaxPayer'
 import log from 'ustaxes/core/log'
 import Form, { FormTag } from 'ustaxes/core/irsForms/Form'
 import { Field } from 'ustaxes/core/pdfFiller'

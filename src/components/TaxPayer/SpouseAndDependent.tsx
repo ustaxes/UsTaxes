@@ -51,7 +51,6 @@ const blankUserPersonForm: UserPersonForm = {
 
 interface UserDependentForm extends UserPersonForm {
   relationship: string
-  birthYear: string
   isStudent: boolean
   numberOfMonths: string
 }
@@ -59,19 +58,17 @@ interface UserDependentForm extends UserPersonForm {
 const blankUserDependentForm: UserDependentForm = {
   ...blankUserPersonForm,
   relationship: '',
-  birthYear: '',
   isStudent: false,
   numberOfMonths: ''
 }
 
 const toDependent = (formData: UserDependentForm): Dependent => {
-  const { birthYear, isStudent, numberOfMonths, ...rest } = formData
+  const { isStudent, numberOfMonths, ...rest } = formData
 
   return {
     ...rest,
     role: PersonRole.DEPENDENT,
     qualifyingInfo: {
-      birthYear: parseInt(birthYear),
       numberOfMonths: parseInt(numberOfMonths),
       isStudent
     },
@@ -84,7 +81,6 @@ const toDependentForm = (dependent: Dependent): UserDependentForm => {
 
   return {
     ...rest,
-    birthYear: qualifyingInfo?.birthYear.toString() ?? '',
     numberOfMonths: qualifyingInfo?.numberOfMonths.toString() ?? '',
     isStudent: qualifyingInfo?.isStudent ?? false,
     dateOfBirth: new Date(rest.dateOfBirth)
@@ -148,11 +144,6 @@ export const AddDependentForm = (): ReactElement => {
           label="Relationship to Taxpayer"
           name="relationship"
           patternConfig={Patterns.name}
-        />
-        <LabeledInput
-          label="Birth Year"
-          patternConfig={Patterns.year}
-          name="birthYear"
         />
         <LabeledInput
           label="How many months did you live together this year?"

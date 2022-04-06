@@ -1,5 +1,4 @@
 import { FilingStatus, Information, PersonRole } from 'ustaxes/core/data'
-import TaxPayer from 'ustaxes/core/data/TaxPayer'
 import Form, { FormTag } from 'ustaxes/core/irsForms/Form'
 import F1040 from './F1040'
 import SDQualifiedAndCapGains from './worksheets/SDQualifiedAndCapGains'
@@ -579,10 +578,10 @@ export default class F6251 extends Form {
   }
 
   fields = (): Array<string | number | boolean | undefined> => {
-    const tp = new TaxPayer(this.state.taxPayer)
+    const tp = this.f1040.tp
     return [
       tp.namesString(),
-      tp.tp.primaryPerson?.ssid,
+      tp.primaryPerson?.ssid,
       // Part I
       this.l1(),
       this.l2a(),

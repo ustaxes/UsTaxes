@@ -248,7 +248,7 @@ export default class ScheduleD extends Form {
 
     return [
       tp.namesString(),
-      tp.tp.primaryPerson?.ssid,
+      tp.primaryPerson?.ssid,
       false,
       false,
       this.l1ad(),

@@ -1,7 +1,6 @@
-import { TaxPayer as TP } from 'ustaxes/core/data'
+import TaxPayer from 'ustaxes/core/data/TaxPayer'
 import Form, { FormTag } from 'ustaxes/core/irsForms/Form'
 import { sumFields } from 'ustaxes/core/irsForms/util'
-import TaxPayer from 'ustaxes/core/data/TaxPayer'
 import F1040 from './F1040'
 
 export default class Schedule2 extends Form {
@@ -10,9 +9,9 @@ export default class Schedule2 extends Form {
   tp: TaxPayer
   f1040: F1040
 
-  constructor(tp: TP, f1040: F1040) {
+  constructor(tp: TaxPayer, f1040: F1040) {
     super()
-    this.tp = new TaxPayer(tp)
+    this.tp = tp
     this.f1040 = f1040
   }
 
@@ -138,7 +137,7 @@ export default class Schedule2 extends Form {
   fields = (): Array<string | number | boolean | undefined> => {
     return [
       this.tp.namesString(),
-      this.tp.tp.primaryPerson?.ssid,
+      this.tp.primaryPerson?.ssid,
 
       this.l1(),
       this.l2(),
