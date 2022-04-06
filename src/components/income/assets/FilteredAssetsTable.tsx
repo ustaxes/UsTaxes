@@ -180,10 +180,11 @@ const FilteredAssetsTable = (): ReactElement => {
     if (assets.length > 0) {
       return (
         <FormProvider {...methods}>
+          <h3>Filter by</h3>
           <Grid container direction="row" spacing={2}>
             <LabeledInput
               sizes={{ xs: 6 }}
-              label="Security"
+              label="Asset Name"
               name="securityName"
             />
             <GenericLabeledDropdown<[string, CloseYear]>

@@ -38,7 +38,7 @@ export const PortfolioTable = ({
 
   const columns: TableColumn<Position>[] = [
     {
-      name: 'Security',
+      name: 'Asset Name',
       selector: (p) => p.security.name
     },
     {
@@ -90,7 +90,7 @@ const field = (name: string, required = true): ColumnDef => ({ name, required })
 
 // The fields that must be set by the user after importing a CSV file
 const fields: ColumnDef[] = [
-  field('Security Name'),
+  field('Asset Name'),
   field('Transaction date'),
   field('Buy or Sell'),
   field('Price per unit'),
@@ -233,7 +233,7 @@ export const TransactionImporter = (): ReactElement => {
     } else {
       return right({
         security: {
-          name: row[assignments.indexOf('Security Name')]
+          name: row[assignments.indexOf('Asset Name')]
         },
         date: date.right.toISOString().slice(0, 10),
         quantity: quantity.right,
