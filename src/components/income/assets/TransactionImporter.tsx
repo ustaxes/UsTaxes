@@ -133,7 +133,8 @@ export const TransactionImporter = (): ReactElement => {
 
   const ready = () =>
     fields.every(
-      (f) => fieldAssignments.filter((a) => a === f.name).length === 1
+      (f) =>
+        !f.required || fieldAssignments.filter((a) => a === f.name).length === 1
     )
 
   const assignField = (colIndex: number, field: string | undefined) => {
