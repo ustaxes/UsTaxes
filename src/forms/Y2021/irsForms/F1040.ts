@@ -58,6 +58,7 @@ import F4137 from './F4137'
 import F8919 from './F8919'
 import F8853 from './F8853'
 import F8582 from './F8582'
+import { Field } from 'ustaxes/core/pdfFiller'
 
 export default class F1040 extends Form {
   tag: FormTag = 'f1040'
@@ -297,7 +298,7 @@ export default class F1040 extends Form {
     }
 
     const eic = new ScheduleEIC(this)
-    if (eic.allowed(this)) {
+    if (eic.allowed()) {
       this.scheduleEIC = eic
     }
 
@@ -530,7 +531,7 @@ export default class F1040 extends Form {
   l26 = (): number =>
     this.info.estimatedTaxes.reduce((res, et) => res + et.payment, 0)
 
-  l27a = (): number | undefined => this.scheduleEIC?.credit(this) ?? 0
+  l27a = (): number | undefined => this.scheduleEIC?.credit() ?? 0
 
   // TODO: handle taxpayers between 1998 and 2004 that
   // can claim themselves for eic.

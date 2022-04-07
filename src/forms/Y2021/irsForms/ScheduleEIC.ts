@@ -49,7 +49,7 @@ export default class ScheduleEIC extends F1040Attachment {
   }
 
   // instructions step 1.1
-  passIncomeLimit = (f1040: F1040): boolean => {
+  passIncomeLimit = (): boolean => {
     const filingStatus = this.f1040.info.taxPayer.filingStatus
     if (filingStatus !== undefined) {
       const incomeLimits = federal.EIC.caps[filingStatus]
@@ -61,7 +61,7 @@ export default class ScheduleEIC extends F1040Attachment {
               incomeLimits.length - 1
             )
           ]
-        return (f1040.l11() ?? 0) < limit
+        return (this.f1040.l11() ?? 0) < limit
       }
     }
     return false
@@ -89,16 +89,16 @@ export default class ScheduleEIC extends F1040Attachment {
   }
 
   // step 2, question 1
-  investmentIncome = (f1040: F1040): number =>
+  investmentIncome = (): number =>
     sumFields([
-      f1040.l2a(),
-      f1040.l2b(),
-      f1040.l3b(),
-      Math.max(f1040.l7() ?? 0, 0)
+      this.f1040.l2a(),
+      this.f1040.l2b(),
+      this.f1040.l3b(),
+      Math.max(this.f1040.l7() ?? 0, 0)
     ])
 
-  passInvestmentIncomeLimit = (f1040: F1040): boolean =>
-    this.investmentIncome(f1040) < federal.EIC.maxInvestmentIncome
+  passInvestmentIncomeLimit = (): boolean =>
+    this.investmentIncome() < federal.EIC.maxInvestmentIncome
 
   // Todo, step 2, question 3
   f4797AllowsEIC = (): boolean => !precludesEIC(checks4797)(this.f1040.f4797)
@@ -194,8 +194,8 @@ export default class ScheduleEIC extends F1040Attachment {
   }
 
   // 5.1 - Earned income
-  earnedIncome = (f1040: F1040): number => {
-    const l1 = f1040.l1() ?? 0
+  earnedIncome = (): number => {
+    const l1 = this.f1040.l1() ?? 0
     const l2 = this.taxableScholarshipIncome()
     const l3 = this.prisonIncome()
     const l4 = this.pensionPlanIncome()
@@ -277,22 +277,22 @@ export default class ScheduleEIC extends F1040Attachment {
   // 6.1 - We will figure the credit.
 
   // EIC worksheet A calculation
-  credit = (f1040: F1040): number =>
+  credit = (): number =>
     Math.min(
-      this.calculateEICForIncome(this.earnedIncome(f1040)),
-      this.calculateEICForIncome(f1040.l11() ?? 0)
+      this.calculateEICForIncome(this.earnedIncome()),
+      this.calculateEICForIncome(this.f1040.l11() ?? 0)
     )
 
-  allowed = (f1040: F1040): boolean => {
+  allowed = (): boolean => {
     return (
       // Step 1
-      this.passIncomeLimit(f1040) &&
+      this.passIncomeLimit() &&
       this.validSSNs() &&
       this.allowedFilingStatus() &&
       this.allowedFilling2555() &&
       this.allowedNonresidentAlien() &&
       // Step 2
-      (this.passInvestmentIncomeLimit(f1040) || this.f4797AllowsEIC()) &&
+      (this.passInvestmentIncomeLimit() || this.f4797AllowsEIC()) &&
       (!(
         // Step 3
         (
@@ -310,7 +310,7 @@ export default class ScheduleEIC extends F1040Attachment {
           this.dependentOfAnother()
         )
       ) &&
-      this.credit(f1040) > 0
+      this.credit() > 0
     )
   }
 
