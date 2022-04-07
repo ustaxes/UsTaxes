@@ -1,19 +1,11 @@
-import TaxPayer from 'ustaxes/core/data/TaxPayer'
-import F1040 from './F1040'
+import F1040Attachment from './F1040Attachment'
 import { sumFields } from 'ustaxes/core/irsForms/util'
-import Form, { FormTag } from 'ustaxes/core/irsForms/Form'
+import { FormTag } from 'ustaxes/core/irsForms/Form'
+import { Field } from 'ustaxes/core/pdfFiller'
 
-export default class Schedule8812 extends Form {
-  tp: TaxPayer
-  f1040: F1040
+export default class Schedule8812 extends F1040Attachment {
   tag: FormTag = 'f1040s8'
   sequenceIndex = 47
-
-  constructor(f1040: F1040) {
-    super()
-    this.tp = new TaxPayer(f1040.info.taxPayer)
-    this.f1040 = f1040
-  }
 
   // This can be calculated with either pub 972 or the child tax credit worksheet, but for now we're only supporting the worksheet
   // TODO: Add pub 972 support
@@ -36,8 +28,7 @@ export default class Schedule8812 extends Form {
   // and add combat pay in as well
   // So for now, it's just line 1 or EIC step 5 (line 9)
   // TODO: Add other earned income definitions
-  l6 = (): number =>
-    this.f1040.scheduleEIC?.earnedIncome(this.f1040) ?? this.f1040.l1()
+  l6 = (): number => this.f1040.scheduleEIC?.earnedIncome() ?? this.f1040.l1()
 
   l7checkBox = (): boolean => this.l6() > 2500
 
@@ -98,31 +89,29 @@ export default class Schedule8812 extends Form {
       ? Math.min(this.l14() ?? 0, this.l5() ?? 0)
       : this.l5() ?? 0
 
-  fields = (): Array<string | number | boolean | undefined> => {
-    return [
-      this.tp.namesString(),
-      this.tp.tp.primaryPerson?.ssid,
-      this.l1(),
-      this.l2(),
-      this.l3(),
-      this.f1040.childTaxCreditWorksheet?.numberQualifyingChildren(),
-      this.l4(),
-      this.l5(),
-      this.l6(),
-      undefined, // Nontaxable combat pay not supported,
-      !this.l7checkBox(),
-      this.l7checkBox(),
-      this.l7(),
-      this.l8(),
-      !this.l9checkBox(),
-      this.l9checkBox(),
-      this.l9(),
-      this.l10(),
-      this.l11(),
-      this.l12(),
-      this.l13(),
-      this.l14(),
-      this.l15()
-    ]
-  }
+  fields = (): Field[] => [
+    this.f1040.info.namesString(),
+    this.f1040.info.taxPayer.primaryPerson?.ssid,
+    this.l1(),
+    this.l2(),
+    this.l3(),
+    this.f1040.childTaxCreditWorksheet?.numberQualifyingChildren(),
+    this.l4(),
+    this.l5(),
+    this.l6(),
+    undefined, // Nontaxable combat pay not supported,
+    !this.l7checkBox(),
+    this.l7checkBox(),
+    this.l7(),
+    this.l8(),
+    !this.l9checkBox(),
+    this.l9checkBox(),
+    this.l9(),
+    this.l10(),
+    this.l11(),
+    this.l12(),
+    this.l13(),
+    this.l14(),
+    this.l15()
+  ]
 }

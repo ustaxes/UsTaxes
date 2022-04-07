@@ -1,29 +1,21 @@
-import { Information } from 'ustaxes/core/data'
-import TaxPayer from 'ustaxes/core/data/TaxPayer'
-import Form, { FormTag } from 'ustaxes/core/irsForms/Form'
+import F1040Attachment from './F1040Attachment'
+import { FormTag } from 'ustaxes/core/irsForms/Form'
 import ScheduleE from './ScheduleE'
 import { sumFields } from 'ustaxes/core/irsForms/util'
-import log from 'ustaxes/core/log'
 import F1040 from './F1040'
 import F8889 from './F8889'
+import { Field } from 'ustaxes/core/pdfFiller'
 
-const unimplemented = (message: string): void =>
-  log.warn(`[Schedule 1] unimplemented ${message}`)
-
-export default class Schedule1 extends Form {
+export default class Schedule1 extends F1040Attachment {
   tag: FormTag = 'f1040s1'
   sequenceIndex = 1
-  state: Information
   scheduleE?: ScheduleE
-  f1040: F1040
   f8889?: F8889
   f8889Spouse?: F8889
   otherIncomeStrings: Set<string>
 
-  constructor(info: Information, f1040: F1040) {
-    super()
-    this.state = info
-    this.f1040 = f1040
+  constructor(f1040: F1040) {
+    super(f1040)
     this.otherIncomeStrings = new Set<string>()
   }
 
@@ -90,9 +82,9 @@ export default class Schedule1 extends Form {
   // TO DO: Write in Deductions
   l22writeIn = (): number | undefined => undefined
 
-  l22 = (): number | undefined => {
-    unimplemented('Adjustments to income')
-    return sumFields([
+  // TODO: adjustments to income
+  l22 = (): number | undefined =>
+    sumFields([
       this.l10(),
       this.l11(),
       this.l12(),
@@ -107,41 +99,36 @@ export default class Schedule1 extends Form {
       this.l21(),
       this.l22writeIn()
     ])
-  }
 
-  fields = (): Array<string | number | boolean | undefined> => {
-    const tp = new TaxPayer(this.state.taxPayer)
-
-    return [
-      tp.namesString(),
-      tp.tp.primaryPerson?.ssid,
-      this.l1(),
-      this.l2a(),
-      this.l2b(),
-      this.l3(),
-      this.l4(),
-      this.l5(),
-      this.l6(),
-      this.l7(),
-      Array.from(this.otherIncomeStrings).join(' '), // Other income type textbox
-      undefined, // Other income type 2
-      this.l8(),
-      this.l9(),
-      this.l10(),
-      this.l11(),
-      this.l12(),
-      this.l13(),
-      this.l14(),
-      this.l15(),
-      this.l16(),
-      this.l17(),
-      this.l18(),
-      undefined, // Alimony Recipient SSN
-      undefined, // Date of Divorce/Seperation
-      this.l19(),
-      this.l20(),
-      this.l21(),
-      this.l22()
-    ]
-  }
+  fields = (): Field[] => [
+    this.f1040.info.namesString(),
+    this.f1040.info.taxPayer.primaryPerson?.ssid,
+    this.l1(),
+    this.l2a(),
+    this.l2b(),
+    this.l3(),
+    this.l4(),
+    this.l5(),
+    this.l6(),
+    this.l7(),
+    Array.from(this.otherIncomeStrings).join(' '), // Other income type textbox
+    undefined, // Other income type 2
+    this.l8(),
+    this.l9(),
+    this.l10(),
+    this.l11(),
+    this.l12(),
+    this.l13(),
+    this.l14(),
+    this.l15(),
+    this.l16(),
+    this.l17(),
+    this.l18(),
+    undefined, // Alimony Recipient SSN
+    undefined, // Date of Divorce/Seperation
+    this.l19(),
+    this.l20(),
+    this.l21(),
+    this.l22()
+  ]
 }

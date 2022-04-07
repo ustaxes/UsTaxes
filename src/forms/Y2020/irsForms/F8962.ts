@@ -1,20 +1,14 @@
-import { TaxPayer } from 'ustaxes/core/data'
+import F1040Attachment from './F1040Attachment'
 import { Field } from 'ustaxes/core/pdfFiller'
-import Form, { FormTag } from 'ustaxes/core/irsForms/Form'
+import { FormTag } from 'ustaxes/core/irsForms/Form'
 
 /**
  * TODO: Not yet implemented
  * Net premium tax credit
  */
-export default class F8962 extends Form {
-  tp: TaxPayer
+export default class F8962 extends F1040Attachment {
   tag: FormTag = 'f8962'
   sequenceIndex = 999
-
-  constructor(tp: TaxPayer) {
-    super()
-    this.tp = tp
-  }
 
   credit = (): number | undefined => undefined
 

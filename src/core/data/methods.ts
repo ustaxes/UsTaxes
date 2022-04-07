@@ -3,7 +3,8 @@ import {
   Ira,
   ItemizedDeductions,
   Responses,
-  ScheduleK1Form1065
+  ScheduleK1Form1065,
+  TaxPayer
 } from '.'
 import {
   EstimatedTaxPayments,
@@ -21,8 +22,7 @@ import {
   Property,
   Refund,
   StateResidency,
-  Supported1099,
-  TaxPayer
+  Supported1099
 } from '.'
 
 export default class InformationMethods implements Information {
@@ -57,6 +57,14 @@ export default class InformationMethods implements Information {
     this.healthSavingsAccounts = info.healthSavingsAccounts
     this.individualRetirementArrangements =
       info.individualRetirementArrangements
+  }
+
+  namesString = (): string => {
+    const ps: Person[] = [this.taxPayer.primaryPerson, this.taxPayer.spouse]
+      .filter((p: Person | undefined) => p !== undefined)
+      .map((p: Person | undefined) => p as Person)
+
+    return ps.map((p: Person) => `${p.firstName} ${p.lastName}`).join(', ')
   }
 
   k1sWithInterest = (): ScheduleK1Form1065[] =>

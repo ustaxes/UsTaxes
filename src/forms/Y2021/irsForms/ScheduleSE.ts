@@ -1,17 +1,11 @@
-import Form, { FormTag } from 'ustaxes/core/irsForms/Form'
-import F1040 from './F1040'
-import TaxPayer from 'ustaxes/core/data/TaxPayer'
+import F1040Attachment from './F1040Attachment'
+import { FormTag } from 'ustaxes/core/irsForms/Form'
 import { sumFields } from 'ustaxes/core/irsForms/util'
+import { Field } from 'ustaxes/core/pdfFiller'
 
-export default class ScheduleSE extends Form {
+export default class ScheduleSE extends F1040Attachment {
   tag: FormTag = 'f1040sse'
-  f1040: F1040
   sequenceIndex = 14
-
-  constructor(f1040: F1040) {
-    super()
-    this.f1040 = f1040
-  }
 
   postL4Field = (f: () => number | undefined): number | undefined => {
     if (this.l4c() < 400) {
@@ -108,35 +102,29 @@ export default class ScheduleSE extends Form {
   l13 = (): number | undefined =>
     this.postL4Field((): number => (this.l12() ?? 0) * 0.5)
 
-  fields = (): Array<string | number | boolean | undefined> => {
-    const tp = new TaxPayer(this.f1040.info.taxPayer)
-
-    const result = [
-      tp.namesString(),
-      tp.tp.primaryPerson?.ssid ?? '',
-      false, // Minister
-      this.l1a(),
-      this.l1b(),
-      this.l2(),
-      this.l3(),
-      this.l4a(),
-      this.l4b(),
-      this.l4c(),
-      this.l5a(),
-      this.l5b(),
-      this.l6(),
-      this.l7(),
-      this.l8a(),
-      this.l8b(),
-      this.l8c(),
-      this.l8d(),
-      this.l9(),
-      this.l10(),
-      this.l11(),
-      this.l12(),
-      this.l13()
-    ]
-
-    return result
-  }
+  fields = (): Field[] => [
+    this.f1040.info.namesString(),
+    this.f1040.info.taxPayer.primaryPerson?.ssid ?? '',
+    false, // Minister
+    this.l1a(),
+    this.l1b(),
+    this.l2(),
+    this.l3(),
+    this.l4a(),
+    this.l4b(),
+    this.l4c(),
+    this.l5a(),
+    this.l5b(),
+    this.l6(),
+    this.l7(),
+    this.l8a(),
+    this.l8b(),
+    this.l8c(),
+    this.l8d(),
+    this.l9(),
+    this.l10(),
+    this.l11(),
+    this.l12(),
+    this.l13()
+  ]
 }
