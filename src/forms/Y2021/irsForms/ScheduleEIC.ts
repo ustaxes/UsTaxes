@@ -1,5 +1,5 @@
-import { Dependent, FilingStatus, TaxPayer as TP } from 'ustaxes/core/data'
-import TaxPayer from 'ustaxes/core/data/TaxPayer'
+import F1040Attachment from './F1040Attachment'
+import { Dependent, FilingStatus } from 'ustaxes/core/data'
 import F1040 from './F1040'
 import { sumFields } from 'ustaxes/core/irsForms/util'
 import * as federal from '../data/federal'
@@ -7,30 +7,21 @@ import F2555 from './F2555'
 import F4797 from './F4797'
 import F8814 from './F8814'
 import Pub596Worksheet1 from './worksheets/Pub596Worksheet1'
-import Form, { FormTag } from 'ustaxes/core/irsForms/Form'
+import { FormTag } from 'ustaxes/core/irsForms/Form'
 import { evaluatePiecewise, Piecewise } from 'ustaxes/core/util'
-import log from 'ustaxes/core/log'
 import _ from 'lodash'
+import { Field } from 'ustaxes/core/pdfFiller'
 
 type PrecludesEIC<F> = (f: F) => boolean
 
-const unimplemented = (message: string): void =>
-  log.warn(`[Schedule EIC] unimplemented ${message}`)
+// TODO: check F2555
+const checks2555: PrecludesEIC<F2555> = (): boolean => false
 
-const checks2555: PrecludesEIC<F2555> = (): boolean => {
-  unimplemented('check F2555')
-  return false
-}
+// TODO: check F4797
+const checks4797: PrecludesEIC<F4797> = (): boolean => false
 
-const checks4797: PrecludesEIC<F4797> = (): boolean => {
-  unimplemented('check F4797')
-  return false
-}
-
-const checks8814: PrecludesEIC<F8814> = (): boolean => {
-  unimplemented('check F8814')
-  return false
-}
+// TODO: check F8814
+const checks8814: PrecludesEIC<F8814> = (): boolean => false
 
 const checksPub596: PrecludesEIC<Pub596Worksheet1> = (f): boolean =>
   f.precludesEIC()
@@ -44,33 +35,24 @@ const precludesEIC =
     return p(f)
   }
 
-export default class ScheduleEIC extends Form {
+export default class ScheduleEIC extends F1040Attachment {
   tag: FormTag = 'f1040sei'
   sequenceIndex = 43
-  tp: TaxPayer
-  f2555?: F2555
-  f4797?: F4797
-  f8814?: F8814
   pub596Worksheet1: Pub596Worksheet1
   qualifyingStudentCutoffYear = 1996
   qualifyingCutoffYear = 2001
   investmentIncomeLimit = 3650
-  f1040: F1040
 
-  constructor(tp: TP, f1040: F1040) {
-    super()
-    this.tp = new TaxPayer(tp)
-    this.f2555 = new F2555(tp)
-    this.f4797 = new F4797(tp)
-    this.f8814 = new F8814(tp)
-    this.f1040 = f1040
-    this.pub596Worksheet1 = new Pub596Worksheet1(tp, f1040)
+  constructor(f1040: F1040) {
+    super(f1040)
+    this.pub596Worksheet1 = new Pub596Worksheet1(f1040)
   }
 
   // instructions step 1.1
-  passIncomeLimit = (f1040: F1040): boolean => {
-    if (this.tp.tp.filingStatus !== undefined) {
-      const incomeLimits = federal.EIC.caps[this.tp.tp.filingStatus]
+  passIncomeLimit = (): boolean => {
+    const filingStatus = this.f1040.info.taxPayer.filingStatus
+    if (filingStatus !== undefined) {
+      const incomeLimits = federal.EIC.caps[filingStatus]
       if (incomeLimits !== undefined) {
         const limit =
           incomeLimits[
@@ -79,62 +61,63 @@ export default class ScheduleEIC extends Form {
               incomeLimits.length - 1
             )
           ]
-        return (f1040.l11() ?? 0) < limit
+        return (this.f1040.l11() ?? 0) < limit
       }
     }
     return false
   }
 
   // Step 1.2, todo, both spouses must have a SSN issued before 2020 due date
-  // and without work restriction and valid for eic purposes
+  //
+  // TODO: ('Step 1.2 (valid SSNs) unchecked') and without work restriction and valid for eic purpos
   validSSNs = (): boolean => {
-    unimplemented('Step 1.2 (valid SSNs) unchecked')
     return true
   }
 
   // Step 1.3
   allowedFilingStatus = (): boolean =>
-    this.tp.tp.filingStatus !== FilingStatus.MFS
+    this.f1040.info.taxPayer.filingStatus !== FilingStatus.MFS
 
   // Step 1.4
-  allowedFilling2555 = (): boolean => !precludesEIC(checks2555)(this.f2555)
+  allowedFilling2555 = (): boolean =>
+    !precludesEIC(checks2555)(this.f1040.f2555)
 
-  // Step 1.5 nonResidentAlien
+  //
+  // TODO: ('Step 1.5, Not checking non-resident alien') Step 1.5 nonResidentAli
   allowedNonresidentAlien = (): boolean => {
-    unimplemented('Step 1.5, Not checking non-resident alien')
     return true
   }
 
   // step 2, question 1
-  investmentIncome = (f1040: F1040): number =>
+  investmentIncome = (): number =>
     sumFields([
-      f1040.l2a(),
-      f1040.l2b(),
-      f1040.l3b(),
-      Math.max(f1040.l7() ?? 0, 0)
+      this.f1040.l2a(),
+      this.f1040.l2b(),
+      this.f1040.l3b(),
+      Math.max(this.f1040.l7() ?? 0, 0)
     ])
 
-  passInvestmentIncomeLimit = (f1040: F1040): boolean =>
-    this.investmentIncome(f1040) < federal.EIC.maxInvestmentIncome
+  passInvestmentIncomeLimit = (): boolean =>
+    this.investmentIncome() < federal.EIC.maxInvestmentIncome
 
   // Todo, step 2, question 3
-  f4797AllowsEIC = (): boolean => !precludesEIC(checks4797)(this.f4797)
+  f4797AllowsEIC = (): boolean => !precludesEIC(checks4797)(this.f1040.f4797)
 
   // Todo, instruction 2.4.1
   filingScheduleE = (): boolean => this.f1040.scheduleE !== undefined
 
-  // 2.4.2
+  //
+  // TODO: ('Not checking personal property income') 2.4
   passIncomeFromPersonalProperty = (): boolean => {
-    unimplemented('Not checking personal property income')
     return true
   }
 
   // 2.4.3
-  passForm8814 = (): boolean => !precludesEIC(checks8814)(this.f8814)
+  passForm8814 = (): boolean => !precludesEIC(checks8814)(this.f1040.f8814)
 
-  // 2.4.4
+  //
+  // TODO: ('Not checking passive activity') 2.4
   incomeOrLossFromPassiveActivity = (): boolean => {
-    unimplemented('Not checking passive activity')
     return false
   }
 
@@ -145,24 +128,25 @@ export default class ScheduleEIC extends Form {
   atLeastOneChild = (): boolean => this.qualifyingDependents().length > 0
 
   // 3.2, 4.4
-  jointReturn = (): boolean => this.tp.tp.filingStatus === FilingStatus.MFJ
+  jointReturn = (): boolean =>
+    this.f1040.info.taxPayer.filingStatus === FilingStatus.MFJ
 
-  // 3.3, 4.5
+  //
+  // TODO: ('3.3: Not checking qualifying child of another') 3.3, 4
   qualifyingChildOfAnother = (): boolean => {
-    unimplemented('3.3: Not checking qualifying child of another')
     return false
   }
 
   // 4.1 - covered by income limit check
-  // 4.2
+  //
+  // TODO: ('4.2: Not checking taxpayer age') 4
   over25Under65 = (): boolean => {
-    unimplemented('4.2: Not checking taxpayer age')
     return true
   }
 
-  // 4.3
+  //
+  // TODO: ('4.3: Not checking residency') 4
   mainHomeInsideUsBothPeople = (): boolean => {
-    unimplemented('4.3: Not checking residency')
     return true
   }
 
@@ -170,48 +154,48 @@ export default class ScheduleEIC extends Form {
   // 4.5 covered above
   // 4.6 dependent of another
   dependentOfAnother = (): boolean =>
-    (this.tp.tp.primaryPerson?.isTaxpayerDependent ?? false) ||
-    (this.tp.tp.spouse?.isTaxpayerDependent ?? false)
+    (this.f1040.info.taxPayer.primaryPerson?.isTaxpayerDependent ?? false) ||
+    (this.f1040.info.taxPayer.spouse?.isTaxpayerDependent ?? false)
 
-  // 5.1 - Filing schedule SE for church
+  //
+  // TODO: ('5.1: Not checking church self-employment income') 5.1 - Filing schedule SE for chur
   filingSEChurchIncome = (): boolean => {
-    unimplemented('5.1: Not checking church self-employment income')
     return false
   }
 
-  // 5.1.2
+  //
+  // TODO: ('5.1.2: Not checking scholarship, grants') 5.1
   taxableScholarshipIncome = (): number => {
-    unimplemented('5.1.2: Not checking scholarship, grants')
     return 0
   }
 
-  // 5.1.3
+  //
+  // TODO: ('5.1.3: Not checking prison income') 5.1
   prisonIncome = (): number => {
-    unimplemented('5.1.3: Not checking prison income')
     return 0
   }
 
-  // 5.1.4
+  //
+  // TODO: ('5.1.4: Not checking pension income') 5.1
   pensionPlanIncome = (): number => {
-    unimplemented('5.1.4: Not checking pension income')
     return 0
   }
 
-  // 5.1.5
+  //
+  // TODO: ('5.1.5: Not checking medicaid waiver') 5.1
   medicaidWaiverPayment = (): number => {
-    unimplemented('5.1.5: Not checking medicaid waiver')
     return 0
   }
 
-  // 5.1.8
+  //
+  // TODO: ('5.1.8: Not checking nontaxable combat pay') 5.1
   nontaxableCombatPay = (): number => {
-    unimplemented('5.1.8: Not checking nontaxable combat pay')
     return 0
   }
 
   // 5.1 - Earned income
-  earnedIncome = (f1040: F1040): number => {
-    const l1 = f1040.l1() ?? 0
+  earnedIncome = (): number => {
+    const l1 = this.f1040.l1() ?? 0
     const l2 = this.taxableScholarshipIncome()
     const l3 = this.prisonIncome()
     const l4 = this.pensionPlanIncome()
@@ -264,11 +248,11 @@ export default class ScheduleEIC extends Form {
    * @returns
    */
   calculateEICForIncome = (income: number): number => {
-    if (this.tp.tp.filingStatus === undefined) {
+    const filingStatus = this.f1040.info.taxPayer.filingStatus
+    if (filingStatus === undefined) {
       return 0
     }
-    const f: Piecewise[] | undefined =
-      federal.EIC.formulas[this.tp.tp.filingStatus]
+    const f: Piecewise[] | undefined = federal.EIC.formulas[filingStatus]
     if (f === undefined) {
       return 0
     }
@@ -282,9 +266,9 @@ export default class ScheduleEIC extends Form {
     )
   }
 
-  // 5.2
+  //
+  // TODO: ('5.2: Not checking selfemployment') 5
   selfEmployed = (): boolean => {
-    unimplemented('5.2: Not checking selfemployment')
     return false
   }
 
@@ -293,22 +277,22 @@ export default class ScheduleEIC extends Form {
   // 6.1 - We will figure the credit.
 
   // EIC worksheet A calculation
-  credit = (f1040: F1040): number =>
+  credit = (): number =>
     Math.min(
-      this.calculateEICForIncome(this.earnedIncome(f1040)),
-      this.calculateEICForIncome(f1040.l11() ?? 0)
+      this.calculateEICForIncome(this.earnedIncome()),
+      this.calculateEICForIncome(this.f1040.l11() ?? 0)
     )
 
-  allowed = (f1040: F1040): boolean => {
+  allowed = (): boolean => {
     return (
       // Step 1
-      this.passIncomeLimit(f1040) &&
+      this.passIncomeLimit() &&
       this.validSSNs() &&
       this.allowedFilingStatus() &&
       this.allowedFilling2555() &&
       this.allowedNonresidentAlien() &&
       // Step 2
-      (this.passInvestmentIncomeLimit(f1040) || this.f4797AllowsEIC()) &&
+      (this.passInvestmentIncomeLimit() || this.f4797AllowsEIC()) &&
       (!(
         // Step 3
         (
@@ -322,16 +306,16 @@ export default class ScheduleEIC extends Form {
       !(
         // Step 4
         (
-          this.tp.tp.filingStatus !== FilingStatus.MFJ &&
+          this.f1040.info.taxPayer.filingStatus !== FilingStatus.MFJ &&
           this.dependentOfAnother()
         )
       ) &&
-      this.credit(f1040) > 0
+      this.credit() > 0
     )
   }
 
   qualifyingDependents = (): Dependent[] =>
-    this.tp.tp.dependents
+    this.f1040.info.taxPayer.dependents
       .filter(
         (d) =>
           d.qualifyingInfo?.birthYear !== undefined &&
@@ -398,9 +382,9 @@ export default class ScheduleEIC extends Form {
   numberMonths = (): Array<number | undefined> =>
     this.qualifyingDependents().map((d) => d.qualifyingInfo?.numberOfMonths)
 
-  fields = (): Array<string | number | boolean | undefined> => [
-    this.tp.namesString(),
-    this.tp.tp.primaryPerson?.ssid,
+  fields = (): Field[] => [
+    this.f1040.info.namesString(),
+    this.f1040.info.taxPayer.primaryPerson?.ssid,
     ...this.nameFields(), // 6
     ...this.ssnFields(), // 3
     ...this.birthYearFields(), // 12

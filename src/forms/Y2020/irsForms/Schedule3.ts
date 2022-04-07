@@ -1,14 +1,14 @@
-import { Information, IncomeW2, PersonRole } from 'ustaxes/core/data'
+import { IncomeW2, PersonRole } from 'ustaxes/core/data'
 import { sumFields } from 'ustaxes/core/irsForms/util'
-import Form, { FormTag } from 'ustaxes/core/irsForms/Form'
-import TaxPayer from 'ustaxes/core/data/TaxPayer'
+import { FormTag } from 'ustaxes/core/irsForms/Form'
 import { fica } from '../data/federal'
-import F1040 from './F1040'
+import F1040Attachment from './F1040Attachment'
+import { Field } from 'ustaxes/core/pdfFiller'
 
 export const claimableExcessSSTaxWithholding = (w2s: IncomeW2[]): number => {
   /* Excess FICA taxes are calculated per person. If an individual person
-     has greater than the applicable amount then they are entitled to a refund
-     of that amount
+    has greater than the applicable amount then they are entitled to a refund
+    of that amount
    */
   let claimableExcessFica = 0
   const primaryFica = w2s
@@ -41,17 +41,9 @@ export const claimableExcessSSTaxWithholding = (w2s: IncomeW2[]): number => {
   return claimableExcessFica
 }
 
-export default class Schedule3 extends Form {
+export default class Schedule3 extends F1040Attachment {
   tag: FormTag = 'f1040s3'
   sequenceIndex = 3
-  state: Information
-  f1040: F1040
-
-  constructor(state: Information, f1040: F1040) {
-    super()
-    this.state = state
-    this.f1040 = f1040
-  }
 
   deductions = (): number => 0
   // Part I: Nonrefundable credits
@@ -84,35 +76,32 @@ export default class Schedule3 extends Form {
   l13 = (): number | undefined =>
     sumFields([this.l8(), this.l9(), this.l10(), this.l11(), this.l12f()])
 
-  fields = (): Array<string | number | boolean | undefined> => {
-    const tp = new TaxPayer(this.state.taxPayer)
-    return [
-      tp.namesString(),
-      tp.tp.primaryPerson?.ssid,
-      this.l1(),
-      this.l2(),
-      this.l3(),
-      this.l4(),
-      this.l5(),
+  fields = (): Field[] => [
+    this.f1040.info.namesString(),
+    this.f1040.info.taxPayer.primaryPerson?.ssid,
+    this.l1(),
+    this.l2(),
+    this.l3(),
+    this.l4(),
+    this.l5(),
 
-      ...Array(4).fill(undefined), // TODO: checkboxes
-      this.l6(),
+    ...Array(4).fill(undefined), // TODO: checkboxes
+    this.l6(),
 
-      this.l7(),
-      this.l8(),
-      this.l9(),
-      this.l10(),
-      this.l11(),
+    this.l7(),
+    this.l8(),
+    this.l9(),
+    this.l10(),
+    this.l11(),
 
-      this.l12a(),
-      this.l12b(),
-      this.l12c(),
-      undefined /* TODO: 'other' box */,
-      this.l12d(),
-      this.l12e(),
+    this.l12a(),
+    this.l12b(),
+    this.l12c(),
+    undefined /* TODO: 'other' box */,
+    this.l12d(),
+    this.l12e(),
 
-      this.l12f(),
-      this.l13()
-    ]
-  }
+    this.l12f(),
+    this.l13()
+  ]
 }

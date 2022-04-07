@@ -1,27 +1,25 @@
-import { Information } from 'ustaxes/core/data'
-import InformationMethods from 'ustaxes/core/data/methods'
-import TaxPayer from 'ustaxes/core/data/TaxPayer'
-import Form, { FormTag } from 'ustaxes/core/irsForms/Form'
+import F1040Attachment from './F1040Attachment'
+import { FormTag } from 'ustaxes/core/irsForms/Form'
 import { sumFields } from 'ustaxes/core/irsForms/util'
+import { Field } from 'ustaxes/core/pdfFiller'
+import F1040 from './F1040'
 
 interface PayerAmount {
   payer?: string
   amount?: number
 }
 
-export default class ScheduleB extends Form {
+export default class ScheduleB extends F1040Attachment {
   tag: FormTag = 'f1040sb'
   sequenceIndex = 8
-  state: InformationMethods
   readonly interestPayersLimit = 14
   readonly dividendPayersLimit = 16
 
   index = 0
   copies: ScheduleB[] = []
 
-  constructor(info: Information, index = 0) {
-    super()
-    this.state = new InformationMethods(info)
+  constructor(f1040: F1040, index = 0) {
+    super(f1040)
     this.index = index
 
     if (index === 0) {
@@ -36,7 +34,7 @@ export default class ScheduleB extends Form {
       )
 
       this.copies = Array.from(Array(extraCopiesNeeded)).map(
-        (_, i) => new ScheduleB(info, i + 1)
+        (_, i) => new ScheduleB(f1040, i + 1)
       )
     }
   }
@@ -45,14 +43,14 @@ export default class ScheduleB extends Form {
     this.l1Fields().length > 0 || this.l5Fields().length > 0
 
   l1Fields = (): PayerAmount[] =>
-    this.state
+    this.f1040.info
       .f1099Ints()
       .map((v) => ({
         payer: v.payer,
         amount: v.form.income
       }))
       .concat(
-        this.state.k1sWithInterest().map((v) => ({
+        this.f1040.info.k1sWithInterest().map((v) => ({
           payer: v.partnershipName,
           amount: v.interestIncome
         }))
@@ -71,7 +69,8 @@ export default class ScheduleB extends Form {
       .concat(Array(rightPad).fill(undefined))
   }
 
-  l2 = (): number => sumFields(this.state.f1099Ints().map((f) => f.form.income))
+  l2 = (): number =>
+    sumFields(this.f1040.info.f1099Ints().map((f) => f.form.income))
 
   // TODO: Interest from tax exempt savings bonds
   l3 = (): number | undefined => undefined
@@ -85,7 +84,7 @@ export default class ScheduleB extends Form {
     [this, ...this.copies].reduce((acc, f) => acc + f.l4(), 0)
 
   l5Fields = (): PayerAmount[] =>
-    this.state.f1099Divs().map((v) => ({
+    this.f1040.info.f1099Divs().map((v) => ({
       payer: v.payer,
       amount: v.form.dividends
     }))
@@ -111,12 +110,12 @@ export default class ScheduleB extends Form {
     [this, ...this.copies].reduce((acc, f) => acc + f.l6(), 0)
 
   foreignAccount = (): boolean =>
-    this.state.questions.FOREIGN_ACCOUNT_EXISTS ?? false
-  fincenForm = (): boolean => this.state.questions.FINCEN_114 ?? false
+    this.f1040.info.questions.FOREIGN_ACCOUNT_EXISTS ?? false
+  fincenForm = (): boolean => this.f1040.info.questions.FINCEN_114 ?? false
   fincenCountry = (): string | undefined =>
-    this.state.questions.FINCEN_114_ACCOUNT_COUNTRY
+    this.f1040.info.questions.FINCEN_114_ACCOUNT_COUNTRY
   foreignTrust = (): boolean =>
-    this.state.questions.FOREIGN_TRUST_RELATIONSHIP ?? false
+    this.f1040.info.questions.FOREIGN_TRUST_RELATIONSHIP ?? false
 
   l7a = (): [boolean, boolean] => [
     this.foreignAccount(),
@@ -129,24 +128,18 @@ export default class ScheduleB extends Form {
 
   l8 = (): [boolean, boolean] => [this.foreignTrust(), !this.foreignTrust()]
 
-  fields = (): Array<string | number | boolean | undefined> => {
-    const tp = new TaxPayer(this.state.taxPayer)
-
-    const result = [
-      tp.namesString(),
-      tp.tp.primaryPerson?.ssid ?? '',
-      ...this.l1(),
-      this.l2(),
-      this.l3(),
-      this.l4(),
-      ...this.l5(),
-      this.l6(),
-      ...this.l7a(),
-      ...this.l7a2(),
-      this.l7b(),
-      ...this.l8()
-    ]
-
-    return result
-  }
+  fields = (): Field[] => [
+    this.f1040.info.namesString(),
+    this.f1040.info.taxPayer.primaryPerson?.ssid ?? '',
+    ...this.l1(),
+    this.l2(),
+    this.l3(),
+    this.l4(),
+    ...this.l5(),
+    this.l6(),
+    ...this.l7a(),
+    ...this.l7a2(),
+    this.l7b(),
+    ...this.l8()
+  ]
 }

@@ -1,19 +1,13 @@
+import F1040Attachment from './F1040Attachment'
 import { Field } from 'ustaxes/core/pdfFiller'
-import Form, { FormTag } from 'ustaxes/core/irsForms/Form'
-import { TaxPayer } from 'ustaxes/core/data'
+import { FormTag } from 'ustaxes/core/irsForms/Form'
 
 /**
  * Impacts EIC, 1040 instructions L27 step 1 squestion 4
  */
-export default class F2555 extends Form {
-  tp: TaxPayer
+export default class F2555 extends F1040Attachment {
   tag: FormTag = 'f2555'
   sequenceIndex = 34
-
-  constructor(tp: TaxPayer) {
-    super()
-    this.tp = tp
-  }
 
   // TODO - required from 6251
   l36 = (): number => 0

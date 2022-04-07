@@ -1,11 +1,10 @@
 import { Information } from 'ustaxes/core/data'
 import { sumFields } from 'ustaxes/core/irsForms/util'
-import TaxPayer from 'ustaxes/core/data/TaxPayer'
-import Form, { FormTag } from 'ustaxes/core/irsForms/Form'
-import F4137 from './F4137'
-import F8919 from './F8919'
+import { FormTag } from 'ustaxes/core/irsForms/Form'
 import ScheduleSE from './ScheduleSE'
 import { fica } from '../data/federal'
+import F1040Attachment from './F1040Attachment'
+import { Field } from 'ustaxes/core/pdfFiller'
 
 export const needsF8959 = (state: Information): boolean => {
   const filingStatus = state.taxPayer.filingStatus
@@ -16,29 +15,13 @@ export const needsF8959 = (state: Information): boolean => {
   )
 }
 
-export default class F8959 extends Form {
+export default class F8959 extends F1040Attachment {
   tag: FormTag = 'f8959'
   sequenceIndex = 71
-  state: Information
-  f4137?: F4137
-  f8919?: F8919
   scheduleSE?: ScheduleSE
 
-  constructor(
-    state: Information,
-    f4137?: F4137,
-    f8919?: F8919,
-    scheduleSE?: ScheduleSE
-  ) {
-    super()
-    this.state = state
-    this.f4137 = f4137
-    this.f8919 = f8919
-    this.scheduleSE = scheduleSE
-  }
-
   thresholdFromFilingStatus = (): number => {
-    const filingStatus = this.state.taxPayer.filingStatus
+    const filingStatus = this.f1040.info.taxPayer.filingStatus
     if (filingStatus === undefined) {
       throw new Error('Filing status is undefined')
     }
@@ -51,10 +34,10 @@ export default class F8959 extends Form {
 
   // Part I: Additional Medicare Tax on Medicare Wages
   l1 = (): number =>
-    this.state.w2s.reduce((sum, w2) => sum + w2.medicareIncome, 0)
+    this.f1040.info.w2s.reduce((sum, w2) => sum + w2.medicareIncome, 0)
 
-  l2 = (): number | undefined => this.f4137?.l6()
-  l3 = (): number | undefined => this.f8919?.l6()
+  l2 = (): number | undefined => this.f1040.f4137?.l6()
+  l3 = (): number | undefined => this.f1040.f8919?.l6()
   l4 = (): number => sumFields([this.l1(), this.l2(), this.l3()])
 
   l5 = (): number => this.thresholdFromFilingStatus()
@@ -86,7 +69,7 @@ export default class F8959 extends Form {
 
   // Part V: Withholding Reconciliation
   l19 = (): number =>
-    this.state.w2s.reduce((sum, w2) => sum + w2.medicareWithholding, 0)
+    this.f1040.info.w2s.reduce((sum, w2) => sum + w2.medicareWithholding, 0)
 
   l20 = (): number => this.l1()
   l21 = (): number => fica.regularMedicareTaxRate * this.l20()
@@ -96,39 +79,36 @@ export default class F8959 extends Form {
   l23 = (): number | undefined => 0 // TODO: RRTA
   l24 = (): number => sumFields([this.l22(), this.l23()])
 
-  fields = (): Array<string | number | boolean | undefined> => {
-    const tp = new TaxPayer(this.state.taxPayer)
-    return [
-      tp.namesString(),
-      tp.tp.primaryPerson?.ssid,
-      this.l1(),
-      this.l2(),
-      this.l3(),
-      this.l4(),
-      this.l5(),
-      this.l6(),
-      this.l7(),
+  fields = (): Field[] => [
+    this.f1040.info.namesString(),
+    this.f1040.info.taxPayer.primaryPerson?.ssid,
+    this.l1(),
+    this.l2(),
+    this.l3(),
+    this.l4(),
+    this.l5(),
+    this.l6(),
+    this.l7(),
 
-      this.l8(),
-      this.l9(),
-      this.l10(),
-      this.l11(),
-      this.l12(),
-      this.l13(),
-      this.l14(),
+    this.l8(),
+    this.l9(),
+    this.l10(),
+    this.l11(),
+    this.l12(),
+    this.l13(),
+    this.l14(),
 
-      this.l15(),
-      this.l16(),
-      this.l17(),
+    this.l15(),
+    this.l16(),
+    this.l17(),
 
-      this.l18(),
+    this.l18(),
 
-      this.l19(),
-      this.l20(),
-      this.l21(),
-      this.l22(),
-      this.l23(),
-      this.l24()
-    ]
-  }
+    this.l19(),
+    this.l20(),
+    this.l21(),
+    this.l22(),
+    this.l23(),
+    this.l24()
+  ]
 }

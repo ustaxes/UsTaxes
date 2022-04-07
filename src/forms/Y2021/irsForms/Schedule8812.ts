@@ -1,9 +1,9 @@
+import F1040Attachment from './F1040Attachment'
 import { FilingStatus } from 'ustaxes/core/data'
-import TaxPayer from 'ustaxes/core/data/TaxPayer'
-import F1040 from './F1040'
 import { sumFields } from 'ustaxes/core/irsForms/util'
-import Form, { FormTag } from 'ustaxes/core/irsForms/Form'
+import { FormTag } from 'ustaxes/core/irsForms/Form'
 import { CURRENT_YEAR } from '../data/federal'
+import { Field } from 'ustaxes/core/pdfFiller'
 
 const nextMultipleOf =
   (mul: number) =>
@@ -79,18 +79,9 @@ type Part3 = Partial<{
   l40: number
 }>
 
-export default class Schedule8812 extends Form {
-  f1040: F1040
+export default class Schedule8812 extends F1040Attachment {
   tag: FormTag = 'f1040s8'
   sequenceIndex = 47
-
-  constructor(f1040: F1040) {
-    super()
-    if (f1040 === undefined) {
-      throw new Error('f1040 is undefined!!')
-    }
-    this.f1040 = f1040
-  }
 
   l1 = (): number => this.f1040.l11()
 
@@ -523,9 +514,7 @@ export default class Schedule8812 extends Form {
 
   l40 = (): number => this.part3().l40 ?? 0
 
-  fields = (): Array<string | number | boolean | undefined> => {
-    const tp = new TaxPayer(this.f1040.info.taxPayer)
-
+  fields = (): Field[] => {
     const part1b = this.part1b()
     const part1c = this.part1c()
     const part2a = this.part2a()
@@ -533,8 +522,8 @@ export default class Schedule8812 extends Form {
     const part3 = this.part3()
 
     return [
-      tp.namesString(),
-      tp.tp.primaryPerson?.ssid,
+      this.f1040.info.namesString(),
+      this.f1040.info.taxPayer.primaryPerson?.ssid,
       this.l1(),
       this.l2a(),
       this.l2b(),

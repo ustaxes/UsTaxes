@@ -1,23 +1,17 @@
 import {
   Address,
-  Information,
   Property,
   PropertyType,
   PropertyExpenseTypeName
 } from 'ustaxes/core/data'
-import Form, { FormTag } from 'ustaxes/core/irsForms/Form'
-import TaxPayer from 'ustaxes/core/data/TaxPayer'
-import F6168 from './F6168'
-import F8582 from './F8582'
+import { FormTag } from 'ustaxes/core/irsForms/Form'
 import { displayNegPos, sumFields } from 'ustaxes/core/irsForms/util'
-import log from 'ustaxes/core/log'
 import _ from 'lodash'
+import F1040Attachment from './F1040Attachment'
+import { Field } from 'ustaxes/core/pdfFiller'
 
 type Cell = number | undefined
 export type MatrixRow = [Cell, Cell, Cell]
-
-const unimplemented = (message: string): void =>
-  log.warn(`[Schedule E] unimplemented ${message}`)
 
 const fill = (values: number[]): MatrixRow => {
   const realValues = (values as Cell[]).slice(0, 3).map((v) => {
@@ -42,19 +36,9 @@ const propTypeIndex = {
   [PropertyType.other]: 8
 }
 
-export default class ScheduleE extends Form {
+export default class ScheduleE extends F1040Attachment {
   tag: FormTag = 'f1040se'
   sequenceIndex = 13
-  state: Information
-  f6168: F6168
-  f8582: F8582
-
-  constructor(info: Information) {
-    super()
-    this.state = info
-    this.f6168 = new F6168(info.taxPayer, this)
-    this.f8582 = new F8582(info.taxPayer, this)
-  }
 
   addressString = (address: Address): string =>
     [
@@ -65,8 +49,8 @@ export default class ScheduleE extends Form {
     ].join(', ')
 
   propForRow = (row: number): Property | undefined => {
-    if (row < this.state.realEstate.length) {
-      return this.state.realEstate[row]
+    if (row < this.f1040.info.realEstate.length) {
+      return this.f1040.info.realEstate[row]
     }
   }
 
@@ -82,19 +66,16 @@ export default class ScheduleE extends Form {
     p.personalUseDays <= Math.max(14, 0.1 * p.rentalDays)
 
   l3 = (): MatrixRow => {
-    const properties = this.state.realEstate
+    const properties = this.f1040.info.realEstate
     return fill(properties.map((a) => a.rentReceived))
   }
 
-  l4 = (): MatrixRow => {
-    unimplemented('Line 4: Royalties')
-
-    return [undefined, undefined, undefined]
-  }
+  // TODO: 'Line 4: Royalties
+  l4 = (): MatrixRow => [undefined, undefined, undefined]
 
   getExpensesRow = (expType: PropertyExpenseTypeName): MatrixRow =>
     fill(
-      this.state.realEstate.map((p) => {
+      this.f1040.info.realEstate.map((p) => {
         if (this.propertyUseTest(p)) {
           return p.expenses[expType] ?? 0
         }
@@ -122,7 +103,7 @@ export default class ScheduleE extends Form {
 
   l19 = (): [string | undefined, MatrixRow] => {
     const expenseRow = this.getExpensesRow('other')
-    const otherText = this.state.realEstate
+    const otherText = this.f1040.info.realEstate
       .flatMap((p) =>
         p.otherExpenseType !== undefined ? [p.otherExpenseType] : []
       )
@@ -151,7 +132,12 @@ export default class ScheduleE extends Form {
     ) as MatrixRow
 
   // Deductible real estate loss from 8582, as positive number
-  l22 = (): MatrixRow => this.f8582.deductibleRealEstateLossAfterLimitation()
+  l22 = (): MatrixRow =>
+    this.f1040.f8582?.deductibleRealEstateLossAfterLimitation() ?? [
+      undefined,
+      undefined,
+      undefined
+    ]
 
   l23a = (): number => sumFields(this.l3())
   l23b = (): number => sumFields(this.l4())
@@ -165,8 +151,8 @@ export default class ScheduleE extends Form {
   l24 = (): number =>
     sumFields(this.l21().filter((x) => x !== undefined && x > 0))
 
+  // TODO: 'Ignoring royalty losses on L25
   l25 = (): number => {
-    unimplemented('Ignoring royalty losses on L25')
     return sumFields(this.l22())
   }
 
@@ -180,8 +166,8 @@ export default class ScheduleE extends Form {
   l29bi = (): number | undefined => undefined
   l29bj = (): number | undefined => undefined
 
+  // TODO: 'Partnership and S corporation income or loss
   l32 = (): number | undefined => {
-    unimplemented('Partnership and S corporation income or loss')
     return undefined
   }
 
@@ -190,31 +176,30 @@ export default class ScheduleE extends Form {
   l34bc = (): number | undefined => undefined
   l34be = (): number | undefined => undefined
 
+  // TODO: 'Real estate trust income or loss
   l37 = (): number | undefined => {
-    unimplemented('Real estate trust income or loss')
     return undefined
   }
 
+  // TODO: 'REMICS income or loss
   l39 = (): number | undefined => {
-    unimplemented('REMICS income or loss')
     return undefined
   }
 
+  // TODO: 'Farm rental income or loss
   l40 = (): number | undefined => {
-    unimplemented('Farm rental income or loss')
     return undefined
   }
 
   l41 = (): number =>
     sumFields([this.l26(), this.l32(), this.l37(), this.l39(), this.l40()])
 
-  fields = (): Array<string | number | boolean | undefined> => {
-    const tp = new TaxPayer(this.state.taxPayer)
+  fields = (): Field[] => {
     const [p0, p1, p2] = [0, 1, 2].map((i) => this.propForRow(i))
 
     return [
-      tp.namesString(),
-      tp.tp.primaryPerson?.ssid,
+      this.f1040.info.namesString(),
+      this.f1040.info.taxPayer.primaryPerson?.ssid,
       false,
       false,
       false,
@@ -258,8 +243,8 @@ export default class ScheduleE extends Form {
       Math.abs(this.l25()),
       displayNegPos(this.l26()),
       // Page 2 - TODO: completely unimplemented
-      tp.namesString(),
-      tp.tp.primaryPerson?.ssid,
+      this.f1040.info.namesString(),
+      this.f1040.info.taxPayer.primaryPerson?.ssid,
       ...[false, false], // l27
       ...Array(6 * 4 + 5 * 4).fill(undefined), // l28
       undefined, // grey
