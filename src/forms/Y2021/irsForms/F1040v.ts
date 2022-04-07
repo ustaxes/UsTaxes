@@ -1,5 +1,6 @@
 import F1040Attachment from './F1040Attachment'
 import { FormTag } from 'ustaxes/core/irsForms/Form'
+import { Field } from 'ustaxes/core/pdfFiller'
 
 export default class F1040V extends F1040Attachment {
   tag: FormTag = 'f1040v'

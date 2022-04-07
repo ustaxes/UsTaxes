@@ -30,6 +30,7 @@ const testW2sSpouse: IncomeW2 = {
 }
 
 const testInformationState: Information = {
+  ...blankState,
   f1099s: [
     {
       payer: 'payer-name',
