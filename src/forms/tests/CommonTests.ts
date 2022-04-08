@@ -8,6 +8,14 @@ interface FormTestInfo<A> {
   getErrors: (a: A) => string[]
 }
 
+beforeAll(() => {
+  jest.spyOn(console, 'warn').mockImplementation((x: string) => {
+    if (!x.includes('Removing XFA form data as pdf-lib')) {
+      console.warn(x)
+    }
+  })
+})
+
 export default class CommonTests<F1040 extends Form & { info: Information }> {
   testKit: TestKit
   formTestInfo: FormTestInfo<F1040>
@@ -31,18 +39,23 @@ export default class CommonTests<F1040 extends Form & { info: Information }> {
   }
 
   withValid1040 = async (
-    f: (f1040: F1040, fs: FilingStatus) => void
+    f: (f1040: F1040, fs: FilingStatus) => void,
+    filter: (info: Information) => boolean = () => true
   ): Promise<void> =>
-    this.testKit.with1040Assert(async (forms): Promise<void> => {
-      const f1040 = this.findF1040OrFail(forms)
+    this.testKit.with1040Assert(
+      async (forms): Promise<void> => {
+        const f1040 = this.findF1040OrFail(forms)
 
-      const fs = f1040.info.taxPayer.filingStatus
-      if (fs === undefined) {
-        throw new Error('Undefined filing status')
-      }
+        const fs = f1040.info.taxPayer.filingStatus
+        if (fs === undefined) {
+          throw new Error('Undefined filing status')
+        }
 
-      f(f1040, fs)
-    })
+        f(f1040, fs)
+      },
+      {},
+      filter
+    )
 
   run = (): void => {
     it('should be created in', async () => {
