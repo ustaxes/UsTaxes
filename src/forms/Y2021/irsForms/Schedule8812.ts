@@ -476,21 +476,21 @@ export default class Schedule8812 extends F1040Attachment {
 
     const l32 = Math.max(0, l30 - l31)
 
-    const l33 = (() => {
-      if (fs === FilingStatus.MFS || fs === FilingStatus.W) {
-        return 60000
-      } else if (fs === FilingStatus.HOH) {
-        return 50000
-      } else {
-        return 40000
-      }
-    })()
+    const l33Values: { [key in FilingStatus]: number } = {
+      [FilingStatus.MFJ]: 60000,
+      [FilingStatus.W]: 60000,
+      [FilingStatus.HOH]: 50000,
+      [FilingStatus.S]: 40000,
+      [FilingStatus.MFS]: 40000
+    }
 
-    const l34 = Math.max(this.l3(), l33)
+    const l33 = l33Values[fs]
+
+    const l34 = Math.max(0, this.l3() - l33)
 
     const l35 = l33
 
-    const l36 = (l34 / l35).toFixed(3)
+    const l36 = Math.min(1, l34 / l35).toFixed(3)
 
     const l37 = l32 * 2000
 
