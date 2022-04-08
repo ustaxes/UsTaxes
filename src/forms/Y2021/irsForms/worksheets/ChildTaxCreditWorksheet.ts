@@ -12,13 +12,12 @@ export default class ChildTaxCreditWorksheet {
   }
 
   qualifiesChild = (d: Dependent): boolean =>
-    d.qualifyingInfo !== undefined &&
-    this.year - d.qualifyingInfo.birthYear < QualifyingDependents.childMaxAge
+    this.year - d.dateOfBirth.getFullYear() < QualifyingDependents.childMaxAge
 
   qualifiesOther = (d: Dependent): boolean =>
     d.qualifyingInfo !== undefined &&
     !this.qualifiesChild(d) &&
-    this.year - d.qualifyingInfo.birthYear <
+    this.year - d.dateOfBirth.getFullYear() <
       (d.qualifyingInfo.isStudent
         ? QualifyingDependents.qualifyingDependentMaxAge
         : QualifyingDependents.qualifyingStudentMaxAge)

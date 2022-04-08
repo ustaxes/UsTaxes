@@ -7,7 +7,12 @@ import {
   ListItemSecondaryAction
 } from '@material-ui/core'
 import { useDispatch, useSelector, TaxesState } from 'ustaxes/redux'
-import { formatSSID, LabeledInput } from 'ustaxes/components/input'
+import {
+  formatSSID,
+  LabeledInput,
+  LabeledCheckbox,
+  DatePicker
+} from 'ustaxes/components/input'
 import { Patterns } from 'ustaxes/components/Patterns'
 import { removeDependent } from 'ustaxes/redux/actions'
 import { Person } from 'ustaxes/core/data'
@@ -39,6 +44,14 @@ export const PersonFields = ({
         label={labels.ssn}
         name="ssid"
         patternConfig={Patterns.ssn}
+      />
+      <LabeledCheckbox label="Is this person blind?" name="isBlind" />
+      <DatePicker
+        name="dateOfBirth"
+        label="Date of Birth"
+        sizes={{ xs: 12, lg: 6 }}
+        minDate={new Date(1900, 0, 1)}
+        maxDate={new Date()}
       />
       {children}
     </>

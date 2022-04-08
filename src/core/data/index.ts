@@ -15,15 +15,16 @@ export enum PersonRole {
   EMPLOYER = 'EMPLOYER'
 }
 
-export interface Person {
+export interface Person<DateType = Date> {
   firstName: string
   lastName: string
   ssid: string
   role: PersonRole
+  isBlind: boolean
+  dateOfBirth: DateType
 }
 
 export interface QualifyingInformation {
-  birthYear: number
   numberOfMonths: number
   isStudent: boolean
 }

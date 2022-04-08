@@ -103,9 +103,7 @@ export default class Schedule8812 extends F1040Attachment {
   // Number of qualifying children under age 6 at EOY
   l4b = (): number =>
     this.f1040.info.taxPayer.dependents.filter(
-      (d) =>
-        d.qualifyingInfo !== undefined &&
-        d.qualifyingInfo.birthYear > CURRENT_YEAR - 6
+      (d) => d.dateOfBirth.getFullYear() > CURRENT_YEAR - 6
     ).length
 
   l4c = (): number => Math.max(0, this.l4a() - this.l4b())

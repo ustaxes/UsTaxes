@@ -37,17 +37,20 @@ interface UserPersonForm {
   firstName: string
   lastName: string
   ssid: string
+  isBlind: boolean
+  dateOfBirth: Date
 }
 
 const blankUserPersonForm: UserPersonForm = {
   firstName: '',
   lastName: '',
-  ssid: ''
+  ssid: '',
+  isBlind: false,
+  dateOfBirth: new Date()
 }
 
 interface UserDependentForm extends UserPersonForm {
   relationship: string
-  birthYear: string
   isStudent: boolean
   numberOfMonths: string
 }
@@ -55,22 +58,21 @@ interface UserDependentForm extends UserPersonForm {
 const blankUserDependentForm: UserDependentForm = {
   ...blankUserPersonForm,
   relationship: '',
-  birthYear: '',
   isStudent: false,
   numberOfMonths: ''
 }
 
 const toDependent = (formData: UserDependentForm): Dependent => {
-  const { birthYear, isStudent, numberOfMonths, ...rest } = formData
+  const { isStudent, numberOfMonths, ...rest } = formData
 
   return {
     ...rest,
     role: PersonRole.DEPENDENT,
     qualifyingInfo: {
-      birthYear: parseInt(birthYear),
       numberOfMonths: parseInt(numberOfMonths),
       isStudent
     }
+    //dateOfBirth: rest.dateOfBirth.toISOString()
   }
 }
 
@@ -79,9 +81,9 @@ const toDependentForm = (dependent: Dependent): UserDependentForm => {
 
   return {
     ...rest,
-    birthYear: qualifyingInfo?.birthYear.toString() ?? '',
     numberOfMonths: qualifyingInfo?.numberOfMonths.toString() ?? '',
-    isStudent: qualifyingInfo?.isStudent ?? false
+    isStudent: qualifyingInfo?.isStudent ?? false,
+    dateOfBirth: new Date(rest.dateOfBirth)
   }
 }
 
@@ -97,10 +99,12 @@ const blankUserSpouseForm = {
 const toSpouse = (formData: UserSpouseForm): Spouse => ({
   ...formData,
   role: PersonRole.SPOUSE
+  //dateOfBirth: formData.dateOfBirth
 })
 
 const toSpouseForm = (spouse: Spouse): UserSpouseForm => ({
   ...spouse
+  //dateOfBirth: new Date(spouse.dateOfBirth)
 })
 
 export const AddDependentForm = (): ReactElement => {
@@ -140,11 +144,6 @@ export const AddDependentForm = (): ReactElement => {
           label="Relationship to Taxpayer"
           name="relationship"
           patternConfig={Patterns.name}
-        />
-        <LabeledInput
-          label="Birth Year"
-          patternConfig={Patterns.year}
-          name="birthYear"
         />
         <LabeledInput
           label="How many months did you live together this year?"
