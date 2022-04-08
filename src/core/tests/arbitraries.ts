@@ -491,9 +491,8 @@ export class Arbitraries {
 
   qualifyingInformation = (): Arbitrary<types.QualifyingInformation> =>
     fc
-      .tuple(this.birthYear(), fc.nat({ max: 12 }), fc.boolean())
-      .map(([birthYear, numberOfMonths, isStudent]) => ({
-        birthYear,
+      .tuple(fc.nat({ max: 12 }), fc.boolean())
+      .map(([numberOfMonths, isStudent]) => ({
         numberOfMonths,
         isStudent
       }))

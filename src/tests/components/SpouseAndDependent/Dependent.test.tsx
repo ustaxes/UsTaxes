@@ -61,7 +61,7 @@ describe('Dependents', () => {
       'Last Name',
       'SSN / TIN',
       'Relationship to Taxpayer',
-      'Birth Year',
+      'Date of Birth',
       'How many months did you live together this year?',
       'Is this person a full-time student?'
     ]
@@ -150,8 +150,8 @@ describe('Dependents', () => {
       newFirstNameInput,
       newLastNameInput,
       newSsnInput,
+      newDAteOfBirthInput,
       newRelationInput,
-      newBirthYearInput,
       newDurationInput
     ] = newInputs
 
@@ -160,7 +160,7 @@ describe('Dependents', () => {
     userEvent.clear(newSsnInput)
     userEvent.type(newSsnInput, '333333333')
     userEvent.type(newRelationInput, 'Daughter')
-    userEvent.type(newBirthYearInput, '2002')
+    userEvent.type(newDAteOfBirthInput, '2002-01-01')
     userEvent.type(newDurationInput, '12')
     userEvent.click(dependent.q.isStudent()!)
 
@@ -265,8 +265,8 @@ describe('Dependents', () => {
       newFirstNameInput,
       newLastNameInput,
       newSsnInput,
+      newDAteOfBirthInput,
       newRelationInput,
-      newBirthYearInput,
       newDurationInput
     ] = newInputs
 
@@ -275,7 +275,7 @@ describe('Dependents', () => {
     userEvent.clear(newSsnInput)
     userEvent.type(newSsnInput, '333333333')
     userEvent.type(newRelationInput, 'Daughter')
-    userEvent.type(newBirthYearInput, '2002')
+    userEvent.type(newDAteOfBirthInput, '2002-0101')
     userEvent.type(newDurationInput, '12')
     userEvent.click(dependent.q.isStudent()!)
     userEvent.click(await dependent.saveButton())
@@ -309,8 +309,8 @@ describe('Dependents', () => {
       filledFirstNameInput,
       filledLastNameInput,
       filledSsnInput,
+      filledDateOfBirthInput,
       filledRelationInput,
-      filledBirthYearInput,
       filledDurationInput
     ] = filledInputs as HTMLInputElement[]
 
@@ -318,7 +318,7 @@ describe('Dependents', () => {
     expect(filledLastNameInput.value).toBe('Brown')
     expect(filledSsnInput.value).toBe('222-22-2222')
     expect(filledRelationInput.value).toBe('Son')
-    expect(filledBirthYearInput.value).toBe('1999')
+    expect(filledDateOfBirthInput.value).toBe('1999-01-01')
     expect(filledDurationInput.value).toBe('12')
     expect(filledFirstNameInput.value).toBe('Charlie')
 
@@ -367,7 +367,7 @@ describe('Dependents', () => {
       'Last Name',
       'SSN / TIN',
       'Relationship to Taxpayer',
-      'Birth Year',
+      'Date of Birth',
       'How many months did you live together this year?',
       'Is this person a full-time student?'
     ]
@@ -385,7 +385,7 @@ describe('Dependents', () => {
 
     // expect six `Input is required` errors
     await waitFor(async () =>
-      expect(dependent.requiredErrors()).toHaveLength(6)
+      expect(dependent.requiredErrors()).toHaveLength(5)
     )
 
     const inputs = spouseAndDependent.rendered().getAllByRole('textbox')
@@ -408,7 +408,7 @@ describe('Dependents', () => {
           .queryByText('Input should only include letters and spaces')
       ).not.toBeInTheDocument()
 
-      expect(dependent.requiredErrors()).toHaveLength(5)
+      expect(dependent.requiredErrors()).toHaveLength(4)
     })
 
     userEvent.clear(firstNameInput)
@@ -422,7 +422,7 @@ describe('Dependents', () => {
           .queryByText('Input should only include letters and spaces')
       ).not.toBeInTheDocument()
 
-      expect(dependent.requiredErrors()).toHaveLength(5)
+      expect(dependent.requiredErrors()).toHaveLength(4)
     })
 
     userEvent.type(lastNameInput, '666')
@@ -436,7 +436,7 @@ describe('Dependents', () => {
       ).not.toBeInTheDocument()
     )
 
-    expect(dependent.requiredErrors()).toHaveLength(4)
+    expect(dependent.requiredErrors()).toHaveLength(3)
 
     userEvent.type(lastNameInput, '{selectall}{del}Washington')
     userEvent.click(await dependent.saveButton())
@@ -448,7 +448,7 @@ describe('Dependents', () => {
           .queryByText('Input should only include letters and spaces')
       ).not.toBeInTheDocument()
     )
-    expect(dependent.requiredErrors()).toHaveLength(4)
+    expect(dependent.requiredErrors()).toHaveLength(3)
 
     userEvent.clear(ssnInput)
     userEvent.type(ssnInput, '123')
@@ -462,7 +462,7 @@ describe('Dependents', () => {
       ).toHaveLength(1)
     )
 
-    expect(dependent.requiredErrors()).toHaveLength(3)
+    expect(dependent.requiredErrors()).toHaveLength(2)
 
     userEvent.clear(ssnInput)
     userEvent.type(ssnInput, '123456789')
@@ -476,7 +476,7 @@ describe('Dependents', () => {
       ).not.toBeInTheDocument()
     )
 
-    expect(dependent.requiredErrors()).toHaveLength(3)
+    expect(dependent.requiredErrors()).toHaveLength(2)
 
     userEvent.type(relationInput, '1111')
     userEvent.click(await dependent.saveButton())
@@ -489,7 +489,7 @@ describe('Dependents', () => {
       ).toHaveLength(1)
     )
 
-    expect(dependent.requiredErrors()).toHaveLength(2)
+    expect(dependent.requiredErrors()).toHaveLength(1)
 
     userEvent.type(relationInput, '{selectall}{del}stepchild')
     userEvent.click(await dependent.saveButton())
@@ -502,7 +502,7 @@ describe('Dependents', () => {
       ).not.toBeInTheDocument()
     )
 
-    expect(dependent.requiredErrors()).toHaveLength(2)
+    expect(dependent.requiredErrors()).toHaveLength(1)
 
     userEvent.type(birthYearInput, 'abcd')
     userEvent.click(await dependent.saveButton())
