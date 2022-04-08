@@ -149,11 +149,10 @@ export default class TestKit {
         params
       )
       .catch(async (e) => {
-        console.error('Trying to log errors.')
+        console.error('Logging 1040 errors.')
         if (lastCallWithInfo !== undefined) {
           await this.log1040(lastCallWithInfo, e)
         } else {
-          console.error('trying to log error but no info is available')
           console.error('trying to log error but no info is available')
         }
         throw e
