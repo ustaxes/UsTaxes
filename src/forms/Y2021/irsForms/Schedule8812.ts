@@ -160,7 +160,7 @@ export default class Schedule8812 extends F1040Attachment {
   l9 = (): number =>
     this.f1040.info.taxPayer.filingStatus === FilingStatus.MFJ ? 400000 : 200000
 
-  l10 = (): number => Math.max(0, nextMultipleOf1000(this.l9() - this.l3()))
+  l10 = (): number => nextMultipleOf1000(Math.max(0, this.l3() - this.l9()))
 
   l11 = (): number => this.l10() * 0.05
 
