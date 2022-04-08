@@ -1,5 +1,5 @@
 import F1040Attachment from './F1040Attachment'
-import { FilingStatus } from 'ustaxes/core/data'
+import { Dependent, FilingStatus } from 'ustaxes/core/data'
 import { sumFields } from 'ustaxes/core/irsForms/util'
 import { FormTag } from 'ustaxes/core/irsForms/Form'
 import { CURRENT_YEAR } from '../data/federal'
@@ -97,12 +97,14 @@ export default class Schedule8812 extends F1040Attachment {
 
   l3 = (): number => sumFields([this.l1(), this.l2d()])
 
-  l4a = (): number =>
-    this.f1040.childTaxCreditWorksheet?.numberQualifyingChildren() ?? 0
+  creditDependents = (): Dependent[] =>
+    this.f1040.childTaxCreditWorksheet?.qualifyingChildren() ?? []
+
+  l4a = (): number => this.creditDependents().length
 
   // Number of qualifying children under age 6 at EOY
   l4b = (): number =>
-    this.f1040.info.taxPayer.dependents.filter(
+    this.creditDependents().filter(
       (d) =>
         d.qualifyingInfo !== undefined &&
         d.qualifyingInfo.birthYear > CURRENT_YEAR - 6
@@ -110,16 +112,20 @@ export default class Schedule8812 extends F1040Attachment {
 
   l4c = (): number => Math.max(0, this.l4a() - this.l4b())
 
+  /**
+   * Computed using the line 5 worksheet, Schedule 8812 instructions
+   */
   l5 = (): number => {
     const fs = this.f1040.info.taxPayer.filingStatus
     if (fs === undefined) {
       throw new Error('filing status is undefined')
     }
 
-    const wsl1 = this.l4b() * 3000
+    const wsl1 = this.l4b() * 3600
     const wsl2 = this.l4c() * 3000
     const wsl3 = wsl1 + wsl2
-    const wsl4 = this.l4a() + 2000
+    const wsl4 = this.l4a() * 2000
+    // Note wsl3 >= wsl4
     const wsl5 = wsl3 - wsl4
     const wsl6values: Partial<{ [key in FilingStatus]: number }> = {
       [FilingStatus.MFJ]: 12500,
