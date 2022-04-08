@@ -4,13 +4,7 @@ import { sumFields } from 'ustaxes/core/irsForms/util'
 import { FormTag } from 'ustaxes/core/irsForms/Form'
 import { CURRENT_YEAR } from '../data/federal'
 import { Field } from 'ustaxes/core/pdfFiller'
-
-const nextMultipleOf =
-  (mul: number) =>
-  (value: number): number =>
-    value % mul === 0 ? value : (Math.floor(value / mul) + 1) * mul
-
-const nextMultipleOf1000 = nextMultipleOf(1000)
+import { nextMultipleOf1000 } from 'ustaxes/core/util'
 
 type Part1b = Partial<{
   l14a: number
@@ -141,7 +135,7 @@ export default class Schedule8812 extends F1040Attachment {
     }
     const wsl8 = wsl8values[fs] ?? 75000
 
-    const wsl9 = Math.max(0, nextMultipleOf1000(this.l3() - wsl8))
+    const wsl9 = nextMultipleOf1000(Math.max(0, this.l3() - wsl8))
     const wsl10 = wsl9 * 0.05
     const wsl11 = Math.min(wsl7, wsl10)
     return Math.max(0, wsl3 - wsl11)
