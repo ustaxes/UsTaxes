@@ -34,7 +34,10 @@ const formReducer = (
         ...newState,
         taxPayer: {
           ...newState.taxPayer,
-          primaryPerson: action.formData
+          primaryPerson: {
+            ...action.formData,
+            dateOfBirth: new Date(action.formData.dateOfBirth)
+          }
         }
       }
     }
@@ -69,7 +72,10 @@ const formReducer = (
           ...newState.taxPayer,
           dependents: [
             ...(newState.taxPayer?.dependents ?? []),
-            action.formData
+            {
+              ...action.formData,
+              dateOfBirth: new Date(action.formData.dateOfBirth)
+            }
           ]
         }
       }
@@ -78,7 +84,10 @@ const formReducer = (
     // Replace dependent by index with a new object.
     case ActionName.EDIT_DEPENDENT: {
       const newDependents = [...(newState.taxPayer?.dependents ?? [])]
-      newDependents.splice(action.formData.index, 1, action.formData.value)
+      newDependents.splice(action.formData.index, 1, {
+        ...action.formData.value,
+        dateOfBirth: new Date(action.formData.value.dateOfBirth)
+      })
 
       return {
         ...newState,
@@ -189,7 +198,10 @@ const formReducer = (
         ...newState,
         taxPayer: {
           ...newState.taxPayer,
-          spouse: action.formData
+          spouse: {
+            ...action.formData,
+            dateOfBirth: new Date(action.formData.dateOfBirth)
+          }
         }
       }
     }

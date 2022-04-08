@@ -62,7 +62,7 @@ const blankUserDependentForm: UserDependentForm = {
   numberOfMonths: ''
 }
 
-const toDependent = (formData: UserDependentForm): Dependent => {
+const toDependent = (formData: UserDependentForm): Dependent<string> => {
   const { isStudent, numberOfMonths, ...rest } = formData
 
   return {
@@ -71,8 +71,8 @@ const toDependent = (formData: UserDependentForm): Dependent => {
     qualifyingInfo: {
       numberOfMonths: parseInt(numberOfMonths),
       isStudent
-    }
-    //dateOfBirth: rest.dateOfBirth.toISOString()
+    },
+    dateOfBirth: rest.dateOfBirth.toISOString()
   }
 }
 
@@ -96,10 +96,10 @@ const blankUserSpouseForm = {
   isTaxpayerDependent: false
 }
 
-const toSpouse = (formData: UserSpouseForm): Spouse => ({
+const toSpouse = (formData: UserSpouseForm): Spouse<string> => ({
   ...formData,
-  role: PersonRole.SPOUSE
-  //dateOfBirth: formData.dateOfBirth
+  role: PersonRole.SPOUSE,
+  dateOfBirth: formData.dateOfBirth.toISOString()
 })
 
 const toSpouseForm = (spouse: Spouse): UserSpouseForm => ({

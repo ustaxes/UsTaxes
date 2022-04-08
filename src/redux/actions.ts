@@ -2,13 +2,13 @@ import {
   Person,
   IncomeW2,
   Refund,
-  Dependent,
+  DependentDateString,
   FilingStatus,
-  PrimaryPerson,
+  PrimaryPersonDateString,
   ContactInfo,
   Supported1099,
   F1098e,
-  Spouse,
+  SpouseDateString,
   Property,
   StateResidency,
   Information,
@@ -98,7 +98,7 @@ interface Save<T, R> {
 type SaveRefundInfo = Save<typeof ActionName.SAVE_REFUND_INFO, Refund>
 type SavePrimaryPersonInfo = Save<
   typeof ActionName.SAVE_PRIMARY_PERSON_INFO,
-  PrimaryPerson
+  PrimaryPersonDateString
 >
 type SaveFilingStatusInfo = Save<
   typeof ActionName.SAVE_FILING_STATUS_INFO,
@@ -109,10 +109,10 @@ type SaveStateResidencyInfo = Save<
   typeof ActionName.SAVE_STATE_RESIDENCY,
   StateResidency
 >
-type AddDependent = Save<typeof ActionName.ADD_DEPENDENT, Dependent>
+type AddDependent = Save<typeof ActionName.ADD_DEPENDENT, DependentDateString>
 type EditDependent = Save<typeof ActionName.EDIT_DEPENDENT, EditDependentAction>
 type RemoveDependent = Save<typeof ActionName.REMOVE_DEPENDENT, number>
-type AddSpouse = Save<typeof ActionName.ADD_SPOUSE, Spouse>
+type AddSpouse = Save<typeof ActionName.ADD_SPOUSE, SpouseDateString>
 type RemoveSpouse = Save<typeof ActionName.REMOVE_SPOUSE, Record<string, never>>
 type AddW2 = Save<typeof ActionName.ADD_W2, IncomeW2>
 type EditW2 = Save<typeof ActionName.EDIT_W2, EditW2Action>
@@ -271,12 +271,12 @@ export const saveRefundInfo: ActionCreator<Refund> = makeActionCreator(
   validators.refund
 )
 
-const cleanPerson = <P extends Person>(p: P): P => ({
+const cleanPerson = <P extends Person<string>>(p: P): P => ({
   ...p,
   ssid: p?.ssid.replace(/-/g, '')
 })
 
-export const savePrimaryPersonInfo: ActionCreator<PrimaryPerson> =
+export const savePrimaryPersonInfo: ActionCreator<PrimaryPersonDateString> =
   makePreprocessActionCreator(
     ActionName.SAVE_PRIMARY_PERSON_INFO,
     validators.primaryPerson,
@@ -299,11 +299,11 @@ export const saveContactInfo: ActionCreator<ContactInfo> =
     })
   )
 
-export const addDependent: ActionCreator<Dependent> =
+export const addDependent: ActionCreator<DependentDateString> =
   makePreprocessActionCreator(
     ActionName.ADD_DEPENDENT,
     validators.dependent,
-    (t: Dependent) => cleanPerson(t)
+    (t: DependentDateString) => cleanPerson(t)
   )
 
 export const editDependent: ActionCreator<EditDependentAction> =
@@ -321,11 +321,12 @@ export const removeDependent: ActionCreator<number> = makeActionCreator(
   indexValidator
 )
 
-export const addSpouse: ActionCreator<Spouse> = makePreprocessActionCreator(
-  ActionName.ADD_SPOUSE,
-  validators.spouse,
-  cleanPerson
-)
+export const addSpouse: ActionCreator<SpouseDateString> =
+  makePreprocessActionCreator(
+    ActionName.ADD_SPOUSE,
+    validators.spouse,
+    cleanPerson
+  )
 
 export const removeSpouse: SignalAction = signalAction(ActionName.REMOVE_SPOUSE)
 

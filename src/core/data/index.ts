@@ -24,15 +24,20 @@ export interface Person<DateType = Date> {
   dateOfBirth: DateType
 }
 
+export type PersonDateString = Person<string>
+
 export interface QualifyingInformation {
   numberOfMonths: number
   isStudent: boolean
 }
 
-export interface Dependent extends Person {
+export interface Dependent<D = Date> extends Person<D> {
   relationship: string
   qualifyingInfo?: QualifyingInformation
+  dateOfBirth: D
 }
+
+export type DependentDateString = Dependent<string>
 
 export interface Address {
   address: string
@@ -45,14 +50,17 @@ export interface Address {
   postalCode?: string
 }
 
-export interface PrimaryPerson extends Person {
+export interface PrimaryPerson<D = Date> extends Person<D> {
   address: Address
   isTaxpayerDependent: boolean
 }
+export type PrimaryPersonDateString = PrimaryPerson<string>
 
-export interface Spouse extends Person {
+export interface Spouse<D = Date> extends Person<D> {
   isTaxpayerDependent: boolean
 }
+
+export type SpouseDateString = Spouse<string>
 
 export interface Employer {
   EIN?: string
@@ -325,12 +333,14 @@ export interface ContactInfo {
   contactEmail?: string
 }
 
-export interface TaxPayer extends ContactInfo {
+export interface TaxPayer<D = Date> extends ContactInfo {
   filingStatus?: FilingStatus
-  primaryPerson?: PrimaryPerson
-  spouse?: Spouse
-  dependents: Dependent[]
+  primaryPerson?: PrimaryPerson<D>
+  spouse?: Spouse<D>
+  dependents: Dependent<D>[]
 }
+
+export type TaxPayerDateString = TaxPayer<string>
 
 export type Income1099Int = Income1099<Income1099Type.INT, F1099IntData>
 export type Income1099B = Income1099<Income1099Type.B, F1099BData>
@@ -579,7 +589,7 @@ export interface ArrayItemEditAction<A> {
   value: A
 }
 
-export type EditDependentAction = ArrayItemEditAction<Dependent>
+export type EditDependentAction = ArrayItemEditAction<DependentDateString>
 export type EditW2Action = ArrayItemEditAction<IncomeW2>
 export type EditEstimatedTaxesAction = ArrayItemEditAction<EstimatedTaxPayments>
 export type Edit1099Action = ArrayItemEditAction<Supported1099>

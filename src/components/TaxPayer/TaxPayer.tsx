@@ -65,7 +65,9 @@ const defaultTaxpayerUserForm: TaxPayerUserForm = {
   dateOfBirth: new Date()
 }
 
-const asPrimaryPerson = (formData: TaxPayerUserForm): PrimaryPerson => ({
+const asPrimaryPerson = (
+  formData: TaxPayerUserForm
+): PrimaryPerson<string> => ({
   address: formData.address,
   firstName: formData.firstName,
   lastName: formData.lastName,
