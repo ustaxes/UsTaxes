@@ -1,7 +1,6 @@
 import { createGenerator } from 'ts-json-schema-generator'
 import fs from 'fs'
 import Ajv from 'ajv'
-import addFormats from 'ajv-formats'
 
 import standaloneCode from 'ajv/dist/standalone'
 
@@ -26,8 +25,6 @@ const ajv = new Ajv({
   allowUnionTypes: true,
   code: { source: true, esm: true }
 })
-
-addFormats(ajv)
 
 const moduleCode = standaloneCode(ajv, {
   Index: '#/definitions/index',
