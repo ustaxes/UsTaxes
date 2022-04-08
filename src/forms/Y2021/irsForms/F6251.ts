@@ -399,7 +399,7 @@ export default class F6251 extends F1040Attachment {
 
     const l29 = Math.max(0, l25 - l28)
 
-    const l30 = Math.min(0, l24, l29)
+    const l30 = Math.min(l24, l29)
 
     const l31 = l30 * 0.15
 
@@ -415,7 +415,7 @@ export default class F6251 extends F1040Attachment {
 
     const l37 = l36 * 0.25
 
-    const l38 = l17 + l31 + l34 + l37
+    const l38 = l18 + l31 + l34 + l37
 
     const l39 = (() => {
       // numbers referenced here are the same as l18.
