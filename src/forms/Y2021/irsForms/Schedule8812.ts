@@ -1,16 +1,10 @@
-import { FilingStatus } from 'ustaxes/core/data'
-import TaxPayer from 'ustaxes/core/data/TaxPayer'
-import F1040 from './F1040'
+import F1040Attachment from './F1040Attachment'
+import { Dependent, FilingStatus } from 'ustaxes/core/data'
 import { sumFields } from 'ustaxes/core/irsForms/util'
-import Form, { FormTag } from 'ustaxes/core/irsForms/Form'
+import { FormTag } from 'ustaxes/core/irsForms/Form'
 import { CURRENT_YEAR } from '../data/federal'
-
-const nextMultipleOf =
-  (mul: number) =>
-  (value: number): number =>
-    value % mul === 0 ? value : (Math.floor(value / mul) + 1) * mul
-
-const nextMultipleOf1000 = nextMultipleOf(1000)
+import { Field } from 'ustaxes/core/pdfFiller'
+import { nextMultipleOf1000 } from 'ustaxes/core/util'
 
 type Part1b = Partial<{
   l14a: number
@@ -79,18 +73,9 @@ type Part3 = Partial<{
   l40: number
 }>
 
-export default class Schedule8812 extends Form {
-  f1040: F1040
+export default class Schedule8812 extends F1040Attachment {
   tag: FormTag = 'f1040s8'
   sequenceIndex = 47
-
-  constructor(f1040: F1040) {
-    super()
-    if (f1040 === undefined) {
-      throw new Error('f1040 is undefined!!')
-    }
-    this.f1040 = f1040
-  }
 
   l1 = (): number => this.f1040.l11()
 
@@ -106,12 +91,14 @@ export default class Schedule8812 extends Form {
 
   l3 = (): number => sumFields([this.l1(), this.l2d()])
 
-  l4a = (): number =>
-    this.f1040.childTaxCreditWorksheet?.numberQualifyingChildren() ?? 0
+  creditDependents = (): Dependent[] =>
+    this.f1040.childTaxCreditWorksheet?.qualifyingChildren() ?? []
+
+  l4a = (): number => this.creditDependents().length
 
   // Number of qualifying children under age 6 at EOY
   l4b = (): number =>
-    this.f1040.info.taxPayer.dependents.filter(
+    this.creditDependents().filter(
       (d) =>
         d.qualifyingInfo !== undefined &&
         d.qualifyingInfo.birthYear > CURRENT_YEAR - 6
@@ -119,16 +106,20 @@ export default class Schedule8812 extends Form {
 
   l4c = (): number => Math.max(0, this.l4a() - this.l4b())
 
+  /**
+   * Computed using the line 5 worksheet, Schedule 8812 instructions
+   */
   l5 = (): number => {
     const fs = this.f1040.info.taxPayer.filingStatus
     if (fs === undefined) {
       throw new Error('filing status is undefined')
     }
 
-    const wsl1 = this.l4b() * 3000
+    const wsl1 = this.l4b() * 3600
     const wsl2 = this.l4c() * 3000
     const wsl3 = wsl1 + wsl2
-    const wsl4 = this.l4a() + 2000
+    const wsl4 = this.l4a() * 2000
+    // Note wsl3 >= wsl4
     const wsl5 = wsl3 - wsl4
     const wsl6values: Partial<{ [key in FilingStatus]: number }> = {
       [FilingStatus.MFJ]: 12500,
@@ -144,7 +135,7 @@ export default class Schedule8812 extends Form {
     }
     const wsl8 = wsl8values[fs] ?? 75000
 
-    const wsl9 = Math.max(0, nextMultipleOf1000(this.l3() - wsl8))
+    const wsl9 = nextMultipleOf1000(Math.max(0, this.l3() - wsl8))
     const wsl10 = wsl9 * 0.05
     const wsl11 = Math.min(wsl7, wsl10)
     return Math.max(0, wsl3 - wsl11)
@@ -163,7 +154,7 @@ export default class Schedule8812 extends Form {
   l9 = (): number =>
     this.f1040.info.taxPayer.filingStatus === FilingStatus.MFJ ? 400000 : 200000
 
-  l10 = (): number => Math.max(0, nextMultipleOf1000(this.l9() - this.l3()))
+  l10 = (): number => nextMultipleOf1000(Math.max(0, this.l3() - this.l9()))
 
   l11 = (): number => this.l10() * 0.05
 
@@ -479,21 +470,21 @@ export default class Schedule8812 extends Form {
 
     const l32 = Math.max(0, l30 - l31)
 
-    const l33 = (() => {
-      if (fs === FilingStatus.MFS || fs === FilingStatus.W) {
-        return 60000
-      } else if (fs === FilingStatus.HOH) {
-        return 50000
-      } else {
-        return 40000
-      }
-    })()
+    const l33Values: { [key in FilingStatus]: number } = {
+      [FilingStatus.MFJ]: 60000,
+      [FilingStatus.W]: 60000,
+      [FilingStatus.HOH]: 50000,
+      [FilingStatus.S]: 40000,
+      [FilingStatus.MFS]: 40000
+    }
 
-    const l34 = Math.max(this.l3(), l33)
+    const l33 = l33Values[fs]
+
+    const l34 = Math.max(0, this.l3() - l33)
 
     const l35 = l33
 
-    const l36 = (l34 / l35).toFixed(3)
+    const l36 = Math.min(1, l34 / l35).toFixed(3)
 
     const l37 = l32 * 2000
 
@@ -523,9 +514,7 @@ export default class Schedule8812 extends Form {
 
   l40 = (): number => this.part3().l40 ?? 0
 
-  fields = (): Array<string | number | boolean | undefined> => {
-    const tp = new TaxPayer(this.f1040.info.taxPayer)
-
+  fields = (): Field[] => {
     const part1b = this.part1b()
     const part1c = this.part1c()
     const part2a = this.part2a()
@@ -533,8 +522,8 @@ export default class Schedule8812 extends Form {
     const part3 = this.part3()
 
     return [
-      tp.namesString(),
-      tp.tp.primaryPerson?.ssid,
+      this.f1040.info.namesString(),
+      this.f1040.info.taxPayer.primaryPerson?.ssid,
       this.l1(),
       this.l2a(),
       this.l2b(),

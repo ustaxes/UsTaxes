@@ -1,30 +1,27 @@
-import { Information, F1099BData, FilingStatus } from 'ustaxes/core/data'
-import Form, { FormTag } from 'ustaxes/core/irsForms/Form'
-import TaxPayer from 'ustaxes/core/data/TaxPayer'
+import F1040Attachment from './F1040Attachment'
+import { F1099BData, FilingStatus } from 'ustaxes/core/data'
+import { FormTag } from 'ustaxes/core/irsForms/Form'
 import { sumFields } from 'ustaxes/core/irsForms/util'
 import SDRateGainWorksheet from './worksheets/SDRateGainWorksheet'
 import SDUnrecaptured1250 from './worksheets/SDUnrecaptured1250'
-import InformationMethods from 'ustaxes/core/data/methods'
 import F8949 from './F8949'
+import F1040 from './F1040'
+import { Field } from 'ustaxes/core/pdfFiller'
 
-export default class ScheduleD extends Form {
+export default class ScheduleD extends F1040Attachment {
   tag: FormTag = 'f1040sd'
   sequenceIndex = 12
-  state: InformationMethods
   aggregated: F1099BData
   rateGainWorksheet: SDRateGainWorksheet
   unrecaptured1250: SDUnrecaptured1250
-  f8949: F8949[]
 
   readonly l21MinMFS = 1500
   readonly l21MinDefault = 3000
 
-  constructor(info: Information, f8949: F8949[]) {
-    super()
-    this.state = new InformationMethods(info)
-    this.f8949 = f8949
+  constructor(f1040: F1040) {
+    super(f1040)
 
-    const bs: F1099BData[] = this.state.f1099Bs().map((f) => f.form)
+    const bs: F1099BData[] = f1040.info.f1099Bs().map((f) => f.form)
 
     this.aggregated = {
       shortTermProceeds: bs.reduce((l, r) => l + r.shortTermProceeds, 0),
@@ -38,7 +35,7 @@ export default class ScheduleD extends Form {
   }
 
   l21Min = (): number => {
-    if (this.state.taxPayer.filingStatus === FilingStatus.MFS) {
+    if (this.f1040.info.taxPayer.filingStatus === FilingStatus.MFS) {
       return this.l21MinMFS
     }
     return this.l21MinDefault
@@ -50,7 +47,7 @@ export default class ScheduleD extends Form {
   l1ag = (): number | undefined => undefined
   l1ah = (): number => sumFields([this.l1ad(), 0 - (this.l1ae() ?? 0)])
 
-  l1f8949s = (): F8949[] => this.f8949.filter((f) => f.part1BoxA())
+  l1f8949s = (): F8949[] => this.f1040.f8949.filter((f) => f.part1BoxA())
 
   l1bd = (): number =>
     sumFields(this.l1f8949s().map((f) => f.shortTermTotalProceeds()))
@@ -62,7 +59,7 @@ export default class ScheduleD extends Form {
   l1bh = (): number =>
     sumFields(this.l1f8949s().map((f) => f.shortTermTotalGain()))
 
-  l2f8949s = (): F8949[] => this.f8949.filter((f) => f.part1BoxB())
+  l2f8949s = (): F8949[] => this.f1040.f8949.filter((f) => f.part1BoxB())
   l2d = (): number =>
     sumFields(this.l2f8949s().map((f) => f.shortTermTotalProceeds()))
 
@@ -75,7 +72,7 @@ export default class ScheduleD extends Form {
   l2h = (): number =>
     sumFields(this.l2f8949s().map((f) => f.shortTermTotalGain()))
 
-  l3f8949s = (): F8949[] => this.f8949.filter((f) => f.part1BoxC())
+  l3f8949s = (): F8949[] => this.f1040.f8949.filter((f) => f.part1BoxC())
   l3d = (): number =>
     sumFields(this.l3f8949s().map((f) => f.shortTermTotalProceeds()))
 
@@ -112,7 +109,7 @@ export default class ScheduleD extends Form {
   l8ah = (): number | undefined =>
     sumFields([this.l8ad(), 0 - (this.l8ae() ?? 0)])
 
-  l8f8949s = (): F8949[] => this.f8949.filter((f) => f.part2BoxD())
+  l8f8949s = (): F8949[] => this.f1040.f8949.filter((f) => f.part2BoxD())
 
   l8bd = (): number =>
     sumFields(this.l8f8949s().map((f) => f.longTermTotalProceeds()))
@@ -126,7 +123,7 @@ export default class ScheduleD extends Form {
   l8bh = (): number =>
     sumFields(this.l8f8949s().map((f) => f.longTermTotalGain()))
 
-  l9f8949s = (): F8949[] => this.f8949.filter((f) => f.part2BoxE())
+  l9f8949s = (): F8949[] => this.f1040.f8949.filter((f) => f.part2BoxE())
 
   l9d = (): number =>
     sumFields(this.l9f8949s().map((f) => f.longTermTotalProceeds()))
@@ -140,7 +137,7 @@ export default class ScheduleD extends Form {
   l9h = (): number =>
     sumFields(this.l9f8949s().map((f) => f.longTermTotalGain()))
 
-  l10f8949s = (): F8949[] => this.f8949.filter((f) => f.part2BoxF())
+  l10f8949s = (): F8949[] => this.f1040.f8949.filter((f) => f.part2BoxF())
 
   l10d = (): number =>
     sumFields(this.l10f8949s().map((f) => f.longTermTotalProceeds()))
@@ -159,7 +156,7 @@ export default class ScheduleD extends Form {
   l12 = (): number | undefined => undefined
 
   l13 = (): number | undefined =>
-    this.state
+    this.f1040.info
       .f1099Divs()
       .reduce((s, f) => s + (f.form.totalCapitalGainsDistributions ?? 0), 0)
 
@@ -217,7 +214,7 @@ export default class ScheduleD extends Form {
   }
 
   haveQualifiedDividends = (): boolean => {
-    return this.state
+    return this.f1040.info
       .f1099Divs()
       .some((f) => (f.form.qualifiedDividends ?? 0) > 0)
   }
@@ -243,65 +240,61 @@ export default class ScheduleD extends Form {
   computeTaxOnQDWorksheet = (): boolean =>
     (this.l20() ?? false) || (this.l22() ?? false)
 
-  fields = (): Array<string | number | boolean | undefined> => {
-    const tp = new TaxPayer(this.state.taxPayer)
-
-    return [
-      tp.namesString(),
-      tp.tp.primaryPerson?.ssid,
-      false,
-      false,
-      this.l1ad(),
-      this.l1ae(),
-      this.l1ag(),
-      this.l1ah(),
-      this.l1bd(),
-      this.l1be(),
-      this.l1bg(),
-      this.l1bh(),
-      this.l2d(),
-      this.l2e(),
-      this.l2g(),
-      this.l2h(),
-      this.l3d(),
-      this.l3e(),
-      this.l3g(),
-      this.l3h(),
-      this.l4(),
-      this.l5(),
-      this.l6(),
-      this.l7(),
-      this.l8ad(),
-      this.l8ae(),
-      this.l8ag(),
-      this.l8ah(),
-      this.l8bd(),
-      this.l8be(),
-      this.l8bg(),
-      this.l8bh(),
-      this.l9d(),
-      this.l9e(),
-      this.l9g(),
-      this.l9h(),
-      this.l10d(),
-      this.l10e(),
-      this.l10g(),
-      this.l10h(),
-      this.l11(),
-      this.l12(),
-      this.l13(),
-      this.l14(),
-      this.l15(),
-      this.l16(),
-      this.l17(),
-      !this.l17(),
-      this.l18(),
-      this.l19(),
-      this.l20() === true,
-      this.l20() === false,
-      this.l21(),
-      this.l22() === true,
-      this.l22() === false
-    ]
-  }
+  fields = (): Field[] => [
+    this.f1040.info.namesString(),
+    this.f1040.info.taxPayer.primaryPerson?.ssid,
+    false,
+    false,
+    this.l1ad(),
+    this.l1ae(),
+    this.l1ag(),
+    this.l1ah(),
+    this.l1bd(),
+    this.l1be(),
+    this.l1bg(),
+    this.l1bh(),
+    this.l2d(),
+    this.l2e(),
+    this.l2g(),
+    this.l2h(),
+    this.l3d(),
+    this.l3e(),
+    this.l3g(),
+    this.l3h(),
+    this.l4(),
+    this.l5(),
+    this.l6(),
+    this.l7(),
+    this.l8ad(),
+    this.l8ae(),
+    this.l8ag(),
+    this.l8ah(),
+    this.l8bd(),
+    this.l8be(),
+    this.l8bg(),
+    this.l8bh(),
+    this.l9d(),
+    this.l9e(),
+    this.l9g(),
+    this.l9h(),
+    this.l10d(),
+    this.l10e(),
+    this.l10g(),
+    this.l10h(),
+    this.l11(),
+    this.l12(),
+    this.l13(),
+    this.l14(),
+    this.l15(),
+    this.l16(),
+    this.l17(),
+    !this.l17(),
+    this.l18(),
+    this.l19(),
+    this.l20() === true,
+    this.l20() === false,
+    this.l21(),
+    this.l22() === true,
+    this.l22() === false
+  ]
 }

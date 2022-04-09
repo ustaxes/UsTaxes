@@ -1,8 +1,10 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
-import Form, { FormTag } from 'ustaxes/core/irsForms/Form'
+import { FormTag } from 'ustaxes/core/irsForms/Form'
 import { Asset, TaxPayer as TP } from 'ustaxes/core/data'
-import TaxPayer from 'ustaxes/core/data/TaxPayer'
+import F1040Attachment from './F1040Attachment'
+import F1040 from './F1040'
+import { Field } from 'ustaxes/core/pdfFiller'
 
 type EmptyLine = [
   undefined,
@@ -53,7 +55,7 @@ const padUntil = <A, B>(xs: A[], v: B, n: number): (A | B)[] => {
   return [...xs, ...Array.from(Array(n - xs.length)).map(() => v)]
 }
 
-export default class F8949 extends Form {
+export default class F8949 extends F1040Attachment {
   tag: FormTag = 'f8949'
   sequenceIndex = 12.1
   assets: Asset<Date>[]
@@ -63,10 +65,11 @@ export default class F8949 extends Form {
 
   copies: F8949[] = []
 
-  constructor(tp: TP, assets: Asset<Date>[], index = 0) {
-    super()
-    this.assets = assets
-    this.tp = tp
+  constructor(f1040: F1040, index = 0) {
+    super(f1040)
+    this.assets = f1040.assets
+    this.tp = f1040.info.taxPayer
+
     if (index === 0) {
       const extraCopiesNeeded = Math.round(
         Math.max(
@@ -75,7 +78,7 @@ export default class F8949 extends Form {
         )
       )
       this.copies = Array.from(Array(extraCopiesNeeded)).map(
-        (_, i) => new F8949(tp, assets, i + 1)
+        (_, i) => new F8949(f1040, i + 1)
       )
     } else {
       this.copies = []
@@ -184,31 +187,28 @@ export default class F8949 extends Form {
   // TODO: handle adjustments column.
   longTermTotalAdjustments = (): number | undefined => undefined
 
-  fields = (): Array<string | number | boolean | undefined> => {
-    const tp = new TaxPayer(this.tp)
-    return [
-      tp.namesString(),
-      this.tp.primaryPerson?.ssid,
-      this.part1BoxA(),
-      this.part1BoxB(),
-      this.part1BoxC(),
-      ...this.shortTermLines().flat(),
-      this.shortTermTotalProceeds(),
-      this.shortTermTotalCost(),
-      undefined, // greyed out field
-      this.shortTermTotalAdjustments(),
-      this.shortTermTotalGain(),
-      tp.namesString(),
-      this.tp.primaryPerson?.ssid,
-      this.part2BoxD(),
-      this.part2BoxE(),
-      this.part2BoxF(),
-      ...this.longTermLines().flat(),
-      this.longTermTotalProceeds(),
-      this.longTermTotalCost(),
-      undefined, // greyed out field
-      this.longTermTotalAdjustments(),
-      this.longTermTotalGain()
-    ]
-  }
+  fields = (): Field[] => [
+    this.f1040.info.namesString(),
+    this.f1040.info.taxPayer.primaryPerson?.ssid,
+    this.part1BoxA(),
+    this.part1BoxB(),
+    this.part1BoxC(),
+    ...this.shortTermLines().flat(),
+    this.shortTermTotalProceeds(),
+    this.shortTermTotalCost(),
+    undefined, // greyed out field
+    this.shortTermTotalAdjustments(),
+    this.shortTermTotalGain(),
+    this.f1040.info.namesString(),
+    this.tp.primaryPerson?.ssid,
+    this.part2BoxD(),
+    this.part2BoxE(),
+    this.part2BoxF(),
+    ...this.longTermLines().flat(),
+    this.longTermTotalProceeds(),
+    this.longTermTotalCost(),
+    undefined, // greyed out field
+    this.longTermTotalAdjustments(),
+    this.longTermTotalGain()
+  ]
 }

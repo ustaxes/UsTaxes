@@ -1,8 +1,11 @@
 import { Information, Person, HealthSavingsAccount } from 'ustaxes/core/data'
 import { sumFields } from 'ustaxes/core/irsForms/util'
-import Form, { FormTag } from 'ustaxes/core/irsForms/Form'
+import { FormTag } from 'ustaxes/core/irsForms/Form'
 import F8853 from './F8853'
 import { CURRENT_YEAR, healthSavingsAccounts } from '../data/federal'
+import F1040Attachment from './F1040Attachment'
+import F1040 from './F1040'
+import { Field } from 'ustaxes/core/pdfFiller'
 
 export const needsF8889 = (state: Information, person: Person): boolean => {
   return state.healthSavingsAccounts.some(
@@ -15,7 +18,7 @@ type PerMonthContributionType = {
   type: Array<'self-only' | 'family'>
 }
 
-export default class F8889 extends Form {
+export default class F8889 extends F1040Attachment {
   tag: FormTag = 'f8889'
   sequenceIndex = 52
   // these should only be the HSAs that belong to this person
@@ -28,14 +31,14 @@ export default class F8889 extends Form {
   perMonthContributions: PerMonthContributionType
   readonly firstDayOfLastMonth: Date
 
-  constructor(state: Information, person: Person, f8853?: F8853) {
-    super()
-    this.f8853 = f8853
+  constructor(f1040: F1040, person: Person) {
+    super(f1040)
+    this.f8853 = f1040.f8853
     this.person = person
-    this.state = state
+    this.state = f1040.info
     // The relevant HSAs are the ones either for this person or any that
     // have family coverage.
-    this.hsas = state.healthSavingsAccounts
+    this.hsas = this.state.healthSavingsAccounts
       .filter((h) => {
         if (h.personRole == person.role || h.coverageType == 'family') {
           return true
@@ -257,35 +260,33 @@ export default class F8889 extends Form {
   l20 = (): number => sumFields([this.l18(), this.l19()])
   l21 = (): number => Math.round(this.l20() * 0.1)
 
-  fields = (): Array<string | number | boolean | undefined> => {
-    return [
-      `${this.person.firstName} ${this.person.lastName}`,
-      this.person.ssid,
-      this.calculatedCoverageType === 'self-only', // line 1: self-only check box
-      this.calculatedCoverageType === 'family', // line 1: family checkbox
-      this.l2(),
-      this.l3(),
-      this.l4(),
-      this.l5(),
-      this.l6(),
-      this.l7(),
-      this.l8(),
-      this.l9(),
-      this.l10(),
-      this.l11(),
-      this.l12(),
-      this.l13(),
-      this.l14a(),
-      this.l14b(),
-      this.l14c(),
-      this.l15(),
-      this.l16(),
-      this.l17a(),
-      this.l17b(),
-      this.l18(),
-      this.l19(),
-      this.l20(),
-      this.l21()
-    ]
-  }
+  fields = (): Field[] => [
+    `${this.person.firstName} ${this.person.lastName}`,
+    this.person.ssid,
+    this.calculatedCoverageType === 'self-only', // line 1: self-only check box
+    this.calculatedCoverageType === 'family', // line 1: family checkbox
+    this.l2(),
+    this.l3(),
+    this.l4(),
+    this.l5(),
+    this.l6(),
+    this.l7(),
+    this.l8(),
+    this.l9(),
+    this.l10(),
+    this.l11(),
+    this.l12(),
+    this.l13(),
+    this.l14a(),
+    this.l14b(),
+    this.l14c(),
+    this.l15(),
+    this.l16(),
+    this.l17a(),
+    this.l17b(),
+    this.l18(),
+    this.l19(),
+    this.l20(),
+    this.l21()
+  ]
 }

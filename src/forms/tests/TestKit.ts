@@ -101,10 +101,11 @@ export default class TestKit {
       forms: Form[],
       info: Information,
       assets: Asset<Date>[]
-    ) => Promise<void>
+    ) => Promise<void>,
+    filter: (info: Information) => boolean = () => true
   ): fc.IAsyncPropertyWithHooks<[Information, Asset<Date>[]]> =>
     fc.asyncProperty(
-      this.arbitaries.information(),
+      this.arbitaries.information().filter(filter),
       fc.array(ustarbitraries.positionDate),
       async (information, assets): Promise<void> => {
         const builder = this.builder.build(information, assets)
@@ -129,7 +130,8 @@ export default class TestKit {
       info: Information,
       assets: Asset<Date>[]
     ) => Promise<void>,
-    params: Parameters<[Information, Asset<Date>[]]> = {}
+    params: Parameters<[Information, Asset<Date>[]]> = {},
+    filter: (info: Information) => boolean = () => true
   ): Promise<void> => {
     let lastCallWithInfo: Information | undefined
     await fc
@@ -145,15 +147,14 @@ export default class TestKit {
             // whether to run it again.
             throw e
           })
-        }),
+        }, filter),
         params
       )
       .catch(async (e) => {
-        console.error('Trying to log errors.')
+        console.error('Logging 1040 errors.')
         if (lastCallWithInfo !== undefined) {
           await this.log1040(lastCallWithInfo, e)
         } else {
-          console.error('trying to log error but no info is available')
           console.error('trying to log error but no info is available')
         }
         throw e

@@ -176,3 +176,19 @@ export const numberOfDaysBetween = (d1: Date, d2: Date): number => {
   )
   return Math.abs(end - start) / 1000 / 60 / 60 / 24
 }
+
+export const nextMultipleOf =
+  (mul: number) =>
+  (value: number): number => {
+    const v = Math.round(value)
+    // Just return the highest possible value divisible by mul
+    // if we're above this number (~9E15)
+    // Above that mod cannot be expected to return correct results
+    if (v > Number.MAX_SAFE_INTEGER - mul) {
+      return Number.MAX_SAFE_INTEGER - (Number.MAX_SAFE_INTEGER % mul)
+    }
+
+    return Math.ceil(v / mul) * mul
+  }
+
+export const nextMultipleOf1000 = nextMultipleOf(1000)
