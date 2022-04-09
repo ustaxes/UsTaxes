@@ -1,12 +1,43 @@
 import F1040Attachment from './F1040Attachment'
 import { FilingStatus, PersonRole } from 'ustaxes/core/data'
 import { FormTag } from 'ustaxes/core/irsForms/Form'
-import SDQualifiedAndCapGains from './worksheets/SDQualifiedAndCapGains'
 import { Field } from 'ustaxes/core/pdfFiller'
+
+type Part3 = Partial<{
+  l12: number
+  l13: number
+  l14: number
+  l15: number
+  l16: number
+  l17: number
+  l18: number
+  l19: number
+  l20: number
+  l21: number
+  l22: number
+  l23: number
+  l24: number
+  l25: number
+  l26: number
+  l27: number
+  l28: number
+  l29: number
+  l30: number
+  l31: number
+  l32: number
+  l33: number
+  l34: number
+  l35: number
+  l36: number
+  l37: number
+  l38: number
+  l39: number
+  l40: number
+}>
 
 export default class F6251 extends F1040Attachment {
   tag: FormTag = 'f6251'
-  sequenceIndex = 72
+  sequenceIndex = 32
 
   isNeeded = (): boolean => {
     // See https://www.irs.gov/instructions/i6251
@@ -209,7 +240,7 @@ export default class F6251 extends F1040Attachment {
 
     // Use line 40 if Part III is required
     if (this.requiresPartIII()) {
-      return this.l40()
+      return this.part3().l40
     }
 
     const cap =
@@ -256,379 +287,247 @@ export default class F6251 extends F1040Attachment {
     return Math.max(0, (this.l9() ?? 0) - (this.l10() ?? 0))
   }
 
-  l12 = (): number | undefined => {
+  part3 = (): Part3 => {
     if (!this.requiresPartIII()) {
-      return undefined
+      return {}
     }
-    return this.l6()
-  }
-
-  l13 = (): number | undefined => {
-    if (!this.requiresPartIII()) {
-      return undefined
+    const fs = this.f1040.info.taxPayer.filingStatus
+    if (fs === undefined) {
+      throw new Error('Filing status is undefined')
     }
 
-    const schDWksht = this.f1040.scheduleD?.rateGainWorksheet
-    if (schDWksht) {
-      const amount = schDWksht.l13()
-      if (amount != undefined) {
-        return amount
+    const qdivWorksheet = this.f1040.qualifiedAndCapGainsWorksheet
+    const schDWksht = this.f1040.scheduleD?.taxWorksheet
+    const usingTaxWorksheet = schDWksht !== undefined && schDWksht.isNeeded()
+
+    const l18Consts: [number, number] = (() => {
+      if (this.f1040.info.taxPayer.filingStatus === FilingStatus.MFS) {
+        return [99950, 1999]
       }
+      return [199900, 3998]
+    })()
+
+    const l19Value: { [k in FilingStatus]: number } = {
+      [FilingStatus.MFJ]: 80800,
+      [FilingStatus.W]: 80800,
+      [FilingStatus.S]: 40400,
+      [FilingStatus.MFS]: 40400,
+      [FilingStatus.HOH]: 54100
     }
 
-    const filingStatus = this.f1040.info.taxPayer.filingStatus
-    if (filingStatus !== undefined) {
-      const wksht = new SDQualifiedAndCapGains(this.f1040)
-      return wksht.l4()
+    const l25Value: { [k in FilingStatus]: number } = {
+      [FilingStatus.MFJ]: 501600,
+      [FilingStatus.W]: 501600,
+      [FilingStatus.S]: 445860,
+      [FilingStatus.MFS]: 250800,
+      [FilingStatus.HOH]: 473750
     }
 
-    return undefined
-  }
+    const l12 = this.l6()
 
-  l14 = (): number | undefined => {
-    if (!this.requiresPartIII()) {
-      return undefined
-    }
-
-    return this.f1040.scheduleD?.l14()
-  }
-
-  l15 = (): number | undefined => {
-    if (!this.requiresPartIII()) {
-      return undefined
-    }
-    if (!this.f1040.scheduleD?.rateGainWorksheet) {
-      return this.l13()
-    }
-
-    const l13And14 = (this.l13() ?? 0) + (this.l14() ?? 0)
-    return Math.min(
-      l13And14,
-      this.f1040.scheduleD?.rateGainWorksheet.l10() ?? 0
-    )
-  }
-
-  l16 = (): number | undefined => {
-    if (!this.requiresPartIII()) {
-      return undefined
-    }
-    return Math.min(this.l12() ?? 0, this.l14() ?? 0)
-  }
-
-  l17 = (): number | undefined => {
-    if (!this.requiresPartIII()) {
-      return undefined
-    }
-    return (this.l12() ?? 0) - (this.l16() ?? 0)
-  }
-
-  l18 = (): number | undefined => {
-    if (!this.requiresPartIII()) {
-      return undefined
-    }
-
-    const l17 = this.l17() ?? 0
-    const cap =
-      this.f1040.info.taxPayer.filingStatus === FilingStatus.MFS
-        ? 99950
-        : 199900
-    if (l17 <= cap) {
-      return l17 * 0.26
-    }
-    const subtract =
-      this.f1040.info.taxPayer.filingStatus === FilingStatus.MFS ? 1999 : 3998
-    return l17 * 0.28 - subtract
-  }
-
-  l19 = (): number | undefined => {
-    if (!this.requiresPartIII()) {
-      return undefined
-    }
-
-    switch (this.f1040.info.taxPayer.filingStatus) {
-      case FilingStatus.MFS:
-      case FilingStatus.S:
-        return 40400
-      case FilingStatus.MFJ:
-      case FilingStatus.W:
-        return 80800
-      case FilingStatus.HOH:
-        return 54100
-    }
-
-    return undefined
-  }
-
-  l20 = (): number | undefined => {
-    if (!this.requiresPartIII()) {
-      return undefined
-    }
-
-    const schDWksht = this.f1040.scheduleD?.rateGainWorksheet
-    if (schDWksht) {
-      const amount = schDWksht.l14()
-      if (amount !== undefined) {
-        return amount
+    // TODO - for F2555, see the instructions for amount
+    const l13: number = (() => {
+      if (usingTaxWorksheet) {
+        return schDWksht.l13() ?? 0
       }
-    }
 
-    if (this.f1040.totalQualifiedDividends() > 0) {
-      const wksht = new SDQualifiedAndCapGains(this.f1040)
-      return wksht.l5()
-    }
+      return qdivWorksheet?.l4() ?? 0
+    })()
 
-    return Math.max(0, this.f1040.l15() ?? 0)
-  }
+    const l14 = this.f1040.scheduleD?.l19() ?? 0
 
-  l21 = (): number | undefined => {
-    if (!this.requiresPartIII()) {
-      return undefined
-    }
-
-    return Math.max(0, (this.l19() ?? 0) - (this.l20() ?? 0))
-  }
-
-  l22 = (): number | undefined => {
-    if (!this.requiresPartIII()) {
-      return undefined
-    }
-    return Math.min(this.l12() ?? 0, this.l13() ?? 0)
-  }
-
-  l23 = (): number | undefined => {
-    if (!this.requiresPartIII()) {
-      return undefined
-    }
-    return Math.min(this.l21() ?? 0, this.l22() ?? 0)
-  }
-
-  l24 = (): number | undefined => {
-    if (!this.requiresPartIII()) {
-      return undefined
-    }
-
-    return Math.max(0, (this.l22() ?? 0) - (this.l23() ?? 0))
-  }
-
-  l25 = (): number | undefined => {
-    if (!this.requiresPartIII()) {
-      return undefined
-    }
-
-    switch (this.f1040.info.taxPayer.filingStatus) {
-      case FilingStatus.S:
-        return 445850
-      case FilingStatus.MFS:
-        return 250800
-      case FilingStatus.MFJ:
-      case FilingStatus.W:
-        return 501600
-      case FilingStatus.HOH:
-        return 473750
-    }
-
-    return undefined
-  }
-
-  l26 = (): number | undefined => this.l21()
-
-  l27 = (): number | undefined => {
-    if (!this.requiresPartIII()) {
-      return undefined
-    }
-
-    const schDWksht = this.f1040.scheduleD?.rateGainWorksheet
-    if (schDWksht) {
-      const amount = schDWksht.l21()
-      if (amount !== undefined) {
-        return amount
+    const l15 = (() => {
+      if (!usingTaxWorksheet) {
+        return l13
       }
-    }
+      return Math.min(l13 + l14, schDWksht.l10() ?? 0)
+    })()
 
-    if (this.f1040.totalQualifiedDividends() > 0) {
-      const wksht = new SDQualifiedAndCapGains(this.f1040)
-      return wksht.l5()
-    }
+    const l16 = Math.min(l12 ?? 0, l15 ?? 0)
 
-    return Math.max(0, this.f1040.l15() ?? 0)
+    const l17 = (l12 ?? 0) - (l16 ?? 0)
+
+    const l18 = (() => {
+      const [c1, c2] = l18Consts
+
+      if (l17 <= c1) {
+        return l17 * 0.26
+      }
+      return l17 * 0.28 - c2
+    })()
+
+    const l19 = l19Value[fs]
+
+    const l20 = (() => {
+      if (usingTaxWorksheet) {
+        return schDWksht.l14() ?? 0
+      }
+
+      if (qdivWorksheet !== undefined) {
+        return qdivWorksheet.l5()
+      }
+
+      return Math.max(0, this.f1040.l15())
+    })()
+
+    const l21 = Math.max(0, (l19 ?? 0) - (l20 ?? 0))
+
+    const l22 = Math.min(l12 ?? 0, l13 ?? 0)
+
+    const l23 = Math.min(l21 ?? 0, l22 ?? 0)
+
+    const l24 = Math.max(0, (l22 ?? 0) - (l23 ?? 0))
+
+    const l25 = l25Value[fs]
+
+    const l26 = l21
+
+    // TODO - see instructions for F2555
+    const l27 = (() => {
+      if (usingTaxWorksheet) {
+        return schDWksht.l21() ?? 0
+      }
+
+      if (qdivWorksheet !== undefined) {
+        return qdivWorksheet.l5()
+      }
+
+      return Math.max(0, this.f1040.l15())
+    })()
+
+    const l28 = l26 + l27
+
+    const l29 = Math.max(0, l25 - l28)
+
+    const l30 = Math.min(l24, l29)
+
+    const l31 = l30 * 0.15
+
+    const l32 = l23 + l30
+
+    const l33 = l22 - l32
+
+    const l34 = l33 * 0.2
+
+    const l35 = l17 + l32 + l33
+
+    const l36 = l12 - l35
+
+    const l37 = l36 * 0.25
+
+    const l38 = l18 + l31 + l34 + l37
+
+    const l39 = (() => {
+      // numbers referenced here are the same as l18.
+      const [c1, c2] = l18Consts
+      if (l12 <= c1) {
+        return l12 * 0.26
+      }
+      return l12 * 0.28 - c2
+    })()
+
+    const l40 = Math.min(l38, l39)
+
+    return {
+      l12,
+      l13,
+      l14,
+      l15,
+      l16,
+      l17,
+      l18,
+      l19,
+      l20,
+      l21,
+      l22,
+      l23,
+      l24,
+      l25,
+      l26,
+      l27,
+      l28,
+      l29,
+      l30,
+      l31,
+      l32,
+      l33,
+      l34,
+      l35,
+      l36,
+      l37,
+      l38,
+      l39,
+      l40
+    }
   }
 
-  l28 = (): number | undefined => {
-    if (!this.requiresPartIII()) {
-      return undefined
-    }
-    return (this.l26() ?? 0) + (this.l27() ?? 0)
+  fields = (): Field[] => {
+    const p3 = this.part3()
+    return [
+      this.f1040.info.namesString(),
+      this.f1040.info.taxPayer.primaryPerson?.ssid,
+      // Part I
+      this.l1(),
+      this.l2a(),
+      this.l2b(),
+      this.l2c(),
+      this.l2d(),
+      this.l2e(),
+      this.l2f(),
+      this.l2g(),
+      this.l2h(),
+      this.l2i(),
+      this.l2j(),
+      this.l2k(),
+      this.l2l(),
+      this.l2m(),
+      this.l2n(),
+      this.l2o(),
+      this.l2p(),
+      this.l2q(),
+      this.l2r(),
+      this.l2s(),
+      this.l2t(),
+      this.l3(),
+      this.l4(),
+      // Part II
+      this.l5(),
+      this.l6(),
+      this.l7(),
+      this.l8(),
+      this.l9(),
+      this.l10(),
+      this.l11(),
+      // Part III
+      p3.l12,
+      p3.l13,
+      p3.l14,
+      p3.l15,
+      p3.l16,
+      p3.l17,
+      p3.l18,
+      p3.l19,
+      p3.l20,
+      p3.l21,
+      p3.l22,
+      p3.l23,
+      p3.l24,
+      p3.l25,
+      p3.l26,
+      p3.l27,
+      p3.l28,
+      p3.l29,
+      p3.l30,
+      p3.l31,
+      p3.l32,
+      p3.l33,
+      p3.l34,
+      p3.l35,
+      p3.l36,
+      p3.l37,
+      p3.l38,
+      p3.l39,
+      p3.l40
+    ]
   }
-
-  l29 = (): number | undefined => {
-    if (!this.requiresPartIII()) {
-      return undefined
-    }
-    return Math.max(0, (this.l25() ?? 0) - (this.l28() ?? 0))
-  }
-
-  l30 = (): number | undefined => {
-    if (!this.requiresPartIII()) {
-      return undefined
-    }
-    return Math.min(this.l24() ?? 0, this.l29() ?? 0)
-  }
-
-  l31 = (): number | undefined => {
-    if (!this.requiresPartIII()) {
-      return undefined
-    }
-    return (this.l30() ?? 0) * 0.15
-  }
-
-  l32 = (): number | undefined => {
-    if (!this.requiresPartIII()) {
-      return undefined
-    }
-    return (this.l23() ?? 0) + (this.l30() ?? 0)
-  }
-
-  l33 = (): number | undefined => {
-    if (
-      !this.requiresPartIII() ||
-      (this.l12() ?? 0) - (this.l32() ?? 0) < 0.01
-    ) {
-      return undefined
-    }
-    return (this.l22() ?? 0) + (this.l32() ?? 0)
-  }
-
-  l34 = (): number | undefined => {
-    const l33 = this.l33()
-    if (l33 === undefined) {
-      return undefined
-    }
-    return l33 * 0.2
-  }
-
-  l35 = (): number | undefined => {
-    if ((this.l14() ?? 0) === 0) {
-      return undefined
-    }
-    return (this.l17() ?? 0) + (this.l32() ?? 0) + (this.l33() ?? 0)
-  }
-
-  l36 = (): number | undefined => {
-    if ((this.l14() ?? 0) === 0) {
-      return undefined
-    }
-    return (this.l12() ?? 0) - (this.l35() ?? 0)
-  }
-
-  l37 = (): number | undefined => {
-    if ((this.l14() ?? 0) === 0) {
-      return undefined
-    }
-    return (this.l36() ?? 0) * 0.25
-  }
-
-  l38 = (): number | undefined => {
-    if (!this.requiresPartIII()) {
-      return undefined
-    }
-    return (
-      (this.l18() ?? 0) +
-      (this.l31() ?? 0) +
-      (this.l34() ?? 0) +
-      (this.l37() ?? 0)
-    )
-  }
-
-  l39 = (): number | undefined => {
-    if (!this.requiresPartIII()) {
-      return undefined
-    }
-
-    const l12 = this.l12() ?? 0
-    const cap =
-      this.f1040.info.taxPayer.filingStatus === FilingStatus.MFS
-        ? 99950
-        : 199900
-    if (l12 <= cap) {
-      return l12 * 0.26
-    }
-    const subtract =
-      this.f1040.info.taxPayer.filingStatus === FilingStatus.MFS ? 1999 : 3998
-    return l12 * 0.28 - subtract
-  }
-
-  l40 = (): number | undefined => {
-    if (!this.requiresPartIII()) {
-      return undefined
-    }
-
-    return Math.min(this.l38() ?? 0, this.l39() ?? 0)
-  }
-
-  fields = (): Field[] => [
-    this.f1040.info.namesString(),
-    this.f1040.info.taxPayer.primaryPerson?.ssid,
-    // Part I
-    this.l1(),
-    this.l2a(),
-    this.l2b(),
-    this.l2c(),
-    this.l2d(),
-    this.l2e(),
-    this.l2f(),
-    this.l2g(),
-    this.l2h(),
-    this.l2i(),
-    this.l2j(),
-    this.l2k(),
-    this.l2l(),
-    this.l2m(),
-    this.l2n(),
-    this.l2o(),
-    this.l2p(),
-    this.l2q(),
-    this.l2r(),
-    this.l2s(),
-    this.l2t(),
-    this.l3(),
-    this.l4(),
-    // Part II
-    this.l5(),
-    this.l6(),
-    this.l7(),
-    this.l8(),
-    this.l9(),
-    this.l10(),
-    this.l11(),
-    // Part III
-    this.l12(),
-    this.l13(),
-    this.l14(),
-    this.l15(),
-    this.l16(),
-    this.l17(),
-    this.l18(),
-    this.l19(),
-    this.l20(),
-    this.l21(),
-    this.l22(),
-    this.l23(),
-    this.l24(),
-    this.l25(),
-    this.l26(),
-    this.l27(),
-    this.l28(),
-    this.l29(),
-    this.l30(),
-    this.l31(),
-    this.l32(),
-    this.l33(),
-    this.l34(),
-    this.l35(),
-    this.l36(),
-    this.l37(),
-    this.l38(),
-    this.l39(),
-    this.l40()
-  ]
 }
