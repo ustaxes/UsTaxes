@@ -25,6 +25,7 @@ export function GenericLabeledDropdown<A>(
     valueMapping,
     keyMapping,
     textMapping,
+    noUndefined = false,
     required = true,
     name,
     useGrid = true,
@@ -70,7 +71,11 @@ export function GenericLabeledDropdown<A>(
               shrink: true
             }}
           >
-            <option value={''} />
+            {(() => {
+              if (!noUndefined) {
+                return <option value={''} />
+              }
+            })()}
             {dropDownData.map((dropDownItem: A, i: number) => (
               <option
                 value={valueMapping(dropDownItem, i)}

@@ -564,7 +564,9 @@ export interface Asset<DateType = Date> {
   closeDate?: DateType
   giftedDate?: DateType
   openPrice: number
+  openFee: number
   closePrice?: number
+  closeFee?: number
   quantity: number
   state?: State
 }

@@ -81,6 +81,7 @@ export enum ActionName {
   ADD_ASSETS = 'ASSETS/ADD_MANY',
   EDIT_ASSET = 'ASSETS/EDIT',
   REMOVE_ASSET = 'ASSETS/REMOVE',
+  REMOVE_ASSETS = 'ASSETS/REMOVE_MANY',
   ADD_F3921 = 'F3921/ADD',
   EDIT_F3921 = 'F3921/EDIT',
   REMOVE_F3921 = 'F3921/REMOVE',
@@ -152,6 +153,7 @@ type AddAsset = Save<typeof ActionName.ADD_ASSET, Asset<Date>>
 type AddAssets = Save<typeof ActionName.ADD_ASSETS, Asset<Date>[]>
 type EditAsset = Save<typeof ActionName.EDIT_ASSET, EditAssetAction>
 type RemoveAsset = Save<typeof ActionName.REMOVE_ASSET, number>
+type RemoveAssets = Save<typeof ActionName.REMOVE_ASSETS, number[]>
 type AddF3921 = Save<typeof ActionName.ADD_F3921, F3921>
 type EditF3921 = Save<typeof ActionName.EDIT_F3921, EditF3921Action>
 type RemoveF3921 = Save<typeof ActionName.REMOVE_F3921, number>
@@ -208,6 +210,7 @@ export type Actions =
   | AddAssets
   | EditAsset
   | RemoveAsset
+  | RemoveAssets
   | AddF3921
   | EditF3921
   | RemoveF3921
@@ -465,6 +468,10 @@ export const editAsset: ActionCreator<EditAssetAction> = makeActionCreator(
 export const removeAsset: ActionCreator<number> = makeActionCreator(
   ActionName.REMOVE_ASSET,
   indexValidator
+)
+
+export const removeAssets: ActionCreator<number[]> = makeActionCreator(
+  ActionName.REMOVE_ASSETS
 )
 
 export const addF3921: ActionCreator<F3921> = makeActionCreator(

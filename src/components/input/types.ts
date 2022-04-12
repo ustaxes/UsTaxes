@@ -29,6 +29,7 @@ export interface LabeledDropdownProps<A> extends BaseDropdownProps {
   valueMapping: (a: A, n: number) => string
   keyMapping: (a: A, n: number) => string | number
   textMapping: (a: A, n: number) => string
+  noUndefined?: boolean
 }
 
 export interface LabeledInputProps {
