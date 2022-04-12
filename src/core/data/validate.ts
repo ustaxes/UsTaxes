@@ -63,7 +63,7 @@ export const refund = fns.Refund as ValidateFunction<types.Refund>
 export const taxPayer =
   fns.TaxPayer as ValidateFunction<types.TaxPayerDateString>
 export const information =
-  fns.Information as ValidateFunction<types.Information>
+  fns.Information as ValidateFunction<types.InformationDateString>
 export const property = fns.Property as ValidateFunction<types.Property>
 export const propertyType =
   fns.PropertyType as ValidateFunction<types.PropertyType>
