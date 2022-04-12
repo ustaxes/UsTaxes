@@ -34,7 +34,7 @@ import { sumFields } from 'ustaxes/core/irsForms/util'
 import ScheduleB from './ScheduleB'
 import { computeOrdinaryTax } from './TaxTable'
 import SDQualifiedAndCapGains from './worksheets/SDQualifiedAndCapGains'
-import ChildTaxCreditWorksheet from './worksheets/ChildTaxCreditWorksheet'
+import QualifyingDependents from './worksheets/QualifyingDependents'
 import SocialSecurityBenefitsWorksheet from './worksheets/SocialSecurityBenefits'
 import F4797 from './F4797'
 import StudentLoanInterestWorksheet from './worksheets/StudentLoanInterestWorksheet'
@@ -109,13 +109,14 @@ export default class F1040 extends Form {
   studentLoanInterestWorksheet?: StudentLoanInterestWorksheet
   socialSecurityBenefitsWorksheet?: SocialSecurityBenefitsWorksheet
 
-  childTaxCreditWorksheet?: ChildTaxCreditWorksheet
+  qualifyingDependents: QualifyingDependents
 
   constructor(info: Information, assets: Asset<Date>[]) {
     super()
     this.info = new InformationMethods(info)
     this.assets = assets
     this.f8949 = []
+    this.qualifyingDependents = new QualifyingDependents(this)
     this.makeSchedules()
   }
 
@@ -330,15 +331,15 @@ export default class F1040 extends Form {
       }
     }
 
-    const ws = new ChildTaxCreditWorksheet(this)
     const schedule8812 = new Schedule8812(this)
 
     if (
       this.info.taxPayer.dependents.some(
-        (dep) => ws.qualifiesChild(dep) || ws.qualifiesOther(dep)
+        (dep) =>
+          this.qualifyingDependents.qualifiesChild(dep) ||
+          this.qualifyingDependents.qualifiesOther(dep)
       )
     ) {
-      this.childTaxCreditWorksheet = ws
       this.schedule8812 = schedule8812
     }
   }
@@ -501,7 +502,7 @@ export default class F1040 extends Form {
   l17 = (): number | undefined => this.schedule2?.l3()
   l18 = (): number => sumFields([this.l16(), this.l17()])
 
-  l19 = (): number | undefined => this.childTaxCreditWorksheet?.l12()
+  l19 = (): number | undefined => this.schedule8812?.to1040Line19()
   l20 = (): number | undefined => this.schedule3?.l7()
   l21 = (): number => sumFields([this.l19(), this.l20()])
 
@@ -585,8 +586,8 @@ export default class F1040 extends Form {
         `${dep.firstName} ${dep.lastName}`,
         dep.ssid,
         dep.relationship,
-        this.childTaxCreditWorksheet?.qualifiesChild(dep) ?? false,
-        this.childTaxCreditWorksheet?.qualifiesOther(dep) ?? false
+        this.qualifyingDependents.qualifiesChild(dep),
+        this.qualifyingDependents.qualifiesOther(dep)
       ]
     }
 

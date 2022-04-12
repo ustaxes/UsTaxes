@@ -7,6 +7,7 @@ import { Field } from 'ustaxes/core/pdfFiller'
 import { nextMultipleOf1000 } from 'ustaxes/core/util'
 
 type Part1b = Partial<{
+  allowed: boolean
   l14a: number
   l14b: number
   l14c: number
@@ -92,7 +93,7 @@ export default class Schedule8812 extends F1040Attachment {
   l3 = (): number => sumFields([this.l1(), this.l2d()])
 
   creditDependents = (): Dependent[] =>
-    this.f1040.childTaxCreditWorksheet?.qualifyingChildren() ?? []
+    this.f1040.qualifyingDependents.qualifyingChildren()
 
   l4a = (): number => this.creditDependents().length
 
@@ -208,29 +209,26 @@ export default class Schedule8812 extends F1040Attachment {
 
   part1b = (): Part1b => {
     const allowed = this.l13a() || this.l13b()
-    const ifAble = <A>(f: () => A): A | undefined => {
-      if (allowed) {
-        return f()
-      }
-    }
+    if (!allowed) return {}
 
-    const l14a = ifAble(() => Math.min(this.l7(), this.l12()))
-    const l14b = ifAble(() => Math.max(this.l12() - (l14a ?? 0)))
-    const l14c = ifAble(() => (l14a === 0 ? 0 : this.creditLimitWorksheetA()))
-    const l14d = ifAble(() => Math.min(l14a ?? 0, l14c ?? 0))
-    const l14e = ifAble(() => sumFields([l14b, l14d]))
+    const l14a = Math.min(this.l7(), this.l12())
+    const l14b = Math.max(this.l12() - (l14a ?? 0))
+    const l14c = l14a === 0 ? 0 : this.creditLimitWorksheetA()
+    const l14d = Math.min(l14a ?? 0, l14c ?? 0)
+    const l14e = sumFields([l14b, l14d])
     // TODO:
     // IMPORTANT: Letter 6419 advance child tax credit payments
-    const l14f = ifAble(() => this.letter6419Payments())
-    const l14g = ifAble(() => Math.max(0, (l14e ?? 0) - (l14f ?? 0)))
+    const l14f = this.letter6419Payments()
+    const l14g = Math.max(0, (l14e ?? 0) - (l14f ?? 0))
 
     // Credit for other dependents
-    const l14h = ifAble(() => Math.min(l14d ?? 0, l14g ?? 0))
+    const l14h = Math.min(l14d ?? 0, l14g ?? 0)
 
     // Refundable child tax credit
-    const l14i = ifAble(() => Math.max(0, (l14g ?? 0) - (l14h ?? 0)))
+    const l14i = Math.max(0, (l14g ?? 0) - (l14h ?? 0))
 
     return {
+      allowed,
       l14a,
       l14b,
       l14c,
@@ -245,22 +243,18 @@ export default class Schedule8812 extends F1040Attachment {
 
   part1c = (): Part1c => {
     const allowed = !(this.l13a() || this.l13b())
-    const ifAble = <A>(f: () => A): A | undefined => {
-      if (allowed) {
-        return f()
-      }
-    }
+    if (!allowed) return {}
 
-    const l15a = ifAble(() => this.creditLimitWorksheetA())
-    const l15b = ifAble(() => Math.min(this.l12(), l15a ?? 0))
+    const l15a = this.creditLimitWorksheetA()
+    const l15b = Math.min(this.l12(), l15a ?? 0)
 
     //TODO - implement after 2a through 2c
-    const l15c = ifAble(() => this.l27() ?? 0)
-    const l15d = ifAble(() => sumFields([l15b, l15c]))
-    const l15e = ifAble(() => this.letter6419Payments())
-    const l15f = ifAble(() => Math.max(0, (l15d ?? 0) - (l15e ?? 0)))
-    const l15g = ifAble(() => Math.min(l15b ?? 0, l15f ?? 0))
-    const l15h = ifAble(() => Math.max(0, (l15f ?? 0) - (l15g ?? 0)))
+    const l15c = this.l27() ?? 0
+    const l15d = sumFields([l15b, l15c])
+    const l15e = this.letter6419Payments()
+    const l15f = Math.max(0, (l15d ?? 0) - (l15e ?? 0))
+    const l15g = Math.min(l15b ?? 0, l15f ?? 0)
+    const l15h = Math.max(0, (l15f ?? 0) - (l15g ?? 0))
 
     return {
       allowed,
@@ -285,6 +279,9 @@ export default class Schedule8812 extends F1040Attachment {
         this.l12() > (part1c.l15a ?? 0))
     )
   }
+
+  to1040Line19 = (): number | undefined =>
+    this.part1b().l14h ?? this.part1c().l15g
 
   to1040Line28 = (): number | undefined =>
     this.part1b().l14i ?? this.part1c().l15h
@@ -451,6 +448,12 @@ export default class Schedule8812 extends F1040Attachment {
     const part1b = this.part1b()
     const part1c = this.part1c()
 
+    const allowed =
+      (part1b.allowed && part1b.l14g === 0) ||
+      (part1c.allowed && part1c.l15f === 0)
+
+    if (!allowed) return {}
+
     if (fs === undefined) {
       throw new Error('filing status is undefined')
     }
@@ -513,6 +516,9 @@ export default class Schedule8812 extends F1040Attachment {
   }
 
   l40 = (): number => this.part3().l40 ?? 0
+
+  // This is your additional tax.
+  toSchedule2Line19: () => number = this.l40
 
   fields = (): Field[] => {
     const part1b = this.part1b()
