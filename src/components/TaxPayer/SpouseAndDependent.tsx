@@ -61,7 +61,7 @@ const blankUserDependentForm: UserDependentForm = {
 }
 
 const toDependent = (formData: UserDependentForm): Dependent => {
-  const { birthYear, isStudent, numberOfMonths, ...rest } = formData
+  const { birthYear, isStudent = false, numberOfMonths, ...rest } = formData
 
   return {
     ...rest,
