@@ -279,15 +279,19 @@ const FilteredAssetsTable = (): ReactElement => {
   })()
 
   return (
-    <Grid container spacing={2} direction="column">
+    <Grid container spacing={1} direction="column">
       <Grid item>{filterForm}</Grid>
       <Grid item>{assetSummary}</Grid>
       {exportView}
 
-      <DisplayAssets
-        assets={displayAssets}
-        deleteRows={(rows) => dispatch(actions.removeAssets(rows)(activeYear))}
-      />
+      <Grid item>
+        <DisplayAssets
+          assets={displayAssets}
+          deleteRows={(rows) =>
+            dispatch(actions.removeAssets(rows)(activeYear))
+          }
+        />
+      </Grid>
     </Grid>
   )
 }
