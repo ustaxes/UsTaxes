@@ -3,6 +3,7 @@ import { CombinedState, combineReducers, Reducer } from 'redux'
 import { Asset, FilingStatus, Information, TaxYear } from 'ustaxes/core/data'
 import { YearsTaxesState } from '.'
 import { ActionName, Actions } from './actions'
+import { stringToDateInfo } from './data'
 
 const DEFAULT_TAX_YEAR: TaxYear = 'Y2021'
 
@@ -327,7 +328,7 @@ const formReducer = (
     case ActionName.SET_INFO: {
       return {
         ...newState,
-        ...action.formData
+        ...stringToDateInfo(action.formData)
       }
     }
     case ActionName.ADD_HSA: {

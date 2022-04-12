@@ -61,7 +61,7 @@ describe('Dependents', () => {
       'Last Name',
       'SSN / TIN',
       'Relationship to Taxpayer',
-      'Birth Year',
+      'Date of Birth',
       'How many months did you live together this year?',
       'Is this person a full-time student?'
     ]
@@ -113,8 +113,8 @@ describe('Dependents', () => {
       firstNameInput,
       lastNameInput,
       ssnInput,
+      dateOfBirthInput,
       relationInput,
-      birthYearInput,
       durationInput
     ] = inputs
 
@@ -123,8 +123,8 @@ describe('Dependents', () => {
     userEvent.type(lastNameInput, 'Brown')
     userEvent.clear(ssnInput)
     userEvent.type(ssnInput, '222222222')
+    userEvent.type(dateOfBirthInput, '12/31/2007')
     userEvent.type(relationInput, 'Son')
-    userEvent.type(birthYearInput, '1999')
     userEvent.type(durationInput, '12')
     userEvent.click(dependent.q.isStudent()!)
 
@@ -151,7 +151,7 @@ describe('Dependents', () => {
       newLastNameInput,
       newSsnInput,
       newRelationInput,
-      newBirthYearInput,
+      newDateOfBirthInput,
       newDurationInput
     ] = newInputs
 
@@ -160,7 +160,7 @@ describe('Dependents', () => {
     userEvent.clear(newSsnInput)
     userEvent.type(newSsnInput, '333333333')
     userEvent.type(newRelationInput, 'Daughter')
-    userEvent.type(newBirthYearInput, '2002')
+    userEvent.type(newDateOfBirthInput, '12/31/2007')
     userEvent.type(newDurationInput, '12')
     userEvent.click(dependent.q.isStudent()!)
 
@@ -229,7 +229,7 @@ describe('Dependents', () => {
       lastNameInput,
       ssnInput,
       relationInput,
-      birthYearInput,
+      dateOfBirthInput,
       durationInput
     ] = inputs
 
@@ -239,7 +239,7 @@ describe('Dependents', () => {
     userEvent.clear(ssnInput)
     userEvent.type(ssnInput, '222222222')
     userEvent.type(relationInput, 'Son')
-    userEvent.type(birthYearInput, '1999')
+    userEvent.type(dateOfBirthInput, '12/31/2007')
     userEvent.type(durationInput, '12')
     userEvent.click(dependent.q.isStudent()!)
 
@@ -266,7 +266,7 @@ describe('Dependents', () => {
       newLastNameInput,
       newSsnInput,
       newRelationInput,
-      newBirthYearInput,
+      newdateOfBirthInput,
       newDurationInput
     ] = newInputs
 
@@ -275,7 +275,7 @@ describe('Dependents', () => {
     userEvent.clear(newSsnInput)
     userEvent.type(newSsnInput, '333333333')
     userEvent.type(newRelationInput, 'Daughter')
-    userEvent.type(newBirthYearInput, '2002')
+    userEvent.type(newdateOfBirthInput, '12/31/2002')
     userEvent.type(newDurationInput, '12')
     userEvent.click(dependent.q.isStudent()!)
     userEvent.click(await dependent.saveButton())
@@ -309,8 +309,8 @@ describe('Dependents', () => {
       filledFirstNameInput,
       filledLastNameInput,
       filledSsnInput,
+      filledDateOfBirthInput,
       filledRelationInput,
-      filledBirthYearInput,
       filledDurationInput
     ] = filledInputs as HTMLInputElement[]
 
@@ -318,7 +318,7 @@ describe('Dependents', () => {
     expect(filledLastNameInput.value).toBe('Brown')
     expect(filledSsnInput.value).toBe('222-22-2222')
     expect(filledRelationInput.value).toBe('Son')
-    expect(filledBirthYearInput.value).toBe('1999')
+    expect(filledDateOfBirthInput.value).toBe('12/31/2002')
     expect(filledDurationInput.value).toBe('12')
     expect(filledFirstNameInput.value).toBe('Charlie')
 
@@ -367,7 +367,7 @@ describe('Dependents', () => {
       'Last Name',
       'SSN / TIN',
       'Relationship to Taxpayer',
-      'Birth Year',
+      'Date of Birth',
       'How many months did you live together this year?',
       'Is this person a full-time student?'
     ]
@@ -383,7 +383,7 @@ describe('Dependents', () => {
     // click the save button with empty inputs
     userEvent.click(await dependent.saveButton())
 
-    // expect six `Input is required` errors
+    // expect five `Input is required` errors
     await waitFor(async () =>
       expect(dependent.requiredErrors()).toHaveLength(6)
     )
@@ -394,7 +394,7 @@ describe('Dependents', () => {
       lastNameInput,
       ssnInput,
       relationInput,
-      birthYearInput,
+      dateOfBirthInput,
       durationInput
     ] = inputs
 
@@ -504,7 +504,7 @@ describe('Dependents', () => {
 
     expect(dependent.requiredErrors()).toHaveLength(2)
 
-    userEvent.type(birthYearInput, 'abcd')
+    userEvent.type(dateOfBirthInput, 'abcd')
     userEvent.click(await dependent.saveButton())
 
     await waitFor(async () =>
@@ -513,29 +513,13 @@ describe('Dependents', () => {
       ).toHaveLength(2)
     )
 
-    userEvent.type(birthYearInput, '{selectall}{del}1294')
+    userEvent.type(dateOfBirthInput, '{selectall}{del}1294')
     userEvent.click(await dependent.saveButton())
-
-    await waitFor(async () =>
-      expect(
-        await spouseAndDependent
-          .rendered()
-          .findAllByText('Input must be greater than or equal to 1900')
-      ).toHaveLength(1)
-    )
 
     expect(dependent.requiredErrors()).toHaveLength(1)
 
-    userEvent.type(birthYearInput, '{selectall}{del}1999')
+    userEvent.type(dateOfBirthInput, '{selectall}{del}12/31/1999')
     userEvent.click(await dependent.saveButton())
-
-    await waitFor(() =>
-      expect(
-        spouseAndDependent
-          .rendered()
-          .queryByText('Input must be greater than or equal to 1900')
-      ).not.toBeInTheDocument()
-    )
 
     expect(dependent.requiredErrors()).toHaveLength(1)
 

@@ -1,8 +1,9 @@
 import * as arbitraries from './arbitraries'
 import * as fc from 'fast-check'
-import { Address, Dependent, Information, PrimaryPerson, Person } from '../data'
+import { Address, Dependent, Information, PrimaryPerson } from '../data'
 import log from '../log'
 import * as validators from '../data/validate'
+import { dateToStringPerson, infoToStringInfo } from 'ustaxes/redux/data'
 
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
@@ -12,37 +13,13 @@ beforeAll(() => {
   log.setDefaultLevel(log.levels.SILENT)
 })
 
-const dateToStringPerson = <P extends Person<Date>>(
-  p: P
-): Omit<P, 'dateOfBirth'> & { dateOfBirth: string } => ({
-  ...p,
-  dateOfBirth: p.dateOfBirth.toISOString()
-})
-
 const primaryPerson: fc.Arbitrary<PrimaryPerson<string>> =
   arbitraries.primaryPerson.map((p) => dateToStringPerson(p))
 
 const information: fc.Arbitrary<Information<string>> = arbitraries
   .forYear(2020)
   .information()
-  .map((i) => ({
-    ...i,
-    healthSavingsAccounts: i.healthSavingsAccounts.map((h) => ({
-      ...h,
-      startDate: h.startDate.toISOString(),
-      endDate: h.endDate.toISOString()
-    })),
-    taxPayer: {
-      ...i.taxPayer,
-      primaryPerson: i.taxPayer.primaryPerson
-        ? dateToStringPerson(i.taxPayer.primaryPerson)
-        : undefined,
-      dependents: i.taxPayer.dependents.map((d) => dateToStringPerson(d)),
-      spouse: i.taxPayer.spouse
-        ? dateToStringPerson(i.taxPayer.spouse)
-        : undefined
-    }
-  }))
+  .map((i) => infoToStringInfo(i))
 
 const dependent: fc.Arbitrary<Dependent<string>> = arbitraries
   .forYear(2020)

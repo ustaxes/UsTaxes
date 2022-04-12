@@ -104,7 +104,6 @@ const toSpouse = (formData: UserSpouseForm): Spouse<string> => ({
 
 const toSpouseForm = (spouse: Spouse): UserSpouseForm => ({
   ...spouse
-  //dateOfBirth: new Date(spouse.dateOfBirth)
 })
 
 export const AddDependentForm = (): ReactElement => {

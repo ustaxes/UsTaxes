@@ -20,7 +20,8 @@ import {
   F3921,
   ScheduleK1Form1065,
   TaxYear,
-  HealthSavingsAccountDateString
+  HealthSavingsAccountDateString,
+  InformationDateString
 } from 'ustaxes/core/data'
 
 import {
@@ -39,6 +40,7 @@ import {
 import * as validators from 'ustaxes/core/data/validate'
 import { index as indexValidator } from 'ustaxes/core/data/validate'
 import { ValidateFunction } from 'ajv'
+import { infoToStringInfo } from './data'
 
 export enum ActionName {
   SAVE_REFUND_INFO = 'SAVE_REFUND_INFO',
@@ -143,7 +145,7 @@ type SetItemizedDeductions = Save<
   typeof ActionName.SET_ITEMIZED_DEDUCTIONS,
   ItemizedDeductions
 >
-type SetInfo = Save<typeof ActionName.SET_INFO, Information>
+type SetInfo = Save<typeof ActionName.SET_INFO, InformationDateString>
 type SetActiveYear = Save<typeof ActionName.SET_ACTIVE_YEAR, TaxYear>
 type AddIRA = Save<typeof ActionName.ADD_IRA, Ira>
 type EditIRA = Save<typeof ActionName.EDIT_IRA, EditIraAction>
@@ -251,18 +253,18 @@ const makeActionCreator =
  * apply formatting changes to provided data, for example.
  */
 const makePreprocessActionCreator =
-  <A, T extends ActionName>(
+  <A, AA, T extends ActionName>(
     t: T,
-    validate: ValidateFunction<A> | undefined,
-    clean: (d: A) => Partial<A>
+    validate: ValidateFunction<AA> | undefined,
+    clean: (d: A) => AA
   ) =>
   (formData: A) =>
-  (year: TaxYear): Save<T, A> => ({
+  (year: TaxYear): Save<T, AA> => ({
     type: t,
     year,
     formData:
       validate !== undefined
-        ? validators.checkType({ ...formData, ...clean(formData) }, validate)
+        ? validators.checkType(clean(formData), validate)
         : { ...formData, ...clean(formData) }
   })
 
@@ -424,10 +426,11 @@ export const setItemizedDeductions: ActionCreator<ItemizedDeductions> =
   )
 
 // debugging purposes only, leaving unchecked.
-export const setInfo: ActionCreator<Information> = makeActionCreator(
-  ActionName.SET_INFO,
-  validators.information
-)
+export const setInfo = makePreprocessActionCreator<
+  Information,
+  InformationDateString,
+  ActionName.SET_INFO
+>(ActionName.SET_INFO, validators.information, (info) => infoToStringInfo(info))
 
 export const setActiveYear: ActionCreator<TaxYear> = makeActionCreator(
   ActionName.SET_ACTIVE_YEAR,
