@@ -15,15 +15,25 @@ export enum PersonRole {
   EMPLOYER = 'EMPLOYER'
 }
 
-export interface Person<DateType = Date> {
+/**
+ * Types such as the following are generic with respect to the Date
+ * type. AJV tests the typed serialization of these interfaces
+ * in JSON, and Date is not a valid type in JSON. So when our data
+ * is serialized in and out of local storage, or to a JSON file,
+ * these data must be parsed / serialized from / to strings.
+ *
+ * Our AJV schema generator ignores generic types.
+ */
+export interface Person<D = Date> {
   firstName: string
   lastName: string
   ssid: string
   role: PersonRole
   isBlind: boolean
-  dateOfBirth: DateType
+  dateOfBirth: D
 }
 
+// Concrete type for our AJV schema generator.
 export type PersonDateString = Person<string>
 
 export interface QualifyingInformation {
@@ -237,16 +247,18 @@ export const W2Box12CodeDescriptions: { [key in W2Box12Code]: string } = {
 
 export type W2Box12Info<A = number> = { [key in W2Box12Code]?: A }
 
-export interface HealthSavingsAccount<DateType = string> {
+export interface HealthSavingsAccount<D = Date> {
   label: string
   coverageType: 'self-only' | 'family'
   contributions: number
   personRole: PersonRole.PRIMARY | PersonRole.SPOUSE
-  startDate: DateType
-  endDate: DateType
+  startDate: D
+  endDate: D
   totalDistributions: number
   qualifiedDistributions: number
 }
+
+export type HealthSavingsAccountDateString = HealthSavingsAccount<string>
 
 export enum IraPlanType {
   IRA = 'IRA',
@@ -311,7 +323,9 @@ export const FilingStatusTexts = {
   [FilingStatus.W]: 'Widow(er)'
 }
 
-export const filingStatuses = (p: TaxPayer | undefined): FilingStatus[] => {
+export const filingStatuses = <D>(
+  p: TaxPayer<D> | undefined
+): FilingStatus[] => {
   let withDependents: FilingStatus[] = []
   let spouseStatuses: FilingStatus[] = []
 
@@ -533,7 +547,7 @@ export type ValueTag = 'string' | 'boolean'
 
 export type Responses = Partial<QuestionTag> // Defines usable tag names for each question later defined,
 
-export interface Information {
+export interface Information<D = Date> {
   f1099s: Supported1099[]
   w2s: IncomeW2[]
   realEstate: Property[]
@@ -543,12 +557,14 @@ export interface Information {
   scheduleK1Form1065s: ScheduleK1Form1065[]
   itemizedDeductions: ItemizedDeductions | undefined
   refund?: Refund
-  taxPayer: TaxPayer
+  taxPayer: TaxPayer<D>
   questions: Responses
   stateResidencies: StateResidency[]
-  healthSavingsAccounts: HealthSavingsAccount[]
+  healthSavingsAccounts: HealthSavingsAccount<D>[]
   individualRetirementArrangements: Ira[]
 }
+
+export type InformationDateString = Information<string>
 
 /**
  * An asset can be anything that is transactable, such as a stock,
@@ -568,12 +584,12 @@ export interface Information {
  * gain. An asset is closed when it gets a closeDate.
  */
 export type AssetType = 'Security' | 'Real Estate'
-export interface Asset<DateType = Date> {
+export interface Asset<D> {
   name: string
   positionType: AssetType
-  openDate: DateType
-  closeDate?: DateType
-  giftedDate?: DateType
+  openDate: D
+  closeDate?: D
+  giftedDate?: D
   openPrice: number
   closePrice?: number
   quantity: number
@@ -595,7 +611,7 @@ export type EditEstimatedTaxesAction = ArrayItemEditAction<EstimatedTaxPayments>
 export type Edit1099Action = ArrayItemEditAction<Supported1099>
 export type EditPropertyAction = ArrayItemEditAction<Property>
 export type Edit1098eAction = ArrayItemEditAction<F1098e>
-export type EditHSAAction = ArrayItemEditAction<HealthSavingsAccount>
+export type EditHSAAction = ArrayItemEditAction<HealthSavingsAccountDateString>
 export type EditIraAction = ArrayItemEditAction<Ira>
 export type EditAssetAction = ArrayItemEditAction<Asset<Date>>
 export type EditF3921Action = ArrayItemEditAction<F3921>
