@@ -111,6 +111,7 @@ export default class F1040 extends Form {
     this.f8949 = []
     this.assets = assets
     this.makeSchedules()
+    this.childTaxCreditWorksheet = new ChildTaxCreditWorksheet(this)
   }
 
   toString = (): string => `

@@ -20,9 +20,7 @@ describe('Schedule 8812', () => {
   it('should be attached with qualifiying dependents', async () => {
     await commonTests.withValid1040(async (f1040) => {
       // If there are qualifying dependents, we must have a schedule 8812
-      if (
-        (f1040.childTaxCreditWorksheet?.numberQualifyingChildren() ?? 0) > 0
-      ) {
+      if (f1040.qualifyingDependents.qualifyingChildren().length > 0) {
         expect(f1040.schedule8812).not.toBe(undefined)
       }
     })
