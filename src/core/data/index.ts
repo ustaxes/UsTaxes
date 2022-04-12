@@ -584,7 +584,7 @@ export type InformationDateString = Information<string>
  * gain. An asset is closed when it gets a closeDate.
  */
 export type AssetType = 'Security' | 'Real Estate'
-export interface Asset<D> {
+export interface Asset<D = Date> {
   name: string
   positionType: AssetType
   openDate: D
