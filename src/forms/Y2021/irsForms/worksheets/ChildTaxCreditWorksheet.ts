@@ -22,13 +22,13 @@ export default class ChildTaxCreditWorksheet {
         ? QualifyingDependents.qualifyingDependentMaxAge
         : QualifyingDependents.qualifyingStudentMaxAge)
 
-  // worksheet line 1
-  numberQualifyingChildren = (): number =>
-    this.f1040.info.taxPayer.dependents.reduce(
-      (total, dependent) =>
-        this.qualifiesChild(dependent) ? total + 1 : total,
-      0
+  qualifyingChildren = (): Dependent[] =>
+    this.f1040.info.taxPayer.dependents.filter((dep) =>
+      this.qualifiesChild(dep)
     )
+
+  // worksheet line 1
+  numberQualifyingChildren = (): number => this.qualifyingChildren().length
 
   l1 = (): number => this.numberQualifyingChildren() * 2000
 

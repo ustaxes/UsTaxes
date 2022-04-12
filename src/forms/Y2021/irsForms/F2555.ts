@@ -9,6 +9,9 @@ export default class F2555 extends F1040Attachment {
   tag: FormTag = 'f2555'
   sequenceIndex = 34
 
+  // TODO - Required from SDCapitalGainWorksheet
+  l3 = (): number | undefined => undefined
+
   // TODO - required from 6251
   l36 = (): number => 0
 

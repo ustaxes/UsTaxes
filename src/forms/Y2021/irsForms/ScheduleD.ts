@@ -7,11 +7,14 @@ import F8949 from './F8949'
 import F1040Attachment from './F1040Attachment'
 import F1040 from './F1040'
 import { Field } from 'ustaxes/core/pdfFiller'
-
+import SDTaxWorksheet from './worksheets/SDTaxWorksheet'
+import QualDivAndCGWorksheet from './worksheets/SDQualifiedAndCapGains'
 export default class ScheduleD extends F1040Attachment {
   tag: FormTag = 'f1040sd'
   sequenceIndex = 12
   aggregated: F1099BData
+  qualifiedDivAndCGWorksheet: QualDivAndCGWorksheet
+  taxWorksheet: SDTaxWorksheet
   rateGainWorksheet: SDRateGainWorksheet
   unrecaptured1250: SDUnrecaptured1250
 
@@ -31,6 +34,8 @@ export default class ScheduleD extends F1040Attachment {
     }
 
     this.rateGainWorksheet = new SDRateGainWorksheet()
+    this.taxWorksheet = new SDTaxWorksheet(f1040)
+    this.qualifiedDivAndCGWorksheet = new QualDivAndCGWorksheet(f1040)
     this.unrecaptured1250 = new SDUnrecaptured1250()
   }
 
