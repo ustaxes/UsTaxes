@@ -576,8 +576,8 @@ export class Arbitraries {
           coverageType,
           contributions,
           personRole,
-          startDate: startDate.toISOString(),
-          endDate: endDate.toISOString(),
+          startDate,
+          endDate,
           totalDistributions,
           qualifiedDistributions
         })

@@ -74,7 +74,7 @@ export const responses = fns.Responses as ValidateFunction<types.Responses>
 export const stateResidency =
   fns.StateResidency as ValidateFunction<types.StateResidency>
 export const healthSavingsAccount =
-  fns.HealthSavingsAccount as ValidateFunction<types.HealthSavingsAccount>
+  fns.HealthSavingsAccount as ValidateFunction<types.HealthSavingsAccountDateString>
 export const ira = fns.Ira as ValidateFunction<types.Ira>
 export const assetType = fns.AssetType as ValidateFunction<types.AssetType>
 export const assetString =

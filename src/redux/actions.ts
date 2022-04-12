@@ -14,13 +14,13 @@ import {
   Information,
   EstimatedTaxPayments,
   Responses,
-  HealthSavingsAccount,
   Ira,
   Asset,
   ItemizedDeductions,
   F3921,
   ScheduleK1Form1065,
-  TaxYear
+  TaxYear,
+  HealthSavingsAccountDateString
 } from 'ustaxes/core/data'
 
 import {
@@ -126,7 +126,7 @@ type EditEstimatedTaxes = Save<
   EditEstimatedTaxesAction
 >
 type RemoveEstimatedTaxes = Save<typeof ActionName.REMOVE_ESTIMATED_TAX, number>
-type AddHSA = Save<typeof ActionName.ADD_HSA, HealthSavingsAccount>
+type AddHSA = Save<typeof ActionName.ADD_HSA, HealthSavingsAccountDateString>
 type EditHSA = Save<typeof ActionName.EDIT_HSA, EditHSAAction>
 type RemoveHSA = Save<typeof ActionName.REMOVE_HSA, number>
 type Add1099 = Save<typeof ActionName.ADD_1099, Supported1099>
@@ -358,10 +358,8 @@ export const removeEstimatedPayment: ActionCreator<number> = makeActionCreator(
   indexValidator
 )
 
-export const addHSA: ActionCreator<HealthSavingsAccount> = makeActionCreator(
-  ActionName.ADD_HSA,
-  validators.healthSavingsAccount
-)
+export const addHSA: ActionCreator<HealthSavingsAccountDateString> =
+  makeActionCreator(ActionName.ADD_HSA, validators.healthSavingsAccount)
 
 export const editHSA: ActionCreator<EditHSAAction> = makeActionCreator(
   ActionName.EDIT_HSA,

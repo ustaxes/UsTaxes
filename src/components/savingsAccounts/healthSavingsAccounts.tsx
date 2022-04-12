@@ -52,7 +52,7 @@ const blankUserInput: HSAUserInput = {
   qualifiedDistributions: ''
 }
 
-const toHSA = (formData: HSAUserInput): HealthSavingsAccount => ({
+const toHSA = (formData: HSAUserInput): HealthSavingsAccount<string> => ({
   ...formData,
   // Note we are not error checking here because
   // we are already in the input validated happy path

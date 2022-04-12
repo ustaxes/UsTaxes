@@ -335,13 +335,21 @@ const formReducer = (
         ...newState,
         healthSavingsAccounts: [
           ...newState.healthSavingsAccounts,
-          action.formData
+          {
+            ...action.formData,
+            endDate: new Date(action.formData.endDate),
+            startDate: new Date(action.formData.startDate)
+          }
         ]
       }
     }
     case ActionName.EDIT_HSA: {
       const newHsa = [...newState.healthSavingsAccounts]
-      newHsa.splice(action.formData.index, 1, action.formData.value)
+      newHsa.splice(action.formData.index, 1, {
+        ...action.formData.value,
+        endDate: new Date(action.formData.value.endDate),
+        startDate: new Date(action.formData.value.startDate)
+      })
       return {
         ...newState,
         healthSavingsAccounts: newHsa
