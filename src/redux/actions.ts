@@ -20,7 +20,9 @@ import {
   ItemizedDeductions,
   F3921,
   ScheduleK1Form1065,
-  TaxYear
+  TaxYear,
+  Credit,
+  EditCreditAction
 } from 'ustaxes/core/data'
 
 import {
@@ -87,7 +89,10 @@ export enum ActionName {
   REMOVE_F3921 = 'F3921/REMOVE',
   ADD_SCHEDULE_K1_F1065 = 'SCHEDULE_K1_F1065/ADD',
   EDIT_SCHEDULE_K1_F1065 = 'SCHEDULE_K1_F1065/EDIT',
-  REMOVE_SCHEDULE_K1_F1065 = 'SCHEDULE_K1_F1065/REMOVE'
+  REMOVE_SCHEDULE_K1_F1065 = 'SCHEDULE_K1_F1065/REMOVE',
+  ADD_CREDIT = 'CREDIT/ADD',
+  EDIT_CREDIT = 'CREDIT/EDIT',
+  REMOVE_CREDIT = 'CREDIT/REMOVE'
 }
 
 interface Save<T, R> {
@@ -169,6 +174,9 @@ type RemoveScheduleK1Form1065 = Save<
   typeof ActionName.REMOVE_SCHEDULE_K1_F1065,
   number
 >
+type AddCredit = Save<typeof ActionName.ADD_CREDIT, Credit>
+type EditCredit = Save<typeof ActionName.EDIT_CREDIT, EditCreditAction>
+type RemoveCredit = Save<typeof ActionName.REMOVE_CREDIT, number>
 
 export type Actions =
   | SaveRefundInfo
@@ -217,6 +225,9 @@ export type Actions =
   | AddScheduleK1Form1065
   | EditScheduleK1Form1065
   | RemoveScheduleK1Form1065
+  | AddCredit
+  | EditCredit
+  | RemoveCredit
 
 export type SignalAction = (year: TaxYear) => Actions
 export type ActionCreator<A> = (formData: A) => SignalAction
@@ -495,3 +506,18 @@ export const editScheduleK1Form1065: ActionCreator<EditScheduleK1Form1065Action>
 
 export const removeScheduleK1Form1065: ActionCreator<number> =
   makeActionCreator(ActionName.REMOVE_SCHEDULE_K1_F1065, indexValidator)
+
+export const addCredit: ActionCreator<Credit> = makeActionCreator(
+  ActionName.ADD_CREDIT,
+  validators.credit
+)
+
+export const editCredit: ActionCreator<EditCreditAction> = makeActionCreator(
+  ActionName.EDIT_CREDIT,
+  validators.editCreditAction
+)
+
+export const removeCredit: ActionCreator<number> = makeActionCreator(
+  ActionName.REMOVE_CREDIT,
+  indexValidator
+)

@@ -78,7 +78,11 @@ export const assetType = fns.AssetType as ValidateFunction<types.AssetType>
 export const assetString =
   fns.AssetString as ValidateFunction<types.AssetString>
 export const taxYear = fns.TaxYear as ValidateFunction<types.TaxYear>
+export const credit = fns.Credit as ValidateFunction<types.Credit>
+
 export const editIraAction =
   fns.EditIRAAction as ValidateFunction<types.EditIraAction>
 export const editHSAAction =
   fns.EditHSAAction as ValidateFunction<types.EditHSAAction>
+export const editCreditAction =
+  fns.EditCreditAction as ValidateFunction<types.EditCreditAction>
