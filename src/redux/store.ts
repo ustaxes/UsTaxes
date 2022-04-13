@@ -7,7 +7,12 @@ import {
 import logger from 'redux-logger'
 import rootReducer from './reducer'
 
-import { persistStore, persistReducer, PersistedState } from 'redux-persist'
+import {
+  persistStore,
+  persistReducer,
+  PersistedState,
+  createMigrate
+} from 'redux-persist'
 import storage from 'redux-persist/lib/storage' // defaults to localStorage for web
 import { Asset, Information, TaxYear } from 'ustaxes/core/data'
 import { blankYearTaxesState, YearsTaxesState } from '.'
@@ -16,7 +21,7 @@ import { PersistPartial } from 'redux-persist/es/persistReducer'
 import { createTransform } from 'redux-persist'
 import { FSAction } from './fs/Actions'
 import fsReducer from './fs/FSReducer'
-import { migrateEachYear } from './migration'
+import { migrateEachYear, migrateAgeAndBlindness } from './migration'
 import _ from 'lodash'
 
 type SerializedState = { [K in TaxYear]: Information } & {
@@ -76,19 +81,31 @@ const dateStringTransform = createTransform(
   deserializeTransform
 )
 
-const migrate = async (state: USTState): Promise<USTState> =>
-  migrateEachYear(state)
+//const migrate = async (state: USTState): Promise<USTState> =>
+// migrateEachYear(state)
+
+// Keys are the version numbers. They must be integers.
+// Each version takes a state and applies a function that
+// generates the state for that version from the previous
+// version.
+const migrations = {
+  0: (state: any) => migrateEachYear(state),
+  1: (state: any) => migrateAgeAndBlindness(state)
+}
 
 const persistedReducer = fsReducer(
   'ustaxes_save.json',
   persistReducer<CombinedState<YearsTaxesState>, Actions>(
     {
       key: 'root',
+      // Changing the version here will set the version used
+      // in the app. When the data is rehydrated the version
+      // number will be compared and all migrations between
+      // the persisted version and the version here will be
+      // applied in order
+      version: 1,
       storage,
-      migrate: async (state) =>
-        state === undefined
-          ? undefined
-          : await migrate({ ...blankYearTaxesState, ...state }),
+      migrate: createMigrate(migrations, { debug: false }),
       transforms: [dateStringTransform]
     },
     rootReducer
