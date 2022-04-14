@@ -18,6 +18,7 @@ import { Alert } from '@material-ui/lab'
 import { TransactionImporter } from './assets/TransactionImporter'
 import FilteredAssetsTable from './assets/FilteredAssetsTable'
 import { DatePicker } from '../input/DatePicker'
+import { intentionallyFloat } from 'ustaxes/core/util'
 
 const showAssetType = (p: AssetType) => {
   switch (p) {
@@ -97,7 +98,7 @@ export const OtherInvestments = (): ReactElement => {
     >
       <Grid container spacing={2}>
         <h3>Add Assets</h3>
-        <GenericLabeledDropdown<AssetType>
+        <GenericLabeledDropdown<AssetType, AssetUserInput>
           label="Asset Type"
           name="positionType"
           dropDownData={['Security', 'Real Estate']}
@@ -193,7 +194,10 @@ export const OtherInvestments = (): ReactElement => {
       <h2>Other Investments</h2>
       <FilteredAssetsTable />
       <FormProvider {...methods}>
-        <form tabIndex={-1} onSubmit={handleSubmit(onAdvance)}>
+        <form
+          tabIndex={-1}
+          onSubmit={intentionallyFloat(handleSubmit(onAdvance))}
+        >
           {form}
           {navButtons}
         </form>

@@ -29,6 +29,7 @@ import { addHSA, editHSA, removeHSA } from 'ustaxes/redux/actions'
 import { YearsTaxesState } from 'ustaxes/redux'
 
 import { format } from 'date-fns'
+import { intentionallyFloat } from 'ustaxes/core/util'
 
 interface HSAUserInput {
   label: string
@@ -137,36 +138,36 @@ export default function HealthSavingsAccounts(): ReactElement {
       )}
     >
       <Grid container spacing={2}>
-        <LabeledInput
+        <LabeledInput<HSAUserInput>
           name="label"
           label="label for this account"
           patternConfig={Patterns.plain}
           sizes={{ xs: 12, lg: 6 }}
         />
-        <LabeledInput
+        <LabeledInput<HSAUserInput>
           name="contributions"
           label="Your total contributions to this account."
           patternConfig={Patterns.currency}
           sizes={{ xs: 12, lg: 6 }}
         />
-        <LabeledInput
+        <LabeledInput<HSAUserInput>
           name="totalDistributions"
           label="Total distributions from this account."
           patternConfig={Patterns.currency}
           sizes={{ xs: 12, lg: 6 }}
         />
-        <LabeledInput
+        <LabeledInput<HSAUserInput>
           name="qualifiedDistributions"
           label="Qualified medical distributions from this account."
           patternConfig={Patterns.currency}
           sizes={{ xs: 12, lg: 6 }}
         />
-        <LabeledDropdown
+        <LabeledDropdown<HSAUserInput>
           dropDownData={['self-only', 'family']}
           label="Coverage Type"
           name="coverageType"
         />
-        <GenericLabeledDropdown
+        <GenericLabeledDropdown<Person, HSAUserInput>
           dropDownData={people}
           label="Recipient"
           valueMapping={(p: Person, i: number) =>
@@ -200,7 +201,10 @@ export default function HealthSavingsAccounts(): ReactElement {
 
   return (
     <FormProvider {...methods}>
-      <form tabIndex={-1} onSubmit={handleSubmit(onAdvance)}>
+      <form
+        tabIndex={-1}
+        onSubmit={intentionallyFloat(handleSubmit(onAdvance))}
+      >
         <Helmet>
           <title>
             Health Savings Accounts (HSA) | Savings Accounts | UsTaxes.org

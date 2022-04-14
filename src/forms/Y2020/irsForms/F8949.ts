@@ -1,8 +1,6 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
-
 import F1040Attachment from './F1040Attachment'
 import { FormTag } from 'ustaxes/core/irsForms/Form'
-import { Asset } from 'ustaxes/core/data'
+import { Asset, SoldAsset } from 'ustaxes/core/data'
 import F1040 from './F1040'
 import { Field } from 'ustaxes/core/pdfFiller'
 
@@ -34,15 +32,15 @@ const emptyLine: EmptyLine = [
 const showDate = (date: Date): string =>
   `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`
 
-const toLine = (position: Asset<Date>): Line => [
+const toLine = (position: SoldAsset<Date>): Line => [
   position.name,
   showDate(position.openDate),
-  showDate(position.closeDate!),
-  position.closePrice! * position.quantity,
+  showDate(position.closeDate),
+  position.closePrice * position.quantity,
   position.openPrice * position.quantity,
   undefined,
   undefined,
-  (position.closePrice! - position.openPrice) * position.quantity
+  (position.closePrice - position.openPrice) * position.quantity
 ]
 
 const NUM_SHORT_LINES = 14
@@ -91,17 +89,17 @@ export default class F8949 extends F1040Attachment {
   part2BoxE = (): boolean => false
   part2BoxF = (): boolean => true
 
-  thisYearSales = (): Asset<Date>[] =>
+  thisYearSales = (): SoldAsset<Date>[] =>
     this.f1040.assets.filter(
       (p) => p.closeDate !== undefined && p.closeDate.getFullYear() === 2020
-    )
+    ) as SoldAsset<Date>[]
 
-  thisYearLongTermSales = (): Asset<Date>[] =>
+  thisYearLongTermSales = (): SoldAsset<Date>[] =>
     this.thisYearSales().filter(
       (p) => p.closeDate !== undefined && this.isLongTerm(p)
     )
 
-  thisYearShortTermSales = (): Asset<Date>[] =>
+  thisYearShortTermSales = (): SoldAsset<Date>[] =>
     this.thisYearSales().filter(
       (p) => p.closeDate !== undefined && !this.isLongTerm(p)
     )
@@ -118,7 +116,7 @@ export default class F8949 extends F1040Attachment {
   /**
    * Take the short term transactions that fit on this copy of the 8949
    */
-  shortTermSales = (): Asset<Date>[] =>
+  shortTermSales = (): SoldAsset<Date>[] =>
     this.thisYearShortTermSales().slice(
       this.index * NUM_SHORT_LINES,
       (this.index + 1) * NUM_SHORT_LINES
@@ -127,7 +125,7 @@ export default class F8949 extends F1040Attachment {
   /**
    * Take the long term transactions that fit on this copy of the 8949
    */
-  longTermSales = (): Asset<Date>[] =>
+  longTermSales = (): SoldAsset<Date>[] =>
     this.thisYearLongTermSales().slice(
       this.index * NUM_LONG_LINES,
       (this.index + 1) * NUM_LONG_LINES
@@ -147,13 +145,13 @@ export default class F8949 extends F1040Attachment {
 
   shortTermTotalProceeds = (): number =>
     this.shortTermSales().reduce(
-      (acc, p) => acc + p.closePrice! * p.quantity - (p.closeFee ?? 0),
+      (acc, p) => acc + p.closePrice * p.quantity - (p.closeFee ?? 0),
       0
     )
 
   shortTermTotalCost = (): number =>
     this.shortTermSales().reduce(
-      (acc, p) => acc + p.openPrice! * p.quantity + p.openFee,
+      (acc, p) => acc + p.openPrice * p.quantity + p.openFee,
       0
     )
 
@@ -165,13 +163,13 @@ export default class F8949 extends F1040Attachment {
 
   longTermTotalProceeds = (): number =>
     this.longTermSales().reduce(
-      (acc, p) => acc + p.closePrice! * p.quantity - (p.closeFee ?? 0),
+      (acc, p) => acc + p.closePrice * p.quantity - (p.closeFee ?? 0),
       0
     )
 
   longTermTotalCost = (): number =>
     this.longTermSales().reduce(
-      (acc, p) => acc + p.openPrice! * p.quantity + (p.openFee ?? 0),
+      (acc, p) => acc + p.openPrice * p.quantity + (p.openFee ?? 0),
       0
     )
 

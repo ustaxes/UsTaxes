@@ -15,7 +15,7 @@ describe('f1040', () => {
   commonTests.run()
 
   it('should never have higher AGI than total income', async () => {
-    await testKit.with1040Assert(async (forms) => {
+    await testKit.with1040Assert((forms): Promise<void> => {
       const f1040 = commonTests.findF1040(forms)
       expect(f1040).not.toBeUndefined()
       if (f1040 !== undefined) {
@@ -24,11 +24,12 @@ describe('f1040', () => {
           displayRound(Math.max(0, f1040.l9() ?? 0)) ?? 0
         )
       }
+      return Promise.resolve()
     })
   })
 
   it('should never produce higher tax than total income', async () => {
-    await testKit.with1040Assert(async (forms) => {
+    await testKit.with1040Assert((forms): Promise<void> => {
       const f1040 = commonTests.findF1040(forms)
       expect(f1040).not.toBeUndefined()
       if (f1040 !== undefined) {
@@ -37,11 +38,12 @@ describe('f1040', () => {
           displayRound(f1040.l24() - (f1040.l17() ?? 0)) ?? 0
         ).toBeLessThanOrEqual(displayRound(Math.max(0, f1040.l9() ?? 0)) ?? 0)
       }
+      return Promise.resolve()
     })
   })
 
   it('should never produce tax on taxable income higher than income', async () => {
-    await testKit.with1040Assert(async (forms) => {
+    await testKit.with1040Assert((forms): Promise<void> => {
       const f1040 = commonTests.findF1040(forms)
       expect(f1040).not.toBeUndefined()
       if (f1040 !== undefined) {
@@ -52,6 +54,7 @@ describe('f1040', () => {
           expect(f1040.l16() ?? 0).toEqual(0)
         }
       }
+      return Promise.resolve()
     })
   })
 })

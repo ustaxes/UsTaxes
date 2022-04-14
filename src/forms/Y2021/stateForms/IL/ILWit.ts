@@ -108,7 +108,7 @@ export class ILWIT extends Form {
    */
   Yourname = (): string | undefined => {
     const person = this.info.taxPayer.primaryPerson
-    return `${person?.firstName} ${person?.lastName}`
+    return [person?.firstName, person?.lastName].flat().join(' ')
   }
 
   f1 = (): string | undefined => this.Yourname()
@@ -165,8 +165,8 @@ export class ILWIT extends Form {
       form.ilWages,
       form.ilTax
     ]),
-    ...Array.from(Array(5 - forms.length)).flatMap(() =>
-      Array(5).fill(undefined)
+    ...Array.from<undefined>(Array(5 - forms.length)).flatMap(() =>
+      Array<undefined>(5).fill(undefined)
     )
   ]
 

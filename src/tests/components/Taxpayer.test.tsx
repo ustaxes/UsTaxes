@@ -17,10 +17,13 @@ afterEach(async () => {
 })
 
 jest.mock('redux-persist', () => {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const real = jest.requireActual('redux-persist')
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
   return {
     ...real,
-    persistReducer: jest.fn().mockImplementation((config, reducers) => reducers)
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    persistReducer: jest.fn().mockImplementation((_, reducers) => reducers)
   }
 })
 

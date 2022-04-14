@@ -1,7 +1,13 @@
 import Form, { FormMethods } from 'ustaxes/core/stateForms/Form'
 import F1040 from '../../irsForms/F1040'
 import { Field } from 'ustaxes/core/pdfFiller'
-import { IncomeW2, Information, PersonRole, State } from 'ustaxes/core/data'
+import {
+  IncomeW2,
+  Information,
+  PersonRole,
+  PrimaryPerson,
+  State
+} from 'ustaxes/core/data'
 import _ from 'lodash'
 
 type FormType =
@@ -68,6 +74,10 @@ export class ILWIT extends Form {
     this.formIndex = subFormIndex
   }
 
+  get primary(): PrimaryPerson | undefined {
+    return this.info.taxPayer.primaryPerson
+  }
+
   attachments = (): Form[] => {
     // If this is the head form, see if we need
     // more copies. For example if the SSIDs have 4 and 11 forms,
@@ -125,10 +135,8 @@ export class ILWIT extends Form {
   /**
    * Index 3: Your name
    */
-  Yourname = (): string | undefined => {
-    const person = this.info.taxPayer.primaryPerson
-    return `${person?.firstName} ${person?.lastName}`
-  }
+  Yourname = (): string | undefined =>
+    [this.primary?.firstName, this.primary?.lastName].flat().join(' ')
 
   f3 = (): string | undefined => this.Yourname()
 
@@ -189,7 +197,7 @@ export class ILWIT extends Form {
       forms.map((form) => form.ilTax)
     ].flatMap((column) => [
       ...column,
-      ...Array(5 - column.length).fill(undefined)
+      ...Array<undefined>(5 - column.length).fill(undefined)
     ])
 
   /**
@@ -258,7 +266,7 @@ export class ILWIT extends Form {
 
   formTypesColumn = (forms: WithholdingForm[]): (string | undefined)[] => [
     ...forms.map((f) => f.formType),
-    ...Array(5 - forms.length).fill(undefined)
+    ...Array<undefined>(5 - forms.length).fill(undefined)
   ]
 
   f52to56 = (): (string | undefined)[] =>
@@ -275,7 +283,7 @@ export class ILWIT extends Form {
    * There's a second field in the Column A column,
    * purpose not clear.
    */
-  f62to71 = (): undefined[] => Array(10).fill(undefined)
+  f62to71 = (): undefined[] => Array<undefined>(10).fill(undefined)
 
   fields = (): Field[] => [
     this.f0(),

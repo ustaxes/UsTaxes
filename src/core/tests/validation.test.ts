@@ -30,7 +30,7 @@ describe('validation', () => {
               ...data,
               address: '123 hi street' as unknown as Address
             },
-            validators.primaryPerson!
+            validators.primaryPerson
           )
         ).toThrow()
       })
@@ -40,7 +40,7 @@ describe('validation', () => {
   it('checks dependent', () => {
     fc.assert(
       fc.property(arbitraries.forYear(2020).dependent(), (data) => {
-        expect(validators.checkType(data, validators.dependent!)).toEqual(data)
+        expect(validators.checkType(data, validators.dependent)).toEqual(data)
       })
     )
   })
@@ -48,9 +48,7 @@ describe('validation', () => {
   it('checkType should not modify correct data', () => {
     fc.assert(
       fc.property(arbitraries.forYear(2020).information(), (info) => {
-        expect(validators.checkType(info, validators.information!)).toEqual(
-          info
-        )
+        expect(validators.checkType(info, validators.information)).toEqual(info)
       })
     )
   })

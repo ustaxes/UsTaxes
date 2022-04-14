@@ -82,7 +82,7 @@ const getTitleAndPage = (currentUrl: string): string => {
     )
     .find(({ url }) => url === currentUrl)
 
-  return `${page?.sectionTitle} - ${page?.title}`
+  return `${page?.sectionTitle ?? ''} - ${page?.title ?? ''}`
 }
 
 export const backPages: SectionItem[] = [

@@ -32,6 +32,7 @@ import { usePager } from 'ustaxes/components/pager'
 import { Box, Grid } from '@material-ui/core'
 import { Person } from '@material-ui/icons'
 import { Alert } from '@material-ui/lab'
+import { intentionallyFloat } from 'ustaxes/core/util'
 
 interface UserPersonForm {
   firstName: string
@@ -277,9 +278,9 @@ export const FilingStatusDropdown = (): ReactElement => {
 
   return (
     <FormProvider {...methods}>
-      <form tabIndex={-1} onSubmit={handleSubmit(onSubmit)}>
+      <form tabIndex={-1} onSubmit={intentionallyFloat(handleSubmit(onSubmit))}>
         <Box marginBottom={2}>
-          <GenericLabeledDropdown<FilingStatus>
+          <GenericLabeledDropdown<FilingStatus, { filingStatus: FilingStatus }>
             label="Filing Status"
             dropDownData={allowedFilingStatuses}
             valueMapping={(x) => x}

@@ -1,7 +1,7 @@
 import Form from 'ustaxes/core/stateForms/Form'
 import F1040 from '../../irsForms/F1040'
 import { Field } from 'ustaxes/core/pdfFiller'
-import { Dependent, Information, State } from 'ustaxes/core/data'
+import { Dependent, Information, PrimaryPerson, State } from 'ustaxes/core/data'
 import parameters from './Parameters'
 
 export class IL1040scheduleileeic extends Form {
@@ -21,6 +21,10 @@ export class IL1040scheduleileeic extends Form {
     this.state = 'IL'
     this.qualifyingDependents =
       this.f1040.scheduleEIC?.qualifyingDependents() ?? []
+  }
+
+  get primary(): PrimaryPerson | undefined {
+    return this.info.taxPayer.primaryPerson
   }
 
   isRequired = (): boolean => (this.earnedIncomeCredit() ?? 0) > 0
@@ -65,7 +69,7 @@ export class IL1040scheduleileeic extends Form {
    * Index 4: Your name
    */
   Yourname = (): string | undefined =>
-    `${this.info.taxPayer.primaryPerson?.firstName} ${this.info.taxPayer.primaryPerson?.lastName}`
+    [this.primary?.firstName, this.primary?.lastName].flat().join(' ')
 
   f4 = (): string | undefined => this.Yourname()
 

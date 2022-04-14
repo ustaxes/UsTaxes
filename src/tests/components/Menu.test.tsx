@@ -17,19 +17,19 @@ describe('Menu', () => {
       await waitFor(() => resizeWindow(400, 900))
       renderWithProviders(<Menu />)
     })
-    it('renders', async () => {
+    it('renders', () => {
       expect(
         screen.queryByRole('button', { name: /close drawer/i })
       ).not.toBeInTheDocument()
     })
-    it('toggles open', async () => {
+    it('toggles open', () => {
       userEvent.click(screen.getByRole('button', { name: /open drawer/i }))
 
       expect(
-        await screen.queryByRole('button', { name: /open drawer/i })
+        screen.queryByRole('button', { name: /open drawer/i })
       ).not.toBeInTheDocument()
     })
-    it('closes with menu', async () => {
+    it('closes with menu', () => {
       userEvent.click(screen.getByRole('button', { name: /open drawer/i }))
       userEvent.click(
         screen.getByRole('button', {

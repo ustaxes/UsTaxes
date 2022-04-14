@@ -30,6 +30,7 @@ import {
   PrimaryPerson,
   Spouse
 } from 'ustaxes/core/data'
+import { intentionallyFloat } from 'ustaxes/core/util'
 
 interface ScheduleK1Form1065UserInput {
   personRole: PersonRole.PRIMARY | PersonRole.SPOUSE
@@ -295,7 +296,10 @@ export const PartnershipIncome = (): ReactElement => {
 
   return (
     <FormProvider {...methods}>
-      <form tabIndex={-1} onSubmit={handleSubmit(onAdvance)}>
+      <form
+        tabIndex={-1}
+        onSubmit={intentionallyFloat(handleSubmit(onAdvance))}
+      >
         <Helmet>
           <title>Partnership Income | Income | UsTaxes.org</title>
         </Helmet>

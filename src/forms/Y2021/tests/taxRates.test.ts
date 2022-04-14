@@ -15,9 +15,7 @@ const getTaxTable = async (): Promise<number[][]> => {
 
 const expectTax = (status: FilingStatus, amount: number, tax: number) => {
   const computedTax = Math.round(computeOrdinaryTax(status, amount))
-  // Add a prefix so it's easy to see which one was wrong
-  const prefix = 'Tax on ' + amount + ' = '
-  expect(prefix + computedTax).toEqual(prefix + tax)
+  expect(computedTax).toEqual(tax)
 }
 
 const expectTaxUnder100KRange = (
@@ -36,7 +34,7 @@ const expectTaxUnder100KRange = (
 }
 
 describe('Tax rates', () => {
-  it('test should be updated for new year', async () => {
+  it('test should be updated for new year', () => {
     // WARNING! Do not just change the year. Also update the CSV and expected tax amounts below!
     expect(CURRENT_YEAR).toEqual(2021)
   })

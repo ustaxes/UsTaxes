@@ -24,6 +24,7 @@ import {
   PrimaryPerson,
   Spouse
 } from 'ustaxes/core/data'
+import { intentionallyFloat } from 'ustaxes/core/util'
 
 interface F3921UserInput {
   name: string
@@ -185,7 +186,10 @@ export const StockOptions = (): ReactElement => {
 
   return (
     <FormProvider {...methods}>
-      <form tabIndex={-1} onSubmit={handleSubmit(onAdvance)}>
+      <form
+        tabIndex={-1}
+        onSubmit={intentionallyFloat(handleSubmit(onAdvance))}
+      >
         <Helmet>
           <title>Stock Options | Income | UsTaxes.org</title>
         </Helmet>

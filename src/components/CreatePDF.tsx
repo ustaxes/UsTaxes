@@ -7,7 +7,7 @@ import { Information, Asset, State, TaxYear } from 'ustaxes/core/data'
 import { YearsTaxesState } from 'ustaxes/redux'
 
 import yearFormBuilder from 'ustaxes/forms/YearForms'
-import { isLeft, runAsync } from 'ustaxes/core/util'
+import { intentionallyFloat, isLeft, runAsync } from 'ustaxes/core/util'
 import { Box, Button } from '@material-ui/core'
 import Summary from './Summary'
 
@@ -59,8 +59,8 @@ export default function CreatePDF(): ReactElement {
   const lastName = info?.taxPayer.primaryPerson?.lastName
   const residency: State | undefined = info?.stateResidencies[0]?.state
 
-  const federalFileName = `${lastName}-1040.pdf`
-  const stateFileName = `${lastName}-${residency}.pdf`
+  const federalFileName = `${lastName ?? 'Tax'}-1040.pdf`
+  const stateFileName = `${lastName ?? 'StateTax'}-${residency}.pdf`
 
   const { navButtons } = usePager()
 
@@ -90,7 +90,7 @@ export default function CreatePDF(): ReactElement {
           <Box marginBottom={2}>
             <Button
               type="button"
-              onClick={federalReturn}
+              onClick={intentionallyFloat(federalReturn)}
               variant="contained"
               color="primary"
             >
@@ -108,7 +108,7 @@ export default function CreatePDF(): ReactElement {
                 return (
                   <Button
                     type="button"
-                    onClick={stateReturn}
+                    onClick={intentionallyFloat(stateReturn)}
                     variant="contained"
                     color="primary"
                   >

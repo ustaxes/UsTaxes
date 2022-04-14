@@ -571,6 +571,15 @@ export interface Asset<DateType = Date> {
   state?: State
 }
 
+export type SoldAsset<D> = Asset<D> & {
+  closePrice: number
+  closeDate: D
+}
+
+export const isSold = <D>(p: Asset<D>): p is SoldAsset<D> => {
+  return p.closeDate !== undefined && p.closePrice !== undefined
+}
+
 export type AssetString = Asset<string>
 
 // Validated action types:

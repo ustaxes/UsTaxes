@@ -68,7 +68,7 @@ describe('CreatePDF Page', () => {
 
         const page = taxpayerComponent(info)
 
-        await waitFor(async () =>
+        await waitFor(() =>
           expect(
             page.rendered().queryByText(F1040Error.filingStatusUndefined)
           ).toBeInTheDocument()

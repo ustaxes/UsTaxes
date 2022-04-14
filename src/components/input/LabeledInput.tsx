@@ -3,14 +3,16 @@ import { useForkRef } from 'rooks'
 import { InputAdornment, Grid, TextField } from '@material-ui/core'
 import { LabeledInputProps } from './types'
 import NumberFormat from 'react-number-format'
-import { Controller, useFormContext } from 'react-hook-form'
+import { Controller, FieldError, useFormContext } from 'react-hook-form'
 import { isNumeric, Patterns } from 'ustaxes/components/Patterns'
 import ConditionallyWrap from 'ustaxes/components/ConditionallyWrap'
 import useStyles from './styles'
-import _ from 'lodash'
 import { useFormContainer } from 'ustaxes/components/FormContainer/Context'
+import { getNestedValue } from 'ustaxes/core/util'
 
-export function LabeledInput(props: LabeledInputProps): ReactElement {
+export function LabeledInput<TFormValues>(
+  props: LabeledInputProps<TFormValues>
+): ReactElement {
   const { onSubmit } = useFormContainer()
   const { label, patternConfig: patternConfigDefined, name, rules = {} } = props
   const { required = patternConfigDefined !== undefined } = props
@@ -31,11 +33,12 @@ export function LabeledInput(props: LabeledInputProps): ReactElement {
 
   const {
     control,
-    register,
     handleSubmit,
+    register,
     formState: { errors }
-  } = useFormContext()
-  const error = _.get(errors, name)
+  } = useFormContext<TFormValues>()
+
+  const error: FieldError | undefined = getNestedValue(errors, name, undefined)
 
   const errorMessage: string | undefined = (() => {
     if (error?.message !== undefined && error?.message !== '') {
@@ -43,10 +46,14 @@ export function LabeledInput(props: LabeledInputProps): ReactElement {
     }
     if (patternConfig !== undefined && isNumeric(patternConfig)) {
       if (error?.type === 'max' && patternConfig.max !== undefined) {
-        return `Input must be less than or equal to ${patternConfig.prefix}${patternConfig.max}`
+        return `Input must be less than or equal to ${
+          patternConfig.prefix ?? ''
+        }${patternConfig.max}`
       }
       if (error?.type === 'min' && patternConfig.min !== undefined) {
-        return `Input must be greater than or equal to ${patternConfig.prefix}${patternConfig.min}`
+        return `Input must be greater than or equal to ${
+          patternConfig.prefix ?? ''
+        }${patternConfig.min}`
       }
     }
   })()
@@ -72,7 +79,7 @@ export function LabeledInput(props: LabeledInputProps): ReactElement {
               format={patternConfig.format}
               isNumericString={false}
               onValueChange={(v) => onChange(v.value)}
-              value={value ?? ''}
+              value={value as number}
               error={error !== undefined}
               fullWidth
               helperText={errorMessage}
@@ -89,7 +96,9 @@ export function LabeledInput(props: LabeledInputProps): ReactElement {
                 onKeyDown: (e: KeyboardEvent) => {
                   if (e.key === 'Enter') {
                     onSubmit?.()
-                    handleSubmit(_.noop)()
+                    void handleSubmit(() => {
+                      //do nothing
+                    })()
                   }
                 }
               }}
@@ -136,7 +145,9 @@ export function LabeledInput(props: LabeledInputProps): ReactElement {
             onChange={onChange}
             onKeyDown={(e) => {
               if (e.key === 'Enter') {
-                handleSubmit(_.noop)()
+                void handleSubmit(() => {
+                  // do nothing
+                })()
                 onSubmit?.()
               }
             }}

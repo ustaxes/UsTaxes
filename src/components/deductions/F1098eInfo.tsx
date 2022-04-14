@@ -10,6 +10,7 @@ import { F1098e } from 'ustaxes/core/data'
 import { Patterns } from 'ustaxes/components/Patterns'
 import { FormListContainer } from 'ustaxes/components/FormContainer'
 import { Grid } from '@material-ui/core'
+import { intentionallyFloat } from 'ustaxes/core/util'
 
 const showInterest = (a: F1098e): ReactElement => {
   return <Currency value={a.interest} />
@@ -89,7 +90,10 @@ export default function F1098eInfo(): ReactElement {
 
   return (
     <FormProvider {...methods}>
-      <form tabIndex={-1} onSubmit={handleSubmit(onAdvance)}>
+      <form
+        tabIndex={-1}
+        onSubmit={intentionallyFloat(handleSubmit(onAdvance))}
+      >
         <Helmet>
           <title>1098-E Information | Deductions | UsTaxes.org</title>
         </Helmet>

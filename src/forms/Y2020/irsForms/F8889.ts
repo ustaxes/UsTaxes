@@ -12,9 +12,10 @@ export const needsF8889 = (state: Information, person: Person): boolean => {
   )
 }
 
+type ContributionType = 'self-only' | 'family'
 type PerMonthContributionType = {
-  amount: Array<number>
-  type: Array<'self-only' | 'family'>
+  amount: number[]
+  type: ContributionType[]
 }
 
 export default class F8889 extends F1040Attachment {
@@ -51,7 +52,7 @@ export default class F8889 extends F1040Attachment {
     this.firstDayOfLastMonth = new Date(CURRENT_YEAR, 11, 1)
     this.perMonthContributions = {
       amount: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      type: new Array(12)
+      type: Array<ContributionType>(12)
     }
   }
 

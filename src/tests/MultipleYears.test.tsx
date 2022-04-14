@@ -16,7 +16,7 @@ import TaxPayerMethods from './common/TaxPayerMethods'
 
 // RTL's cleanup method only after each
 // jest test is done. (Not each property test)
-afterEach(async () => {
+afterEach(() => {
   cleanup()
 })
 
@@ -98,13 +98,13 @@ describe('years', () => {
     const state = utarbitraries.justOneState()
 
     await withForm(state)(async (form): Promise<boolean> => {
-      await waitFor(async () =>
+      await waitFor(() =>
         expect(form.yearStatus.yearDropdownButton()).toBeInTheDocument()
       )
 
       form.yearStatus.openDropdown()
 
-      await waitFor(async () =>
+      await waitFor(() =>
         expect(form.yearStatus.yearDropdownButton()).not.toBeInTheDocument()
       )
 
@@ -118,7 +118,7 @@ describe('years', () => {
     const state = utarbitraries.justOneState()
 
     await withForm(state)(async (form): Promise<boolean> => {
-      await waitFor(async () => {
+      await waitFor(() => {
         expect(form.store.getState().activeYear).toBe(state.activeYear)
         expect(form.yearStatus.yearValue()).toEqual(state.activeYear)
       })
@@ -144,11 +144,11 @@ describe('years', () => {
             await withForm(state)(async (form): Promise<boolean> => {
               await form.yearStatus.setYear(year)
 
-              await waitFor(async () =>
+              await waitFor(() =>
                 expect(form.store.getState().activeYear).toEqual(year)
               )
               form.yearStatus.openDropdown()
-              await waitFor(async () =>
+              await waitFor(() =>
                 expect(form.yearStatus.yearValue()).toEqual(year)
               )
               return true
@@ -169,7 +169,7 @@ describe('years', () => {
         await withForm(state)(async (form) => {
           await form.yearStatus.setYear(year)
 
-          await waitFor(async () =>
+          await waitFor(() =>
             expect(form.person.firstNameField()?.value).toEqual(
               state[year]?.taxPayer.primaryPerson?.firstName
             )
