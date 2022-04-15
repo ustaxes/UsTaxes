@@ -522,7 +522,8 @@ export type ValueTag = 'string' | 'boolean'
 export type Responses = Partial<QuestionTag> // Defines usable tag names for each question later defined,
 
 export enum CreditType {
-  AdvanceChildTaxCredit = 'CreditType/AdvanceChildTaxCredit'
+  AdvanceChildTaxCredit = 'CreditType/AdvanceChildTaxCredit',
+  Other = 'CreditType/Other'
 }
 
 export interface Credit {
