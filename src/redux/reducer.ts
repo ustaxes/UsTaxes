@@ -19,6 +19,7 @@ export const blankState: Information = {
   itemizedDeductions: undefined,
   stateResidencies: [],
   healthSavingsAccounts: [],
+  credits: [],
   individualRetirementArrangements: []
 }
 
@@ -365,6 +366,29 @@ const formReducer = (
         individualRetirementArrangements: newIra
       }
     }
+    case ActionName.ADD_CREDIT: {
+      return {
+        ...newState,
+        credits: [...newState.credits, action.formData]
+      }
+    }
+    case ActionName.EDIT_CREDIT: {
+      const newCredits = [...newState.credits]
+      newCredits.splice(action.formData.index, 1, action.formData.value)
+      return {
+        ...newState,
+        credits: newCredits
+      }
+    }
+    case ActionName.REMOVE_CREDIT: {
+      const newCredits = [...newState.credits]
+      newCredits.splice(action.formData, 1)
+      return {
+        ...newState,
+        credits: newCredits
+      }
+    }
+
     default: {
       return newState
     }

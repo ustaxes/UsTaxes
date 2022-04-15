@@ -34,6 +34,9 @@ const Urls = {
   },
   createPdf: '/createpdf',
   settings: '/settings',
+  Y2021: {
+    credits: `/Y2021/credits`
+  },
   default: ''
 }
 

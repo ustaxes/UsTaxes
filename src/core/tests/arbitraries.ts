@@ -1,13 +1,7 @@
 import * as fc from 'fast-check'
 import { Arbitrary } from 'fast-check'
 import locationPostalCodes from '../data/locationPostalCodes'
-import {
-  QuestionTagName,
-  questionTagNames,
-  // IraPlanName,
-  // iraPlanNames,
-  Responses
-} from '../data'
+import { QuestionTagName, questionTagNames, Responses } from '../data'
 import * as types from '../data'
 import * as util from '../util'
 import _ from 'lodash'
@@ -635,6 +629,14 @@ export class Arbitraries {
           repayments
         })
       )
+
+  credit = (): Arbitrary<types.Credit> =>
+    fc.tuple(fc.nat({ max: 100000 }).map((x) => x / 100)).map(([amount]) => ({
+      recipient: types.PersonRole.PRIMARY,
+      amount,
+      type: types.CreditType.AdvanceChildTaxCredit
+    }))
+
   information = (): Arbitrary<types.Information> =>
     fc
       .tuple(
@@ -651,6 +653,7 @@ export class Arbitraries {
         questions,
         state,
         fc.array(this.healthSavingsAccount()),
+        fc.array(this.credit(), { maxLength: 2 }),
         fc.array(this.ira())
       )
       .map(
@@ -668,6 +671,7 @@ export class Arbitraries {
           questions,
           state,
           healthSavingsAccounts,
+          credits,
           individualRetirementArrangements
         ]) => ({
           f1099s,
@@ -683,6 +687,7 @@ export class Arbitraries {
           questions,
           stateResidencies: [{ state }],
           healthSavingsAccounts,
+          credits,
           individualRetirementArrangements
         })
       )

@@ -242,6 +242,8 @@ export default class F1040 extends Form {
       }
     }
 
+    this.schedule2 = new Schedule2(this)
+
     if (
       this.info.taxPayer.primaryPerson &&
       needsF8889(this.info, this.info.taxPayer.primaryPerson)
@@ -249,10 +251,6 @@ export default class F1040 extends Form {
       this.f8889 = new F8889(this, this.info.taxPayer.primaryPerson)
       if (this.schedule1 === undefined) {
         this.schedule1 = new Schedule1(this)
-      }
-
-      if (this.schedule2 === undefined) {
-        this.schedule2 = new Schedule2(this)
       }
     }
 
@@ -265,10 +263,6 @@ export default class F1040 extends Form {
       if (this.schedule1 === undefined) {
         this.schedule1 = new Schedule1(this)
       }
-
-      if (this.schedule2 === undefined) {
-        this.schedule2 = new Schedule2(this)
-      }
     }
 
     if (needsF8959(this.info, this.scheduleSE)) {
@@ -279,10 +273,6 @@ export default class F1040 extends Form {
 
     if (needsF8960(this.info)) {
       this.f8960 = new F8960(this)
-    }
-
-    if (this.f8959 !== undefined || this.f8960 !== undefined) {
-      this.schedule2 = new Schedule2(this)
     }
 
     if (
@@ -331,8 +321,6 @@ export default class F1040 extends Form {
       }
     }
 
-    const schedule8812 = new Schedule8812(this)
-
     if (
       this.info.taxPayer.dependents.some(
         (dep) =>
@@ -340,7 +328,7 @@ export default class F1040 extends Form {
           this.qualifyingDependents.qualifiesOther(dep)
       )
     ) {
-      this.schedule8812 = schedule8812
+      this.schedule8812 = new Schedule8812(this)
     }
   }
 
