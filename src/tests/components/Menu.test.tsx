@@ -2,13 +2,20 @@ import userEvent from '@testing-library/user-event'
 import { screen, waitFor } from '@testing-library/react'
 import Menu, { drawerSections } from 'ustaxes/components/Menu'
 import { resizeWindow, renderWithProviders } from 'ustaxes/testUtil'
+import { Provider } from 'react-redux'
+import { createWholeStoreUnpersisted } from 'ustaxes/redux/store'
+import { blankYearTaxesState } from 'ustaxes/redux'
 
 const heading = drawerSections[0].title
-
+const blankStore = createWholeStoreUnpersisted(blankYearTaxesState)
 describe('Menu', () => {
   describe('desktop view', () => {
     it('renders', () => {
-      renderWithProviders(<Menu />)
+      renderWithProviders(
+        <Provider store={blankStore}>
+          <Menu />
+        </Provider>
+      )
       expect(screen.getByText(heading)).toBeInTheDocument()
     })
   })
