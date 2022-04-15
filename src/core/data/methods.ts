@@ -1,4 +1,5 @@
 import {
+  Credit,
   F3921,
   Ira,
   ItemizedDeductions,
@@ -39,6 +40,7 @@ export default class InformationMethods implements Information {
   questions: Responses
   stateResidencies: StateResidency[]
   healthSavingsAccounts: HealthSavingsAccount[]
+  credits: Credit[]
   individualRetirementArrangements: Ira[]
 
   constructor(info: Information) {
@@ -55,6 +57,7 @@ export default class InformationMethods implements Information {
     this.questions = info.questions
     this.stateResidencies = info.stateResidencies
     this.healthSavingsAccounts = info.healthSavingsAccounts
+    this.credits = info.credits
     this.individualRetirementArrangements =
       info.individualRetirementArrangements
   }

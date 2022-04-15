@@ -16,13 +16,16 @@ import { StateLoader } from './debug'
 import NoMatchPage from './NoMatchPage'
 import SkipToLinks from './SkipToLinks'
 import ScrollTop from './ScrollTop'
-import Menu, { drawerSections, backPages } from './Menu'
+import Menu, { backPages, drawerSectionsForYear } from './Menu'
 import { Section, SectionItem } from './ResponsiveDrawer'
 
 import { useFocus } from 'ustaxes/hooks/Focus'
 import Urls from 'ustaxes/data/urls'
 import DataPropagator from './DataPropagator'
 import YearStatusBar from './YearStatusBar'
+import { useSelector } from 'react-redux'
+import { TaxYear } from 'ustaxes/core/data'
+import { YearsTaxesState } from 'ustaxes/redux'
 
 type Props = {
   isMobile: boolean
@@ -55,6 +58,11 @@ const useStyles = makeStyles<Theme, Props>((theme: Theme) =>
 
 export default function Main(): ReactElement {
   const [ref] = useFocus()
+
+  const activeYear: TaxYear = useSelector(
+    (state: YearsTaxesState) => state.activeYear
+  )
+
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)')
   const isStartPage = useLocation().pathname === '/start'
   const theme = useMemo(
@@ -88,7 +96,7 @@ export default function Main(): ReactElement {
 
   const classes = useStyles({ isMobile })
 
-  const steps: SectionItem[] = drawerSections.flatMap(
+  const steps: SectionItem[] = drawerSectionsForYear(activeYear).flatMap(
     (section: Section) => section.items
   )
 

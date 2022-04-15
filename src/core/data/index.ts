@@ -522,6 +522,16 @@ export type ValueTag = 'string' | 'boolean'
 
 export type Responses = Partial<QuestionTag> // Defines usable tag names for each question later defined,
 
+export enum CreditType {
+  AdvanceChildTaxCredit = 'CreditType/AdvanceChildTaxCredit'
+}
+
+export interface Credit {
+  recipient: PersonRole
+  amount: number
+  type: CreditType
+}
+
 export interface Information {
   f1099s: Supported1099[]
   w2s: IncomeW2[]
@@ -534,6 +544,7 @@ export interface Information {
   refund?: Refund
   taxPayer: TaxPayer
   questions: Responses
+  credits: Credit[]
   stateResidencies: StateResidency[]
   healthSavingsAccounts: HealthSavingsAccount[]
   individualRetirementArrangements: Ira[]
@@ -592,3 +603,4 @@ export type EditAssetAction = ArrayItemEditAction<Asset<Date>>
 export type EditF3921Action = ArrayItemEditAction<F3921>
 export type EditScheduleK1Form1065Action =
   ArrayItemEditAction<ScheduleK1Form1065>
+export type EditCreditAction = ArrayItemEditAction<Credit>
