@@ -34,7 +34,7 @@ const toWithholdingForm = (w2: IncomeW2): WithholdingForm | undefined => {
   ) {
     return {
       formType: ['W', undefined],
-      ein: w2.employer?.EIN ?? '',
+      ein: w2.employer.EIN,
       federalWages: w2.income,
       ilWages: w2.stateWages,
       ilTax: w2.stateWithholding,

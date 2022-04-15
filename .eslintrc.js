@@ -26,7 +26,8 @@ module.exports = {
   plugins: ['react', '@typescript-eslint', 'prettier'],
   rules: {
     'react/jsx-uses-react': 'off',
-    'react/react-in-jsx-scope': 'off'
+    'react/react-in-jsx-scope': 'off',
+    '@typescript-eslint/no-unnecessary-condition': 'warn'
   },
   parserOptions: {
     project: ['./tsconfig.json', './.eslintrc.js']

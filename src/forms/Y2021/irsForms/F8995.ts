@@ -52,8 +52,7 @@ export default class F8995 extends F1040Attachment {
   // TODO: REIT
   l6 = (): number => 0
   l7 = (): number => 0
-  l8 = (): number | undefined =>
-    ifNumber(this.l6(), (num) => num + (this.l7() ?? 0))
+  l8 = (): number | undefined => ifNumber(this.l6(), (num) => num + this.l7())
   l9 = (): number | undefined => ifNumber(this.l8(), (num) => num * 0.2)
 
   l10 = (): number | undefined =>

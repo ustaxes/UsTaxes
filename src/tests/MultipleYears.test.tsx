@@ -171,7 +171,7 @@ describe('years', () => {
 
           await waitFor(() =>
             expect(form.person.firstNameField()?.value).toEqual(
-              state[year]?.taxPayer.primaryPerson?.firstName
+              state[year].taxPayer.primaryPerson?.firstName
             )
           )
 

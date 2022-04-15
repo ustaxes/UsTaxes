@@ -41,10 +41,10 @@ export function LabeledInput<TFormValues>(
   const error: FieldError | undefined = getNestedValue(errors, name, undefined)
 
   const errorMessage: string | undefined = (() => {
-    if (error?.message !== undefined && error?.message !== '') {
-      return error?.message
+    if (error?.message !== undefined && error.message !== '') {
+      return error.message
     }
-    if (patternConfig !== undefined && isNumeric(patternConfig)) {
+    if (isNumeric(patternConfig)) {
       if (error?.type === 'max' && patternConfig.max !== undefined) {
         return `Input must be less than or equal to ${
           patternConfig.prefix ?? ''
@@ -130,9 +130,9 @@ export function LabeledInput<TFormValues>(
               ...rules,
               required: required ? 'Input is required' : undefined,
               pattern: {
-                value: patternConfig?.regexp ?? (required ? /.+/ : /.*/),
+                value: patternConfig.regexp ?? (required ? /.+/ : /.*/),
                 message:
-                  patternConfig?.description ??
+                  patternConfig.description ??
                   (required ? 'Input is required' : '')
               }
             })}
@@ -141,7 +141,7 @@ export function LabeledInput<TFormValues>(
             name={name}
             className={classes.root}
             label={label}
-            value={value ?? ''}
+            value={value}
             onChange={onChange}
             onKeyDown={(e) => {
               if (e.key === 'Enter') {

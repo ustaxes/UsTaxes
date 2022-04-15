@@ -41,15 +41,13 @@ export default class Schedule8812 extends F1040Attachment {
     if (this.f1040.validW2s().length > 0) {
       return this.f1040
         .validW2s()
-        .reduce((res, w2) => res + (w2.ssWithholding ?? 0), 0)
+        .reduce((res, w2) => res + w2.ssWithholding, 0)
     }
     return 0
   }
 
   medicareWithholding = (): number =>
-    this.f1040
-      .validW2s()
-      .reduce((res, w2) => res + (w2.medicareWithholding ?? 0), 0)
+    this.f1040.validW2s().reduce((res, w2) => res + w2.medicareWithholding, 0)
 
   l9checkBox = (): boolean => (this.l4() ?? 0) > 4200
 
@@ -85,9 +83,7 @@ export default class Schedule8812 extends F1040Attachment {
     this.l9checkBox() ? Math.max(this.l8() ?? 0, this.l13() ?? 0) : undefined
 
   l15 = (): number | undefined =>
-    this.l9checkBox()
-      ? Math.min(this.l14() ?? 0, this.l5() ?? 0)
-      : this.l5() ?? 0
+    this.l9checkBox() ? Math.min(this.l14() ?? 0, this.l5()) : this.l5()
 
   fields = (): Field[] => [
     this.f1040.info.namesString(),

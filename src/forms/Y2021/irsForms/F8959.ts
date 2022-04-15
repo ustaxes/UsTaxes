@@ -34,7 +34,7 @@ export default class F8959 extends F1040Attachment {
   }
 
   computeAdditionalMedicareTax = (compensation: number): number => {
-    return fica.additionalMedicareTaxRate * (compensation ?? 0)
+    return fica.additionalMedicareTaxRate * compensation
   }
 
   // Part I: Additional Medicare Tax on Medicare Wages
@@ -47,8 +47,7 @@ export default class F8959 extends F1040Attachment {
   l5 = (): number => this.thresholdFromFilingStatus()
   l6 = (): number => Math.max(0, this.l4() - this.l5())
 
-  l7 = (): number | undefined =>
-    this.computeAdditionalMedicareTax(this.l6() ?? 0)
+  l7 = (): number | undefined => this.computeAdditionalMedicareTax(this.l6())
 
   // Part II: Additional Medicare Tax on Self-Employment Income
   l8 = (): number | undefined => this.f1040.scheduleSE?.l6()

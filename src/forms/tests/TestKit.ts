@@ -68,7 +68,7 @@ export default class TestKit {
       if (logstr !== undefined) {
         await fs.writeFile(
           path.resolve(saveDir, 'error.txt'),
-          logstr?.toString()
+          logstr.toString()
         )
       }
     } catch (e) {

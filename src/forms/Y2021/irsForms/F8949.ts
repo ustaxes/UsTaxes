@@ -153,7 +153,7 @@ export default class F8949 extends F1040Attachment {
 
   shortTermTotalCost = (): number =>
     this.shortTermSales().reduce(
-      (acc, p) => acc + p.openPrice * p.quantity + (p.openFee ?? 0),
+      (acc, p) => acc + p.openPrice * p.quantity + p.openFee,
       0
     )
 
@@ -171,7 +171,7 @@ export default class F8949 extends F1040Attachment {
 
   longTermTotalCost = (): number =>
     this.longTermSales().reduce(
-      (acc, p) => acc + p.openPrice * p.quantity + (p.openFee ?? 0),
+      (acc, p) => acc + p.openPrice * p.quantity + p.openFee,
       0
     )
 

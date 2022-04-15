@@ -20,7 +20,7 @@ describe('f1040', () => {
       if (f1040 !== undefined) {
         expect(displayRound(f1040.l11()) ?? 0).toBeLessThanOrEqual(
           // It is possible for losses to create negative income.
-          displayRound(Math.max(0, f1040.l9() ?? 0)) ?? 0
+          displayRound(Math.max(0, f1040.l9())) ?? 0
         )
       }
       return Promise.resolve()
@@ -33,7 +33,7 @@ describe('f1040', () => {
       expect(f1040).not.toBeUndefined()
       if (f1040 !== undefined) {
         expect(displayRound(f1040.l24()) ?? 0).toBeLessThanOrEqual(
-          displayRound(Math.max(0, f1040.l9() ?? 0)) ?? 0
+          displayRound(Math.max(0, f1040.l9())) ?? 0
         )
       }
       return Promise.resolve()
@@ -46,8 +46,8 @@ describe('f1040', () => {
       expect(f1040).not.toBeUndefined()
       if (f1040 !== undefined) {
         // tax on taxable income should be less than taxable income
-        if (f1040.l15() ?? 0 > 0) {
-          expect(f1040.l16() ?? 0).toBeLessThan(f1040.l15() ?? 0)
+        if (f1040.l15() > 0) {
+          expect(f1040.l16() ?? 0).toBeLessThan(f1040.l15())
         } else {
           expect(f1040.l16() ?? 0).toEqual(0)
         }

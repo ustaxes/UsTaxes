@@ -20,8 +20,8 @@ const DataPropagator = (): ReactElement => {
 
   const canPropagate =
     yearIndex > 0 &&
-    currentYear?.taxPayer?.primaryPerson?.firstName === undefined &&
-    priorYear?.taxPayer?.primaryPerson?.firstName !== undefined
+    currentYear.taxPayer.primaryPerson?.firstName === undefined &&
+    priorYear.taxPayer.primaryPerson?.firstName !== undefined
 
   const onClick = () => {
     if (canPropagate) {

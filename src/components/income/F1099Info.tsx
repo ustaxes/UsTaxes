@@ -252,8 +252,8 @@ export default function F1099Info(): ReactElement {
     }
 
   const people: Person[] = useSelector((state: TaxesState) => [
-    state.information.taxPayer?.primaryPerson,
-    state.information.taxPayer?.spouse
+    state.information.taxPayer.primaryPerson,
+    state.information.taxPayer.spouse
   ])
     .filter((p) => p !== undefined)
     .map((p) => p as Person)

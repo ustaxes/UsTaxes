@@ -106,7 +106,7 @@ const toSpouseForm = (spouse: Spouse): UserSpouseForm => ({
 
 export const AddDependentForm = (): ReactElement => {
   const dependents = useSelector(
-    (state: TaxesState) => state.information.taxPayer?.dependents ?? []
+    (state: TaxesState) => state.information.taxPayer.dependents
   )
 
   const dispatch = useDispatch()
@@ -171,7 +171,7 @@ export const SpouseInfo = (): ReactElement => {
   const dispatch = useDispatch()
 
   const spouse: Spouse | undefined = useSelector((state: TaxesState) => {
-    return state.information.taxPayer?.spouse
+    return state.information.taxPayer.spouse
   })
 
   const onSubmit = (): void => {

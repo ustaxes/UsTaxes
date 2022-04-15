@@ -138,9 +138,9 @@ export const PartnershipIncome = (): ReactElement => {
     (k1) => k1.personRole === PersonRole.SPOUSE
   )
 
-  const spouse: Spouse | undefined = information.taxPayer?.spouse
+  const spouse: Spouse | undefined = information.taxPayer.spouse
 
-  const primary: PrimaryPerson | undefined = information.taxPayer?.primaryPerson
+  const primary: PrimaryPerson | undefined = information.taxPayer.primaryPerson
 
   const filingStatus: FilingStatus | undefined =
     information.taxPayer.filingStatus

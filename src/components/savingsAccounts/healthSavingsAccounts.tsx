@@ -85,8 +85,8 @@ export default function HealthSavingsAccounts(): ReactElement {
   )
 
   const people: Person[] = useYearSelector((state: TaxesState) => [
-    state.information.taxPayer?.primaryPerson,
-    state.information.taxPayer?.spouse
+    state.information.taxPayer.primaryPerson,
+    state.information.taxPayer.spouse
   ])
     .filter((p) => p !== undefined)
     .map((p) => p as Person)

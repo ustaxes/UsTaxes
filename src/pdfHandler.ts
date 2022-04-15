@@ -22,11 +22,13 @@ export async function savePDF(
   } else {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any,@typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-call
     const defaultPath = await (window as any).__TAURI__.path.documentDir()
-    const path = await save({
+
+    // path can be null if user cancels save.
+    const path: string | null = (await save({
       filters: [{ name: 'PDF Documents (.pdf)', extensions: ['pdf'] }],
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       defaultPath
-    })
+    })) as string | null
 
     if (path !== null) {
       return await writeBinaryFile({ contents, path }, {})

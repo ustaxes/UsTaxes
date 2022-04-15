@@ -127,7 +127,7 @@ describe('Transactions', () => {
           }>(
             (acc, [name, quantity]) => ({
               ...acc,
-              [name]: (acc[name] ?? 0) + quantity
+              [name]: acc[name] + quantity
             }),
             {}
           )
@@ -139,7 +139,7 @@ describe('Transactions', () => {
           }>(
             (acc, p) => ({
               ...acc,
-              [p.security.name]: (acc[p.security.name] ?? 0) + p.quantity
+              [p.security.name]: acc[p.security.name] + p.quantity
             }),
             {}
           )
@@ -164,10 +164,10 @@ describe('Transactions', () => {
             ...acc,
             [t.security.name]: {
               basis:
-                (acc[t.security.name]?.basis ?? 0) +
+                acc[t.security.name].basis +
                 (t.side === 'BUY' ? t.quantity * t.price : 0),
               proceeds:
-                (acc[t.security.name]?.proceeds ?? 0) +
+                acc[t.security.name].proceeds +
                 (t.side === 'SELL' ? t.quantity * t.price : 0)
             }
           }),
@@ -180,10 +180,9 @@ describe('Transactions', () => {
           (acc, p) => ({
             ...acc,
             [p.security.name]: {
-              basis: (acc[p.security.name]?.basis ?? 0) + p.price * p.quantity,
+              basis: acc[p.security.name].basis + p.price * p.quantity,
               proceeds:
-                (acc[p.security.name]?.proceeds ?? 0) +
-                (p.closePrice ?? 0) * p.quantity
+                acc[p.security.name].proceeds + (p.closePrice ?? 0) * p.quantity
             }
           }),
           {}

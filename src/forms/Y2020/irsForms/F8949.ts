@@ -95,14 +95,10 @@ export default class F8949 extends F1040Attachment {
     ) as SoldAsset<Date>[]
 
   thisYearLongTermSales = (): SoldAsset<Date>[] =>
-    this.thisYearSales().filter(
-      (p) => p.closeDate !== undefined && this.isLongTerm(p)
-    )
+    this.thisYearSales().filter((p) => this.isLongTerm(p))
 
   thisYearShortTermSales = (): SoldAsset<Date>[] =>
-    this.thisYearSales().filter(
-      (p) => p.closeDate !== undefined && !this.isLongTerm(p)
-    )
+    this.thisYearSales().filter((p) => !this.isLongTerm(p))
 
   // in milliseconds
   oneDay = 1000 * 60 * 60 * 24
@@ -169,7 +165,7 @@ export default class F8949 extends F1040Attachment {
 
   longTermTotalCost = (): number =>
     this.longTermSales().reduce(
-      (acc, p) => acc + p.openPrice * p.quantity + (p.openFee ?? 0),
+      (acc, p) => acc + p.openPrice * p.quantity + p.openFee,
       0
     )
 

@@ -11,7 +11,6 @@ import { intentionallyFloat, isLeft, runAsync } from 'ustaxes/core/util'
 import { Box, Button } from '@material-ui/core'
 import Summary from './Summary'
 
-import { store } from 'ustaxes/redux/store'
 import { savePDF } from 'ustaxes/pdfHandler'
 
 export default function CreatePDF(): ReactElement {
@@ -32,32 +31,23 @@ export default function CreatePDF(): ReactElement {
   const builder = yearFormBuilder(year, info, assets)
 
   useEffect(() => {
-    if (builder !== undefined) {
-      const f1040Res = builder.f1040()
-      if (isLeft(f1040Res)) {
-        updateIrsErrors(f1040Res.left)
-        updateStateErrors(['Cannot build state return with IRS errors'])
-      } else {
-        updateIrsErrors([])
-        const stateRes = builder.makeStateReturn()
-        if (isLeft(stateRes)) {
-          updateStateErrors(stateRes.left)
-        } else {
-          updateStateErrors([])
-        }
-      }
+    const f1040Res = builder.f1040()
+    if (isLeft(f1040Res)) {
+      updateIrsErrors(f1040Res.left)
+      updateStateErrors(['Cannot build state return with IRS errors'])
     } else {
-      updateIrsErrors([
-        `Information was undefined for tax year: ${store.getState().activeYear}`
-      ])
-      updateStateErrors([
-        `Information was undefined for tax year: ${store.getState().activeYear}`
-      ])
+      updateIrsErrors([])
+      const stateRes = builder.makeStateReturn()
+      if (isLeft(stateRes)) {
+        updateStateErrors(stateRes.left)
+      } else {
+        updateStateErrors([])
+      }
     }
   }, [info])
 
-  const lastName = info?.taxPayer.primaryPerson?.lastName
-  const residency: State | undefined = info?.stateResidencies[0]?.state
+  const lastName = info.taxPayer.primaryPerson?.lastName
+  const residency: State | undefined = info.stateResidencies[0]?.state
 
   const federalFileName = `${lastName ?? 'Tax'}-1040.pdf`
   const stateFileName = `${lastName ?? 'StateTax'}-${residency}.pdf`
@@ -66,19 +56,15 @@ export default function CreatePDF(): ReactElement {
 
   const federalReturn = async (e: FormEvent<Element>): Promise<void> => {
     e.preventDefault()
-    if (builder !== undefined) {
-      const r1 = await runAsync(builder.f1040Bytes())
-      const r2 = await r1.mapAsync((bytes) => savePDF(bytes, federalFileName))
-      return r2.orThrow()
-    }
+    const r1 = await runAsync(builder.f1040Bytes())
+    const r2 = await r1.mapAsync((bytes) => savePDF(bytes, federalFileName))
+    return r2.orThrow()
   }
 
   const stateReturn = async (): Promise<void> => {
-    if (builder !== undefined) {
-      const r1 = await runAsync(builder.stateReturnBytes())
-      const r2 = await r1.mapAsync((bytes) => savePDF(bytes, stateFileName))
-      return r2.orThrow()
-    }
+    const r1 = await runAsync(builder.stateReturnBytes())
+    const r2 = await r1.mapAsync((bytes) => savePDF(bytes, stateFileName))
+    return r2.orThrow()
   }
 
   const printActions: ReactNode = (() => {
@@ -98,7 +84,7 @@ export default function CreatePDF(): ReactElement {
             </Button>
           </Box>
           {(() => {
-            if (info?.stateResidencies[0]?.state !== undefined) {
+            if (info.stateResidencies.length > 0) {
               return <h3>State: {info.stateResidencies[0].state} </h3>
             }
           })()}

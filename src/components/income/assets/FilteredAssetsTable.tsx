@@ -36,7 +36,7 @@ const assetTableColumns: TableColumn<Row>[] = [
   },
   {
     name: 'Open Date',
-    selector: ({ openDate }) => openDate?.toISOString().slice(0, 10) ?? '',
+    selector: ({ openDate }) => openDate.toISOString().slice(0, 10),
     sortable: true
   },
   {
@@ -187,7 +187,7 @@ const FilteredAssetsTable = (): ReactElement => {
               label="Asset Name"
               name="securityName"
             />
-            <GenericLabeledDropdown<[string, CloseYear]>
+            <GenericLabeledDropdown<[string, CloseYear], AssetFilter>
               noUndefined
               sizes={{ xs: 6 }}
               label="Sale Year"
@@ -201,7 +201,7 @@ const FilteredAssetsTable = (): ReactElement => {
                 ])
               ]}
               keyMapping={(x) => x[1].toString()}
-              valueMapping={(x) => x[1] ?? 'all'}
+              valueMapping={(x) => x[1]}
               textMapping={(x) => x[0]}
             />
           </Grid>

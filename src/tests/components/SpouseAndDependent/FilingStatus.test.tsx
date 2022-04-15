@@ -49,8 +49,8 @@ describe('FilingStatus', () => {
       }
     }
 
-    expect(state[y1]?.taxPayer).not.toBeUndefined()
-    expect(state[y2]?.taxPayer).not.toBeUndefined()
+    expect(state[y1].taxPayer).not.toBeUndefined()
+    expect(state[y2].taxPayer).not.toBeUndefined()
 
     checkFs(state[y1].taxPayer)
     await page.yearStatus.setYear(y2)
@@ -61,12 +61,11 @@ describe('FilingStatus', () => {
     await waitFor(() => {
       expect(page.yearStatus.yearValue()).toEqual(y2)
     })
-    const tp = state[y2]?.taxPayer
-    if (tp !== undefined) {
-      await waitFor(() => {
-        checkFs(tp)
-      })
-    }
+    const tp = state[y2].taxPayer
+    await waitFor(() => {
+      checkFs(tp)
+    })
+
     return true
   })
 })

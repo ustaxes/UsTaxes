@@ -203,7 +203,7 @@ export default function RealEstate(): ReactElement {
   )
 
   const otherExpenseDescription = (() => {
-    if (otherExpensesEntered ?? 0 !== 0) {
+    if ((otherExpensesEntered ?? 0) !== 0) {
       return (
         <LabeledInput
           key={enumKeys(PropertyExpenseType).length}

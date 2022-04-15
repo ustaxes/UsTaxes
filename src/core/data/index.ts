@@ -125,21 +125,20 @@ export enum PlanType1099 {
    * simplified employee pension (SEP) IRA,
    * and a savings incentive match plan for employees (SIMPLE) IRA
    */
-  // IRA = 'IRA',
-  // RothIRA = 'RothIRA',
-  // SepIRA = 'SepIRA',
-  // SimpleIRA = 'SimpleIRA',
-  /* Pension and annuity payments include distributions from 401(k), 403(b), and governmental 457(b) plans.
-   */
+  IRA = 'IRA',
+  RothIRA = 'RothIRA',
+  SepIRA = 'SepIRA',
+  SimpleIRA = 'SimpleIRA',
+  // Pension and annuity payments include distributions from 401(k), 403(b), and governmental 457(b) plans.
   Pension = 'Pension'
 }
 
-export const PlanType1099Texts = {
-  // [PlanType1099.IRA]:'traditional IRA',
-  // [PlanType1099.RothIRA]: 'Roth IRA',
-  // [PlanType1099.SepIRA]: 'simplified employee pension (SEP) IRA',
-  // [PlanType1099.SimpleIRA]: 'savings incentive match plan for employees (SIMPLE) IRA',
-  [PlanType1099.Pension]: '401(k), 403(b), or 457(b) plan'
+export const PlanType1099Texts: { [k in keyof typeof PlanType1099]: string } = {
+  IRA: 'traditional IRA',
+  RothIRA: 'Roth IRA',
+  SepIRA: 'simplified employee pension (SEP) IRA',
+  SimpleIRA: 'savings incentive match plan for employees (SIMPLE) IRA',
+  Pension: '401(k), 403(b), or 457(b) plan'
 }
 
 export interface F1099RData {

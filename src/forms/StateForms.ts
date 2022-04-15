@@ -16,10 +16,7 @@ type StateForms<F> = {
 export const createStateReturn =
   <F>(noFilingStates: State[], stateForms: StateForms<F>) =>
   (info: Information, f1040: F): Either<StateFormError[], StateForm[]> => {
-    if (
-      info.stateResidencies !== undefined &&
-      info.stateResidencies.length < 1
-    ) {
+    if (info.stateResidencies.length < 1) {
       return left([StateFormError.NoResidency])
     } else if (noFilingStates.includes(info.stateResidencies[0].state)) {
       return left([StateFormError.NoFilingRequirement])
@@ -29,7 +26,7 @@ export const createStateReturn =
     const form = stateForms[residency.state]?.call(undefined, info, f1040)
     if (form !== undefined) {
       return right(
-        [form, ...form?.attachments()].sort((a, b) => a.formOrder - b.formOrder)
+        [form, ...form.attachments()].sort((a, b) => a.formOrder - b.formOrder)
       )
     }
     return left([StateFormError.StateFormsNotAvailable])

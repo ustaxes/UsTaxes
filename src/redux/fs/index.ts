@@ -27,11 +27,13 @@ const loadFile = async (file: File): Promise<string> => {
       e: ProgressEvent<FileReader>
     ): any {
       e.preventDefault()
-      const contents: string = fileReader.result as string
+      // type known here because of readAsText
+      const contents: string | null = fileReader.result as string | null
       if (contents === null) {
         reject('file contents were null')
+      } else {
+        resolve(contents)
       }
-      resolve(contents)
     }
     fileReader.readAsText(file)
   })

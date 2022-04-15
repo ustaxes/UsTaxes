@@ -16,7 +16,7 @@ describe('validation', () => {
   it('should validate some data', () => {
     fc.assert(
       fc.property(arbitraries.primaryPerson, (data) => {
-        expect(validators.primaryPerson?.(data)).toEqual(true)
+        expect(validators.primaryPerson(data)).toEqual(true)
       })
     )
   })

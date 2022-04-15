@@ -190,7 +190,7 @@ export default class F8889 extends F1040Attachment {
     if (this.lastMonthCoverage() === 'family') {
       // TODO: This hard codes the allocation at 50% for each spouse but the
       // rules say any contribution allowcation is allowed
-      return Math.round(this.l5() ?? 0 / 2)
+      return Math.round(this.l5() / 2)
     } else {
       // get the number of months of family coverage
       const familyMonths: number = this.perMonthContributions.type.filter(
@@ -226,7 +226,7 @@ export default class F8889 extends F1040Attachment {
 
   l3 = (): number => this.contributionLimit()
   l4 = (): number => sumFields([this.f8853?.l1(), this.f8853?.l2()])
-  l5 = (): number => (this.l3() ?? 0) - this.l4()
+  l5 = (): number => this.l3() - this.l4()
   l6 = (): number | undefined => this.splitFamilyContributionLimit()
   // TODO: Additional contirbution amount. Need to know the age of the user
   l7 = (): number | undefined => undefined

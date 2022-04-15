@@ -68,7 +68,7 @@ describe('Questions', () => {
 
     await waitFor(() => {})
     expect(
-      new TaxesStateMethods(store.getState()).info()?.questions.CRYPTO
+      new TaxesStateMethods(store.getState()).info().questions.CRYPTO
     ).toEqual(true)
   })
 })

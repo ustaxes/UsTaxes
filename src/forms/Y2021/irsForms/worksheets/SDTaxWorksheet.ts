@@ -16,7 +16,7 @@ export default class SDTaxWorksheet extends Worksheet {
 
     const sdCondition =
       sd !== undefined &&
-      ((sd.l18() ?? 0) > 0 || (sd?.l19() ?? 0) > 0) &&
+      ((sd.l18() ?? 0) > 0 || (sd.l19() ?? 0) > 0) &&
       sd.l15() > 0 &&
       sd.l16() > 0
 

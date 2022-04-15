@@ -216,7 +216,7 @@ export default class ScheduleE extends F1040Attachment {
         .flatMap((k1) => [
           k1.partnershipName,
           k1.partnerOrSCorp,
-          k1.isForeign ?? false,
+          k1.isForeign,
           k1.partnershipEin,
           false,
           false
