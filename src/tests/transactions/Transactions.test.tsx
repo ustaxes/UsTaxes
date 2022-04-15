@@ -122,24 +122,28 @@ describe('Transactions', () => {
             t.security.name,
             t.side === 'BUY' ? t.quantity : -t.quantity
           ])
-          .reduce<{
-            [name: string]: number
-          }>(
+          .reduce<
+            Partial<{
+              [name: string]: number
+            }>
+          >(
             (acc, [name, quantity]) => ({
               ...acc,
-              [name]: acc[name] + quantity
+              [name]: (acc[name] ?? 0) + quantity
             }),
             {}
           )
 
         const portfolioCounts = portfolio.positions
           .filter((p) => p.closeDate === undefined)
-          .reduce<{
-            [name: string]: number
-          }>(
+          .reduce<
+            Partial<{
+              [name: string]: number
+            }>
+          >(
             (acc, p) => ({
               ...acc,
-              [p.security.name]: acc[p.security.name] + p.quantity
+              [p.security.name]: (acc[p.security.name] ?? 0) + p.quantity
             }),
             {}
           )
@@ -157,32 +161,37 @@ describe('Transactions', () => {
           { positions: [] }
         )
 
-        const transactionCounts = transactions.reduce<{
-          [name: string]: { basis: number; proceeds: number }
-        }>(
+        const transactionCounts = transactions.reduce<
+          Partial<{
+            [name: string]: { basis: number; proceeds: number }
+          }>
+        >(
           (acc, t) => ({
             ...acc,
             [t.security.name]: {
               basis:
-                acc[t.security.name].basis +
+                (acc[t.security.name]?.basis ?? 0) +
                 (t.side === 'BUY' ? t.quantity * t.price : 0),
               proceeds:
-                acc[t.security.name].proceeds +
+                (acc[t.security.name]?.proceeds ?? 0) +
                 (t.side === 'SELL' ? t.quantity * t.price : 0)
             }
           }),
           {}
         )
 
-        const portfolioCounts = portfolio.positions.reduce<{
-          [name: string]: { basis: number; proceeds: number }
-        }>(
+        const portfolioCounts = portfolio.positions.reduce<
+          Partial<{
+            [name: string]: { basis: number; proceeds: number }
+          }>
+        >(
           (acc, p) => ({
             ...acc,
             [p.security.name]: {
-              basis: acc[p.security.name].basis + p.price * p.quantity,
+              basis: (acc[p.security.name]?.basis ?? 0) + p.price * p.quantity,
               proceeds:
-                acc[p.security.name].proceeds + (p.closePrice ?? 0) * p.quantity
+                (acc[p.security.name]?.proceeds ?? 0) +
+                (p.closePrice ?? 0) * p.quantity
             }
           }),
           {}
