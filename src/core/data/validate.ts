@@ -9,7 +9,7 @@ import * as types from 'ustaxes/core/data'
 // validate against the schema.definitions.
 export const checkType = <A>(data: A, validate: ValidateFunction<A>): A => {
   validate(data)
-  if (validate.errors !== undefined) {
+  if ((validate.errors ?? undefined) !== undefined) {
     // Taken from doc example: The type cast is needed to allow user-defined keywords and errors
     // You can extend this type to include your error types as needed.
 
