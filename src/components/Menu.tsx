@@ -28,6 +28,8 @@ import F1098eInfo from './deductions/F1098eInfo'
 import Questions from './Questions'
 import Urls from 'ustaxes/data/urls'
 
+import ORWFHDCInput from './stateForms/OR/ORWFHDC'
+
 import { isMobile } from 'react-device-detect'
 import HealthSavingsAccounts from './savingsAccounts/healthSavingsAccounts'
 import OtherInvestments from './income/OtherInvestments'
@@ -123,6 +125,10 @@ export const drawerSections: Section[] = [
         <HealthSavingsAccounts />
       )
     ]
+  },
+  {
+    title: 'OR Forms',
+    items: [item('OR-WFHDC', Urls.orforms.orwfhdc, <ORWFHDCInput />)]
   },
   {
     title: 'Results',
