@@ -16,30 +16,39 @@ export interface QualifyingInformationV0 {
   birthYear: number
 }
 
-export interface DependentV0 extends Person {
+export interface DependentV0 extends Omit<Person, 'isBlind' | 'dateOfBirth'> {
   relationship: string
   qualifyingInfo?: QualifyingInformationV0
 }
 
-// export type USTStateV0 = {
-//   [P in keyof Omit<USTState, 'taxPayer'>]: USTState[P];
-// } & {
-//   taxPayer: {
-//     primaryPerson?: PrimaryPerson;
-//     dependents: DependentV0[];
-//     filingStatus?: FilingStatus;
-//     spouse?: Spouse;
-// };}
+export type PrimaryPersonV0 = Omit<PrimaryPerson, 'isBlind' | 'dateOfBirth'>
+
+export type SpouseV0 = Omit<Spouse, 'isBlind' | 'dateOfBirth'>
+
+export type USTStateV0 = {
+  [P in keyof Omit<USTState, 'taxPayer'>]: USTState[P]
+} & {
+  taxPayer: {
+    primaryPerson?: PrimaryPersonV0
+    dependents: DependentV0[]
+    filingStatus?: FilingStatus
+    spouse?: SpouseV0
+  }
+}
 
 function migrateDependent(p: DependentV0): Dependent {
   const birthYear = p.qualifyingInfo?.birthYear
-  p as Dependent
-  if (birthYear !== undefined) {
-    p.dateOfBirth = new Date(birthYear, 0, 1)
-  } else {
-    p.dateOfBirth = new Date()
+  const q: Dependent = {
+    ...p,
+    qualifyingInfo: {
+      numberOfMonths: p.qualifyingInfo?.numberOfMonths ?? 0,
+      isStudent: p.qualifyingInfo?.isStudent ?? false
+    },
+    dateOfBirth:
+      birthYear !== undefined ? new Date(birthYear, 0, 1) : new Date(),
+    isBlind: false
   }
-  return p
+  return q
 }
 
 function migratePrimaryOrSpouse(p: Spouse | PrimaryPerson) {

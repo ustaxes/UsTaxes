@@ -1,6 +1,6 @@
 import { AnyAction, Reducer } from 'redux'
 import { download } from '.'
-import { migrateEachYear } from '../migration'
+import { migrateEachYear, migrateAgeAndBlindness } from '../migration'
 import {
   deserializeTransform,
   serializeTransform,
@@ -32,8 +32,12 @@ const fsReducer = <S extends USTState, A extends AnyAction>(
         // so we can safely cast it to a FSRecover<USTSerializedState>.
         return {
           ...newState,
-          ...migrateEachYear(
-            deserializeTransform((action as FSRecover<USTSerializedState>).data)
+          ...migrateAgeAndBlindness(
+            migrateEachYear(
+              deserializeTransform(
+                (action as FSRecover<USTSerializedState>).data
+              )
+            )
           )
         }
       }
