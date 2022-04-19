@@ -14,7 +14,15 @@ import {
   createMigrate
 } from 'redux-persist'
 import storage from 'redux-persist/lib/storage' // defaults to localStorage for web
-import { Asset, Information, TaxYear } from 'ustaxes/core/data'
+import {
+  Asset,
+  Information,
+  TaxYear,
+  PrimaryPerson,
+  Dependent,
+  Spouse,
+  FilingStatus
+} from 'ustaxes/core/data'
 import { blankYearTaxesState, YearsTaxesState } from '.'
 import { Actions } from './actions'
 import { PersistPartial } from 'redux-persist/es/persistReducer'
@@ -80,6 +88,37 @@ const dateStringTransform = createTransform(
   serializeTransform,
   deserializeTransform
 )
+
+// https://gist.github.com/lafiosca/b7bbb569ae3fe5c1ce110bf71d7ee153
+interface QualifyingInformationV0 {
+  numberOfMonths: number
+  isStudent: boolean
+  birthYear: number
+}
+
+type DependentV0 = Omit<
+  Dependent,
+  'isBlind' | 'dateOfBirth' | 'qualifyingInfo'
+> & {
+  qualifyingInfo?: QualifyingInformationV0
+}
+
+type PrimaryPersonV0 = Omit<PrimaryPerson, 'isBlind' | 'dateOfBirth'>
+
+export type SpouseV0 = Omit<Spouse, 'isBlind' | 'dateOfBirth'>
+
+export type USTStateV0 = {
+  [P in keyof Omit<USTState, 'taxPayer'>]: USTState[P]
+} & {
+  taxPayer: {
+    primaryPerson?: PrimaryPersonV0
+    dependents: DependentV0[]
+    filingStatus?: FilingStatus
+    spouse?: SpouseV0
+  }
+}
+
+type USTStateV1 = USTState
 
 //const migrate = async (state: USTState): Promise<USTState> =>
 // migrateEachYear(state)
