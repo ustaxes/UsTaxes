@@ -61,7 +61,7 @@ export default class ScheduleEIC extends F1040Attachment {
               incomeLimits.length - 1
             )
           ]
-        return (this.f1040.l11() ?? 0) < limit
+        return this.f1040.l11() < limit
       }
     }
     return false
@@ -195,7 +195,7 @@ export default class ScheduleEIC extends F1040Attachment {
 
   // 5.1 - Earned income
   earnedIncome = (): number => {
-    const l1 = this.f1040.l1() ?? 0
+    const l1 = this.f1040.l1()
     const l2 = this.taxableScholarshipIncome()
     const l3 = this.prisonIncome()
     const l4 = this.pensionPlanIncome()
@@ -280,7 +280,7 @@ export default class ScheduleEIC extends F1040Attachment {
   credit = (): number =>
     Math.min(
       this.calculateEICForIncome(this.earnedIncome()),
-      this.calculateEICForIncome(this.f1040.l11() ?? 0)
+      this.calculateEICForIncome(this.f1040.l11())
     )
 
   allowed = (): boolean => {
@@ -319,10 +319,9 @@ export default class ScheduleEIC extends F1040Attachment {
       .filter(
         (d) =>
           d.qualifyingInfo?.birthYear !== undefined &&
-          ((d.qualifyingInfo?.birthYear !== undefined &&
-            d.qualifyingInfo?.birthYear >= this.qualifyingCutoffYear) ||
-            ((d.qualifyingInfo?.isStudent ?? false) &&
-              d.qualifyingInfo?.birthYear >= this.qualifyingStudentCutoffYear))
+          (d.qualifyingInfo.birthYear >= this.qualifyingCutoffYear ||
+            (d.qualifyingInfo.isStudent &&
+              d.qualifyingInfo.birthYear >= this.qualifyingStudentCutoffYear))
       )
       .sort((d) => d.qualifyingInfo?.birthYear as number)
       .slice(0, 3)

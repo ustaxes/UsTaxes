@@ -12,11 +12,11 @@ import { LabeledRadioProps } from './types'
 import useStyles from './styles'
 import ConditionallyWrap from 'ustaxes/components/ConditionallyWrap'
 
-export function LabeledRadio(props: LabeledRadioProps): ReactElement {
+export function LabeledRadio<A>(props: LabeledRadioProps<A>): ReactElement {
   const { label, name, values, useGrid = true, sizes = { xs: 12 } } = props
 
   const classes = useStyles()
-  const { control } = useFormContext()
+  const { control } = useFormContext<A>()
 
   return (
     <ConditionallyWrap

@@ -42,9 +42,9 @@ export default class Schedule1 extends F1040Attachment {
   l8q = (): number | undefined => undefined
   l8z = (): number => {
     if (
-      (this.f1040.f8889?.l20() !== undefined && this.f1040.f8889?.l20() > 0) ||
+      (this.f1040.f8889?.l20() !== undefined && this.f1040.f8889.l20() > 0) ||
       (this.f1040.f8889Spouse?.l20() !== undefined &&
-        this.f1040.f8889Spouse?.l20() > 0)
+        this.f1040.f8889Spouse.l20() > 0)
     ) {
       this.otherIncomeStrings.add('HSA')
     }

@@ -13,9 +13,12 @@ beforeEach(() => {
 })
 
 jest.mock('redux-persist', () => {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const real = jest.requireActual('redux-persist')
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
   return {
     ...real,
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     persistReducer: jest.fn().mockImplementation((config, reducers) => reducers)
   }
 })
@@ -46,10 +49,10 @@ describe('FilingStatus', () => {
       }
     }
 
-    expect(state[y1]?.taxPayer).not.toBeUndefined()
-    expect(state[y2]?.taxPayer).not.toBeUndefined()
+    expect(state[y1].taxPayer).not.toBeUndefined()
+    expect(state[y2].taxPayer).not.toBeUndefined()
 
-    checkFs(state[y1]?.taxPayer!)
+    checkFs(state[y1].taxPayer)
     await page.yearStatus.setYear(y2)
 
     await waitFor(() => {
@@ -58,12 +61,11 @@ describe('FilingStatus', () => {
     await waitFor(() => {
       expect(page.yearStatus.yearValue()).toEqual(y2)
     })
-    const tp = state[y2]?.taxPayer
-    if (tp !== undefined) {
-      await waitFor(() => {
-        checkFs(tp)
-      })
-    }
+    const tp = state[y2].taxPayer
+    await waitFor(() => {
+      checkFs(tp)
+    })
+
     return true
   })
 })

@@ -158,7 +158,7 @@ export default class ScheduleD extends F1040Attachment {
   l13 = (): number | undefined =>
     this.f1040.info
       .f1099Divs()
-      .reduce((s, f) => s + (f.form.totalCapitalGainsDistributions ?? 0), 0)
+      .reduce((s, f) => s + f.form.totalCapitalGainsDistributions, 0)
 
   l14 = (): number | undefined => undefined
 
@@ -181,7 +181,7 @@ export default class ScheduleD extends F1040Attachment {
   l16 = (): number => sumFields([this.l7(), this.l15()])
 
   // Are L15 and L16 both gains?
-  l17 = (): boolean => (this.l15() ?? 0) > 0 && (this.l16() ?? 0) > 0
+  l17 = (): boolean => this.l15() > 0 && this.l16() > 0
 
   l18 = (): number | undefined => {
     if (!this.l17()) {
@@ -216,7 +216,7 @@ export default class ScheduleD extends F1040Attachment {
   haveQualifiedDividends = (): boolean => {
     return this.f1040.info
       .f1099Divs()
-      .some((f) => (f.form.qualifiedDividends ?? 0) > 0)
+      .some((f) => f.form.qualifiedDividends > 0)
   }
 
   // TODO: Schedule D tax worksheet

@@ -19,6 +19,7 @@ import _ from 'lodash'
 import { ReactNode } from 'react'
 import { FormContainerProvider } from './FormContainer/Context'
 import { Prompt } from 'ustaxes/components/Prompt'
+import { intentionallyFloat } from 'ustaxes/core/util'
 
 interface FormContainerProps {
   onDone: () => void
@@ -199,7 +200,10 @@ export const OpenableFormContainer = <A,>(
       {(() => {
         if (isOpen) {
           return (
-            <FormContainer onDone={handleSubmit(onSave)} onCancel={onClose}>
+            <FormContainer
+              onDone={intentionallyFloat(handleSubmit(onSave))}
+              onCancel={onClose}
+            >
               {props.children}
             </FormContainer>
           )

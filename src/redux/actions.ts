@@ -287,7 +287,7 @@ export const saveRefundInfo: ActionCreator<Refund> = makeActionCreator(
 
 const cleanPerson = <P extends Person>(p: P): P => ({
   ...p,
-  ssid: p?.ssid.replace(/-/g, '')
+  ssid: p.ssid.replace(/-/g, '')
 })
 
 export const savePrimaryPersonInfo: ActionCreator<PrimaryPerson> =

@@ -85,7 +85,7 @@ export default class Schedule3 extends F1040Attachment {
     this.l4(),
     this.l5(),
 
-    ...Array(4).fill(undefined), // TODO: checkboxes
+    ...Array<undefined>(4).fill(undefined), // TODO: checkboxes
     this.l6(),
 
     this.l7(),

@@ -68,17 +68,14 @@ const formReducer = (
         ...newState,
         taxPayer: {
           ...newState.taxPayer,
-          dependents: [
-            ...(newState.taxPayer?.dependents ?? []),
-            action.formData
-          ]
+          dependents: [...newState.taxPayer.dependents, action.formData]
         }
       }
     }
 
     // Replace dependent by index with a new object.
     case ActionName.EDIT_DEPENDENT: {
-      const newDependents = [...(newState.taxPayer?.dependents ?? [])]
+      const newDependents = [...newState.taxPayer.dependents]
       newDependents.splice(action.formData.index, 1, action.formData.value)
 
       return {
@@ -91,7 +88,7 @@ const formReducer = (
     }
 
     case ActionName.REMOVE_DEPENDENT: {
-      const newDependents = [...(newState.taxPayer?.dependents ?? [])]
+      const newDependents = [...newState.taxPayer.dependents]
       newDependents.splice(action.formData, 1)
 
       const filingStatus = (() => {

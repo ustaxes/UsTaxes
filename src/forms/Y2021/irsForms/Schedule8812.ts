@@ -205,7 +205,7 @@ export default class Schedule8812 extends F1040Attachment {
   // TODO: Letter 6419 advance child tax credit payments
   letter6419Payments = (): number | undefined =>
     this.f1040.info.credits
-      .filter((c) => (c.type = CreditType.AdvanceChildTaxCredit))
+      .filter((c) => c.type === CreditType.AdvanceChildTaxCredit)
       .reduce((sum, c) => sum + c.amount, 0)
 
   part1b = (): Part1b => {
@@ -213,20 +213,20 @@ export default class Schedule8812 extends F1040Attachment {
     if (!allowed) return { allowed: false }
 
     const l14a = Math.min(this.l7(), this.l12())
-    const l14b = Math.max(this.l12() - (l14a ?? 0))
+    const l14b = Math.max(this.l12() - l14a)
     const l14c = l14a === 0 ? 0 : this.creditLimitWorksheetA()
-    const l14d = Math.min(l14a ?? 0, l14c ?? 0)
+    const l14d = Math.min(l14a, l14c)
     const l14e = sumFields([l14b, l14d])
     // TODO:
     // IMPORTANT: Letter 6419 advance child tax credit payments
-    const l14f = this.letter6419Payments()
-    const l14g = Math.max(0, (l14e ?? 0) - (l14f ?? 0))
+    const l14f = this.letter6419Payments() ?? 0
+    const l14g = Math.max(0, l14e - l14f)
 
     // Credit for other dependents
-    const l14h = Math.min(l14d ?? 0, l14g ?? 0)
+    const l14h = Math.min(l14d, l14g)
 
     // Refundable child tax credit
-    const l14i = Math.max(0, (l14g ?? 0) - (l14h ?? 0))
+    const l14i = Math.max(0, l14g - l14h)
 
     return {
       allowed,
@@ -247,15 +247,15 @@ export default class Schedule8812 extends F1040Attachment {
     if (!allowed) return { allowed: false }
 
     const l15a = this.creditLimitWorksheetA()
-    const l15b = Math.min(this.l12(), l15a ?? 0)
+    const l15b = Math.min(this.l12(), l15a)
 
     //TODO - implement after 2a through 2c
     const l15c = this.l27() ?? 0
     const l15d = sumFields([l15b, l15c])
-    const l15e = this.letter6419Payments()
-    const l15f = Math.max(0, (l15d ?? 0) - (l15e ?? 0))
-    const l15g = Math.min(l15b ?? 0, l15f ?? 0)
-    const l15h = Math.max(0, (l15f ?? 0) - (l15g ?? 0))
+    const l15e = this.letter6419Payments() ?? 0
+    const l15f = Math.max(0, l15d - l15e)
+    const l15g = Math.min(l15b, l15f)
+    const l15h = Math.max(0, l15f - l15g)
 
     return {
       allowed,
@@ -295,12 +295,13 @@ export default class Schedule8812 extends F1040Attachment {
     // data also belong here.
     const l2b = this.f1040.scheduleC?.l31() ?? 0
     // TODO: Net farm profit...
-    const l2c = undefined
+    // const l2c = undefined
     // TODO: Farm optional method for self-employment net earnings
     const l2d = 0
 
+    // TODO: min(l2c, l2d)
     // Allowed to be a loss:
-    const l2e = Math.min(l2c ?? 0, l2d)
+    const l2e = Math.min(0, l2d)
 
     const l3 = sumFields([l1a, l1b, l2a, l2b, l2e])
 
@@ -349,15 +350,15 @@ export default class Schedule8812 extends F1040Attachment {
     const l18b = this.f1040.nonTaxableCombatPay() ?? 0
     const l19No = l18a > 2500
     const l19Yes = l18a <= 2500
-    const l19 = Math.max(0, (l18a ?? 0) - 2500)
-    const l20 = (l19 ?? 0) * 0.15
-    const l20No = (l16b ?? 0) >= 4200
-    const l20Yes = (l16b ?? 0) < 4200
+    const l19 = Math.max(0, l18a - 2500)
+    const l20 = l19 * 0.15
+    const l20No = l16b >= 4200
+    const l20Yes = l16b < 4200
 
     const toLine27 = (() => {
-      if (l20No && (l20 ?? 0) > 0) {
-        return Math.min(l17 ?? 0, l20 ?? 0)
-      } else if (l20Yes && (l20 ?? 0) >= (l17 ?? 0)) {
+      if (l20No && l20 > 0) {
+        return Math.min(l17, l20)
+      } else if (l20Yes && l20 >= l17) {
         return l17
       }
     })()
@@ -408,7 +409,7 @@ export default class Schedule8812 extends F1040Attachment {
 
     const l24 = sumFields([this.f1040.l27a(), this.f1040.schedule3?.l11()])
 
-    const l25 = Math.max(0, (l23 ?? 0) - (l24 ?? 0))
+    const l25 = Math.max(0, l23 - l24)
 
     const l26 = Math.max(part2a.l20 ?? 0, l25)
 

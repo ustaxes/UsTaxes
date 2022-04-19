@@ -32,13 +32,13 @@ export default class Schedule2 extends F1040Attachment {
     ) {
       this.otherIncomeStrings.add('HSA')
     }
-    if (this.f1040.f8889?.l21() !== undefined && this.f1040.f8889?.l21() > 0) {
+    if (this.f1040.f8889?.l21() !== undefined && this.f1040.f8889.l21() > 0) {
       this.otherIncomeStrings.add('HDHP')
     }
 
     if (
       this.f1040.f8889Spouse?.l21() !== undefined &&
-      this.f1040.f8889Spouse?.l21() > 0
+      this.f1040.f8889Spouse.l21() > 0
     ) {
       this.otherIncomeStrings.add('HDHP')
     }

@@ -16,7 +16,7 @@ export default class ScheduleSE extends F1040Attachment {
 
   l8aRelatedField = (f: () => number | undefined): number | undefined => {
     return this.postL4Field(() => {
-      if (this.l8a() ?? 0 >= 142800) {
+      if ((this.l8a() ?? 0) >= 142800) {
         return undefined
       }
       return f()

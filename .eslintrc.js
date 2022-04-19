@@ -12,6 +12,7 @@ module.exports = {
   extends: [
     'plugin:react/recommended',
     'plugin:@typescript-eslint/recommended',
+    'plugin:@typescript-eslint/recommended-requiring-type-checking',
     'prettier'
   ],
   parser: '@typescript-eslint/parser',
@@ -25,6 +26,10 @@ module.exports = {
   plugins: ['react', '@typescript-eslint', 'prettier'],
   rules: {
     'react/jsx-uses-react': 'off',
-    'react/react-in-jsx-scope': 'off'
+    'react/react-in-jsx-scope': 'off',
+    '@typescript-eslint/no-unnecessary-condition': 'warn'
+  },
+  parserOptions: {
+    project: ['./tsconfig.json', './.eslintrc.js']
   }
 }

@@ -30,7 +30,7 @@ import {
   LabeledInput
 } from 'ustaxes/components/input'
 import { Patterns } from 'ustaxes/components/Patterns'
-import { daysInYear, enumKeys } from 'ustaxes/core/util'
+import { daysInYear, enumKeys, intentionallyFloat } from 'ustaxes/core/util'
 import { HouseOutlined } from '@material-ui/icons'
 import { FormListContainer } from 'ustaxes/components/FormContainer'
 import { Grid } from '@material-ui/core'
@@ -203,7 +203,7 @@ export default function RealEstate(): ReactElement {
   )
 
   const otherExpenseDescription = (() => {
-    if (otherExpensesEntered ?? 0 !== 0) {
+    if ((otherExpensesEntered ?? 0) !== 0) {
       return (
         <LabeledInput
           key={enumKeys(PropertyExpenseType).length}
@@ -298,7 +298,10 @@ export default function RealEstate(): ReactElement {
 
   return (
     <FormProvider {...methods}>
-      <form tabIndex={-1} onSubmit={handleSubmit(onAdvance)}>
+      <form
+        tabIndex={-1}
+        onSubmit={intentionallyFloat(handleSubmit(onAdvance))}
+      >
         <Helmet>
           <title>Real Estate | Income | UsTaxes.org</title>
         </Helmet>

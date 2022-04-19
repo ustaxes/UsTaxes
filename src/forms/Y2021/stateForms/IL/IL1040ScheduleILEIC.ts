@@ -1,7 +1,13 @@
 import Form from 'ustaxes/core/stateForms/Form'
 import F1040 from '../../irsForms/F1040'
 import { Field } from 'ustaxes/core/pdfFiller'
-import { Dependent, Information, State } from 'ustaxes/core/data'
+import {
+  Dependent,
+  Information,
+  PrimaryPerson,
+  Spouse,
+  State
+} from 'ustaxes/core/data'
 import parameters from './Parameters'
 
 export class IL1040scheduleileeic extends Form {
@@ -21,6 +27,14 @@ export class IL1040scheduleileeic extends Form {
     this.state = 'IL'
     this.qualifyingDependents =
       this.f1040.scheduleEIC?.qualifyingDependents() ?? []
+  }
+
+  get primary(): PrimaryPerson | undefined {
+    return this.info.taxPayer.primaryPerson
+  }
+
+  get spouse(): Spouse | undefined {
+    return this.info.taxPayer.spouse
   }
 
   isRequired = (): boolean => (this.earnedIncomeCredit() ?? 0) > 0
@@ -65,7 +79,7 @@ export class IL1040scheduleileeic extends Form {
    * Index 4: Your name
    */
   Yourname = (): string | undefined =>
-    `${this.info.taxPayer.primaryPerson?.firstName} ${this.info.taxPayer.primaryPerson?.lastName}`
+    [this.primary?.firstName, this.primary?.lastName].flat().join(' ')
 
   f4 = (): string | undefined => this.Yourname()
 
@@ -726,7 +740,7 @@ export class IL1040scheduleileeic extends Form {
    * TODO: Confirm this checkbox
    */
   EligibleforEarnedIncomeCredit1 = (): boolean | undefined =>
-    this.info.taxPayer.dependents[0] !== undefined
+    this.info.taxPayer.dependents.length > 0
 
   f84 = (): boolean | undefined => this.EligibleforEarnedIncomeCredit1()
 
@@ -735,7 +749,7 @@ export class IL1040scheduleileeic extends Form {
    * TODO: Confirm this checkbox
    */
   EligibleforEarnedIncomeCredit2 = (): boolean | undefined =>
-    this.info.taxPayer.dependents[1] !== undefined
+    this.info.taxPayer.dependents.length > 1
 
   f85 = (): boolean | undefined => this.EligibleforEarnedIncomeCredit2()
 
@@ -744,7 +758,7 @@ export class IL1040scheduleileeic extends Form {
    * TODO: Confirm this checkbox
    */
   EligibleforEarnedIncomeCredit3 = (): boolean | undefined =>
-    this.info.taxPayer.dependents[2] !== undefined
+    this.info.taxPayer.dependents.length > 2
 
   f86 = (): boolean | undefined => this.EligibleforEarnedIncomeCredit3()
 
@@ -753,7 +767,7 @@ export class IL1040scheduleileeic extends Form {
    * TODO: Confirm this checkbox
    */
   EligibleforEarnedIncomeCredit4 = (): boolean | undefined =>
-    this.info.taxPayer.dependents[3] !== undefined
+    this.info.taxPayer.dependents.length > 3
 
   f87 = (): boolean | undefined => this.EligibleforEarnedIncomeCredit4()
 
@@ -762,7 +776,7 @@ export class IL1040scheduleileeic extends Form {
    * TODO: Confirm this checkbox
    */
   EligibleforEarnedIncomeCredit5 = (): boolean | undefined =>
-    this.info.taxPayer.dependents[4] !== undefined
+    this.info.taxPayer.dependents.length > 4
 
   f88 = (): boolean | undefined => this.EligibleforEarnedIncomeCredit5()
 
@@ -771,7 +785,7 @@ export class IL1040scheduleileeic extends Form {
    * TODO: Confirm this checkbox
    */
   EligibleforEarnedIncomeCredit6 = (): boolean | undefined =>
-    this.info.taxPayer.dependents[5] !== undefined
+    this.info.taxPayer.dependents.length > 5
 
   f89 = (): boolean | undefined => this.EligibleforEarnedIncomeCredit6()
 
@@ -780,7 +794,7 @@ export class IL1040scheduleileeic extends Form {
    * TODO: Confirm this checkbox
    */
   EligibleforEarnedIncomeCredit7 = (): boolean | undefined =>
-    this.info.taxPayer.dependents[6] !== undefined
+    this.info.taxPayer.dependents.length > 6
 
   f90 = (): boolean | undefined => this.EligibleforEarnedIncomeCredit7()
 
@@ -789,7 +803,7 @@ export class IL1040scheduleileeic extends Form {
    * TODO: Confirm this checkbox
    */
   EligibleforEarnedIncomeCredit8 = (): boolean | undefined =>
-    this.info.taxPayer.dependents[7] !== undefined
+    this.info.taxPayer.dependents.length > 7
 
   f91 = (): boolean | undefined => this.EligibleforEarnedIncomeCredit8()
 
@@ -798,7 +812,7 @@ export class IL1040scheduleileeic extends Form {
    * TODO: Confirm this checkbox
    */
   EligibleforEarnedIncomeCredit9 = (): boolean | undefined =>
-    this.info.taxPayer.dependents[8] !== undefined
+    this.info.taxPayer.dependents.length > 8
 
   f92 = (): boolean | undefined => this.EligibleforEarnedIncomeCredit9()
 
@@ -807,7 +821,7 @@ export class IL1040scheduleileeic extends Form {
    * TODO: Confirm this checkbox
    */
   EligibleforEarnedIncomeCredit10 = (): boolean | undefined =>
-    this.info.taxPayer.dependents[9] !== undefined
+    this.info.taxPayer.dependents.length > 9
 
   f93 = (): boolean | undefined => this.EligibleforEarnedIncomeCredit10()
 

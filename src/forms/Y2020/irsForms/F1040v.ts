@@ -10,10 +10,6 @@ export default class F1040V extends F1040Attachment {
     const tp = this.f1040.info.taxPayer
     const taxOwed = this.f1040.l37()
 
-    if (taxOwed === undefined) {
-      throw new Error('Attempted to build F1040V with no tax owed')
-    }
-
     const result = [
       tp.primaryPerson?.ssid,
       tp.spouse?.ssid,

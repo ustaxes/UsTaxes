@@ -10,6 +10,7 @@ import _ from 'lodash'
 import { Refund } from 'ustaxes/core/data'
 import { usePager } from './pager'
 import { Grid } from '@material-ui/core'
+import { intentionallyFloat } from 'ustaxes/core/util'
 
 const blankFormData: Partial<Refund> = {
   routingNumber: '',
@@ -60,7 +61,7 @@ export default function RefundBankAccount(): ReactElement {
   }
 
   return (
-    <form tabIndex={-1} onSubmit={handleSubmit(onSubmit)}>
+    <form tabIndex={-1} onSubmit={intentionallyFloat(handleSubmit(onSubmit))}>
       <FormProvider {...methods}>
         <Helmet>
           <title>Refund Information | Results | UsTaxes.org</title>
@@ -78,7 +79,7 @@ export default function RefundBankAccount(): ReactElement {
             patternConfig={Patterns.bankAccount}
             name="accountNumber"
           />
-          <LabeledRadio
+          <LabeledRadio<Refund>
             label="Account Type"
             name="accountType"
             values={[

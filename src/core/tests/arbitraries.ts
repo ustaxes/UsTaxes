@@ -406,11 +406,11 @@ const questionTagArbs = {
 }
 
 export const questions: Arbitrary<Responses> = fc
-  .set(questionTag)
+  .uniqueArray(questionTag, { comparator: 'IsStrictlyEqual' })
   .chain((tags) =>
     fc
       .tuple(...tags.map((t) => questionTagArbs[t].map((v) => [t, v])))
-      .map((kvs) => Object.fromEntries(kvs))
+      .map((kvs) => Object.fromEntries(kvs) as Responses)
   )
 
 // const iraPlan: Arbitrary<IraPlanName> = fc.constantFrom(...iraPlanNames)

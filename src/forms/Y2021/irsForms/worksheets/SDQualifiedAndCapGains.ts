@@ -42,8 +42,8 @@ export default class QualDivAndCGWorksheet extends Worksheet {
   l3 = (): number => {
     if (this.f1040.scheduleD !== undefined) {
       return Math.min(
-        Math.max(this.f1040.scheduleD?.l15() ?? 0, 0),
-        Math.max(this.f1040.scheduleD?.l16() ?? 0, 0)
+        Math.max(this.f1040.scheduleD.l15(), 0),
+        Math.max(this.f1040.scheduleD.l16(), 0)
       )
     }
     return this.f1040.l7() ?? 0

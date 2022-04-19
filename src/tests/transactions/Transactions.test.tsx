@@ -122,9 +122,11 @@ describe('Transactions', () => {
             t.security.name,
             t.side === 'BUY' ? t.quantity : -t.quantity
           ])
-          .reduce<{
-            [name: string]: number
-          }>(
+          .reduce<
+            Partial<{
+              [name: string]: number
+            }>
+          >(
             (acc, [name, quantity]) => ({
               ...acc,
               [name]: (acc[name] ?? 0) + quantity
@@ -134,9 +136,11 @@ describe('Transactions', () => {
 
         const portfolioCounts = portfolio.positions
           .filter((p) => p.closeDate === undefined)
-          .reduce<{
-            [name: string]: number
-          }>(
+          .reduce<
+            Partial<{
+              [name: string]: number
+            }>
+          >(
             (acc, p) => ({
               ...acc,
               [p.security.name]: (acc[p.security.name] ?? 0) + p.quantity
@@ -157,9 +161,11 @@ describe('Transactions', () => {
           { positions: [] }
         )
 
-        const transactionCounts = transactions.reduce<{
-          [name: string]: { basis: number; proceeds: number }
-        }>(
+        const transactionCounts = transactions.reduce<
+          Partial<{
+            [name: string]: { basis: number; proceeds: number }
+          }>
+        >(
           (acc, t) => ({
             ...acc,
             [t.security.name]: {
@@ -174,9 +180,11 @@ describe('Transactions', () => {
           {}
         )
 
-        const portfolioCounts = portfolio.positions.reduce<{
-          [name: string]: { basis: number; proceeds: number }
-        }>(
+        const portfolioCounts = portfolio.positions.reduce<
+          Partial<{
+            [name: string]: { basis: number; proceeds: number }
+          }>
+        >(
           (acc, p) => ({
             ...acc,
             [p.security.name]: {

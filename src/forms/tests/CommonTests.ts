@@ -32,7 +32,7 @@ export default class CommonTests<F1040 extends Form & { info: Information }> {
     const res = this.findF1040(forms)
     if (res === undefined) {
       throw new Error(
-        `Looked for F1040 in ${forms.map((f) => f.tag)}, not found`
+        `Looked for F1040 in ${forms.map((f) => f.tag).join(',')}, not found`
       )
     }
     return res
@@ -51,7 +51,7 @@ export default class CommonTests<F1040 extends Form & { info: Information }> {
           throw new Error('Undefined filing status')
         }
 
-        f(f1040, fs)
+        await Promise.resolve(f(f1040, fs))
       },
       {},
       filter
@@ -59,20 +59,22 @@ export default class CommonTests<F1040 extends Form & { info: Information }> {
 
   run = (): void => {
     it('should be created in', async () => {
-      await this.testKit.with1040Assert(async (forms) => {
+      await this.testKit.with1040Assert((forms) => {
         const f1040 = this.findF1040(forms)
         expect(f1040).not.toBeUndefined()
         if (f1040 !== undefined) {
           expect(this.formTestInfo.getErrors(f1040)).toEqual([])
         }
+        return Promise.resolve()
       })
     })
 
     it('should arrange attachments according to sequence order', async () => {
-      await this.testKit.with1040Assert(async (forms) => {
+      await this.testKit.with1040Assert((forms) => {
         expect(forms.sort((a, b) => a.sequenceIndex - b.sequenceIndex)).toEqual(
           forms
         )
+        return Promise.resolve()
       })
     })
 

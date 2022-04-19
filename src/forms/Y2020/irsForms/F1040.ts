@@ -152,7 +152,7 @@ export default class F1040 extends Form {
     const res = _.compact(res1)
 
     // Attach payment voucher to front if there is a payment due
-    if ((this.l37() ?? 0) > 0) {
+    if (this.l37() > 0) {
       res.push(new F1040V(this))
     }
 
@@ -435,13 +435,13 @@ export default class F1040 extends Form {
   l20 = (): number | undefined => this.schedule3?.l7()
   l21 = (): number => sumFields([this.l19(), this.l20()])
 
-  l22 = (): number => Math.max(0, (this.l18() ?? 0) - this.l21())
+  l22 = (): number => Math.max(0, this.l18() - this.l21())
 
   l23 = (): number | undefined => this.schedule2?.l10()
   l24 = (): number => sumFields([this.l22(), this.l23()])
 
   l25a = (): number =>
-    this.validW2s().reduce((res, w2) => res + (w2.fedWithholding ?? 0), 0)
+    this.validW2s().reduce((res, w2) => res + w2.fedWithholding, 0)
 
   // tax withheld from 1099s
   l25b = (): number =>
@@ -475,14 +475,14 @@ export default class F1040 extends Form {
 
   l33 = (): number => sumFields([this.l25d(), this.l26(), this.l32()])
 
-  l34 = (): number => Math.max(0, this.l33() - (this.l24() ?? 0))
+  l34 = (): number => Math.max(0, this.l33() - this.l24())
 
   // TODO: assuming user wants amount refunded
   // rather than applied to estimated tax
   l35a = (): number => this.l34()
   l36 = (): number => Math.max(0, this.l34() - this.l35a())
 
-  l37 = (): number => Math.max(0, (this.l24() ?? 0) - this.l33())
+  l37 = (): number => Math.max(0, this.l24() - this.l33())
 
   // TODO - estimated tax penalty
   l38 = (): number | undefined => undefined

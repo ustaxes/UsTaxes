@@ -24,6 +24,7 @@ import {
 } from 'ustaxes/components/input'
 import { Patterns } from 'ustaxes/components/Patterns'
 import { FormListContainer } from 'ustaxes/components/FormContainer'
+import { intentionallyFloat } from 'ustaxes/core/util'
 
 const showIncome = (a: Supported1099): ReactElement => {
   switch (a.type) {
@@ -251,8 +252,8 @@ export default function F1099Info(): ReactElement {
     }
 
   const people: Person[] = useSelector((state: TaxesState) => [
-    state.information.taxPayer?.primaryPerson,
-    state.information.taxPayer?.spouse
+    state.information.taxPayer.primaryPerson,
+    state.information.taxPayer.spouse
   ])
     .filter((p) => p !== undefined)
     .map((p) => p as Person)
@@ -348,7 +349,7 @@ export default function F1099Info(): ReactElement {
         patternConfig={Patterns.currency}
         name="federalIncomeTaxWithheld"
       />
-      <GenericLabeledDropdown<PlanType1099>
+      <GenericLabeledDropdown<PlanType1099, F1099UserInput>
         label="Type of 1099-R"
         dropDownData={Object.values(PlanType1099)}
         valueMapping={(x) => x}
@@ -469,7 +470,10 @@ export default function F1099Info(): ReactElement {
 
   return (
     <FormProvider {...methods}>
-      <form tabIndex={-1} onSubmit={handleSubmit(onAdvance)}>
+      <form
+        tabIndex={-1}
+        onSubmit={intentionallyFloat(handleSubmit(onAdvance))}
+      >
         <Helmet>
           <title>1099 Information | Income | UsTaxes.org</title>
         </Helmet>

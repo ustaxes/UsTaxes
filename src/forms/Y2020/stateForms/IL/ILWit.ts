@@ -1,7 +1,13 @@
 import Form, { FormMethods } from 'ustaxes/core/stateForms/Form'
 import F1040 from '../../irsForms/F1040'
 import { Field } from 'ustaxes/core/pdfFiller'
-import { IncomeW2, Information, PersonRole, State } from 'ustaxes/core/data'
+import {
+  IncomeW2,
+  Information,
+  PersonRole,
+  PrimaryPerson,
+  State
+} from 'ustaxes/core/data'
 import _ from 'lodash'
 
 type FormType =
@@ -35,7 +41,7 @@ const toWithholdingForm = (w2: IncomeW2): WithholdingForm | undefined => {
   ) {
     return {
       formType: 'W',
-      ein: w2.employer?.EIN ?? '',
+      ein: w2.employer.EIN,
       federalWages: w2.income,
       ilWages: w2.stateWages,
       ilTax: w2.stateWithholding,
@@ -66,6 +72,10 @@ export class ILWIT extends Form {
     this.f1040 = f1040
     this.methods = new FormMethods(this)
     this.formIndex = subFormIndex
+  }
+
+  get primary(): PrimaryPerson | undefined {
+    return this.info.taxPayer.primaryPerson
   }
 
   attachments = (): Form[] => {
@@ -125,10 +135,8 @@ export class ILWIT extends Form {
   /**
    * Index 3: Your name
    */
-  Yourname = (): string | undefined => {
-    const person = this.info.taxPayer.primaryPerson
-    return `${person?.firstName} ${person?.lastName}`
-  }
+  Yourname = (): string | undefined =>
+    [this.primary?.firstName, this.primary?.lastName].flat().join(' ')
 
   f3 = (): string | undefined => this.Yourname()
 
@@ -189,7 +197,7 @@ export class ILWIT extends Form {
       forms.map((form) => form.ilTax)
     ].flatMap((column) => [
       ...column,
-      ...Array(5 - column.length).fill(undefined)
+      ...Array<undefined>(5 - column.length).fill(undefined)
     ])
 
   /**
@@ -258,7 +266,7 @@ export class ILWIT extends Form {
 
   formTypesColumn = (forms: WithholdingForm[]): (string | undefined)[] => [
     ...forms.map((f) => f.formType),
-    ...Array(5 - forms.length).fill(undefined)
+    ...Array<undefined>(5 - forms.length).fill(undefined)
   ]
 
   f52to56 = (): (string | undefined)[] =>
@@ -275,7 +283,7 @@ export class ILWIT extends Form {
    * There's a second field in the Column A column,
    * purpose not clear.
    */
-  f62to71 = (): undefined[] => Array(10).fill(undefined)
+  f62to71 = (): undefined[] => Array<undefined>(10).fill(undefined)
 
   fields = (): Field[] => [
     this.f0(),
