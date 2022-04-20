@@ -176,8 +176,8 @@ export default class F8949 extends F1040Attachment {
   longTermTotalAdjustments = (): number | undefined => undefined
 
   fields = (): Field[] => [
-    this.f1040.info.namesString(),
-    this.f1040.info.taxPayer.primaryPerson?.ssid,
+    this.f1040.namesString(),
+    this.f1040.info.taxPayer.primaryPerson.ssid,
     this.part1BoxA(),
     this.part1BoxB(),
     this.part1BoxC(),
@@ -187,8 +187,8 @@ export default class F8949 extends F1040Attachment {
     undefined, // greyed out field
     this.shortTermTotalAdjustments(),
     this.shortTermTotalGain(),
-    this.f1040.info.namesString(),
-    this.f1040.info.taxPayer.primaryPerson?.ssid,
+    this.f1040.namesString(),
+    this.f1040.info.taxPayer.primaryPerson.ssid,
     this.part2BoxD(),
     this.part2BoxE(),
     this.part2BoxF(),

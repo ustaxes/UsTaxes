@@ -103,8 +103,8 @@ export default class ScheduleSE extends F1040Attachment {
     this.postL4Field((): number => (this.l12() ?? 0) * 0.5)
 
   fields = (): Field[] => [
-    this.f1040.info.namesString(),
-    this.f1040.info.taxPayer.primaryPerson?.ssid ?? '',
+    this.f1040.namesString(),
+    this.f1040.info.taxPayer.primaryPerson.ssid,
     false, // Minister
     this.l1a(),
     this.l1b(),

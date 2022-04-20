@@ -7,15 +7,19 @@ import { Information, Asset, State, TaxYear } from 'ustaxes/core/data'
 import { YearsTaxesState } from 'ustaxes/redux'
 
 import yearFormBuilder from 'ustaxes/forms/YearForms'
-import { intentionallyFloat, isLeft, runAsync } from 'ustaxes/core/util'
+import { intentionallyFloat, run, runAsync } from 'ustaxes/core/util'
 import { Box, Button } from '@material-ui/core'
 import Summary from './Summary'
 
 import { savePDF } from 'ustaxes/pdfHandler'
+import StateForm from 'ustaxes/core/stateForms/Form'
+import Form from 'ustaxes/core/irsForms/Form'
 
 export default function CreatePDF(): ReactElement {
   const [irsErrors, updateIrsErrors] = useState<string[]>([])
   const [stateErrors, updateStateErrors] = useState<string[]>([])
+  const [irsForms, updateIrsForms] = useState<Form[]>([])
+  const [stateForms, updateStateForms] = useState<StateForm[]>([])
 
   const year: TaxYear = useSelector(
     (state: YearsTaxesState) => state.activeYear
@@ -28,21 +32,28 @@ export default function CreatePDF(): ReactElement {
     (state: YearsTaxesState) => state.assets
   )
 
-  const builder = yearFormBuilder(year, info, assets)
-
   useEffect(() => {
-    const f1040Res = builder.f1040()
-    if (isLeft(f1040Res)) {
-      updateIrsErrors(f1040Res.left)
+    const builder = yearFormBuilder(year, info, assets)
+    const f1040Errors = builder.errors()
+
+    updateIrsErrors(f1040Errors)
+    if (f1040Errors.length > 0) {
       updateStateErrors(['Cannot build state return with IRS errors'])
+      updateStateForms([])
+      updateIrsForms([])
     } else {
-      updateIrsErrors([])
+      const irsRes = builder.f1040()
       const stateRes = builder.makeStateReturn()
-      if (isLeft(stateRes)) {
-        updateStateErrors(stateRes.left)
-      } else {
+
+      run(stateRes).fold(updateStateErrors, (stateForms) => {
         updateStateErrors([])
-      }
+        updateStateForms(stateForms)
+      })
+
+      run(irsRes).fold(updateIrsErrors, (f1040Forms) => {
+        updateIrsErrors([])
+        updateIrsForms(f1040Forms)
+      })
     }
   }, [info])
 
@@ -56,12 +67,16 @@ export default function CreatePDF(): ReactElement {
 
   const federalReturn = async (e: FormEvent<Element>): Promise<void> => {
     e.preventDefault()
+    const builder = yearFormBuilder(year, info, assets)
+
     const r1 = await runAsync(builder.f1040Bytes())
     const r2 = await r1.mapAsync((bytes) => savePDF(bytes, federalFileName))
     return r2.orThrow()
   }
 
   const stateReturn = async (): Promise<void> => {
+    const builder = yearFormBuilder(year, info, assets)
+
     const r1 = await runAsync(builder.stateReturnBytes())
     const r2 = await r1.mapAsync((bytes) => savePDF(bytes, stateFileName))
     return r2.orThrow()
@@ -116,7 +131,12 @@ export default function CreatePDF(): ReactElement {
 
   return (
     <div>
-      <Summary />
+      <Summary
+        errors={irsErrors}
+        stateErrors={stateErrors}
+        irsForms={irsForms}
+        stateForms={stateForms}
+      />
       <form tabIndex={-1}>
         <Helmet>
           <title>Print Copy to File | Results | UsTaxes.org</title>

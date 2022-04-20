@@ -191,9 +191,6 @@ describe('fica', () => {
   it('should add Additional Medicare Tax form 8959', async () => {
     await testKit.with1040Assert((forms): Promise<void> => {
       const f1040 = commonTests.findF1040OrFail(forms)
-      if (f1040.info.taxPayer.filingStatus === undefined) {
-        return Promise.resolve()
-      }
       const filingStatus = f1040.info.taxPayer.filingStatus
       // Should add Additional Medicare Tax if medicare wages over threshold
       if (
@@ -220,9 +217,6 @@ describe('fica', () => {
   it('should add Additional Medicare Tax based on filing status', async () => {
     await testKit.with1040Assert(async (forms): Promise<void> => {
       const f1040 = commonTests.findF1040OrFail(forms)
-      if (f1040.info.taxPayer.filingStatus === undefined) {
-        return
-      }
       if (hasAdditionalMedicareTax(f1040)) {
         const filingStatus = f1040.info.taxPayer.filingStatus
         const selfEmploymentWages = f1040.scheduleSE?.l6() ?? 0

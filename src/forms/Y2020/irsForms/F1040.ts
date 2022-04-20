@@ -5,7 +5,6 @@ import {
   IncomeW2,
   PersonRole,
   PlanType1099,
-  Information,
   Asset
 } from 'ustaxes/core/data'
 import federalBrackets from '../data/federal'
@@ -47,21 +46,19 @@ import SDQualifiedAndCapGains from './worksheets/SDQualifiedAndCapGains'
 import ChildTaxCreditWorksheet from './worksheets/ChildTaxCreditWorksheet'
 import SocialSecurityBenefitsWorksheet from './worksheets/SocialSecurityBenefits'
 import StudentLoanInterestWorksheet from './worksheets/StudentLoanInterestWorksheet'
-import InformationMethods from 'ustaxes/core/data/methods'
 import _ from 'lodash'
-import { F1040Error } from 'ustaxes/forms/errors'
 import F8949 from './F8949'
 import F4137 from './F4137'
 import F8919 from './F8919'
 import F8582 from './F8582'
 import { Field } from 'ustaxes/core/pdfFiller'
 import Form8853 from './F8853'
+import F1040Base, { ValidatedInformation } from 'ustaxes/forms/F1040Base'
 
-export default class F1040 extends Form {
+export default class F1040 extends F1040Base {
   tag: FormTag = 'f1040'
   sequenceIndex = 0
 
-  info: InformationMethods
   assets: Asset<Date>[]
 
   schedule1?: Schedule1
@@ -105,9 +102,8 @@ export default class F1040 extends Form {
 
   childTaxCreditWorksheet?: ChildTaxCreditWorksheet
 
-  constructor(info: Information, assets: Asset<Date>[] = []) {
-    super()
-    this.info = new InformationMethods(info)
+  constructor(info: ValidatedInformation, assets: Asset<Date>[] = []) {
+    super(info)
     this.f8949 = []
     this.assets = assets
     this.makeSchedules()
@@ -160,9 +156,9 @@ export default class F1040 extends Form {
   }
 
   makeSchedules = (): void => {
-    const f1099bs = this.info.f1099Bs()
+    const f1099bs = this.f1099Bs()
 
-    const f1099ssas = this.info.f1099ssas()
+    const f1099ssas = this.f1099ssas()
 
     const scheduleB = new ScheduleB(this)
 
@@ -207,10 +203,7 @@ export default class F1040 extends Form {
       }
     }
 
-    if (
-      this.info.taxPayer.primaryPerson &&
-      needsF8889(this.info, this.info.taxPayer.primaryPerson)
-    ) {
+    if (needsF8889(this.info, this.info.taxPayer.primaryPerson)) {
       this.f8889 = new F8889(this, this.info.taxPayer.primaryPerson)
       if (this.schedule1 === undefined) {
         this.schedule1 = new Schedule1(this)
@@ -245,7 +238,7 @@ export default class F1040 extends Form {
     }
 
     if (needsF8960(this.info)) {
-      this.f8960 = new F8960(this.info, this)
+      this.f8960 = new F8960(this)
     }
 
     if (this.f8959 !== undefined || this.f8960 !== undefined) {
@@ -312,10 +305,8 @@ export default class F1040 extends Form {
 
   standardDeduction = (): number | undefined => {
     const filingStatus = this.info.taxPayer.filingStatus
-    if (filingStatus === undefined) {
-      return undefined
-    } else if (
-      (this.info.taxPayer.primaryPerson?.isTaxpayerDependent ?? false) ||
+    if (
+      this.info.taxPayer.primaryPerson.isTaxpayerDependent ||
       (this.info.taxPayer.spouse?.isTaxpayerDependent ?? false)
     ) {
       return Math.min(
@@ -327,7 +318,7 @@ export default class F1040 extends Form {
   }
 
   totalQualifiedDividends = (): number =>
-    this.info.f1099Divs().reduce((sum, f) => sum + f.form.qualifiedDividends, 0)
+    this.f1099Divs().reduce((sum, f) => sum + f.form.qualifiedDividends, 0)
 
   totalGrossDistributionsFromIra = (): number =>
     this.info.individualRetirementArrangements.reduce(
@@ -342,14 +333,12 @@ export default class F1040 extends Form {
     )
 
   totalGrossDistributionsFrom1099R = (planType: PlanType1099): number =>
-    this.info
-      .f1099rs()
+    this.f1099rs()
       .filter((element) => element.form.planType == planType)
       .reduce((res, f1099) => res + f1099.form.grossDistribution, 0)
 
   totalTaxableFrom1099R = (planType: PlanType1099): number =>
-    this.info
-      .f1099rs()
+    this.f1099rs()
       .filter((element) => element.form.planType == planType)
       .reduce((res, f1099) => res + f1099.form.taxableAmount, 0)
 
@@ -407,13 +396,6 @@ export default class F1040 extends Form {
 
   computeTax = (): number | undefined => {
     if (
-      this.errors().length > 0 ||
-      this.info.taxPayer.filingStatus === undefined
-    ) {
-      return undefined
-    }
-
-    if (
       this.scheduleD?.computeTaxOnQDWorksheet() ??
       this.totalQualifiedDividends() > 0
     ) {
@@ -445,12 +427,14 @@ export default class F1040 extends Form {
 
   // tax withheld from 1099s
   l25b = (): number =>
-    this.info
-      .f1099rs()
-      .reduce((res, f1099) => res + f1099.form.federalIncomeTaxWithheld, 0) +
-    this.info
-      .f1099ssas()
-      .reduce((res, f1099) => res + f1099.form.federalIncomeTaxWithheld, 0)
+    this.f1099rs().reduce(
+      (res, f1099) => res + f1099.form.federalIncomeTaxWithheld,
+      0
+    ) +
+    this.f1099ssas().reduce(
+      (res, f1099) => res + f1099.form.federalIncomeTaxWithheld,
+      0
+    )
 
   // TODO: form(s) W-2G box 4, schedule K-1, form 1042-S, form 8805, form 8288-A
   l25c = (): number | undefined => this.f8959?.l24()
@@ -516,28 +500,6 @@ export default class F1040 extends Form {
   _depFieldMappings = (): Array<string | boolean> =>
     Array.from(Array(20)).map((u, n: number) => this._depField(n))
 
-  errors = (): F1040Error[] => {
-    const result: F1040Error[] = []
-    if (this.info.taxPayer.filingStatus === undefined) {
-      result.push(F1040Error.filingStatusUndefined)
-    }
-
-    const fs = this.info.taxPayer.filingStatus
-    const numDependents = this.info.taxPayer.dependents.length
-    const hasSpouse = this.info.taxPayer.spouse !== undefined
-    const hasDependents = numDependents > 0
-    // Check basic requirements of filing statuses
-    if (
-      fs === undefined ||
-      ([FilingStatus.S, FilingStatus.HOH].some((x) => x === fs) && hasSpouse) ||
-      (fs === FilingStatus.HOH && !hasDependents)
-    ) {
-      result.push(F1040Error.filingStatusRequirementsNotMet)
-    }
-
-    return result
-  }
-
   fields = (): Field[] =>
     [
       this.info.taxPayer.filingStatus === FilingStatus.S,
@@ -546,12 +508,10 @@ export default class F1040 extends Form {
       this.info.taxPayer.filingStatus === FilingStatus.HOH,
       this.info.taxPayer.filingStatus === FilingStatus.W,
       // TODO: implement non dependent child for HOH and QW
-      this.info.taxPayer.filingStatus === 'MFS'
-        ? this.info.spouseFullName()
-        : '',
-      this.info.taxPayer.primaryPerson?.firstName,
-      this.info.taxPayer.primaryPerson?.lastName,
-      this.info.taxPayer.primaryPerson?.ssid,
+      this.info.taxPayer.filingStatus === 'MFS' ? this.spouseFullName() : '',
+      this.info.taxPayer.primaryPerson.firstName,
+      this.info.taxPayer.primaryPerson.lastName,
+      this.info.taxPayer.primaryPerson.ssid,
       this.info.taxPayer.filingStatus === FilingStatus.MFJ
         ? this.info.taxPayer.spouse?.firstName
         : '',
@@ -559,19 +519,19 @@ export default class F1040 extends Form {
         ? this.info.taxPayer.spouse?.lastName ?? ''
         : '',
       this.info.taxPayer.spouse?.ssid,
-      this.info.taxPayer.primaryPerson?.address.address,
-      this.info.taxPayer.primaryPerson?.address.aptNo,
-      this.info.taxPayer.primaryPerson?.address.city,
-      this.info.taxPayer.primaryPerson?.address.state,
-      this.info.taxPayer.primaryPerson?.address.zip,
-      this.info.taxPayer.primaryPerson?.address.foreignCountry,
-      this.info.taxPayer.primaryPerson?.address.province,
-      this.info.taxPayer.primaryPerson?.address.postalCode,
+      this.info.taxPayer.primaryPerson.address.address,
+      this.info.taxPayer.primaryPerson.address.aptNo,
+      this.info.taxPayer.primaryPerson.address.city,
+      this.info.taxPayer.primaryPerson.address.state,
+      this.info.taxPayer.primaryPerson.address.zip,
+      this.info.taxPayer.primaryPerson.address.foreignCountry,
+      this.info.taxPayer.primaryPerson.address.province,
+      this.info.taxPayer.primaryPerson.address.postalCode,
       false, // election campaign boxes
       false,
       this.info.questions.CRYPTO ?? false,
       !(this.info.questions.CRYPTO ?? false),
-      this.info.taxPayer.primaryPerson?.isTaxpayerDependent ?? false,
+      this.info.taxPayer.primaryPerson.isTaxpayerDependent,
       this.info.taxPayer.spouse?.isTaxpayerDependent ?? false,
       false, // TODO: spouse itemizes separately,
       this.bornBeforeDate(),

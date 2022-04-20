@@ -12,21 +12,21 @@ export default class F1040V extends F1040Attachment {
     const taxOwed = this.f1040.l37()
 
     const result = [
-      tp.primaryPerson?.ssid,
+      tp.primaryPerson.ssid,
       tp.spouse?.ssid,
       taxOwed.toFixed(2), // dollars
-      tp.primaryPerson?.firstName,
-      tp.primaryPerson?.lastName,
+      tp.primaryPerson.firstName,
+      tp.primaryPerson.lastName,
       tp.spouse?.firstName,
       tp.spouse?.lastName,
-      tp.primaryPerson?.address.address,
-      tp.primaryPerson?.address.aptNo,
-      tp.primaryPerson?.address.city,
-      tp.primaryPerson?.address.state,
-      tp.primaryPerson?.address.zip,
-      tp.primaryPerson?.address.foreignCountry,
-      tp.primaryPerson?.address.province,
-      tp.primaryPerson?.address.postalCode
+      tp.primaryPerson.address.address,
+      tp.primaryPerson.address.aptNo,
+      tp.primaryPerson.address.city,
+      tp.primaryPerson.address.state,
+      tp.primaryPerson.address.zip,
+      tp.primaryPerson.address.foreignCountry,
+      tp.primaryPerson.address.province,
+      tp.primaryPerson.address.postalCode
     ]
 
     return result

@@ -129,8 +129,8 @@ export default class Schedule2 extends F1040Attachment {
   // and on Form 1040 or 1040-SR, line 23, or Form 1040-NR, line 23b
 
   fields = (): Field[] => [
-    this.f1040.info.namesString(),
-    this.f1040.info.taxPayer.primaryPerson?.ssid,
+    this.f1040.namesString(),
+    this.f1040.info.taxPayer.primaryPerson.ssid,
 
     this.l1(),
     this.l2(),

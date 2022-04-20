@@ -2,19 +2,15 @@ import Form, { FormMethods } from 'ustaxes/core/stateForms/Form'
 import F1040 from '../../irsForms/F1040'
 import { Field, RadioSelect } from 'ustaxes/core/pdfFiller'
 import { sumFields } from 'ustaxes/core/irsForms/util'
-import {
-  AccountType,
-  FilingStatus,
-  Information,
-  State
-} from 'ustaxes/core/data'
+import { AccountType, FilingStatus, State } from 'ustaxes/core/data'
 import parameters from './Parameters'
 import { IL1040scheduleileeic } from './IL1040ScheduleILEIC'
 import IL1040V from './IL1040V'
 import { ILWIT } from './ILWit'
+import { ValidatedInformation } from 'ustaxes/forms/F1040Base'
 
 export class IL1040 extends Form {
-  info: Information
+  info: ValidatedInformation
   f1040: F1040
   formName: string
   state: State
@@ -23,14 +19,14 @@ export class IL1040 extends Form {
   formOrder = 0
   methods: FormMethods
 
-  constructor(info: Information, f1040: F1040) {
+  constructor(f1040: F1040) {
     super()
-    this.info = info
+    this.info = f1040.info
     this.f1040 = f1040
     this.formName = 'IL-1040'
     this.state = 'IL'
-    this.scheduleEIC = new IL1040scheduleileeic(info, f1040)
-    this.il1040V = new IL1040V(info, f1040, this)
+    this.scheduleEIC = new IL1040scheduleileeic(this.info, f1040)
+    this.il1040V = new IL1040V(this.info, f1040, this)
     this.methods = new FormMethods(this)
   }
 
@@ -44,7 +40,7 @@ export class IL1040 extends Form {
       result.push(this.scheduleEIC)
     }
     if (this.methods.stateWithholding() > 0) {
-      const ilwit = new ILWIT(this.info, this.f1040)
+      const ilwit = new ILWIT(this.f1040)
       result.push(ilwit)
       ilwit.attachments().forEach((f) => result.push(f))
     }
@@ -82,14 +78,14 @@ export class IL1040 extends Form {
   /**
    * Index 3: name1
    */
-  name1 = (): string | undefined => this.info.taxPayer.primaryPerson?.firstName
+  name1 = (): string | undefined => this.info.taxPayer.primaryPerson.firstName
 
   f3 = (): string | undefined => this.name1()
 
   /**
    * Index 4: name2
    */
-  name2 = (): string | undefined => this.info.taxPayer.primaryPerson?.lastName
+  name2 = (): string | undefined => this.info.taxPayer.primaryPerson.lastName
 
   f4 = (): string | undefined => this.name2()
 
@@ -105,7 +101,7 @@ export class IL1040 extends Form {
    * Index 6: ssn1
    */
   ssn1 = (): string | undefined =>
-    this.info.taxPayer.primaryPerson?.ssid.slice(0, 3)
+    this.info.taxPayer.primaryPerson.ssid.slice(0, 3)
 
   f6 = (): string | undefined => this.ssn1()
 
@@ -113,7 +109,7 @@ export class IL1040 extends Form {
    * Index 7: ssn2
    */
   ssn2 = (): string | undefined =>
-    this.info.taxPayer.primaryPerson?.ssid.slice(3, 5)
+    this.info.taxPayer.primaryPerson.ssid.slice(3, 5)
 
   f7 = (): string | undefined => this.ssn2()
 
@@ -121,7 +117,7 @@ export class IL1040 extends Form {
    * Index 8: ssn3
    */
   ssn3 = (): string | undefined =>
-    this.info.taxPayer.primaryPerson?.ssid.slice(5)
+    this.info.taxPayer.primaryPerson.ssid.slice(5)
 
   f8 = (): string | undefined => this.ssn3()
 
@@ -172,15 +168,14 @@ export class IL1040 extends Form {
    * Index 15: address
    */
   address = (): string | undefined =>
-    this.info.taxPayer.primaryPerson?.address.address
+    this.info.taxPayer.primaryPerson.address.address
 
   f15 = (): string | undefined => this.address()
 
   /**
    * Index 16: apt
    */
-  apt = (): string | undefined =>
-    this.info.taxPayer.primaryPerson?.address.aptNo
+  apt = (): string | undefined => this.info.taxPayer.primaryPerson.address.aptNo
 
   f16 = (): string | undefined => this.apt()
 
@@ -195,8 +190,7 @@ export class IL1040 extends Form {
   /**
    * Index 18: city
    */
-  city = (): string | undefined =>
-    this.info.taxPayer.primaryPerson?.address.city
+  city = (): string | undefined => this.info.taxPayer.primaryPerson.address.city
 
   f18 = (): string | undefined => this.city()
 
@@ -204,15 +198,15 @@ export class IL1040 extends Form {
    * Index 19: st
    */
   st = (): string | undefined =>
-    this.info.taxPayer.primaryPerson?.address.state ??
-    this.info.taxPayer.primaryPerson?.address.province
+    this.info.taxPayer.primaryPerson.address.state ??
+    this.info.taxPayer.primaryPerson.address.province
 
   f19 = (): string | undefined => this.st()
 
   /**
    * Index 20: zip
    */
-  zip = (): string | undefined => this.info.taxPayer.primaryPerson?.address.zip
+  zip = (): string | undefined => this.info.taxPayer.primaryPerson.address.zip
 
   f20 = (): string | undefined => this.zip()
 
@@ -220,7 +214,7 @@ export class IL1040 extends Form {
    * Index 21: foreign
    */
   foreign = (): string | undefined =>
-    this.info.taxPayer.primaryPerson?.address.foreignCountry
+    this.info.taxPayer.primaryPerson.address.foreignCountry
 
   f21 = (): string | undefined => this.foreign()
 
@@ -229,28 +223,23 @@ export class IL1040 extends Form {
    * This is actually a radio group, so indicate the correct selection
    * by index.
    */
-  CheckBox1 = (): RadioSelect | undefined => {
-    const fs = this.info.taxPayer.filingStatus
-    if (fs === undefined) {
-      throw new Error('Filing Status is undefined')
-    }
-    return {
-      select: [
-        FilingStatus.S,
-        FilingStatus.MFJ,
-        FilingStatus.MFS,
-        FilingStatus.W,
-        FilingStatus.HOH
-      ].findIndex((x) => x === fs)
-    }
-  }
+  CheckBox1 = (): RadioSelect | undefined => ({
+    select: [
+      FilingStatus.S,
+      FilingStatus.MFJ,
+      FilingStatus.MFS,
+      FilingStatus.W,
+      FilingStatus.HOH
+    ].findIndex((x) => x === this.info.taxPayer.filingStatus)
+  })
+
   f22 = (): RadioSelect | undefined => this.CheckBox1()
 
   /**
    * Index 23: Check Box1c
    */
   CheckBox1c = (): boolean | undefined =>
-    this.info.taxPayer.primaryPerson?.isTaxpayerDependent
+    this.info.taxPayer.primaryPerson.isTaxpayerDependent
 
   f23 = (): boolean | undefined => this.CheckBox1c()
 
@@ -719,7 +708,6 @@ export class IL1040 extends Form {
   ]
 }
 
-const makeIL1040 = (info: Information, f1040: F1040): IL1040 =>
-  new IL1040(info, f1040)
+const makeIL1040 = (f1040: F1040): IL1040 => new IL1040(f1040)
 
 export default makeIL1040

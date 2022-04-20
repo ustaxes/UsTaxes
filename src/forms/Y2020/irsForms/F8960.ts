@@ -1,30 +1,19 @@
-import { Information } from 'ustaxes/core/data'
 import { sumFields } from 'ustaxes/core/irsForms/util'
-import Form, { FormTag } from 'ustaxes/core/irsForms/Form'
+import { FormTag } from 'ustaxes/core/irsForms/Form'
 import { netInvestmentIncomeTax } from '../data/federal'
-import F1040 from './F1040'
+import { ValidatedInformation } from 'ustaxes/forms/F1040Base'
+import F1040Attachment from './F1040Attachment'
 import { Field } from 'ustaxes/core/pdfFiller'
 
-export const needsF8960 = (state: Information): boolean => {
+export const needsF8960 = (state: ValidatedInformation): boolean => {
   const filingStatus = state.taxPayer.filingStatus
   const totalW2Income = state.w2s.reduce((sum, w2) => sum + w2.income, 0)
-  return (
-    filingStatus !== undefined &&
-    netInvestmentIncomeTax.taxThreshold(filingStatus) < totalW2Income
-  )
+  return netInvestmentIncomeTax.taxThreshold(filingStatus) < totalW2Income
 }
 
-export default class F8960 extends Form {
+export default class F8960 extends F1040Attachment {
   tag: FormTag = 'f8960'
   sequenceIndex = 72
-  state: Information
-  f1040: F1040
-
-  constructor(state: Information, f1040: F1040) {
-    super()
-    this.state = state
-    this.f1040 = f1040
-  }
 
   //Taxable Interest
   l1 = (): number | undefined => this.f1040.l2b()
@@ -105,13 +94,8 @@ export default class F8960 extends Form {
   // TODO: This should also take into account values on form 2555 and adjustments for Certain CFCs and Certain PFICs
   l13 = (): number => this.f1040.l11()
 
-  l14 = (): number => {
-    const filingStatus = this.state.taxPayer.filingStatus
-    if (filingStatus === undefined) {
-      throw new Error('Filing status is undefined')
-    }
-    return netInvestmentIncomeTax.taxThreshold(filingStatus)
-  }
+  l14 = (): number =>
+    netInvestmentIncomeTax.taxThreshold(this.f1040.info.taxPayer.filingStatus)
 
   l15 = (): number => Math.max(0, this.l13() - this.l14())
   l16 = (): number => (this.l12() < this.l15() ? this.l12() : this.l15())
@@ -133,8 +117,8 @@ export default class F8960 extends Form {
   l21 = (): number | undefined => undefined // Math.round(this.l20() * netInvestmentIncomeTax.taxRate)
 
   fields = (): Field[] => [
-    this.f1040.info.namesString(),
-    this.f1040.info.taxPayer.primaryPerson?.ssid,
+    this.f1040.namesString(),
+    this.f1040.info.taxPayer.primaryPerson.ssid,
     undefined, // Section 6013(g) election checkbox
     undefined, // Section 6013(h) election checkbox
     undefined, // Regulations section 1.1411-10(g) election checkbox

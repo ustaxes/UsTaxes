@@ -247,8 +247,8 @@ export default class ScheduleE extends F1040Attachment {
     )
 
     return [
-      this.f1040.info.namesString(),
-      this.f1040.info.taxPayer.primaryPerson?.ssid,
+      this.f1040.namesString(),
+      this.f1040.info.taxPayer.primaryPerson.ssid,
       false,
       false,
       false,
@@ -292,8 +292,8 @@ export default class ScheduleE extends F1040Attachment {
       Math.abs(this.l25()),
       displayNegPos(this.l26()),
       // Page 2 - TODO: Only part II implemented
-      this.f1040.info.namesString(),
-      this.f1040.info.taxPayer.primaryPerson?.ssid,
+      this.f1040.namesString(),
+      this.f1040.info.taxPayer.primaryPerson.ssid,
       ...[false, false], // l27
       ...l28Fields,
       undefined, // grey

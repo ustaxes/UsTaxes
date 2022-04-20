@@ -5,6 +5,10 @@ import { QuestionTagName, questionTagNames, Responses } from '../data'
 import * as types from '../data'
 import * as util from '../util'
 import _ from 'lodash'
+import {
+  ValidatedInformation,
+  ValidatedTaxpayer
+} from 'ustaxes/forms/F1040Base'
 
 const lower: Arbitrary<string> = fc
   .integer({ min: 0x61, max: 0x7a })
@@ -490,7 +494,7 @@ export class Arbitraries {
         qualifyingInfo
       }))
 
-  taxPayer = (): Arbitrary<types.TaxPayer> =>
+  taxPayer = (): Arbitrary<ValidatedTaxpayer> =>
     fc
       .tuple(
         filingStatus,
@@ -637,7 +641,7 @@ export class Arbitraries {
       type: types.CreditType.AdvanceChildTaxCredit
     }))
 
-  information = (): Arbitrary<types.Information> =>
+  information = (): Arbitrary<ValidatedInformation> =>
     fc
       .tuple(
         fc.array(f1099),

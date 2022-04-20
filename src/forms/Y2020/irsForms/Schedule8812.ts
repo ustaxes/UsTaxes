@@ -86,8 +86,8 @@ export default class Schedule8812 extends F1040Attachment {
     this.l9checkBox() ? Math.min(this.l14() ?? 0, this.l5()) : this.l5()
 
   fields = (): Field[] => [
-    this.f1040.info.namesString(),
-    this.f1040.info.taxPayer.primaryPerson?.ssid,
+    this.f1040.namesString(),
+    this.f1040.info.taxPayer.primaryPerson.ssid,
     this.l1(),
     this.l2(),
     this.l3(),

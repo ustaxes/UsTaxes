@@ -68,8 +68,8 @@ export default class F8995 extends F1040Attachment {
   deductions = (): number => this.l15()
 
   fields = (): Field[] => [
-    this.f1040.info.namesString(),
-    this.f1040.info.taxPayer.primaryPerson?.ssid ?? '',
+    this.f1040.namesString(),
+    this.f1040.info.taxPayer.primaryPerson.ssid,
     this.applicableK1s()[0]?.partnershipName,
     this.applicableK1s()[0]?.partnershipEin,
     this.applicableK1s()[0]?.section199AQBI,
