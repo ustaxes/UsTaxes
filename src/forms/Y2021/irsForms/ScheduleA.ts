@@ -108,8 +108,8 @@ export default class ScheduleA extends F1040Attachment {
   l18 = (): boolean => false
 
   fields = (): Field[] => [
-    this.f1040.info.namesString(),
-    this.f1040.info.taxPayer.primaryPerson?.ssid ?? '',
+    this.f1040.namesString(),
+    this.f1040.info.taxPayer.primaryPerson.ssid,
     this.l1(),
     this.l2(),
     this.l3(),

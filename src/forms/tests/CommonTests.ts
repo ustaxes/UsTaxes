@@ -1,11 +1,18 @@
 import { Information, Asset, FilingStatus } from 'ustaxes/core/data'
 import Form from 'ustaxes/core/irsForms/Form'
 import { run } from 'ustaxes/core/util'
+import { F1040Error } from '../errors'
+import F1040Base, { validate } from '../F1040Base'
 import TestKit from './TestKit'
-interface FormTestInfo<A> {
-  getAssets: (a: A) => Asset<Date>[]
-  getInfo: (a: A) => Information
-  getErrors: (a: A) => string[]
+export abstract class FormTestInfo<A> {
+  abstract getAssets: (a: A) => Asset<Date>[]
+  abstract getInfo: (a: A) => Information
+
+  getErrors: (info: Information) => F1040Error[] = (info) =>
+    run(validate(info)).fold(
+      (errors) => errors,
+      () => []
+    )
 }
 
 beforeAll(() => {
@@ -16,7 +23,7 @@ beforeAll(() => {
   })
 })
 
-export default class CommonTests<F1040 extends Form & { info: Information }> {
+export default class CommonTests<F1040 extends F1040Base> {
   testKit: TestKit
   formTestInfo: FormTestInfo<F1040>
 
@@ -47,9 +54,6 @@ export default class CommonTests<F1040 extends Form & { info: Information }> {
         const f1040 = this.findF1040OrFail(forms)
 
         const fs = f1040.info.taxPayer.filingStatus
-        if (fs === undefined) {
-          throw new Error('Undefined filing status')
-        }
 
         await Promise.resolve(f(f1040, fs))
       },
@@ -62,9 +66,7 @@ export default class CommonTests<F1040 extends Form & { info: Information }> {
       await this.testKit.with1040Assert((forms) => {
         const f1040 = this.findF1040(forms)
         expect(f1040).not.toBeUndefined()
-        if (f1040 !== undefined) {
-          expect(this.formTestInfo.getErrors(f1040)).toEqual([])
-        }
+
         return Promise.resolve()
       })
     })

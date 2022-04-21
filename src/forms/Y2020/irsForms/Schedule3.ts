@@ -77,8 +77,8 @@ export default class Schedule3 extends F1040Attachment {
     sumFields([this.l8(), this.l9(), this.l10(), this.l11(), this.l12f()])
 
   fields = (): Field[] => [
-    this.f1040.info.namesString(),
-    this.f1040.info.taxPayer.primaryPerson?.ssid,
+    this.f1040.namesString(),
+    this.f1040.info.taxPayer.primaryPerson.ssid,
     this.l1(),
     this.l2(),
     this.l3(),

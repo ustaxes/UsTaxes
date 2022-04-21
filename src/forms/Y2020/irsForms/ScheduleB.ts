@@ -44,7 +44,7 @@ export default class ScheduleB extends F1040Attachment {
     this.l1Fields().length > 0 || this.l5Fields().length > 0
 
   l1Fields = (): PayerAmount[] =>
-    this.f1040.info.f1099Ints().map((v) => ({
+    this.f1040.f1099Ints().map((v) => ({
       payer: v.payer,
       amount: v.form.income
     }))
@@ -62,8 +62,7 @@ export default class ScheduleB extends F1040Attachment {
       .concat(Array(rightPad).fill(undefined))
   }
 
-  l2 = (): number =>
-    sumFields(this.f1040.info.f1099Ints().map((f) => f.form.income))
+  l2 = (): number => sumFields(this.f1040.f1099Ints().map((f) => f.form.income))
 
   // TODO: Interest from tax exempt savings bonds
   l3 = (): number | undefined => undefined
@@ -77,7 +76,7 @@ export default class ScheduleB extends F1040Attachment {
     [this, ...this.copies].reduce((acc, f) => acc + f.l4(), 0)
 
   l5Fields = (): PayerAmount[] =>
-    this.f1040.info.f1099Divs().map((v) => ({
+    this.f1040.f1099Divs().map((v) => ({
       payer: v.payer,
       amount: v.form.dividends
     }))
@@ -123,8 +122,8 @@ export default class ScheduleB extends F1040Attachment {
   l8 = (): [boolean, boolean] => [this.foreignTrust(), !this.foreignTrust()]
 
   fields = (): Field[] => [
-    this.f1040.info.namesString(),
-    this.f1040.info.taxPayer.primaryPerson?.ssid ?? '',
+    this.f1040.namesString(),
+    this.f1040.info.taxPayer.primaryPerson.ssid,
     ...this.l1(),
     this.l2(),
     this.l3(),

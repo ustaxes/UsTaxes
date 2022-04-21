@@ -23,7 +23,6 @@ export default class StudentLoanInterestWorksheet {
 
   // Can't take deduction if someone else claims you as a dependent
   isNotDependentSelf = (): boolean =>
-    this.f1040.info.taxPayer.primaryPerson === undefined ||
     !this.f1040.info.taxPayer.primaryPerson.isTaxpayerDependent
 
   isNotDependent = (): boolean =>

@@ -25,17 +25,11 @@ export default class F8959 extends F1040Attachment {
   tag: FormTag = 'f8959'
   sequenceIndex = 71
 
-  thresholdFromFilingStatus = (): number => {
-    const filingStatus = this.f1040.info.taxPayer.filingStatus
-    if (filingStatus === undefined) {
-      throw new Error('Filing status is undefined')
-    }
-    return fica.additionalMedicareTaxThreshold(filingStatus)
-  }
+  thresholdFromFilingStatus = (): number =>
+    fica.additionalMedicareTaxThreshold(this.f1040.info.taxPayer.filingStatus)
 
-  computeAdditionalMedicareTax = (compensation: number): number => {
-    return fica.additionalMedicareTaxRate * compensation
-  }
+  computeAdditionalMedicareTax = (compensation: number): number =>
+    fica.additionalMedicareTaxRate * compensation
 
   // Part I: Additional Medicare Tax on Medicare Wages
   l1 = (): number => this.f1040.medicareWages()
@@ -89,8 +83,8 @@ export default class F8959 extends F1040Attachment {
   to1040l25c = (): number => this.l24()
 
   fields = (): Field[] => [
-    this.f1040.info.namesString(),
-    this.f1040.info.taxPayer.primaryPerson?.ssid,
+    this.f1040.namesString(),
+    this.f1040.info.taxPayer.primaryPerson.ssid,
     this.l1(),
     this.l2(),
     this.l3(),

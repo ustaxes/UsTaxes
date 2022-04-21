@@ -110,9 +110,6 @@ export default class Schedule8812 extends F1040Attachment {
    */
   l5 = (): number => {
     const fs = this.f1040.info.taxPayer.filingStatus
-    if (fs === undefined) {
-      throw new Error('filing status is undefined')
-    }
 
     const wsl1 = this.l4b() * 3600
     const wsl2 = this.l4c() * 3000
@@ -441,10 +438,6 @@ export default class Schedule8812 extends F1040Attachment {
 
     if (!allowed) return { allowed: false }
 
-    if (fs === undefined) {
-      throw new Error('filing status is undefined')
-    }
-
     const l28a = this.part1b().l14f ?? this.part1c().l15e
 
     const l28b = part1b.l14e ?? part1c.l15d
@@ -516,8 +509,8 @@ export default class Schedule8812 extends F1040Attachment {
     const part3 = this.part3()
 
     return [
-      this.f1040.info.namesString(),
-      this.f1040.info.taxPayer.primaryPerson?.ssid,
+      this.f1040.namesString(),
+      this.f1040.info.taxPayer.primaryPerson.ssid,
       this.l1(),
       this.l2a(),
       this.l2b(),

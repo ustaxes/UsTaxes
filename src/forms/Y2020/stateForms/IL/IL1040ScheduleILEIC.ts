@@ -1,11 +1,12 @@
 import Form from 'ustaxes/core/stateForms/Form'
 import F1040 from '../../irsForms/F1040'
 import { Field } from 'ustaxes/core/pdfFiller'
-import { Dependent, Information, PrimaryPerson, State } from 'ustaxes/core/data'
+import { Dependent, PrimaryPerson, State } from 'ustaxes/core/data'
 import parameters from './Parameters'
+import { ValidatedInformation } from 'ustaxes/forms/F1040Base'
 
 export class IL1040scheduleileeic extends Form {
-  info: Information
+  info: ValidatedInformation
   f1040: F1040
   formName: string
   state: State
@@ -13,7 +14,7 @@ export class IL1040scheduleileeic extends Form {
   attachments: () => Form[] = () => []
   qualifyingDependents: Dependent[]
 
-  constructor(info: Information, f1040: F1040) {
+  constructor(info: ValidatedInformation, f1040: F1040) {
     super()
     this.info = info
     this.f1040 = f1040
@@ -1628,7 +1629,7 @@ export class IL1040scheduleileeic extends Form {
    * Index 183: Your SSN3
    */
   YourSSN3 = (): string | undefined =>
-    this.info.taxPayer.primaryPerson?.ssid.slice(0, 3)
+    this.info.taxPayer.primaryPerson.ssid.slice(0, 3)
 
   f183 = (): string | undefined => this.YourSSN3()
 
@@ -1636,7 +1637,7 @@ export class IL1040scheduleileeic extends Form {
    * Index 184: Your SSN2
    */
   YourSSN2 = (): string | undefined =>
-    this.info.taxPayer.primaryPerson?.ssid.slice(3, 5)
+    this.info.taxPayer.primaryPerson.ssid.slice(3, 5)
 
   f184 = (): string | undefined => this.YourSSN2()
 
@@ -1644,7 +1645,7 @@ export class IL1040scheduleileeic extends Form {
    * Index 185: Your SSN4
    */
   YourSSN4 = (): string | undefined =>
-    this.info.taxPayer.primaryPerson?.ssid.slice(5)
+    this.info.taxPayer.primaryPerson.ssid.slice(5)
 
   f185 = (): string | undefined => this.YourSSN4()
 
@@ -1839,7 +1840,7 @@ export class IL1040scheduleileeic extends Form {
 }
 
 const makeil1040scheduleileeic = (
-  info: Information,
+  info: ValidatedInformation,
   f1040: F1040
 ): IL1040scheduleileeic => new IL1040scheduleileeic(info, f1040)
 

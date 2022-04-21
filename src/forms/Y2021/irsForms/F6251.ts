@@ -292,10 +292,6 @@ export default class F6251 extends F1040Attachment {
       return {}
     }
     const fs = this.f1040.info.taxPayer.filingStatus
-    if (fs === undefined) {
-      throw new Error('Filing status is undefined')
-    }
-
     const qdivWorksheet = this.f1040.qualifiedAndCapGainsWorksheet
     const schDWksht = this.f1040.scheduleD?.taxWorksheet
     const usingTaxWorksheet = schDWksht !== undefined && schDWksht.isNeeded()
@@ -464,8 +460,8 @@ export default class F6251 extends F1040Attachment {
   fields = (): Field[] => {
     const p3 = this.part3()
     return [
-      this.f1040.info.namesString(),
-      this.f1040.info.taxPayer.primaryPerson?.ssid,
+      this.f1040.namesString(),
+      this.f1040.info.taxPayer.primaryPerson.ssid,
       // Part I
       this.l1(),
       this.l2a(),

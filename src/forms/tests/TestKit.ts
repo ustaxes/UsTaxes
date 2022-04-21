@@ -13,6 +13,7 @@ import { PDFDocument } from 'pdf-lib'
 import { insertFormDataToPdfs } from 'ustaxes/core/irsForms'
 import { CreateForms, yearFormBuilder } from '../YearForms'
 import { PDFDownloader } from 'ustaxes/core/pdfFiller/pdfHandler'
+import { ValidatedInformation } from '../F1040Base'
 
 const logsDir = path.resolve(__dirname, '../../../logs/errors')
 
@@ -99,11 +100,11 @@ export default class TestKit {
   with1040Property = (
     f: (
       forms: Form[],
-      info: Information,
+      info: ValidatedInformation,
       assets: Asset<Date>[]
     ) => Promise<void>,
-    filter: (info: Information) => boolean = () => true
-  ): fc.IAsyncPropertyWithHooks<[Information, Asset<Date>[]]> =>
+    filter: (info: ValidatedInformation) => boolean = () => true
+  ): fc.IAsyncPropertyWithHooks<[ValidatedInformation, Asset<Date>[]]> =>
     fc.asyncProperty(
       this.arbitaries.information().filter(filter),
       fc.array(ustarbitraries.positionDate),
@@ -127,13 +128,13 @@ export default class TestKit {
   with1040Assert = async (
     f: (
       forms: Form[],
-      info: Information,
+      info: ValidatedInformation,
       assets: Asset<Date>[]
     ) => Promise<void>,
     params: Parameters<[Information, Asset<Date>[]]> = {},
-    filter: (info: Information) => boolean = () => true
+    filter: (info: ValidatedInformation) => boolean = () => true
   ): Promise<void> => {
-    let lastCallWithInfo: [Information, Asset<Date>[]] | undefined
+    let lastCallWithInfo: [ValidatedInformation, Asset<Date>[]] | undefined
     await fc
       .assert(
         this.with1040Property(async (forms, info, assets) => {

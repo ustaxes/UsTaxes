@@ -15,16 +15,15 @@ import {
   AccordionDetails
 } from '@material-ui/core'
 import { YearsTaxesState } from 'ustaxes/redux'
-import { Information, TaxYear } from 'ustaxes/core/data'
+import { TaxYear } from 'ustaxes/core/data'
 import { Check, Close, ExpandMore } from '@material-ui/icons'
 import Alert from '@material-ui/lab/Alert'
-import { run } from 'ustaxes/core/util'
-import yearFormBuilder from 'ustaxes/forms/YearForms'
 import { useSelector } from 'react-redux'
 import { createSummary, SummaryData } from './SummaryData'
 import { Currency } from './input'
 import { displayRound } from 'ustaxes/core/irsForms/util'
-
+import StateForm from 'ustaxes/core/stateForms/Form'
+import Form from 'ustaxes/core/irsForms/Form'
 interface BinaryStateListItemProps {
   active: boolean
   children: string | ReactElement | ReactElement[]
@@ -152,48 +151,42 @@ const F1040Summary = ({ summary }: F1040SummaryProps): ReactElement => (
   </>
 )
 
-const Summary = (): ReactElement => {
+interface SummaryProps {
+  errors: string[]
+  stateErrors?: string[]
+  irsForms: Form[]
+  stateForms?: StateForm[]
+}
+
+const Summary = ({ errors, irsForms }: SummaryProps): ReactElement => {
   const year: TaxYear = useSelector(
     (state: YearsTaxesState) => state.activeYear
   )
-  const info: Information = useSelector(
-    (state: YearsTaxesState) => state[state.activeYear]
+
+  const summaryBody = (
+    <>
+      <h3>Federal</h3>
+      {(() => {
+        if (errors.length > 0) {
+          return (
+            <Box marginBottom={2}>
+              {errors.map((error, i) => (
+                <Alert key={i} severity="warning">
+                  {error}
+                </Alert>
+              ))}
+            </Box>
+          )
+        } else {
+          const summary = createSummary(year, irsForms)
+          if (summary === undefined) {
+            return undefined
+          }
+          return <F1040Summary summary={summary} />
+        }
+      })()}
+    </>
   )
-  const assets = useSelector((state: YearsTaxesState) => state.assets)
-
-  const builder = yearFormBuilder(year, info, assets)
-
-  const summaryBody = (() => {
-    if (info.taxPayer.primaryPerson === undefined) {
-      return <p>No data entered yet</p>
-    } else {
-      const f1040Result = builder.f1040()
-
-      return (
-        <>
-          <h3>Federal</h3>
-          {run(f1040Result).fold(
-            (errors) => (
-              <Box marginBottom={2}>
-                {errors.map((error, i) => (
-                  <Alert key={i} severity="warning">
-                    {error}
-                  </Alert>
-                ))}
-              </Box>
-            ),
-            (forms) => {
-              const summary = createSummary(year, forms)
-              if (summary === undefined) {
-                return undefined
-              }
-              return <F1040Summary summary={summary} />
-            }
-          )}
-        </>
-      )
-    }
-  })()
 
   return (
     <div>

@@ -2,19 +2,15 @@ import Form, { FormMethods } from 'ustaxes/core/stateForms/Form'
 import F1040 from '../../irsForms/F1040'
 import { Field, RadioSelect } from 'ustaxes/core/pdfFiller'
 import { sumFields } from 'ustaxes/core/irsForms/util'
-import {
-  AccountType,
-  FilingStatus,
-  Information,
-  State
-} from 'ustaxes/core/data'
+import { AccountType, FilingStatus, State } from 'ustaxes/core/data'
 import parameters from './Parameters'
 import { IL1040scheduleileeic } from './IL1040ScheduleILEIC'
 import IL1040V from './IL1040V'
 import { ILWIT } from './ILWit'
+import { ValidatedInformation } from 'ustaxes/forms/F1040Base'
 
 export class IL1040 extends Form {
-  info: Information
+  info: ValidatedInformation
   f1040: F1040
   formName: string
   state: State
@@ -23,14 +19,14 @@ export class IL1040 extends Form {
   formOrder = 0
   methods: FormMethods
 
-  constructor(info: Information, f1040: F1040) {
+  constructor(f1040: F1040) {
     super()
-    this.info = info
+    this.info = f1040.info
     this.f1040 = f1040
     this.formName = 'IL-1040'
     this.state = 'IL'
-    this.scheduleEIC = new IL1040scheduleileeic(info, f1040)
-    this.il1040V = new IL1040V(info, f1040, this)
+    this.scheduleEIC = new IL1040scheduleileeic(f1040)
+    this.il1040V = new IL1040V(f1040, this)
     this.methods = new FormMethods(this)
   }
 
@@ -44,7 +40,7 @@ export class IL1040 extends Form {
       result.push(this.scheduleEIC)
     }
     if (this.methods.stateWithholding() > 0) {
-      const ilwit = new ILWIT(this.info, this.f1040)
+      const ilwit = new ILWIT(this.f1040)
       result.push(ilwit)
       ilwit.attachments().forEach((f) => result.push(f))
     }
@@ -82,7 +78,8 @@ export class IL1040 extends Form {
    * Index 3: name2
    * Primary First Name
    */
-  name2 = (): string | undefined => this.info.taxPayer.primaryPerson?.firstName
+  name2 = (): string | undefined =>
+    this.f1040.info.taxPayer.primaryPerson.firstName
 
   f3 = (): string | undefined => this.name2()
 
@@ -98,7 +95,7 @@ export class IL1040 extends Form {
   /**
    * Index 5: ssn1
    */
-  ssn1 = (): string | undefined => this.info.taxPayer.primaryPerson?.ssid
+  ssn1 = (): string | undefined => this.f1040.info.taxPayer.primaryPerson.ssid
 
   f5 = (): string | undefined => this.ssn1()
 
@@ -106,7 +103,8 @@ export class IL1040 extends Form {
    * Primary last name?
    * Index 6: name3
    */
-  name3 = (): string | undefined => this.info.taxPayer.primaryPerson?.lastName
+  name3 = (): string | undefined =>
+    this.f1040.info.taxPayer.primaryPerson.lastName
 
   f6 = (): string | undefined => this.name3()
 
@@ -114,7 +112,7 @@ export class IL1040 extends Form {
    * Spouse Fist name?
    * Index 7: name4
    */
-  name4 = (): string | undefined => this.info.taxPayer.spouse?.firstName
+  name4 = (): string | undefined => this.f1040.info.taxPayer.spouse?.firstName
 
   f7 = (): string | undefined => this.name4()
 
@@ -129,7 +127,7 @@ export class IL1040 extends Form {
    * Spouse SSN
    * Index 9: ssn4
    */
-  ssn4 = (): string | undefined => this.info.taxPayer.spouse?.ssid
+  ssn4 = (): string | undefined => this.f1040.info.taxPayer.spouse?.ssid
 
   f9 = (): string | undefined => this.ssn4()
 
@@ -137,7 +135,7 @@ export class IL1040 extends Form {
    * Index 10: address
    */
   address = (): string | undefined =>
-    this.info.taxPayer.primaryPerson?.address.address
+    this.f1040.info.taxPayer.primaryPerson.address.address
 
   f10 = (): string | undefined => this.address()
 
@@ -145,7 +143,7 @@ export class IL1040 extends Form {
    * Index 11: apt
    */
   apt = (): string | undefined =>
-    this.info.taxPayer.primaryPerson?.address.aptNo
+    this.f1040.info.taxPayer.primaryPerson.address.aptNo
 
   f11 = (): string | undefined => this.apt()
 
@@ -160,7 +158,7 @@ export class IL1040 extends Form {
    * Index 13: city
    */
   city = (): string | undefined =>
-    this.info.taxPayer.primaryPerson?.address.city
+    this.f1040.info.taxPayer.primaryPerson.address.city
 
   f13 = (): string | undefined => this.city()
 
@@ -168,15 +166,16 @@ export class IL1040 extends Form {
    * Index 14: st
    */
   st = (): string | undefined =>
-    this.info.taxPayer.primaryPerson?.address.state ??
-    this.info.taxPayer.primaryPerson?.address.province
+    this.f1040.info.taxPayer.primaryPerson.address.state ??
+    this.f1040.info.taxPayer.primaryPerson.address.province
 
   f14 = (): string | undefined => this.st()
 
   /**
    * Index 15: zip
    */
-  zip = (): string | undefined => this.info.taxPayer.primaryPerson?.address.zip
+  zip = (): string | undefined =>
+    this.f1040.info.taxPayer.primaryPerson.address.zip
 
   f15 = (): string | undefined => this.zip()
 
@@ -184,7 +183,7 @@ export class IL1040 extends Form {
    * Index 16: foreign
    */
   foreign = (): string | undefined =>
-    this.info.taxPayer.primaryPerson?.address.foreignCountry
+    this.f1040.info.taxPayer.primaryPerson.address.foreignCountry
 
   f16 = (): string | undefined => this.foreign()
 
@@ -193,21 +192,15 @@ export class IL1040 extends Form {
    * This is actually a radio group, so indicate the correct selection
    * by index.
    */
-  CheckBox1 = (): RadioSelect | undefined => {
-    const fs = this.info.taxPayer.filingStatus
-    if (fs === undefined) {
-      throw new Error('Filing Status is undefined')
-    }
-    return {
-      select: [
-        FilingStatus.S,
-        FilingStatus.MFJ,
-        FilingStatus.MFS,
-        FilingStatus.W,
-        FilingStatus.HOH
-      ].findIndex((x) => x === fs)
-    }
-  }
+  CheckBox1 = (): RadioSelect | undefined => ({
+    select: [
+      FilingStatus.S,
+      FilingStatus.MFJ,
+      FilingStatus.MFS,
+      FilingStatus.W,
+      FilingStatus.HOH
+    ].findIndex((x) => x === this.f1040.info.taxPayer.filingStatus)
+  })
 
   f17 = (): RadioSelect | undefined => this.CheckBox1()
 
@@ -215,7 +208,7 @@ export class IL1040 extends Form {
    * Index 18: Check Box1c
    */
   CheckBox1c = (): boolean | undefined =>
-    this.info.taxPayer.primaryPerson?.isTaxpayerDependent
+    this.f1040.info.taxPayer.primaryPerson.isTaxpayerDependent
 
   f18 = (): boolean | undefined => this.CheckBox1c()
 
@@ -223,7 +216,7 @@ export class IL1040 extends Form {
    * Index 19: Check Box1cc
    */
   CheckBox1cc = (): boolean | undefined =>
-    this.info.taxPayer.spouse?.isTaxpayerDependent
+    this.f1040.info.taxPayer.spouse?.isTaxpayerDependent
 
   f19 = (): boolean | undefined => this.CheckBox1cc()
 
@@ -241,14 +234,14 @@ export class IL1040 extends Form {
    * Spouse last name !
    * Index 21: name1
    */
-  name1 = (): string | undefined => this.info.taxPayer.spouse?.lastName
+  name1 = (): string | undefined => this.f1040.info.taxPayer.spouse?.lastName
 
   f21 = (): string | undefined => this.name1()
 
   /**
    * Index 22: emailadd
    */
-  emailadd = (): string | undefined => this.info.taxPayer.contactEmail
+  emailadd = (): string | undefined => this.f1040.info.taxPayer.contactEmail
 
   f22 = (): string | undefined => this.emailadd()
 
@@ -313,7 +306,7 @@ export class IL1040 extends Form {
    * Index 33: 10a
    */
   l10a = (): number => {
-    if (this.info.taxPayer.filingStatus === FilingStatus.MFJ)
+    if (this.f1040.info.taxPayer.filingStatus === FilingStatus.MFJ)
       return parameters.exemptions.MFJ.exemptionAmount
     return parameters.exemptions.S.exemptionAmount
   }
@@ -507,7 +500,7 @@ export class IL1040 extends Form {
   /**
    * Index 62: rn1
    */
-  rn1 = (): string | undefined => this.info.refund?.routingNumber
+  rn1 = (): string | undefined => this.f1040.info.refund?.routingNumber
 
   f62 = (): string | undefined => this.rn1()
 
@@ -516,14 +509,14 @@ export class IL1040 extends Form {
    * TODO: support savings account checkbox - radio field issue
    */
   CheckBox11 = (): boolean | undefined =>
-    this.info.refund?.accountType === AccountType.checking
+    this.f1040.info.refund?.accountType === AccountType.checking
 
   f63 = (): boolean | undefined => this.CheckBox11()
 
   /**
    * Index 64: ac1
    */
-  ac1 = (): string | undefined => this.info.refund?.accountNumber
+  ac1 = (): string | undefined => this.f1040.info.refund?.accountNumber
 
   f64 = (): string | undefined => this.ac1()
 
@@ -553,7 +546,7 @@ export class IL1040 extends Form {
    * Index 68: DaytimeAreaCode
    */
   DaytimeAreaCode = (): string | undefined =>
-    this.info.taxPayer.contactPhoneNumber?.slice(0, 3)
+    this.f1040.info.taxPayer.contactPhoneNumber?.slice(0, 3)
 
   f68 = (): string | undefined => this.DaytimeAreaCode()
 
@@ -561,7 +554,7 @@ export class IL1040 extends Form {
    * Index 69: DaytimePhoneNumber
    */
   DaytimePhoneNumber = (): string | undefined =>
-    this.info.taxPayer.contactPhoneNumber?.slice(3)
+    this.f1040.info.taxPayer.contactPhoneNumber?.slice(3)
 
   f69 = (): string | undefined => this.DaytimePhoneNumber()
 
@@ -857,7 +850,6 @@ export class IL1040 extends Form {
   ]
 }
 
-const makeIL1040 = (info: Information, f1040: F1040): IL1040 =>
-  new IL1040(info, f1040)
+const makeIL1040 = (f1040: F1040): IL1040 => new IL1040(f1040)
 
 export default makeIL1040

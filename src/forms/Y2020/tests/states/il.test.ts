@@ -24,7 +24,7 @@ const withStateReturn = (
   }
 
   const [f1040] = f1040Result.right
-  const stateReturn = createStateReturn(info, f1040)
+  const stateReturn = createStateReturn(f1040)
   if (isLeft(stateReturn)) {
     fail(stateReturn.left.join(';'))
   }

@@ -2,10 +2,11 @@ import Form from 'ustaxes/core/stateForms/Form'
 import F1040 from '../../irsForms/F1040'
 import { IL1040 } from './IL1040'
 import { Field } from 'ustaxes/core/pdfFiller'
-import { Information, State } from 'ustaxes/core/data'
+import { State } from 'ustaxes/core/data'
+import { ValidatedInformation } from 'ustaxes/forms/F1040Base'
 
 export default class IL1040V extends Form {
-  info: Information
+  info: ValidatedInformation
   f1040: F1040
   formName: string
   state: State
@@ -13,7 +14,7 @@ export default class IL1040V extends Form {
   formOrder = -1
   attachments: () => Form[] = () => []
 
-  constructor(info: Information, f1040: F1040, il1040: IL1040) {
+  constructor(info: ValidatedInformation, f1040: F1040, il1040: IL1040) {
     super()
     this.info = info
     this.f1040 = f1040
@@ -35,7 +36,7 @@ export default class IL1040V extends Form {
    * Index 1: PrimarySSN1
    */
   PrimarySSN1 = (): string | undefined =>
-    this.info.taxPayer.primaryPerson?.ssid.slice(0, 3)
+    this.info.taxPayer.primaryPerson.ssid.slice(0, 3)
 
   f1 = (): string | undefined => this.PrimarySSN1()
 
@@ -43,7 +44,7 @@ export default class IL1040V extends Form {
    * Index 2: PrimarySSN2
    */
   PrimarySSN2 = (): string | undefined =>
-    this.info.taxPayer.primaryPerson?.ssid.slice(3, 5)
+    this.info.taxPayer.primaryPerson.ssid.slice(3, 5)
 
   f2 = (): string | undefined => this.PrimarySSN2()
 
@@ -51,7 +52,7 @@ export default class IL1040V extends Form {
    * Index 3: PrimarySSN3
    */
   PrimarySSN3 = (): string | undefined =>
-    this.info.taxPayer.primaryPerson?.ssid.slice(5)
+    this.info.taxPayer.primaryPerson.ssid.slice(5)
 
   f3 = (): string | undefined => this.PrimarySSN3()
 
@@ -83,7 +84,7 @@ export default class IL1040V extends Form {
    * Index 7: FirstName
    */
   FirstName = (): string | undefined =>
-    this.info.taxPayer.primaryPerson?.firstName
+    this.info.taxPayer.primaryPerson.firstName
 
   f7 = (): string | undefined => this.FirstName()
 
@@ -98,8 +99,7 @@ export default class IL1040V extends Form {
   /**
    * Index 9: LastName
    */
-  LastName = (): string | undefined =>
-    this.info.taxPayer.primaryPerson?.lastName
+  LastName = (): string | undefined => this.info.taxPayer.primaryPerson.lastName
 
   f9 = (): string | undefined => this.LastName()
 
@@ -107,15 +107,14 @@ export default class IL1040V extends Form {
    * Index 10: Address
    */
   Address = (): string | undefined =>
-    this.info.taxPayer.primaryPerson?.address.address
+    this.info.taxPayer.primaryPerson.address.address
 
   f10 = (): string | undefined => this.Address()
 
   /**
    * Index 11: City
    */
-  City = (): string | undefined =>
-    this.info.taxPayer.primaryPerson?.address.city
+  City = (): string | undefined => this.info.taxPayer.primaryPerson.address.city
 
   f11 = (): string | undefined => this.City()
 
@@ -123,14 +122,14 @@ export default class IL1040V extends Form {
    * Index 12: State
    */
   State = (): string | undefined =>
-    this.info.taxPayer.primaryPerson?.address.state
+    this.info.taxPayer.primaryPerson.address.state
 
   f12 = (): string | undefined => this.State()
 
   /**
    * Index 13: ZIP
    */
-  ZIP = (): string | undefined => this.info.taxPayer.primaryPerson?.address.zip
+  ZIP = (): string | undefined => this.info.taxPayer.primaryPerson.address.zip
 
   f13 = (): string | undefined => this.ZIP()
 
