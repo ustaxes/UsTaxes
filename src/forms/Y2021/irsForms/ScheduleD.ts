@@ -12,11 +12,12 @@ import QualDivAndCGWorksheet from './worksheets/SDQualifiedAndCapGains'
 export default class ScheduleD extends F1040Attachment {
   tag: FormTag = 'f1040sd'
   sequenceIndex = 12
-  aggregated: F1099BData
+  _aggregated?: F1099BData
   qualifiedDivAndCGWorksheet: QualDivAndCGWorksheet
   taxWorksheet: SDTaxWorksheet
   rateGainWorksheet: SDRateGainWorksheet
   unrecaptured1250: SDUnrecaptured1250
+  _f8949s?: F8949[]
 
   readonly l21MinMFS = 1500
   readonly l21MinDefault = 3000
@@ -24,20 +25,29 @@ export default class ScheduleD extends F1040Attachment {
   constructor(f1040: F1040) {
     super(f1040)
 
-    const bs: F1099BData[] = this.f1040.f1099Bs().map((f) => f.form)
-
-    this.aggregated = {
-      shortTermProceeds: bs.reduce((l, r) => l + r.shortTermProceeds, 0),
-      shortTermCostBasis: bs.reduce((l, r) => l + r.shortTermCostBasis, 0),
-      longTermProceeds: bs.reduce((l, r) => l + r.longTermProceeds, 0),
-      longTermCostBasis: bs.reduce((l, r) => l + r.longTermCostBasis, 0)
-    }
-
     this.rateGainWorksheet = new SDRateGainWorksheet()
     this.taxWorksheet = new SDTaxWorksheet(f1040)
     this.qualifiedDivAndCGWorksheet = new QualDivAndCGWorksheet(f1040)
     this.unrecaptured1250 = new SDUnrecaptured1250()
   }
+
+  get aggregated(): F1099BData {
+    if (this._aggregated === undefined) {
+      const bs: F1099BData[] = this.f1040.f1099Bs().map((f) => f.form)
+
+      this._aggregated = {
+        shortTermProceeds: bs.reduce((l, r) => l + r.shortTermProceeds, 0),
+        shortTermCostBasis: bs.reduce((l, r) => l + r.shortTermCostBasis, 0),
+        longTermProceeds: bs.reduce((l, r) => l + r.longTermProceeds, 0),
+        longTermCostBasis: bs.reduce((l, r) => l + r.longTermCostBasis, 0)
+      }
+    }
+
+    return this._aggregated
+  }
+
+  isNeeded = (): boolean =>
+    this.f1040.f8949s.length > 0 || this.f1040.f1099Bs().length > 0
 
   l21Min = (): number => {
     if (this.f1040.info.taxPayer.filingStatus === FilingStatus.MFS) {
@@ -52,7 +62,7 @@ export default class ScheduleD extends F1040Attachment {
   l1ag = (): number | undefined => undefined
   l1ah = (): number => sumFields([this.l1ad(), 0 - (this.l1ae() ?? 0)])
 
-  l1f8949s = (): F8949[] => this.f1040.f8949.filter((f) => f.part1BoxA())
+  l1f8949s = (): F8949[] => this.f1040.f8949s.filter((f) => f.part1BoxA())
 
   l1bd = (): number =>
     sumFields(this.l1f8949s().map((f) => f.shortTermTotalProceeds()))
@@ -64,7 +74,8 @@ export default class ScheduleD extends F1040Attachment {
   l1bh = (): number =>
     sumFields(this.l1f8949s().map((f) => f.shortTermTotalGain()))
 
-  l2f8949s = (): F8949[] => this.f1040.f8949.filter((f) => f.part1BoxB())
+  l2f8949s = (): F8949[] => this.f1040.f8949s.filter((f) => f.part1BoxB())
+
   l2d = (): number =>
     sumFields(this.l2f8949s().map((f) => f.shortTermTotalProceeds()))
 
@@ -77,7 +88,8 @@ export default class ScheduleD extends F1040Attachment {
   l2h = (): number =>
     sumFields(this.l2f8949s().map((f) => f.shortTermTotalGain()))
 
-  l3f8949s = (): F8949[] => this.f1040.f8949.filter((f) => f.part1BoxC())
+  l3f8949s = (): F8949[] => this.f1040.f8949s.filter((f) => f.part1BoxC())
+
   l3d = (): number =>
     sumFields(this.l3f8949s().map((f) => f.shortTermTotalProceeds()))
 
@@ -114,7 +126,7 @@ export default class ScheduleD extends F1040Attachment {
   l8ah = (): number | undefined =>
     sumFields([this.l8ad(), 0 - (this.l8ae() ?? 0)])
 
-  l8f8949s = (): F8949[] => this.f1040.f8949.filter((f) => f.part2BoxD())
+  l8f8949s = (): F8949[] => this.f1040.f8949s.filter((f) => f.part2BoxD())
 
   l8bd = (): number =>
     sumFields(this.l8f8949s().map((f) => f.longTermTotalProceeds()))
@@ -128,7 +140,7 @@ export default class ScheduleD extends F1040Attachment {
   l8bh = (): number =>
     sumFields(this.l8f8949s().map((f) => f.longTermTotalGain()))
 
-  l9f8949s = (): F8949[] => this.f1040.f8949.filter((f) => f.part2BoxE())
+  l9f8949s = (): F8949[] => this.f1040.f8949s.filter((f) => f.part2BoxE())
 
   l9d = (): number =>
     sumFields(this.l9f8949s().map((f) => f.longTermTotalProceeds()))
@@ -142,7 +154,7 @@ export default class ScheduleD extends F1040Attachment {
   l9h = (): number =>
     sumFields(this.l9f8949s().map((f) => f.longTermTotalGain()))
 
-  l10f8949s = (): F8949[] => this.f1040.f8949.filter((f) => f.part2BoxF())
+  l10f8949s = (): F8949[] => this.f1040.f8949s.filter((f) => f.part2BoxF())
 
   l10d = (): number =>
     sumFields(this.l10f8949s().map((f) => f.longTermTotalProceeds()))

@@ -19,16 +19,10 @@ export default class Schedule1 extends F1040Attachment {
     this.otherIncomeStrings = new Set<string>()
   }
 
-  addScheduleE = (scheduleE: ScheduleE): void => {
-    this.scheduleE = scheduleE
-  }
-
-  addF8889 = (f8889: F8889): void => {
-    this.f8889 = f8889
-  }
-  addF8889Spouse = (f8889: F8889): void => {
-    this.f8889Spouse = f8889
-  }
+  isNeeded = (): boolean =>
+    this.f1040.studentLoanInterestWorksheet !== undefined &&
+    this.f1040.studentLoanInterestWorksheet.notMFS() &&
+    this.f1040.studentLoanInterestWorksheet.isNotDependent()
 
   l1 = (): number | undefined => undefined
   l2a = (): number | undefined => undefined
@@ -69,7 +63,7 @@ export default class Schedule1 extends F1040Attachment {
   l10 = (): number | undefined => undefined
   l11 = (): number | undefined => undefined
   l12 = (): number | undefined =>
-    sumFields([this.f8889?.l13(), this.f8889Spouse?.l13()])
+    sumFields([this.f8889?.l13(), this.f1040.f8889Spouse?.l13()])
   l13 = (): number | undefined => undefined
   l14 = (): number | undefined => undefined
   l15 = (): number | undefined => undefined

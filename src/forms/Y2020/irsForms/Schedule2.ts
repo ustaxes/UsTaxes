@@ -14,6 +14,9 @@ export default class Schedule2 extends F1040Attachment {
     this.otherIncomeStrings = new Set<string>()
   }
 
+  isNeeded = (): boolean =>
+    this.f1040.f8959?.isNeeded() || this.f1040.f8960?.isNeeded()
+
   // Part I: Tax
   l1 = (): number | undefined => undefined // TODO: Alternative Minimum Tax (form 6251)
   l2 = (): number | undefined => undefined // TODO: excess advance premium tax credit repayment (form 8962)

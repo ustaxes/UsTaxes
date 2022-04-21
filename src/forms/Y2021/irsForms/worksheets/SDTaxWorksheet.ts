@@ -15,7 +15,7 @@ export default class SDTaxWorksheet extends Worksheet {
     const f4952 = this.f1040.f4952
 
     const sdCondition =
-      sd !== undefined &&
+      sd.isNeeded() &&
       ((sd.l18() ?? 0) > 0 || (sd.l19() ?? 0) > 0) &&
       sd.l15() > 0 &&
       sd.l16() > 0

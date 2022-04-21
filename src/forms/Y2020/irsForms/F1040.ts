@@ -20,17 +20,17 @@ import F5695 from './F5695'
 import F8814 from './F8814'
 import F8863 from './F8863'
 import F8888 from './F8888'
-import F8889, { needsF8889 } from './F8889'
+import F8889 from './F8889'
 import F8910 from './F8910'
 import F8936 from './F8936'
-import F8959, { needsF8959 } from './F8959'
-import F8960, { needsF8960 } from './F8960'
+import F8959 from './F8959'
+import F8960 from './F8960'
 import F8962 from './F8962'
 import F8995 from './F8995'
 import F8995A from './F8995A'
 import Schedule1 from './Schedule1'
 import Schedule2 from './Schedule2'
-import Schedule3, { claimableExcessSSTaxWithholding } from './Schedule3'
+import Schedule3 from './Schedule3'
 import Schedule8812 from './Schedule8812'
 import ScheduleA from './ScheduleA'
 import ScheduleB from './ScheduleB'
@@ -54,6 +54,7 @@ import F8582 from './F8582'
 import { Field } from 'ustaxes/core/pdfFiller'
 import Form8853 from './F8853'
 import F1040Base, { ValidatedInformation } from 'ustaxes/forms/F1040Base'
+import F1040Attachment from './F1040Attachment'
 
 export default class F1040 extends F1040Base {
   tag: FormTag = 'f1040'
@@ -61,17 +62,17 @@ export default class F1040 extends F1040Base {
 
   assets: Asset<Date>[]
 
-  schedule1?: Schedule1
-  schedule2?: Schedule2
-  schedule3?: Schedule3
+  schedule1: Schedule1
+  schedule2: Schedule2
+  schedule3: Schedule3
   scheduleA?: ScheduleA
-  scheduleB?: ScheduleB
+  scheduleB: ScheduleB
   scheduleC?: ScheduleC
-  scheduleD?: ScheduleD
-  scheduleE?: ScheduleE
-  scheduleEIC?: ScheduleEIC
+  scheduleD: ScheduleD
+  scheduleE: ScheduleE
+  scheduleEIC: ScheduleEIC
   scheduleR?: ScheduleR
-  schedule8812?: Schedule8812
+  schedule8812: Schedule8812
   f2441?: F2441
   f2555?: F2555
   f4136?: F4136
@@ -87,27 +88,67 @@ export default class F1040 extends F1040Base {
   f8853?: Form8853
   f8863?: F8863
   f8888?: F8888
-  f8889?: F8889
+  f8889: F8889
   f8889Spouse?: F8889
   f8910?: F8910
   f8919?: F8919
   f8936?: F8936
-  f8949: F8949[]
-  f8959?: F8959
-  f8960?: F8960
+  f8949: F8949
+  _f8949s?: F8949[]
+  f8959: F8959
+  f8960: F8960
   f8962?: F8962
   f8995?: F8995 | F8995A
   studentLoanInterestWorksheet?: StudentLoanInterestWorksheet
   socialSecurityBenefitsWorksheet?: SocialSecurityBenefitsWorksheet
 
-  childTaxCreditWorksheet?: ChildTaxCreditWorksheet
+  childTaxCreditWorksheet: ChildTaxCreditWorksheet
 
   constructor(info: ValidatedInformation, assets: Asset<Date>[] = []) {
     super(info)
-    this.f8949 = []
     this.assets = assets
-    this.makeSchedules()
     this.childTaxCreditWorksheet = new ChildTaxCreditWorksheet(this)
+
+    this.scheduleB = new ScheduleB(this)
+    this.scheduleD = new ScheduleD(this)
+    this.scheduleE = new ScheduleE(this)
+    this.scheduleEIC = new ScheduleEIC(this)
+
+    this.schedule1 = new Schedule1(this)
+    this.schedule2 = new Schedule2(this)
+    this.schedule3 = new Schedule3(this)
+    this.schedule8812 = new Schedule8812(this)
+
+    this.f8889 = new F8889(this, this.info.taxPayer.primaryPerson)
+    if (this.info.taxPayer.spouse !== undefined) {
+      // add in separate form 8889 for the spouse
+      this.f8889Spouse = new F8889(this, this.info.taxPayer.spouse)
+    }
+
+    this.f8949 = new F8949(this)
+    this.f8959 = new F8959(this)
+    this.f8960 = new F8960(this)
+
+    if (this.f1099ssas().length > 0) {
+      const ssws = new SocialSecurityBenefitsWorksheet(this.info, this)
+      this.socialSecurityBenefitsWorksheet = ssws
+    }
+
+    if (this.info.f1098es.length > 0) {
+      this.studentLoanInterestWorksheet = new StudentLoanInterestWorksheet(
+        this,
+        this.info.f1098es
+      )
+    }
+
+    this.childTaxCreditWorksheet = new ChildTaxCreditWorksheet(this)
+  }
+
+  get f8949s(): F8949[] {
+    if (this._f8949s === undefined) {
+      this._f8949s = [this.f8949, ...this.f8949.copies()]
+    }
+    return this._f8949s
   }
 
   toString = (): string => `
@@ -117,11 +158,9 @@ export default class F1040 extends F1040Base {
   `
 
   schedules = (): Form[] => {
-    const res1: (Form | undefined)[] = [
-      this,
+    const res1: (F1040Attachment | undefined)[] = [
       this.scheduleA,
       this.scheduleB,
-      ...(this.scheduleB?.copies ?? []),
       this.scheduleD,
       this.scheduleE,
       this.scheduleR,
@@ -134,10 +173,10 @@ export default class F1040 extends F1040Base {
       this.f8814,
       this.f8888,
       this.f8889,
-      this.f8889Spouse,
+      ...(this.f8889Spouse === undefined ? [] : [this.f8889Spouse]),
       this.f8910,
       this.f8936,
-      ...this.f8949,
+      this.f8949,
       this.f8959,
       this.f8960,
       this.f8995,
@@ -146,135 +185,15 @@ export default class F1040 extends F1040Base {
       this.schedule3
     ]
     const res = _.compact(res1)
+      .filter((f) => f.isNeeded())
+      .flatMap((f) => [f, ...f.copies()])
 
     // Attach payment voucher to front if there is a payment due
     if (this.l37() > 0) {
       res.push(new F1040V(this))
     }
 
-    return res.sort((a, b) => a.sequenceIndex - b.sequenceIndex)
-  }
-
-  makeSchedules = (): void => {
-    const f1099bs = this.f1099Bs()
-
-    const f1099ssas = this.f1099ssas()
-
-    const scheduleB = new ScheduleB(this)
-
-    if (scheduleB.formRequired()) {
-      this.scheduleB = scheduleB
-    }
-
-    if (this.assets.length > 0) {
-      const f8949 = new F8949(this)
-      if (f8949.isNeeded()) {
-        // a F8949 may spawn more copies of itself.
-        this.f8949 = [f8949, ...f8949.copies]
-      }
-    }
-
-    if (f1099bs.length > 0 || this.f8949.length > 0) {
-      this.scheduleD = new ScheduleD(this)
-    }
-
-    if (f1099ssas.length > 0) {
-      const ssws = new SocialSecurityBenefitsWorksheet(this.info, this)
-      this.socialSecurityBenefitsWorksheet = ssws
-    }
-
-    if (this.info.realEstate.length > 0) {
-      this.scheduleE = new ScheduleE(this)
-    }
-
-    if (this.info.f1098es.length > 0) {
-      this.studentLoanInterestWorksheet = new StudentLoanInterestWorksheet(
-        this,
-        this.info.f1098es
-      )
-      // Future proofing be checking if Schedule 1 exists before adding it
-      // Don't add s1 if unable to take deduction
-      if (
-        this.schedule1 === undefined &&
-        this.studentLoanInterestWorksheet.notMFS() &&
-        this.studentLoanInterestWorksheet.isNotDependent()
-      ) {
-        this.schedule1 = new Schedule1(this)
-      }
-    }
-
-    if (needsF8889(this.info, this.info.taxPayer.primaryPerson)) {
-      this.f8889 = new F8889(this, this.info.taxPayer.primaryPerson)
-      if (this.schedule1 === undefined) {
-        this.schedule1 = new Schedule1(this)
-      }
-
-      if (this.schedule2 === undefined) {
-        this.schedule2 = new Schedule2(this)
-      }
-      this.schedule1.addF8889(this.f8889)
-    }
-
-    if (
-      this.info.taxPayer.spouse &&
-      needsF8889(this.info, this.info.taxPayer.spouse)
-    ) {
-      // add in separate form 8889 for the spouse
-      this.f8889Spouse = new F8889(this, this.info.taxPayer.spouse)
-      if (this.schedule1 === undefined) {
-        this.schedule1 = new Schedule1(this)
-      }
-
-      if (this.schedule2 === undefined) {
-        this.schedule2 = new Schedule2(this)
-      }
-      this.schedule1.addF8889Spouse(this.f8889Spouse)
-    }
-
-    if (needsF8959(this.info)) {
-      if (this.f8959 === undefined) {
-        this.f8959 = new F8959(this)
-      }
-    }
-
-    if (needsF8960(this.info)) {
-      this.f8960 = new F8960(this)
-    }
-
-    if (this.f8959 !== undefined || this.f8960 !== undefined) {
-      this.schedule2 = new Schedule2(this)
-    }
-
-    if (
-      claimableExcessSSTaxWithholding(this.info.w2s) > 0 &&
-      this.schedule3 === undefined
-    ) {
-      this.schedule3 = new Schedule3(this)
-    }
-
-    if (this.scheduleE !== undefined) {
-      if (this.schedule1 === undefined) {
-        this.schedule1 = new Schedule1(this)
-      }
-      this.schedule1.addScheduleE(this.scheduleE)
-    }
-
-    const eic = new ScheduleEIC(this)
-    if (eic.allowed()) {
-      this.scheduleEIC = eic
-    }
-
-    const ws = new ChildTaxCreditWorksheet(this)
-    const schedule8812 = new Schedule8812(this)
-
-    if (
-      this.info.taxPayer.dependents.some(
-        (dep) => ws.qualifiesChild(dep) || ws.qualifiesOther(dep)
-      )
-    ) {
-      this.childTaxCreditWorksheet = ws
-      this.schedule8812 = schedule8812
-    }
+    return [this, ...res].sort((a, b) => a.sequenceIndex - b.sequenceIndex)
   }
 
   // TODO -> born before 1956/01/02
@@ -343,10 +262,10 @@ export default class F1040 extends F1040Base {
       .reduce((res, f1099) => res + f1099.form.taxableAmount, 0)
 
   l1 = (): number => this.wages()
-  l2a = (): number | undefined => this.scheduleB?.l3()
-  l2b = (): number | undefined => this.scheduleB?.to1040l2b()
+  l2a = (): number | undefined => this.scheduleB.l3()
+  l2b = (): number | undefined => this.scheduleB.to1040l2b()
   l3a = (): number | undefined => this.totalQualifiedDividends()
-  l3b = (): number | undefined => this.scheduleB?.to1040l3b()
+  l3b = (): number | undefined => this.scheduleB.to1040l3b()
   // This is the value of box 1 in 1099-R forms coming from IRAs
   l4a = (): number | undefined => this.totalGrossDistributionsFromIra()
   // This should be the value of box 2a in 1099-R coming from IRAs
@@ -362,8 +281,8 @@ export default class F1040 extends F1040Base {
   // calculation of the taxable amount of line 6a based on other income
   l6b = (): number | undefined =>
     this.socialSecurityBenefitsWorksheet?.taxableAmount()
-  l7 = (): number | undefined => this.scheduleD?.to1040()
-  l8 = (): number | undefined => this.schedule1?.l9()
+  l7 = (): number | undefined => this.scheduleD.to1040()
+  l8 = (): number | undefined => this.schedule1.l9()
   l9 = (): number =>
     sumFields([
       this.l1(),
@@ -376,7 +295,7 @@ export default class F1040 extends F1040Base {
       this.l8()
     ])
 
-  l10a = (): number | undefined => this.schedule1?.l22()
+  l10a = (): number | undefined => this.schedule1.l22()
   l10b = (): number | undefined => undefined
   l10c = (): number => sumFields([this.l10a(), this.l10b()])
 
@@ -396,7 +315,7 @@ export default class F1040 extends F1040Base {
 
   computeTax = (): number | undefined => {
     if (
-      this.scheduleD?.computeTaxOnQDWorksheet() ??
+      this.scheduleD.computeTaxOnQDWorksheet() ||
       this.totalQualifiedDividends() > 0
     ) {
       const wksht = new SDQualifiedAndCapGains(this)
@@ -409,17 +328,17 @@ export default class F1040 extends F1040Base {
   l16 = (): number | undefined =>
     sumFields([this.f8814?.tax(), this.f4972?.tax(), this.computeTax()])
 
-  l17 = (): number | undefined => this.schedule2?.l3()
+  l17 = (): number | undefined => this.schedule2.l3()
   l18 = (): number => sumFields([this.l16(), this.l17()])
 
   // TODO
-  l19 = (): number | undefined => this.childTaxCreditWorksheet?.l12()
-  l20 = (): number | undefined => this.schedule3?.l7()
+  l19 = (): number | undefined => this.childTaxCreditWorksheet.l12()
+  l20 = (): number | undefined => this.schedule3.l7()
   l21 = (): number => sumFields([this.l19(), this.l20()])
 
   l22 = (): number => Math.max(0, this.l18() - this.l21())
 
-  l23 = (): number | undefined => this.schedule2?.l10()
+  l23 = (): number | undefined => this.schedule2.l10()
   l24 = (): number => sumFields([this.l22(), this.l23()])
 
   l25a = (): number =>
@@ -437,22 +356,22 @@ export default class F1040 extends F1040Base {
     )
 
   // TODO: form(s) W-2G box 4, schedule K-1, form 1042-S, form 8805, form 8288-A
-  l25c = (): number | undefined => this.f8959?.l24()
+  l25c = (): number | undefined => this.f8959.l24()
 
   l25d = (): number => sumFields([this.l25a(), this.l25b(), this.l25c()])
 
   l26 = (): number =>
     this.info.estimatedTaxes.reduce((res, et) => res + et.payment, 0)
 
-  l27 = (): number | undefined => this.scheduleEIC?.credit() ?? 0
-  l28 = (): number | undefined => this.schedule8812?.l15()
+  l27 = (): number | undefined => this.scheduleEIC.credit()
+  l28 = (): number | undefined => this.schedule8812.l15()
 
   l29 = (): number | undefined => this.f8863?.l8()
 
   // TODO: recovery rebate credit?
   l30 = (): number | undefined => undefined
 
-  l31 = (): number | undefined => this.schedule3?.l13()
+  l31 = (): number | undefined => this.schedule3.l13()
 
   l32 = (): number =>
     sumFields([this.l27(), this.l28(), this.l29(), this.l30(), this.l31()])
@@ -487,8 +406,8 @@ export default class F1040 extends F1040Base {
         `${dep.firstName} ${dep.lastName}`,
         dep.ssid,
         dep.relationship,
-        this.childTaxCreditWorksheet?.qualifiesChild(dep) ?? false,
-        this.childTaxCreditWorksheet?.qualifiesOther(dep) ?? false
+        this.childTaxCreditWorksheet.qualifiesChild(dep),
+        this.childTaxCreditWorksheet.qualifiesOther(dep)
       ]
     }
 
@@ -551,7 +470,7 @@ export default class F1040 extends F1040Base {
       this.l5b(),
       this.l6a(),
       this.l6b(),
-      this.scheduleD === undefined,
+      !this.scheduleD.isNeeded(),
       this.l7(),
       this.l8(),
       this.l9(),

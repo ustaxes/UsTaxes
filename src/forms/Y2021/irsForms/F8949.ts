@@ -1,5 +1,5 @@
 import { FormTag } from 'ustaxes/core/irsForms/Form'
-import { Asset, isSold, SoldAsset, TaxPayer as TP } from 'ustaxes/core/data'
+import { Asset, isSold, SoldAsset } from 'ustaxes/core/data'
 import F1040Attachment from './F1040Attachment'
 import F1040 from './F1040'
 import { Field } from 'ustaxes/core/pdfFiller'
@@ -56,35 +56,30 @@ const padUntil = <A, B>(xs: A[], v: B, n: number): (A | B)[] => {
 export default class F8949 extends F1040Attachment {
   tag: FormTag = 'f8949'
   sequenceIndex = 12.1
-  assets: Asset<Date>[]
-  tp: TP
 
   index = 0
 
-  copies: F8949[] = []
-
   constructor(f1040: F1040, index = 0) {
     super(f1040)
-    this.assets = f1040.assets
-    this.tp = f1040.info.taxPayer
+    this.index = index
+  }
 
-    if (index === 0) {
+  isNeeded = (): boolean => this.thisYearSales().length > 0
+
+  copies = (): F8949[] => {
+    if (this.index === 0) {
       const extraCopiesNeeded = Math.round(
         Math.max(
           this.thisYearShortTermSales().length / NUM_SHORT_LINES,
           this.thisYearLongTermSales().length / NUM_LONG_LINES
         )
       )
-      this.copies = Array.from(Array(extraCopiesNeeded)).map(
-        (_, i) => new F8949(f1040, i + 1)
+      return Array.from(Array(extraCopiesNeeded)).map(
+        (_, i) => new F8949(this.f1040, i + 1)
       )
-    } else {
-      this.copies = []
     }
-    this.index = index
+    return []
   }
-
-  isNeeded = (): boolean => this.thisYearSales().length > 0
 
   // Assuming we're only handling non-reported transactions
   part1BoxA = (): boolean => false
@@ -95,7 +90,7 @@ export default class F8949 extends F1040Attachment {
   part2BoxF = (): boolean => true
 
   thisYearSales = (): SoldAsset<Date>[] =>
-    this.assets.filter(
+    this.f1040.assets.filter(
       (p) => isSold(p) && p.closeDate.getFullYear() === 2021
     ) as SoldAsset<Date>[]
 

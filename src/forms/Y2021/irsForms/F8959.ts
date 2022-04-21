@@ -1,29 +1,23 @@
 import F1040Attachment from './F1040Attachment'
-import { Information } from 'ustaxes/core/data'
 import { sumFields } from 'ustaxes/core/irsForms/util'
 import { FormTag } from 'ustaxes/core/irsForms/Form'
-import ScheduleSE from './ScheduleSE'
 import { fica } from '../data/federal'
 import { Field } from 'ustaxes/core/pdfFiller'
-
-export const needsF8959 = (
-  state: Information,
-  scheduleSE: ScheduleSE | undefined
-): boolean => {
-  const filingStatus = state.taxPayer.filingStatus
-  const totalW2Income = state.w2s
-    .map((w2) => w2.medicareIncome)
-    .reduce((l, r) => l + r, 0)
-  return (
-    filingStatus !== undefined &&
-    fica.additionalMedicareTaxThreshold(filingStatus) <
-      totalW2Income + (scheduleSE?.l6() ?? 0)
-  )
-}
 
 export default class F8959 extends F1040Attachment {
   tag: FormTag = 'f8959'
   sequenceIndex = 71
+
+  isNeeded = (): boolean => {
+    const filingStatus = this.f1040.info.taxPayer.filingStatus
+    const totalW2Income = this.f1040.info.w2s
+      .map((w2) => w2.medicareIncome)
+      .reduce((l, r) => l + r, 0)
+    return (
+      fica.additionalMedicareTaxThreshold(filingStatus) <
+      totalW2Income + (this.f1040.scheduleSE.l6() ?? 0)
+    )
+  }
 
   thresholdFromFilingStatus = (): number =>
     fica.additionalMedicareTaxThreshold(this.f1040.info.taxPayer.filingStatus)
@@ -44,7 +38,7 @@ export default class F8959 extends F1040Attachment {
   l7 = (): number | undefined => this.computeAdditionalMedicareTax(this.l6())
 
   // Part II: Additional Medicare Tax on Self-Employment Income
-  l8 = (): number | undefined => this.f1040.scheduleSE?.l6()
+  l8 = (): number | undefined => this.f1040.scheduleSE.l6()
   l9 = (): number => this.thresholdFromFilingStatus()
   l10 = (): number => this.l4()
   l11 = (): number => Math.max(0, this.l9() - this.l10())

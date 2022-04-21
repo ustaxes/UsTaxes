@@ -87,16 +87,14 @@ export default class F6251 extends F1040Attachment {
   }
 
   l2a = (): number | undefined => {
-    if (this.f1040.scheduleA) {
+    if (this.f1040.scheduleA.isNeeded()) {
       return this.f1040.scheduleA.l7()
     }
     return this.f1040.l12a()
   }
 
   l2b = (): number | undefined => {
-    return (
-      (this.f1040.schedule1?.l1() ?? 0) + (this.f1040.schedule1?.l8z() ?? 0)
-    )
+    return (this.f1040.schedule1.l1() ?? 0) + this.f1040.schedule1.l8z()
   }
 
   // TODO: Investment interest expense (difference between regular tax and AMT)
@@ -106,7 +104,7 @@ export default class F6251 extends F1040Attachment {
   l2d = (): number | undefined => undefined
 
   l2e = (): number | undefined => {
-    return Math.abs(this.f1040.schedule1?.l8a() ?? 0)
+    return Math.abs(this.f1040.schedule1.l8a() ?? 0)
   }
 
   // TODO: Alternative tax net operating loss deduction
@@ -218,8 +216,7 @@ export default class F6251 extends F1040Attachment {
     return (
       this.f1040.l7() !== undefined ||
       this.f1040.l3a() !== undefined ||
-      ((this.f1040.scheduleD?.l15() ?? 0) > 0 &&
-        (this.f1040.scheduleD?.l16() ?? 0) > 0)
+      (this.f1040.scheduleD.l15() > 0 && this.f1040.scheduleD.l16() > 0)
     )
   }
 
@@ -273,8 +270,8 @@ export default class F6251 extends F1040Attachment {
   l10 = (): number => {
     const f1040L16 = this.f1040.l16() ?? 0
     const f4972 = this.f1040.f4972?.tax() ?? 0
-    const sch2L2 = this.f1040.schedule2?.l2() ?? 0
-    const sch3L1 = this.f1040.schedule3?.l1() ?? 0
+    const sch2L2 = this.f1040.schedule2.l2() ?? 0
+    const sch3L1 = this.f1040.schedule3.l1() ?? 0
     const f8978L14 = Math.abs(0) // TODO: Form 8978
     return Math.max(0, f1040L16 - f4972 + sch2L2 - sch3L1 - f8978L14)
   }
@@ -293,8 +290,8 @@ export default class F6251 extends F1040Attachment {
     }
     const fs = this.f1040.info.taxPayer.filingStatus
     const qdivWorksheet = this.f1040.qualifiedAndCapGainsWorksheet
-    const schDWksht = this.f1040.scheduleD?.taxWorksheet
-    const usingTaxWorksheet = schDWksht !== undefined && schDWksht.isNeeded()
+    const schDWksht = this.f1040.scheduleD.taxWorksheet
+    const usingTaxWorksheet = schDWksht.isNeeded()
 
     const l18Consts: [number, number] = (() => {
       if (this.f1040.info.taxPayer.filingStatus === FilingStatus.MFS) {
@@ -330,7 +327,7 @@ export default class F6251 extends F1040Attachment {
       return qdivWorksheet?.l4() ?? 0
     })()
 
-    const l14 = this.f1040.scheduleD?.l19() ?? 0
+    const l14 = this.f1040.scheduleD.l19() ?? 0
 
     const l15 = (() => {
       if (!usingTaxWorksheet) {

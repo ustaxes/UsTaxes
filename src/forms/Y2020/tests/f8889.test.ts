@@ -1,18 +1,17 @@
 /* eslint @typescript-eslint/no-empty-function: "off" */
 
-import {
-  FilingStatus,
-  Income1099Type,
-  PersonRole,
-  Information
-} from 'ustaxes/core/data'
+import { FilingStatus, Income1099Type, PersonRole } from 'ustaxes/core/data'
 import { CURRENT_YEAR, healthSavingsAccounts } from '../data/federal'
-import F8889, { needsF8889 } from '../irsForms/F8889'
+import F8889 from '../irsForms/F8889'
 import { cloneDeep } from 'lodash'
 import F1040 from '../irsForms/F1040'
 import { blankState } from 'ustaxes/redux/reducer'
+import { ValidatedInformation } from 'ustaxes/forms/F1040Base'
+import { yearFormBuilder } from 'ustaxes/forms/YearForms'
+import { run } from 'ustaxes/core/util'
+import { commonTests } from '.'
 
-const baseInformation: Information = {
+const baseInformation: ValidatedInformation = {
   ...blankState,
   f1099s: [
     {
@@ -72,13 +71,10 @@ const baseInformation: Information = {
 }
 
 describe('Health Savings Accounts', () => {
-  it('shold not need form 8889 if there are no health savings accounts', () => {
-    if (baseInformation.taxPayer.primaryPerson === undefined) {
-      throw new Error('baseInformation.taxPayer.primaryPerson is undefined')
-    }
-    expect(
-      needsF8889(baseInformation, baseInformation.taxPayer.primaryPerson)
-    ).toEqual(false)
+  it('should not need form 8889 if there are no health savings accounts', () => {
+    const builder = yearFormBuilder('Y2020').build(baseInformation, [])
+    const fs = run(builder.f1040()).orThrow()
+    expect(commonTests.findF1040OrFail(fs).f8889.isNeeded()).toEqual(false)
   })
 
   it('should have a max contribution limit when covered for all months', () => {
@@ -97,9 +93,6 @@ describe('Health Savings Accounts', () => {
     ]
 
     const f1040 = new F1040(information)
-    if (information.taxPayer.primaryPerson === undefined) {
-      throw new Error('information.taxPayer.primaryPerson is undefined')
-    }
 
     const f8889 = new F8889(f1040, information.taxPayer.primaryPerson)
     expect(f8889.fullYearHsa()).toEqual(true)
@@ -136,9 +129,7 @@ describe('Health Savings Accounts', () => {
     ]
 
     const f1040 = new F1040(information)
-    if (information.taxPayer.primaryPerson === undefined) {
-      throw new Error('information.taxPayer.primaryPerson is undefined')
-    }
+
     const f8889 = new F8889(f1040, information.taxPayer.primaryPerson)
     expect(f8889.fullYearHsa()).toEqual(true)
     expect(f8889.lastMonthCoverage()).toEqual('family')
@@ -164,9 +155,7 @@ describe('Health Savings Accounts', () => {
     ]
 
     const f1040 = new F1040(information)
-    if (information.taxPayer.primaryPerson === undefined) {
-      throw new Error('information.taxPayer.primaryPerson is undefined')
-    }
+
     const f8889 = new F8889(f1040, information.taxPayer.primaryPerson)
     expect(f8889.fullYearHsa()).toEqual(false)
     expect(f8889.contributionLimit()).toEqual(
@@ -201,9 +190,7 @@ describe('Health Savings Accounts', () => {
     ]
 
     const f1040 = new F1040(information)
-    if (information.taxPayer.primaryPerson === undefined) {
-      throw new Error('information.taxPayer.primaryPerson is undefined')
-    }
+
     const f8889 = new F8889(f1040, information.taxPayer.primaryPerson)
     expect(f8889.fullYearHsa()).toEqual(false)
     expect(f8889.contributionLimit()).toEqual(
@@ -241,9 +228,7 @@ describe('Health Savings Accounts', () => {
     ]
 
     const f1040 = new F1040(information)
-    if (information.taxPayer.primaryPerson === undefined) {
-      throw new Error('information.taxPayer.primaryPerson is undefined')
-    }
+
     const f8889 = new F8889(f1040, information.taxPayer.primaryPerson)
     expect(f8889.fullYearHsa()).toEqual(false)
     expect(f8889.contributionLimit()).toEqual(
@@ -280,9 +265,7 @@ describe('Health Savings Accounts', () => {
       }
     ]
     const f1040 = new F1040(information)
-    if (information.taxPayer.primaryPerson === undefined) {
-      throw new Error('No primary person')
-    }
+
     const f8889 = new F8889(f1040, information.taxPayer.primaryPerson)
     expect(f8889.splitFamilyContributionLimit()).toEqual(3550)
     expect(f8889.calculatedCoverageType).toEqual('self-only')
@@ -314,9 +297,6 @@ describe('Health Savings Accounts', () => {
       }
     ]
     const f1040 = new F1040(information)
-    if (information.taxPayer.primaryPerson === undefined) {
-      throw new Error('No primary person')
-    }
 
     const f8889 = new F8889(f1040, information.taxPayer.primaryPerson)
     expect(f8889.l9()).toEqual(0)

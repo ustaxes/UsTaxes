@@ -14,12 +14,20 @@ export default class Schedule1 extends F1040Attachment {
     this.otherIncomeStrings = new Set<string>()
   }
 
+  isNeeded = (): boolean =>
+    this.f1040.scheduleE.isNeeded() ||
+    (this.f1040.studentLoanInterestWorksheet !== undefined &&
+      this.f1040.studentLoanInterestWorksheet.notMFS() &&
+      this.f1040.studentLoanInterestWorksheet.isNotDependent()) ||
+    this.f1040.f8889.isNeeded() ||
+    (this.f1040.f8889Spouse?.isNeeded() ?? false)
+
   l1 = (): number | undefined => undefined
   l2a = (): number | undefined => undefined
   l2b = (): number | undefined => undefined
   l3 = (): number | undefined => undefined
   l4 = (): number | undefined => undefined
-  l5 = (): number | undefined => this.f1040.scheduleE?.l41()
+  l5 = (): number | undefined => this.f1040.scheduleE.l41()
   l6 = (): number | undefined => undefined
   l7 = (): number | undefined => undefined
   l8a = (): number | undefined => undefined
@@ -27,7 +35,7 @@ export default class Schedule1 extends F1040Attachment {
   l8c = (): number | undefined => undefined
   l8d = (): number | undefined => undefined
   l8e = (): number | undefined =>
-    sumFields([this.f1040.f8889?.l16(), this.f1040.f8889Spouse?.l16()])
+    sumFields([this.f1040.f8889.l16(), this.f1040.f8889Spouse?.l16()])
   l8f = (): number | undefined => undefined
   l8g = (): number | undefined => undefined
   l8h = (): number | undefined => undefined
@@ -42,14 +50,15 @@ export default class Schedule1 extends F1040Attachment {
   l8q = (): number | undefined => undefined
   l8z = (): number => {
     if (
-      (this.f1040.f8889?.l20() !== undefined && this.f1040.f8889.l20() > 0) ||
-      (this.f1040.f8889Spouse?.l20() !== undefined &&
+      (this.f1040.f8889.isNeeded() && this.f1040.f8889.l20() > 0) ||
+      ((this.f1040.f8889Spouse?.isNeeded() ?? false) &&
+        this.f1040.f8889Spouse?.l20() !== undefined &&
         this.f1040.f8889Spouse.l20() > 0)
     ) {
       this.otherIncomeStrings.add('HSA')
     }
 
-    return sumFields([this.f1040.f8889?.l20(), this.f1040.f8889Spouse?.l20()])
+    return sumFields([this.f1040.f8889.l20(), this.f1040.f8889Spouse?.l20()])
   }
 
   l9 = (): number =>
@@ -91,9 +100,9 @@ export default class Schedule1 extends F1040Attachment {
   l11 = (): number | undefined => undefined
   l12 = (): number | undefined => undefined
   l13 = (): number | undefined =>
-    sumFields([this.f1040.f8889?.l13(), this.f1040.f8889Spouse?.l13()])
+    sumFields([this.f1040.f8889.l13(), this.f1040.f8889Spouse?.l13()])
   l14 = (): number | undefined => undefined
-  l15 = (): number | undefined => this.f1040.scheduleSE?.l13()
+  l15 = (): number | undefined => this.f1040.scheduleSE.l13()
   l16 = (): number | undefined => undefined
   l17 = (): number | undefined => undefined
   l18 = (): number | undefined => undefined

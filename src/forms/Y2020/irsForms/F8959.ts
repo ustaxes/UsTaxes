@@ -4,18 +4,20 @@ import ScheduleSE from './ScheduleSE'
 import { fica } from '../data/federal'
 import F1040Attachment from './F1040Attachment'
 import { Field } from 'ustaxes/core/pdfFiller'
-import { ValidatedInformation } from 'ustaxes/forms/F1040Base'
-
-export const needsF8959 = (state: ValidatedInformation): boolean => {
-  const filingStatus = state.taxPayer.filingStatus
-  const totalW2Income = state.w2s.reduce((s, w2) => s + w2.medicareIncome, 0)
-  return fica.additionalMedicareTaxThreshold(filingStatus) < totalW2Income
-}
 
 export default class F8959 extends F1040Attachment {
   tag: FormTag = 'f8959'
   sequenceIndex = 71
   scheduleSE?: ScheduleSE
+
+  isNeeded = (): boolean => {
+    const filingStatus = this.f1040.info.taxPayer.filingStatus
+    const totalW2Income = this.f1040.info.w2s.reduce(
+      (s, w2) => s + w2.medicareIncome,
+      0
+    )
+    return fica.additionalMedicareTaxThreshold(filingStatus) < totalW2Income
+  }
 
   thresholdFromFilingStatus = (): number =>
     fica.additionalMedicareTaxThreshold(this.f1040.info.taxPayer.filingStatus)

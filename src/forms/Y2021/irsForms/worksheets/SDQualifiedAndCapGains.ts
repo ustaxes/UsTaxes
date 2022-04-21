@@ -32,7 +32,7 @@ export default class QualDivAndCGWorksheet extends Worksheet {
   //      If either line 15 or 16 is blank or a loss, enter - 0 -. 3.
   // No. Enter the amount from Form 1040 or 1040-SR, line 7.
   l3 = (): number => {
-    if (this.f1040.scheduleD !== undefined) {
+    if (this.f1040.scheduleD.isNeeded()) {
       return Math.min(
         Math.max(this.f1040.scheduleD.l15(), 0),
         Math.max(this.f1040.scheduleD.l16(), 0)

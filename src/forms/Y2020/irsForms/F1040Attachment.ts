@@ -8,6 +8,17 @@ abstract class F1040Attachment extends Form {
     super()
     this.f1040 = f1040
   }
+
+  isNeeded = (): boolean => true
+  copies = (): F1040Attachment[] => []
+}
+
+export abstract class Worksheet {
+  f1040: F1040
+
+  constructor(f1040: F1040) {
+    this.f1040 = f1040
+  }
 }
 
 export default F1040Attachment

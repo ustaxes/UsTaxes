@@ -43,17 +43,17 @@ export default class SocialSecurityBenefitsWorksheet extends Worksheet {
   l6 = (): number =>
     sumFields([
       this.f1040.l12b(),
-      this.f1040.schedule1?.l10(),
-      this.f1040.schedule1?.l11(),
-      this.f1040.schedule1?.l12(),
-      this.f1040.schedule1?.l13(),
-      this.f1040.schedule1?.l14(),
-      this.f1040.schedule1?.l15(),
-      this.f1040.schedule1?.l16(),
-      this.f1040.schedule1?.l17(),
-      this.f1040.schedule1?.l18(),
-      this.f1040.schedule1?.l19a(),
-      this.f1040.schedule1?.l20()
+      this.f1040.schedule1.l10(),
+      this.f1040.schedule1.l11(),
+      this.f1040.schedule1.l12(),
+      this.f1040.schedule1.l13(),
+      this.f1040.schedule1.l14(),
+      this.f1040.schedule1.l15(),
+      this.f1040.schedule1.l16(),
+      this.f1040.schedule1.l17(),
+      this.f1040.schedule1.l18(),
+      this.f1040.schedule1.l19a(),
+      this.f1040.schedule1.l20()
     ])
 
   /* Line 7: Is the amount on line 6 less than the amount on line 5?

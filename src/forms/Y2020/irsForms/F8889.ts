@@ -1,16 +1,10 @@
-import { Information, Person, HealthSavingsAccount } from 'ustaxes/core/data'
+import { Person, HealthSavingsAccount } from 'ustaxes/core/data'
 import { sumFields } from 'ustaxes/core/irsForms/util'
 import { FormTag } from 'ustaxes/core/irsForms/Form'
 import { CURRENT_YEAR, healthSavingsAccounts } from '../data/federal'
 import F1040Attachment from './F1040Attachment'
 import F1040 from './F1040'
 import { Field } from 'ustaxes/core/pdfFiller'
-
-export const needsF8889 = (state: Information, person: Person): boolean => {
-  return state.healthSavingsAccounts.some(
-    (h) => h.personRole === person.role || h.coverageType === 'family'
-  )
-}
 
 type ContributionType = 'self-only' | 'family'
 type PerMonthContributionType = {
@@ -55,6 +49,11 @@ export default class F8889 extends F1040Attachment {
       type: Array<ContributionType>(12)
     }
   }
+
+  isNeeded = (): boolean =>
+    this.f1040.info.healthSavingsAccounts.some(
+      (h) => h.personRole === this.person.role || h.coverageType === 'family'
+    )
 
   calculatePerMonthLimits = (): void => {
     for (

@@ -16,14 +16,15 @@ export default class ScheduleB extends F1040Attachment {
   readonly dividendPayersLimit = 16
 
   index = 0
-  copies: ScheduleB[] = []
 
   constructor(f1040: F1040, index = 0) {
     super(f1040)
 
     this.index = index
+  }
 
-    if (index === 0) {
+  copies = (): ScheduleB[] => {
+    if (this.index === 0) {
       const numInterestPayers = this.l1Fields().length
       const numDivPayers = this.l5Fields().length
 
@@ -34,13 +35,14 @@ export default class ScheduleB extends F1040Attachment {
         )
       )
 
-      this.copies = Array.from(Array(extraCopiesNeeded)).map(
-        (_, i) => new ScheduleB(f1040, i + 1)
+      return Array.from(Array(extraCopiesNeeded)).map(
+        (_, i) => new ScheduleB(this.f1040, i + 1)
       )
     }
+    return []
   }
 
-  formRequired = (): boolean =>
+  isNeeded = (): boolean =>
     this.l1Fields().length > 0 || this.l5Fields().length > 0
 
   l1Fields = (): PayerAmount[] =>
@@ -73,7 +75,7 @@ export default class ScheduleB extends F1040Attachment {
    * Total interest on all schedule Bs.
    */
   to1040l2b = (): number =>
-    [this, ...this.copies].reduce((acc, f) => acc + f.l4(), 0)
+    [this, ...this.copies()].reduce((acc, f) => acc + f.l4(), 0)
 
   l5Fields = (): PayerAmount[] =>
     this.f1040.f1099Divs().map((v) => ({
@@ -99,7 +101,7 @@ export default class ScheduleB extends F1040Attachment {
    * Total dividends on all schedule Bs.
    */
   to1040l3b = (): number =>
-    [this, ...this.copies].reduce((acc, f) => acc + f.l6(), 0)
+    [this, ...this.copies()].reduce((acc, f) => acc + f.l6(), 0)
 
   foreignAccount = (): boolean =>
     this.f1040.info.questions.FOREIGN_ACCOUNT_EXISTS ?? false

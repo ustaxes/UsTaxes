@@ -57,6 +57,8 @@ export default class ScheduleEIC extends F1040Attachment {
     this.pub596Worksheet1 = new Pub596Worksheet1(f1040)
   }
 
+  isNeeded = (): boolean => this.allowed()
+
   // instructions step 1.1
   passIncomeLimit = (): boolean => {
     const filingStatus = this.f1040.info.taxPayer.filingStatus

@@ -7,6 +7,13 @@ export default class Schedule8812 extends F1040Attachment {
   tag: FormTag = 'f1040s8'
   sequenceIndex = 47
 
+  isNeeded = (): boolean =>
+    this.f1040.info.taxPayer.dependents.some(
+      (dep) =>
+        this.f1040.childTaxCreditWorksheet.qualifiesChild(dep) ||
+        this.f1040.childTaxCreditWorksheet.qualifiesOther(dep)
+    )
+
   // This can be calculated with either pub 972 or the child tax credit worksheet, but for now we're only supporting the worksheet
   // TODO: Add pub 972 support
   l1 = (): number => this.f1040.childTaxCreditWorksheet?.l8() ?? 0

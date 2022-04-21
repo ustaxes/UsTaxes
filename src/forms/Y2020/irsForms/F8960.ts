@@ -1,19 +1,21 @@
 import { sumFields } from 'ustaxes/core/irsForms/util'
 import { FormTag } from 'ustaxes/core/irsForms/Form'
 import { netInvestmentIncomeTax } from '../data/federal'
-import { ValidatedInformation } from 'ustaxes/forms/F1040Base'
 import F1040Attachment from './F1040Attachment'
 import { Field } from 'ustaxes/core/pdfFiller'
-
-export const needsF8960 = (state: ValidatedInformation): boolean => {
-  const filingStatus = state.taxPayer.filingStatus
-  const totalW2Income = state.w2s.reduce((sum, w2) => sum + w2.income, 0)
-  return netInvestmentIncomeTax.taxThreshold(filingStatus) < totalW2Income
-}
 
 export default class F8960 extends F1040Attachment {
   tag: FormTag = 'f8960'
   sequenceIndex = 72
+
+  isNeeded = (): boolean => {
+    const filingStatus = this.f1040.info.taxPayer.filingStatus
+    const totalW2Income = this.f1040.info.w2s.reduce(
+      (sum, w2) => sum + w2.income,
+      0
+    )
+    return netInvestmentIncomeTax.taxThreshold(filingStatus) < totalW2Income
+  }
 
   //Taxable Interest
   l1 = (): number | undefined => this.f1040.l2b()
