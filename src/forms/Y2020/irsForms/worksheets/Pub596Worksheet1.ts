@@ -16,7 +16,7 @@ export default class Pub596Worksheet1 {
   l3 = (): number | undefined => this.f1040.l3b()
 
   // TODO: Unchecked child's Alaska permanent fund dividend
-  l4 = (): number | undefined => this.f1040.schedule1?.l8()
+  l4 = (): number | undefined => this.f1040.schedule1.l8()
 
   l5 = (): number => ((this.f1040.l7() ?? 0) < 0 ? 0 : this.f1040.l7() ?? 0)
   l6 = (): number => {
@@ -36,12 +36,12 @@ export default class Pub596Worksheet1 {
   }
 
   l8 = (): number | undefined =>
-    sumFields([this.f1040.scheduleE?.l23b(), this.f1040.schedule1?.l8()])
+    sumFields([this.f1040.scheduleE.l23b(), this.f1040.schedule1.l8()])
 
   l9 = (): number | undefined =>
     sumFields([
-      this.f1040.scheduleE?.royaltyExpenses(),
-      this.f1040.schedule1?.l22()
+      this.f1040.scheduleE.royaltyExpenses(),
+      this.f1040.schedule1.l22()
     ])
 
   l10 = (): number => {
@@ -51,20 +51,20 @@ export default class Pub596Worksheet1 {
 
   l11 = (): number | undefined =>
     sumFields([
-      ifPositive(this.f1040.scheduleE?.l26() ?? 0),
-      this.f1040.scheduleE?.l29ah(),
-      this.f1040.scheduleE?.l34ad(),
-      this.f1040.scheduleE?.l40()
+      ifPositive(this.f1040.scheduleE.l26() ?? 0),
+      this.f1040.scheduleE.l29ah(),
+      this.f1040.scheduleE.l34ad(),
+      this.f1040.scheduleE.l40()
       // todo: FPA form 4797 line 10
     ])
 
   l12 = (): number | undefined =>
     sumFields(
       [
-        this.f1040.scheduleE?.l26() ?? 0,
-        this.f1040.scheduleE?.l29bg() ?? 0,
-        this.f1040.scheduleE?.l34bc() ?? 0,
-        this.f1040.scheduleE?.l40() ?? 0
+        this.f1040.scheduleE.l26() ?? 0,
+        this.f1040.scheduleE.l29bg() ?? 0,
+        this.f1040.scheduleE.l34bc() ?? 0,
+        this.f1040.scheduleE.l40() ?? 0
         // TODO: PAL Loss form 4797
       ].map((x) => ifNegative(x))
     )

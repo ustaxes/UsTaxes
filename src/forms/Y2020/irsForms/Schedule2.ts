@@ -15,7 +15,7 @@ export default class Schedule2 extends F1040Attachment {
   }
 
   isNeeded = (): boolean =>
-    this.f1040.f8959?.isNeeded() || this.f1040.f8960?.isNeeded()
+    this.f1040.f8959.isNeeded() || this.f1040.f8960.isNeeded()
 
   // Part I: Tax
   l1 = (): number | undefined => undefined // TODO: Alternative Minimum Tax (form 6251)
@@ -30,12 +30,12 @@ export default class Schedule2 extends F1040Attachment {
   l7b = (): number | undefined => undefined // TODO: repayment of first-time homebuyer credit
   l8 = (): number | undefined => {
     if (
-      this.f1040.f8889?.l17b() !== undefined ||
+      this.f1040.f8889.l17b() !== undefined ||
       this.f1040.f8889Spouse?.l17b() !== undefined
     ) {
       this.otherIncomeStrings.add('HSA')
     }
-    if (this.f1040.f8889?.l21() !== undefined && this.f1040.f8889.l21() > 0) {
+    if (this.f1040.f8889.l21() !== undefined && this.f1040.f8889.l21() > 0) {
       this.otherIncomeStrings.add('HDHP')
     }
 
@@ -47,10 +47,10 @@ export default class Schedule2 extends F1040Attachment {
     }
 
     return sumFields([
-      this.f1040.f8959?.l18(),
-      this.f1040.f8960?.l17(),
-      this.f1040.f8889?.l17b(),
-      this.f1040.f8889?.l21(),
+      this.f1040.f8959.l18(),
+      this.f1040.f8960.l17(),
+      this.f1040.f8889.l17b(),
+      this.f1040.f8889.l21(),
       this.f1040.f8889Spouse?.l17b(),
       this.f1040.f8889Spouse?.l21()
     ])

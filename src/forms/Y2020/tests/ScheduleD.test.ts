@@ -9,7 +9,7 @@ describe('ScheduleD', () => {
         expect(f1040).not.toBeUndefined()
         if (f1040 !== undefined) {
           expect(Math.round(f1040.l7() ?? 0)).toBeGreaterThanOrEqual(
-            -(f1040.scheduleD?.l21Min() ?? Number.POSITIVE_INFINITY)
+            -(f1040.scheduleD.l21Min() ?? Number.POSITIVE_INFINITY)
           )
         }
         return Promise.resolve()

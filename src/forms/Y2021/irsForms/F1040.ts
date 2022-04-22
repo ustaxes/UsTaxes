@@ -139,7 +139,6 @@ export default class F1040 extends F1040Base {
     this.f8959 = new F8959(this)
     this.f8960 = new F8960(this)
 
-
     if (this.f1099ssas().length > 0) {
       const ssws = new SocialSecurityBenefitsWorksheet(this)
       this.socialSecurityBenefitsWorksheet = ssws

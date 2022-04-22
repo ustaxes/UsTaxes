@@ -40,13 +40,13 @@ export const SummaryCreatorFor2020: SummaryCreator<F1040For2020> = {
     credits: [
       {
         name: 'Earned Income Credit',
-        value: f.scheduleEIC?.credit(),
-        allowed: f.scheduleEIC?.allowed() ?? false
+        value: f.scheduleEIC.credit(),
+        allowed: f.scheduleEIC.allowed() ?? false
       },
       {
         name: 'Children and Other Dependents',
-        value: f.childTaxCreditWorksheet?.credit(),
-        allowed: f.childTaxCreditWorksheet?.isAllowed() ?? false
+        value: f.childTaxCreditWorksheet.credit(),
+        allowed: f.childTaxCreditWorksheet.isAllowed() ?? false
       }
     ],
     worksheets: [],
@@ -60,8 +60,8 @@ export const SummaryCreatorFor2021: SummaryCreator<F1040For2021> = {
     credits: [
       {
         name: 'Earned income credit',
-        value: f.scheduleEIC?.credit(),
-        allowed: f.scheduleEIC?.allowed() ?? false
+        value: f.scheduleEIC.credit(),
+        allowed: f.scheduleEIC.allowed() ?? false
       }
     ],
     worksheets: [

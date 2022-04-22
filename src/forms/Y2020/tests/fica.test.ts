@@ -19,12 +19,12 @@ jest.setTimeout(10000)
 
 function hasSSRefund(f1040: F1040): boolean {
   const s3 = f1040.schedule3
-  const l10 = s3?.l10()
+  const l10 = s3.l10()
   return l10 !== undefined && l10 > 0
 }
 
 function hasAdditionalMedicareTax(f1040: F1040): boolean {
-  const medicareTax = f1040.f8959?.l18()
+  const medicareTax = f1040.f8959.l18()
   return medicareTax !== undefined && medicareTax > 0
 }
 
@@ -74,7 +74,7 @@ describe('fica', () => {
     await testKit.with1040Assert((forms): Promise<void> => {
       const f1040 = commonTests.findF1040OrFail(forms)
       if (hasSSRefund(f1040)) {
-        const s3l10 = f1040.schedule3?.l10()
+        const s3l10 = f1040.schedule3.l10()
         expect(displayRound(s3l10)).not.toBeUndefined()
         expect(s3l10).toBeGreaterThan(0)
 
@@ -211,7 +211,7 @@ describe('fica', () => {
         expect(incomeOverThreshold).toBeGreaterThan(0)
 
         // Adds the right amount of additional tax
-        const s2l8 = f1040.f8959?.l18()
+        const s2l8 = f1040.f8959.l18()
         expect(s2l8).not.toBeUndefined()
         expect(displayRound(s2l8)).toEqual(
           displayRound(incomeOverThreshold * fica.additionalMedicareTaxRate)

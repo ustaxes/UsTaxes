@@ -16,14 +16,14 @@ export default class Schedule8812 extends F1040Attachment {
 
   // This can be calculated with either pub 972 or the child tax credit worksheet, but for now we're only supporting the worksheet
   // TODO: Add pub 972 support
-  l1 = (): number => this.f1040.childTaxCreditWorksheet?.l8() ?? 0
+  l1 = (): number => this.f1040.childTaxCreditWorksheet.l8() ?? 0
 
   l2 = (): number => this.f1040.l19() ?? 0
 
   l3 = (): number => Math.max(0, this.l1() - this.l2())
 
   l4 = (): number | undefined =>
-    (this.f1040.childTaxCreditWorksheet?.numberQualifyingChildren() ?? 0) * 1400
+    (this.f1040.childTaxCreditWorksheet.numberQualifyingChildren() ?? 0) * 1400
 
   l5 = (): number => Math.min(this.l3(), this.l4() ?? 0)
 
@@ -35,7 +35,7 @@ export default class Schedule8812 extends F1040Attachment {
   // and add combat pay in as well
   // So for now, it's just line 1 or EIC step 5 (line 9)
   // TODO: Add other earned income definitions
-  l6 = (): number => this.f1040.scheduleEIC?.earnedIncome() ?? this.f1040.l1()
+  l6 = (): number => this.f1040.scheduleEIC.earnedIncome() ?? this.f1040.l1()
 
   l7checkBox = (): boolean => this.l6() > 2500
 
@@ -66,9 +66,9 @@ export default class Schedule8812 extends F1040Attachment {
   l10 = (): number | undefined =>
     this.l9checkBox()
       ? sumFields([
-          this.f1040.schedule1?.l14(),
-          this.f1040.schedule2?.l5(),
-          this.f1040.schedule2?.l8()
+          this.f1040.schedule1.l14(),
+          this.f1040.schedule2.l5(),
+          this.f1040.schedule2.l8()
         ])
       : undefined
 
@@ -78,7 +78,7 @@ export default class Schedule8812 extends F1040Attachment {
   // TODO: Add 1040-NR
   l12 = (): number | undefined =>
     this.l9checkBox()
-      ? sumFields([this.f1040.l27(), this.f1040.schedule3?.l10()])
+      ? sumFields([this.f1040.l27(), this.f1040.schedule3.l10()])
       : undefined
 
   l13 = (): number | undefined =>
@@ -98,7 +98,7 @@ export default class Schedule8812 extends F1040Attachment {
     this.l1(),
     this.l2(),
     this.l3(),
-    this.f1040.childTaxCreditWorksheet?.numberQualifyingChildren(),
+    this.f1040.childTaxCreditWorksheet.numberQualifyingChildren(),
     this.l4(),
     this.l5(),
     this.l6(),

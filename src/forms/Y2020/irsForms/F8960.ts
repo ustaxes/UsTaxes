@@ -54,14 +54,14 @@ export default class F8960 extends F1040Attachment {
       representing the amount that you would properly include on Schedule 1 (Form 1040), line 5, 
       if you were filing Form 1040 or 1040‐SR and including income and loss only for your period of U.S. residency.
   */
-  l4a = (): number | undefined => this.f1040.schedule1?.l5()
+  l4a = (): number | undefined => this.f1040.schedule1.l5()
 
   l4b = (): number | undefined => undefined
 
   l4c = (): number => sumFields([this.l4a(), this.l4b()])
 
   // Line 5a-5d: Gains and Losses on the Disassets of Property
-  l5a = (): number => sumFields([this.f1040.l7(), this.f1040.schedule1?.l4()])
+  l5a = (): number => sumFields([this.f1040.l7(), this.f1040.schedule1.l4()])
   // TODO: implement line 5b and 5c from worksheet.
   l5b = (): number | undefined => undefined
   l5c = (): number | undefined => undefined
