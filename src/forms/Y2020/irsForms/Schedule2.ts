@@ -35,7 +35,7 @@ export default class Schedule2 extends F1040Attachment {
     ) {
       this.otherIncomeStrings.add('HSA')
     }
-    if (this.f1040.f8889.l21() !== undefined && this.f1040.f8889.l21() > 0) {
+    if (this.f1040.f8889.l21() > 0) {
       this.otherIncomeStrings.add('HDHP')
     }
 
@@ -81,8 +81,8 @@ export default class Schedule2 extends F1040Attachment {
     this.l6(),
     this.l7a(),
     this.l7b(),
-    this.f1040.f8959 !== undefined, // Form 8959 checkbox
-    this.f1040.f8960 !== undefined, // Form 8960 checkbox
+    this.f1040.f8959.isNeeded(), // Form 8959 checkbox
+    this.f1040.f8960.isNeeded(), // Form 8960 checkbox
     undefined, //others checkbox
     Array.from(this.otherIncomeStrings).join(' '), // others textbox
     this.l8(),

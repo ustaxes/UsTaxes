@@ -20,8 +20,7 @@ export class IL1040scheduleileeic extends Form {
     this.f1040 = f1040
     this.formName = 'il-1040-schedule-il-e-eic'
     this.state = 'IL'
-    this.qualifyingDependents =
-      this.f1040.scheduleEIC.qualifyingDependents() ?? []
+    this.qualifyingDependents = this.f1040.scheduleEIC.qualifyingDependents()
   }
 
   get primary(): PrimaryPerson | undefined {

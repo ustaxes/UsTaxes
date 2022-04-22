@@ -17,16 +17,10 @@ beforeAll(() => {
 
 jest.setTimeout(10000)
 
-function hasSSRefund(f1040: F1040): boolean {
-  const s3 = f1040.schedule3
-  const l10 = s3.l10()
-  return l10 !== undefined && l10 > 0
-}
+const hasSSRefund = (f1040: F1040): boolean => f1040.schedule3.l10() > 0
 
-function hasAdditionalMedicareTax(f1040: F1040): boolean {
-  const medicareTax = f1040.f8959.l18()
-  return medicareTax !== undefined && medicareTax > 0
-}
+const hasAdditionalMedicareTax = (f1040: F1040): boolean =>
+  f1040.f8959.l18() > 0
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 type Constructor<T> = new (...args: any[]) => T

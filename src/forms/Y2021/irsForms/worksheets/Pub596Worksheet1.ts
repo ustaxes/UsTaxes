@@ -48,7 +48,7 @@ export default class Pub596Worksheet1 {
 
   l11 = (): number | undefined =>
     sumFields([
-      ifPositive(this.f1040.scheduleE.l26() ?? 0),
+      ifPositive(this.f1040.scheduleE.l26()),
       this.f1040.scheduleE.l29ah(),
       this.f1040.scheduleE.l34ad(),
       this.f1040.scheduleE.l40()
@@ -58,7 +58,7 @@ export default class Pub596Worksheet1 {
   l12 = (): number | undefined =>
     sumFields(
       [
-        this.f1040.scheduleE.l26() ?? 0,
+        this.f1040.scheduleE.l26(),
         this.f1040.scheduleE.l29bg() ?? 0,
         this.f1040.scheduleE.l34bc() ?? 0,
         this.f1040.scheduleE.l40() ?? 0

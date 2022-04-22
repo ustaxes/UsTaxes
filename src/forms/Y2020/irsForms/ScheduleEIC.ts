@@ -109,7 +109,7 @@ export default class ScheduleEIC extends F1040Attachment {
   f4797AllowsEIC = (): boolean => !precludesEIC(checks4797)(this.f4797)
 
   // Todo, instruction 2.4.1
-  filingScheduleE = (): boolean => this.f1040.scheduleE !== undefined
+  filingScheduleE = (): boolean => this.f1040.scheduleE.isNeeded()
 
   //
   // TODO: Not checking personal property income 2.4.2

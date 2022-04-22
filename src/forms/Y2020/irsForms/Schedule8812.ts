@@ -23,7 +23,7 @@ export default class Schedule8812 extends F1040Attachment {
   l3 = (): number => Math.max(0, this.l1() - this.l2())
 
   l4 = (): number | undefined =>
-    (this.f1040.childTaxCreditWorksheet.numberQualifyingChildren() ?? 0) * 1400
+    this.f1040.childTaxCreditWorksheet.numberQualifyingChildren() * 1400
 
   l5 = (): number => Math.min(this.l3(), this.l4() ?? 0)
 
@@ -35,7 +35,10 @@ export default class Schedule8812 extends F1040Attachment {
   // and add combat pay in as well
   // So for now, it's just line 1 or EIC step 5 (line 9)
   // TODO: Add other earned income definitions
-  l6 = (): number => this.f1040.scheduleEIC.earnedIncome() ?? this.f1040.l1()
+  l6 = (): number =>
+    this.f1040.scheduleEIC.isNeeded()
+      ? this.f1040.scheduleEIC.earnedIncome()
+      : this.f1040.l1()
 
   l7checkBox = (): boolean => this.l6() > 2500
 
