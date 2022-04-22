@@ -3,15 +3,12 @@ import { FormTag } from 'ustaxes/core/irsForms/Form'
 import ScheduleE from './ScheduleE'
 import { sumFields } from 'ustaxes/core/irsForms/util'
 import F1040 from './F1040'
-import F8889 from './F8889'
 import { Field } from 'ustaxes/core/pdfFiller'
 
 export default class Schedule1 extends F1040Attachment {
   tag: FormTag = 'f1040s1'
   sequenceIndex = 1
   scheduleE?: ScheduleE
-  f8889?: F8889
-  f8889Spouse?: F8889
   otherIncomeStrings: Set<string>
 
   constructor(f1040: F1040) {
@@ -34,18 +31,16 @@ export default class Schedule1 extends F1040Attachment {
   l7 = (): number | undefined => undefined
   l8 = (): number => {
     if (
-      this.f8889?.l16() !== undefined ||
-      this.f8889?.l20() !== undefined ||
-      this.f8889Spouse?.l16() !== undefined ||
-      this.f8889Spouse?.l20() !== undefined
+      this.f1040.f8889.isNeeded() ||
+      (this.f1040.f8889Spouse?.isNeeded() ?? false)
     ) {
       this.otherIncomeStrings.add('HSA')
     }
     return sumFields([
-      this.f8889?.l16(),
-      this.f8889?.l20(),
-      this.f8889Spouse?.l16(),
-      this.f8889Spouse?.l20()
+      this.f1040.f8889.l16(),
+      this.f1040.f8889.l20(),
+      this.f1040.f8889Spouse?.l16(),
+      this.f1040.f8889Spouse?.l20()
     ])
   }
   l9 = (): number =>
@@ -63,7 +58,7 @@ export default class Schedule1 extends F1040Attachment {
   l10 = (): number | undefined => undefined
   l11 = (): number | undefined => undefined
   l12 = (): number | undefined =>
-    sumFields([this.f8889?.l13(), this.f1040.f8889Spouse?.l13()])
+    sumFields([this.f1040.f8889.l13(), this.f1040.f8889Spouse?.l13()])
   l13 = (): number | undefined => undefined
   l14 = (): number | undefined => undefined
   l15 = (): number | undefined => undefined
