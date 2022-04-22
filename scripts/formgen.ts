@@ -72,16 +72,17 @@ const buildSource = (doc: PDFDocument, formName: string): string => {
 import F1040 from '../../irsForms/F1040'
 import { Field } from '../../pdfFiller'
 import { displayNumber, sumFields } from '../../irsForms/util'
-import { AccountType, FilingStatus, Information, State } from '../../redux/data'
+import { AccountType, FilingStatus, State } from '../../redux/data'
+import { ValidatedInformation } from 'ustaxes/forms/F1040Base'
 
 export class ${className} extends Form {
-  info: Information
+  info: ValidatedInformation
   f1040: F1040
   formName: string
   state: State
 
-  constructor(info: Information, f1040: F1040) {
-    this.info = info
+  constructor(f1040: F1040) {
+    this.info = f1040.info
     this.f1040 = f1040
     this.formName = '${formName}'
     this.state = 'AK' // <-- Fill here
@@ -100,8 +101,8 @@ ${functionNames
   ])
 }
 
-const make${className} = (info: Information, f1040: F1040): ${className} =>
-  new ${className}(info, f1040)
+const make${className} = (f1040: F1040): ${className} =>
+  new ${className}(f1040)
 
 export default make${className}
 `

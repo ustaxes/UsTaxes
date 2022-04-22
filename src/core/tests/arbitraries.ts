@@ -1,16 +1,14 @@
 import * as fc from 'fast-check'
 import { Arbitrary } from 'fast-check'
 import locationPostalCodes from '../data/locationPostalCodes'
-import {
-  QuestionTagName,
-  questionTagNames,
-  // IraPlanName,
-  // iraPlanNames,
-  Responses
-} from '../data'
+import { QuestionTagName, questionTagNames, Responses } from '../data'
 import * as types from '../data'
 import * as util from '../util'
 import _ from 'lodash'
+import {
+  ValidatedInformation,
+  ValidatedTaxpayer
+} from 'ustaxes/forms/F1040Base'
 
 const lower: Arbitrary<string> = fc
   .integer({ min: 0x61, max: 0x7a })
@@ -412,11 +410,11 @@ const questionTagArbs = {
 }
 
 export const questions: Arbitrary<Responses> = fc
-  .set(questionTag)
+  .uniqueArray(questionTag, { comparator: 'IsStrictlyEqual' })
   .chain((tags) =>
     fc
       .tuple(...tags.map((t) => questionTagArbs[t].map((v) => [t, v])))
-      .map((kvs) => Object.fromEntries(kvs))
+      .map((kvs) => Object.fromEntries(kvs) as Responses)
   )
 
 // const iraPlan: Arbitrary<IraPlanName> = fc.constantFrom(...iraPlanNames)
@@ -496,7 +494,7 @@ export class Arbitraries {
         qualifyingInfo
       }))
 
-  taxPayer = (): Arbitrary<types.TaxPayer> =>
+  taxPayer = (): Arbitrary<ValidatedTaxpayer> =>
     fc
       .tuple(
         filingStatus,
@@ -635,7 +633,15 @@ export class Arbitraries {
           repayments
         })
       )
-  information = (): Arbitrary<types.Information> =>
+
+  credit = (): Arbitrary<types.Credit> =>
+    fc.tuple(fc.nat({ max: 100000 }).map((x) => x / 100)).map(([amount]) => ({
+      recipient: types.PersonRole.PRIMARY,
+      amount,
+      type: types.CreditType.AdvanceChildTaxCredit
+    }))
+
+  information = (): Arbitrary<ValidatedInformation> =>
     fc
       .tuple(
         fc.array(f1099),
@@ -651,6 +657,7 @@ export class Arbitraries {
         questions,
         state,
         fc.array(this.healthSavingsAccount()),
+        fc.array(this.credit(), { maxLength: 2 }),
         fc.array(this.ira())
       )
       .map(
@@ -668,6 +675,7 @@ export class Arbitraries {
           questions,
           state,
           healthSavingsAccounts,
+          credits,
           individualRetirementArrangements
         ]) => ({
           f1099s,
@@ -683,6 +691,7 @@ export class Arbitraries {
           questions,
           stateResidencies: [{ state }],
           healthSavingsAccounts,
+          credits,
           individualRetirementArrangements
         })
       )

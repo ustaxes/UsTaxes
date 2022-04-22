@@ -1,7 +1,7 @@
-import F1040 from './F1040'
-import TaxPayer from 'ustaxes/core/data/TaxPayer'
-import Form, { FormTag } from 'ustaxes/core/irsForms/Form'
+import F1040Attachment from './F1040Attachment'
+import { FormTag } from 'ustaxes/core/irsForms/Form'
 import { FilingStatus } from 'ustaxes/core/data'
+import { Field } from 'ustaxes/core/pdfFiller'
 
 export function getF8995PhaseOutIncome(filingStatus: FilingStatus): number {
   let formAMinAmount = 164900
@@ -20,15 +20,9 @@ function ifNumber(
   return num !== undefined ? f(num) : undefined
 }
 
-export default class F8995 extends Form {
+export default class F8995 extends F1040Attachment {
   tag: FormTag = 'f8995'
-  f1040: F1040
   sequenceIndex = 999
-
-  constructor(f1040: F1040) {
-    super()
-    this.f1040 = f1040
-  }
 
   applicableK1s = () =>
     this.f1040.info.scheduleK1Form1065s.filter((k1) => k1.section199AQBI > 0)
@@ -58,8 +52,7 @@ export default class F8995 extends Form {
   // TODO: REIT
   l6 = (): number => 0
   l7 = (): number => 0
-  l8 = (): number | undefined =>
-    ifNumber(this.l6(), (num) => num + (this.l7() ?? 0))
+  l8 = (): number | undefined => ifNumber(this.l6(), (num) => num + this.l7())
   l9 = (): number | undefined => ifNumber(this.l8(), (num) => num * 0.2)
 
   l10 = (): number | undefined =>
@@ -74,45 +67,39 @@ export default class F8995 extends Form {
 
   deductions = (): number => this.l15()
 
-  fields = (): Array<string | number | boolean | undefined> => {
-    const tp = new TaxPayer(this.f1040.info.taxPayer)
-
-    const result = [
-      tp.namesString(),
-      tp.tp.primaryPerson?.ssid ?? '',
-      this.applicableK1s()[0]?.partnershipName,
-      this.applicableK1s()[0]?.partnershipEin,
-      this.applicableK1s()[0]?.section199AQBI,
-      this.applicableK1s()[1]?.partnershipName,
-      this.applicableK1s()[1]?.partnershipEin,
-      this.applicableK1s()[1]?.section199AQBI,
-      this.applicableK1s()[2]?.partnershipName,
-      this.applicableK1s()[2]?.partnershipEin,
-      this.applicableK1s()[2]?.section199AQBI,
-      this.applicableK1s()[3]?.partnershipName,
-      this.applicableK1s()[3]?.partnershipEin,
-      this.applicableK1s()[3]?.section199AQBI,
-      this.applicableK1s()[4]?.partnershipName,
-      this.applicableK1s()[4]?.partnershipEin,
-      this.applicableK1s()[4]?.section199AQBI,
-      this.l2(),
-      this.l3(),
-      this.l4(),
-      this.l5(),
-      this.l6(),
-      this.l7(),
-      this.l8(),
-      this.l9(),
-      this.l10(),
-      this.l11(),
-      this.l12(),
-      this.l13(),
-      this.l14(),
-      this.l15(),
-      this.l16(),
-      this.l17()
-    ]
-
-    return result
-  }
+  fields = (): Field[] => [
+    this.f1040.namesString(),
+    this.f1040.info.taxPayer.primaryPerson.ssid,
+    this.applicableK1s()[0]?.partnershipName,
+    this.applicableK1s()[0]?.partnershipEin,
+    this.applicableK1s()[0]?.section199AQBI,
+    this.applicableK1s()[1]?.partnershipName,
+    this.applicableK1s()[1]?.partnershipEin,
+    this.applicableK1s()[1]?.section199AQBI,
+    this.applicableK1s()[2]?.partnershipName,
+    this.applicableK1s()[2]?.partnershipEin,
+    this.applicableK1s()[2]?.section199AQBI,
+    this.applicableK1s()[3]?.partnershipName,
+    this.applicableK1s()[3]?.partnershipEin,
+    this.applicableK1s()[3]?.section199AQBI,
+    this.applicableK1s()[4]?.partnershipName,
+    this.applicableK1s()[4]?.partnershipEin,
+    this.applicableK1s()[4]?.section199AQBI,
+    this.l2(),
+    this.l3(),
+    this.l4(),
+    this.l5(),
+    this.l6(),
+    this.l7(),
+    this.l8(),
+    this.l9(),
+    this.l10(),
+    this.l11(),
+    this.l12(),
+    this.l13(),
+    this.l14(),
+    this.l15(),
+    this.l16(),
+    this.l17()
+  ]
 }

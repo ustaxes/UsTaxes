@@ -30,6 +30,7 @@ const testW2sSpouse: IncomeW2 = {
 }
 
 const testInformationState: Information = {
+  ...blankState,
   f1099s: [
     {
       payer: 'payer-name',
@@ -149,7 +150,7 @@ describe('F1099Info', () => {
       )
     })
 
-    it('Form Type', async () => {
+    it('Form Type', () => {
       const { selectOption, buttonClick } = setup()
 
       buttonClick('Add')
@@ -157,7 +158,7 @@ describe('F1099Info', () => {
       buttonClick('Save')
     })
 
-    it('Recipient', async () => {
+    it('Recipient', () => {
       const { selectOption, buttonClick } = setup()
 
       buttonClick('Add')

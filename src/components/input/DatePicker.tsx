@@ -10,7 +10,9 @@ import {
 import DateFnsUtils from '@date-io/date-fns'
 import { DatePickerProps } from './types'
 
-export function DatePicker(props: DatePickerProps): ReactElement {
+export function DatePicker<TFormValues>(
+  props: DatePickerProps<TFormValues>
+): ReactElement {
   const {
     label,
     name,
@@ -21,7 +23,7 @@ export function DatePicker(props: DatePickerProps): ReactElement {
   } = props
 
   const classes = useStyles()
-  const { control } = useFormContext()
+  const { control } = useFormContext<TFormValues>()
 
   return (
     <ConditionallyWrap
@@ -34,7 +36,7 @@ export function DatePicker(props: DatePickerProps): ReactElement {
     >
       <Controller
         name={name}
-        render={({ field: { value = null, onChange } }) => (
+        render={({ field: { value, onChange } }) => (
           <div className={classes.root}>
             <FormControl component="fieldset">
               <FormLabel>{label}</FormLabel>
@@ -42,7 +44,7 @@ export function DatePicker(props: DatePickerProps): ReactElement {
                 <MuiDatePicker
                   minDate={minDate}
                   maxDate={maxDate}
-                  value={value}
+                  value={(value as string | undefined) ?? ''}
                   onChange={onChange}
                   format="MM/dd/yyyy"
                   emptyLabel="mm/dd/yyyy"

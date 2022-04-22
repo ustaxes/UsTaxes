@@ -9,8 +9,11 @@ import {
 import { CURRENT_YEAR, healthSavingsAccounts } from '../data/federal'
 import F8889, { needsF8889 } from '../irsForms/F8889'
 import { cloneDeep } from 'lodash'
+import F1040 from '../irsForms/F1040'
+import { blankState } from 'ustaxes/redux/reducer'
 
 const baseInformation: Information = {
+  ...blankState,
   f1099s: [
     {
       payer: 'payer-name',
@@ -70,6 +73,9 @@ const baseInformation: Information = {
 
 describe('Health Savings Accounts', () => {
   it('shold not need form 8889 if there are no health savings accounts', () => {
+    if (baseInformation.taxPayer.primaryPerson === undefined) {
+      throw new Error('baseInformation.taxPayer.primaryPerson is undefined')
+    }
     expect(
       needsF8889(baseInformation, baseInformation.taxPayer.primaryPerson)
     ).toEqual(false)
@@ -90,7 +96,12 @@ describe('Health Savings Accounts', () => {
       }
     ]
 
-    const f8889 = new F8889(information, information.taxPayer.primaryPerson)
+    const f1040 = new F1040(information)
+    if (information.taxPayer.primaryPerson === undefined) {
+      throw new Error('information.taxPayer.primaryPerson is undefined')
+    }
+
+    const f8889 = new F8889(f1040, information.taxPayer.primaryPerson)
     expect(f8889.fullYearHsa()).toEqual(true)
     expect(f8889.lastMonthCoverage()).toEqual('self-only')
     expect(f8889.contributionLimit()).toEqual(
@@ -124,7 +135,11 @@ describe('Health Savings Accounts', () => {
       }
     ]
 
-    const f8889 = new F8889(information, information.taxPayer.primaryPerson)
+    const f1040 = new F1040(information)
+    if (information.taxPayer.primaryPerson === undefined) {
+      throw new Error('information.taxPayer.primaryPerson is undefined')
+    }
+    const f8889 = new F8889(f1040, information.taxPayer.primaryPerson)
     expect(f8889.fullYearHsa()).toEqual(true)
     expect(f8889.lastMonthCoverage()).toEqual('family')
     expect(f8889.contributionLimit()).toEqual(
@@ -148,7 +163,11 @@ describe('Health Savings Accounts', () => {
       }
     ]
 
-    const f8889 = new F8889(information, information.taxPayer.primaryPerson)
+    const f1040 = new F1040(information)
+    if (information.taxPayer.primaryPerson === undefined) {
+      throw new Error('information.taxPayer.primaryPerson is undefined')
+    }
+    const f8889 = new F8889(f1040, information.taxPayer.primaryPerson)
     expect(f8889.fullYearHsa()).toEqual(false)
     expect(f8889.contributionLimit()).toEqual(
       Math.round((healthSavingsAccounts.contributionLimit['family'] * 6) / 12)
@@ -181,7 +200,11 @@ describe('Health Savings Accounts', () => {
       }
     ]
 
-    const f8889 = new F8889(information, information.taxPayer.primaryPerson)
+    const f1040 = new F1040(information)
+    if (information.taxPayer.primaryPerson === undefined) {
+      throw new Error('information.taxPayer.primaryPerson is undefined')
+    }
+    const f8889 = new F8889(f1040, information.taxPayer.primaryPerson)
     expect(f8889.fullYearHsa()).toEqual(false)
     expect(f8889.contributionLimit()).toEqual(
       Math.round(
@@ -217,7 +240,11 @@ describe('Health Savings Accounts', () => {
       }
     ]
 
-    const f8889 = new F8889(information, information.taxPayer.primaryPerson)
+    const f1040 = new F1040(information)
+    if (information.taxPayer.primaryPerson === undefined) {
+      throw new Error('information.taxPayer.primaryPerson is undefined')
+    }
+    const f8889 = new F8889(f1040, information.taxPayer.primaryPerson)
     expect(f8889.fullYearHsa()).toEqual(false)
     expect(f8889.contributionLimit()).toEqual(
       Math.round(
@@ -252,9 +279,51 @@ describe('Health Savings Accounts', () => {
         qualifiedDistributions: 500
       }
     ]
-
-    const f8889 = new F8889(information, information.taxPayer.primaryPerson)
+    const f1040 = new F1040(information)
+    if (information.taxPayer.primaryPerson === undefined) {
+      throw new Error('No primary person')
+    }
+    const f8889 = new F8889(f1040, information.taxPayer.primaryPerson)
     expect(f8889.splitFamilyContributionLimit()).toEqual(3550)
     expect(f8889.calculatedCoverageType).toEqual('self-only')
+  })
+
+  it('Should apply employer contributions to only the form belonging to the right person', () => {
+    const information = cloneDeep(baseInformation)
+    information.w2s[0].box12 = { W: 4000 } // The w2 belongs to the spouse
+    information.healthSavingsAccounts = [
+      {
+        coverageType: 'self-only',
+        contributions: 3550,
+        personRole: PersonRole.PRIMARY,
+        startDate: new Date(CURRENT_YEAR, 0, 1).toISOString(),
+        endDate: new Date(CURRENT_YEAR, 11, 31).toISOString(),
+        label: 'test',
+        totalDistributions: 500,
+        qualifiedDistributions: 500
+      },
+      {
+        coverageType: 'self-only',
+        contributions: 3550,
+        personRole: PersonRole.SPOUSE,
+        startDate: new Date(CURRENT_YEAR, 0, 1).toISOString(),
+        endDate: new Date(CURRENT_YEAR, 11, 31).toISOString(),
+        label: 'test',
+        totalDistributions: 500,
+        qualifiedDistributions: 500
+      }
+    ]
+    const f1040 = new F1040(information)
+    if (information.taxPayer.primaryPerson === undefined) {
+      throw new Error('No primary person')
+    }
+
+    const f8889 = new F8889(f1040, information.taxPayer.primaryPerson)
+    expect(f8889.l9()).toEqual(0)
+
+    if (information.taxPayer.spouse !== undefined) {
+      const f8889spouse = new F8889(f1040, information.taxPayer.spouse)
+      expect(f8889spouse.l9()).toEqual(4000)
+    }
   })
 })

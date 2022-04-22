@@ -1,8 +1,8 @@
 import { AnyAction, Reducer } from 'redux'
 import { download } from '.'
-import { migrateEachYear } from '../migration'
 import {
   deserializeTransform,
+  migrate,
   serializeTransform,
   USTSerializedState,
   USTState
@@ -32,7 +32,8 @@ const fsReducer = <S extends USTState, A extends AnyAction>(
         // so we can safely cast it to a FSRecover<USTSerializedState>.
         return {
           ...newState,
-          ...migrateEachYear(
+          ...migrate(
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
             deserializeTransform((action as FSRecover<USTSerializedState>).data)
           )
         }

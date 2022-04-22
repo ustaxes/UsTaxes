@@ -7,33 +7,29 @@ export class SpouseMethods extends PersonMethods {
   addButton = (): Promise<HTMLButtonElement> =>
     within(this.dom()).findByRole('button', {
       name: /Add/
-    }) as Promise<HTMLButtonElement>
+    })
 
   q = {
     editButton: (): HTMLButtonElement | null =>
-      within(this.dom()).queryByLabelText('edit') as HTMLButtonElement | null
+      within(this.dom()).queryByLabelText('edit')
   }
 
   editButton = async (): Promise<HTMLButtonElement> =>
-    (await within(this.dom()).findByLabelText('edit')) as HTMLButtonElement
+    await within(this.dom()).findByLabelText('edit')
 }
 
 export class DependentMethods extends PersonMethods {
   addButton = (): Promise<HTMLButtonElement> =>
     within(this.dom()).findByRole('button', {
       name: /Add/
-    }) as Promise<HTMLButtonElement>
+    })
 
   editButtons = (): Promise<HTMLButtonElement[]> =>
-    within(this.dom()).findAllByLabelText('edit') as Promise<
-      HTMLButtonElement[]
-    >
+    within(this.dom()).findAllByLabelText('edit')
 
   q = {
     isStudent: (): HTMLInputElement | null =>
-      within(this.dom()).queryByText(
-        'Is this person a full-time student?'
-      ) as HTMLInputElement | null
+      within(this.dom()).queryByText('Is this person a full-time student?')
   }
 }
 
@@ -47,7 +43,7 @@ export class FilingStatusMethods extends DomMethods {
       })
 
   dropdown = (): HTMLSelectElement | null =>
-    within(this.dom()).queryByRole('combobox') as HTMLSelectElement | null
+    within(this.dom()).queryByRole('combobox')
 
   selected = (): FilingStatus | undefined =>
     this.dropdown()?.value as FilingStatus | undefined

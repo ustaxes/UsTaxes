@@ -1,13 +1,15 @@
-import Ajv, { DefinedError, ValidateFunction } from 'ajv'
-import * as schema from './validation.json'
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+
+import { DefinedError, ValidateFunction } from 'ajv'
 import log from '../log'
-import * as types from './index'
+import * as fns from './validate-fns'
+import * as types from 'ustaxes/core/data'
 
 // We will simply throw a runtime error if the data does not
 // validate against the schema.definitions.
 export const checkType = <A>(data: A, validate: ValidateFunction<A>): A => {
   validate(data)
-  if (validate.errors !== null) {
+  if ((validate.errors ?? undefined) !== undefined) {
     // Taken from doc example: The type cast is needed to allow user-defined keywords and errors
     // You can extend this type to include your error types as needed.
 
@@ -20,93 +22,69 @@ export const checkType = <A>(data: A, validate: ValidateFunction<A>): A => {
     log.error(validate.errors)
     log.error(data)
 
-    throw new Error(
-      'Validation Failed: ' +
-        validate.errors
-          ?.map((e) => `${e.instancePath}: ${e.message}`)
-          .join('\n')
-    )
+    const errorMessage =
+      validate.errors
+        ?.map((e) => `${e.instancePath}: ${e.message ?? ''}`)
+        .join('\n') ?? 'Unknown error'
+
+    throw new Error(`Validation Failed: ${errorMessage}`)
   }
 
   return data
 }
 
-// See this doc for a complete list of available options:
-// ajv.js.org/options.html#option-defaults
-const ajv = new Ajv({
-  allowDate: true,
-  allowUnionTypes: true
-}).addSchema(schema)
+export const index = fns.Index as ValidateFunction<number>
+export const personRole = fns.PersonRole as ValidateFunction<types.PersonRole>
+export const contactInfo =
+  fns.ContactInfo as ValidateFunction<types.ContactInfo>
+export const address = fns.Address as ValidateFunction<types.Address>
+export const accountType =
+  fns.AccountType as ValidateFunction<types.AccountType>
+export const employer = fns.Employer as ValidateFunction<types.Employer>
+export const filingStatus =
+  fns.FilingStatus as ValidateFunction<types.FilingStatus>
+export const primaryPerson =
+  fns.PrimaryPerson as ValidateFunction<types.PrimaryPerson>
+export const spouse = fns.Spouse as ValidateFunction<types.Spouse>
+export const person = fns.Person as ValidateFunction<types.Person>
+export const dependent = fns.Dependent as ValidateFunction<types.Dependent>
+export const f1099IntData =
+  fns.F1099IntData as ValidateFunction<types.F1099IntData>
+export const f1099BData = fns.F1099BData as ValidateFunction<types.F1099BData>
+export const income1099Int =
+  fns.Income1099Int as ValidateFunction<types.Income1099Int>
+export const income1099B =
+  fns.Income1099B as ValidateFunction<types.Income1099B>
+export const supported1099 =
+  fns.Supported1099 as ValidateFunction<types.Supported1099>
+export const incomeW2 = fns.IncomeW2 as ValidateFunction<types.IncomeW2>
+export const estimatedTaxPayments =
+  fns.EstimatedTaxPayments as ValidateFunction<types.EstimatedTaxPayments>
+export const refund = fns.Refund as ValidateFunction<types.Refund>
+export const taxPayer = fns.TaxPayer as ValidateFunction<types.TaxPayer>
+export const information =
+  fns.Information as ValidateFunction<types.Information>
+export const property = fns.Property as ValidateFunction<types.Property>
+export const propertyType =
+  fns.PropertyType as ValidateFunction<types.PropertyType>
+export const f1098e = fns.F1098e as ValidateFunction<types.F1098e>
+export const itemizedDeductions =
+  fns.ItemizedDeductions as ValidateFunction<types.ItemizedDeductions>
+export const responses = fns.Responses as ValidateFunction<types.Responses>
+export const stateResidency =
+  fns.StateResidency as ValidateFunction<types.StateResidency>
+export const healthSavingsAccount =
+  fns.HealthSavingsAccount as ValidateFunction<types.HealthSavingsAccount>
+export const ira = fns.Ira as ValidateFunction<types.Ira>
+export const assetType = fns.AssetType as ValidateFunction<types.AssetType>
+export const assetString =
+  fns.AssetString as ValidateFunction<types.AssetString>
+export const taxYear = fns.TaxYear as ValidateFunction<types.TaxYear>
+export const credit = fns.Credit as ValidateFunction<types.Credit>
 
-// Doing this seems to be necessary so that recursive self
-// links (ref fields) are created properly. Without it we get
-// undefined is not a function errors as refs are not present
-export const personRole = ajv.getSchema<types.PersonRole>(
-  '#/definitions/PersonRole'
-)
-export const contactInfo = ajv.getSchema<types.ContactInfo>(
-  '#/definitions/ContactInfo'
-)
-export const address = ajv.getSchema<types.Address>('#/definitions/Address')
-export const accountType = ajv.getSchema<types.AccountType>(
-  '#/definitions/AccountType'
-)
-export const employer = ajv.getSchema<types.Employer>('#/definitions/Employer')
-export const filingStatus = ajv.getSchema<types.FilingStatus>(
-  '#/definitions/FilingStatus'
-)
-export const primaryPerson = ajv.getSchema<types.PrimaryPerson>(
-  '#/definitions/PrimaryPerson'
-)
-export const spouse = ajv.getSchema<types.Spouse>('#/definitions/Spouse')
-export const person = ajv.getSchema<types.Person>('#/definitions/Person')
-export const dependent = ajv.getSchema<types.Dependent>(
-  '#/definitions/Dependent'
-)
-export const intData = ajv.getSchema<types.F1099IntData>(
-  '#/definitions/F1099IntData'
-)
-export const bData = ajv.getSchema<types.F1099BData>('#/definitions/F1099BData')
-export const income1099Int = ajv.getSchema<types.Income1099Int>(
-  '#/definitions/Income1099Int'
-)
-export const income1099B = ajv.getSchema<types.Income1099B>(
-  '#/definitions/Income1099B'
-)
-export const supported1099 = ajv.getSchema<types.Supported1099>(
-  '#/definitions/Supported1099'
-)
-export const incomeW2 = ajv.getSchema<types.IncomeW2>('#/definitions/IncomeW2')
-export const estimatedTaxPayments = ajv.getSchema<types.EstimatedTaxPayments>(
-  '#/definitions/EstimatedTaxPayments'
-)
-export const refund = ajv.getSchema<types.Refund>('#/definitions/Refund')
-export const taxPayer = ajv.getSchema<types.TaxPayer>('#/definitions/TaxPayer')
-export const information = ajv.getSchema<types.Information>(
-  '#/definitions/Information'
-)
-export const property = ajv.getSchema<types.Property>('#/definitions/Property')
-export const propertyType = ajv.getSchema<types.PropertyType>(
-  '#/definitions/PropertyType'
-)
-export const f1098e = ajv.getSchema<types.F1098e>('#/definitions/F1098e')
-export const itemizedDeductions = ajv.getSchema<types.ItemizedDeductions>(
-  '#/definitions/ItemizedDeductions'
-)
-export const responses = ajv.getSchema<types.Responses>(
-  '#/definitions/Responses'
-)
-export const stateResidency = ajv.getSchema<types.StateResidency>(
-  '#/definitions/StateResidency'
-)
-
-export const healthSavingsAccounts = ajv.getSchema<types.HealthSavingsAccount>(
-  '#/definitions/HealthSavingsAccount'
-)
-
-export const individualRetirementArrangements =
-  ajv.getSchema<types.Ira>('#/definitions/Ira')
-
-export const position = ajv.getSchema<types.Asset>('#/definitions/Asset')
-
-export default ajv
+export const editIraAction =
+  fns.EditIRAAction as ValidateFunction<types.EditIraAction>
+export const editHSAAction =
+  fns.EditHSAAction as ValidateFunction<types.EditHSAAction>
+export const editCreditAction =
+  fns.EditCreditAction as ValidateFunction<types.EditCreditAction>

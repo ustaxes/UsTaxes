@@ -9,6 +9,7 @@ import { ItemizedDeductions } from 'ustaxes/core/data'
 import { Patterns } from 'ustaxes/components/Patterns'
 import { Grid, Box } from '@material-ui/core'
 import { Alert } from '@material-ui/lab'
+import { intentionallyFloat } from 'ustaxes/core/util'
 
 interface ItemizedDeductionUserInput {
   medicalAndDental: string | number
@@ -219,7 +220,7 @@ export const ItemizedDeductionsInfo = (): ReactElement => {
   )
 
   return (
-    <form tabIndex={-1} onSubmit={handleSubmit(onSubmit)}>
+    <form tabIndex={-1} onSubmit={intentionallyFloat(handleSubmit(onSubmit))}>
       <p>
         If you do not wish to itemize, you can skip this form. The itemized
         deductions will only be used if they result in a higher deduction than

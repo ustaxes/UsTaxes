@@ -1,7 +1,6 @@
 /* eslint-disable indent */
 import { CombinedState, combineReducers, Reducer } from 'redux'
-import { Asset, FilingStatus, Information } from 'ustaxes/core/data'
-import { TaxYear } from 'ustaxes/data'
+import { Asset, FilingStatus, Information, TaxYear } from 'ustaxes/core/data'
 import { YearsTaxesState } from '.'
 import { ActionName, Actions } from './actions'
 
@@ -20,6 +19,7 @@ export const blankState: Information = {
   itemizedDeductions: undefined,
   stateResidencies: [],
   healthSavingsAccounts: [],
+  credits: [],
   individualRetirementArrangements: []
 }
 
@@ -68,17 +68,14 @@ const formReducer = (
         ...newState,
         taxPayer: {
           ...newState.taxPayer,
-          dependents: [
-            ...(newState.taxPayer?.dependents ?? []),
-            action.formData
-          ]
+          dependents: [...newState.taxPayer.dependents, action.formData]
         }
       }
     }
 
     // Replace dependent by index with a new object.
     case ActionName.EDIT_DEPENDENT: {
-      const newDependents = [...(newState.taxPayer?.dependents ?? [])]
+      const newDependents = [...newState.taxPayer.dependents]
       newDependents.splice(action.formData.index, 1, action.formData.value)
 
       return {
@@ -91,7 +88,7 @@ const formReducer = (
     }
 
     case ActionName.REMOVE_DEPENDENT: {
-      const newDependents = [...(newState.taxPayer?.dependents ?? [])]
+      const newDependents = [...newState.taxPayer.dependents]
       newDependents.splice(action.formData, 1)
 
       const filingStatus = (() => {
@@ -369,6 +366,29 @@ const formReducer = (
         individualRetirementArrangements: newIra
       }
     }
+    case ActionName.ADD_CREDIT: {
+      return {
+        ...newState,
+        credits: [...newState.credits, action.formData]
+      }
+    }
+    case ActionName.EDIT_CREDIT: {
+      const newCredits = [...newState.credits]
+      newCredits.splice(action.formData.index, 1, action.formData.value)
+      return {
+        ...newState,
+        credits: newCredits
+      }
+    }
+    case ActionName.REMOVE_CREDIT: {
+      const newCredits = [...newState.credits]
+      newCredits.splice(action.formData, 1)
+      return {
+        ...newState,
+        credits: newCredits
+      }
+    }
+
     default: {
       return newState
     }
@@ -422,6 +442,9 @@ const assetReducer = (
       const newAssets = [...newState]
       newAssets.splice(action.formData, 1)
       return newAssets
+    }
+    case ActionName.REMOVE_ASSETS: {
+      return newState.filter((_, i) => !action.formData.includes(i))
     }
     default: {
       return newState

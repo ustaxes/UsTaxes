@@ -1,8 +1,8 @@
 import { Dispatch } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Actions, SignalAction } from './actions'
+import { SignalAction } from './actions'
 import { YearsTaxesState } from '.'
-import { TaxYear } from 'ustaxes/data'
+import { TaxYear } from 'ustaxes/core/data'
 import { TaxesState } from '.'
 
 /**
@@ -12,7 +12,7 @@ import { TaxesState } from '.'
  * are posted to the current selected year.
  */
 const useYearDispatch = (): Dispatch<SignalAction> => {
-  const dispatch = useDispatch<Dispatch<Actions>>()
+  const dispatch = useDispatch()
   const year: TaxYear = useSelector(
     (state: YearsTaxesState) => state.activeYear
   )

@@ -1,15 +1,12 @@
 import { EIC } from '../../data/federal'
-import { TaxPayer } from 'ustaxes/core/data'
 import { ifNegative, ifPositive } from 'ustaxes/core/util'
 import F1040 from '../../irsForms/F1040'
 import { sumFields } from 'ustaxes/core/irsForms/util'
 
 export default class Pub596Worksheet1 {
-  tp: TaxPayer
   f1040: F1040
 
-  constructor(tp: TaxPayer, f1040: F1040) {
-    this.tp = tp
+  constructor(f1040: F1040) {
     this.f1040 = f1040
   }
 

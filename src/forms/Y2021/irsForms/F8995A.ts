@@ -1,9 +1,9 @@
 import F8995, { getF8995PhaseOutIncome } from './F8995'
 
-import TaxPayer from 'ustaxes/core/data/TaxPayer'
 import { FormTag } from 'ustaxes/core/irsForms/Form'
 import { FilingStatus } from 'ustaxes/core/data'
 import { sumFields } from 'ustaxes/core/irsForms/util'
+import { Field } from 'ustaxes/core/pdfFiller'
 
 function ifNumber(
   num: number | undefined,
@@ -108,9 +108,7 @@ export default class F8995A extends F8995 {
 
   l20 = (): number => this.f1040.l11() - this.f1040.l12c()
   l21 = (): number =>
-    getF8995PhaseOutIncome(
-      this.f1040.info.taxPayer.filingStatus ?? FilingStatus.S
-    )
+    getF8995PhaseOutIncome(this.f1040.info.taxPayer.filingStatus)
   l22 = (): number => this.l20() - this.l21()
   l23 = (): number =>
     this.f1040.info.taxPayer.filingStatus === FilingStatus.MFJ ? 100000 : 50000
@@ -153,123 +151,117 @@ export default class F8995A extends F8995 {
   deductions = (): number => this.l39()
   l40 = (): number => Math.min(0, this.l28() + this.l29())
 
-  fields = (): Array<string | number | boolean | undefined> => {
-    const tp = new TaxPayer(this.f1040.info.taxPayer)
-
-    const result = [
-      tp.namesString(),
-      tp.tp.primaryPerson?.ssid ?? '',
-      this.applicableK1s()[0]?.partnershipName,
-      false, // 1Ab
-      false, // 1Ac
-      this.applicableK1s()[0]?.partnershipEin,
-      false, // 1Ae
-      this.applicableK1s()[1]?.partnershipName,
-      false, // 1Bb
-      false, // 1Bc
-      this.applicableK1s()[1]?.partnershipEin,
-      false, // 1Be
-      this.applicableK1s()[2]?.partnershipName,
-      false, // 1Cb
-      false, // 1Cc
-      this.applicableK1s()[2]?.partnershipEin,
-      false, // 1Ce
-      this.l2a(),
-      this.l2b(),
-      this.l2c(),
-      this.l3a(),
-      this.l3b(),
-      this.l3c(),
-      this.l4a(),
-      this.l4b(),
-      this.l4c(),
-      this.l5a(),
-      this.l5b(),
-      this.l5c(),
-      this.l6a(),
-      this.l6b(),
-      this.l6c(),
-      this.l7a(),
-      this.l7b(),
-      this.l7c(),
-      this.l8a(),
-      this.l8b(),
-      this.l8c(),
-      this.l9a(),
-      this.l9b(),
-      this.l9c(),
-      this.l10a(),
-      this.l10b(),
-      this.l10c(),
-      this.l11a(),
-      this.l11b(),
-      this.l11c(),
-      this.l12a(),
-      this.l12b(),
-      this.l12c(),
-      this.l13a(),
-      this.l13b(),
-      this.l13c(),
-      this.l14a(),
-      this.l14b(),
-      this.l14c(),
-      this.l15a(),
-      this.l15b(),
-      this.l15c(),
-      this.l16(),
-      undefined, // Gray
-      undefined, // Gray
-      this.l17a(),
-      this.l17b(),
-      this.l17c(),
-      this.l18a(),
-      this.l18b(),
-      this.l18c(),
-      this.l19a(),
-      this.l19b(),
-      this.l19c(),
-      this.l20(),
-      undefined, // Gray
-      undefined, // Gray
-      undefined, // Gray
-      this.l21(),
-      undefined, // Gray
-      undefined, // Gray
-      undefined, // Gray
-      this.l22(),
-      undefined, // Gray
-      undefined, // Gray
-      undefined, // Gray
-      this.l23(),
-      undefined, // Gray
-      undefined, // Gray
-      undefined, // Gray
-      (this.l24() * 100).toFixed(2) + '%', // TODO: Percent sign is duplicated, but it prevents Fill.ts from rounding this
-      undefined, // Gray
-      undefined, // Gray
-      undefined, // Gray
-      this.l25a(),
-      this.l25b(),
-      this.l25c(),
-      this.l26a(),
-      this.l26b(),
-      this.l26c(),
-      this.l27(),
-      this.l28(),
-      this.l29(),
-      this.l30(),
-      this.l31(),
-      this.l32(),
-      this.l33(),
-      this.l34(),
-      this.l35(),
-      this.l36(),
-      this.l37(),
-      this.l38(),
-      this.l39(),
-      this.l40()
-    ]
-
-    return result
-  }
+  fields = (): Field[] => [
+    this.f1040.namesString(),
+    this.f1040.info.taxPayer.primaryPerson.ssid,
+    this.applicableK1s()[0]?.partnershipName,
+    false, // 1Ab
+    false, // 1Ac
+    this.applicableK1s()[0]?.partnershipEin,
+    false, // 1Ae
+    this.applicableK1s()[1]?.partnershipName,
+    false, // 1Bb
+    false, // 1Bc
+    this.applicableK1s()[1]?.partnershipEin,
+    false, // 1Be
+    this.applicableK1s()[2]?.partnershipName,
+    false, // 1Cb
+    false, // 1Cc
+    this.applicableK1s()[2]?.partnershipEin,
+    false, // 1Ce
+    this.l2a(),
+    this.l2b(),
+    this.l2c(),
+    this.l3a(),
+    this.l3b(),
+    this.l3c(),
+    this.l4a(),
+    this.l4b(),
+    this.l4c(),
+    this.l5a(),
+    this.l5b(),
+    this.l5c(),
+    this.l6a(),
+    this.l6b(),
+    this.l6c(),
+    this.l7a(),
+    this.l7b(),
+    this.l7c(),
+    this.l8a(),
+    this.l8b(),
+    this.l8c(),
+    this.l9a(),
+    this.l9b(),
+    this.l9c(),
+    this.l10a(),
+    this.l10b(),
+    this.l10c(),
+    this.l11a(),
+    this.l11b(),
+    this.l11c(),
+    this.l12a(),
+    this.l12b(),
+    this.l12c(),
+    this.l13a(),
+    this.l13b(),
+    this.l13c(),
+    this.l14a(),
+    this.l14b(),
+    this.l14c(),
+    this.l15a(),
+    this.l15b(),
+    this.l15c(),
+    this.l16(),
+    undefined, // Gray
+    undefined, // Gray
+    this.l17a(),
+    this.l17b(),
+    this.l17c(),
+    this.l18a(),
+    this.l18b(),
+    this.l18c(),
+    this.l19a(),
+    this.l19b(),
+    this.l19c(),
+    this.l20(),
+    undefined, // Gray
+    undefined, // Gray
+    undefined, // Gray
+    this.l21(),
+    undefined, // Gray
+    undefined, // Gray
+    undefined, // Gray
+    this.l22(),
+    undefined, // Gray
+    undefined, // Gray
+    undefined, // Gray
+    this.l23(),
+    undefined, // Gray
+    undefined, // Gray
+    undefined, // Gray
+    (this.l24() * 100).toFixed(2) + '%', // TODO: Percent sign is duplicated, but it prevents Fill.ts from rounding this
+    undefined, // Gray
+    undefined, // Gray
+    undefined, // Gray
+    this.l25a(),
+    this.l25b(),
+    this.l25c(),
+    this.l26a(),
+    this.l26b(),
+    this.l26c(),
+    this.l27(),
+    this.l28(),
+    this.l29(),
+    this.l30(),
+    this.l31(),
+    this.l32(),
+    this.l33(),
+    this.l34(),
+    this.l35(),
+    this.l36(),
+    this.l37(),
+    this.l38(),
+    this.l39(),
+    this.l40()
+  ]
 }

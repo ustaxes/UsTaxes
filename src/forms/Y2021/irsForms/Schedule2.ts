@@ -1,20 +1,11 @@
-import { TaxPayer as TP } from 'ustaxes/core/data'
-import Form, { FormTag } from 'ustaxes/core/irsForms/Form'
+import F1040Attachment from './F1040Attachment'
+import { FormTag } from 'ustaxes/core/irsForms/Form'
 import { sumFields } from 'ustaxes/core/irsForms/util'
-import TaxPayer from 'ustaxes/core/data/TaxPayer'
-import F1040 from './F1040'
+import { Field } from 'ustaxes/core/pdfFiller'
 
-export default class Schedule2 extends Form {
+export default class Schedule2 extends F1040Attachment {
   tag: FormTag = 'f1040s2'
   sequenceIndex = 2
-  tp: TaxPayer
-  f1040: F1040
-
-  constructor(tp: TP, f1040: F1040) {
-    super()
-    this.tp = new TaxPayer(tp)
-    this.f1040 = f1040
-  }
 
   // Part I: Tax
   l1 = (): number | undefined => this.f1040.f6251?.l11()
@@ -109,8 +100,10 @@ export default class Schedule2 extends Form {
       this.l17q(),
       this.l17z()
     ])
-  // 19Additional tax from Schedule 8812
-  l19 = (): number | undefined => this.f1040.schedule8812?.l40()
+
+  // 19 Additional tax from Schedule 8812
+  l19 = (): number | undefined => this.f1040.schedule8812?.toSchedule2Line19()
+
   // TODO: Section 965 net tax liability installment from Form 965-A. .
   l20 = (): number | undefined => undefined
 
@@ -135,53 +128,51 @@ export default class Schedule2 extends Form {
   to1040l23 = (): number => this.l21()
   // and on Form 1040 or 1040-SR, line 23, or Form 1040-NR, line 23b
 
-  fields = (): Array<string | number | boolean | undefined> => {
-    return [
-      this.tp.namesString(),
-      this.tp.tp.primaryPerson?.ssid,
+  fields = (): Field[] => [
+    this.f1040.namesString(),
+    this.f1040.info.taxPayer.primaryPerson.ssid,
 
-      this.l1(),
-      this.l2(),
-      this.l3(),
+    this.l1(),
+    this.l2(),
+    this.l3(),
 
-      this.l4(),
-      this.l5(),
-      this.l6(),
-      this.l7(),
-      this.l8(),
-      this.l9(),
-      this.l10(),
-      this.l11(),
-      this.l12(),
-      this.l13(),
-      this.l14(),
-      this.l15(),
-      this.l16(),
-      this.l17aDesc(),
-      this.l17a(),
-      this.l17b(),
-      this.l17c(),
-      this.l17d(),
-      this.l17e(),
-      this.l17f(),
-      this.l17g(),
-      this.l17h(),
-      this.l17i(),
-      this.l17j(),
-      this.l17k(),
-      this.l17l(),
-      this.l17m(),
-      this.l17n(),
-      this.l17o(),
-      this.l17p(),
-      this.l17q(),
-      this.l17zDesc(),
-      undefined,
-      this.l17z(),
-      this.l18(),
-      this.l19(),
-      this.l20(),
-      this.l21()
-    ]
-  }
+    this.l4(),
+    this.l5(),
+    this.l6(),
+    this.l7(),
+    this.l8(),
+    this.l9(),
+    this.l10(),
+    this.l11(),
+    this.l12(),
+    this.l13(),
+    this.l14(),
+    this.l15(),
+    this.l16(),
+    this.l17aDesc(),
+    this.l17a(),
+    this.l17b(),
+    this.l17c(),
+    this.l17d(),
+    this.l17e(),
+    this.l17f(),
+    this.l17g(),
+    this.l17h(),
+    this.l17i(),
+    this.l17j(),
+    this.l17k(),
+    this.l17l(),
+    this.l17m(),
+    this.l17n(),
+    this.l17o(),
+    this.l17p(),
+    this.l17q(),
+    this.l17zDesc(),
+    undefined,
+    this.l17z(),
+    this.l18(),
+    this.l19(),
+    this.l20(),
+    this.l21()
+  ]
 }

@@ -2,21 +2,21 @@
 import * as fc from 'fast-check'
 import * as utarbitraries from './arbitraries'
 import { cleanup, waitFor } from '@testing-library/react'
-import { YearsTaxesState } from 'ustaxes/redux'
+import { blankYearTaxesState, YearsTaxesState } from 'ustaxes/redux'
 import { ReactElement } from 'react'
 import TaxPayer from 'ustaxes/components/TaxPayer'
 import { tests as TaxPayerTests } from './components/Taxpayer.test'
 import { blankState } from 'ustaxes/redux/reducer'
 import { FakePagerProvider, PagerMethods } from './common/FakePager'
 import YearStatusBar from 'ustaxes/components/YearStatusBar'
-import TaxPayerMethods from './common/TaxPayerMethods'
 import YearStatusBarMethods from './common/YearsStatusBarMethods'
 import { PersonMethods } from './common/PersonMethods'
 import TestPage from './common/Page'
+import TaxPayerMethods from './common/TaxPayerMethods'
 
 // RTL's cleanup method only after each
 // jest test is done. (Not each property test)
-afterEach(async () => {
+afterEach(() => {
   cleanup()
 })
 
@@ -98,13 +98,13 @@ describe('years', () => {
     const state = utarbitraries.justOneState()
 
     await withForm(state)(async (form): Promise<boolean> => {
-      await waitFor(async () =>
+      await waitFor(() =>
         expect(form.yearStatus.yearDropdownButton()).toBeInTheDocument()
       )
 
       form.yearStatus.openDropdown()
 
-      await waitFor(async () =>
+      await waitFor(() =>
         expect(form.yearStatus.yearDropdownButton()).not.toBeInTheDocument()
       )
 
@@ -118,7 +118,7 @@ describe('years', () => {
     const state = utarbitraries.justOneState()
 
     await withForm(state)(async (form): Promise<boolean> => {
-      await waitFor(async () => {
+      await waitFor(() => {
         expect(form.store.getState().activeYear).toBe(state.activeYear)
         expect(form.yearStatus.yearValue()).toEqual(state.activeYear)
       })
@@ -136,15 +136,19 @@ describe('years', () => {
             // Generating states can lead to long runtimes as the generator
             // tries to fiddle with all of state's parameters to induce a failure.
             // We're just testing the year part of the state now.
-            const state = { [startYear]: blankState, activeYear: startYear }
+            const state = {
+              ...blankYearTaxesState,
+              [startYear]: blankState,
+              activeYear: startYear
+            }
             await withForm(state)(async (form): Promise<boolean> => {
               await form.yearStatus.setYear(year)
 
-              await waitFor(async () =>
+              await waitFor(() =>
                 expect(form.store.getState().activeYear).toEqual(year)
               )
               form.yearStatus.openDropdown()
-              await waitFor(async () =>
+              await waitFor(() =>
                 expect(form.yearStatus.yearValue()).toEqual(year)
               )
               return true
@@ -165,9 +169,9 @@ describe('years', () => {
         await withForm(state)(async (form) => {
           await form.yearStatus.setYear(year)
 
-          await waitFor(async () =>
+          await waitFor(() =>
             expect(form.person.firstNameField()?.value).toEqual(
-              state[year]?.taxPayer.primaryPerson?.firstName
+              state[year].taxPayer.primaryPerson?.firstName
             )
           )
 
@@ -177,7 +181,11 @@ describe('years', () => {
     ))
 
   it('selecting year should not impact taxpayer form error handling after changing year', async () => {
-    const form = new TestForm({ Y2020: blankState, activeYear: 'Y2020' })
+    const form = new TestForm({
+      ...blankYearTaxesState,
+      Y2020: blankState,
+      activeYear: 'Y2020'
+    })
 
     await TaxPayerTests.incompleteData(form)
 

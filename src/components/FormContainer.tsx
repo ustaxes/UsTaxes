@@ -18,13 +18,14 @@ import { SubmitHandler, useFormContext } from 'react-hook-form'
 import _ from 'lodash'
 import { ReactNode } from 'react'
 import { FormContainerProvider } from './FormContainer/Context'
+import { intentionallyFloat } from 'ustaxes/core/util'
 
 interface FormContainerProps {
   onDone: () => void
-  onCancel: () => void
+  onCancel?: () => void
 }
 
-const FormContainer = ({
+export const FormContainer = ({
   onDone,
   onCancel,
   children
@@ -142,12 +143,6 @@ interface FormListContainerProps<A> {
   groupHeaders?: (ReactNode | undefined)[]
 }
 
-enum FormState {
-  Adding,
-  Editing,
-  Closed
-}
-
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     buttonList: {
@@ -156,11 +151,78 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 )
 
+export interface OpenableFormContainerProps<A> {
+  onCancel?: () => void
+  onSave: SubmitHandler<A>
+  isOpen?: boolean
+  onOpenStateChange: (isOpen: boolean) => void
+  allowAdd?: boolean
+}
+
+export const OpenableFormContainer = <A,>(
+  props: PropsWithChildren<OpenableFormContainerProps<A>>
+): ReactElement => {
+  const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)')
+  const { isOpen = false, allowAdd = true } = props
+  const classes = useStyles()
+
+  // Note useFormContext here instead of useForm reuses the
+  // existing form context from the parent.
+  const { reset, handleSubmit } = useFormContext()
+
+  const closeForm = (): void => {
+    props.onOpenStateChange(false)
+    reset({})
+  }
+
+  const onClose = (): void => {
+    if (props.onCancel !== undefined) props.onCancel()
+    closeForm()
+  }
+
+  const onSave: SubmitHandler<A> = (formData): void => {
+    props.onSave(formData)
+    closeForm()
+  }
+
+  const openAddForm = () => {
+    props.onOpenStateChange(true)
+  }
+
+  return (
+    <>
+      {(() => {
+        if (isOpen) {
+          return (
+            <FormContainer
+              onDone={intentionallyFloat(handleSubmit(onSave))}
+              onCancel={onClose}
+            >
+              {props.children}
+            </FormContainer>
+          )
+        } else if (allowAdd) {
+          return (
+            <div className={classes.buttonList}>
+              <Button
+                type="button"
+                onClick={openAddForm}
+                color={prefersDarkMode ? 'default' : 'secondary'}
+                variant="contained"
+              >
+                Add
+              </Button>
+            </div>
+          )
+        }
+      })()}
+    </>
+  )
+}
+
 const FormListContainer = <A,>(
   props: PropsWithChildren<FormListContainerProps<A>>
 ): ReactElement => {
-  const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)')
-  const classes = useStyles()
   const {
     children,
     items,
@@ -178,8 +240,10 @@ const FormListContainer = <A,>(
     grouping = () => 0,
     groupHeaders = []
   } = props
-  const [formState, setFormState] = useState(FormState.Closed)
+  const [isOpen, setOpen] = useState(false)
   const [editing, setEditing] = useState<number | undefined>(undefined)
+
+  const allowAdd = max === undefined || items.length < max
 
   // Use the provided grouping function to split the input
   // array into an array of groups. Each group has a title
@@ -196,17 +260,17 @@ const FormListContainer = <A,>(
 
   // Note useFormContext here instead of useForm reuses the
   // existing form context from the parent.
-  const { reset, handleSubmit } = useFormContext()
+  const { reset } = useFormContext()
 
-  const close = (): void => {
-    setFormState(FormState.Closed)
-    reset({})
+  const closeForm = (): void => {
     setEditing(undefined)
+    setOpen(false)
+    reset()
   }
 
-  const onClose = (): void => {
+  const cancel = (): void => {
+    closeForm()
     onCancel()
-    close()
   }
 
   const onSave: SubmitHandler<A> = (formData): void => {
@@ -215,21 +279,17 @@ const FormListContainer = <A,>(
     } else {
       onSubmitAdd(formData)
     }
-    close()
+    closeForm()
   }
 
   const openEditForm = (n: number): (() => void) | undefined => {
-    if (!disableEditing && formState === FormState.Closed) {
+    if (!disableEditing && editing === undefined) {
       return () => {
-        setFormState(FormState.Editing)
         setEditing(n)
+        setOpen(true)
         reset(items[n])
       }
     }
-  }
-
-  const openAddForm = () => {
-    setFormState(FormState.Adding)
   }
 
   const itemDisplay = (() => {
@@ -247,7 +307,7 @@ const FormListContainer = <A,>(
                     secondary !== undefined ? secondary(item) : undefined
                   }
                   onEdit={openEditForm(originalIndex)}
-                  disableEdit={formState !== FormState.Closed}
+                  disableEdit={isOpen}
                   editing={editing === originalIndex}
                   remove={
                     removeItem !== undefined
@@ -267,28 +327,15 @@ const FormListContainer = <A,>(
   return (
     <>
       {itemDisplay}
-      {(() => {
-        if (formState !== FormState.Closed) {
-          return (
-            <FormContainer onDone={handleSubmit(onSave)} onCancel={onClose}>
-              {children}
-            </FormContainer>
-          )
-        } else if (max === undefined || items.length < max) {
-          return (
-            <div className={classes.buttonList}>
-              <Button
-                type="button"
-                onClick={openAddForm}
-                color={prefersDarkMode ? 'default' : 'secondary'}
-                variant="contained"
-              >
-                Add
-              </Button>
-            </div>
-          )
-        }
-      })()}
+      <OpenableFormContainer
+        allowAdd={allowAdd}
+        onSave={onSave}
+        isOpen={isOpen}
+        onOpenStateChange={setOpen}
+        onCancel={cancel}
+      >
+        {children}
+      </OpenableFormContainer>
     </>
   )
 }

@@ -1,7 +1,7 @@
 import { waitFor } from '@testing-library/react'
 import TaxPayer from 'ustaxes/components/TaxPayer'
 import { Information } from 'ustaxes/core/data'
-import { YearsTaxesState } from 'ustaxes/redux'
+import { blankYearTaxesState, YearsTaxesState } from 'ustaxes/redux'
 import { blankState } from 'ustaxes/redux/reducer'
 import { FakePagerProvider, PagerMethods } from '../common/FakePager'
 import TestPage from '../common/Page'
@@ -16,10 +16,13 @@ afterEach(async () => {
 })
 
 jest.mock('redux-persist', () => {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const real = jest.requireActual('redux-persist')
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
   return {
     ...real,
-    persistReducer: jest.fn().mockImplementation((config, reducers) => reducers)
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    persistReducer: jest.fn().mockImplementation((_, reducers) => reducers)
   }
 })
 
@@ -82,7 +85,11 @@ export const tests = {
 
 describe('Taxpayer', () => {
   const taxpayerComponent = (information: Information = blankState) =>
-    new TaxPayerTestPage({ Y2020: information, activeYear: 'Y2020' })
+    new TaxPayerTestPage({
+      ...blankYearTaxesState,
+      Y2020: information,
+      activeYear: 'Y2020'
+    })
 
   it('should show errors if incomplete data is entered', async () => {
     const page = taxpayerComponent()

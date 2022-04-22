@@ -1,5 +1,5 @@
 import Form from 'ustaxes/core/irsForms/Form'
-import { TaxYear } from 'ustaxes/data'
+import { TaxYear } from 'ustaxes/core/data'
 import F1040For2020 from 'ustaxes/forms/Y2020/irsForms/F1040'
 import F1040For2021 from 'ustaxes/forms/Y2021/irsForms/F1040'
 
@@ -40,8 +40,8 @@ export const SummaryCreatorFor2020: SummaryCreator<F1040For2020> = {
     credits: [
       {
         name: 'Earned Income Credit',
-        value: f.scheduleEIC?.credit(f),
-        allowed: f.scheduleEIC?.allowed(f) ?? false
+        value: f.scheduleEIC?.credit(),
+        allowed: f.scheduleEIC?.allowed() ?? false
       },
       {
         name: 'Children and Other Dependents',
@@ -60,8 +60,8 @@ export const SummaryCreatorFor2021: SummaryCreator<F1040For2021> = {
     credits: [
       {
         name: 'Earned income credit',
-        value: f.scheduleEIC?.credit(f),
-        allowed: f.scheduleEIC?.allowed(f) ?? false
+        value: f.scheduleEIC?.credit(),
+        allowed: f.scheduleEIC?.allowed() ?? false
       }
     ],
     worksheets: [
@@ -83,11 +83,15 @@ export const createSummary = (
     return undefined
   }
 
-  if (year === 'Y2019') {
-    return emptySummary
-  } else if (year === 'Y2020') {
-    return SummaryCreatorFor2020.summary(f1040 as F1040For2020)
-  } else if (year === 'Y2021') {
-    return SummaryCreatorFor2021.summary(f1040 as F1040For2021)
+  switch (year) {
+    case 'Y2019': {
+      return emptySummary
+    }
+    case 'Y2021': {
+      return SummaryCreatorFor2020.summary(f1040 as F1040For2020)
+    }
+    case 'Y2021': {
+      return SummaryCreatorFor2021.summary(f1040 as F1040For2021)
+    }
   }
 }

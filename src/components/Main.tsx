@@ -1,13 +1,10 @@
-import { useMemo, PropsWithChildren, ReactElement } from 'react'
+import { PropsWithChildren, ReactElement } from 'react'
 import {
   createStyles,
   makeStyles,
-  unstable_createMuiStrictModeTheme as createMuiTheme,
-  useMediaQuery,
   CssBaseline,
   Grid,
-  Theme,
-  ThemeProvider
+  Theme
 } from '@material-ui/core'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { isMobileOnly as isMobile } from 'react-device-detect'
@@ -16,12 +13,15 @@ import { StateLoader } from './debug'
 import NoMatchPage from './NoMatchPage'
 import SkipToLinks from './SkipToLinks'
 import ScrollTop from './ScrollTop'
-import Menu, { drawerSections, backPages } from './Menu'
+import Menu, { backPages, drawerSectionsForYear } from './Menu'
 import { Section, SectionItem } from './ResponsiveDrawer'
 
 import Urls from 'ustaxes/data/urls'
 import DataPropagator from './DataPropagator'
 import YearStatusBar from './YearStatusBar'
+import { useSelector } from 'react-redux'
+import { TaxYear } from 'ustaxes/core/data'
+import { YearsTaxesState } from 'ustaxes/redux'
 
 type Props = {
   isMobile: boolean
@@ -53,39 +53,13 @@ const useStyles = makeStyles<Theme, Props>((theme: Theme) =>
 )
 
 export default function Main(): ReactElement {
-  const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)')
-  const theme = useMemo(
-    () =>
-      createMuiTheme({
-        palette: {
-          type: prefersDarkMode ? 'dark' : 'light',
-          secondary: prefersDarkMode
-            ? {
-                light: '#4f5b62',
-                main: '#d5d5d5',
-                dark: '#000a12',
-                contrastText: '#ffffff'
-              }
-            : {
-                light: '#4f5b62',
-                main: '#263238',
-                dark: '#000a12',
-                contrastText: '#ffffff'
-              },
-          primary: {
-            light: '#66ffa6',
-            main: '#00e676',
-            dark: '#00b248',
-            contrastText: '#000000'
-          }
-        }
-      }),
-    [prefersDarkMode]
+  const activeYear: TaxYear = useSelector(
+    (state: YearsTaxesState) => state.activeYear
   )
 
   const classes = useStyles({ isMobile })
 
-  const steps: SectionItem[] = drawerSections.flatMap(
+  const steps: SectionItem[] = drawerSectionsForYear(activeYear).flatMap(
     (section: Section) => section.items
   )
 
@@ -123,7 +97,7 @@ export default function Main(): ReactElement {
   )
 
   return (
-    <ThemeProvider theme={theme}>
+    <>
       <CssBaseline />
       <SkipToLinks />
       <div className={classes.container}>
@@ -155,6 +129,6 @@ export default function Main(): ReactElement {
         </PagerProvider>
         {!isMobile && <ScrollTop />}
       </div>
-    </ThemeProvider>
+    </>
   )
 }

@@ -1,27 +1,17 @@
-import { Information } from 'ustaxes/core/data'
-import TaxPayer from 'ustaxes/core/data/TaxPayer'
-import Form, { FormTag } from 'ustaxes/core/irsForms/Form'
-import ScheduleE from './ScheduleE'
+import F1040Attachment from './F1040Attachment'
+import { FormTag } from 'ustaxes/core/irsForms/Form'
 import { sumFields } from 'ustaxes/core/irsForms/util'
 import F1040 from './F1040'
+import { Field } from 'ustaxes/core/pdfFiller'
 
-export default class Schedule1 extends Form {
+export default class Schedule1 extends F1040Attachment {
   tag: FormTag = 'f1040s1'
   sequenceIndex = 1
-  state: Information
-  scheduleE?: ScheduleE
-  f1040: F1040
   otherIncomeStrings: Set<string>
 
-  constructor(info: Information, f1040: F1040) {
-    super()
-    this.state = info
-    this.f1040 = f1040
+  constructor(f1040: F1040) {
+    super(f1040)
     this.otherIncomeStrings = new Set<string>()
-  }
-
-  addScheduleE = (scheduleE: ScheduleE): void => {
-    this.scheduleE = scheduleE
   }
 
   l1 = (): number | undefined => undefined
@@ -29,7 +19,7 @@ export default class Schedule1 extends Form {
   l2b = (): number | undefined => undefined
   l3 = (): number | undefined => undefined
   l4 = (): number | undefined => undefined
-  l5 = (): number | undefined => this.scheduleE?.l41()
+  l5 = (): number | undefined => this.f1040.scheduleE?.l41()
   l6 = (): number | undefined => undefined
   l7 = (): number | undefined => undefined
   l8a = (): number | undefined => undefined
@@ -52,8 +42,9 @@ export default class Schedule1 extends Form {
   l8q = (): number | undefined => undefined
   l8z = (): number => {
     if (
-      this.f1040.f8889?.l20() !== undefined ||
-      this.f1040.f8889Spouse?.l20() != undefined
+      (this.f1040.f8889?.l20() !== undefined && this.f1040.f8889.l20() > 0) ||
+      (this.f1040.f8889Spouse?.l20() !== undefined &&
+        this.f1040.f8889Spouse.l20() > 0)
     ) {
       this.otherIncomeStrings.add('HSA')
     }
@@ -126,6 +117,7 @@ export default class Schedule1 extends Form {
   l24j = (): number | undefined => undefined
   l24k = (): number | undefined => undefined
   l24zDesc = (): string | undefined => undefined
+  l24zDesc2 = (): string | undefined => undefined
   l24z = (): number | undefined => undefined
 
   l25 = (): number =>
@@ -163,71 +155,68 @@ export default class Schedule1 extends Form {
 
   to1040Line10 = (): number => this.l26()
 
-  fields = (): Array<string | number | boolean | undefined> => {
-    const tp = new TaxPayer(this.state.taxPayer)
-
-    return [
-      tp.namesString(),
-      tp.tp.primaryPerson?.ssid,
-      this.l1(),
-      this.l2a(),
-      this.l2b(),
-      this.l3(),
-      this.l4(),
-      this.l5(),
-      this.l6(),
-      this.l7(),
-      this.l8a(),
-      this.l8b(),
-      this.l8c(),
-      this.l8d(),
-      this.l8e(),
-      this.l8f(),
-      this.l8g(),
-      this.l8h(),
-      this.l8i(),
-      this.l8j(),
-      this.l8k(),
-      this.l8l(),
-      this.l8m(),
-      this.l8n(),
-      this.l8o(),
-      this.l8p(),
-      Array.from(this.otherIncomeStrings).join(' '),
-      undefined,
-      this.l8z(),
-      this.l9(),
-      this.l10(),
-      this.l11(),
-      this.l12(),
-      this.l13(),
-      this.l14(),
-      this.l15(),
-      this.l16(),
-      this.l17(),
-      this.l18(),
-      this.l19a(),
-      this.l19b(),
-      this.l19c(),
-      this.l20(),
-      this.l21(),
-      this.l22(),
-      this.l23(),
-      this.l24a(),
-      this.l24b(),
-      this.l24c(),
-      this.l24d(),
-      this.l24e(),
-      this.l24f(),
-      this.l24g(),
-      this.l24h(),
-      this.l24i(),
-      this.l24j(),
-      this.l24k(),
-      this.l24zDesc(),
-      this.l24z(),
-      this.l25(),
-      this.l26()
-    ]
-  }
+  fields = (): Field[] => [
+    this.f1040.namesString(),
+    this.f1040.info.taxPayer.primaryPerson.ssid,
+    this.l1(),
+    this.l2a(),
+    this.l2b(),
+    this.l3(),
+    this.l4(),
+    this.l5(),
+    this.l6(),
+    this.l7(),
+    this.l8a(),
+    this.l8b(),
+    this.l8c(),
+    this.l8d(),
+    this.l8e(),
+    this.l8f(),
+    this.l8g(),
+    this.l8h(),
+    this.l8i(),
+    this.l8j(),
+    this.l8k(),
+    this.l8l(),
+    this.l8m(),
+    this.l8n(),
+    this.l8o(),
+    this.l8p(),
+    Array.from(this.otherIncomeStrings).join(' '),
+    undefined,
+    this.l8z(),
+    this.l9(),
+    this.l10(),
+    this.l11(),
+    this.l12(),
+    this.l13(),
+    this.l14(),
+    this.l15(),
+    this.l16(),
+    this.l17(),
+    this.l18(),
+    this.l19a(),
+    this.l19b(),
+    this.l19c(),
+    this.l20(),
+    this.l21(),
+    this.l22(),
+    this.l23(),
+    this.l24a(),
+    this.l24b(),
+    this.l24c(),
+    this.l24d(),
+    this.l24e(),
+    this.l24f(),
+    this.l24g(),
+    this.l24h(),
+    this.l24i(),
+    this.l24j(),
+    this.l24k(),
+    this.l24zDesc(),
+    this.l24zDesc2(),
+    this.l24z(),
+    this.l25(),
+    this.l26()
+  ]
 }

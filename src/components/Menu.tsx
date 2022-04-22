@@ -1,6 +1,7 @@
 import { ReactElement, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 
+import { useSelector } from 'react-redux'
 import {
   createStyles,
   makeStyles,
@@ -40,6 +41,9 @@ import IRA from './savingsAccounts/IRA'
 import OtherInvestments from './income/OtherInvestments'
 import { StockOptions } from './income/StockOptions'
 import { PartnershipIncome } from './income/PartnershipIncome'
+import { TaxYear } from 'ustaxes/core/data'
+import { AdvanceChildTaxCredit } from './Y2021/AdvanceChildTaxCredit'
+import { YearsTaxesState } from 'ustaxes/redux'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -72,17 +76,17 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 )
 
-const getTitleAndPage = (currentUrl: string): string => {
+const getTitleAndPage = (currentUrl: string, year: TaxYear): string => {
   const backPage = backPages.find(({ url }) => url === currentUrl)
   if (backPage) return backPage.title
 
-  const page = drawerSections
+  const page = drawerSectionsForYear(year)
     .flatMap(({ title: sectionTitle, items }) =>
       items.map(({ title, url }) => ({ sectionTitle, title, url }))
     )
     .find(({ url }) => url === currentUrl)
 
-  return `${page?.sectionTitle} - ${page?.title}`
+  return `${page?.sectionTitle ?? ''} - ${page?.title ?? ''}`
 }
 
 export const backPages: SectionItem[] = [
@@ -170,9 +174,35 @@ export const drawerSections: Section[] = [
   }
 ]
 
+const yearSpecificPages: Partial<{ [k in TaxYear]: Section[] }> = {
+  Y2021: [
+    {
+      title: 'Tax Year 2021',
+      items: [
+        item(
+          'Advance Child Tax Credit (Letter 6419)',
+          Urls.Y2021.credits,
+          <AdvanceChildTaxCredit />
+        )
+      ]
+    }
+  ]
+}
+
+export const drawerSectionsForYear = (year: TaxYear): Section[] => [
+  ...drawerSections.slice(0, -2),
+  ...(yearSpecificPages[year] || []),
+  drawerSections[drawerSections.length - 1]
+]
+
 const Menu = (): ReactElement => {
   const classes = useStyles()
   const [isOpen, setOpen] = useState(!isMobile)
+  const activeYear: TaxYear = useSelector(
+    (state: YearsTaxesState) => state.activeYear
+  )
+
+  const allSections = drawerSectionsForYear(activeYear)
 
   return (
     <>
@@ -195,13 +225,13 @@ const Menu = (): ReactElement => {
           </Slide>
           <Slide in={!isOpen} direction={'left'}>
             <Typography className={classes.title}>
-              {getTitleAndPage(useLocation().pathname)}
+              {getTitleAndPage(useLocation().pathname, activeYear)}
             </Typography>
           </Slide>
         </Toolbar>
       </AppBar>
       <ResponsiveDrawer
-        sections={drawerSections}
+        sections={allSections}
         isOpen={isOpen}
         setOpen={setOpen}
       />

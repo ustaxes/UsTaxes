@@ -1,5 +1,6 @@
 import { Button, ButtonProps } from '@material-ui/core'
 import { ChangeEvent, PropsWithChildren, ReactElement } from 'react'
+import { intentionallyFloat } from 'ustaxes/core/util'
 import { loadFile } from '.'
 
 interface LoadProps<S> {
@@ -29,7 +30,12 @@ export const LoadRaw = (
   return (
     <Button {...{ ...rest, component: 'label' }}>
       {children}
-      <input type="file" hidden accept={accept} onChange={onClick} />
+      <input
+        type="file"
+        hidden
+        accept={accept}
+        onChange={intentionallyFloat(onClick)}
+      />
     </Button>
   )
 }

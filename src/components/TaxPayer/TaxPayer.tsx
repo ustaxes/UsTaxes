@@ -28,6 +28,7 @@ import {
 import AddressFields from './Address'
 import { Grid } from '@material-ui/core'
 import { Patterns } from 'ustaxes/components/Patterns'
+import { intentionallyFloat } from 'ustaxes/core/util'
 
 interface TaxPayerUserForm {
   firstName: string
@@ -136,7 +137,7 @@ export default function PrimaryTaxpayer(): ReactElement {
   }
 
   const page = (
-    <form tabIndex={-1} onSubmit={handleSubmit(onSubmit)}>
+    <form tabIndex={-1} onSubmit={intentionallyFloat(handleSubmit(onSubmit))}>
       <Helmet>
         <title>Primary Taxpayer Information | Personal | UsTaxes.org</title>
       </Helmet>

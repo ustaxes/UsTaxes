@@ -1,24 +1,20 @@
 import Form from 'ustaxes/core/stateForms/Form'
 import F1040 from '../../irsForms/F1040'
 import { Field } from 'ustaxes/core/pdfFiller'
-import {
-  // Dependent,
-  Information,
-  State
-} from 'ustaxes/core/data'
-// import parameters from './Parameters'
+import { State } from 'ustaxes/core/data'
+import { ValidatedInformation } from 'ustaxes/forms/F1040Base'
 
 export class ORWFHDC extends Form {
-  info: Information
+  info: ValidatedInformation
   f1040: F1040
   formName: string
   state: State
   formOrder = 1
   attachments: () => Form[] = () => []
 
-  constructor(info: Information, f1040: F1040) {
+  constructor(f1040: F1040) {
     super()
-    this.info = info
+    this.info = f1040.info
     this.f1040 = f1040
     this.formName = 'OR-WFHDC'
     this.state = 'OR'
@@ -1128,7 +1124,6 @@ export class ORWFHDC extends Form {
   ]
 }
 
-const makeORWFHDC = (info: Information, f1040: F1040): ORWFHDC =>
-  new ORWFHDC(info, f1040)
+const makeORWFHDC = (f1040: F1040): ORWFHDC => new ORWFHDC(f1040)
 
 export default makeORWFHDC

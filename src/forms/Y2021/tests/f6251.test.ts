@@ -66,7 +66,7 @@ describe('AMT', () => {
   it('stock options should trigger AMT', () => {
     const information = cloneDeep(baseInformation)
     const f1040 = new F1040(information, [])
-    const f6251 = new F6251(information, f1040)
+    const f6251 = new F6251(f1040)
     expect(f6251.isNeeded()).toEqual(true)
     expect(Math.round(f6251.l1() ?? 0)).toEqual(87450)
     expect(Math.round(f6251.l7() ?? 0)).toEqual(32864)
@@ -79,7 +79,7 @@ describe('AMT', () => {
     information.f3921s[0].exercisePricePerShare = 100
 
     const f1040 = new F1040(information, [])
-    const f6251 = new F6251(information, f1040)
+    const f6251 = new F6251(f1040)
     expect(f6251.isNeeded()).toEqual(false)
     expect(Math.round(f6251.l1() ?? 0)).toEqual(87450)
     expect(Math.round(f6251.l7() ?? 0)).toEqual(7124)

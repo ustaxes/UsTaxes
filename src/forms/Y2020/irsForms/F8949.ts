@@ -1,8 +1,8 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
-
-import Form, { FormTag } from 'ustaxes/core/irsForms/Form'
-import { Asset, TaxPayer as TP } from 'ustaxes/core/data'
-import TaxPayer from 'ustaxes/core/data/TaxPayer'
+import F1040Attachment from './F1040Attachment'
+import { FormTag } from 'ustaxes/core/irsForms/Form'
+import { Asset, SoldAsset } from 'ustaxes/core/data'
+import F1040 from './F1040'
+import { Field } from 'ustaxes/core/pdfFiller'
 
 type EmptyLine = [
   undefined,
@@ -32,15 +32,15 @@ const emptyLine: EmptyLine = [
 const showDate = (date: Date): string =>
   `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`
 
-const toLine = (position: Asset<Date>): Line => [
+const toLine = (position: SoldAsset<Date>): Line => [
   position.name,
   showDate(position.openDate),
-  showDate(position.closeDate!),
-  position.closePrice! * position.quantity,
+  showDate(position.closeDate),
+  position.closePrice * position.quantity,
   position.openPrice * position.quantity,
   undefined,
   undefined,
-  (position.closePrice! - position.openPrice) * position.quantity
+  (position.closePrice - position.openPrice) * position.quantity
 ]
 
 const NUM_SHORT_LINES = 14
@@ -53,20 +53,16 @@ const padUntil = <A, B>(xs: A[], v: B, n: number): (A | B)[] => {
   return [...xs, ...Array.from(Array(n - xs.length)).map(() => v)]
 }
 
-export default class F8949 extends Form {
+export default class F8949 extends F1040Attachment {
   tag: FormTag = 'f8949'
   sequenceIndex = 12.1
-  assets: Asset<Date>[]
-  tp: TP
 
   index = 0
 
   copies: F8949[] = []
 
-  constructor(tp: TP, assets: Asset<Date>[], index = 0) {
-    super()
-    this.assets = assets
-    this.tp = tp
+  constructor(f1040: F1040, index = 0) {
+    super(f1040)
     if (index === 0) {
       const extraCopiesNeeded = Math.round(
         Math.max(
@@ -75,7 +71,7 @@ export default class F8949 extends Form {
         )
       )
       this.copies = Array.from(Array(extraCopiesNeeded)).map(
-        (_, i) => new F8949(tp, assets, i + 1)
+        (_, i) => new F8949(f1040, i + 1)
       )
     } else {
       this.copies = []
@@ -93,20 +89,16 @@ export default class F8949 extends Form {
   part2BoxE = (): boolean => false
   part2BoxF = (): boolean => true
 
-  thisYearSales = (): Asset<Date>[] =>
-    this.assets.filter(
+  thisYearSales = (): SoldAsset<Date>[] =>
+    this.f1040.assets.filter(
       (p) => p.closeDate !== undefined && p.closeDate.getFullYear() === 2020
-    )
+    ) as SoldAsset<Date>[]
 
-  thisYearLongTermSales = (): Asset<Date>[] =>
-    this.thisYearSales().filter(
-      (p) => p.closeDate !== undefined && this.isLongTerm(p)
-    )
+  thisYearLongTermSales = (): SoldAsset<Date>[] =>
+    this.thisYearSales().filter((p) => this.isLongTerm(p))
 
-  thisYearShortTermSales = (): Asset<Date>[] =>
-    this.thisYearSales().filter(
-      (p) => p.closeDate !== undefined && !this.isLongTerm(p)
-    )
+  thisYearShortTermSales = (): SoldAsset<Date>[] =>
+    this.thisYearSales().filter((p) => !this.isLongTerm(p))
 
   // in milliseconds
   oneDay = 1000 * 60 * 60 * 24
@@ -120,7 +112,7 @@ export default class F8949 extends Form {
   /**
    * Take the short term transactions that fit on this copy of the 8949
    */
-  shortTermSales = (): Asset<Date>[] =>
+  shortTermSales = (): SoldAsset<Date>[] =>
     this.thisYearShortTermSales().slice(
       this.index * NUM_SHORT_LINES,
       (this.index + 1) * NUM_SHORT_LINES
@@ -129,7 +121,7 @@ export default class F8949 extends Form {
   /**
    * Take the long term transactions that fit on this copy of the 8949
    */
-  longTermSales = (): Asset<Date>[] =>
+  longTermSales = (): SoldAsset<Date>[] =>
     this.thisYearLongTermSales().slice(
       this.index * NUM_LONG_LINES,
       (this.index + 1) * NUM_LONG_LINES
@@ -149,12 +141,15 @@ export default class F8949 extends Form {
 
   shortTermTotalProceeds = (): number =>
     this.shortTermSales().reduce(
-      (acc, p) => acc + p.closePrice! * p.quantity,
+      (acc, p) => acc + p.closePrice * p.quantity - (p.closeFee ?? 0),
       0
     )
 
   shortTermTotalCost = (): number =>
-    this.shortTermSales().reduce((acc, p) => acc + p.openPrice! * p.quantity, 0)
+    this.shortTermSales().reduce(
+      (acc, p) => acc + p.openPrice * p.quantity + p.openFee,
+      0
+    )
 
   shortTermTotalGain = (): number =>
     this.shortTermTotalProceeds() - this.shortTermTotalCost()
@@ -163,10 +158,16 @@ export default class F8949 extends Form {
   shortTermTotalAdjustments = (): number | undefined => undefined
 
   longTermTotalProceeds = (): number =>
-    this.longTermSales().reduce((acc, p) => acc + p.closePrice! * p.quantity, 0)
+    this.longTermSales().reduce(
+      (acc, p) => acc + p.closePrice * p.quantity - (p.closeFee ?? 0),
+      0
+    )
 
   longTermTotalCost = (): number =>
-    this.longTermSales().reduce((acc, p) => acc + p.openPrice! * p.quantity, 0)
+    this.longTermSales().reduce(
+      (acc, p) => acc + p.openPrice * p.quantity + p.openFee,
+      0
+    )
 
   longTermTotalGain = (): number =>
     this.longTermTotalProceeds() - this.longTermTotalCost()
@@ -174,31 +175,28 @@ export default class F8949 extends Form {
   // TODO: handle adjustments column.
   longTermTotalAdjustments = (): number | undefined => undefined
 
-  fields = (): Array<string | number | boolean | undefined> => {
-    const tp = new TaxPayer(this.tp)
-    return [
-      tp.namesString(),
-      this.tp.primaryPerson?.ssid,
-      this.part1BoxA(),
-      this.part1BoxB(),
-      this.part1BoxC(),
-      ...this.shortTermLines().flat(),
-      this.shortTermTotalProceeds(),
-      this.shortTermTotalCost(),
-      undefined, // greyed out field
-      this.shortTermTotalAdjustments(),
-      this.shortTermTotalGain(),
-      tp.namesString(),
-      this.tp.primaryPerson?.ssid,
-      this.part2BoxD(),
-      this.part2BoxE(),
-      this.part2BoxF(),
-      ...this.longTermLines().flat(),
-      this.longTermTotalProceeds(),
-      this.longTermTotalCost(),
-      undefined, // greyed out field
-      this.longTermTotalAdjustments(),
-      this.longTermTotalGain()
-    ]
-  }
+  fields = (): Field[] => [
+    this.f1040.namesString(),
+    this.f1040.info.taxPayer.primaryPerson.ssid,
+    this.part1BoxA(),
+    this.part1BoxB(),
+    this.part1BoxC(),
+    ...this.shortTermLines().flat(),
+    this.shortTermTotalProceeds(),
+    this.shortTermTotalCost(),
+    undefined, // greyed out field
+    this.shortTermTotalAdjustments(),
+    this.shortTermTotalGain(),
+    this.f1040.namesString(),
+    this.f1040.info.taxPayer.primaryPerson.ssid,
+    this.part2BoxD(),
+    this.part2BoxE(),
+    this.part2BoxF(),
+    ...this.longTermLines().flat(),
+    this.longTermTotalProceeds(),
+    this.longTermTotalCost(),
+    undefined, // greyed out field
+    this.longTermTotalAdjustments(),
+    this.longTermTotalGain()
+  ]
 }
