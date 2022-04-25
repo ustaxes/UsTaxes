@@ -63,7 +63,7 @@ export const infoToStringInfo = <I extends Information<Date>>(
   healthSavingsAccounts: info.healthSavingsAccounts.map((h) => ({
     ...h,
     startDate: h.startDate.toISOString(),
-    endDate: h.endDate?.toISOString()
+    endDate: h.endDate.toISOString()
   })),
   taxPayer: {
     ...info.taxPayer,

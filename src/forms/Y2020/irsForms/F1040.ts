@@ -277,19 +277,16 @@ export default class F1040 extends F1040Base {
     }
   }
 
-  // TODO -> born before 1956/01/02
   bornBeforeDate = (): boolean =>
-    (this.info.taxPayer.primaryPerson?.dateOfBirth ?? new Date()) <
+    this.info.taxPayer.primaryPerson.dateOfBirth <
     new Date(CURRENT_YEAR - 64, 0, 2)
-  // TODO
-  blind = (): boolean => this.info.taxPayer.primaryPerson?.isBlind ?? false
 
-  // TODO
+  blind = (): boolean => this.info.taxPayer.primaryPerson.isBlind
+
   spouseBeforeDate = (): boolean =>
     (this.info.taxPayer.spouse?.dateOfBirth ?? new Date()) <
     new Date(CURRENT_YEAR - 64, 0, 2)
 
-  // TODO
   spouseBlind = (): boolean => this.info.taxPayer.spouse?.isBlind ?? false
 
   validW2s = (): IncomeW2[] => {

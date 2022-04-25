@@ -327,10 +327,10 @@ export default class F1040 extends F1040Base {
 
   // born before 1957/01/02
   bornBeforeDate = (): boolean =>
-    (this.info.taxPayer.primaryPerson?.dateOfBirth ?? new Date()) <
+    this.info.taxPayer.primaryPerson.dateOfBirth <
     new Date(CURRENT_YEAR - 64, 0, 2)
 
-  blind = (): boolean => this.info.taxPayer.primaryPerson?.isBlind ?? false
+  blind = (): boolean => this.info.taxPayer.primaryPerson.isBlind
 
   spouseBeforeDate = (): boolean =>
     (this.info.taxPayer.spouse?.dateOfBirth ?? new Date()) <
