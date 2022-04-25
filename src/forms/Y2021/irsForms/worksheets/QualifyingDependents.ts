@@ -16,14 +16,13 @@ export default class QualifyingDependents {
   }
 
   qualifiesChild = (d: Dependent): boolean =>
-    d.qualifyingInfo !== undefined &&
-    this.year - d.qualifyingInfo.birthYear <
-      federal.QualifyingDependents.childMaxAge
+    this.year - d.dateOfBirth.getFullYear() <
+    federal.QualifyingDependents.childMaxAge
 
   qualifiesOther = (d: Dependent): boolean =>
     d.qualifyingInfo !== undefined &&
     !this.qualifiesChild(d) &&
-    this.year - d.qualifyingInfo.birthYear <
+    this.year - d.dateOfBirth.getFullYear() <
       (d.qualifyingInfo.isStudent
         ? federal.QualifyingDependents.qualifyingDependentMaxAge
         : federal.QualifyingDependents.qualifyingStudentMaxAge)
