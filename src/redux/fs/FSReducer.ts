@@ -39,7 +39,7 @@ const fsReducer = <S extends USTState, A extends AnyAction>(
               )
             )
           )
-        }
+        } as S // migrations return any, must coerce.
       }
       case 'fs/persist': {
         download(filename, JSON.stringify(serializeTransform(newState)))

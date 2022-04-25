@@ -88,10 +88,21 @@ const dateStringTransform = createTransform(
 // Each version takes a state and applies a function that
 // generates the state for that version from the previous
 // version.
+
+// The below migrations deal with types that don't exist in this
+// project anymore, and the hope is that after applying the
+// migrations to the user's data, the resulting data will match
+// the YearsTaxesState<Date> type. But without maintaining
+// type definititions for every possible version, we can't
+// really say anything about the type of the incoming data.
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unsafe-return */
 const migrations = {
   0: (state: any) => migrateEachYear(state),
   1: (state: any) => migrateAgeAndBlindness(state)
 }
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+/* eslint-enable @typescript-eslint/no-explicit-any */
 
 const persistedReducer = fsReducer(
   'ustaxes_save.json',
