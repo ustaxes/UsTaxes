@@ -1,7 +1,8 @@
 import Form, { FormMethods } from 'ustaxes/core/stateForms/Form'
 import F1040 from '../../irsForms/F1040'
 import { Field } from 'ustaxes/core/pdfFiller'
-import { IncomeW2, Information, PersonRole, State } from 'ustaxes/core/data'
+import { IncomeW2, PersonRole, State } from 'ustaxes/core/data'
+import { ValidatedInformation } from 'ustaxes/forms/F1040Base'
 
 type FormType =
   | 'W' // W-2
@@ -34,7 +35,7 @@ const toWithholdingForm = (w2: IncomeW2): WithholdingForm | undefined => {
   ) {
     return {
       formType: ['W', undefined],
-      ein: w2.employer?.EIN ?? '',
+      ein: w2.employer.EIN,
       federalWages: w2.income,
       ilWages: w2.stateWages,
       ilTax: w2.stateWithholding,
@@ -49,7 +50,7 @@ const toWithholdingForm = (w2: IncomeW2): WithholdingForm | undefined => {
  * TODO: support more than 5 for each
  */
 export class ILWIT extends Form {
-  info: Information
+  info: ValidatedInformation
   f1040: F1040
   formName = 'IL-WIT'
   state: State = 'IL'
@@ -59,9 +60,9 @@ export class ILWIT extends Form {
 
   static WITHHOLDING_FORMS_PER_PAGE = 5
 
-  constructor(info: Information, f1040: F1040, subFormIndex = 0) {
+  constructor(f1040: F1040, subFormIndex = 0) {
     super()
-    this.info = info
+    this.info = f1040.info
     this.f1040 = f1040
     this.methods = new FormMethods(this)
     this.formIndex = subFormIndex
@@ -88,7 +89,7 @@ export class ILWIT extends Form {
 
       return Array(copiesNeeded)
         .fill(undefined)
-        .map((x, i) => new ILWIT(this.info, this.f1040, i + 1))
+        .map((x, i) => new ILWIT(this.f1040, i + 1))
     }
 
     return []
@@ -108,7 +109,7 @@ export class ILWIT extends Form {
    */
   Yourname = (): string | undefined => {
     const person = this.info.taxPayer.primaryPerson
-    return `${person?.firstName} ${person?.lastName}`
+    return [person.firstName, person.lastName].flat().join(' ')
   }
 
   f1 = (): string | undefined => this.Yourname()
@@ -117,7 +118,7 @@ export class ILWIT extends Form {
    * Index 2: Your SSN-3
    */
   YourSSN3 = (): string | undefined =>
-    this.info.taxPayer.primaryPerson?.ssid.slice(0, 3)
+    this.info.taxPayer.primaryPerson.ssid.slice(0, 3)
 
   f2 = (): string | undefined => this.YourSSN3()
 
@@ -125,7 +126,7 @@ export class ILWIT extends Form {
    * Index 3: Your SSN-2
    */
   YourSSN2 = (): string | undefined =>
-    this.info.taxPayer.primaryPerson?.ssid.slice(3, 5)
+    this.info.taxPayer.primaryPerson.ssid.slice(3, 5)
 
   f3 = (): string | undefined => this.YourSSN2()
 
@@ -133,7 +134,7 @@ export class ILWIT extends Form {
    * Index 4: Your SSN-4
    */
   YourSSN4 = (): string | undefined =>
-    this.info.taxPayer.primaryPerson?.ssid.slice(5)
+    this.info.taxPayer.primaryPerson.ssid.slice(5)
 
   f4 = (): string | undefined => this.YourSSN4()
 
@@ -165,8 +166,8 @@ export class ILWIT extends Form {
       form.ilWages,
       form.ilTax
     ]),
-    ...Array.from(Array(5 - forms.length)).flatMap(() =>
-      Array(5).fill(undefined)
+    ...Array.from<undefined>(Array(5 - forms.length)).flatMap(() =>
+      Array<undefined>(5).fill(undefined)
     )
   ]
 
@@ -244,7 +245,6 @@ export class ILWIT extends Form {
   ]
 }
 
-const makeILWIT = (info: Information, f1040: F1040): ILWIT =>
-  new ILWIT(info, f1040)
+const makeILWIT = (f1040: F1040): ILWIT => new ILWIT(f1040)
 
 export default makeILWIT

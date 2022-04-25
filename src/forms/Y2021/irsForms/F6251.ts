@@ -284,7 +284,7 @@ export default class F6251 extends F1040Attachment {
     if (l6 === 0) {
       return 0
     }
-    return Math.max(0, (this.l9() ?? 0) - (this.l10() ?? 0))
+    return Math.max(0, this.l9() - this.l10())
   }
 
   part3 = (): Part3 => {
@@ -292,10 +292,6 @@ export default class F6251 extends F1040Attachment {
       return {}
     }
     const fs = this.f1040.info.taxPayer.filingStatus
-    if (fs === undefined) {
-      throw new Error('Filing status is undefined')
-    }
-
     const qdivWorksheet = this.f1040.qualifiedAndCapGainsWorksheet
     const schDWksht = this.f1040.scheduleD?.taxWorksheet
     const usingTaxWorksheet = schDWksht !== undefined && schDWksht.isNeeded()
@@ -343,9 +339,9 @@ export default class F6251 extends F1040Attachment {
       return Math.min(l13 + l14, schDWksht.l10() ?? 0)
     })()
 
-    const l16 = Math.min(l12 ?? 0, l15 ?? 0)
+    const l16 = Math.min(l12, l15)
 
-    const l17 = (l12 ?? 0) - (l16 ?? 0)
+    const l17 = l12 - l16
 
     const l18 = (() => {
       const [c1, c2] = l18Consts
@@ -370,13 +366,13 @@ export default class F6251 extends F1040Attachment {
       return Math.max(0, this.f1040.l15())
     })()
 
-    const l21 = Math.max(0, (l19 ?? 0) - (l20 ?? 0))
+    const l21 = Math.max(0, l19 - l20)
 
-    const l22 = Math.min(l12 ?? 0, l13 ?? 0)
+    const l22 = Math.min(l12, l13)
 
-    const l23 = Math.min(l21 ?? 0, l22 ?? 0)
+    const l23 = Math.min(l21, l22)
 
-    const l24 = Math.max(0, (l22 ?? 0) - (l23 ?? 0))
+    const l24 = Math.max(0, l22 - l23)
 
     const l25 = l25Value[fs]
 
@@ -464,8 +460,8 @@ export default class F6251 extends F1040Attachment {
   fields = (): Field[] => {
     const p3 = this.part3()
     return [
-      this.f1040.info.namesString(),
-      this.f1040.info.taxPayer.primaryPerson?.ssid,
+      this.f1040.namesString(),
+      this.f1040.info.taxPayer.primaryPerson.ssid,
       // Part I
       this.l1(),
       this.l2a(),

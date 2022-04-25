@@ -16,14 +16,6 @@ const cutoffAmounts: Cutoffs = {
 }
 
 export default class QualDivAndCGWorksheet extends Worksheet {
-  fs = (): FilingStatus => {
-    const fs = this.f1040.info.taxPayer.filingStatus
-    if (fs === undefined) {
-      throw new Error('Filing status is undefined')
-    }
-    return fs
-  }
-
   // 1. Enter the amount from Form 1040 or 1040-SR, line 15.
   // However, if you are filing Form 2555(relating to foreign earned income),
   // enter the amount from line 3 of the Foreign Earned Income Tax Worksheet
@@ -42,8 +34,8 @@ export default class QualDivAndCGWorksheet extends Worksheet {
   l3 = (): number => {
     if (this.f1040.scheduleD !== undefined) {
       return Math.min(
-        Math.max(this.f1040.scheduleD?.l15() ?? 0, 0),
-        Math.max(this.f1040.scheduleD?.l16() ?? 0, 0)
+        Math.max(this.f1040.scheduleD.l15(), 0),
+        Math.max(this.f1040.scheduleD.l16(), 0)
       )
     }
     return this.f1040.l7() ?? 0
@@ -55,7 +47,7 @@ export default class QualDivAndCGWorksheet extends Worksheet {
   // 6. Enter:
   // $40,400 if single or married filing separately,
   // $80,800 if married filing jointly or qualifying widow(er), $54,100 if head of household.
-  l6 = (): number => cutoffAmounts[this.fs()][0]
+  l6 = (): number => cutoffAmounts[this.f1040.info.taxPayer.filingStatus][0]
   // 7. Enter the smaller of line 1 or line 6
   l7 = (): number => Math.min(this.l1(), this.l6())
   // 8. Enter the smaller of line 5 or line 7
@@ -71,7 +63,7 @@ export default class QualDivAndCGWorksheet extends Worksheet {
   // 13. Enter:
   // $445,850 if single, $250,800 if married filing separately, $501,600 if married filing jointly or qualifying widow(er), $473,750 if head of household.
   //
-  l13 = (): number => cutoffAmounts[this.fs()][1]
+  l13 = (): number => cutoffAmounts[this.f1040.info.taxPayer.filingStatus][1]
   // 14. Enter the smaller of line 1 or line 13
   l14 = (): number => Math.min(this.l1(), this.l13())
   // 15. Add lines 5 and 9
@@ -91,11 +83,13 @@ export default class QualDivAndCGWorksheet extends Worksheet {
   l21 = (): number =>
     (this.l20() * federalBrackets.longTermCapGains.rates[2]) / 100
   // 22. Figure the tax on the amount on line 5. If the amount on line 5 is less than $100,000, use the Tax Table to figure the tax. If the amount on line 5 is $100,000 or more, use the Tax Computation Worksheet
-  l22 = (): number => computeOrdinaryTax(this.fs(), this.l5())
+  l22 = (): number =>
+    computeOrdinaryTax(this.f1040.info.taxPayer.filingStatus, this.l5())
   // 23. Add lines 18, 21, and 22
   l23 = (): number => this.l18() + this.l21() + this.l22()
   // 24. Figure the tax on the amount on line 1. If the amount on line 1 is less than $100,000, use the Tax Table to figure the tax. If the amount on line 1 is $100,000 or more, use the Tax Computation Worksheet
-  l24 = (): number => computeOrdinaryTax(this.fs(), this.l1())
+  l24 = (): number =>
+    computeOrdinaryTax(this.f1040.info.taxPayer.filingStatus, this.l1())
   // 25. Tax on all taxable income. Enter the smaller of line 23 or 24. Also include this amount on the entry space on Form 1040 or 1040-SR, line 16. If you are filing Form 2555, don’t enter this amount on the entry space on Form 1040 or 1040-SR, line 16. Instead, enter it on line 4 of the Foreign Earned Income Tax Worksheet
   l25 = (): number => Math.min(this.l23(), this.l24())
 

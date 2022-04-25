@@ -5,6 +5,9 @@
  * @returns tyepsafe array of keys
  */
 
+import _ from 'lodash'
+import { DeepMap, DeepPartial } from 'react-hook-form'
+
 export const enumKeys = <A>(a: A): Array<keyof typeof a> =>
   Object.keys(a).filter((k) => isNaN(Number(k))) as Array<keyof typeof a>
 
@@ -131,7 +134,7 @@ export const runAsync = <E, A>(
   e: Promise<Either<E, A>>
 ): Promise<EitherMethods<E, A>> => e.then(run)
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// eslint-disable-next-line @typescript-eslint/no-explicit-any,@typescript-eslint/no-unsafe-member-access
 export const isDesktop = (): boolean => (window as any).__TAURI__ !== undefined
 
 export const isWeb = (): boolean => !isDesktop()
@@ -164,9 +167,17 @@ export const parseFormNumber = (x: string | undefined): number | undefined => {
 export const parseFormNumberOrThrow = (x: string | undefined): number => {
   const res = parseFormNumber(x)
   if (res === undefined) {
-    throw new Error(`${x} does not parse to number`)
+    throw new Error(`${x ?? 'undefined'} does not parse to number`)
   }
   return res
+}
+
+export const numberOfDaysBetween = (d1: Date, d2: Date): number => {
+  const [start, end] = [d1, d2].map((d) =>
+    // Ignore time part if it exists.
+    new Date(d.toISOString().slice(0, 10)).getTime()
+  )
+  return Math.abs(end - start) / 1000 / 60 / 60 / 24
 }
 
 export const nextMultipleOf =
@@ -184,3 +195,28 @@ export const nextMultipleOf =
   }
 
 export const nextMultipleOf1000 = nextMultipleOf(1000)
+
+/**
+ * https://github.com/typescript-eslint/typescript-eslint/issues/4619#issuecomment-1055653098
+ *
+ * Mark a promise as intentionally floating, not awaited.
+ *
+ * In react, we often want to do something asynchronous as a result
+ * of a user action, such as when there is an onClick to handle. onClick
+ * expects a function that returns void. But in these asynchronous cases
+ * we have a promise with no one around to await it. So explicitly mark
+ * this use as acceptable by wrapping the handler in this function.
+ */
+export const intentionallyFloat = <A extends unknown[]>(
+  fn: (...args: A) => Promise<unknown>
+): ((...args: A) => void) => {
+  return (...args) => {
+    void fn(...args)
+  }
+}
+
+export const getNestedValue = <A, E, V>(
+  obj: DeepMap<DeepPartial<A>, E>,
+  path: string,
+  defaultValue: V
+): E | V => _.get(obj, path, defaultValue) as E | V

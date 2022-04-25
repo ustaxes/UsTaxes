@@ -14,15 +14,7 @@ import {
   createMigrate
 } from 'redux-persist'
 import storage from 'redux-persist/lib/storage' // defaults to localStorage for web
-import {
-  Asset,
-  Information,
-  TaxYear,
-  PrimaryPerson,
-  Dependent,
-  Spouse,
-  FilingStatus
-} from 'ustaxes/core/data'
+import { Asset, Information, TaxYear } from 'ustaxes/core/data'
 import { blankYearTaxesState, YearsTaxesState } from '.'
 import { Actions } from './actions'
 import { PersistPartial } from 'redux-persist/es/persistReducer'

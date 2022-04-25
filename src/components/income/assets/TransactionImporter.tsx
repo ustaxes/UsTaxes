@@ -10,6 +10,7 @@ import {
   Portfolio,
   Position,
   processTransactions,
+  Side,
   Transaction,
   TransactionError
 } from 'ustaxes/data/transactions'
@@ -24,10 +25,7 @@ import {
   run
 } from 'ustaxes/core/util'
 import { Asset } from 'ustaxes/core/data'
-import ConfigurableDataTable, {
-  baseCellStyle,
-  forceHeadCells
-} from './ConfigurableDataTable'
+import ConfigurableDataTable, { ColumnDef } from './ConfigurableDataTable'
 
 interface PortfolioTableProps {
   portfolio: Portfolio
@@ -40,46 +38,42 @@ export const PortfolioTable = ({
 
   const columns: TableColumn<Position>[] = [
     {
-      name: 'Security',
-      selector: (p) => p.security.name,
-      style: baseCellStyle(prefersDarkMode)
+      name: 'Asset Name',
+      selector: (p) => p.security.name
     },
     {
       name: 'Open Date',
-      selector: (p) => p.openDate,
-      style: baseCellStyle(prefersDarkMode)
+      selector: (p) => p.openDate
     },
     {
       name: 'Quantity',
-      selector: (p) => p.quantity,
-      style: baseCellStyle(prefersDarkMode)
+      selector: (p) => p.quantity
     },
     {
       name: 'Price per unit',
-      selector: (p) => p.price,
-      style: baseCellStyle(prefersDarkMode)
+      selector: (p) => p.price
     },
     {
       name: 'Basis',
-      selector: (p) => p.price * p.quantity,
-      style: baseCellStyle(prefersDarkMode)
+      selector: (p) => p.price * p.quantity
     },
     {
       name: 'Close Date',
-      selector: (p) => p.closeDate ?? '',
-      style: baseCellStyle(prefersDarkMode)
+      selector: (p) => p.closeDate ?? ''
+    },
+    {
+      name: 'Close Fee',
+      selector: (p) => (p.closeDate === undefined ? '' : p.closeFee ?? 0)
     },
     {
       name: 'Proceeds',
       selector: (p) =>
-        p.closePrice !== undefined ? p.quantity * p.closePrice : '',
-      style: baseCellStyle(prefersDarkMode)
+        p.closePrice !== undefined ? p.quantity * p.closePrice : ''
     },
     {
       name: 'Gain or Loss',
       selector: (p) =>
-        p.closePrice !== undefined ? (p.closePrice - p.price) * p.quantity : '',
-      style: baseCellStyle(prefersDarkMode)
+        p.closePrice !== undefined ? (p.closePrice - p.price) * p.quantity : ''
     }
   ]
 
@@ -87,18 +81,21 @@ export const PortfolioTable = ({
     <DataTable
       columns={columns}
       data={portfolio.positions}
-      customStyles={forceHeadCells(prefersDarkMode)}
+      theme={prefersDarkMode ? 'dark' : 'normal'}
     />
   )
 }
 
+const field = (name: string, required = true): ColumnDef => ({ name, required })
+
 // The fields that must be set by the user after importing a CSV file
-const fields = [
-  'Security Name',
-  'Transaction date',
-  'Buy or Sell',
-  'Price per unit',
-  'Quantity'
+const fields: ColumnDef[] = [
+  field('Asset Name'),
+  field('Transaction date'),
+  field('Buy or Sell'),
+  field('Price per unit'),
+  field('Quantity'),
+  field('Fee / commissions', false)
 ]
 
 export const TransactionImporter = (): ReactElement => {
@@ -122,7 +119,10 @@ export const TransactionImporter = (): ReactElement => {
   const dispatch = useDispatch()
 
   const ready = () =>
-    fields.every((f) => fieldAssignments.filter((a) => a === f).length === 1)
+    fields.every(
+      (f) =>
+        !f.required || fieldAssignments.filter((a) => a === f.name).length === 1
+    )
 
   const assignField = (colIndex: number, field: string | undefined) => {
     const newFieldAssignments = [...fieldAssignments]
@@ -177,6 +177,32 @@ export const TransactionImporter = (): ReactElement => {
       }
     })()
 
+    const side: Either<string, Side> = (() => {
+      const cell = row[assignments.indexOf('Buy or Sell')].toLowerCase()
+      if (cell === 'buy') {
+        return right('BUY')
+      }
+      if (cell === 'sell') {
+        return right('SELL')
+      }
+      return left(`Could not parse value ${cell} as buy or sell`)
+    })()
+
+    const feeIdx = assignments.indexOf('Fee / commissions')
+
+    const fee: Either<string, number | undefined> = (() => {
+      if (feeIdx < 0) {
+        return right(undefined)
+      }
+      const feeStr = row[feeIdx]
+      const v = parseFloat(feeStr)
+      if (isNaN(v)) {
+        return left(`Could not parse fee value (${feeStr}) as number`)
+      } else {
+        return right(v)
+      }
+    })()
+
     // Either is a fail-fast construct, so
     // we dont (yet) have a way to nicely combine
     // errors.
@@ -191,22 +217,29 @@ export const TransactionImporter = (): ReactElement => {
     if (isLeft(price)) {
       errors.push(price.left)
     }
+    if (isLeft(side)) {
+      errors.push(side.left)
+    }
 
     // bad if condition necessary for typechecking below.
-    if (isLeft(date) || isLeft(quantity) || isLeft(price)) {
+    if (
+      isLeft(date) ||
+      isLeft(quantity) ||
+      isLeft(price) ||
+      isLeft(side) ||
+      isLeft(fee)
+    ) {
       return left(errors)
     } else {
       return right({
         security: {
-          name: row[assignments.indexOf('Security Name')]
+          name: row[assignments.indexOf('Asset Name')]
         },
         date: date.right.toISOString().slice(0, 10),
         quantity: quantity.right,
         price: price.right,
-        side:
-          row[assignments.indexOf('Buy or Sell')].toLowerCase() === 'buy'
-            ? 'BUY'
-            : 'SELL'
+        side: side.right,
+        fee: fee.right
       })
     }
   }
@@ -301,6 +334,8 @@ export const TransactionImporter = (): ReactElement => {
       openPrice: position.price,
       positionType: 'Security',
       quantity: position.quantity,
+      openFee: position.openFee,
+      closeFee: position.closeFee,
       closeDate:
         position.closeDate !== undefined
           ? new Date(position.closeDate)

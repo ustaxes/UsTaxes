@@ -1,12 +1,12 @@
 import F1040Attachment from './F1040Attachment'
-import { Dependent, FilingStatus } from 'ustaxes/core/data'
+import { CreditType, Dependent, FilingStatus } from 'ustaxes/core/data'
 import { sumFields } from 'ustaxes/core/irsForms/util'
 import { FormTag } from 'ustaxes/core/irsForms/Form'
 import { CURRENT_YEAR } from '../data/federal'
 import { Field } from 'ustaxes/core/pdfFiller'
 import { nextMultipleOf1000 } from 'ustaxes/core/util'
 
-type Part1b = Partial<{
+type Part1b = { allowed: boolean } & Partial<{
   l14a: number
   l14b: number
   l14c: number
@@ -18,8 +18,7 @@ type Part1b = Partial<{
   l14i: number
 }>
 
-type Part1c = Partial<{
-  allowed: boolean
+type Part1c = { allowed: boolean } & Partial<{
   l15a: number
   l15b: number
   l15c: number
@@ -30,7 +29,7 @@ type Part1c = Partial<{
   l15h: number
 }>
 
-type Part2a = Partial<{
+type Part2a = { allowed: boolean } & Partial<{
   l16a: number
   l16bdeps: number
   l16b: number
@@ -46,7 +45,7 @@ type Part2a = Partial<{
   toLine27: number
 }>
 
-type Part2b = Partial<{
+type Part2b = { allowed: boolean } & Partial<{
   l21: number
   l22: number
   l23: number
@@ -56,7 +55,7 @@ type Part2b = Partial<{
   toLine27: number
 }>
 
-type Part3 = Partial<{
+type Part3 = { allowed: boolean } & Partial<{
   l28a: number
   l28b: number
   l29: number
@@ -92,7 +91,7 @@ export default class Schedule8812 extends F1040Attachment {
   l3 = (): number => sumFields([this.l1(), this.l2d()])
 
   creditDependents = (): Dependent[] =>
-    this.f1040.childTaxCreditWorksheet?.qualifyingChildren() ?? []
+    this.f1040.qualifyingDependents.qualifyingChildren()
 
   l4a = (): number => this.creditDependents().length
 
@@ -111,9 +110,6 @@ export default class Schedule8812 extends F1040Attachment {
    */
   l5 = (): number => {
     const fs = this.f1040.info.taxPayer.filingStatus
-    if (fs === undefined) {
-      throw new Error('filing status is undefined')
-    }
 
     const wsl1 = this.l4b() * 3600
     const wsl2 = this.l4c() * 3000
@@ -204,33 +200,33 @@ export default class Schedule8812 extends F1040Attachment {
   }
 
   // TODO: Letter 6419 advance child tax credit payments
-  letter6419Payments = (): number | undefined => undefined
+  letter6419Payments = (): number | undefined =>
+    this.f1040.info.credits
+      .filter((c) => c.type === CreditType.AdvanceChildTaxCredit)
+      .reduce((sum, c) => sum + c.amount, 0)
 
   part1b = (): Part1b => {
     const allowed = this.l13a() || this.l13b()
-    const ifAble = <A>(f: () => A): A | undefined => {
-      if (allowed) {
-        return f()
-      }
-    }
+    if (!allowed) return { allowed: false }
 
-    const l14a = ifAble(() => Math.min(this.l7(), this.l12()))
-    const l14b = ifAble(() => Math.max(this.l12() - (l14a ?? 0)))
-    const l14c = ifAble(() => (l14a === 0 ? 0 : this.creditLimitWorksheetA()))
-    const l14d = ifAble(() => Math.min(l14a ?? 0, l14c ?? 0))
-    const l14e = ifAble(() => sumFields([l14b, l14d]))
+    const l14a = Math.min(this.l7(), this.l12())
+    const l14b = Math.max(this.l12() - l14a)
+    const l14c = l14a === 0 ? 0 : this.creditLimitWorksheetA()
+    const l14d = Math.min(l14a, l14c)
+    const l14e = sumFields([l14b, l14d])
     // TODO:
     // IMPORTANT: Letter 6419 advance child tax credit payments
-    const l14f = ifAble(() => this.letter6419Payments())
-    const l14g = ifAble(() => Math.max(0, (l14e ?? 0) - (l14f ?? 0)))
+    const l14f = this.letter6419Payments() ?? 0
+    const l14g = Math.max(0, l14e - l14f)
 
     // Credit for other dependents
-    const l14h = ifAble(() => Math.min(l14d ?? 0, l14g ?? 0))
+    const l14h = Math.min(l14d, l14g)
 
     // Refundable child tax credit
-    const l14i = ifAble(() => Math.max(0, (l14g ?? 0) - (l14h ?? 0)))
+    const l14i = Math.max(0, l14g - l14h)
 
     return {
+      allowed,
       l14a,
       l14b,
       l14c,
@@ -245,22 +241,18 @@ export default class Schedule8812 extends F1040Attachment {
 
   part1c = (): Part1c => {
     const allowed = !(this.l13a() || this.l13b())
-    const ifAble = <A>(f: () => A): A | undefined => {
-      if (allowed) {
-        return f()
-      }
-    }
+    if (!allowed) return { allowed: false }
 
-    const l15a = ifAble(() => this.creditLimitWorksheetA())
-    const l15b = ifAble(() => Math.min(this.l12(), l15a ?? 0))
+    const l15a = this.creditLimitWorksheetA()
+    const l15b = Math.min(this.l12(), l15a)
 
     //TODO - implement after 2a through 2c
-    const l15c = ifAble(() => this.l27() ?? 0)
-    const l15d = ifAble(() => sumFields([l15b, l15c]))
-    const l15e = ifAble(() => this.letter6419Payments())
-    const l15f = ifAble(() => Math.max(0, (l15d ?? 0) - (l15e ?? 0)))
-    const l15g = ifAble(() => Math.min(l15b ?? 0, l15f ?? 0))
-    const l15h = ifAble(() => Math.max(0, (l15f ?? 0) - (l15g ?? 0)))
+    const l15c = this.l27() ?? 0
+    const l15d = sumFields([l15b, l15c])
+    const l15e = this.letter6419Payments() ?? 0
+    const l15f = Math.max(0, l15d - l15e)
+    const l15g = Math.min(l15b, l15f)
+    const l15h = Math.max(0, l15f - l15g)
 
     return {
       allowed,
@@ -286,10 +278,13 @@ export default class Schedule8812 extends F1040Attachment {
     )
   }
 
+  to1040Line19 = (): number | undefined =>
+    this.part1b().l14h ?? this.part1c().l15g
+
   to1040Line28 = (): number | undefined =>
     this.part1b().l14i ?? this.part1c().l15h
 
-  earnedIncomeWorksheet = (): number | undefined => {
+  earnedIncomeWorksheet = (): number => {
     const l1a = this.f1040.l1()
     const l1b = this.f1040.nonTaxableCombatPay()
     const l2a = this.f1040.scheduleC?.l1() ?? 0
@@ -297,12 +292,13 @@ export default class Schedule8812 extends F1040Attachment {
     // data also belong here.
     const l2b = this.f1040.scheduleC?.l31() ?? 0
     // TODO: Net farm profit...
-    const l2c = undefined
+    // const l2c = undefined
     // TODO: Farm optional method for self-employment net earnings
     const l2d = 0
 
+    // TODO: min(l2c, l2d)
     // Allowed to be a loss:
-    const l2e = Math.min(l2c ?? 0, l2d)
+    const l2e = Math.min(0, l2d)
 
     const l3 = sumFields([l1a, l1b, l2a, l2b, l2e])
 
@@ -331,49 +327,41 @@ export default class Schedule8812 extends F1040Attachment {
     return l7
   }
 
-  part2Allowed = (): boolean =>
-    this.part2AllowedBy1C() &&
-    this.f1040.f2555 === undefined &&
-    !(this.l13a() || this.l13b())
-
-  ifAblePart2 = <A>(f: () => A): A | undefined => {
-    if (this.part2Allowed()) {
-      return f()
-    }
-  }
-
   part2a = (): Part2a => {
-    const ifAble = this.ifAblePart2
+    const l16a = Math.max(0, this.l12() - (this.part1c().l15b ?? 0))
+    const l16bdeps = this.l4a()
 
-    const l16a = ifAble(() =>
-      Math.max(0, this.l12() - (this.part1c().l15b ?? 0))
-    )
-    const l16bdeps = ifAble(() => this.l4a())
-    const l16b = ifAble(() => (l16bdeps ?? 0) * 1400)
-    const ifAble2 = <A>(f: () => A): A | undefined => {
-      if (this.part2Allowed() && (l16b ?? 0) > 0) {
-        return f()
-      }
-    }
-    const l17 = ifAble2(() => Math.min(l16a ?? 0, l16b ?? 0))
-    const l18a = ifAble2(() => this.earnedIncomeWorksheet())
-    const l18b = ifAble2(() => this.f1040.nonTaxableCombatPay())
-    const l19No = ifAble2(() => (l18a ?? 0) > 2500)
-    const l19Yes = ifAble2(() => (l18a ?? 0) <= 2500)
-    const l19 = ifAble2(() => Math.max(0, (l18a ?? 0) - 2500))
-    const l20 = ifAble2(() => (l19 ?? 0) * 0.15)
-    const l20No = ifAble2(() => (l16b ?? 0) >= 4200)
-    const l20Yes = ifAble2(() => (l16b ?? 0) < 4200)
+    const allowed =
+      this.part2AllowedBy1C() &&
+      this.f1040.f2555 === undefined &&
+      !(this.l13a() || this.l13b()) &&
+      l16a > 0 &&
+      l16bdeps > 0
+
+    if (!allowed) return { allowed: false }
+
+    const l16b = l16bdeps * 1400
+
+    const l17 = Math.min(l16a, l16b)
+    const l18a = this.earnedIncomeWorksheet()
+    const l18b = this.f1040.nonTaxableCombatPay() ?? 0
+    const l19No = l18a > 2500
+    const l19Yes = l18a <= 2500
+    const l19 = Math.max(0, l18a - 2500)
+    const l20 = l19 * 0.15
+    const l20No = l16b >= 4200
+    const l20Yes = l16b < 4200
 
     const toLine27 = (() => {
-      if (l20No && (l20 ?? 0) > 0) {
-        return Math.min(l17 ?? 0, l20 ?? 0)
-      } else if (l20Yes && (l20 ?? 0) >= (l17 ?? 0)) {
+      if (l20No && l20 > 0) {
+        return Math.min(l17, l20)
+      } else if (l20Yes && l20 >= l17) {
         return l17
       }
     })()
 
     return {
+      allowed: true,
       l16a,
       l16bdeps,
       l16b,
@@ -393,13 +381,9 @@ export default class Schedule8812 extends F1040Attachment {
   part2b = (): Part2b => {
     const part2a = this.part2a()
     // three or more qualifying children.
-    const allowed = this.part2Allowed() && this.l4a() >= 3
+    const allowed = part2a.allowed
 
-    const ifAble = <A>(f: () => A): A | undefined => {
-      if (allowed) {
-        return f()
-      }
-    }
+    if (!allowed) return { allowed: false }
 
     const ssWithholding = this.f1040
       .validW2s()
@@ -409,30 +393,27 @@ export default class Schedule8812 extends F1040Attachment {
       .validW2s()
       .reduce((res, w2) => res + w2.medicareWithholding, 0)
 
-    const l21 = ifAble(() => ssWithholding + medicareWithholding)
+    const l21 = ssWithholding + medicareWithholding
 
-    const l22 = ifAble(() =>
-      sumFields([
-        this.f1040.schedule1?.l15(),
-        this.f1040.schedule2?.l5(),
-        this.f1040.schedule2?.l6(),
-        this.f1040.schedule2?.l13()
-      ])
-    )
+    const l22 = sumFields([
+      this.f1040.schedule1?.l15(),
+      this.f1040.schedule2?.l5(),
+      this.f1040.schedule2?.l6(),
+      this.f1040.schedule2?.l13()
+    ])
 
-    const l23 = ifAble(() => sumFields([l21, l22]))
+    const l23 = sumFields([l21, l22])
 
-    const l24 = ifAble(() =>
-      sumFields([this.f1040.l27a(), this.f1040.schedule3?.l11()])
-    )
+    const l24 = sumFields([this.f1040.l27a(), this.f1040.schedule3?.l11()])
 
-    const l25 = Math.max(0, (l23 ?? 0) - (l24 ?? 0))
+    const l25 = Math.max(0, l23 - l24)
 
     const l26 = Math.max(part2a.l20 ?? 0, l25)
 
     const toLine27 = Math.min(part2a.l17 ?? 0, l26)
 
     return {
+      allowed: true,
       l21,
       l22,
       l23,
@@ -451,9 +432,11 @@ export default class Schedule8812 extends F1040Attachment {
     const part1b = this.part1b()
     const part1c = this.part1c()
 
-    if (fs === undefined) {
-      throw new Error('filing status is undefined')
-    }
+    const allowed =
+      (part1b.allowed && part1b.l14g === 0) ||
+      (part1c.allowed && part1c.l15f === 0)
+
+    if (!allowed) return { allowed: false }
 
     const l28a = this.part1b().l14f ?? this.part1c().l15e
 
@@ -495,6 +478,7 @@ export default class Schedule8812 extends F1040Attachment {
     const l40 = Math.max(0, l29 - l39)
 
     return {
+      allowed: true,
       l28a,
       l28b,
       l29,
@@ -514,6 +498,9 @@ export default class Schedule8812 extends F1040Attachment {
 
   l40 = (): number => this.part3().l40 ?? 0
 
+  // This is your additional tax.
+  toSchedule2Line19: () => number = this.l40
+
   fields = (): Field[] => {
     const part1b = this.part1b()
     const part1c = this.part1c()
@@ -522,8 +509,8 @@ export default class Schedule8812 extends F1040Attachment {
     const part3 = this.part3()
 
     return [
-      this.f1040.info.namesString(),
-      this.f1040.info.taxPayer.primaryPerson?.ssid,
+      this.f1040.namesString(),
+      this.f1040.info.taxPayer.primaryPerson.ssid,
       this.l1(),
       this.l2a(),
       this.l2b(),

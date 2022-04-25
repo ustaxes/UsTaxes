@@ -10,9 +10,11 @@ import { Controller, useFormContext } from 'react-hook-form'
 import { LabeledCheckboxProps } from './types'
 import ConditionallyWrap from 'ustaxes/components/ConditionallyWrap'
 
-export function LabeledCheckbox(props: LabeledCheckboxProps): ReactElement {
+export function LabeledCheckbox<TFormValues>(
+  props: LabeledCheckboxProps<TFormValues>
+): ReactElement {
   const { label, name, useGrid = true, sizes = { xs: 12 } } = props
-  const { control } = useFormContext()
+  const { control } = useFormContext<TFormValues>()
 
   return (
     <ConditionallyWrap
@@ -32,7 +34,7 @@ export function LabeledCheckbox(props: LabeledCheckboxProps): ReactElement {
                 control={
                   <Checkbox
                     name={name}
-                    checked={value}
+                    checked={(value as boolean | undefined) ?? false}
                     onChange={(_, checked) => onChange(checked)}
                     color="primary"
                   />

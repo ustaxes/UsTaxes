@@ -9,9 +9,7 @@ export default class TaxPayerMethods extends DomMethods {
 
   g = {
     foreignCountryBox: (): HTMLInputElement =>
-      within(this.dom()).getByLabelText(
-        'Do you have a foreign address?'
-      ) as HTMLInputElement
+      within(this.dom()).getByLabelText('Do you have a foreign address?')
   }
 
   setIsForeignCountry = (value: boolean): void =>

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unnecessary-condition */
 import { enumKeys } from 'ustaxes/core/util'
 import {
   Person,

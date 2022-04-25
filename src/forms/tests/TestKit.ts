@@ -13,6 +13,7 @@ import { PDFDocument } from 'pdf-lib'
 import { insertFormDataToPdfs } from 'ustaxes/core/irsForms'
 import { CreateForms, yearFormBuilder } from '../YearForms'
 import { PDFDownloader } from 'ustaxes/core/pdfFiller/pdfHandler'
+import { ValidatedInformation } from '../F1040Base'
 
 const logsDir = path.resolve(__dirname, '../../../logs/errors')
 
@@ -54,7 +55,7 @@ export default class TestKit {
         (pdfs) =>
           Promise.all(
             pdfs.map(async (pdf, i) => {
-              fs.writeFile(
+              await fs.writeFile(
                 path.resolve(saveDir, pdf.getTitle() ?? `Form ${i}`),
                 await pdf.save()
               )
@@ -68,7 +69,7 @@ export default class TestKit {
       if (logstr !== undefined) {
         await fs.writeFile(
           path.resolve(saveDir, 'error.txt'),
-          logstr?.toString()
+          logstr.toString()
         )
       }
     } catch (e) {
@@ -99,11 +100,11 @@ export default class TestKit {
   with1040Property = (
     f: (
       forms: Form[],
-      info: Information,
+      info: ValidatedInformation,
       assets: Asset<Date>[]
     ) => Promise<void>,
-    filter: (info: Information) => boolean = () => true
-  ): fc.IAsyncPropertyWithHooks<[Information, Asset<Date>[]]> =>
+    filter: (info: ValidatedInformation) => boolean = () => true
+  ): fc.IAsyncPropertyWithHooks<[ValidatedInformation, Asset<Date>[]]> =>
     fc.asyncProperty(
       this.arbitaries.information().filter(filter),
       fc.array(ustarbitraries.positionDate),
@@ -111,10 +112,10 @@ export default class TestKit {
         const builder = this.builder.build(information, assets)
         await run(builder.f1040()).fold(
           async (e: string[]): Promise<void> => {
-            expect(e).not.toEqual([])
+            await Promise.resolve(expect(e).not.toEqual([]))
           },
-          (forms: Form[]): Promise<void> => {
-            return f(forms, information, assets)
+          async (forms: Form[]): Promise<void> => {
+            return await f(forms, information, assets)
           }
         )
       }
@@ -127,19 +128,19 @@ export default class TestKit {
   with1040Assert = async (
     f: (
       forms: Form[],
-      info: Information,
+      info: ValidatedInformation,
       assets: Asset<Date>[]
     ) => Promise<void>,
     params: Parameters<[Information, Asset<Date>[]]> = {},
-    filter: (info: Information) => boolean = () => true
+    filter: (info: ValidatedInformation) => boolean = () => true
   ): Promise<void> => {
-    let lastCallWithInfo: Information | undefined
+    let lastCallWithInfo: [ValidatedInformation, Asset<Date>[]] | undefined
     await fc
       .assert(
         this.with1040Property(async (forms, info, assets) => {
           await f(forms, info, assets).catch((e) => {
             // Save the last failing test info for logging
-            lastCallWithInfo = info
+            lastCallWithInfo = [info, assets]
             // Hand it back to fc's assert.
             // We're only saving the last form data after
             // fast-check has done its shrinking. So we need
@@ -150,10 +151,10 @@ export default class TestKit {
         }, filter),
         params
       )
-      .catch(async (e) => {
+      .catch(async (e: Error) => {
         console.error('Logging 1040 errors.')
         if (lastCallWithInfo !== undefined) {
-          await this.log1040(lastCallWithInfo, e)
+          await this.log1040(...lastCallWithInfo, e.message)
         } else {
           console.error('trying to log error but no info is available')
         }

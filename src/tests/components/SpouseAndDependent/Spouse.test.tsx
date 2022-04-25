@@ -17,9 +17,12 @@ beforeEach(() => {
 })
 
 jest.mock('redux-persist', () => {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const real = jest.requireActual('redux-persist')
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
   return {
     ...real,
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     persistReducer: jest.fn().mockImplementation((config, reducers) => reducers)
   }
 })
@@ -142,25 +145,19 @@ describe('SpouseInfo', () => {
     userEvent.type(spouse.firstNameField()!, 'F$LF(#)& ##3')
     userEvent.click(await spouse.saveButton())
 
-    await waitFor(async () =>
-      expect(await spouse.requiredErrors()).toHaveLength(2)
-    )
+    await waitFor(() => expect(spouse.requiredErrors()).toHaveLength(2))
 
     // fill in the first name correctly
     userEvent.type(spouse.firstNameField()!, '{selectall}{del}Sally K')
     userEvent.click(await spouse.saveButton())
 
-    await waitFor(async () =>
-      expect(await spouse.requiredErrors()).toHaveLength(2)
-    )
+    await waitFor(() => expect(spouse.requiredErrors()).toHaveLength(2))
 
     // add a name with restricted characters
     userEvent.type(spouse.lastNameField()!, 'R5$%84')
     userEvent.click(await spouse.saveButton())
 
-    await waitFor(async () =>
-      expect(await spouse.requiredErrors()).toHaveLength(1)
-    )
+    await waitFor(() => expect(spouse.requiredErrors()).toHaveLength(1))
 
     // correctly enter a last name
     userEvent.type(spouse.lastNameField()!, '{selectall}{del}Ride')

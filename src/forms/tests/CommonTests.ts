@@ -1,11 +1,18 @@
 import { Information, Asset, FilingStatus } from 'ustaxes/core/data'
 import Form from 'ustaxes/core/irsForms/Form'
 import { run } from 'ustaxes/core/util'
+import { F1040Error } from '../errors'
+import F1040Base, { validate } from '../F1040Base'
 import TestKit from './TestKit'
-interface FormTestInfo<A> {
-  getAssets: (a: A) => Asset<Date>[]
-  getInfo: (a: A) => Information
-  getErrors: (a: A) => string[]
+export abstract class FormTestInfo<A> {
+  abstract getAssets: (a: A) => Asset<Date>[]
+  abstract getInfo: (a: A) => Information
+
+  getErrors: (info: Information) => F1040Error[] = (info) =>
+    run(validate(info)).fold(
+      (errors) => errors,
+      () => []
+    )
 }
 
 beforeAll(() => {
@@ -16,7 +23,7 @@ beforeAll(() => {
   })
 })
 
-export default class CommonTests<F1040 extends Form & { info: Information }> {
+export default class CommonTests<F1040 extends F1040Base> {
   testKit: TestKit
   formTestInfo: FormTestInfo<F1040>
 
@@ -32,7 +39,7 @@ export default class CommonTests<F1040 extends Form & { info: Information }> {
     const res = this.findF1040(forms)
     if (res === undefined) {
       throw new Error(
-        `Looked for F1040 in ${forms.map((f) => f.tag)}, not found`
+        `Looked for F1040 in ${forms.map((f) => f.tag).join(',')}, not found`
       )
     }
     return res
@@ -47,11 +54,8 @@ export default class CommonTests<F1040 extends Form & { info: Information }> {
         const f1040 = this.findF1040OrFail(forms)
 
         const fs = f1040.info.taxPayer.filingStatus
-        if (fs === undefined) {
-          throw new Error('Undefined filing status')
-        }
 
-        f(f1040, fs)
+        await Promise.resolve(f(f1040, fs))
       },
       {},
       filter
@@ -59,20 +63,20 @@ export default class CommonTests<F1040 extends Form & { info: Information }> {
 
   run = (): void => {
     it('should be created in', async () => {
-      await this.testKit.with1040Assert(async (forms) => {
+      await this.testKit.with1040Assert((forms) => {
         const f1040 = this.findF1040(forms)
         expect(f1040).not.toBeUndefined()
-        if (f1040 !== undefined) {
-          expect(this.formTestInfo.getErrors(f1040)).toEqual([])
-        }
+
+        return Promise.resolve()
       })
     })
 
     it('should arrange attachments according to sequence order', async () => {
-      await this.testKit.with1040Assert(async (forms) => {
+      await this.testKit.with1040Assert((forms) => {
         expect(forms.sort((a, b) => a.sequenceIndex - b.sequenceIndex)).toEqual(
           forms
         )
+        return Promise.resolve()
       })
     })
 

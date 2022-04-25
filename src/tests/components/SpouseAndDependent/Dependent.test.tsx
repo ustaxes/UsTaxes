@@ -19,9 +19,12 @@ beforeAll(() => {
 jest.setTimeout(10000)
 
 jest.mock('redux-persist', () => {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const real = jest.requireActual('redux-persist')
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
   return {
     ...real,
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     persistReducer: jest.fn().mockImplementation((config, reducers) => reducers)
   }
 })
@@ -101,7 +104,7 @@ describe('Dependents', () => {
 
     userEvent.click(addDependentButton)
 
-    await waitFor(async () => {
+    await waitFor(() => {
       expect(dependent.firstNameField()).toBeInTheDocument()
     })
 
@@ -175,7 +178,7 @@ describe('Dependents', () => {
     expect(
       spouseAndDependent.rendered().getByText('222-22-2222')
     ).toBeInTheDocument()
-    await waitFor(async () => {
+    await waitFor(() => {
       expect(
         spouseAndDependent.rendered().getByText('Sally Brown')
       ).toBeInTheDocument()
@@ -218,9 +221,7 @@ describe('Dependents', () => {
 
     userEvent.click(addDependentButton)
 
-    await waitFor(async () =>
-      expect(dependent.firstNameField()).toBeInTheDocument()
-    )
+    await waitFor(() => expect(dependent.firstNameField()).toBeInTheDocument())
 
     // get all inputs
     const inputs = spouseAndDependent.rendered().getAllByRole('textbox')
@@ -256,9 +257,7 @@ describe('Dependents', () => {
 
     userEvent.click(await dependent.addButton())
 
-    await waitFor(async () =>
-      expect(dependent.firstNameField()).toBeInTheDocument()
-    )
+    await waitFor(() => expect(dependent.firstNameField()).toBeInTheDocument())
 
     const newInputs = spouseAndDependent.rendered().getAllByRole('textbox')
     const [
@@ -384,7 +383,7 @@ describe('Dependents', () => {
     userEvent.click(await dependent.saveButton())
 
     // expect five `Input is required` errors
-    await waitFor(async () =>
+    await waitFor(() =>
       expect(dependent.requiredErrors().length).toBeGreaterThan(1)
     )
 
@@ -401,7 +400,7 @@ describe('Dependents', () => {
     userEvent.type(firstNameInput, '8675309')
     userEvent.click(await dependent.saveButton())
 
-    await waitFor(async () => {
+    await waitFor(() => {
       expect(
         spouseAndDependent
           .rendered()
@@ -535,16 +534,14 @@ describe('Dependents', () => {
     userEvent.type(durationInput, 'abcd')
     userEvent.click(await dependent.saveButton())
 
-    await waitFor(
-      async () =>
-        expect(dependent.requiredErrors().length).toBeGreaterThanOrEqual(1)
-      //expect(dependent.requiredErrors()).toHaveLength(1)
+    await waitFor(() =>
+      expect(dependent.requiredErrors().length).toBeGreaterThanOrEqual(1)
     )
 
     userEvent.type(durationInput, '{selectall}{del}15')
     userEvent.click(await dependent.saveButton())
 
-    await waitFor(async () =>
+    await waitFor(() =>
       expect(
         spouseAndDependent
           .rendered()

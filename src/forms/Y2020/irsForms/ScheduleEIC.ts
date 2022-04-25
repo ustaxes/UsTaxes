@@ -60,18 +60,13 @@ export default class ScheduleEIC extends F1040Attachment {
   // instructions step 1.1
   passIncomeLimit = (): boolean => {
     const filingStatus = this.f1040.info.taxPayer.filingStatus
-    if (filingStatus !== undefined) {
-      const incomeLimits = federal.EIC.caps[filingStatus]
-      if (incomeLimits !== undefined) {
-        const limit =
-          incomeLimits[
-            Math.min(
-              this.qualifyingDependents().length,
-              incomeLimits.length - 1
-            )
-          ]
-        return (this.f1040.l11() ?? 0) < limit
-      }
+    const incomeLimits = federal.EIC.caps[filingStatus]
+    if (incomeLimits !== undefined) {
+      const limit =
+        incomeLimits[
+          Math.min(this.qualifyingDependents().length, incomeLimits.length - 1)
+        ]
+      return this.f1040.l11() < limit
     }
     return false
   }
@@ -162,7 +157,7 @@ export default class ScheduleEIC extends F1040Attachment {
   // 4.5 covered above
   // 4.6 dependent of another
   dependentOfAnother = (): boolean =>
-    (this.f1040.info.taxPayer.primaryPerson?.isTaxpayerDependent ?? false) ||
+    this.f1040.info.taxPayer.primaryPerson.isTaxpayerDependent ||
     (this.f1040.info.taxPayer.spouse?.isTaxpayerDependent ?? false)
 
   //
@@ -203,7 +198,7 @@ export default class ScheduleEIC extends F1040Attachment {
 
   // 5.1 - Earned income
   earnedIncome = (): number => {
-    const l1 = this.f1040.l1() ?? 0
+    const l1 = this.f1040.l1()
     const l2 = this.taxableScholarshipIncome()
     const l3 = this.prisonIncome()
     const l4 = this.pensionPlanIncome()
@@ -256,9 +251,6 @@ export default class ScheduleEIC extends F1040Attachment {
    * @returns
    */
   calculateEICForIncome = (income: number): number => {
-    if (this.f1040.info.taxPayer.filingStatus === undefined) {
-      return 0
-    }
     const f: Piecewise[] | undefined =
       federal.EIC.formulas[this.f1040.info.taxPayer.filingStatus]
     if (f === undefined) {
@@ -288,7 +280,7 @@ export default class ScheduleEIC extends F1040Attachment {
   credit = (): number =>
     Math.min(
       this.calculateEICForIncome(this.earnedIncome()),
-      this.calculateEICForIncome(this.f1040.l11() ?? 0)
+      this.calculateEICForIncome(this.f1040.l11())
     )
 
   allowed = (): boolean => {
@@ -326,13 +318,11 @@ export default class ScheduleEIC extends F1040Attachment {
     this.f1040.info.taxPayer.dependents
       .filter(
         (d) =>
-          d.dateOfBirth.getFullYear() !== undefined &&
-          ((d.dateOfBirth.getFullYear() !== undefined &&
-            d.dateOfBirth.getFullYear() >= this.qualifyingCutoffYear) ||
-            ((d.qualifyingInfo?.isStudent ?? false) &&
-              d.dateOfBirth.getFullYear() >= this.qualifyingStudentCutoffYear))
+          d.dateOfBirth.getFullYear() >= this.qualifyingCutoffYear ||
+          ((d.qualifyingInfo?.isStudent ?? false) &&
+            d.dateOfBirth.getFullYear() >= this.qualifyingStudentCutoffYear)
       )
-      .sort((d) => d.dateOfBirth.getFullYear() as number)
+      .sort((d) => d.dateOfBirth.getFullYear())
       .slice(0, 3)
 
   qualifyingDependentsFilled = (): Array<Dependent | undefined> => {
@@ -391,8 +381,8 @@ export default class ScheduleEIC extends F1040Attachment {
     this.qualifyingDependents().map((d) => d.qualifyingInfo?.numberOfMonths)
 
   fields = (): Field[] => [
-    this.f1040.info.namesString(),
-    this.f1040.info.taxPayer.primaryPerson?.ssid,
+    this.f1040.namesString(),
+    this.f1040.info.taxPayer.primaryPerson.ssid,
     ...this.nameFields(), // 6
     ...this.ssnFields(), // 3
     ...this.birthYearFields(), // 12

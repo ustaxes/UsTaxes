@@ -27,41 +27,56 @@ const dateStr = (): Arbitrary<string> =>
 
 export const transaction = (securities?: Security[]): Arbitrary<Transaction> =>
   fc
-    .tuple(
-      securities === undefined ? security() : fc.constantFrom(...securities),
-      dateStr(),
-      fc.constantFrom<Side>('BUY', 'SELL'),
-      fc.float({ min: 0 }),
-      //      fc.float({ min: 0.0001 })
-      fc.integer({ min: 1, max: 1000 })
+    .tuple(fc.float({ min: 0 }), fc.integer({ min: 1, max: 1000 }))
+    .chain(([price, quantity]) =>
+      fc
+        .tuple(
+          securities === undefined
+            ? security()
+            : fc.constantFrom(...securities),
+          dateStr(),
+          fc.constantFrom<Side>('BUY', 'SELL'),
+          fc.float({ min: 0, max: (quantity * price) / 2 })
+        )
+        .map(([security, date, side, fee]) => ({
+          security,
+          date,
+          side,
+          price,
+          quantity,
+          fee
+        }))
     )
-    .map(([security, date, side, price, quantity]) => ({
-      security,
-      date,
-      side,
-      price,
-      quantity
-    }))
 
 export const position = (securities?: Security[]): Arbitrary<Position> =>
-  fc.oneof(dateStr(), fc.constant(undefined)).chain((closeDate) =>
-    fc
-      .tuple(
-        securities === undefined ? security() : fc.constantFrom(...securities),
-        fc.integer({ min: 1, max: 100 }),
-        fc.float({ min: 0 }),
-        dateStr(),
-        fc.float({ min: 0 })
-      )
-      .map(([security, quantity, price, openDate, closePrice]) => ({
-        security,
-        quantity,
-        price,
-        openDate,
-        closeDate,
-        closePrice: closeDate === undefined ? undefined : closePrice
-      }))
-  )
+  fc
+    .tuple(
+      fc.nat(),
+      fc.float({ min: 0 }),
+      fc.float({ min: 0 }),
+      fc.oneof(dateStr(), fc.constant(undefined))
+    )
+    .chain(([quantity, price, closePrice, closeDate]) =>
+      fc
+        .tuple(
+          securities === undefined
+            ? security()
+            : fc.constantFrom(...securities),
+          dateStr(),
+          fc.float({ min: 0, max: (quantity * price) / 2 }),
+          fc.float({ min: 0, max: (quantity * closePrice) / 2 })
+        )
+        .map(([security, openDate, openFee, closeFee]) => ({
+          security,
+          quantity,
+          price,
+          openDate,
+          closeDate,
+          closePrice: closeDate === undefined ? undefined : closePrice,
+          openFee,
+          closeFee: closeDate === undefined ? undefined : closeFee
+        }))
+    )
 
 export const portfolio = (securities?: Security[]): Arbitrary<Portfolio> =>
   fc

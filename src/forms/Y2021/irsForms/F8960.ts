@@ -1,19 +1,16 @@
 import F1040Attachment from './F1040Attachment'
-import { Information } from 'ustaxes/core/data'
 import { sumFields } from 'ustaxes/core/irsForms/util'
 import { FormTag } from 'ustaxes/core/irsForms/Form'
 import { netInvestmentIncomeTax } from '../data/federal'
 import { Field } from 'ustaxes/core/pdfFiller'
+import { ValidatedInformation } from 'ustaxes/forms/F1040Base'
 
-export const needsF8960 = (state: Information): boolean => {
+export const needsF8960 = (state: ValidatedInformation): boolean => {
   const filingStatus = state.taxPayer.filingStatus
   const totalW2Income = state.w2s
     .map((w2) => w2.income)
     .reduce((l, r) => l + r, 0)
-  return (
-    filingStatus !== undefined &&
-    netInvestmentIncomeTax.taxThreshold(filingStatus) < totalW2Income
-  )
+  return netInvestmentIncomeTax.taxThreshold(filingStatus) < totalW2Income
 }
 
 export default class F8960 extends F1040Attachment {
@@ -110,13 +107,8 @@ export default class F8960 extends F1040Attachment {
   // TODO: This should also take into account values on form 2555 and adjustments for Certain CFCs and Certain PFICs
   l13 = (): number => this.f1040.l11()
 
-  l14 = (): number => {
-    const filingStatus = this.f1040.info.taxPayer.filingStatus
-    if (filingStatus === undefined) {
-      throw new Error('Filing status is undefined')
-    }
-    return netInvestmentIncomeTax.taxThreshold(filingStatus)
-  }
+  l14 = (): number =>
+    netInvestmentIncomeTax.taxThreshold(this.f1040.info.taxPayer.filingStatus)
 
   l15 = (): number => Math.max(0, this.l13() - this.l14())
   l16 = (): number => (this.l12() < this.l15() ? this.l12() : this.l15())
@@ -140,8 +132,8 @@ export default class F8960 extends F1040Attachment {
   toSchedule2l12 = (): number | undefined => this.l17()
 
   fields = (): Field[] => [
-    this.f1040.info.namesString(),
-    this.f1040.info.taxPayer.primaryPerson?.ssid,
+    this.f1040.namesString(),
+    this.f1040.info.taxPayer.primaryPerson.ssid,
     undefined, // Section 6013(g) election checkbox
     undefined, // Section 6013(h) election checkbox
     undefined, // Regulations section 1.1411-10(g) election checkbox

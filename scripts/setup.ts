@@ -61,7 +61,9 @@ const moduleCode = standaloneCode(ajv, {
   TaxYear: '#/definitions/TaxYear',
 
   EditHSAAction: '#/definitions/EditHSAAction',
-  EditIRAAction: '#/definitions/EditIraAction'
+  EditIRAAction: '#/definitions/EditIraAction',
+  Credit: '#/definitions/Credit',
+  EditCreditAction: '#/definitions/EditCreditAction'
 })
 
 fs.writeFileSync(outputPath, moduleCode)

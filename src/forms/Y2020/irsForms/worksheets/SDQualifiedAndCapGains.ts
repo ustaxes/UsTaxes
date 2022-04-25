@@ -31,9 +31,6 @@ export default class QualDivAndCGWorksheetReference {
 
   constructor(f1040: F1040) {
     const filingStatus = f1040.info.taxPayer.filingStatus
-    if (filingStatus === undefined) {
-      throw new Error('Filing status is undefined')
-    }
     this.data = {
       qualDiv: f1040.l3a() ?? 0,
       taxableIncome: f1040.l15(),

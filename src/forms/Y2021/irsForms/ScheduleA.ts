@@ -52,7 +52,7 @@ export default class ScheduleA extends F1040Attachment {
   l5b = (): number =>
     Number(this.itemizedDeductions.stateAndLocalRealEstateTaxes)
   l5c = (): number => Number(this.itemizedDeductions.stateAndLocalPropertyTaxes)
-  l5d = (): number => (this.l5a() ?? 0) + (this.l5b() ?? 0) + (this.l5c() ?? 0)
+  l5d = (): number => this.l5a() + this.l5b() + this.l5c()
   l5e = (): number => {
     const max =
       this.f1040.info.taxPayer.filingStatus === FilingStatus.MFS ? 5000 : 10000
@@ -83,9 +83,7 @@ export default class ScheduleA extends F1040Attachment {
 
   // Used in Form 8960
   l9 = (): number | undefined =>
-    this.itemizedDeductions.investmentInterest === undefined
-      ? undefined
-      : Number(this.itemizedDeductions.investmentInterest)
+    Number(this.itemizedDeductions.investmentInterest)
 
   l10 = (): number => this.l8e() + (this.l9() ?? 0)
 
@@ -110,8 +108,8 @@ export default class ScheduleA extends F1040Attachment {
   l18 = (): boolean => false
 
   fields = (): Field[] => [
-    this.f1040.info.namesString(),
-    this.f1040.info.taxPayer.primaryPerson?.ssid ?? '',
+    this.f1040.namesString(),
+    this.f1040.info.taxPayer.primaryPerson.ssid,
     this.l1(),
     this.l2(),
     this.l3(),

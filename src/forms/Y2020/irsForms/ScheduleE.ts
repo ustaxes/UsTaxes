@@ -198,8 +198,8 @@ export default class ScheduleE extends F1040Attachment {
     const [p0, p1, p2] = [0, 1, 2].map((i) => this.propForRow(i))
 
     return [
-      this.f1040.info.namesString(),
-      this.f1040.info.taxPayer.primaryPerson?.ssid,
+      this.f1040.namesString(),
+      this.f1040.info.taxPayer.primaryPerson.ssid,
       false,
       false,
       false,
@@ -243,10 +243,10 @@ export default class ScheduleE extends F1040Attachment {
       Math.abs(this.l25()),
       displayNegPos(this.l26()),
       // Page 2 - TODO: completely unimplemented
-      this.f1040.info.namesString(),
-      this.f1040.info.taxPayer.primaryPerson?.ssid,
+      this.f1040.namesString(),
+      this.f1040.info.taxPayer.primaryPerson.ssid,
       ...[false, false], // l27
-      ...Array(6 * 4 + 5 * 4).fill(undefined), // l28
+      ...Array<undefined>(6 * 4 + 5 * 4).fill(undefined), // l28
       undefined, // grey
       this.l29ah(),
       undefined, // grey
@@ -260,12 +260,12 @@ export default class ScheduleE extends F1040Attachment {
       undefined, // l30
       undefined, // l31
       this.l32(), // l32
-      ...Array(2 * 4).fill(undefined), // l33
+      ...Array<undefined>(2 * 4).fill(undefined), // l33
       undefined,
       this.l34ad(),
       undefined,
       this.l34af(),
-      ...Array(4).fill(undefined),
+      ...Array<undefined>(4).fill(undefined),
       this.l34bc(),
       undefined, // grey
       this.l34be(),
@@ -274,7 +274,7 @@ export default class ScheduleE extends F1040Attachment {
       undefined, // l35
       undefined, // l36
       this.l37(), // l37
-      ...Array(5 + 4).fill(undefined), // l38
+      ...Array<undefined>(5 + 4).fill(undefined), // l38
       this.l39(), // l39
       this.l40(), // l40
       this.l41(), // l41

@@ -4,17 +4,7 @@ import { useLastLocation } from 'react-router-last-location'
 export const useFocus = (): [RefCallback<HTMLElement>] => {
   const ref = useRef<HTMLElement | null>(null)
   const lastLocation = useLastLocation()
-  const setRef = useCallback((node) => {
-    if (ref.current) {
-      // Make sure to cleanup any events/references added to the last instance
-    }
-
-    if (node) {
-      // Check if a node is actually passed. Otherwise node would be null.
-      // You can now do what you need to, addEventListeners, measure, etc.
-    }
-
-    // Save a reference to the node
+  const setRef = useCallback((node: HTMLElement | null) => {
     ref.current = node
   }, [])
 

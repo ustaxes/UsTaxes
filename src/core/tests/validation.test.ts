@@ -33,7 +33,7 @@ describe('validation', () => {
   it('should validate some data', () => {
     fc.assert(
       fc.property(primaryPerson, (data) => {
-        expect(validators.primaryPerson?.(data)).toEqual(true)
+        expect(validators.primaryPerson(data)).toEqual(true)
       })
     )
   })
@@ -47,7 +47,7 @@ describe('validation', () => {
               ...data,
               address: '123 hi street' as unknown as Address
             },
-            validators.primaryPerson!
+            validators.primaryPerson
           )
         ).toThrow()
       })
