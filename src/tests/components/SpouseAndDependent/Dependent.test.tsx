@@ -159,8 +159,6 @@ describe('Dependents', () => {
       newDurationInput
     ] = newInputs
 
-    console.debug(newDateOfBirthInput)
-
     userEvent.type(newFirstNameInput, 'Sally')
     userEvent.type(newLastNameInput, 'Brown')
     userEvent.clear(newSsnInput)
