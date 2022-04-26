@@ -507,7 +507,7 @@ describe('Dependents', () => {
 
     expect(dependent.requiredErrors()).toHaveLength(1)
 
-    /*userEvent.type(birthYearInput, 'abcd')
+    userEvent.type(dateOfBirthInput, 'abcd')
     userEvent.click(await dependent.saveButton())
 
     await waitFor(async () =>
@@ -515,7 +515,7 @@ describe('Dependents', () => {
         await spouseAndDependent.rendered().findAllByText('Input is required')
       ).toHaveLength(2)
     )
-
+    /*
     userEvent.type(birthYearInput, '{selectall}{del}1294')
     userEvent.click(await dependent.saveButton())
 
