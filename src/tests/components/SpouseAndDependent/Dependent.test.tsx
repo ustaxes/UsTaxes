@@ -440,7 +440,8 @@ describe('Dependents', () => {
 
     expect(dependent.requiredErrors()).toHaveLength(1)
 
-    userEvent.type(dependent.dateOfBirthField()!, 'abcd')
+    userEvent.clear(dependent.dateOfBirthField()!)
+    userEvent.type(dependent.dateOfBirthField()!, '31/12/2011')
     userEvent.click(dependent.saveButton()!)
 
     await waitFor(async () =>
