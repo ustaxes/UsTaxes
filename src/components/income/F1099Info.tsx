@@ -90,7 +90,7 @@ interface F1099UserInput {
   dividends: string | number
   qualifiedDividends: string | number
   totalCapitalGainsDistributions: string | number
-  personRole: PersonRole.PRIMARY | PersonRole.SPOUSE
+  personRole?: PersonRole.PRIMARY | PersonRole.SPOUSE
   // R fields
   grossDistribution: string | number
   taxableAmount: string | number
@@ -105,7 +105,6 @@ interface F1099UserInput {
 const blankUserInput: F1099UserInput = {
   formType: undefined,
   payer: '',
-  personRole: PersonRole.PRIMARY,
   interest: '',
   // B Fields
   shortTermProceeds: '',
@@ -161,7 +160,7 @@ const toF1099 = (input: F1099UserInput): Supported1099 | undefined => {
     case Income1099Type.INT: {
       return {
         payer: input.payer,
-        personRole: input.personRole,
+        personRole: input.personRole ?? PersonRole.PRIMARY,
         type: input.formType,
         form: {
           income: Number(input.interest)
@@ -171,7 +170,7 @@ const toF1099 = (input: F1099UserInput): Supported1099 | undefined => {
     case Income1099Type.B: {
       return {
         payer: input.payer,
-        personRole: input.personRole,
+        personRole: input.personRole ?? PersonRole.PRIMARY,
         type: input.formType,
         form: {
           shortTermCostBasis: Number(input.shortTermCostBasis),
@@ -184,7 +183,7 @@ const toF1099 = (input: F1099UserInput): Supported1099 | undefined => {
     case Income1099Type.DIV: {
       return {
         payer: input.payer,
-        personRole: input.personRole,
+        personRole: input.personRole ?? PersonRole.PRIMARY,
         type: input.formType,
         form: {
           dividends: Number(input.dividends),
@@ -198,7 +197,7 @@ const toF1099 = (input: F1099UserInput): Supported1099 | undefined => {
     case Income1099Type.R: {
       return {
         payer: input.payer,
-        personRole: input.personRole,
+        personRole: input.personRole ?? PersonRole.PRIMARY,
         type: input.formType,
         form: {
           grossDistribution: Number(input.grossDistribution),
@@ -211,7 +210,7 @@ const toF1099 = (input: F1099UserInput): Supported1099 | undefined => {
     case Income1099Type.SSA: {
       return {
         payer: input.payer,
-        personRole: input.personRole,
+        personRole: input.personRole ?? PersonRole.PRIMARY,
         type: input.formType,
         form: {
           // benefitsPaid: Number(input.benefitsPaid),
