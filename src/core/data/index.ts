@@ -44,7 +44,6 @@ export interface QualifyingInformation {
 export interface Dependent<D = Date> extends Person<D> {
   relationship: string
   qualifyingInfo?: QualifyingInformation
-  dateOfBirth: D
 }
 
 export type DependentDateString = Dependent<string>

@@ -39,7 +39,7 @@ interface UserPersonForm {
   lastName: string
   ssid: string
   isBlind: boolean
-  dateOfBirth: Date
+  dateOfBirth?: Date
 }
 
 const blankUserPersonForm: UserPersonForm = {
@@ -47,7 +47,7 @@ const blankUserPersonForm: UserPersonForm = {
   lastName: '',
   ssid: '',
   isBlind: false,
-  dateOfBirth: new Date()
+  dateOfBirth: undefined
 }
 
 interface UserDependentForm extends UserPersonForm {
@@ -64,7 +64,10 @@ const blankUserDependentForm: UserDependentForm = {
 }
 
 const toDependent = (formData: UserDependentForm): Dependent<string> => {
-  const { isStudent = false, numberOfMonths, ...rest } = formData
+  const { isStudent, numberOfMonths, ...rest } = formData
+  if (formData.dateOfBirth === undefined) {
+    throw new Error('Called with undefined date of birth')
+  }
 
   return {
     ...rest,
@@ -73,18 +76,18 @@ const toDependent = (formData: UserDependentForm): Dependent<string> => {
       numberOfMonths: parseInt(numberOfMonths),
       isStudent
     },
-    dateOfBirth: rest.dateOfBirth.toISOString()
+    dateOfBirth: formData.dateOfBirth.toISOString()
   }
 }
 
 const toDependentForm = (dependent: Dependent): UserDependentForm => {
-  const { qualifyingInfo, ...rest } = dependent
+  const { qualifyingInfo, dateOfBirth, ...rest } = dependent
 
   return {
     ...rest,
     numberOfMonths: qualifyingInfo?.numberOfMonths.toString() ?? '',
     isStudent: qualifyingInfo?.isStudent ?? false,
-    dateOfBirth: new Date(rest.dateOfBirth)
+    dateOfBirth
   }
 }
 
@@ -97,14 +100,21 @@ const blankUserSpouseForm = {
   isTaxpayerDependent: false
 }
 
-const toSpouse = (formData: UserSpouseForm): Spouse<string> => ({
-  ...formData,
-  role: PersonRole.SPOUSE,
-  dateOfBirth: formData.dateOfBirth.toISOString()
-})
+const toSpouse = (formData: UserSpouseForm): Spouse<string> => {
+  if (formData.dateOfBirth === undefined) {
+    throw new Error('Called with undefined date of birth')
+  }
+
+  return {
+    ...formData,
+    role: PersonRole.SPOUSE,
+    dateOfBirth: formData.dateOfBirth.toISOString()
+  }
+}
 
 const toSpouseForm = (spouse: Spouse): UserSpouseForm => ({
-  ...spouse
+  ...spouse,
+  dateOfBirth: new Date(spouse.dateOfBirth)
 })
 
 export const AddDependentForm = (): ReactElement => {
@@ -125,7 +135,12 @@ export const AddDependentForm = (): ReactElement => {
   const onSubmitEdit =
     (index: number) =>
     (formData: UserDependentForm): void => {
-      dispatch(editDependent({ index, value: toDependent(formData) }))
+      dispatch(
+        editDependent({
+          index,
+          value: toDependent(formData)
+        })
+      )
     }
 
   const page = (

@@ -27,6 +27,7 @@ export const checkType = <A>(data: A, validate: ValidateFunction<A>): A => {
         ?.map((e) => `${e.instancePath}: ${e.message ?? ''}`)
         .join('\n') ?? 'Unknown error'
 
+    validate.errors?.forEach(console.error)
     throw new Error(`Validation Failed: ${errorMessage}`)
   }
 

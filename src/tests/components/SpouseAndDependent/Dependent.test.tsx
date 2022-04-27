@@ -30,13 +30,13 @@ jest.mock('redux-persist', () => {
 })
 
 describe('Dependents', () => {
-  it('renders an empty dependent list initially', async () => {
+  it('renders an empty dependent list initially', () => {
     const spouseAndDependent = new SpouseAndDependentTestPage(store.getState())
     const { spouse, dependent } = spouseAndDependent
 
     // Both spouse and dependent add buttons should appear
-    expect(await dependent.addButton()).toBeInTheDocument()
-    expect(await spouse.addButton()).toBeInTheDocument()
+    expect(dependent.addButton()).toBeInTheDocument()
+    expect(spouse.addButton()).toBeInTheDocument()
 
     // initial state does not have forms or labels
     expect(dependent.firstNameField()).not.toBeInTheDocument()
@@ -50,14 +50,12 @@ describe('Dependents', () => {
     const spouseAndDependent = new SpouseAndDependentTestPage(store.getState())
     const { spouse, dependent } = spouseAndDependent
 
-    await waitFor(async () => {
-      expect(await spouse.addButton()).toBeInTheDocument()
-      expect(await dependent.addButton()).toBeInTheDocument()
+    await waitFor(() => {
+      expect(spouse.addButton()).toBeInTheDocument()
+      expect(dependent.addButton()).toBeInTheDocument()
     })
 
-    const addDependentButton = await dependent.addButton()
-
-    userEvent.click(addDependentButton)
+    userEvent.click(dependent.addButton()!)
 
     const dependentFormLabels = [
       'First Name and Initial',
@@ -78,7 +76,7 @@ describe('Dependents', () => {
       )
     })
 
-    userEvent.click(await spouseAndDependent.dependent.closeButton())
+    userEvent.click(spouseAndDependent.dependent.closeButton()!)
 
     // assert all the labels are now gone
     await waitFor(() => {
@@ -96,43 +94,30 @@ describe('Dependents', () => {
     const spouseAndDependent = new SpouseAndDependentTestPage(store.getState())
     const dependent = spouseAndDependent.dependent
 
-    await waitFor(async () => {
-      expect(await dependent.addButton()).toBeInTheDocument()
+    await waitFor(() => {
+      expect(dependent.addButton()).toBeInTheDocument()
     })
 
-    const addDependentButton = await dependent.addButton()
-
-    userEvent.click(addDependentButton)
+    userEvent.click(dependent.addButton()!)
 
     await waitFor(() => {
       expect(dependent.firstNameField()).toBeInTheDocument()
     })
 
-    expect(dependent.q.isStudent()).toBeInTheDocument()
-
-    // get all inputs
-    const inputs = spouseAndDependent.rendered().getAllByRole('textbox')
-    const [
-      firstNameInput,
-      lastNameInput,
-      ssnInput,
-      dateOfBirthInput,
-      relationInput,
-      durationInput
-    ] = inputs
+    expect(dependent.isStudent()).toBeInTheDocument()
 
     // add values for each input
-    userEvent.type(firstNameInput, 'Charlie')
-    userEvent.type(lastNameInput, 'Brown')
-    userEvent.clear(ssnInput)
-    userEvent.type(ssnInput, '222222222')
-    userEvent.type(relationInput, 'Son')
-    userEvent.clear(dateOfBirthInput)
-    userEvent.type(dateOfBirthInput, '01/01/2007')
-    userEvent.type(durationInput, '12')
-    userEvent.click(dependent.q.isStudent()!)
+    userEvent.type(dependent.firstNameField()!, 'Charlie')
+    userEvent.type(dependent.lastNameField()!, 'Brown')
+    userEvent.clear(dependent.ssnField()!)
+    userEvent.type(dependent.ssnField()!, '222222222')
+    userEvent.type(dependent.relationField()!, 'Son')
+    userEvent.clear(dependent.dateOfBirthField()!)
+    userEvent.type(dependent.dateOfBirthField()!, '01/01/2007')
+    userEvent.type(dependent.durationField()!, '12')
+    userEvent.click(dependent.isStudent()!)
 
-    userEvent.click(await dependent.saveButton())
+    userEvent.click(dependent.saveButton()!)
 
     await waitFor(async () =>
       expect(
@@ -144,32 +129,21 @@ describe('Dependents', () => {
       spouseAndDependent.rendered().getByText('222-22-2222')
     ).toBeInTheDocument()
 
-    const addAnotherDependentButton = await dependent.addButton()
-    userEvent.click(addAnotherDependentButton)
+    userEvent.click(dependent.addButton()!)
 
-    await waitFor(() => expect(dependent.q.isStudent()).toBeInTheDocument())
+    await waitFor(() => expect(dependent.isStudent()).toBeInTheDocument())
 
-    const newInputs = spouseAndDependent.rendered().getAllByRole('textbox')
-    const [
-      newFirstNameInput,
-      newLastNameInput,
-      newSsnInput,
-      newDateOfBirthInput,
-      newRelationInput,
-      newDurationInput
-    ] = newInputs
+    userEvent.type(dependent.firstNameField()!, 'Sally')
+    userEvent.type(dependent.lastNameField()!, 'Brown')
+    userEvent.clear(dependent.ssnField()!)
+    userEvent.type(dependent.ssnField()!, '333333333')
+    userEvent.type(dependent.relationField()!, 'Daughter')
+    userEvent.clear(dependent.dateOfBirthField()!)
+    userEvent.type(dependent.dateOfBirthField()!, '03/01/2000')
+    userEvent.type(dependent.durationField()!, '12')
+    userEvent.click(dependent.isStudent()!)
 
-    userEvent.type(newFirstNameInput, 'Sally')
-    userEvent.type(newLastNameInput, 'Brown')
-    userEvent.clear(newSsnInput)
-    userEvent.type(newSsnInput, '333333333')
-    userEvent.type(newRelationInput, 'Daughter')
-    userEvent.clear(newDateOfBirthInput)
-    userEvent.type(newDateOfBirthInput, '03/01/2000')
-    userEvent.type(newDurationInput, '12')
-    userEvent.click(dependent.q.isStudent()!)
-
-    userEvent.click(await dependent.saveButton())
+    userEvent.click(dependent.saveButton()!)
 
     await waitFor(async () => {
       expect(
@@ -189,9 +163,9 @@ describe('Dependents', () => {
       spouseAndDependent.rendered().getByText('333-33-3333')
     ).toBeInTheDocument()
 
-    expect(await dependent.deleteButtons()).toHaveLength(2)
+    expect(dependent.deleteButtons()).toHaveLength(2)
 
-    const [deleteCharlie, deleteSally] = await dependent.deleteButtons()
+    const [deleteCharlie, deleteSally] = dependent.deleteButtons()
 
     userEvent.click(deleteSally)
 
@@ -215,39 +189,25 @@ describe('Dependents', () => {
     const spouseAndDependent = new SpouseAndDependentTestPage(store.getState())
     const dependent = spouseAndDependent.dependent
 
-    await waitFor(async () => {
-      expect(await dependent.addButton()).toBeInTheDocument()
+    await waitFor(() => {
+      expect(dependent.addButton()).toBeInTheDocument()
     })
 
-    const addDependentButton = await dependent.addButton()
-
-    userEvent.click(addDependentButton)
+    userEvent.click(dependent.addButton()!)
 
     await waitFor(() => expect(dependent.firstNameField()).toBeInTheDocument())
 
-    // get all inputs
-    const inputs = spouseAndDependent.rendered().getAllByRole('textbox')
-    const [
-      firstNameInput,
-      lastNameInput,
-      ssnInput,
-      dateOfBirthInput,
-      relationInput,
-      durationInput
-    ] = inputs
+    userEvent.type(dependent.firstNameField()!, 'Charlie')
+    userEvent.type(dependent.lastNameField()!, 'Brown')
+    userEvent.clear(dependent.ssnField()!)
+    userEvent.type(dependent.ssnField()!, '222222222')
+    userEvent.type(dependent.relationField()!, 'Son')
+    userEvent.type(dependent.durationField()!, '12')
+    userEvent.clear(dependent.dateOfBirthField()!)
+    userEvent.type(dependent.dateOfBirthField()!, '09/11/2001')
+    userEvent.click(dependent.isStudent()!)
 
-    // add values for each input
-    userEvent.type(firstNameInput, 'Charlie')
-    userEvent.type(lastNameInput, 'Brown')
-    userEvent.clear(ssnInput)
-    userEvent.type(ssnInput, '222222222')
-    userEvent.type(relationInput, 'Son')
-    userEvent.type(durationInput, '12')
-    userEvent.clear(dateOfBirthInput)
-    userEvent.type(dateOfBirthInput, '09/11/2001')
-    userEvent.click(dependent.q.isStudent()!)
-
-    userEvent.click(await dependent.saveButton())
+    userEvent.click(dependent.saveButton()!)
 
     await waitFor(async () =>
       expect(
@@ -258,30 +218,29 @@ describe('Dependents', () => {
       spouseAndDependent.rendered().getByText('222-22-2222')
     ).toBeInTheDocument()
 
-    userEvent.click(await dependent.addButton())
+    userEvent.click(dependent.addButton()!)
 
     await waitFor(() => expect(dependent.firstNameField()).toBeInTheDocument())
+    await waitFor(() =>
+      expect(dependent.dateOfBirthField()).toBeInTheDocument()
+    )
 
-    const newInputs = spouseAndDependent.rendered().getAllByRole('textbox')
-    const [
-      newFirstNameInput,
-      newLastNameInput,
-      newSsnInput,
-      newDateOfBirthInput,
-      newRelationInput,
-      newDurationInput
-    ] = newInputs
+    userEvent.type(dependent.firstNameField()!, 'Sally')
+    userEvent.type(dependent.lastNameField()!, 'Brown')
+    userEvent.clear(dependent.ssnField()!)
+    userEvent.type(dependent.ssnField()!, '333333333')
+    userEvent.type(dependent.relationField()!, 'Daughter')
+    userEvent.type(dependent.durationField()!, '12')
+    userEvent.clear(dependent.dateOfBirthField()!)
+    userEvent.type(dependent.dateOfBirthField()!, '08/12/1999')
+    userEvent.click(dependent.isStudent()!)
+    userEvent.click(dependent.saveButton()!)
 
-    userEvent.type(newFirstNameInput, 'Sally')
-    userEvent.type(newLastNameInput, 'Brown')
-    userEvent.clear(newSsnInput)
-    userEvent.type(newSsnInput, '333333333')
-    userEvent.type(newRelationInput, 'Daughter')
-    userEvent.type(newDurationInput, '12')
-    userEvent.clear(newDateOfBirthInput)
-    userEvent.type(newDateOfBirthInput, '08/12/1999')
-    userEvent.click(dependent.q.isStudent()!)
-    userEvent.click(await dependent.saveButton())
+    expect(
+      spouseAndDependent.rendered().queryByText('Input is required')
+    ).not.toBeInTheDocument()
+
+    await waitFor(() => expect(dependent.dateOfBirthErrors()).toHaveLength(0))
 
     await waitFor(async () => {
       expect(
@@ -298,45 +257,33 @@ describe('Dependents', () => {
       ).toBeInTheDocument()
     })
 
-    await waitFor(async () => {
-      expect(await dependent.editButtons()).toHaveLength(2)
+    await waitFor(() => {
+      expect(dependent.editButtons()).toHaveLength(2)
     })
 
-    const editCharlie = (await dependent.editButtons())[0]
+    const editCharlie = dependent.editButtons()[0]
     userEvent.click(editCharlie)
 
-    const filledInputs = await spouseAndDependent
-      .rendered()
-      .findAllByRole('textbox')
-    const [
-      filledFirstNameInput,
-      filledLastNameInput,
-      filledSsnInput,
-      filledDateOfBirthInput,
-      filledRelationInput,
-      filledDurationInput
-    ] = filledInputs as HTMLInputElement[]
+    expect(dependent.firstNameField()!.value).toBe('Charlie')
+    expect(dependent.lastNameField()!.value).toBe('Brown')
+    expect(dependent.ssnField()!.value).toBe('222-22-2222')
+    expect(dependent.relationField()!.value).toBe('Son')
+    expect(dependent.durationField()!.value).toBe('12')
+    expect(dependent.firstNameField()!.value).toBe('Charlie')
+    expect(dependent.dateOfBirthField()!.value).toBe('09/11/2001')
 
-    expect(filledFirstNameInput.value).toBe('Charlie')
-    expect(filledLastNameInput.value).toBe('Brown')
-    expect(filledSsnInput.value).toBe('222-22-2222')
-    expect(filledRelationInput.value).toBe('Son')
-    expect(filledDurationInput.value).toBe('12')
-    expect(filledFirstNameInput.value).toBe('Charlie')
-    expect(filledDateOfBirthInput.value).toBe('09/11/2001')
+    userEvent.type(dependent.firstNameField()!, '{selectall}{del}Deebo')
+    userEvent.clear(dependent.ssnField()!)
+    userEvent.type(dependent.ssnField()!, '777777777')
 
-    userEvent.type(filledFirstNameInput, '{selectall}{del}Deebo')
-    userEvent.clear(filledSsnInput)
-    userEvent.type(filledSsnInput, '777777777')
-
-    userEvent.click(await dependent.saveButton())
+    userEvent.click(dependent.saveButton()!)
 
     await spouseAndDependent.rendered().findByText('Deebo Brown')
     await spouseAndDependent.rendered().findByText('777-77-7777')
 
-    expect(await dependent.deleteButtons()).toHaveLength(2)
+    expect(dependent.deleteButtons()).toHaveLength(2)
 
-    const [deleteDeebo, deleteSally] = await dependent.deleteButtons()
+    const [deleteDeebo, deleteSally] = dependent.deleteButtons()
 
     userEvent.click(deleteSally)
     await waitFor(() =>
@@ -359,11 +306,9 @@ describe('Dependents', () => {
     const spouseAndDependent = new SpouseAndDependentTestPage(store.getState())
     const dependent = spouseAndDependent.dependent
 
-    await waitFor(async () =>
-      expect(await dependent.addButton()).toBeInTheDocument()
-    )
+    await waitFor(() => expect(dependent.addButton()).toBeInTheDocument())
 
-    userEvent.click(await dependent.addButton())
+    userEvent.click(dependent.addButton()!)
 
     const labels = [
       'First Name and Initial',
@@ -384,23 +329,13 @@ describe('Dependents', () => {
     })
 
     // click the save button with empty inputs
-    userEvent.click(await dependent.saveButton())
+    userEvent.click(dependent.saveButton()!)
 
-    // expect six `Input is required` errors
+    // expect five `Input is required` errors
     await waitFor(() => expect(dependent.requiredErrors()).toHaveLength(5))
 
-    const inputs = spouseAndDependent.rendered().getAllByRole('textbox')
-    const [
-      firstNameInput,
-      lastNameInput,
-      ssnInput,
-      dateOfBirthInput,
-      relationInput,
-      durationInput
-    ] = inputs
-
-    userEvent.type(firstNameInput, '8675309')
-    userEvent.click(await dependent.saveButton())
+    userEvent.type(dependent.firstNameField()!, '8675309')
+    userEvent.click(dependent.saveButton()!)
 
     await waitFor(() => {
       expect(
@@ -412,9 +347,9 @@ describe('Dependents', () => {
       expect(dependent.requiredErrors()).toHaveLength(4)
     })
 
-    userEvent.clear(firstNameInput)
-    userEvent.type(firstNameInput, 'Booker T')
-    userEvent.click(await dependent.saveButton())
+    userEvent.clear(dependent.firstNameField()!)
+    userEvent.type(dependent.firstNameField()!, 'Booker T')
+    userEvent.click(dependent.saveButton()!)
 
     await waitFor(() => {
       expect(
@@ -426,8 +361,8 @@ describe('Dependents', () => {
       expect(dependent.requiredErrors()).toHaveLength(4)
     })
 
-    userEvent.type(lastNameInput, '666')
-    userEvent.click(await dependent.saveButton())
+    userEvent.type(dependent.lastNameField()!, '666')
+    userEvent.click(dependent.saveButton()!)
 
     await waitFor(() =>
       expect(
@@ -439,8 +374,8 @@ describe('Dependents', () => {
 
     expect(dependent.requiredErrors()).toHaveLength(3)
 
-    userEvent.type(lastNameInput, '{selectall}{del}Washington')
-    userEvent.click(await dependent.saveButton())
+    userEvent.type(dependent.lastNameField()!, '{selectall}{del}Washington')
+    userEvent.click(dependent.saveButton()!)
 
     await waitFor(() =>
       expect(
@@ -451,9 +386,9 @@ describe('Dependents', () => {
     )
     expect(dependent.requiredErrors()).toHaveLength(3)
 
-    userEvent.clear(ssnInput)
-    userEvent.type(ssnInput, '123')
-    userEvent.click(await dependent.saveButton())
+    userEvent.clear(dependent.ssnField()!)
+    userEvent.type(dependent.ssnField()!, '123')
+    userEvent.click(dependent.saveButton()!)
 
     await waitFor(async () =>
       expect(
@@ -465,9 +400,9 @@ describe('Dependents', () => {
 
     expect(dependent.requiredErrors()).toHaveLength(2)
 
-    userEvent.clear(ssnInput)
-    userEvent.type(ssnInput, '123456789')
-    userEvent.click(await dependent.saveButton())
+    userEvent.clear(dependent.ssnField()!)
+    userEvent.type(dependent.ssnField()!, '123456789')
+    userEvent.click(dependent.saveButton()!)
 
     await waitFor(() =>
       expect(
@@ -479,8 +414,8 @@ describe('Dependents', () => {
 
     expect(dependent.requiredErrors()).toHaveLength(2)
 
-    userEvent.type(relationInput, '1111')
-    userEvent.click(await dependent.saveButton())
+    userEvent.type(dependent.relationField()!, '1111')
+    userEvent.click(dependent.saveButton()!)
 
     await waitFor(async () =>
       expect(
@@ -492,8 +427,8 @@ describe('Dependents', () => {
 
     expect(dependent.requiredErrors()).toHaveLength(1)
 
-    userEvent.type(relationInput, '{selectall}{del}stepchild')
-    userEvent.click(await dependent.saveButton())
+    userEvent.type(dependent.relationField()!, '{selectall}{del}stepchild')
+    userEvent.click(dependent.saveButton()!)
 
     await waitFor(() =>
       expect(
@@ -505,48 +440,34 @@ describe('Dependents', () => {
 
     expect(dependent.requiredErrors()).toHaveLength(1)
 
-    userEvent.type(dateOfBirthInput, 'abcd')
-    userEvent.click(await dependent.saveButton())
+    userEvent.type(dependent.dateOfBirthField()!, 'abcd')
+    userEvent.click(dependent.saveButton()!)
 
     await waitFor(async () =>
       expect(
         await spouseAndDependent.rendered().findAllByText('Input is required')
-      ).toHaveLength(2)
-    )
-    /*
-    userEvent.type(birthYearInput, '{selectall}{del}1294')
-    userEvent.click(await dependent.saveButton())
-
-    await waitFor(async () =>
-      expect(
-        await spouseAndDependent
-          .rendered()
-          .findAllByText('Input must be greater than or equal to 1900')
       ).toHaveLength(1)
     )
 
-    expect(dependent.requiredErrors()).toHaveLength(1)
+    await waitFor(() => {
+      const dateErr = spouseAndDependent
+        .rendered()
+        .queryAllByText('Invalid date format')
+      expect(dateErr).toHaveLength(1)
+    })
 
-    userEvent.type(birthYearInput, '{selectall}{del}1999')
-    userEvent.click(await dependent.saveButton())
-
-    await waitFor(() =>
-      expect(
-        spouseAndDependent
-          .rendered()
-          .queryByText('Input must be greater than or equal to 1900')
-      ).not.toBeInTheDocument()
-    )*/
+    userEvent.type(dependent.dateOfBirthField()!, '{selectall}{del}01/01/2000')
+    userEvent.click(dependent.saveButton()!)
 
     expect(dependent.requiredErrors()).toHaveLength(1)
 
-    userEvent.type(durationInput, 'abcd')
-    userEvent.click(await dependent.saveButton())
+    userEvent.type(dependent.durationField()!, 'abcd')
+    userEvent.click(dependent.saveButton()!)
 
     await waitFor(() => expect(dependent.requiredErrors()).toHaveLength(1))
 
-    userEvent.type(durationInput, '{selectall}{del}15')
-    userEvent.click(await dependent.saveButton())
+    userEvent.type(dependent.durationField()!, '{selectall}{del}15')
+    userEvent.click(dependent.saveButton()!)
 
     await waitFor(() =>
       expect(
@@ -558,8 +479,8 @@ describe('Dependents', () => {
 
     expect(dependent.requiredErrors()).toHaveLength(0)
 
-    userEvent.type(durationInput, '{selectall}{del}10')
-    userEvent.click(await dependent.saveButton())
+    userEvent.type(dependent.durationField()!, '{selectall}{del}10')
+    userEvent.click(dependent.saveButton()!)
 
     await waitFor(() =>
       expect(
@@ -575,7 +496,7 @@ describe('Dependents', () => {
       spouseAndDependent.rendered().getByText('123-45-6789')
     ).toBeInTheDocument()
 
-    const deleteBooker = (await dependent.deleteButtons())[0]
+    const deleteBooker = dependent.deleteButtons()[0]
     userEvent.click(deleteBooker)
     await waitFor(() =>
       expect(

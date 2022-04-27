@@ -24,6 +24,7 @@ import PersonIcon from '@material-ui/icons/Person'
 export const labels = {
   fname: 'First Name and Initial',
   lname: 'Last Name',
+  dateOfBirth: 'Date of Birth',
   ssn: 'SSN / TIN'
 }
 
@@ -48,8 +49,8 @@ export const PersonFields = ({
       <LabeledCheckbox label="Is this person blind?" name="isBlind" />
       <DatePicker
         name="dateOfBirth"
-        label="Date of Birth"
-        sizes={{ xs: 12, lg: 6 }}
+        label={labels.dateOfBirth}
+        required={true}
         minDate={new Date(1900, 0, 1)}
         maxDate={new Date()}
       />
