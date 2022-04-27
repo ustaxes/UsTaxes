@@ -34,7 +34,7 @@ export function LabeledCheckbox<TFormValues>(
                 control={
                   <Checkbox
                     name={name}
-                    checked={(value as boolean | undefined) ?? false}
+                    checked={value as boolean}
                     onChange={(_, checked) => onChange(checked)}
                     color="primary"
                   />

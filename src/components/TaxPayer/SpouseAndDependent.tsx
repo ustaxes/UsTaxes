@@ -109,10 +109,12 @@ export const AddDependentForm = (): ReactElement => {
     (state: TaxesState) => state.information.taxPayer.dependents
   )
 
+  const defaultValues = blankUserDependentForm
+
   const dispatch = useDispatch()
 
   const methods = useForm<UserDependentForm>({
-    defaultValues: blankUserDependentForm
+    defaultValues
   })
 
   const onSubmitAdd = (formData: UserDependentForm): void => {
@@ -127,6 +129,7 @@ export const AddDependentForm = (): ReactElement => {
 
   const page = (
     <FormListContainer<UserDependentForm>
+      defaultValues={defaultValues}
       onSubmitAdd={onSubmitAdd}
       onSubmitEdit={onSubmitEdit}
       items={dependents.map((a) => toDependentForm(a))}
@@ -164,8 +167,9 @@ export const AddDependentForm = (): ReactElement => {
 }
 
 export const SpouseInfo = (): ReactElement => {
+  const defaultValues = blankUserSpouseForm
   const methods = useForm<UserSpouseForm>({
-    defaultValues: blankUserSpouseForm
+    defaultValues
   })
   const { getValues } = methods
   const dispatch = useDispatch()
@@ -182,6 +186,7 @@ export const SpouseInfo = (): ReactElement => {
 
   const page = (
     <FormListContainer
+      defaultValues={defaultValues}
       items={spouse !== undefined ? [toSpouseForm(spouse)] : []}
       primary={(s) => `${s.firstName} ${s.lastName}`}
       secondary={(s) => formatSSID(s.ssid)}

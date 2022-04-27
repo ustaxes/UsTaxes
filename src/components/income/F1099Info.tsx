@@ -227,7 +227,9 @@ const toF1099 = (input: F1099UserInput): Supported1099 | undefined => {
 export default function F1099Info(): ReactElement {
   const f1099s = useSelector((state: TaxesState) => state.information.f1099s)
 
-  const methods = useForm<F1099UserInput>()
+  const defaultValues = blankUserInput
+
+  const methods = useForm<F1099UserInput>({ defaultValues })
   const { handleSubmit, watch } = methods
   const selectedType: Income1099Type | undefined = watch('formType')
 
@@ -411,6 +413,7 @@ export default function F1099Info(): ReactElement {
 
   const form: ReactElement | undefined = (
     <FormListContainer
+      defaultValues={defaultValues}
       onSubmitAdd={onSubmitAdd}
       onSubmitEdit={onSubmitEdit}
       items={f1099s.map((a) => toUserInput(a))}
