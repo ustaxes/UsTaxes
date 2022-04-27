@@ -7,8 +7,21 @@ import Load from './Load'
 export const stateToString = (state: any): string =>
   JSON.stringify(serializeTransform(state))
 
-export const stringToState = (str: string): USTState =>
-  deserializeTransform(JSON.parse(str)) as USTState
+/**
+ * Reuse the same functionality as reloading the state from redux-persist,
+ * to reload state from a file
+ */
+export const stringToState = (str: string): USTState => {
+  const data = JSON.parse(str) as Record<string, unknown>
+  return Object.keys(data).reduce(
+    (acc, key) => ({
+      ...acc,
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+      [key]: deserializeTransform(data[key])
+    }),
+    {}
+  ) as USTState
+}
 
 export const download = (filename: string, text: string): void => {
   const element = document.createElement('a')
