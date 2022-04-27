@@ -107,6 +107,7 @@ const toIraUserInput = (data: Ira): IraUserInput => ({
 })
 
 export default function IRA(): ReactElement {
+  const defaultValues = blankUserInput
   const ira = useYearSelector(
     (state: TaxesState) => state.information.individualRetirementArrangements
   )
@@ -120,7 +121,7 @@ export default function IRA(): ReactElement {
 
   const dispatch = useYearDispatch()
 
-  const methods = useForm<IraUserInput>()
+  const methods = useForm<IraUserInput>({ defaultValues })
   const { handleSubmit } = methods
 
   const { navButtons, onAdvance } = usePager()
@@ -137,6 +138,7 @@ export default function IRA(): ReactElement {
 
   const hsaBlock = (
     <FormListContainer<IraUserInput>
+      defaultValues={defaultValues}
       items={ira.map((a) => toIraUserInput(a))}
       onSubmitAdd={onSubmitAdd}
       onSubmitEdit={onSubmitEdit}
