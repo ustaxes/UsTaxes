@@ -9,7 +9,7 @@
     "@material-ui/lab": "^4.0.0-alpha.61",
     "@material-ui/pickers": "^3.3.10",
     "@tauri-apps/api": "^1.0.0-rc.3",
-    "@tauri-apps/cli": "^1.0.0-rc.8",
+    "@tauri-apps/cli": "^1.0.0-rc.9",
     "ajv": "^8.11.0",
     "ajv-formats": "^2.1.1",
     "date-fns": "^2.28.0",
