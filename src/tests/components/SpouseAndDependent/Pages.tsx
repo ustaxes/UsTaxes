@@ -1,5 +1,4 @@
 import { ReactElement } from 'react'
-import { BrowserRouter as Router } from 'react-router-dom'
 import {
   AddDependentForm,
   FilingStatusDropdown,
@@ -22,11 +21,9 @@ export class SpouseTestPage extends TestPage {
   }
 
   component: ReactElement = (
-    <Router>
-      <div data-testid="spouse-info">
-        <SpouseInfo />
-      </div>
-    </Router>
+    <div data-testid="spouse-info">
+      <SpouseInfo />
+    </div>
   )
 }
 
@@ -51,7 +48,7 @@ export class SpouseAndDependentTestPage extends TestPage {
   }
 
   component: ReactElement = (
-    <Router>
+    <>
       <div data-testid="year-status-bar">
         <YearStatusBar />
       </div>
@@ -64,6 +61,6 @@ export class SpouseAndDependentTestPage extends TestPage {
       <div data-testid="filing-status-dropdown">
         <FilingStatusDropdown />
       </div>
-    </Router>
+    </>
   )
 }
