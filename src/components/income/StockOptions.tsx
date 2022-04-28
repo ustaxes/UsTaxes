@@ -66,6 +66,7 @@ const toF3921 = (input: F3921UserInput): F3921 | undefined => {
 }
 
 export const StockOptions = (): ReactElement => {
+  const defaultValues = blankUserInput
   const information: Information = useSelector(
     (state: TaxesState) => state.information
   )
@@ -86,7 +87,7 @@ export const StockOptions = (): ReactElement => {
     p !== undefined ? [p as Person] : []
   )
 
-  const methods = useForm<F3921UserInput>()
+  const methods = useForm<F3921UserInput>({ defaultValues })
   const { handleSubmit } = methods
   const dispatch = useDispatch()
 
@@ -110,6 +111,7 @@ export const StockOptions = (): ReactElement => {
 
   const form: ReactElement | undefined = (
     <FormListContainer<F3921UserInput>
+      defaultValues={defaultValues}
       onSubmitAdd={onSubmitAdd}
       onSubmitEdit={onSubmitEdit}
       items={f3921s.map((a) => toUserInput(a))}

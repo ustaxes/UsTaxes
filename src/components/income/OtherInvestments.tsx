@@ -42,6 +42,15 @@ interface AssetUserInput {
   state?: State
 }
 
+const blankAssetUserInput: AssetUserInput = {
+  name: '',
+  positionType: 'Security',
+  openPrice: '',
+  openFee: '',
+  closeFee: '',
+  quantity: ''
+}
+
 const toAsset = (input: AssetUserInput): Asset<Date> | undefined => {
   const {
     name,
@@ -75,7 +84,8 @@ const toAsset = (input: AssetUserInput): Asset<Date> | undefined => {
 export const OtherInvestments = (): ReactElement => {
   const year = useSelector((state: YearsTaxesState) => state.activeYear)
   const [isOpen, setOpen] = useState(false)
-  const methods = useForm<AssetUserInput>()
+  const defaultValues = blankAssetUserInput
+  const methods = useForm<AssetUserInput>({ defaultValues })
   const { handleSubmit, watch } = methods
   const positionType = watch('positionType')
   const closeDate = watch('closeDate')
@@ -92,6 +102,7 @@ export const OtherInvestments = (): ReactElement => {
 
   const form: ReactElement | undefined = (
     <OpenableFormContainer
+      defaultValues={defaultValues}
       isOpen={isOpen}
       onOpenStateChange={setOpen}
       onSave={onSubmitAdd}

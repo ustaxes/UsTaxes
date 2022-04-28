@@ -165,9 +165,9 @@ const Box12Data = (): ReactElement => {
 
 export default function W2JobInfo(): ReactElement {
   const dispatch = useDispatch()
-
+  const defaultValues = blankW2UserInput
   const methods = useForm<IncomeW2UserInput>({
-    defaultValues: blankW2UserInput
+    defaultValues
   })
 
   const { navButtons, onAdvance } = usePager()
@@ -203,6 +203,7 @@ export default function W2JobInfo(): ReactElement {
 
   const w2sBlock = (
     <FormListContainer<IncomeW2UserInput>
+      defaultValues={defaultValues}
       items={w2s.map((a) => toIncomeW2UserInput(a))}
       onSubmitAdd={onSubmitAdd}
       onSubmitEdit={onSubmitEdit}
