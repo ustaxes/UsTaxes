@@ -20,7 +20,7 @@ import { Actions } from './actions'
 import { PersistPartial } from 'redux-persist/es/persistReducer'
 import { createTransform } from 'redux-persist'
 import { FSAction } from './fs/Actions'
-import fsReducer from './fs/FSReducer'
+import { fsReducer } from './fs/FSReducer'
 import { migrateEachYear, migrateAgeAndBlindness } from './migration'
 import _ from 'lodash'
 
