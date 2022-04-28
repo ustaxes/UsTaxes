@@ -6,7 +6,7 @@ import {
 } from 'redux'
 import logger from 'redux-logger'
 import rootReducer from './reducer'
-
+import _ from 'lodash'
 import {
   persistStore,
   persistReducer,
@@ -22,7 +22,6 @@ import { createTransform } from 'redux-persist'
 import { FSAction } from './fs/Actions'
 import { fsReducer } from './fs/FSReducer'
 import { migrateEachYear, migrateAgeAndBlindness } from './migration'
-import _ from 'lodash'
 
 type SerializedState = { [K in TaxYear]: Information } & {
   assets: Asset<string>[]
@@ -32,49 +31,65 @@ type SerializedState = { [K in TaxYear]: Information } & {
 export type USTSerializedState = NonNullable<PersistedState> & SerializedState
 export type USTState = NonNullable<PersistedState> & YearsTaxesState
 
-const positionTransformDS = (p: Asset): Asset<string> => ({
-  ...p,
-  openDate: p.openDate.toISOString(),
-  closeDate: p.closeDate?.toISOString(),
-  giftedDate: p.giftedDate?.toISOString()
-})
-
-const positionTransformSD = (p: Asset<string>): Asset => ({
-  ...p,
-  openDate: new Date(p.openDate),
-  closeDate: p.closeDate ? new Date(p.closeDate) : undefined,
-  giftedDate: p.giftedDate ? new Date(p.giftedDate) : undefined
-})
-
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 /**
  * Redux-persist calls the transform function not for
  * the entire state, but for each reducer in our state.
  */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
-export const serializeTransform = (s: any): any => {
-  // We're only looking for the assets array.
-  // Assuming for now that the only array as a value in the
-  // root of the state is the assets array.
-  if (!_.isArray(s)) {
-    return s
-  }
-  return (s as Asset[]).map((p) => positionTransformDS(p))
-}
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
 
-export const deserializeTransform = (s: any): any => {
-  // We're only looking for the assets array.
-  // Assuming for now that the only array as a value in the
-  // root of the state is the assets array.
-  if (!_.isArray(s)) {
-    return s
+// A key that must indicate a date value.
+// eg: dateOfBirth, or openDate
+const dateKey = /(^date)|(Date)/
+
+const serializeDeserialize =
+  (f: (d: Date | string) => Date | string) =>
+  (s: any): any => {
+    const recur = serializeDeserialize(f)
+    if (_.isArray(s)) {
+      return s.map((p) => recur(p))
+    } else if (_.isObject(s)) {
+      const ob = s as { [k: string]: any }
+      return Object.keys(ob).reduce((acc, k) => {
+        const newValue = (() => {
+          if (dateKey.exec(k) !== null) {
+            return f(ob[k] as Date | string)
+          }
+          return recur(ob[k])
+        })()
+
+        return {
+          ...acc,
+          [k]: newValue
+        }
+      }, {})
+    } else {
+      return s
+    }
   }
-  return (s as Asset<string>[]).map((p) => positionTransformSD(p))
-}
-/* eslint-enable @typescript-eslint/no-explicit-any */
-/* eslint-enable @typescript-eslint/explicit-module-boundary-types */
+
+/**
+ * Look for all the Dates that need to be turned to strings
+ */
+export const serializeTransform: (s: any) => any = serializeDeserialize((d) =>
+  (d as Date).toISOString()
+)
+
+/**
+ * Look for all strings that need to be turned to Dates
+ */
+export const deserializeTransform: (s: any) => any = serializeDeserialize(
+  (d) => new Date(d as string)
+)
+
+/* eslint-enable @typescript-eslint/no-unsafe-assignment */
+/* eslint-enable @typescript-eslint/no-unsafe-argument */
+/* eslint-enable @typescript-eslint/no-unsafe-return */
+/* eslint-enable @typescript-eslint/no-unsafe-call */
 
 const dateStringTransform = createTransform(
   serializeTransform,

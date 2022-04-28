@@ -8,8 +8,8 @@ import { blankState } from './reducer'
  */
 export type TaxesState = { information: Information }
 
-export type YearsTaxesState = { [K in TaxYear]: Information } & {
-  assets: Asset<Date>[]
+export type YearsTaxesState<D = Date> = { [K in TaxYear]: Information<D> } & {
+  assets: Asset<D>[]
   activeYear: TaxYear
 }
 
