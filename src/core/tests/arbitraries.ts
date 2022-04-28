@@ -9,6 +9,7 @@ import {
   ValidatedInformation,
   ValidatedTaxpayer
 } from 'ustaxes/forms/F1040Base'
+import { blankYearTaxesState, YearsTaxesState } from 'ustaxes/redux'
 
 const lower: Arbitrary<string> = fc
   .integer({ min: 0x61, max: 0x7a })
@@ -698,3 +699,30 @@ export class Arbitraries {
 }
 
 export const forYear = (year: number): Arbitraries => new Arbitraries(year)
+
+export const asset: Arbitrary<types.Asset> = fc
+  .tuple(
+    fc.string(),
+    fc.constantFrom<types.AssetType>('Security', 'Real Estate'),
+    fc.date(),
+    fc.nat({ max: 100000 }),
+    fc.nat({ max: 100 }),
+    fc.nat({ max: 100 })
+  )
+  .map(([name, positionType, openDate, openPrice, openFee, quantity]) => ({
+    name,
+    positionType,
+    openPrice,
+    openDate,
+    openFee,
+    quantity
+  }))
+
+export const yearsTaxesState: Arbitrary<YearsTaxesState> = fc
+  .tuple(forYear(2021).information(), fc.array(asset))
+  .map(([Y2021, assets]) => ({
+    ...blankYearTaxesState,
+    Y2021,
+    assets,
+    activeYear: 'Y2021'
+  }))
