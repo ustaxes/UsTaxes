@@ -26,7 +26,7 @@ export function DatePicker<TFormValues>(
   const classes = useStyles()
   const {
     control,
-    formState: { isDirty, isSubmitted }
+    formState: { isSubmitted }
   } = useFormContext<TFormValues>()
 
   return (
@@ -42,42 +42,53 @@ export function DatePicker<TFormValues>(
         name={name}
         control={control}
         rules={{
-          required: required ? 'Input is required' : false
+          required
         }}
-        render={({ field: { value, onChange } }) => (
-          <div className={classes.root}>
-            <FormControl component="fieldset">
-              <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                <MuiDatePicker
-                  data-testid={name}
-                  label={label}
-                  InputProps={{
-                    fullWidth: true
-                  }}
-                  InputLabelProps={{
-                    shrink: true
-                  }}
-                  inputVariant="filled"
-                  minDate={minDate}
-                  maxDate={maxDate}
-                  maxDateMessage={`Date cannot be after ${maxDate.toLocaleDateString()}`}
-                  minDateMessage={`Date cannot be before ${minDate.toLocaleDateString()}`}
-                  // invalid date message can be shown once user has attempted to submit
-                  invalidDateMessage={
-                    isDirty && isSubmitted ? 'Invalid date format' : ''
-                  }
-                  value={
-                    (value as string | undefined) ?? null
-                    // if user is working with the field, we should not display the empty label
-                  }
-                  placeholder="mm/dd/yyyy"
-                  onChange={onChange}
-                  format="MM/dd/yyyy"
-                />
-              </MuiPickersUtilsProvider>
-            </FormControl>
-          </div>
-        )}
+        render={({ field: { value, onChange } }) => {
+          const forceError: boolean | undefined =
+            (isSubmitted &&
+              required &&
+              ((value as string | undefined | null) ?? undefined) ===
+                undefined) ||
+            value === ''
+
+          const forceErrorProps = forceError
+            ? {
+                helperText: 'Input is required',
+                error: true
+              }
+            : {}
+
+          return (
+            <div className={classes.root}>
+              <FormControl component="fieldset">
+                <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                  <MuiDatePicker
+                    {...forceErrorProps}
+                    data-testid={name}
+                    label={label}
+                    InputLabelProps={{
+                      shrink: true
+                    }}
+                    inputVariant="filled"
+                    minDate={minDate}
+                    maxDate={maxDate}
+                    maxDateMessage={`Date cannot be after ${maxDate.toLocaleDateString()}`}
+                    minDateMessage={`Date cannot be before ${minDate.toLocaleDateString()}`}
+                    // invalid date message can be shown once user has attempted to submit
+                    invalidDateMessage={
+                      isSubmitted ? 'Invalid date format' : undefined
+                    }
+                    value={(value as string | undefined) ?? null}
+                    placeholder="mm/dd/yyyy"
+                    onChange={onChange}
+                    format="MM/dd/yyyy"
+                  />
+                </MuiPickersUtilsProvider>
+              </FormControl>
+            </div>
+          )
+        }}
       />
     </ConditionallyWrap>
   )

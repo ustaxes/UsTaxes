@@ -331,60 +331,26 @@ describe('Dependents', () => {
     // click the save button with empty inputs
     userEvent.click(dependent.saveButton()!)
 
-    // expect five `Input is required` errors
-    await waitFor(() => expect(dependent.requiredErrors()).toHaveLength(5))
+    // expect six `Input is required` errors
+    await waitFor(() => expect(dependent.requiredErrors()).toHaveLength(6))
 
     userEvent.type(dependent.firstNameField()!, '8675309')
     userEvent.click(dependent.saveButton()!)
 
-    await waitFor(() => {
-      expect(
-        spouseAndDependent
-          .rendered()
-          .queryByText('Input should only include letters and spaces')
-      ).not.toBeInTheDocument()
-
-      expect(dependent.requiredErrors()).toHaveLength(4)
-    })
+    await waitFor(() => expect(dependent.requiredErrors()).toHaveLength(5))
 
     userEvent.clear(dependent.firstNameField()!)
     userEvent.type(dependent.firstNameField()!, 'Booker T')
     userEvent.click(dependent.saveButton()!)
 
     await waitFor(() => {
-      expect(
-        spouseAndDependent
-          .rendered()
-          .queryByText('Input should only include letters and spaces')
-      ).not.toBeInTheDocument()
-
-      expect(dependent.requiredErrors()).toHaveLength(4)
+      expect(dependent.requiredErrors()).toHaveLength(5)
     })
-
-    userEvent.type(dependent.lastNameField()!, '666')
-    userEvent.click(dependent.saveButton()!)
-
-    await waitFor(() =>
-      expect(
-        spouseAndDependent
-          .rendered()
-          .queryByText('Input should only include letters and spaces')
-      ).not.toBeInTheDocument()
-    )
-
-    expect(dependent.requiredErrors()).toHaveLength(3)
 
     userEvent.type(dependent.lastNameField()!, '{selectall}{del}Washington')
     userEvent.click(dependent.saveButton()!)
 
-    await waitFor(() =>
-      expect(
-        spouseAndDependent
-          .rendered()
-          .queryByText('Input should only include letters and spaces')
-      ).not.toBeInTheDocument()
-    )
-    expect(dependent.requiredErrors()).toHaveLength(3)
+    await waitFor(() => expect(dependent.requiredErrors()).toHaveLength(4))
 
     userEvent.clear(dependent.ssnField()!)
     userEvent.type(dependent.ssnField()!, '123')
@@ -398,7 +364,7 @@ describe('Dependents', () => {
       ).toHaveLength(1)
     )
 
-    expect(dependent.requiredErrors()).toHaveLength(2)
+    expect(dependent.requiredErrors()).toHaveLength(3)
 
     userEvent.clear(dependent.ssnField()!)
     userEvent.type(dependent.ssnField()!, '123456789')
@@ -411,8 +377,7 @@ describe('Dependents', () => {
           .queryByText('Input should be filled with 9 digits')
       ).not.toBeInTheDocument()
     )
-
-    expect(dependent.requiredErrors()).toHaveLength(2)
+    await waitFor(() => expect(dependent.requiredErrors()).toHaveLength(3))
 
     userEvent.type(dependent.relationField()!, '1111')
     userEvent.click(dependent.saveButton()!)
@@ -425,7 +390,7 @@ describe('Dependents', () => {
       ).toHaveLength(1)
     )
 
-    expect(dependent.requiredErrors()).toHaveLength(1)
+    expect(dependent.requiredErrors()).toHaveLength(2)
 
     userEvent.type(dependent.relationField()!, '{selectall}{del}stepchild')
     userEvent.click(dependent.saveButton()!)
@@ -438,17 +403,13 @@ describe('Dependents', () => {
       ).not.toBeInTheDocument()
     )
 
-    expect(dependent.requiredErrors()).toHaveLength(1)
+    expect(dependent.requiredErrors()).toHaveLength(2)
 
     userEvent.clear(dependent.dateOfBirthField()!)
     userEvent.type(dependent.dateOfBirthField()!, '31/12/2011')
     userEvent.click(dependent.saveButton()!)
 
-    await waitFor(async () =>
-      expect(
-        await spouseAndDependent.rendered().findAllByText('Input is required')
-      ).toHaveLength(1)
-    )
+    await waitFor(() => expect(dependent.requiredErrors()).toHaveLength(1))
 
     await waitFor(() => {
       const dateErr = spouseAndDependent
@@ -457,10 +418,13 @@ describe('Dependents', () => {
       expect(dateErr).toHaveLength(1)
     })
 
-    userEvent.type(dependent.dateOfBirthField()!, '{selectall}{del}01/01/2000')
+    userEvent.clear(dependent.dateOfBirthField()!)
+    userEvent.type(dependent.dateOfBirthField()!, '01/01/2000')
     userEvent.click(dependent.saveButton()!)
 
-    expect(dependent.requiredErrors()).toHaveLength(1)
+    await waitFor(() =>
+      expect(spouseAndDependent.rendered().queryByText('Invalid date format'))
+    )
 
     userEvent.type(dependent.durationField()!, 'abcd')
     userEvent.click(dependent.saveButton()!)

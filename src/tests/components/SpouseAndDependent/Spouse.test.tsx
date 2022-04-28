@@ -143,38 +143,37 @@ describe('SpouseInfo', () => {
     // click the save button with empty inputs
     userEvent.click(spouse.saveButton()!)
 
-    // expect three `Input is required` errors
-    await waitFor(() => expect(spouse.requiredErrors()).toHaveLength(3))
+    // expect four `Input is required` errors (including date input)
+    await waitFor(() => expect(spouse.requiredErrors()).toHaveLength(4))
 
-    // expect one date error "Invalid date format"
-    await waitFor(() =>
-      expect(
-        spousePage.rendered().queryAllByText('Invalid date format')
-      ).toHaveLength(1)
-    )
     // fill in the first name incorrectly
     userEvent.type(spouse.firstNameField()!, 'F$LF(#)& ##3')
     userEvent.click(spouse.saveButton()!)
 
-    await waitFor(() => expect(spouse.requiredErrors()).toHaveLength(2))
+    await waitFor(() => expect(spouse.requiredErrors()).toHaveLength(3))
 
     // fill in the first name correctly
     userEvent.type(spouse.firstNameField()!, '{selectall}{del}Sally K')
     userEvent.click(spouse.saveButton()!)
 
-    await waitFor(() => expect(spouse.requiredErrors()).toHaveLength(2))
+    await waitFor(() => expect(spouse.requiredErrors()).toHaveLength(3))
 
     // add a name with restricted characters
     userEvent.type(spouse.lastNameField()!, 'R5$%84')
     userEvent.click(spouse.saveButton()!)
 
-    await waitFor(() => expect(spouse.requiredErrors()).toHaveLength(1))
+    await waitFor(() => expect(spouse.requiredErrors()).toHaveLength(2))
 
     // correctly enter a last name
     userEvent.type(spouse.lastNameField()!, '{selectall}{del}Ride')
     userEvent.click(spouse.saveButton()!)
 
-    // only the ssn error remains
+    expect(spouse.requiredErrors()).toHaveLength(2)
+
+    userEvent.clear(spouse.dateOfBirthField()!)
+    userEvent.type(spouse.dateOfBirthField()!, '12/31/1989')
+
+    // only ssn error remains
     expect(spouse.requiredErrors()).toHaveLength(1)
 
     // incorrectly enter ssn
