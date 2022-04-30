@@ -1,22 +1,11 @@
-import { FilingStatus, TaxPayer, Information } from 'ustaxes/core/data'
-import F1040 from '../F1040'
+import { FilingStatus } from 'ustaxes/core/data'
 import { sumFields } from 'ustaxes/core/irsForms/util'
 import { SSBenefits } from '../../data/federal'
-import InformationMethods from 'ustaxes/core/data/methods'
+import { Worksheet } from '../F1040Attachment'
 
-export default class SocialSecurityBenefitsWorksheet {
-  state: InformationMethods
-  tp: TaxPayer
-  f1040: F1040
-
-  constructor(state: Information, f1040: F1040) {
-    this.state = new InformationMethods(state)
-    this.f1040 = f1040
-    this.tp = state.taxPayer
-  }
-
+export default class SocialSecurityBenefitsWorksheet extends Worksheet {
   totalNetBenefits = (): number =>
-    this.state
+    this.f1040
       .f1099ssas()
       .map((f) => f.form.netBenefits)
       .reduce((l, r) => l + r, 0)
@@ -90,13 +79,11 @@ export default class SocialSecurityBenefitsWorksheet {
     enter the result on line 16. Then, go to line 17
   */
   l8 = (): number => {
-    if (this.tp.filingStatus == undefined) {
-      return 0
-    } else if (this.tp.filingStatus == FilingStatus.MFS) {
+    if (this.f1040.info.taxPayer.filingStatus == FilingStatus.MFS) {
       // treat Married filing separately specially due to the extra question below
       // and resulting logic in the worksheet
-      if (this.state.questions.LIVE_APART_FROM_SPOUSE) {
-        return SSBenefits.caps[this.tp.filingStatus].l8
+      if (this.f1040.info.questions.LIVE_APART_FROM_SPOUSE) {
+        return SSBenefits.caps[this.f1040.info.taxPayer.filingStatus].l8
       } else {
         // Note that this value won't be taken into account. Instead,
         // the line 16 function will also check for this and perform
@@ -104,7 +91,7 @@ export default class SocialSecurityBenefitsWorksheet {
         return 0
       }
     } else {
-      return SSBenefits.caps[this.tp.filingStatus].l8
+      return SSBenefits.caps[this.f1040.info.taxPayer.filingStatus].l8
     }
   }
   /*
@@ -130,12 +117,7 @@ export default class SocialSecurityBenefitsWorksheet {
   $9,000 if single, head of household, qualifying widow(er), or married filing separately 
   and you lived apart from your spouse for all of 2020
   */
-  l10 = (): number => {
-    if (this.tp.filingStatus == undefined) {
-      return 0
-    }
-    return SSBenefits.caps[this.tp.filingStatus].l10
-  }
+  l10 = (): number => SSBenefits.caps[this.f1040.info.taxPayer.filingStatus].l10
 
   // Subtract line 10 from line 9. If zero or less, enter -0-
   l11 = (): number => {
@@ -172,8 +154,8 @@ export default class SocialSecurityBenefitsWorksheet {
     // in 2020, skip lines 8 through 15; multiply line 7 by 85% (0.85) and
     // enter the result on line 16. Then, go to line 17
     if (
-      this.tp.filingStatus == FilingStatus.MFS &&
-      !this.state.questions.LIVE_APART_FROM_SPOUSE
+      this.f1040.info.taxPayer.filingStatus == FilingStatus.MFS &&
+      !this.f1040.info.questions.LIVE_APART_FROM_SPOUSE
     ) {
       return this.l7() * 0.85
     } else {

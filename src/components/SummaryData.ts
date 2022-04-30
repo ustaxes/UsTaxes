@@ -83,11 +83,15 @@ export const createSummary = (
     return undefined
   }
 
-  if (year === 'Y2019') {
-    return emptySummary
-  } else if (year === 'Y2020') {
-    return SummaryCreatorFor2020.summary(f1040 as F1040For2020)
-  } else if (year === 'Y2021') {
-    return SummaryCreatorFor2021.summary(f1040 as F1040For2021)
+  switch (year) {
+    case 'Y2019': {
+      return emptySummary
+    }
+    case 'Y2021': {
+      return SummaryCreatorFor2020.summary(f1040 as F1040For2020)
+    }
+    case 'Y2021': {
+      return SummaryCreatorFor2021.summary(f1040 as F1040For2021)
+    }
   }
 }

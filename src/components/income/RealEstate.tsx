@@ -30,7 +30,7 @@ import {
   LabeledInput
 } from 'ustaxes/components/input'
 import { Patterns } from 'ustaxes/components/Patterns'
-import { daysInYear, enumKeys } from 'ustaxes/core/util'
+import { daysInYear, enumKeys, intentionallyFloat } from 'ustaxes/core/util'
 import { HouseOutlined } from '@material-ui/icons'
 import { FormListContainer } from 'ustaxes/components/FormContainer'
 import { Grid } from '@material-ui/core'
@@ -140,7 +140,8 @@ const toUserInput = (property: Property): PropertyAddForm => {
 }
 
 export default function RealEstate(): ReactElement {
-  const methods = useForm<PropertyAddForm>({ defaultValues: blankAddForm })
+  const defaultValues = blankAddForm
+  const methods = useForm<PropertyAddForm>({ defaultValues })
   const { handleSubmit, control, getValues } = methods
 
   const dispatch = useDispatch()
@@ -203,7 +204,7 @@ export default function RealEstate(): ReactElement {
   )
 
   const otherExpenseDescription = (() => {
-    if (otherExpensesEntered ?? 0 !== 0) {
+    if ((otherExpensesEntered ?? 0) !== 0) {
       return (
         <LabeledInput
           key={enumKeys(PropertyExpenseType).length}
@@ -217,6 +218,7 @@ export default function RealEstate(): ReactElement {
 
   const form = (
     <FormListContainer
+      defaultValues={defaultValues}
       items={properties.map((a) => toUserInput(a))}
       icon={() => <HouseOutlined />}
       primary={(p) => toProperty(p).address.address}
@@ -298,7 +300,10 @@ export default function RealEstate(): ReactElement {
 
   return (
     <FormProvider {...methods}>
-      <form tabIndex={-1} onSubmit={handleSubmit(onAdvance)}>
+      <form
+        tabIndex={-1}
+        onSubmit={intentionallyFloat(handleSubmit(onAdvance))}
+      >
         <Helmet>
           <title>Real Estate | Income | UsTaxes.org</title>
         </Helmet>

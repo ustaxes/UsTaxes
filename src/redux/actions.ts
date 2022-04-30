@@ -20,7 +20,9 @@ import {
   ItemizedDeductions,
   F3921,
   ScheduleK1Form1065,
-  TaxYear
+  TaxYear,
+  Credit,
+  EditCreditAction
 } from 'ustaxes/core/data'
 
 import {
@@ -81,12 +83,16 @@ export enum ActionName {
   ADD_ASSETS = 'ASSETS/ADD_MANY',
   EDIT_ASSET = 'ASSETS/EDIT',
   REMOVE_ASSET = 'ASSETS/REMOVE',
+  REMOVE_ASSETS = 'ASSETS/REMOVE_MANY',
   ADD_F3921 = 'F3921/ADD',
   EDIT_F3921 = 'F3921/EDIT',
   REMOVE_F3921 = 'F3921/REMOVE',
   ADD_SCHEDULE_K1_F1065 = 'SCHEDULE_K1_F1065/ADD',
   EDIT_SCHEDULE_K1_F1065 = 'SCHEDULE_K1_F1065/EDIT',
-  REMOVE_SCHEDULE_K1_F1065 = 'SCHEDULE_K1_F1065/REMOVE'
+  REMOVE_SCHEDULE_K1_F1065 = 'SCHEDULE_K1_F1065/REMOVE',
+  ADD_CREDIT = 'CREDIT/ADD',
+  EDIT_CREDIT = 'CREDIT/EDIT',
+  REMOVE_CREDIT = 'CREDIT/REMOVE'
 }
 
 interface Save<T, R> {
@@ -152,6 +158,7 @@ type AddAsset = Save<typeof ActionName.ADD_ASSET, Asset<Date>>
 type AddAssets = Save<typeof ActionName.ADD_ASSETS, Asset<Date>[]>
 type EditAsset = Save<typeof ActionName.EDIT_ASSET, EditAssetAction>
 type RemoveAsset = Save<typeof ActionName.REMOVE_ASSET, number>
+type RemoveAssets = Save<typeof ActionName.REMOVE_ASSETS, number[]>
 type AddF3921 = Save<typeof ActionName.ADD_F3921, F3921>
 type EditF3921 = Save<typeof ActionName.EDIT_F3921, EditF3921Action>
 type RemoveF3921 = Save<typeof ActionName.REMOVE_F3921, number>
@@ -167,6 +174,9 @@ type RemoveScheduleK1Form1065 = Save<
   typeof ActionName.REMOVE_SCHEDULE_K1_F1065,
   number
 >
+type AddCredit = Save<typeof ActionName.ADD_CREDIT, Credit>
+type EditCredit = Save<typeof ActionName.EDIT_CREDIT, EditCreditAction>
+type RemoveCredit = Save<typeof ActionName.REMOVE_CREDIT, number>
 
 export type Actions =
   | SaveRefundInfo
@@ -208,12 +218,16 @@ export type Actions =
   | AddAssets
   | EditAsset
   | RemoveAsset
+  | RemoveAssets
   | AddF3921
   | EditF3921
   | RemoveF3921
   | AddScheduleK1Form1065
   | EditScheduleK1Form1065
   | RemoveScheduleK1Form1065
+  | AddCredit
+  | EditCredit
+  | RemoveCredit
 
 export type SignalAction = (year: TaxYear) => Actions
 export type ActionCreator<A> = (formData: A) => SignalAction
@@ -273,7 +287,7 @@ export const saveRefundInfo: ActionCreator<Refund> = makeActionCreator(
 
 const cleanPerson = <P extends Person>(p: P): P => ({
   ...p,
-  ssid: p?.ssid.replace(/-/g, '')
+  ssid: p.ssid.replace(/-/g, '')
 })
 
 export const savePrimaryPersonInfo: ActionCreator<PrimaryPerson> =
@@ -467,6 +481,10 @@ export const removeAsset: ActionCreator<number> = makeActionCreator(
   indexValidator
 )
 
+export const removeAssets: ActionCreator<number[]> = makeActionCreator(
+  ActionName.REMOVE_ASSETS
+)
+
 export const addF3921: ActionCreator<F3921> = makeActionCreator(
   ActionName.ADD_F3921
 )
@@ -488,3 +506,18 @@ export const editScheduleK1Form1065: ActionCreator<EditScheduleK1Form1065Action>
 
 export const removeScheduleK1Form1065: ActionCreator<number> =
   makeActionCreator(ActionName.REMOVE_SCHEDULE_K1_F1065, indexValidator)
+
+export const addCredit: ActionCreator<Credit> = makeActionCreator(
+  ActionName.ADD_CREDIT,
+  validators.credit
+)
+
+export const editCredit: ActionCreator<EditCreditAction> = makeActionCreator(
+  ActionName.EDIT_CREDIT,
+  validators.editCreditAction
+)
+
+export const removeCredit: ActionCreator<number> = makeActionCreator(
+  ActionName.REMOVE_CREDIT,
+  indexValidator
+)

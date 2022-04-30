@@ -1,18 +1,15 @@
-import { Information } from 'ustaxes/core/data'
 import { sumFields } from 'ustaxes/core/irsForms/util'
 import { FormTag } from 'ustaxes/core/irsForms/Form'
 import ScheduleSE from './ScheduleSE'
 import { fica } from '../data/federal'
 import F1040Attachment from './F1040Attachment'
 import { Field } from 'ustaxes/core/pdfFiller'
+import { ValidatedInformation } from 'ustaxes/forms/F1040Base'
 
-export const needsF8959 = (state: Information): boolean => {
+export const needsF8959 = (state: ValidatedInformation): boolean => {
   const filingStatus = state.taxPayer.filingStatus
   const totalW2Income = state.w2s.reduce((s, w2) => s + w2.medicareIncome, 0)
-  return (
-    filingStatus !== undefined &&
-    fica.additionalMedicareTaxThreshold(filingStatus) < totalW2Income
-  )
+  return fica.additionalMedicareTaxThreshold(filingStatus) < totalW2Income
 }
 
 export default class F8959 extends F1040Attachment {
@@ -20,17 +17,11 @@ export default class F8959 extends F1040Attachment {
   sequenceIndex = 71
   scheduleSE?: ScheduleSE
 
-  thresholdFromFilingStatus = (): number => {
-    const filingStatus = this.f1040.info.taxPayer.filingStatus
-    if (filingStatus === undefined) {
-      throw new Error('Filing status is undefined')
-    }
-    return fica.additionalMedicareTaxThreshold(filingStatus)
-  }
+  thresholdFromFilingStatus = (): number =>
+    fica.additionalMedicareTaxThreshold(this.f1040.info.taxPayer.filingStatus)
 
-  computeAdditionalMedicareTax = (compensation: number): number => {
-    return fica.additionalMedicareTaxRate * (compensation ?? 0)
-  }
+  computeAdditionalMedicareTax = (compensation: number): number =>
+    fica.additionalMedicareTaxRate * compensation
 
   // Part I: Additional Medicare Tax on Medicare Wages
   l1 = (): number =>
@@ -43,8 +34,7 @@ export default class F8959 extends F1040Attachment {
   l5 = (): number => this.thresholdFromFilingStatus()
   l6 = (): number => Math.max(0, this.l4() - this.l5())
 
-  l7 = (): number | undefined =>
-    this.computeAdditionalMedicareTax(this.l6() ?? 0)
+  l7 = (): number | undefined => this.computeAdditionalMedicareTax(this.l6())
 
   // Part II: Additional Medicare Tax on Self-Employment Income
   l8 = (): number | undefined => this.scheduleSE?.l6()
@@ -80,8 +70,8 @@ export default class F8959 extends F1040Attachment {
   l24 = (): number => sumFields([this.l22(), this.l23()])
 
   fields = (): Field[] => [
-    this.f1040.info.namesString(),
-    this.f1040.info.taxPayer.primaryPerson?.ssid,
+    this.f1040.namesString(),
+    this.f1040.info.taxPayer.primaryPerson.ssid,
     this.l1(),
     this.l2(),
     this.l3(),

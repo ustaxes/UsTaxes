@@ -24,6 +24,7 @@ import {
 } from 'ustaxes/components/input'
 import { Patterns } from 'ustaxes/components/Patterns'
 import { FormListContainer } from 'ustaxes/components/FormContainer'
+import { intentionallyFloat } from 'ustaxes/core/util'
 
 const showIncome = (a: Supported1099): ReactElement => {
   switch (a.type) {
@@ -89,7 +90,7 @@ interface F1099UserInput {
   dividends: string | number
   qualifiedDividends: string | number
   totalCapitalGainsDistributions: string | number
-  personRole: PersonRole.PRIMARY | PersonRole.SPOUSE
+  personRole?: PersonRole.PRIMARY | PersonRole.SPOUSE
   // R fields
   grossDistribution: string | number
   taxableAmount: string | number
@@ -104,7 +105,6 @@ interface F1099UserInput {
 const blankUserInput: F1099UserInput = {
   formType: undefined,
   payer: '',
-  personRole: PersonRole.PRIMARY,
   interest: '',
   // B Fields
   shortTermProceeds: '',
@@ -160,7 +160,7 @@ const toF1099 = (input: F1099UserInput): Supported1099 | undefined => {
     case Income1099Type.INT: {
       return {
         payer: input.payer,
-        personRole: input.personRole,
+        personRole: input.personRole ?? PersonRole.PRIMARY,
         type: input.formType,
         form: {
           income: Number(input.interest)
@@ -170,7 +170,7 @@ const toF1099 = (input: F1099UserInput): Supported1099 | undefined => {
     case Income1099Type.B: {
       return {
         payer: input.payer,
-        personRole: input.personRole,
+        personRole: input.personRole ?? PersonRole.PRIMARY,
         type: input.formType,
         form: {
           shortTermCostBasis: Number(input.shortTermCostBasis),
@@ -183,7 +183,7 @@ const toF1099 = (input: F1099UserInput): Supported1099 | undefined => {
     case Income1099Type.DIV: {
       return {
         payer: input.payer,
-        personRole: input.personRole,
+        personRole: input.personRole ?? PersonRole.PRIMARY,
         type: input.formType,
         form: {
           dividends: Number(input.dividends),
@@ -197,7 +197,7 @@ const toF1099 = (input: F1099UserInput): Supported1099 | undefined => {
     case Income1099Type.R: {
       return {
         payer: input.payer,
-        personRole: input.personRole,
+        personRole: input.personRole ?? PersonRole.PRIMARY,
         type: input.formType,
         form: {
           grossDistribution: Number(input.grossDistribution),
@@ -210,7 +210,7 @@ const toF1099 = (input: F1099UserInput): Supported1099 | undefined => {
     case Income1099Type.SSA: {
       return {
         payer: input.payer,
-        personRole: input.personRole,
+        personRole: input.personRole ?? PersonRole.PRIMARY,
         type: input.formType,
         form: {
           // benefitsPaid: Number(input.benefitsPaid),
@@ -226,7 +226,9 @@ const toF1099 = (input: F1099UserInput): Supported1099 | undefined => {
 export default function F1099Info(): ReactElement {
   const f1099s = useSelector((state: TaxesState) => state.information.f1099s)
 
-  const methods = useForm<F1099UserInput>()
+  const defaultValues = blankUserInput
+
+  const methods = useForm<F1099UserInput>({ defaultValues })
   const { handleSubmit, watch } = methods
   const selectedType: Income1099Type | undefined = watch('formType')
 
@@ -251,8 +253,8 @@ export default function F1099Info(): ReactElement {
     }
 
   const people: Person[] = useSelector((state: TaxesState) => [
-    state.information.taxPayer?.primaryPerson,
-    state.information.taxPayer?.spouse
+    state.information.taxPayer.primaryPerson,
+    state.information.taxPayer.spouse
   ])
     .filter((p) => p !== undefined)
     .map((p) => p as Person)
@@ -348,7 +350,7 @@ export default function F1099Info(): ReactElement {
         patternConfig={Patterns.currency}
         name="federalIncomeTaxWithheld"
       />
-      <GenericLabeledDropdown<PlanType1099>
+      <GenericLabeledDropdown<PlanType1099, F1099UserInput>
         label="Type of 1099-R"
         dropDownData={Object.values(PlanType1099)}
         valueMapping={(x) => x}
@@ -410,6 +412,7 @@ export default function F1099Info(): ReactElement {
 
   const form: ReactElement | undefined = (
     <FormListContainer
+      defaultValues={defaultValues}
       onSubmitAdd={onSubmitAdd}
       onSubmitEdit={onSubmitEdit}
       items={f1099s.map((a) => toUserInput(a))}
@@ -469,7 +472,10 @@ export default function F1099Info(): ReactElement {
 
   return (
     <FormProvider {...methods}>
-      <form tabIndex={-1} onSubmit={handleSubmit(onAdvance)}>
+      <form
+        tabIndex={-1}
+        onSubmit={intentionallyFloat(handleSubmit(onAdvance))}
+      >
         <Helmet>
           <title>1099 Information | Income | UsTaxes.org</title>
         </Helmet>

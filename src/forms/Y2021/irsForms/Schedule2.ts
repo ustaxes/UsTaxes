@@ -100,8 +100,10 @@ export default class Schedule2 extends F1040Attachment {
       this.l17q(),
       this.l17z()
     ])
-  // 19Additional tax from Schedule 8812
-  l19 = (): number | undefined => this.f1040.schedule8812?.l40()
+
+  // 19 Additional tax from Schedule 8812
+  l19 = (): number | undefined => this.f1040.schedule8812?.toSchedule2Line19()
+
   // TODO: Section 965 net tax liability installment from Form 965-A. .
   l20 = (): number | undefined => undefined
 
@@ -127,8 +129,8 @@ export default class Schedule2 extends F1040Attachment {
   // and on Form 1040 or 1040-SR, line 23, or Form 1040-NR, line 23b
 
   fields = (): Field[] => [
-    this.f1040.info.namesString(),
-    this.f1040.info.taxPayer.primaryPerson?.ssid,
+    this.f1040.namesString(),
+    this.f1040.info.taxPayer.primaryPerson.ssid,
 
     this.l1(),
     this.l2(),

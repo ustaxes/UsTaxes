@@ -52,8 +52,7 @@ export default class F8995 extends F1040Attachment {
   // TODO: REIT
   l6 = (): number => 0
   l7 = (): number => 0
-  l8 = (): number | undefined =>
-    ifNumber(this.l6(), (num) => num + (this.l7() ?? 0))
+  l8 = (): number | undefined => ifNumber(this.l6(), (num) => num + this.l7())
   l9 = (): number | undefined => ifNumber(this.l8(), (num) => num * 0.2)
 
   l10 = (): number | undefined =>
@@ -69,8 +68,8 @@ export default class F8995 extends F1040Attachment {
   deductions = (): number => this.l15()
 
   fields = (): Field[] => [
-    this.f1040.info.namesString(),
-    this.f1040.info.taxPayer.primaryPerson?.ssid ?? '',
+    this.f1040.namesString(),
+    this.f1040.info.taxPayer.primaryPerson.ssid,
     this.applicableK1s()[0]?.partnershipName,
     this.applicableK1s()[0]?.partnershipEin,
     this.applicableK1s()[0]?.section199AQBI,

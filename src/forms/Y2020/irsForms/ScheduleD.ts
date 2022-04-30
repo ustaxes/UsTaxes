@@ -21,7 +21,7 @@ export default class ScheduleD extends F1040Attachment {
   constructor(f1040: F1040) {
     super(f1040)
 
-    const bs: F1099BData[] = f1040.info.f1099Bs().map((f) => f.form)
+    const bs: F1099BData[] = f1040.f1099Bs().map((f) => f.form)
 
     this.aggregated = {
       shortTermProceeds: bs.reduce((l, r) => l + r.shortTermProceeds, 0),
@@ -156,9 +156,9 @@ export default class ScheduleD extends F1040Attachment {
   l12 = (): number | undefined => undefined
 
   l13 = (): number | undefined =>
-    this.f1040.info
+    this.f1040
       .f1099Divs()
-      .reduce((s, f) => s + (f.form.totalCapitalGainsDistributions ?? 0), 0)
+      .reduce((s, f) => s + f.form.totalCapitalGainsDistributions, 0)
 
   l14 = (): number | undefined => undefined
 
@@ -181,7 +181,7 @@ export default class ScheduleD extends F1040Attachment {
   l16 = (): number => sumFields([this.l7(), this.l15()])
 
   // Are L15 and L16 both gains?
-  l17 = (): boolean => (this.l15() ?? 0) > 0 && (this.l16() ?? 0) > 0
+  l17 = (): boolean => this.l15() > 0 && this.l16() > 0
 
   l18 = (): number | undefined => {
     if (!this.l17()) {
@@ -213,11 +213,8 @@ export default class ScheduleD extends F1040Attachment {
     }
   }
 
-  haveQualifiedDividends = (): boolean => {
-    return this.f1040.info
-      .f1099Divs()
-      .some((f) => (f.form.qualifiedDividends ?? 0) > 0)
-  }
+  haveQualifiedDividends = (): boolean =>
+    this.f1040.f1099Divs().some((f) => f.form.qualifiedDividends > 0)
 
   // TODO: Schedule D tax worksheet
   // neither box should be checked if this question was not required to be answered by l20.
@@ -241,8 +238,8 @@ export default class ScheduleD extends F1040Attachment {
     (this.l20() ?? false) || (this.l22() ?? false)
 
   fields = (): Field[] => [
-    this.f1040.info.namesString(),
-    this.f1040.info.taxPayer.primaryPerson?.ssid,
+    this.f1040.namesString(),
+    this.f1040.info.taxPayer.primaryPerson.ssid,
     false,
     false,
     this.l1ad(),

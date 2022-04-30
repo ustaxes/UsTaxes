@@ -25,6 +25,7 @@ import { Grid } from '@material-ui/core'
 import { Work } from '@material-ui/icons'
 import { TaxesState } from 'ustaxes/redux'
 import { addIRA, editIRA, removeIRA } from 'ustaxes/redux/actions'
+import { intentionallyFloat } from 'ustaxes/core/util'
 
 interface IraUserInput {
   payer: string
@@ -106,20 +107,21 @@ const toIraUserInput = (data: Ira): IraUserInput => ({
 })
 
 export default function IRA(): ReactElement {
+  const defaultValues = blankUserInput
   const ira = useYearSelector(
     (state: TaxesState) => state.information.individualRetirementArrangements
   )
 
   const people: Person[] = useYearSelector((state: TaxesState) => [
-    state.information.taxPayer?.primaryPerson,
-    state.information.taxPayer?.spouse
+    state.information.taxPayer.primaryPerson,
+    state.information.taxPayer.spouse
   ])
     .filter((p) => p !== undefined)
     .map((p) => p as Person)
 
   const dispatch = useYearDispatch()
 
-  const methods = useForm<IraUserInput>()
+  const methods = useForm<IraUserInput>({ defaultValues })
   const { handleSubmit } = methods
 
   const { navButtons, onAdvance } = usePager()
@@ -136,6 +138,7 @@ export default function IRA(): ReactElement {
 
   const hsaBlock = (
     <FormListContainer<IraUserInput>
+      defaultValues={defaultValues}
       items={ira.map((a) => toIraUserInput(a))}
       onSubmitAdd={onSubmitAdd}
       onSubmitEdit={onSubmitEdit}
@@ -154,13 +157,13 @@ export default function IRA(): ReactElement {
       )}
     >
       <Grid container spacing={2}>
-        <LabeledInput
+        <LabeledInput<IraUserInput>
           name="payer"
           label="Payer for this account"
           patternConfig={Patterns.plain}
           sizes={{ xs: 12, lg: 12 }}
         />
-        <GenericLabeledDropdown<IraPlanType>
+        <GenericLabeledDropdown<IraPlanType, IraUserInput>
           label="IRA Type"
           dropDownData={Object.values(IraPlanType)}
           valueMapping={(x) => x}
@@ -168,7 +171,7 @@ export default function IRA(): ReactElement {
           textMapping={(status) => IraPlanTypeTexts[status]}
           name="planType"
         />
-        <GenericLabeledDropdown
+        <GenericLabeledDropdown<Person, IraUserInput>
           dropDownData={people}
           label="Recipient"
           valueMapping={(p: Person, i: number) =>
@@ -284,7 +287,10 @@ export default function IRA(): ReactElement {
 
   return (
     <FormProvider {...methods}>
-      <form tabIndex={-1} onSubmit={handleSubmit(onAdvance)}>
+      <form
+        tabIndex={-1}
+        onSubmit={intentionallyFloat(handleSubmit(onAdvance))}
+      >
         <Helmet>
           <title>
             Individual Retirement Arrangements (IRA) | Savings Accounts |

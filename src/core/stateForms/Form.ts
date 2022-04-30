@@ -1,5 +1,6 @@
 import Fill from '../pdfFiller/Fill'
-import { IncomeW2, Information, State } from '../data'
+import { IncomeW2, State } from '../data'
+import { ValidatedInformation } from 'ustaxes/forms/F1040Base'
 
 /**
  * Represents a state's income tax form, or schedule
@@ -9,7 +10,7 @@ export default abstract class Form extends Fill {
   abstract formName: string
   abstract formOrder: number
   abstract attachments: () => Form[]
-  abstract info: Information
+  abstract info: ValidatedInformation
 }
 
 /**

@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+
 import { DefinedError, ValidateFunction } from 'ajv'
 import log from '../log'
 import * as fns from './validate-fns'
@@ -7,7 +9,7 @@ import * as types from 'ustaxes/core/data'
 // validate against the schema.definitions.
 export const checkType = <A>(data: A, validate: ValidateFunction<A>): A => {
   validate(data)
-  if (validate.errors !== null) {
+  if ((validate.errors ?? undefined) !== undefined) {
     // Taken from doc example: The type cast is needed to allow user-defined keywords and errors
     // You can extend this type to include your error types as needed.
 
@@ -20,12 +22,12 @@ export const checkType = <A>(data: A, validate: ValidateFunction<A>): A => {
     log.error(validate.errors)
     log.error(data)
 
-    throw new Error(
-      'Validation Failed: ' +
-        validate.errors
-          ?.map((e) => `${e.instancePath}: ${e.message}`)
-          .join('\n')
-    )
+    const errorMessage =
+      validate.errors
+        ?.map((e) => `${e.instancePath}: ${e.message ?? ''}`)
+        .join('\n') ?? 'Unknown error'
+
+    throw new Error(`Validation Failed: ${errorMessage}`)
   }
 
   return data
@@ -78,7 +80,11 @@ export const assetType = fns.AssetType as ValidateFunction<types.AssetType>
 export const assetString =
   fns.AssetString as ValidateFunction<types.AssetString>
 export const taxYear = fns.TaxYear as ValidateFunction<types.TaxYear>
+export const credit = fns.Credit as ValidateFunction<types.Credit>
+
 export const editIraAction =
   fns.EditIRAAction as ValidateFunction<types.EditIraAction>
 export const editHSAAction =
   fns.EditHSAAction as ValidateFunction<types.EditHSAAction>
+export const editCreditAction =
+  fns.EditCreditAction as ValidateFunction<types.EditCreditAction>

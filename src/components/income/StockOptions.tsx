@@ -24,6 +24,7 @@ import {
   PrimaryPerson,
   Spouse
 } from 'ustaxes/core/data'
+import { intentionallyFloat } from 'ustaxes/core/util'
 
 interface F3921UserInput {
   name: string
@@ -65,6 +66,7 @@ const toF3921 = (input: F3921UserInput): F3921 | undefined => {
 }
 
 export const StockOptions = (): ReactElement => {
+  const defaultValues = blankUserInput
   const information: Information = useSelector(
     (state: TaxesState) => state.information
   )
@@ -73,9 +75,9 @@ export const StockOptions = (): ReactElement => {
     (f3921) => f3921.personRole === PersonRole.SPOUSE
   )
 
-  const spouse: Spouse | undefined = information.taxPayer?.spouse
+  const spouse: Spouse | undefined = information.taxPayer.spouse
 
-  const primary: PrimaryPerson | undefined = information.taxPayer?.primaryPerson
+  const primary: PrimaryPerson | undefined = information.taxPayer.primaryPerson
 
   const filingStatus: FilingStatus | undefined =
     information.taxPayer.filingStatus
@@ -85,7 +87,7 @@ export const StockOptions = (): ReactElement => {
     p !== undefined ? [p as Person] : []
   )
 
-  const methods = useForm<F3921UserInput>()
+  const methods = useForm<F3921UserInput>({ defaultValues })
   const { handleSubmit } = methods
   const dispatch = useDispatch()
 
@@ -109,6 +111,7 @@ export const StockOptions = (): ReactElement => {
 
   const form: ReactElement | undefined = (
     <FormListContainer<F3921UserInput>
+      defaultValues={defaultValues}
       onSubmitAdd={onSubmitAdd}
       onSubmitEdit={onSubmitEdit}
       items={f3921s.map((a) => toUserInput(a))}
@@ -185,7 +188,10 @@ export const StockOptions = (): ReactElement => {
 
   return (
     <FormProvider {...methods}>
-      <form tabIndex={-1} onSubmit={handleSubmit(onAdvance)}>
+      <form
+        tabIndex={-1}
+        onSubmit={intentionallyFloat(handleSubmit(onAdvance))}
+      >
         <Helmet>
           <title>Stock Options | Income | UsTaxes.org</title>
         </Helmet>

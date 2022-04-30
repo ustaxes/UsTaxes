@@ -48,6 +48,7 @@ const toEstimatedTaxesUserInput = (
 })
 
 export default function EstimatedTaxes(): ReactElement {
+  const defaultValues = blankUserInput
   const activeYear: TaxYear = useSelector(
     (state: YearsTaxesState) => state.activeYear
   )
@@ -58,7 +59,7 @@ export default function EstimatedTaxes(): ReactElement {
 
   const dispatch = useDispatch()
 
-  const methods = useForm<EstimatedTaxesUserInput>()
+  const methods = useForm<EstimatedTaxesUserInput>({ defaultValues })
 
   const { navButtons, onAdvance } = usePager()
 
@@ -74,6 +75,7 @@ export default function EstimatedTaxes(): ReactElement {
 
   const w2sBlock = (
     <FormListContainer<EstimatedTaxesUserInput>
+      defaultValues={defaultValues}
       items={estimatedTaxes.map((a) => toEstimatedTaxesUserInput(a))}
       onSubmitAdd={onSubmitAdd}
       onSubmitEdit={onSubmitEdit}

@@ -125,21 +125,20 @@ export enum PlanType1099 {
    * simplified employee pension (SEP) IRA,
    * and a savings incentive match plan for employees (SIMPLE) IRA
    */
-  // IRA = 'IRA',
-  // RothIRA = 'RothIRA',
-  // SepIRA = 'SepIRA',
-  // SimpleIRA = 'SimpleIRA',
-  /* Pension and annuity payments include distributions from 401(k), 403(b), and governmental 457(b) plans.
-   */
+  IRA = 'IRA',
+  RothIRA = 'RothIRA',
+  SepIRA = 'SepIRA',
+  SimpleIRA = 'SimpleIRA',
+  // Pension and annuity payments include distributions from 401(k), 403(b), and governmental 457(b) plans.
   Pension = 'Pension'
 }
 
-export const PlanType1099Texts = {
-  // [PlanType1099.IRA]:'traditional IRA',
-  // [PlanType1099.RothIRA]: 'Roth IRA',
-  // [PlanType1099.SepIRA]: 'simplified employee pension (SEP) IRA',
-  // [PlanType1099.SimpleIRA]: 'savings incentive match plan for employees (SIMPLE) IRA',
-  [PlanType1099.Pension]: '401(k), 403(b), or 457(b) plan'
+export const PlanType1099Texts: { [k in keyof typeof PlanType1099]: string } = {
+  IRA: 'traditional IRA',
+  RothIRA: 'Roth IRA',
+  SepIRA: 'simplified employee pension (SEP) IRA',
+  SimpleIRA: 'savings incentive match plan for employees (SIMPLE) IRA',
+  Pension: '401(k), 403(b), or 457(b) plan'
 }
 
 export interface F1099RData {
@@ -522,6 +521,17 @@ export type ValueTag = 'string' | 'boolean'
 
 export type Responses = Partial<QuestionTag> // Defines usable tag names for each question later defined,
 
+export enum CreditType {
+  AdvanceChildTaxCredit = 'CreditType/AdvanceChildTaxCredit',
+  Other = 'CreditType/Other'
+}
+
+export interface Credit {
+  recipient: PersonRole
+  amount: number
+  type: CreditType
+}
+
 export interface Information {
   f1099s: Supported1099[]
   w2s: IncomeW2[]
@@ -534,6 +544,7 @@ export interface Information {
   refund?: Refund
   taxPayer: TaxPayer
   questions: Responses
+  credits: Credit[]
   stateResidencies: StateResidency[]
   healthSavingsAccounts: HealthSavingsAccount[]
   individualRetirementArrangements: Ira[]
@@ -564,9 +575,20 @@ export interface Asset<DateType = Date> {
   closeDate?: DateType
   giftedDate?: DateType
   openPrice: number
+  openFee: number
   closePrice?: number
+  closeFee?: number
   quantity: number
   state?: State
+}
+
+export type SoldAsset<D> = Asset<D> & {
+  closePrice: number
+  closeDate: D
+}
+
+export const isSold = <D>(p: Asset<D>): p is SoldAsset<D> => {
+  return p.closeDate !== undefined && p.closePrice !== undefined
 }
 
 export type AssetString = Asset<string>
@@ -590,3 +612,4 @@ export type EditAssetAction = ArrayItemEditAction<Asset<Date>>
 export type EditF3921Action = ArrayItemEditAction<F3921>
 export type EditScheduleK1Form1065Action =
   ArrayItemEditAction<ScheduleK1Form1065>
+export type EditCreditAction = ArrayItemEditAction<Credit>

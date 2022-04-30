@@ -32,6 +32,7 @@ import { usePager } from 'ustaxes/components/pager'
 import { Box, Grid } from '@material-ui/core'
 import { Person } from '@material-ui/icons'
 import { Alert } from '@material-ui/lab'
+import { intentionallyFloat } from 'ustaxes/core/util'
 
 interface UserPersonForm {
   firstName: string
@@ -61,7 +62,7 @@ const blankUserDependentForm: UserDependentForm = {
 }
 
 const toDependent = (formData: UserDependentForm): Dependent => {
-  const { birthYear, isStudent, numberOfMonths, ...rest } = formData
+  const { birthYear, isStudent = false, numberOfMonths, ...rest } = formData
 
   return {
     ...rest,
@@ -105,13 +106,15 @@ const toSpouseForm = (spouse: Spouse): UserSpouseForm => ({
 
 export const AddDependentForm = (): ReactElement => {
   const dependents = useSelector(
-    (state: TaxesState) => state.information.taxPayer?.dependents ?? []
+    (state: TaxesState) => state.information.taxPayer.dependents
   )
+
+  const defaultValues = blankUserDependentForm
 
   const dispatch = useDispatch()
 
   const methods = useForm<UserDependentForm>({
-    defaultValues: blankUserDependentForm
+    defaultValues
   })
 
   const onSubmitAdd = (formData: UserDependentForm): void => {
@@ -126,6 +129,7 @@ export const AddDependentForm = (): ReactElement => {
 
   const page = (
     <FormListContainer<UserDependentForm>
+      defaultValues={defaultValues}
       onSubmitAdd={onSubmitAdd}
       onSubmitEdit={onSubmitEdit}
       items={dependents.map((a) => toDependentForm(a))}
@@ -163,14 +167,15 @@ export const AddDependentForm = (): ReactElement => {
 }
 
 export const SpouseInfo = (): ReactElement => {
+  const defaultValues = blankUserSpouseForm
   const methods = useForm<UserSpouseForm>({
-    defaultValues: blankUserSpouseForm
+    defaultValues
   })
   const { getValues } = methods
   const dispatch = useDispatch()
 
   const spouse: Spouse | undefined = useSelector((state: TaxesState) => {
-    return state.information.taxPayer?.spouse
+    return state.information.taxPayer.spouse
   })
 
   const onSubmit = (): void => {
@@ -181,6 +186,7 @@ export const SpouseInfo = (): ReactElement => {
 
   const page = (
     <FormListContainer
+      defaultValues={defaultValues}
       items={spouse !== undefined ? [toSpouseForm(spouse)] : []}
       primary={(s) => `${s.firstName} ${s.lastName}`}
       secondary={(s) => formatSSID(s.ssid)}
@@ -277,9 +283,9 @@ export const FilingStatusDropdown = (): ReactElement => {
 
   return (
     <FormProvider {...methods}>
-      <form tabIndex={-1} onSubmit={handleSubmit(onSubmit)}>
+      <form tabIndex={-1} onSubmit={intentionallyFloat(handleSubmit(onSubmit))}>
         <Box marginBottom={2}>
-          <GenericLabeledDropdown<FilingStatus>
+          <GenericLabeledDropdown<FilingStatus, { filingStatus: FilingStatus }>
             label="Filing Status"
             dropDownData={allowedFilingStatuses}
             valueMapping={(x) => x}

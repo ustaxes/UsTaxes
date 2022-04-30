@@ -3,18 +3,7 @@ import { WorksheetData } from 'ustaxes/components/SummaryData'
 import { FilingStatus } from 'ustaxes/core/data'
 import federalBrackets from '../../data/federal'
 import { computeOrdinaryTax } from '../../irsForms/TaxTable'
-import F1040 from '../F1040'
-
-export interface TestData {
-  qualDiv: number
-  taxableIncome: number
-  f1040l7: number | undefined
-  sdl15: number | undefined
-  sdl16: number | undefined
-  sdl18: number | undefined
-  sdl19: number | undefined
-  filingStatus: FilingStatus
-}
+import { Worksheet } from '../F1040Attachment'
 
 type Bracket = [number, number]
 type Cutoffs = { [key in FilingStatus]: Bracket }
@@ -26,40 +15,31 @@ const cutoffAmounts: Cutoffs = {
   [FilingStatus.HOH]: [54100, 473750]
 }
 
-export default class QualDivAndCGWorksheetReference {
-  [k: string]: TestData | (() => number) | (() => WorksheetData)
-  data: TestData
-
-  constructor(f1040: F1040) {
-    const filingStatus = f1040.info.taxPayer.filingStatus
-    if (filingStatus === undefined) {
-      throw new Error('Filing status is undefined')
+export default class QualDivAndCGWorksheet extends Worksheet {
+  // 1. Enter the amount from Form 1040 or 1040-SR, line 15.
+  // However, if you are filing Form 2555(relating to foreign earned income),
+  // enter the amount from line 3 of the Foreign Earned Income Tax Worksheet
+  l1 = (): number => {
+    if (this.f1040.f2555 !== undefined) {
+      return this.f1040.f2555.l3() ?? 0
     }
-    this.data = {
-      qualDiv: f1040.l3a() ?? 0,
-      taxableIncome: f1040.l15(),
-      f1040l7: f1040.l7(),
-      sdl15: f1040.scheduleD?.l15(),
-      sdl16: f1040.scheduleD?.l16(),
-      sdl18: f1040.scheduleD?.l18(),
-      sdl19: f1040.scheduleD?.l19(),
-      filingStatus
-    }
+    return this.f1040.l15()
   }
-
-  // 1. Enter the amount from Form 1040 or 1040-SR, line 15. However, if you are filing Form 2555 (relating to foreign earned income), enter the amount from line 3 of the Foreign Earned Income Tax Worksheet
-  l1 = (): number => this.data.taxableIncome
   // 2. Enter the amount from Form 1040 or 1040-SR, line 3a*
-  l2 = (): number => this.data.qualDiv
+  l2 = (): number => this.f1040.l3a() ?? 0
   // 3. Are you filing Schedule D?*
-  // Yes. Enter the smaller of line 15 or 16 of Schedule D. If either line 15 or 16 is blank or a loss, enter -0-. 3.
+  // Yes. Enter the smaller of line 15 or 16 of Schedule D.
+  //      If either line 15 or 16 is blank or a loss, enter - 0 -. 3.
   // No. Enter the amount from Form 1040 or 1040-SR, line 7.
-  // Either way, it's the smaller of LTCG or total capital gain.
-  l3 = (): number =>
-    Math.min(
-      Math.max(this.data.sdl15 ?? 0, 0),
-      Math.max(this.data.sdl16 ?? 0, 0)
-    )
+  l3 = (): number => {
+    if (this.f1040.scheduleD !== undefined) {
+      return Math.min(
+        Math.max(this.f1040.scheduleD.l15(), 0),
+        Math.max(this.f1040.scheduleD.l16(), 0)
+      )
+    }
+    return this.f1040.l7() ?? 0
+  }
   // 4. Add lines 2 and 3: LTCG + QDIV
   l4 = (): number => this.l2() + this.l3()
   // 5. Subtract line 4 from line 1. If zero or less, enter -0-
@@ -67,7 +47,7 @@ export default class QualDivAndCGWorksheetReference {
   // 6. Enter:
   // $40,400 if single or married filing separately,
   // $80,800 if married filing jointly or qualifying widow(er), $54,100 if head of household.
-  l6 = (): number => cutoffAmounts[this.data.filingStatus][0]
+  l6 = (): number => cutoffAmounts[this.f1040.info.taxPayer.filingStatus][0]
   // 7. Enter the smaller of line 1 or line 6
   l7 = (): number => Math.min(this.l1(), this.l6())
   // 8. Enter the smaller of line 5 or line 7
@@ -83,7 +63,7 @@ export default class QualDivAndCGWorksheetReference {
   // 13. Enter:
   // $445,850 if single, $250,800 if married filing separately, $501,600 if married filing jointly or qualifying widow(er), $473,750 if head of household.
   //
-  l13 = (): number => cutoffAmounts[this.data.filingStatus][1]
+  l13 = (): number => cutoffAmounts[this.f1040.info.taxPayer.filingStatus][1]
   // 14. Enter the smaller of line 1 or line 13
   l14 = (): number => Math.min(this.l1(), this.l13())
   // 15. Add lines 5 and 9
@@ -103,11 +83,13 @@ export default class QualDivAndCGWorksheetReference {
   l21 = (): number =>
     (this.l20() * federalBrackets.longTermCapGains.rates[2]) / 100
   // 22. Figure the tax on the amount on line 5. If the amount on line 5 is less than $100,000, use the Tax Table to figure the tax. If the amount on line 5 is $100,000 or more, use the Tax Computation Worksheet
-  l22 = (): number => computeOrdinaryTax(this.data.filingStatus, this.l5())
+  l22 = (): number =>
+    computeOrdinaryTax(this.f1040.info.taxPayer.filingStatus, this.l5())
   // 23. Add lines 18, 21, and 22
   l23 = (): number => this.l18() + this.l21() + this.l22()
   // 24. Figure the tax on the amount on line 1. If the amount on line 1 is less than $100,000, use the Tax Table to figure the tax. If the amount on line 1 is $100,000 or more, use the Tax Computation Worksheet
-  l24 = (): number => computeOrdinaryTax(this.data.filingStatus, this.l1())
+  l24 = (): number =>
+    computeOrdinaryTax(this.f1040.info.taxPayer.filingStatus, this.l1())
   // 25. Tax on all taxable income. Enter the smaller of line 23 or 24. Also include this amount on the entry space on Form 1040 or 1040-SR, line 16. If you are filing Form 2555, don’t enter this amount on the entry space on Form 1040 or 1040-SR, line 16. Instead, enter it on line 4 of the Foreign Earned Income Tax Worksheet
   l25 = (): number => Math.min(this.l23(), this.l24())
 

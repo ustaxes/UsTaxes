@@ -108,9 +108,7 @@ export default class F8995A extends F8995 {
 
   l20 = (): number => this.f1040.l11() - this.f1040.l12c()
   l21 = (): number =>
-    getF8995PhaseOutIncome(
-      this.f1040.info.taxPayer.filingStatus ?? FilingStatus.S
-    )
+    getF8995PhaseOutIncome(this.f1040.info.taxPayer.filingStatus)
   l22 = (): number => this.l20() - this.l21()
   l23 = (): number =>
     this.f1040.info.taxPayer.filingStatus === FilingStatus.MFJ ? 100000 : 50000
@@ -154,8 +152,8 @@ export default class F8995A extends F8995 {
   l40 = (): number => Math.min(0, this.l28() + this.l29())
 
   fields = (): Field[] => [
-    this.f1040.info.namesString(),
-    this.f1040.info.taxPayer.primaryPerson?.ssid ?? '',
+    this.f1040.namesString(),
+    this.f1040.info.taxPayer.primaryPerson.ssid,
     this.applicableK1s()[0]?.partnershipName,
     false, // 1Ab
     false, // 1Ac

@@ -1,26 +1,35 @@
 import Form from 'ustaxes/core/stateForms/Form'
 import F1040 from '../../irsForms/F1040'
 import { Field } from 'ustaxes/core/pdfFiller'
-import { Dependent, Information, State } from 'ustaxes/core/data'
+import { Dependent, PrimaryPerson, Spouse, State } from 'ustaxes/core/data'
 import parameters from './Parameters'
+import { ValidatedInformation } from 'ustaxes/forms/F1040Base'
 
 export class IL1040scheduleileeic extends Form {
-  info: Information
   f1040: F1040
+  info: ValidatedInformation
   formName: string
   state: State
   formOrder = 1
   attachments: () => Form[] = () => []
   qualifyingDependents: Dependent[]
 
-  constructor(info: Information, f1040: F1040) {
+  constructor(f1040: F1040) {
     super()
-    this.info = info
+    this.info = f1040.info
     this.f1040 = f1040
     this.formName = 'il-1040-schedule-il-e-eic'
     this.state = 'IL'
     this.qualifyingDependents =
       this.f1040.scheduleEIC?.qualifyingDependents() ?? []
+  }
+
+  get primary(): PrimaryPerson | undefined {
+    return this.f1040.info.taxPayer.primaryPerson
+  }
+
+  get spouse(): Spouse | undefined {
+    return this.f1040.info.taxPayer.spouse
   }
 
   isRequired = (): boolean => (this.earnedIncomeCredit() ?? 0) > 0
@@ -65,7 +74,7 @@ export class IL1040scheduleileeic extends Form {
    * Index 4: Your name
    */
   Yourname = (): string | undefined =>
-    `${this.info.taxPayer.primaryPerson?.firstName} ${this.info.taxPayer.primaryPerson?.lastName}`
+    [this.primary?.firstName, this.primary?.lastName].flat().join(' ')
 
   f4 = (): string | undefined => this.Yourname()
 
@@ -73,7 +82,7 @@ export class IL1040scheduleileeic extends Form {
    * Index 5: Dependents first name - 2
    */
   Dependentsfirstname2 = (): string | undefined =>
-    this.info.taxPayer.dependents[1]?.firstName
+    this.f1040.info.taxPayer.dependents[1]?.firstName
 
   f5 = (): string | undefined => this.Dependentsfirstname2()
 
@@ -81,7 +90,7 @@ export class IL1040scheduleileeic extends Form {
    * Index 6: Dependent's first name - 1
    */
   Dependentsfirstname1 = (): string | undefined =>
-    this.info.taxPayer.dependents[0]?.firstName
+    this.f1040.info.taxPayer.dependents[0]?.firstName
 
   f6 = (): string | undefined => this.Dependentsfirstname1()
 
@@ -89,7 +98,7 @@ export class IL1040scheduleileeic extends Form {
    * Index 7: Dependent's first name - 3
    */
   Dependentsfirstname3 = (): string | undefined =>
-    this.info.taxPayer.dependents[2]?.firstName
+    this.f1040.info.taxPayer.dependents[2]?.firstName
 
   f7 = (): string | undefined => this.Dependentsfirstname3()
 
@@ -97,7 +106,7 @@ export class IL1040scheduleileeic extends Form {
    * Index 8: Dependent's first name - 4
    */
   Dependentsfirstname4 = (): string | undefined =>
-    this.info.taxPayer.dependents[3]?.firstName
+    this.f1040.info.taxPayer.dependents[3]?.firstName
 
   f8 = (): string | undefined => this.Dependentsfirstname4()
 
@@ -105,7 +114,7 @@ export class IL1040scheduleileeic extends Form {
    * Index 9: Dependent's first name - 5
    */
   Dependentsfirstname5 = (): string | undefined =>
-    this.info.taxPayer.dependents[4]?.firstName
+    this.f1040.info.taxPayer.dependents[4]?.firstName
 
   f9 = (): string | undefined => this.Dependentsfirstname5()
 
@@ -113,7 +122,7 @@ export class IL1040scheduleileeic extends Form {
    * Index 10: Dependent's first name - 6
    */
   Dependentsfirstname6 = (): string | undefined =>
-    this.info.taxPayer.dependents[5]?.firstName
+    this.f1040.info.taxPayer.dependents[5]?.firstName
 
   f10 = (): string | undefined => this.Dependentsfirstname6()
 
@@ -121,7 +130,7 @@ export class IL1040scheduleileeic extends Form {
    * Index 11: Dependent's first name - 7
    */
   Dependentsfirstname7 = (): string | undefined =>
-    this.info.taxPayer.dependents[6]?.firstName
+    this.f1040.info.taxPayer.dependents[6]?.firstName
 
   f11 = (): string | undefined => this.Dependentsfirstname7()
 
@@ -129,7 +138,7 @@ export class IL1040scheduleileeic extends Form {
    * Index 12: Dependent's first name - 8
    */
   Dependentsfirstname8 = (): string | undefined =>
-    this.info.taxPayer.dependents[7]?.firstName
+    this.f1040.info.taxPayer.dependents[7]?.firstName
 
   f12 = (): string | undefined => this.Dependentsfirstname8()
 
@@ -137,7 +146,7 @@ export class IL1040scheduleileeic extends Form {
    * Index 13: Dependent's first name - 9
    */
   Dependentsfirstname9 = (): string | undefined =>
-    this.info.taxPayer.dependents[8]?.firstName
+    this.f1040.info.taxPayer.dependents[8]?.firstName
 
   f13 = (): string | undefined => this.Dependentsfirstname9()
 
@@ -145,7 +154,7 @@ export class IL1040scheduleileeic extends Form {
    * Index 14: Dependent's first name - 10
    */
   Dependentsfirstname10 = (): string | undefined =>
-    this.info.taxPayer.dependents[9]?.firstName
+    this.f1040.info.taxPayer.dependents[9]?.firstName
 
   f14 = (): string | undefined => this.Dependentsfirstname10()
 
@@ -153,7 +162,7 @@ export class IL1040scheduleileeic extends Form {
    * Index 15: Dependent's last name - 2
    */
   Dependentslastname2 = (): string | undefined =>
-    this.info.taxPayer.dependents[1]?.lastName
+    this.f1040.info.taxPayer.dependents[1]?.lastName
 
   f15 = (): string | undefined => this.Dependentslastname2()
 
@@ -161,7 +170,7 @@ export class IL1040scheduleileeic extends Form {
    * Index 16: Dependent's last name - 1
    */
   Dependentslastname1 = (): string | undefined =>
-    this.info.taxPayer.dependents[0]?.lastName
+    this.f1040.info.taxPayer.dependents[0]?.lastName
 
   f16 = (): string | undefined => this.Dependentslastname1()
 
@@ -169,7 +178,7 @@ export class IL1040scheduleileeic extends Form {
    * Index 17: Dependent's last name - 3
    */
   Dependentslastname3 = (): string | undefined =>
-    this.info.taxPayer.dependents[2]?.lastName
+    this.f1040.info.taxPayer.dependents[2]?.lastName
 
   f17 = (): string | undefined => this.Dependentslastname3()
 
@@ -177,7 +186,7 @@ export class IL1040scheduleileeic extends Form {
    * Index 18: Dependent's last name - 4
    */
   Dependentslastname4 = (): string | undefined =>
-    this.info.taxPayer.dependents[3]?.lastName
+    this.f1040.info.taxPayer.dependents[3]?.lastName
 
   f18 = (): string | undefined => this.Dependentslastname4()
 
@@ -185,7 +194,7 @@ export class IL1040scheduleileeic extends Form {
    * Index 19: Dependent's last name - 5
    */
   Dependentslastname5 = (): string | undefined =>
-    this.info.taxPayer.dependents[4]?.lastName
+    this.f1040.info.taxPayer.dependents[4]?.lastName
 
   f19 = (): string | undefined => this.Dependentslastname5()
 
@@ -193,7 +202,7 @@ export class IL1040scheduleileeic extends Form {
    * Index 20: Dependent's last name - 6
    */
   Dependentslastname6 = (): string | undefined =>
-    this.info.taxPayer.dependents[5]?.lastName
+    this.f1040.info.taxPayer.dependents[5]?.lastName
 
   f20 = (): string | undefined => this.Dependentslastname6()
 
@@ -201,7 +210,7 @@ export class IL1040scheduleileeic extends Form {
    * Index 21: Dependent's last name - 7
    */
   Dependentslastname7 = (): string | undefined =>
-    this.info.taxPayer.dependents[6]?.lastName
+    this.f1040.info.taxPayer.dependents[6]?.lastName
 
   f21 = (): string | undefined => this.Dependentslastname7()
 
@@ -209,7 +218,7 @@ export class IL1040scheduleileeic extends Form {
    * Index 22: Dependent's last name - 8
    */
   Dependentslastname8 = (): string | undefined =>
-    this.info.taxPayer.dependents[7]?.lastName
+    this.f1040.info.taxPayer.dependents[7]?.lastName
 
   f22 = (): string | undefined => this.Dependentslastname8()
 
@@ -217,7 +226,7 @@ export class IL1040scheduleileeic extends Form {
    * Index 23: Dependent's last name - 9
    */
   Dependentslastname9 = (): string | undefined =>
-    this.info.taxPayer.dependents[8]?.lastName
+    this.f1040.info.taxPayer.dependents[8]?.lastName
 
   f23 = (): string | undefined => this.Dependentslastname9()
 
@@ -225,7 +234,7 @@ export class IL1040scheduleileeic extends Form {
    * Index 24: Dependent's last name - 10
    */
   Dependentslastname10 = (): string | undefined =>
-    this.info.taxPayer.dependents[9]?.lastName
+    this.f1040.info.taxPayer.dependents[9]?.lastName
 
   f24 = (): string | undefined => this.Dependentslastname10()
 
@@ -233,7 +242,7 @@ export class IL1040scheduleileeic extends Form {
    * Index 25: Social Security number - 2
    */
   SocialSecuritynumber2 = (): string | undefined =>
-    this.info.taxPayer.dependents[1]?.ssid
+    this.f1040.info.taxPayer.dependents[1]?.ssid
 
   f25 = (): string | undefined => this.SocialSecuritynumber2()
 
@@ -241,7 +250,7 @@ export class IL1040scheduleileeic extends Form {
    * Index 26: Social Security number - 3
    */
   SocialSecuritynumber3 = (): string | undefined =>
-    this.info.taxPayer.dependents[2]?.ssid
+    this.f1040.info.taxPayer.dependents[2]?.ssid
 
   f26 = (): string | undefined => this.SocialSecuritynumber3()
 
@@ -249,7 +258,7 @@ export class IL1040scheduleileeic extends Form {
    * Index 27: Social Security number - 4
    */
   SocialSecuritynumber4 = (): string | undefined =>
-    this.info.taxPayer.dependents[3]?.ssid
+    this.f1040.info.taxPayer.dependents[3]?.ssid
 
   f27 = (): string | undefined => this.SocialSecuritynumber4()
 
@@ -257,7 +266,7 @@ export class IL1040scheduleileeic extends Form {
    * Index 28: Social Security number - 5
    */
   SocialSecuritynumber5 = (): string | undefined =>
-    this.info.taxPayer.dependents[4]?.ssid
+    this.f1040.info.taxPayer.dependents[4]?.ssid
 
   f28 = (): string | undefined => this.SocialSecuritynumber5()
 
@@ -265,7 +274,7 @@ export class IL1040scheduleileeic extends Form {
    * Index 29: Social Security number - 6
    */
   SocialSecuritynumber6 = (): string | undefined =>
-    this.info.taxPayer.dependents[5]?.ssid
+    this.f1040.info.taxPayer.dependents[5]?.ssid
 
   f29 = (): string | undefined => this.SocialSecuritynumber6()
 
@@ -273,7 +282,7 @@ export class IL1040scheduleileeic extends Form {
    * Index 30: Social Security number - 7
    */
   SocialSecuritynumber7 = (): string | undefined =>
-    this.info.taxPayer.dependents[6]?.ssid
+    this.f1040.info.taxPayer.dependents[6]?.ssid
 
   f30 = (): string | undefined => this.SocialSecuritynumber7()
 
@@ -281,7 +290,7 @@ export class IL1040scheduleileeic extends Form {
    * Index 31: Social Security number - 8
    */
   SocialSecuritynumber8 = (): string | undefined =>
-    this.info.taxPayer.dependents[7]?.ssid
+    this.f1040.info.taxPayer.dependents[7]?.ssid
 
   f31 = (): string | undefined => this.SocialSecuritynumber8()
 
@@ -289,7 +298,7 @@ export class IL1040scheduleileeic extends Form {
    * Index 32: Social Security number - 9
    */
   SocialSecuritynumber9 = (): string | undefined =>
-    this.info.taxPayer.dependents[8]?.ssid
+    this.f1040.info.taxPayer.dependents[8]?.ssid
 
   f32 = (): string | undefined => this.SocialSecuritynumber9()
 
@@ -297,7 +306,7 @@ export class IL1040scheduleileeic extends Form {
    * Index 33: Social Security number - 10
    */
   SocialSecuritynumber10 = (): string | undefined =>
-    this.info.taxPayer.dependents[9]?.ssid
+    this.f1040.info.taxPayer.dependents[9]?.ssid
 
   f33 = (): string | undefined => this.SocialSecuritynumber10()
 
@@ -485,7 +494,7 @@ export class IL1040scheduleileeic extends Form {
    * Index 54: Full Time Student - 1
    */
   FullTimeStudent1 = (): boolean | undefined =>
-    this.info.taxPayer.dependents[0]?.qualifyingInfo?.isStudent
+    this.f1040.info.taxPayer.dependents[0]?.qualifyingInfo?.isStudent
 
   f54 = (): boolean | undefined => this.FullTimeStudent1()
 
@@ -493,7 +502,7 @@ export class IL1040scheduleileeic extends Form {
    * Index 55: Full Time Student - 2
    */
   FullTimeStudent2 = (): boolean | undefined =>
-    this.info.taxPayer.dependents[1]?.qualifyingInfo?.isStudent
+    this.f1040.info.taxPayer.dependents[1]?.qualifyingInfo?.isStudent
 
   f55 = (): boolean | undefined => this.FullTimeStudent2()
 
@@ -501,7 +510,7 @@ export class IL1040scheduleileeic extends Form {
    * Index 56: Full Time Student - 3
    */
   FullTimeStudent3 = (): boolean | undefined =>
-    this.info.taxPayer.dependents[2]?.qualifyingInfo?.isStudent
+    this.f1040.info.taxPayer.dependents[2]?.qualifyingInfo?.isStudent
 
   f56 = (): boolean | undefined => this.FullTimeStudent3()
 
@@ -509,7 +518,7 @@ export class IL1040scheduleileeic extends Form {
    * Index 57: Full Time Student - 4
    */
   FullTimeStudent4 = (): boolean | undefined =>
-    this.info.taxPayer.dependents[3]?.qualifyingInfo?.isStudent
+    this.f1040.info.taxPayer.dependents[3]?.qualifyingInfo?.isStudent
 
   f57 = (): boolean | undefined => this.FullTimeStudent4()
 
@@ -517,7 +526,7 @@ export class IL1040scheduleileeic extends Form {
    * Index 58: Full Time Student - 5
    */
   FullTimeStudent5 = (): boolean | undefined =>
-    this.info.taxPayer.dependents[4]?.qualifyingInfo?.isStudent
+    this.f1040.info.taxPayer.dependents[4]?.qualifyingInfo?.isStudent
 
   f58 = (): boolean | undefined => this.FullTimeStudent5()
 
@@ -525,7 +534,7 @@ export class IL1040scheduleileeic extends Form {
    * Index 59: Full Time Student - 6
    */
   FullTimeStudent6 = (): boolean | undefined =>
-    this.info.taxPayer.dependents[5]?.qualifyingInfo?.isStudent
+    this.f1040.info.taxPayer.dependents[5]?.qualifyingInfo?.isStudent
 
   f59 = (): boolean | undefined => this.FullTimeStudent6()
 
@@ -533,7 +542,7 @@ export class IL1040scheduleileeic extends Form {
    * Index 60: Full Time Student - 7
    */
   FullTimeStudent7 = (): boolean | undefined =>
-    this.info.taxPayer.dependents[6]?.qualifyingInfo?.isStudent
+    this.f1040.info.taxPayer.dependents[6]?.qualifyingInfo?.isStudent
 
   f60 = (): boolean | undefined => this.FullTimeStudent7()
 
@@ -541,7 +550,7 @@ export class IL1040scheduleileeic extends Form {
    * Index 61: Full Time Student - 8
    */
   FullTimeStudent8 = (): boolean | undefined =>
-    this.info.taxPayer.dependents[7]?.qualifyingInfo?.isStudent
+    this.f1040.info.taxPayer.dependents[7]?.qualifyingInfo?.isStudent
 
   f61 = (): boolean | undefined => this.FullTimeStudent8()
 
@@ -549,7 +558,7 @@ export class IL1040scheduleileeic extends Form {
    * Index 62: Full Time Student - 9
    */
   FullTimeStudent9 = (): boolean | undefined =>
-    this.info.taxPayer.dependents[8]?.qualifyingInfo?.isStudent
+    this.f1040.info.taxPayer.dependents[8]?.qualifyingInfo?.isStudent
 
   f62 = (): boolean | undefined => this.FullTimeStudent9()
 
@@ -557,7 +566,7 @@ export class IL1040scheduleileeic extends Form {
    * Index 63: Full Time Student - 10
    */
   FullTimeStudent10 = (): boolean | undefined =>
-    this.info.taxPayer.dependents[9]?.qualifyingInfo?.isStudent
+    this.f1040.info.taxPayer.dependents[9]?.qualifyingInfo?.isStudent
 
   f63 = (): boolean | undefined => this.FullTimeStudent10()
 
@@ -645,7 +654,7 @@ export class IL1040scheduleileeic extends Form {
    * Index 74: Number of months living with you - 1
    */
   Numberofmonthslivingwithyou1 = (): number | undefined =>
-    this.info.taxPayer.dependents[0]?.qualifyingInfo?.numberOfMonths
+    this.f1040.info.taxPayer.dependents[0]?.qualifyingInfo?.numberOfMonths
 
   f74 = (): number | undefined => this.Numberofmonthslivingwithyou1()
 
@@ -653,7 +662,7 @@ export class IL1040scheduleileeic extends Form {
    * Index 75: Number of months living with you - 2
    */
   Numberofmonthslivingwithyou2 = (): number | undefined =>
-    this.info.taxPayer.dependents[1]?.qualifyingInfo?.numberOfMonths
+    this.f1040.info.taxPayer.dependents[1]?.qualifyingInfo?.numberOfMonths
 
   f75 = (): number | undefined => this.Numberofmonthslivingwithyou2()
 
@@ -661,7 +670,7 @@ export class IL1040scheduleileeic extends Form {
    * Index 76: Number of months living with you - 3
    */
   Numberofmonthslivingwithyou3 = (): number | undefined =>
-    this.info.taxPayer.dependents[2]?.qualifyingInfo?.numberOfMonths
+    this.f1040.info.taxPayer.dependents[2]?.qualifyingInfo?.numberOfMonths
 
   f76 = (): number | undefined => this.Numberofmonthslivingwithyou3()
 
@@ -669,7 +678,7 @@ export class IL1040scheduleileeic extends Form {
    * Index 77: Number of months living with you - 4
    */
   Numberofmonthslivingwithyou4 = (): number | undefined =>
-    this.info.taxPayer.dependents[3]?.qualifyingInfo?.numberOfMonths
+    this.f1040.info.taxPayer.dependents[3]?.qualifyingInfo?.numberOfMonths
 
   f77 = (): number | undefined => this.Numberofmonthslivingwithyou4()
 
@@ -677,7 +686,7 @@ export class IL1040scheduleileeic extends Form {
    * Index 78: Number of months living with you - 5
    */
   Numberofmonthslivingwithyou5 = (): number | undefined =>
-    this.info.taxPayer.dependents[4]?.qualifyingInfo?.numberOfMonths
+    this.f1040.info.taxPayer.dependents[4]?.qualifyingInfo?.numberOfMonths
 
   f78 = (): number | undefined => this.Numberofmonthslivingwithyou5()
 
@@ -685,7 +694,7 @@ export class IL1040scheduleileeic extends Form {
    * Index 79: Number of months living with you - 6
    */
   Numberofmonthslivingwithyou6 = (): number | undefined =>
-    this.info.taxPayer.dependents[5]?.qualifyingInfo?.numberOfMonths
+    this.f1040.info.taxPayer.dependents[5]?.qualifyingInfo?.numberOfMonths
 
   f79 = (): number | undefined => this.Numberofmonthslivingwithyou6()
 
@@ -693,7 +702,7 @@ export class IL1040scheduleileeic extends Form {
    * Index 80: Number of months living with you - 7
    */
   Numberofmonthslivingwithyou7 = (): number | undefined =>
-    this.info.taxPayer.dependents[6]?.qualifyingInfo?.numberOfMonths
+    this.f1040.info.taxPayer.dependents[6]?.qualifyingInfo?.numberOfMonths
 
   f80 = (): number | undefined => this.Numberofmonthslivingwithyou7()
 
@@ -701,7 +710,7 @@ export class IL1040scheduleileeic extends Form {
    * Index 81: Number of months living with you - 8
    */
   Numberofmonthslivingwithyou8 = (): number | undefined =>
-    this.info.taxPayer.dependents[7]?.qualifyingInfo?.numberOfMonths
+    this.f1040.info.taxPayer.dependents[7]?.qualifyingInfo?.numberOfMonths
 
   f81 = (): number | undefined => this.Numberofmonthslivingwithyou8()
 
@@ -709,7 +718,7 @@ export class IL1040scheduleileeic extends Form {
    * Index 82: Number of months living with you - 9
    */
   Numberofmonthslivingwithyou9 = (): number | undefined =>
-    this.info.taxPayer.dependents[8]?.qualifyingInfo?.numberOfMonths
+    this.f1040.info.taxPayer.dependents[8]?.qualifyingInfo?.numberOfMonths
 
   f82 = (): number | undefined => this.Numberofmonthslivingwithyou9()
 
@@ -717,7 +726,7 @@ export class IL1040scheduleileeic extends Form {
    * Index 83: Number of months living with you - 10
    */
   Numberofmonthslivingwithyou10 = (): number | undefined =>
-    this.info.taxPayer.dependents[9]?.qualifyingInfo?.numberOfMonths
+    this.f1040.info.taxPayer.dependents[9]?.qualifyingInfo?.numberOfMonths
 
   f83 = (): number | undefined => this.Numberofmonthslivingwithyou10()
 
@@ -726,7 +735,7 @@ export class IL1040scheduleileeic extends Form {
    * TODO: Confirm this checkbox
    */
   EligibleforEarnedIncomeCredit1 = (): boolean | undefined =>
-    this.info.taxPayer.dependents[0] !== undefined
+    this.f1040.info.taxPayer.dependents.length > 0
 
   f84 = (): boolean | undefined => this.EligibleforEarnedIncomeCredit1()
 
@@ -735,7 +744,7 @@ export class IL1040scheduleileeic extends Form {
    * TODO: Confirm this checkbox
    */
   EligibleforEarnedIncomeCredit2 = (): boolean | undefined =>
-    this.info.taxPayer.dependents[1] !== undefined
+    this.f1040.info.taxPayer.dependents.length > 1
 
   f85 = (): boolean | undefined => this.EligibleforEarnedIncomeCredit2()
 
@@ -744,7 +753,7 @@ export class IL1040scheduleileeic extends Form {
    * TODO: Confirm this checkbox
    */
   EligibleforEarnedIncomeCredit3 = (): boolean | undefined =>
-    this.info.taxPayer.dependents[2] !== undefined
+    this.f1040.info.taxPayer.dependents.length > 2
 
   f86 = (): boolean | undefined => this.EligibleforEarnedIncomeCredit3()
 
@@ -753,7 +762,7 @@ export class IL1040scheduleileeic extends Form {
    * TODO: Confirm this checkbox
    */
   EligibleforEarnedIncomeCredit4 = (): boolean | undefined =>
-    this.info.taxPayer.dependents[3] !== undefined
+    this.f1040.info.taxPayer.dependents.length > 3
 
   f87 = (): boolean | undefined => this.EligibleforEarnedIncomeCredit4()
 
@@ -762,7 +771,7 @@ export class IL1040scheduleileeic extends Form {
    * TODO: Confirm this checkbox
    */
   EligibleforEarnedIncomeCredit5 = (): boolean | undefined =>
-    this.info.taxPayer.dependents[4] !== undefined
+    this.f1040.info.taxPayer.dependents.length > 4
 
   f88 = (): boolean | undefined => this.EligibleforEarnedIncomeCredit5()
 
@@ -771,7 +780,7 @@ export class IL1040scheduleileeic extends Form {
    * TODO: Confirm this checkbox
    */
   EligibleforEarnedIncomeCredit6 = (): boolean | undefined =>
-    this.info.taxPayer.dependents[5] !== undefined
+    this.f1040.info.taxPayer.dependents.length > 5
 
   f89 = (): boolean | undefined => this.EligibleforEarnedIncomeCredit6()
 
@@ -780,7 +789,7 @@ export class IL1040scheduleileeic extends Form {
    * TODO: Confirm this checkbox
    */
   EligibleforEarnedIncomeCredit7 = (): boolean | undefined =>
-    this.info.taxPayer.dependents[6] !== undefined
+    this.f1040.info.taxPayer.dependents.length > 6
 
   f90 = (): boolean | undefined => this.EligibleforEarnedIncomeCredit7()
 
@@ -789,7 +798,7 @@ export class IL1040scheduleileeic extends Form {
    * TODO: Confirm this checkbox
    */
   EligibleforEarnedIncomeCredit8 = (): boolean | undefined =>
-    this.info.taxPayer.dependents[7] !== undefined
+    this.f1040.info.taxPayer.dependents.length > 7
 
   f91 = (): boolean | undefined => this.EligibleforEarnedIncomeCredit8()
 
@@ -798,7 +807,7 @@ export class IL1040scheduleileeic extends Form {
    * TODO: Confirm this checkbox
    */
   EligibleforEarnedIncomeCredit9 = (): boolean | undefined =>
-    this.info.taxPayer.dependents[8] !== undefined
+    this.f1040.info.taxPayer.dependents.length > 8
 
   f92 = (): boolean | undefined => this.EligibleforEarnedIncomeCredit9()
 
@@ -807,7 +816,7 @@ export class IL1040scheduleileeic extends Form {
    * TODO: Confirm this checkbox
    */
   EligibleforEarnedIncomeCredit10 = (): boolean | undefined =>
-    this.info.taxPayer.dependents[9] !== undefined
+    this.f1040.info.taxPayer.dependents.length > 9
 
   f93 = (): boolean | undefined => this.EligibleforEarnedIncomeCredit10()
 
@@ -983,7 +992,7 @@ export class IL1040scheduleileeic extends Form {
    * Index 111: Social Security number - 1
    */
   SocialSecuritynumber1 = (): string | undefined =>
-    this.info.taxPayer.dependents[0]?.ssid
+    this.f1040.info.taxPayer.dependents[0]?.ssid
 
   f111 = (): string | undefined => this.SocialSecuritynumber1()
 
@@ -1624,7 +1633,7 @@ export class IL1040scheduleileeic extends Form {
    * Index 183: Your SSN3
    */
   YourSSN3 = (): string | undefined =>
-    this.info.taxPayer.primaryPerson?.ssid.slice(0, 3)
+    this.f1040.info.taxPayer.primaryPerson.ssid.slice(0, 3)
 
   f183 = (): string | undefined => this.YourSSN3()
 
@@ -1632,7 +1641,7 @@ export class IL1040scheduleileeic extends Form {
    * Index 184: Your SSN2
    */
   YourSSN2 = (): string | undefined =>
-    this.info.taxPayer.primaryPerson?.ssid.slice(3, 5)
+    this.f1040.info.taxPayer.primaryPerson.ssid.slice(3, 5)
 
   f184 = (): string | undefined => this.YourSSN2()
 
@@ -1640,7 +1649,7 @@ export class IL1040scheduleileeic extends Form {
    * Index 185: Your SSN4
    */
   YourSSN4 = (): string | undefined =>
-    this.info.taxPayer.primaryPerson?.ssid.slice(5)
+    this.f1040.info.taxPayer.primaryPerson.ssid.slice(5)
 
   f185 = (): string | undefined => this.YourSSN4()
 
@@ -1834,9 +1843,7 @@ export class IL1040scheduleileeic extends Form {
   ]
 }
 
-const makeil1040scheduleileeic = (
-  info: Information,
-  f1040: F1040
-): IL1040scheduleileeic => new IL1040scheduleileeic(info, f1040)
+const makeil1040scheduleileeic = (f1040: F1040): IL1040scheduleileeic =>
+  new IL1040scheduleileeic(f1040)
 
 export default makeil1040scheduleileeic

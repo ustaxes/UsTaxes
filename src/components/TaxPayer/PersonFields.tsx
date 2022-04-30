@@ -67,7 +67,7 @@ export const PersonListItem = ({
       secondary={formatSSID(person.ssid)}
     />
     {(() => {
-      if (editing !== undefined) {
+      if (editing) {
         return (
           <ListItemIcon>
             <IconButton onClick={onEdit} edge="end" aria-label="edit">
@@ -97,7 +97,7 @@ export function ListDependents({
   editing
 }: ListDependentsProps): ReactElement {
   const dependents = useSelector(
-    (state: TaxesState) => state.information.taxPayer?.dependents ?? []
+    (state: TaxesState) => state.information.taxPayer.dependents
   )
 
   const dispatch = useDispatch()

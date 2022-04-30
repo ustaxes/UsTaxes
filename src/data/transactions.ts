@@ -12,6 +12,7 @@ export interface Transaction {
   date: string
   side: Side
   price: number
+  fee?: number
   quantity: number
 }
 
@@ -22,6 +23,8 @@ export interface Position {
   quantity: number
   price: number
   openDate: string
+  openFee: number
+  closeFee?: number
   closeDate?: string
   closePrice?: number
 }
@@ -31,12 +34,13 @@ export interface Portfolio {
 }
 
 const openPosition = (transaction: Transaction): Position => {
-  const { security, date, side, price, quantity } = transaction
+  const { security, date, side, price, quantity, fee } = transaction
   return {
     security,
     quantity: side === 'BUY' ? quantity : 0,
     price,
-    openDate: date
+    openDate: date,
+    openFee: fee ?? 0
   }
 }
 
@@ -80,7 +84,8 @@ export const processTransaction = (
           {
             ...position,
             closePrice: transaction.price,
-            closeDate: transaction.date
+            closeDate: transaction.date,
+            closeFee: transaction.fee
           }
         ]
       } else {
@@ -88,15 +93,25 @@ export const processTransaction = (
         const closedQuantity = remainingQuantity
         const newQuantity = position.quantity - closedQuantity
         remainingQuantity = 0
+        const closeRatio = closedQuantity / position.quantity
         return [
           {
             ...position,
+
+            // Since we're tracking the fee at opening and closing of
+            // the position, we have to apportion the fee to split lots
+            // so that the cost basis and proceeds for each will calculate
+            // correctly.
+            openFee: position.openFee * closeRatio,
+            closeFee: (position.closeFee ?? 0) * closeRatio,
             closeDate: transaction.date,
             closePrice: transaction.price,
             quantity: closedQuantity
           },
           {
             ...position,
+            openFee: position.openFee * (1 - closeRatio),
+            closeFee: (position.closeFee ?? 0) * (1 - closeRatio),
             quantity: newQuantity
           }
         ]

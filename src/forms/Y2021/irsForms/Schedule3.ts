@@ -153,8 +153,8 @@ export default class Schedule3 extends F1040Attachment {
   // Credit for child and dependent care expenses form 2441, line 10
 
   fields = (): Field[] => [
-    this.f1040.info.namesString(),
-    this.f1040.info.taxPayer.primaryPerson?.ssid,
+    this.f1040.namesString(),
+    this.f1040.info.taxPayer.primaryPerson.ssid,
     this.l1(),
     this.l2(),
     this.l3(),

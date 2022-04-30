@@ -43,7 +43,7 @@ function hasAttachment<FormType>(
 
 describe('fica', () => {
   it('should give refund SS tax overpayment only in some conditions', async () => {
-    await testKit.with1040Assert(async (forms) => {
+    await testKit.with1040Assert((forms): Promise<void> => {
       const f1040 = commonTests.findF1040OrFail(forms)
       if (f1040.validW2s().length <= 1) {
         // Should never give SS refund with 1 or fewer W2s
@@ -66,11 +66,12 @@ describe('fica', () => {
           expect(hasAttachment(forms, Schedule3)).toEqual(true)
         }
       }
+      return Promise.resolve()
     })
   })
 
   it('should give SS refund based on filing status', async () => {
-    await testKit.with1040Assert(async (forms) => {
+    await testKit.with1040Assert((forms): Promise<void> => {
       const f1040 = commonTests.findF1040OrFail(forms)
       if (hasSSRefund(f1040)) {
         const s3l10 = f1040.schedule3?.l10()
@@ -82,11 +83,12 @@ describe('fica', () => {
           .reduce((sum, w2) => sum + w2.ssWithholding, 0)
         expect(s3l10).toEqual(ssWithheld - fica.maxSSTax)
       }
+      return Promise.resolve()
     })
   })
 
   it('should not give a refund if each person has less than the max', async () => {
-    await testKit.with1040Assert(async (forms) => {
+    await testKit.with1040Assert((forms): Promise<void> => {
       const f1040 = commonTests.findF1040OrFail(forms)
       f1040.info.w2s = [
         {
@@ -119,11 +121,12 @@ describe('fica', () => {
         }
       ]
       expect(claimableExcessSSTaxWithholding(f1040.info.w2s)).toEqual(0)
+      return Promise.resolve()
     })
   })
 
   it('should give a refund if a person has more than the max if they have two w2s', async () => {
-    await testKit.with1040Assert(async (forms) => {
+    await testKit.with1040Assert((forms): Promise<void> => {
       const f1040 = commonTests.findF1040OrFail(forms)
       f1040.info.w2s = [
         {
@@ -171,15 +174,13 @@ describe('fica', () => {
         }
       ]
       expect(claimableExcessSSTaxWithholding(f1040.info.w2s)).toEqual(1000)
+      return Promise.resolve()
     })
   })
 
   it('should add Additional Medicare Tax form 8959', async () => {
-    await testKit.with1040Assert(async (forms) => {
+    await testKit.with1040Assert((forms): Promise<void> => {
       const f1040 = commonTests.findF1040OrFail(forms)
-      if (f1040.info.taxPayer.filingStatus === undefined) {
-        return
-      }
       const filingStatus = f1040.info.taxPayer.filingStatus
       // Should add Additional Medicare Tax if medicare wages over threshold
       if (
@@ -195,15 +196,13 @@ describe('fica', () => {
         expect(hasAdditionalMedicareTax(f1040)).toEqual(false)
         expect(hasAttachment(forms, F8959)).toEqual(false)
       }
+      return Promise.resolve()
     })
   })
 
   it('should add Additional Medicare Tax based on filing status', async () => {
-    await testKit.with1040Assert(async (forms) => {
+    await testKit.with1040Assert((forms): Promise<void> => {
       const f1040 = commonTests.findF1040OrFail(forms)
-      if (f1040.info.taxPayer.filingStatus === undefined) {
-        return
-      }
       if (hasAdditionalMedicareTax(f1040)) {
         const filingStatus = f1040.info.taxPayer.filingStatus
         const incomeOverThreshold =
@@ -236,6 +235,7 @@ describe('fica', () => {
           expect(displayRound(f1040.l25c())).toBeUndefined()
         }
       }
+      return Promise.resolve()
     })
   })
 })

@@ -30,6 +30,7 @@ import {
   PrimaryPerson,
   Spouse
 } from 'ustaxes/core/data'
+import { intentionallyFloat } from 'ustaxes/core/util'
 
 interface ScheduleK1Form1065UserInput {
   personRole: PersonRole.PRIMARY | PersonRole.SPOUSE
@@ -137,9 +138,9 @@ export const PartnershipIncome = (): ReactElement => {
     (k1) => k1.personRole === PersonRole.SPOUSE
   )
 
-  const spouse: Spouse | undefined = information.taxPayer?.spouse
+  const spouse: Spouse | undefined = information.taxPayer.spouse
 
-  const primary: PrimaryPerson | undefined = information.taxPayer?.primaryPerson
+  const primary: PrimaryPerson | undefined = information.taxPayer.primaryPerson
 
   const filingStatus: FilingStatus | undefined =
     information.taxPayer.filingStatus
@@ -149,7 +150,9 @@ export const PartnershipIncome = (): ReactElement => {
     p !== undefined ? [p as Person] : []
   )
 
-  const methods = useForm<ScheduleK1Form1065UserInput>()
+  const defaultValues = blankUserInput
+
+  const methods = useForm<ScheduleK1Form1065UserInput>({ defaultValues })
   const { handleSubmit } = methods
   const dispatch = useDispatch()
 
@@ -173,6 +176,7 @@ export const PartnershipIncome = (): ReactElement => {
 
   const form: ReactElement | undefined = (
     <FormListContainer<ScheduleK1Form1065UserInput>
+      defaultValues={defaultValues}
       onSubmitAdd={onSubmitAdd}
       onSubmitEdit={onSubmitEdit}
       items={ScheduleK1Form1065s.map((a) => toUserInput(a))}
@@ -295,7 +299,10 @@ export const PartnershipIncome = (): ReactElement => {
 
   return (
     <FormProvider {...methods}>
-      <form tabIndex={-1} onSubmit={handleSubmit(onAdvance)}>
+      <form
+        tabIndex={-1}
+        onSubmit={intentionallyFloat(handleSubmit(onAdvance))}
+      >
         <Helmet>
           <title>Partnership Income | Income | UsTaxes.org</title>
         </Helmet>

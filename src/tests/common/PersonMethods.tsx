@@ -5,9 +5,7 @@ import DomMethods from './DomMethods'
 
 export class PersonMethods extends DomMethods {
   firstNameField = (): HTMLInputElement | null =>
-    within(this.dom()).queryByLabelText(
-      personLabels.fname
-    ) as HTMLInputElement | null
+    within(this.dom()).queryByLabelText(personLabels.fname)
 
   setIfAble = (f: HTMLInputElement | null, v: string): boolean => {
     if (f !== null) {
@@ -21,32 +19,28 @@ export class PersonMethods extends DomMethods {
     this.setIfAble(this.firstNameField(), v)
 
   lastNameField = (): HTMLInputElement | null =>
-    within(this.dom()).queryByLabelText(
-      personLabels.lname
-    ) as HTMLInputElement | null
+    within(this.dom()).queryByLabelText(personLabels.lname)
 
   setLastName = (v: string): boolean => this.setIfAble(this.lastNameField(), v)
 
   ssnField = (): HTMLInputElement | null =>
-    within(this.dom()).queryByLabelText(
-      personLabels.ssn
-    ) as HTMLInputElement | null
+    within(this.dom()).queryByLabelText(personLabels.ssn)
 
   requiredErrors = (): HTMLElement[] =>
     within(this.dom()).queryAllByText('Input is required')
 
   saveButton = async (): Promise<HTMLButtonElement> =>
-    (await within(this.dom()).findByRole('button', {
+    await within(this.dom()).findByRole('button', {
       name: /Save/
-    })) as HTMLButtonElement
+    })
 
   closeButton = async (): Promise<HTMLButtonElement> =>
-    (await within(this.dom()).findByRole('button', {
+    await within(this.dom()).findByRole('button', {
       name: /Discard/i
-    })) as HTMLButtonElement
+    })
 
   deleteButtons = async (): Promise<HTMLButtonElement[]> =>
-    (await within(this.dom()).findAllByRole('button', {
+    await within(this.dom()).findAllByRole('button', {
       name: /delete/
-    })) as HTMLButtonElement[]
+    })
 }

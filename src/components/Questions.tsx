@@ -9,6 +9,7 @@ import { answerQuestion } from 'ustaxes/redux/actions'
 import { FormProvider, useForm } from 'react-hook-form'
 import { usePager } from './pager'
 import _ from 'lodash'
+import { intentionallyFloat } from 'ustaxes/core/util'
 
 const emptyQuestions: Responses = {
   CRYPTO: false,
@@ -77,7 +78,7 @@ const Questions = (): ReactElement => {
   }
 
   const page = (
-    <form tabIndex={-1} onSubmit={handleSubmit(onSubmit)}>
+    <form tabIndex={-1} onSubmit={intentionallyFloat(handleSubmit(onSubmit))}>
       <Helmet>
         <title>Informational Questions | Results | UsTaxes.org</title>
       </Helmet>

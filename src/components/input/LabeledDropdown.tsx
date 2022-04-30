@@ -10,14 +10,14 @@ import useStyles from './styles'
 import { BaseDropdownProps, LabeledDropdownProps } from './types'
 import ConditionallyWrap from 'ustaxes/components/ConditionallyWrap'
 
-export function GenericLabeledDropdown<A>(
-  props: LabeledDropdownProps<A>
+export function GenericLabeledDropdown<A, TFormValues>(
+  props: LabeledDropdownProps<A, TFormValues>
 ): ReactElement {
   const classes = useStyles()
   const {
     control,
     formState: { errors }
-  } = useFormContext()
+  } = useFormContext<TFormValues>()
   const {
     autofocus,
     label,
@@ -25,12 +25,16 @@ export function GenericLabeledDropdown<A>(
     valueMapping,
     keyMapping,
     textMapping,
+    noUndefined = false,
     required = true,
     name,
     useGrid = true,
     sizes = { xs: 12 }
   } = props
-  const error = _.get(errors, name)
+
+  const error: string | undefined = _.get(errors, name, undefined) as
+    | string
+    | undefined
   const inputRef = useRef<HTMLElement | null>(null)
 
   useEffect(() => {
@@ -70,7 +74,11 @@ export function GenericLabeledDropdown<A>(
               shrink: true
             }}
           >
-            <option value={''} />
+            {(() => {
+              if (!noUndefined) {
+                return <option value={''} />
+              }
+            })()}
             {dropDownData.map((dropDownItem: A, i: number) => (
               <option
                 value={valueMapping(dropDownItem, i)}
@@ -94,10 +102,10 @@ export function GenericLabeledDropdown<A>(
  *
  * @param props
  */
-export const LabeledDropdown = (
-  props: BaseDropdownProps & { dropDownData: string[] }
+export const LabeledDropdown = <TFormValues,>(
+  props: BaseDropdownProps<TFormValues> & { dropDownData: string[] }
 ): ReactElement => (
-  <GenericLabeledDropdown<string>
+  <GenericLabeledDropdown<string, TFormValues>
     {...props}
     valueMapping={(x) => x}
     keyMapping={(x, n) => n}
@@ -105,8 +113,10 @@ export const LabeledDropdown = (
   />
 )
 
-export const USStateDropDown = (props: BaseDropdownProps): ReactElement => (
-  <GenericLabeledDropdown<[string, State]>
+export const USStateDropDown = <TFormValues,>(
+  props: BaseDropdownProps<TFormValues>
+): ReactElement => (
+  <GenericLabeledDropdown<[string, State], TFormValues>
     {...props}
     dropDownData={locationPostalCodes}
     valueMapping={([, code]) => code}
@@ -115,8 +125,10 @@ export const USStateDropDown = (props: BaseDropdownProps): ReactElement => (
   />
 )
 
-export const CountryDropDown = (props: BaseDropdownProps): ReactElement => (
-  <GenericLabeledDropdown<string>
+export const CountryDropDown = <TFormValues,>(
+  props: BaseDropdownProps<TFormValues>
+): ReactElement => (
+  <GenericLabeledDropdown<string, TFormValues>
     {...props}
     dropDownData={countries}
     valueMapping={(name) => name}

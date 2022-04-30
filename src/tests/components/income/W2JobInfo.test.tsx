@@ -15,11 +15,14 @@ import userEvent from '@testing-library/user-event'
 import { BrowserRouter as Router } from 'react-router-dom'
 
 jest.mock('redux-persist', () => {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const real = jest.requireActual('redux-persist')
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
   return {
     ...real,
     persistReducer: jest
       .fn()
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
       .mockImplementation((_config, reducers) => reducers)
   }
 })
@@ -196,7 +199,7 @@ describe('W2JobInfo', () => {
     })
   })
 
-  it('shows spouse W2 message', async () => {
+  it('shows spouse W2 message', () => {
     setup(testInfo)
 
     expect(
@@ -258,9 +261,9 @@ describe('W2JobInfo', () => {
     expect(
       screen.getByLabelText(/Employer's Identification Number/)
     ).toHaveValue(
-      testW2sSpouse.employer?.EIN?.slice(0, 2) +
+      (testW2sSpouse.employer?.EIN?.slice(0, 2) ?? '') +
         '-' +
-        testW2sSpouse.employer?.EIN?.slice(2)
+        (testW2sSpouse.employer?.EIN?.slice(2) ?? '')
     )
     expect(screen.getByLabelText('Occupation')).toHaveValue(
       testW2sSpouse.occupation

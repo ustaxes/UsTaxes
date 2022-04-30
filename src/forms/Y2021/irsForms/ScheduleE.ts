@@ -216,13 +216,15 @@ export default class ScheduleE extends F1040Attachment {
         .flatMap((k1) => [
           k1.partnershipName,
           k1.partnerOrSCorp,
-          k1.isForeign ?? false,
+          k1.isForeign,
           k1.partnershipEin,
           false,
           false
         ])
     )
-    l28Fields.push(...Array(6 * Math.max(0, 4 - k1s.length)).fill(undefined))
+    l28Fields.push(
+      ...Array<undefined>(6 * Math.max(0, 4 - k1s.length)).fill(undefined)
+    )
     l28Fields.push(
       ...k1s.slice(0, 4).flatMap((k1) => {
         if (k1.isPassive) {
@@ -240,11 +242,13 @@ export default class ScheduleE extends F1040Attachment {
         }
       })
     )
-    l28Fields.push(...Array(5 * Math.max(0, 4 - k1s.length)).fill(undefined))
+    l28Fields.push(
+      ...Array<undefined>(5 * Math.max(0, 4 - k1s.length)).fill(undefined)
+    )
 
     return [
-      this.f1040.info.namesString(),
-      this.f1040.info.taxPayer.primaryPerson?.ssid,
+      this.f1040.namesString(),
+      this.f1040.info.taxPayer.primaryPerson.ssid,
       false,
       false,
       false,
@@ -288,8 +292,8 @@ export default class ScheduleE extends F1040Attachment {
       Math.abs(this.l25()),
       displayNegPos(this.l26()),
       // Page 2 - TODO: Only part II implemented
-      this.f1040.info.namesString(),
-      this.f1040.info.taxPayer.primaryPerson?.ssid,
+      this.f1040.namesString(),
+      this.f1040.info.taxPayer.primaryPerson.ssid,
       ...[false, false], // l27
       ...l28Fields,
       undefined, // grey
@@ -305,7 +309,7 @@ export default class ScheduleE extends F1040Attachment {
       this.l30(),
       this.l31(),
       this.l32(), // l32
-      ...Array(2 * 6).fill(undefined), // l33
+      ...Array<undefined>(2 * 6).fill(undefined), // l33
       undefined,
       this.l34ad(),
       undefined,
@@ -317,7 +321,7 @@ export default class ScheduleE extends F1040Attachment {
       undefined, // l35
       undefined, // l36
       this.l37(), // l37
-      ...Array(5).fill(undefined), // l38
+      ...Array<undefined>(5).fill(undefined), // l38
       this.l39(), // l39
       this.l40(), // l40
       this.l41(), // l41

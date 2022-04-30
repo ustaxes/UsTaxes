@@ -2,21 +2,18 @@ import { FilingStatus, TaxPayer, Information } from 'ustaxes/core/data'
 import F1040 from '../F1040'
 import { sumFields } from 'ustaxes/core/irsForms/util'
 import { SSBenefits } from '../../data/federal'
-import InformationMethods from 'ustaxes/core/data/methods'
 
 export default class SocialSecurityBenefitsWorksheet {
-  state: InformationMethods
   tp: TaxPayer
   f1040: F1040
 
   constructor(state: Information, f1040: F1040) {
-    this.state = new InformationMethods(state)
     this.f1040 = f1040
     this.tp = state.taxPayer
   }
 
   totalNetBenefits = (): number =>
-    this.state.f1099ssas().reduce((sum, f) => sum + f.form.netBenefits, 0)
+    this.f1040.f1099ssas().reduce((sum, f) => sum + f.form.netBenefits, 0)
 
   /* Enter the total amount from box 5 of all your Forms SSA-1099 and RRB-1099.
       Also enter this amount on Form 1040 or 1040-SR, line 6a
@@ -92,7 +89,7 @@ export default class SocialSecurityBenefitsWorksheet {
     } else if (this.tp.filingStatus == FilingStatus.MFS) {
       // treat Married filing separately specially due to the extra question below
       // and resulting logic in the worksheet
-      if (this.state.questions.LIVE_APART_FROM_SPOUSE) {
+      if (this.f1040.info.questions.LIVE_APART_FROM_SPOUSE) {
         return SSBenefits.caps[this.tp.filingStatus].l8
       } else {
         // Note that this value won't be taken into account. Instead,
@@ -170,7 +167,7 @@ export default class SocialSecurityBenefitsWorksheet {
     // enter the result on line 16. Then, go to line 17
     if (
       this.tp.filingStatus == FilingStatus.MFS &&
-      !this.state.questions.LIVE_APART_FROM_SPOUSE
+      !this.f1040.info.questions.LIVE_APART_FROM_SPOUSE
     ) {
       return this.l7() * 0.85
     } else {
