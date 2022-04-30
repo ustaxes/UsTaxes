@@ -15,7 +15,8 @@ import {
   EstimatedTaxPayments,
   Responses,
   HealthSavingsAccount,
-  Asset
+  Asset,
+  StateResponses
 } from 'ustaxes/core/data'
 
 import {
@@ -74,7 +75,8 @@ export enum ActionName {
   PROPAGATE_YEAR_DATA = 'PROPAGATE_YEAR_DATA',
   ADD_ASSET = 'ASSETS/ADD',
   EDIT_ASSET = 'ASSETS/EDIT',
-  REMOVE_ASSET = 'ASSETS/REMOVE'
+  REMOVE_ASSET = 'ASSETS/REMOVE',
+  ANSWER_STATE_QUESTION = 'ANSWER_STATE_QUESTION'
 }
 
 interface Save<T, R> {
@@ -132,6 +134,10 @@ type SetActiveYear = Save<typeof ActionName.SET_ACTIVE_YEAR, TaxYear>
 type AddAsset = Save<typeof ActionName.ADD_ASSET, Asset<Date>>
 type EditAsset = Save<typeof ActionName.EDIT_ASSET, EditAssetAction>
 type RemoveAsset = Save<typeof ActionName.REMOVE_ASSET, number>
+type AnswerStateQuestion = Save<
+  typeof ActionName.ANSWER_STATE_QUESTION,
+  StateResponses
+>
 
 export type Actions =
   | SaveRefundInfo
@@ -168,6 +174,7 @@ export type Actions =
   | AddAsset
   | EditAsset
   | RemoveAsset
+  | AnswerStateQuestion
 
 export type SignalAction = (year: TaxYear) => Actions
 export type ActionCreator<A> = (formData: A) => SignalAction
@@ -397,3 +404,6 @@ export const removeAsset: ActionCreator<number> = makeActionCreator(
   ActionName.REMOVE_ASSET,
   indexValidator
 )
+
+export const answerStateQuestion: ActionCreator<StateResponses> =
+  makeActionCreator(ActionName.ANSWER_STATE_QUESTION)

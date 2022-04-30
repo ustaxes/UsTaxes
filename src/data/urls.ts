@@ -31,8 +31,8 @@ const Urls = {
   createPdf: '/createpdf',
   settings: '/settings',
   default: '',
+  stateQuestions: '/statequestions',
   orforms: {
-    or40: '/state/oregon/or40',
     orwfhdc: '/state/oregon/orwfhdc'
   }
 }

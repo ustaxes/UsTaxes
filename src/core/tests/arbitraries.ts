@@ -1,7 +1,14 @@
 import * as fc from 'fast-check'
 import { Arbitrary } from 'fast-check'
 import locationPostalCodes from '../data/locationPostalCodes'
-import { QuestionTagName, questionTagNames, Responses } from '../data'
+import {
+  QuestionTagName,
+  questionTagNames,
+  Responses,
+  StateQuestionTagName,
+  stateQuestionTagNames,
+  StateResponses
+} from '../data'
 import * as types from '../data'
 import * as util from '../util'
 import _ from 'lodash'
@@ -299,6 +306,23 @@ export const questions: Arbitrary<Responses> = fc
       .map((kvs) => Object.fromEntries(kvs))
   )
 
+const stateQuestionTag: Arbitrary<StateQuestionTagName> = fc.constantFrom(
+  ...stateQuestionTagNames
+)
+
+// make sure that the question tag maps to values of correct type.
+const stateQuestionTagArbs = {
+  OR_TAXPAYER_SEVERELY_DISABLED: fc.boolean()
+}
+
+export const stateQuestions: Arbitrary<StateResponses> = fc
+  .set(stateQuestionTag)
+  .chain((tags) =>
+    fc
+      .tuple(...tags.map((t) => stateQuestionTagArbs[t].map((v) => [t, v])))
+      .map((kvs) => Object.fromEntries(kvs))
+  )
+
 export class Arbitraries {
   currentYear: number
 
@@ -463,7 +487,8 @@ export class Arbitraries {
         this.taxPayer(),
         questions,
         state,
-        fc.array(this.healthSavingsAccount())
+        fc.array(this.healthSavingsAccount()),
+        stateQuestions
       )
       .map(
         ([
@@ -476,7 +501,8 @@ export class Arbitraries {
           taxPayer,
           questions,
           state,
-          healthSavingsAccounts
+          healthSavingsAccounts,
+          stateQuestions
         ]) => ({
           f1099s,
           w2s,
@@ -487,7 +513,8 @@ export class Arbitraries {
           taxPayer,
           questions,
           stateResidencies: [{ state }],
-          healthSavingsAccounts
+          healthSavingsAccounts,
+          stateQuestions
         })
       )
 }

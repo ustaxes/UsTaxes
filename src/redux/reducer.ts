@@ -16,7 +16,8 @@ export const blankState: Information = {
   questions: {},
   f1098es: [],
   stateResidencies: [],
-  healthSavingsAccounts: []
+  healthSavingsAccounts: [],
+  stateQuestions: {}
 }
 
 const formReducer = (
@@ -288,6 +289,13 @@ const formReducer = (
       return {
         ...newState,
         healthSavingsAccounts: newHsa
+      }
+    }
+    case ActionName.ANSWER_STATE_QUESTION: {
+      // must reset all questions
+      return {
+        ...newState,
+        stateQuestions: action.formData
       }
     }
     default: {

@@ -26,6 +26,7 @@ import RealEstate from './income/RealEstate'
 import GettingStarted from './GettingStarted'
 import F1098eInfo from './deductions/F1098eInfo'
 import Questions from './Questions'
+import StateQuestions from './StateQuestions'
 import Urls from 'ustaxes/data/urls'
 
 import ORWFHDCInput from './stateForms/OR/ORWFHDC'
@@ -125,6 +126,10 @@ export const drawerSections: Section[] = [
         <HealthSavingsAccounts />
       )
     ]
+  },
+  {
+    title: 'State Questions',
+    items: [item('State Questions', Urls.stateQuestions, <StateQuestions />)]
   },
   {
     title: 'OR Forms',

@@ -16,7 +16,8 @@ import {
   Refund,
   StateResidency,
   Supported1099,
-  TaxPayer
+  TaxPayer,
+  StateResponses
 } from '.'
 
 export default class InformationMethods implements Information {
@@ -30,6 +31,7 @@ export default class InformationMethods implements Information {
   questions: Responses
   stateResidencies: StateResidency[]
   healthSavingsAccounts: HealthSavingsAccount[]
+  stateQuestions: StateResponses
 
   constructor(info: Information) {
     this.f1099s = info.f1099s
@@ -42,6 +44,7 @@ export default class InformationMethods implements Information {
     this.questions = info.questions
     this.stateResidencies = info.stateResidencies
     this.healthSavingsAccounts = info.healthSavingsAccounts
+    this.stateQuestions = info.stateQuestions
   }
 
   f1099sByType = (ft: Income1099Type): Supported1099[] =>

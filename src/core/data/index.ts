@@ -418,6 +418,23 @@ export type ValueTag = 'string' | 'boolean'
 
 export type Responses = Partial<QuestionTag> // Defines usable tag names for each question later defined,
 
+// Defines usable tag names for each question later defined,
+// and maps to a type which is the expected response type.
+export interface StateQuestionTag {
+  // oregon state questions
+  OR_TAXPAYER_SEVERELY_DISABLED: boolean
+}
+
+export type StateQuestionTagName = keyof StateQuestionTag
+
+// Typescript provides no way to access
+// keys of an interface at runtime.
+export const stateQuestionTagNames: StateQuestionTagName[] = [
+  'OR_TAXPAYER_SEVERELY_DISABLED'
+]
+
+export type StateResponses = Partial<StateQuestionTag> // Defines usable tag names for each question later defined,
+
 export interface Information {
   f1099s: Supported1099[]
   w2s: IncomeW2[]
@@ -429,6 +446,7 @@ export interface Information {
   questions: Responses
   stateResidencies: StateResidency[]
   healthSavingsAccounts: HealthSavingsAccount[]
+  stateQuestions: StateResponses
 }
 
 /**
