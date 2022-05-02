@@ -150,7 +150,9 @@ export const PartnershipIncome = (): ReactElement => {
     p !== undefined ? [p as Person] : []
   )
 
-  const methods = useForm<ScheduleK1Form1065UserInput>()
+  const defaultValues = blankUserInput
+
+  const methods = useForm<ScheduleK1Form1065UserInput>({ defaultValues })
   const { handleSubmit } = methods
   const dispatch = useDispatch()
 
@@ -174,6 +176,7 @@ export const PartnershipIncome = (): ReactElement => {
 
   const form: ReactElement | undefined = (
     <FormListContainer<ScheduleK1Form1065UserInput>
+      defaultValues={defaultValues}
       onSubmitAdd={onSubmitAdd}
       onSubmitEdit={onSubmitEdit}
       items={ScheduleK1Form1065s.map((a) => toUserInput(a))}

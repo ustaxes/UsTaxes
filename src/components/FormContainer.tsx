@@ -14,7 +14,7 @@ import {
   Theme
 } from '@material-ui/core'
 import { Delete, Edit } from '@material-ui/icons'
-import { SubmitHandler, useFormContext } from 'react-hook-form'
+import { DefaultValues, SubmitHandler, useFormContext } from 'react-hook-form'
 import _ from 'lodash'
 import { ReactNode } from 'react'
 import { FormContainerProvider } from './FormContainer/Context'
@@ -133,6 +133,9 @@ interface FormListContainerProps<A> {
   onSubmitAdd: SubmitHandler<A>
   onSubmitEdit: (index: number) => SubmitHandler<A>
   onCancel?: () => void
+
+  // same default values passed to useForm
+  defaultValues: DefaultValues<A>
   items: A[]
   disableEditing?: boolean
   removeItem?: (v: number) => void
@@ -156,6 +159,7 @@ export interface OpenableFormContainerProps<A> {
   onCancel?: () => void
   onSave: SubmitHandler<A>
   isOpen?: boolean
+  defaultValues: DefaultValues<A>
   onOpenStateChange: (isOpen: boolean) => void
   allowAdd?: boolean
 }
@@ -164,7 +168,7 @@ export const OpenableFormContainer = <A,>(
   props: PropsWithChildren<OpenableFormContainerProps<A>>
 ): ReactElement => {
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)')
-  const { isOpen = false, allowAdd = true } = props
+  const { isOpen = false, allowAdd = true, defaultValues } = props
   const classes = useStyles()
 
   // Note useFormContext here instead of useForm reuses the
@@ -177,7 +181,7 @@ export const OpenableFormContainer = <A,>(
 
   const closeForm = (): void => {
     props.onOpenStateChange(false)
-    reset({})
+    reset(defaultValues)
   }
 
   const onClose = (): void => {
@@ -235,6 +239,7 @@ const FormListContainer = <A,>(
     icon,
     max,
     primary,
+    defaultValues,
     secondary,
     disableEditing = false,
     removeItem,
@@ -271,7 +276,7 @@ const FormListContainer = <A,>(
   const closeForm = (): void => {
     setEditing(undefined)
     setOpen(false)
-    reset()
+    reset(defaultValues)
   }
 
   const cancel = (): void => {
@@ -335,6 +340,7 @@ const FormListContainer = <A,>(
       {itemDisplay}
       <OpenableFormContainer
         allowAdd={allowAdd}
+        defaultValues={defaultValues}
         onSave={onSave}
         isOpen={isOpen}
         onOpenStateChange={setOpen}

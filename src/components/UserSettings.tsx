@@ -1,9 +1,8 @@
 import { Check } from '@material-ui/icons'
 import { ReactElement, useState } from 'react'
 import { useDispatch } from 'react-redux'
-import { Load } from 'ustaxes/redux/fs'
 import { fsRecover } from 'ustaxes/redux/fs/Actions'
-import { USTSerializedState } from 'ustaxes/redux/store'
+import { LoadRaw } from 'ustaxes/redux/fs/Load'
 import SaveToFile from './SaveToFile'
 
 const UserSettings = (): ReactElement => {
@@ -23,7 +22,7 @@ const UserSettings = (): ReactElement => {
         Load your saved data from a file. Warning, this will overwrite present
         state.
       </p>
-      <Load<USTSerializedState>
+      <LoadRaw
         startIcon={done ? <Check /> : undefined}
         accept="*.json"
         handleData={(state) => {
@@ -36,7 +35,7 @@ const UserSettings = (): ReactElement => {
         color="primary"
       >
         Load
-      </Load>
+      </LoadRaw>
     </>
   )
 }
