@@ -355,16 +355,38 @@ export default class F1040 extends F1040Base {
 
   standardDeduction = (): number | undefined => {
     const filingStatus = this.info.taxPayer.filingStatus
+
+    const allowances = [
+      this.bornBeforeDate(),
+      this.blind(),
+      this.spouseBeforeDate(),
+      this.spouseBlind()
+    ].reduce((res, e) => res + +!!e, 0)
+
     if (
       this.info.taxPayer.primaryPerson.isTaxpayerDependent ||
       (this.info.taxPayer.spouse?.isTaxpayerDependent ?? false)
     ) {
-      return Math.min(
+      const l4a = Math.min(
         federalBrackets.ordinary.status[filingStatus].deductions[0].amount,
         this.wages() > 750 ? this.wages() + 350 : 1100
       )
+      if (allowances > 0) {
+        if (
+          filingStatus === FilingStatus.HOH ||
+          filingStatus === FilingStatus.S
+        ) {
+          return l4a + allowances * 1700
+        } else {
+          return l4a + allowances * 1350
+        }
+      } else {
+        return l4a
+      }
     }
-    return federalBrackets.ordinary.status[filingStatus].deductions[0].amount
+
+    return federalBrackets.ordinary.status[filingStatus].deductions[allowances]
+      .amount
   }
 
   totalQualifiedDividends = (): number =>
