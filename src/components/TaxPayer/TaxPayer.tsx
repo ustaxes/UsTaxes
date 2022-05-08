@@ -43,7 +43,7 @@ interface TaxPayerUserForm {
   isTaxpayerDependent: boolean
   stateResidency?: State
   isBlind: boolean
-  dateOfBirth: Date
+  dateOfBirth?: Date
 }
 
 const defaultTaxpayerUserForm: TaxPayerUserForm = {
@@ -63,21 +63,24 @@ const defaultTaxpayerUserForm: TaxPayerUserForm = {
   },
   isTaxpayerDependent: false,
   isBlind: false,
-  dateOfBirth: new Date()
+  dateOfBirth: undefined
 }
 
-const asPrimaryPerson = (
-  formData: TaxPayerUserForm
-): PrimaryPerson<string> => ({
-  address: formData.address,
-  firstName: formData.firstName,
-  lastName: formData.lastName,
-  ssid: formData.ssid.replace(/-/g, ''),
-  isTaxpayerDependent: formData.isTaxpayerDependent,
-  role: PersonRole.PRIMARY,
-  dateOfBirth: formData.dateOfBirth.toISOString(),
-  isBlind: formData.isBlind
-})
+const asPrimaryPerson = (formData: TaxPayerUserForm): PrimaryPerson<string> => {
+  if (formData.dateOfBirth === undefined) {
+    throw new Error('Called with undefined date of birth')
+  }
+  return {
+    address: formData.address,
+    firstName: formData.firstName,
+    lastName: formData.lastName,
+    ssid: formData.ssid.replace(/-/g, ''),
+    isTaxpayerDependent: formData.isTaxpayerDependent,
+    role: PersonRole.PRIMARY,
+    dateOfBirth: formData.dateOfBirth.toISOString(),
+    isBlind: formData.isBlind
+  }
+}
 
 const asContactInfo = (formData: TaxPayerUserForm): ContactInfo => ({
   contactPhoneNumber: formData.contactPhoneNumber,
