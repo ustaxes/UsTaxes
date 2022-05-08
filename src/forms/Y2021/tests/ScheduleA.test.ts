@@ -1,5 +1,4 @@
 import { commonTests } from '.'
-import federalBrackets from '../data/federal'
 
 describe('ScheduleA', () => {
   it('should make deduction > standard deduction if Schedule A is attached', async () => {
