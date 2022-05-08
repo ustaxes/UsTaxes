@@ -13,7 +13,7 @@ describe('ScheduleA', () => {
   })
 
   it('should be attached if deduction is more than standard', async () => {
-    await commonTests.withValid1040((f1040, fs) => {
+    await commonTests.withValid1040((f1040) => {
       const standardDeduction = f1040.standardDeduction() ?? 0
 
       // If the deduction is more than standard, we must have a schedule A
