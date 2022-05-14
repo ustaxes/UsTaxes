@@ -312,7 +312,22 @@ const stateQuestionTag: Arbitrary<StateQuestionTagName> = fc.constantFrom(
 
 // make sure that the question tag maps to values of correct type.
 const stateQuestionTagArbs = {
-  OR_TAXPAYER_SEVERELY_DISABLED: fc.boolean()
+  // oregon state questions
+  // page 2
+  OR_6A_TAXPAYER_SEVERELY_DISABLED: fc.boolean(),
+  OR_6B_SPOUSE_SEVERELY_DISABLED: fc.boolean(),
+  // page 5
+  OR_32_OREGON_INCOME_TAX_WITHHELD: words,
+  OR_33_AMOUNT_APPLIED_FROM_PRIOR_YEAR_REFUND: words,
+  OR_34_ESTIMATED_TAX_PAYMENTS: words,
+  OR_37_TOTAL_REFUNDABLE_CREDITS_FROM_OR_ASC: words,
+  // page 6
+  OR_46_ESTIMATED_TAX: words,
+  OR_47_CHARITABLE_CHECKOFF_DONATIONS: words,
+  OR_48_POLITICAL_PARTY_3DOLLAR_CHECKOFF: words,
+  OR_48a_TAXPAYER_POLITICAL_PARTY_CODE: words,
+  OR_48b_SPOUSE_POLITICAL_PARTY_CODE: words,
+  OR_49_529_COLLEGE_SAVINGS_PLAN_DEPOSITS: words
 }
 
 export const stateQuestions: Arbitrary<StateResponses> = fc

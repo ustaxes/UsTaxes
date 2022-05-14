@@ -3,8 +3,8 @@ import F1040 from '../../irsForms/F1040'
 import { Field } from 'ustaxes/core/pdfFiller'
 // import { sumFields } from 'ustaxes/core/irsForms/util'
 import {
-  // AccountType,
-  // FilingStatus,
+  AccountType,
+  FilingStatus,
   Information,
   // PersonRole,
   State
@@ -246,7 +246,7 @@ export class OR40 extends Form {
    * Index 19: Severely Disabled (6a)
    */
   SeverelyDisabled6a = (): boolean | undefined => {
-    return true
+    return this.info.stateQuestions.OR_6A_TAXPAYER_SEVERELY_DISABLED ?? false
   }
 
   f19 = (): boolean | undefined => this.SeverelyDisabled6a()
@@ -379,7 +379,7 @@ export class OR40 extends Form {
    * Index 33: Dependent 2 Has Disability
    */
   Dependent2HasDisability = (): boolean | undefined => {
-    return true
+    return false
   }
 
   f33 = (): boolean | undefined => this.Dependent2HasDisability()
@@ -425,7 +425,7 @@ export class OR40 extends Form {
    * Index 38: Dependent 3 Has Disability
    */
   Dependent3HasDisability = (): boolean | undefined => {
-    return true
+    return false
   }
 
   f38 = (): boolean | undefined => this.Dependent3HasDisability()
@@ -471,7 +471,7 @@ export class OR40 extends Form {
    * Index 42: Spouse Severely Disabled (6b)
    */
   SpouseSeverelyDisabled6b = (): boolean | undefined => {
-    return true
+    return this.info.stateQuestions.OR_6B_SPOUSE_SEVERELY_DISABLED ?? false
   }
 
   f42 = (): boolean | undefined => this.SpouseSeverelyDisabled6b()
@@ -734,7 +734,7 @@ export class OR40 extends Form {
    * Index 70: Party Code You (48a)
    */
   PartyCodeYou48a = (): string | undefined => {
-    return undefined
+    return this.info.stateQuestions.OR_48a_TAXPAYER_POLITICAL_PARTY_CODE
   }
 
   f70 = (): string | undefined => this.PartyCodeYou48a()
@@ -743,7 +743,7 @@ export class OR40 extends Form {
    * Index 71: Party Code Spouse (48b)
    */
   PartyCodeSpouse48b = (): string | undefined => {
-    return undefined
+    return this.info.stateQuestions.OR_48b_SPOUSE_POLITICAL_PARTY_CODE
   }
 
   f71 = (): string | undefined => this.PartyCodeSpouse48b()
@@ -1101,12 +1101,8 @@ export class OR40 extends Form {
    * Index 108: OR Income Tax Withheld (32)
    */
   ORIncomeTaxWithheld32 = (): string | undefined => {
-    // Filter on w2s in Oregon, then sum state withholding from each w2
     return this.formatDollarAmount(
-      this.info.w2s
-        .filter((w2) => w2.state === 'OR')
-        .map((w2) => w2.stateWithholding)
-        .reduce((prev, curr) => (prev ?? 0) + (curr ?? 0), 0)
+      parseInt(this.info.stateQuestions.OR_32_OREGON_INCOME_TAX_WITHHELD ?? '0')
     )
   }
 
@@ -1116,7 +1112,12 @@ export class OR40 extends Form {
    * Index 109: Prior Year Tax Refund (33)
    */
   PriorYearTaxRefund33 = (): string | undefined => {
-    return undefined
+    return this.formatDollarAmount(
+      parseInt(
+        this.info.stateQuestions.OR_33_AMOUNT_APPLIED_FROM_PRIOR_YEAR_REFUND ??
+          '0'
+      )
+    )
   }
 
   f109 = (): string | undefined => this.PriorYearTaxRefund33()
@@ -1126,8 +1127,9 @@ export class OR40 extends Form {
    * Don't include line 33
    */
   Est2021TaxPayments34 = (): string | undefined => {
-    // TODO: Use this.info.estimatedTaxes - but which label(s) to filter on?
-    return undefined
+    return this.formatDollarAmount(
+      parseInt(this.info.stateQuestions.OR_34_ESTIMATED_TAX_PAYMENTS ?? '0')
+    )
   }
 
   f110 = (): string | undefined => this.Est2021TaxPayments34()
@@ -1136,6 +1138,20 @@ export class OR40 extends Form {
    * Index 111: Earned Income Credit (35)
    */
   EarnedIncomeCredit35 = (): string | undefined => {
+    // const earnedIncomeCredit = 13145 // TODO: Call `calculateEICForIncome()` in src\forms\Y2021\irsForms\ScheduleEIC.ts here
+    // The multiplier is 9% for taxpayers with no dependents or dependents strictly >=3 years old
+    // let multiplier = 0.09
+    // if (this.info.taxPayer.dependents.length > 0) {
+    //   for (const dependent of this.info.taxPayer.dependents) {
+    //     // The multiplier is 12% for taxpayers with one or more dependents strictly <3 years old
+    //     if (CHECK AGE HERE)
+    //       // TODO: Check dependent's age here
+    //       multiplier = 0.12
+    //   }
+    // }
+    // return this.formatDollarAmount(
+    //   parseInt((earnedIncomeCredit * multiplier).toString())
+    // )
     return undefined
   }
 
@@ -1156,7 +1172,12 @@ export class OR40 extends Form {
    * Section F
    */
   TotalRefundableCreditsScheduleASC37 = (): string | undefined => {
-    return undefined
+    return this.formatDollarAmount(
+      parseInt(
+        this.info.stateQuestions.OR_37_TOTAL_REFUNDABLE_CREDITS_FROM_OR_ASC ??
+          '0'
+      )
+    )
   }
 
   f113 = (): string | undefined => this.TotalRefundableCreditsScheduleASC37()
@@ -1228,29 +1249,29 @@ export class OR40 extends Form {
   f117 = (): string | undefined => this.LateFilingPenaltyAndInterest41()
 
   /**
-   * Index 118: Intrest On Underpayment of Est. OR-10 Tax (42)
+   * Index 118: Interest On Underpayment of Est. OR-10 Tax (42)
    */
-  IntrestOnUnderpaymentOfEstOR10Tax42 = (): string | undefined => {
+  InterestOnUnderpaymentOfEstOR10Tax42 = (): string | undefined => {
     return undefined
   }
 
-  f118 = (): string | undefined => this.IntrestOnUnderpaymentOfEstOR10Tax42()
+  f118 = (): string | undefined => this.InterestOnUnderpaymentOfEstOR10Tax42()
 
   /**
    * Index 119: Total Penalty + Intrest Due (43)
    */
-  TotalPenaltyIntrestDue43 = (): string | undefined => {
+  TotalPenaltyInterestDue43 = (): string | undefined => {
     return this.formatDollarAmount(
       parseInt(
         this.LateFilingPenaltyAndInterest41()?.replace(/\s/g, '') ?? '0'
       ) +
         parseInt(
-          this.IntrestOnUnderpaymentOfEstOR10Tax42()?.replace(/\s/g, '') ?? '0'
+          this.InterestOnUnderpaymentOfEstOR10Tax42()?.replace(/\s/g, '') ?? '0'
         )
     )
   }
 
-  f119 = (): string | undefined => this.TotalPenaltyIntrestDue43()
+  f119 = (): string | undefined => this.TotalPenaltyInterestDue43()
 
   /**
    * Index 120: Tax Minus Standard Credits (27)
@@ -1312,7 +1333,7 @@ export class OR40 extends Form {
       this.OverpaymentOfTax39()?.replace(/\s/g, '') ?? '0'
     )
     const penaltiesAndInterest = parseInt(
-      this.TotalPenaltyIntrestDue43()?.replace(/\s/g, '') ?? '0'
+      this.TotalPenaltyInterestDue43()?.replace(/\s/g, '') ?? '0'
     )
 
     // See: OR-40-FY Amount due (44)
@@ -1334,7 +1355,7 @@ export class OR40 extends Form {
       this.OverpaymentOfTax39()?.replace(/\s/g, '') ?? '0'
     )
     const penaltiesAndInterest = parseInt(
-      this.TotalPenaltyIntrestDue43()?.replace(/\s/g, '') ?? '0'
+      this.TotalPenaltyInterestDue43()?.replace(/\s/g, '') ?? '0'
     )
 
     if (overpayment > 0 && overpayment > penaltiesAndInterest) {
@@ -1351,7 +1372,10 @@ export class OR40 extends Form {
    * Portion of Line 45 appl. to open estimated tax acc
    */
   EstimatedTax46 = (): string | undefined => {
-    return undefined
+    // TODO: Validate against amount on Line 45
+    return this.formatDollarAmount(
+      parseInt(this.info.stateQuestions.OR_46_ESTIMATED_TAX ?? '0')
+    )
   }
 
   f127 = (): string | undefined => this.EstimatedTax46()
@@ -1361,7 +1385,11 @@ export class OR40 extends Form {
    * Schedule OR-DONATE, Line 30
    */
   CharitableCheckoffScheduleDONATE47 = (): string | undefined => {
-    return undefined
+    return this.formatDollarAmount(
+      parseInt(
+        this.info.stateQuestions.OR_47_CHARITABLE_CHECKOFF_DONATIONS ?? '0'
+      )
+    )
   }
 
   f128 = (): string | undefined => this.CharitableCheckoffScheduleDONATE47()
@@ -1370,7 +1398,11 @@ export class OR40 extends Form {
    * Index 129: Political Party $3 Checkoff (48)
    */
   PoliticalPartyCheckoff48 = (): string | undefined => {
-    return undefined
+    return this.formatDollarAmount(
+      parseInt(
+        this.info.stateQuestions.OR_48_POLITICAL_PARTY_3DOLLAR_CHECKOFF ?? '0'
+      )
+    )
   }
 
   f129 = (): string | undefined => this.PoliticalPartyCheckoff48()
@@ -1379,7 +1411,11 @@ export class OR40 extends Form {
    * Index 130: Oregon 529 College Savings Plan Deposits Schedule OR-529 (49)
    */
   CollegeSavingsPlanDepositSchedule52949 = (): string | undefined => {
-    return undefined
+    return this.formatDollarAmount(
+      parseInt(
+        this.info.stateQuestions.OR_49_529_COLLEGE_SAVINGS_PLAN_DEPOSITS ?? '0'
+      )
+    )
   }
 
   f130 = (): string | undefined => this.CollegeSavingsPlanDepositSchedule52949()

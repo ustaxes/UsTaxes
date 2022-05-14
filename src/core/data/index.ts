@@ -414,7 +414,7 @@ export const questionTagNames: QuestionTagName[] = [
   'LIVE_APART_FROM_SPOUSE'
 ]
 
-export type ValueTag = 'string' | 'boolean'
+export type ValueTag = 'string' | 'boolean' | 'combobox'
 
 export type Responses = Partial<QuestionTag> // Defines usable tag names for each question later defined,
 
@@ -422,7 +422,21 @@ export type Responses = Partial<QuestionTag> // Defines usable tag names for eac
 // and maps to a type which is the expected response type.
 export interface StateQuestionTag {
   // oregon state questions
-  OR_TAXPAYER_SEVERELY_DISABLED: boolean
+  // page 2
+  OR_6A_TAXPAYER_SEVERELY_DISABLED: boolean
+  OR_6B_SPOUSE_SEVERELY_DISABLED: boolean
+  // page 5
+  OR_32_OREGON_INCOME_TAX_WITHHELD: string
+  OR_33_AMOUNT_APPLIED_FROM_PRIOR_YEAR_REFUND: string
+  OR_34_ESTIMATED_TAX_PAYMENTS: string
+  OR_37_TOTAL_REFUNDABLE_CREDITS_FROM_OR_ASC: string
+  // page 6
+  OR_46_ESTIMATED_TAX: string
+  OR_47_CHARITABLE_CHECKOFF_DONATIONS: string
+  OR_48_POLITICAL_PARTY_3DOLLAR_CHECKOFF: string
+  OR_48a_TAXPAYER_POLITICAL_PARTY_CODE: string
+  OR_48b_SPOUSE_POLITICAL_PARTY_CODE: string
+  OR_49_529_COLLEGE_SAVINGS_PLAN_DEPOSITS: string
 }
 
 export type StateQuestionTagName = keyof StateQuestionTag
@@ -430,7 +444,22 @@ export type StateQuestionTagName = keyof StateQuestionTag
 // Typescript provides no way to access
 // keys of an interface at runtime.
 export const stateQuestionTagNames: StateQuestionTagName[] = [
-  'OR_TAXPAYER_SEVERELY_DISABLED'
+  // oregon state questions
+  // page 2
+  'OR_6A_TAXPAYER_SEVERELY_DISABLED',
+  'OR_6B_SPOUSE_SEVERELY_DISABLED',
+  // page 5
+  'OR_32_OREGON_INCOME_TAX_WITHHELD',
+  'OR_33_AMOUNT_APPLIED_FROM_PRIOR_YEAR_REFUND',
+  'OR_34_ESTIMATED_TAX_PAYMENTS',
+  'OR_37_TOTAL_REFUNDABLE_CREDITS_FROM_OR_ASC',
+  // page 6
+  'OR_46_ESTIMATED_TAX',
+  'OR_47_CHARITABLE_CHECKOFF_DONATIONS',
+  'OR_48_POLITICAL_PARTY_3DOLLAR_CHECKOFF',
+  'OR_48a_TAXPAYER_POLITICAL_PARTY_CODE',
+  'OR_48b_SPOUSE_POLITICAL_PARTY_CODE',
+  'OR_49_529_COLLEGE_SAVINGS_PLAN_DEPOSITS'
 ]
 
 export type StateResponses = Partial<StateQuestionTag> // Defines usable tag names for each question later defined,
