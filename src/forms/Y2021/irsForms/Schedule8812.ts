@@ -100,7 +100,7 @@ export default class Schedule8812 extends F1040Attachment {
     this.creditDependents().filter(
       (d) =>
         d.qualifyingInfo !== undefined &&
-        d.qualifyingInfo.birthYear > CURRENT_YEAR - 6
+        d.dateOfBirth.getFullYear() > CURRENT_YEAR - 6
     ).length
 
   l4c = (): number => Math.max(0, this.l4a() - this.l4b())

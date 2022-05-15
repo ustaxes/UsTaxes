@@ -64,6 +64,7 @@ export interface LabeledRadioProps<TFormValues>
 
 export interface DatePickerProps<TFormValues>
   extends LabeledFormProps<TFormValues> {
+  required?: boolean
   minDate?: Date
   maxDate: Date
 }

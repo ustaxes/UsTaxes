@@ -373,11 +373,22 @@ export const filingStatus: Arbitrary<types.FilingStatus> = fc.constantFrom(
 )
 
 export const person: Arbitrary<types.Person> = fc
-  .tuple(word, word, ein)
-  .map(([firstName, lastName, ssid]) => ({
+  .tuple(
+    word,
+    word,
+    ein,
+    fc.boolean(),
+    fc.date({
+      min: new Date(1900, 0, 1),
+      max: new Date()
+    })
+  )
+  .map(([firstName, lastName, ssid, isBlind, dateOfBirth]) => ({
     firstName,
     lastName,
     ssid,
+    isBlind,
+    dateOfBirth,
     role: types.PersonRole.PRIMARY
   }))
 
@@ -479,9 +490,8 @@ export class Arbitraries {
 
   qualifyingInformation = (): Arbitrary<types.QualifyingInformation> =>
     fc
-      .tuple(this.birthYear(), fc.nat({ max: 12 }), fc.boolean())
-      .map(([birthYear, numberOfMonths, isStudent]) => ({
-        birthYear,
+      .tuple(fc.nat({ max: 12 }), fc.boolean())
+      .map(([numberOfMonths, isStudent]) => ({
         numberOfMonths,
         isStudent
       }))
@@ -565,8 +575,8 @@ export class Arbitraries {
           coverageType,
           contributions,
           personRole,
-          startDate: startDate.toISOString(),
-          endDate: endDate.toISOString(),
+          startDate,
+          endDate,
           totalDistributions,
           qualifiedDistributions
         })
