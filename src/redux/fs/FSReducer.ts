@@ -1,6 +1,7 @@
 import { AnyAction, Reducer } from 'redux'
+import { migrateEachYear, migrateAgeAndBlindness } from '../migration'
 import { download, stateToString, stringToState } from '.'
-import { migrate, USTState } from '../store'
+import { USTState } from '../store'
 import { FSPersist, FSRecover } from './Actions'
 
 type PersistActions = FSPersist | FSRecover
@@ -26,11 +27,13 @@ export const fsReducer = <S extends USTState, A extends AnyAction>(
         // so we can safely cast it to a FSRecover<USTSerializedState>.
         return {
           ...newState,
-          ...migrate(
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-            stringToState(action.data)
+          ...migrateAgeAndBlindness(
+            migrateEachYear(
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+              stringToState(action.data)
+            )
           )
-        }
+        } as S // migrations return any, must coerce.
       }
       case 'fs/persist': {
         download(filename, stateToString(newState))

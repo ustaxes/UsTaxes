@@ -7,7 +7,7 @@ import {
   PlanType1099,
   Asset
 } from 'ustaxes/core/data'
-import federalBrackets from '../data/federal'
+import federalBrackets, { CURRENT_YEAR } from '../data/federal'
 import F4972 from './F4972'
 import F5695 from './F5695'
 import F8814 from './F8814'
@@ -225,16 +225,18 @@ export default class F1040 extends F1040Base {
     return [this, ...res].sort((a, b) => a.sequenceIndex - b.sequenceIndex)
   }
 
-  // TODO -> born before 1956/01/02
-  bornBeforeDate = (): boolean => false
-  // TODO
-  blind = (): boolean => false
+  // born before 1957/01/02
+  bornBeforeDate = (): boolean =>
+    this.info.taxPayer.primaryPerson.dateOfBirth <
+    new Date(CURRENT_YEAR - 64, 0, 2)
 
-  // TODO
-  spouseBeforeDate = (): boolean => false
+  blind = (): boolean => this.info.taxPayer.primaryPerson.isBlind
 
-  // TODO
-  spouseBlind = (): boolean => false
+  spouseBeforeDate = (): boolean =>
+    (this.info.taxPayer.spouse?.dateOfBirth ?? new Date()) <
+    new Date(CURRENT_YEAR - 64, 0, 2)
+
+  spouseBlind = (): boolean => this.info.taxPayer.spouse?.isBlind ?? false
 
   validW2s = (): IncomeW2[] => {
     if (this.info.taxPayer.filingStatus === FilingStatus.MFS) {
@@ -253,16 +255,38 @@ export default class F1040 extends F1040Base {
 
   standardDeduction = (): number | undefined => {
     const filingStatus = this.info.taxPayer.filingStatus
+
+    const allowances = [
+      this.bornBeforeDate(),
+      this.blind(),
+      this.spouseBeforeDate(),
+      this.spouseBlind()
+    ].reduce((res, e) => res + +!!e, 0)
+
     if (
       this.info.taxPayer.primaryPerson.isTaxpayerDependent ||
       (this.info.taxPayer.spouse?.isTaxpayerDependent ?? false)
     ) {
-      return Math.min(
+      const l4a = Math.min(
         federalBrackets.ordinary.status[filingStatus].deductions[0].amount,
         this.wages() > 750 ? this.wages() + 350 : 1100
       )
+      if (allowances > 0) {
+        if (
+          filingStatus === FilingStatus.HOH ||
+          filingStatus === FilingStatus.S
+        ) {
+          return l4a + allowances * 1700
+        } else {
+          return l4a + allowances * 1350
+        }
+      } else {
+        return l4a
+      }
     }
-    return federalBrackets.ordinary.status[filingStatus].deductions[0].amount
+
+    return federalBrackets.ordinary.status[filingStatus].deductions[allowances]
+      .amount
   }
 
   totalQualifiedDividends = (): number =>

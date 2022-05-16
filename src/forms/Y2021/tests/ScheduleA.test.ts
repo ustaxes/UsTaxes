@@ -1,6 +1,4 @@
 import { commonTests } from '.'
-import federalBrackets from '../data/federal'
-import * as fc from 'fast-check'
 
 describe('ScheduleA', () => {
   it('should make deduction > standard deduction if Schedule A is attached', async () => {
@@ -17,16 +15,12 @@ describe('ScheduleA', () => {
   })
 
   it('should be attached if deduction is more than standard', async () => {
-    await commonTests.withValid1040((f1040, fs) => {
-      const standardDeduction =
-        federalBrackets.ordinary.status[fs].deductions[0].amount
+    await commonTests.withValid1040((f1040) => {
+      const standardDeduction = f1040.standardDeduction() ?? 0
 
       // If the deduction is more than standard, we must have a schedule A
       // Note dependents of other taxpayers may still itemize.
-      if (
-        (f1040.l12a() ?? 0) >
-        Math.min(standardDeduction, f1040.standardDeduction() ?? 0)
-      ) {
+      if ((f1040.l12a() ?? 0) > standardDeduction) {
         expect(f1040.scheduleA).not.toBe(undefined)
       }
     })
