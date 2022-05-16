@@ -10,6 +10,7 @@ import { FilingStatus, IncomeW2, PersonRole } from 'ustaxes/core/data'
 import { run } from 'ustaxes/core/util'
 import { blankState } from 'ustaxes/redux/reducer'
 import { ValidatedInformation } from 'ustaxes/forms/F1040Base'
+import * as fc from 'fast-check'
 
 jest.setTimeout(10000)
 
@@ -48,14 +49,18 @@ const sampleInfo: ValidatedInformation = {
       isTaxpayerDependent: false,
       lastName: '',
       role: PersonRole.PRIMARY,
-      ssid: ''
+      ssid: '',
+      isBlind: false,
+      dateOfBirth: new Date('2000-01-01')
     },
     spouse: {
       firstName: '',
       isTaxpayerDependent: false,
       lastName: '',
       role: PersonRole.SPOUSE,
-      ssid: ''
+      ssid: '',
+      isBlind: false,
+      dateOfBirth: new Date('2000-01-01')
     }
   }
 }
@@ -131,6 +136,8 @@ describe('fica', () => {
             .reduce((l, r) => l + r, 0)
 
         expect(ssRefund).toEqual(ssWithheld - fica.maxSSTax)
+      } else {
+        fc.pre(false)
       }
 
       return Promise.resolve()
