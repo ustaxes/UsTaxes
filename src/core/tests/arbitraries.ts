@@ -9,6 +9,7 @@ import {
   ValidatedInformation,
   ValidatedTaxpayer
 } from 'ustaxes/forms/F1040Base'
+import { blankYearTaxesState, YearsTaxesState } from 'ustaxes/redux'
 
 const lower: Arbitrary<string> = fc
   .integer({ min: 0x61, max: 0x7a })
@@ -64,6 +65,7 @@ const investmentResult = posNegCurrency(100000)
 const expense: Arbitrary<number> = posCurrency(10000)
 const interest: Arbitrary<number> = posCurrency(10000)
 const payment: Arbitrary<number> = fc.nat({ max: 100000 })
+const ssWitholding: Arbitrary<number> = fc.nat({ max: 10000 })
 
 const payerName: Arbitrary<string> = maxWords(3)
 
@@ -110,7 +112,7 @@ const w2: Arbitrary<types.IncomeW2> = wages.chain((income) =>
       fc.nat({ max: 2 * income }),
       fc.nat({ max: income }),
       fc.nat({ max: income }),
-      fc.nat({ max: income }),
+      ssWitholding,
       fc.nat({ max: income }),
       employer,
       w2Box12Info(income),
@@ -372,11 +374,22 @@ export const filingStatus: Arbitrary<types.FilingStatus> = fc.constantFrom(
 )
 
 export const person: Arbitrary<types.Person> = fc
-  .tuple(word, word, ein)
-  .map(([firstName, lastName, ssid]) => ({
+  .tuple(
+    word,
+    word,
+    ein,
+    fc.boolean(),
+    fc.date({
+      min: new Date(1900, 0, 1),
+      max: new Date()
+    })
+  )
+  .map(([firstName, lastName, ssid, isBlind, dateOfBirth]) => ({
     firstName,
     lastName,
     ssid,
+    isBlind,
+    dateOfBirth,
     role: types.PersonRole.PRIMARY
   }))
 
@@ -478,9 +491,8 @@ export class Arbitraries {
 
   qualifyingInformation = (): Arbitrary<types.QualifyingInformation> =>
     fc
-      .tuple(this.birthYear(), fc.nat({ max: 12 }), fc.boolean())
-      .map(([birthYear, numberOfMonths, isStudent]) => ({
-        birthYear,
+      .tuple(fc.nat({ max: 12 }), fc.boolean())
+      .map(([numberOfMonths, isStudent]) => ({
         numberOfMonths,
         isStudent
       }))
@@ -564,8 +576,8 @@ export class Arbitraries {
           coverageType,
           contributions,
           personRole,
-          startDate: startDate.toISOString(),
-          endDate: endDate.toISOString(),
+          startDate,
+          endDate,
           totalDistributions,
           qualifiedDistributions
         })
@@ -698,3 +710,30 @@ export class Arbitraries {
 }
 
 export const forYear = (year: number): Arbitraries => new Arbitraries(year)
+
+export const asset: Arbitrary<types.Asset> = fc
+  .tuple(
+    fc.string(),
+    fc.constantFrom<types.AssetType>('Security', 'Real Estate'),
+    fc.date(),
+    fc.nat({ max: 100000 }),
+    fc.nat({ max: 100 }),
+    fc.nat({ max: 100 })
+  )
+  .map(([name, positionType, openDate, openPrice, openFee, quantity]) => ({
+    name,
+    positionType,
+    openPrice,
+    openDate,
+    openFee,
+    quantity
+  }))
+
+export const yearsTaxesState: Arbitrary<YearsTaxesState> = fc
+  .tuple(forYear(2021).information(), fc.array(asset))
+  .map(([Y2021, assets]) => ({
+    ...blankYearTaxesState,
+    Y2021,
+    assets,
+    activeYear: 'Y2021'
+  }))

@@ -27,6 +27,7 @@ export const checkType = <A>(data: A, validate: ValidateFunction<A>): A => {
         ?.map((e) => `${e.instancePath}: ${e.message ?? ''}`)
         .join('\n') ?? 'Unknown error'
 
+    validate.errors?.forEach(console.error)
     throw new Error(`Validation Failed: ${errorMessage}`)
   }
 
@@ -44,10 +45,11 @@ export const employer = fns.Employer as ValidateFunction<types.Employer>
 export const filingStatus =
   fns.FilingStatus as ValidateFunction<types.FilingStatus>
 export const primaryPerson =
-  fns.PrimaryPerson as ValidateFunction<types.PrimaryPerson>
-export const spouse = fns.Spouse as ValidateFunction<types.Spouse>
-export const person = fns.Person as ValidateFunction<types.Person>
-export const dependent = fns.Dependent as ValidateFunction<types.Dependent>
+  fns.PrimaryPerson as ValidateFunction<types.PrimaryPersonDateString>
+export const spouse = fns.Spouse as ValidateFunction<types.SpouseDateString>
+export const person = fns.Person as ValidateFunction<types.PersonDateString>
+export const dependent =
+  fns.Dependent as ValidateFunction<types.DependentDateString>
 export const f1099IntData =
   fns.F1099IntData as ValidateFunction<types.F1099IntData>
 export const f1099BData = fns.F1099BData as ValidateFunction<types.F1099BData>
@@ -61,9 +63,10 @@ export const incomeW2 = fns.IncomeW2 as ValidateFunction<types.IncomeW2>
 export const estimatedTaxPayments =
   fns.EstimatedTaxPayments as ValidateFunction<types.EstimatedTaxPayments>
 export const refund = fns.Refund as ValidateFunction<types.Refund>
-export const taxPayer = fns.TaxPayer as ValidateFunction<types.TaxPayer>
+export const taxPayer =
+  fns.TaxPayer as ValidateFunction<types.TaxPayerDateString>
 export const information =
-  fns.Information as ValidateFunction<types.Information>
+  fns.Information as ValidateFunction<types.InformationDateString>
 export const property = fns.Property as ValidateFunction<types.Property>
 export const propertyType =
   fns.PropertyType as ValidateFunction<types.PropertyType>
@@ -74,7 +77,7 @@ export const responses = fns.Responses as ValidateFunction<types.Responses>
 export const stateResidency =
   fns.StateResidency as ValidateFunction<types.StateResidency>
 export const healthSavingsAccount =
-  fns.HealthSavingsAccount as ValidateFunction<types.HealthSavingsAccount>
+  fns.HealthSavingsAccount as ValidateFunction<types.HealthSavingsAccountDateString>
 export const ira = fns.Ira as ValidateFunction<types.Ira>
 export const assetType = fns.AssetType as ValidateFunction<types.AssetType>
 export const assetString =

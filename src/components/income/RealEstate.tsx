@@ -140,7 +140,8 @@ const toUserInput = (property: Property): PropertyAddForm => {
 }
 
 export default function RealEstate(): ReactElement {
-  const methods = useForm<PropertyAddForm>({ defaultValues: blankAddForm })
+  const defaultValues = blankAddForm
+  const methods = useForm<PropertyAddForm>({ defaultValues })
   const { handleSubmit, control, getValues } = methods
 
   const dispatch = useDispatch()
@@ -217,6 +218,7 @@ export default function RealEstate(): ReactElement {
 
   const form = (
     <FormListContainer
+      defaultValues={defaultValues}
       items={properties.map((a) => toUserInput(a))}
       icon={() => <HouseOutlined />}
       primary={(p) => toProperty(p).address.address}

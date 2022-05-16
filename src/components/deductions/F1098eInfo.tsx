@@ -63,6 +63,7 @@ export default function F1098eInfo(): ReactElement {
 
   const form: ReactElement | undefined = (
     <FormListContainer
+      defaultValues={defaultValues}
       onSubmitAdd={onAdd1098e}
       onSubmitEdit={onEdit1098e}
       items={f1098es.map((a) => toUserInput(a))}

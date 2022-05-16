@@ -53,7 +53,7 @@ const blankUserInput: HSAUserInput = {
   qualifiedDistributions: ''
 }
 
-const toHSA = (formData: HSAUserInput): HealthSavingsAccount => ({
+const toHSA = (formData: HSAUserInput): HealthSavingsAccount<string> => ({
   ...formData,
   // Note we are not error checking here because
   // we are already in the input validated happy path
@@ -80,6 +80,7 @@ const toHSAUserInput = (data: HealthSavingsAccount): HSAUserInput => ({
 })
 
 export default function HealthSavingsAccounts(): ReactElement {
+  const defaultValues = blankUserInput
   const hsa = useYearSelector(
     (state: TaxesState) => state.information.healthSavingsAccounts
   )
@@ -93,7 +94,7 @@ export default function HealthSavingsAccounts(): ReactElement {
 
   const dispatch = useYearDispatch()
 
-  const methods = useForm<HSAUserInput>()
+  const methods = useForm<HSAUserInput>({ defaultValues })
   const { handleSubmit } = methods
 
   const activeYear: TaxYear = useSelector(
@@ -114,6 +115,7 @@ export default function HealthSavingsAccounts(): ReactElement {
 
   const hsaBlock = (
     <FormListContainer<HSAUserInput>
+      defaultValues={defaultValues}
       items={hsa.map((a) => toHSAUserInput(a))}
       onSubmitAdd={onSubmitAdd}
       onSubmitEdit={onSubmitEdit}
