@@ -87,7 +87,7 @@ export const createSummary = (
     case 'Y2019': {
       return emptySummary
     }
-    case 'Y2021': {
+    case 'Y2020': {
       return SummaryCreatorFor2020.summary(f1040 as F1040For2020)
     }
     case 'Y2021': {
