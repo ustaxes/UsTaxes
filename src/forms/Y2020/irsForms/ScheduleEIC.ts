@@ -318,12 +318,11 @@ export default class ScheduleEIC extends F1040Attachment {
     this.f1040.info.taxPayer.dependents
       .filter(
         (d) =>
-          d.qualifyingInfo?.birthYear !== undefined &&
-          (d.qualifyingInfo.birthYear >= this.qualifyingCutoffYear ||
-            (d.qualifyingInfo.isStudent &&
-              d.qualifyingInfo.birthYear >= this.qualifyingStudentCutoffYear))
+          d.dateOfBirth.getFullYear() >= this.qualifyingCutoffYear ||
+          ((d.qualifyingInfo?.isStudent ?? false) &&
+            d.dateOfBirth.getFullYear() >= this.qualifyingStudentCutoffYear)
       )
-      .sort((d) => d.qualifyingInfo?.birthYear as number)
+      .sort((d) => d.dateOfBirth.getFullYear())
       .slice(0, 3)
 
   qualifyingDependentsFilled = (): Array<Dependent | undefined> => {
@@ -342,7 +341,7 @@ export default class ScheduleEIC extends F1040Attachment {
     this.qualifyingDependentsFilled().map((d) => d?.ssid)
 
   years = (): Array<number | undefined> =>
-    this.qualifyingDependentsFilled().map((d) => d?.qualifyingInfo?.birthYear)
+    this.qualifyingDependentsFilled().map((d) => d?.dateOfBirth.getFullYear())
 
   // EIC line 3
   birthYearFields = (): Array<string | undefined> =>
