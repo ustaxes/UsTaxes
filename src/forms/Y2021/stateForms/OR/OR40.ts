@@ -716,7 +716,7 @@ export class OR40 extends Form {
    * Index 68: Exemption Number 42a
    */
   ExemptionNumber42a = (): string | undefined => {
-    return undefined
+    return this.info.stateQuestions.OR_42a_EXCEPTION_NUMBER
   }
 
   f68 = (): string | undefined => this.ExemptionNumber42a()
@@ -724,11 +724,11 @@ export class OR40 extends Form {
   /**
    * Index 69: Form OR-10 Anualized (42b)
    */
-  FormOR10Anualized42b = (): boolean | undefined => {
-    return true
+  FormOR10Annualized42b = (): boolean | undefined => {
+    return this.info.stateQuestions.OR_42b_ANNUALIZED
   }
 
-  f69 = (): boolean | undefined => this.FormOR10Anualized42b()
+  f69 = (): boolean | undefined => this.FormOR10Annualized42b()
 
   /**
    * Index 70: Party Code You (48a)
@@ -779,13 +779,13 @@ export class OR40 extends Form {
   f74 = (): string | undefined => this.AccountNumber52()
 
   /**
-   * Index 75: Kicker To State School Fund (53)
+   * Index 75: Kicker To State School Fund (53a)
    */
-  KickerToStateSchoolFund53 = (): boolean | undefined => {
-    return true
+  KickerToStateSchoolFund53a = (): boolean | undefined => {
+    return this.info.stateQuestions.OR_53_DONATE_TO_STATE_SCHOOL_FUND
   }
 
-  f75 = (): boolean | undefined => this.KickerToStateSchoolFund53()
+  f75 = (): boolean | undefined => this.KickerToStateSchoolFund53a()
 
   /**
    * Index 76: Your Signature Date
@@ -1162,7 +1162,15 @@ export class OR40 extends Form {
    * Enter 0 to donate to State School Fund, see line 53
    */
   KickerCreditAmount36 = (): string | undefined => {
-    return undefined
+    if (this.KickerToStateSchoolFund53a() === false) {
+      return this.formatDollarAmount(
+        parseInt(
+          this.info.stateQuestions.OR_36_53_KICKER_OREGON_SURPLUS_CREDIT ?? '0'
+        )
+      )
+    } else {
+      return '0'
+    }
   }
 
   f112 = (): string | undefined => this.KickerCreditAmount36()
@@ -1243,7 +1251,9 @@ export class OR40 extends Form {
    * Index 117: Late Filing Penalty And Interest (41)
    */
   LateFilingPenaltyAndInterest41 = (): string | undefined => {
-    return undefined
+    return this.formatDollarAmount(
+      parseInt(this.info.stateQuestions.OR_41_PENALTY_FOR_FILING_LATE ?? '0')
+    )
   }
 
   f117 = (): string | undefined => this.LateFilingPenaltyAndInterest41()
@@ -1252,7 +1262,12 @@ export class OR40 extends Form {
    * Index 118: Interest On Underpayment of Est. OR-10 Tax (42)
    */
   InterestOnUnderpaymentOfEstOR10Tax42 = (): string | undefined => {
-    return undefined
+    return this.formatDollarAmount(
+      parseInt(
+        this.info.stateQuestions.OR_42_INTEREST_ON_UNDERPAYMENT_OF_EST_TAX ??
+          '0'
+      )
+    )
   }
 
   f118 = (): string | undefined => this.InterestOnUnderpaymentOfEstOR10Tax42()
@@ -1451,7 +1466,15 @@ export class OR40 extends Form {
    * Index 132: Kicker Donation (53b)
    */
   KickerDonation53b = (): string | undefined => {
-    return undefined
+    if (this.KickerToStateSchoolFund53a() === true) {
+      return this.formatDollarAmount(
+        parseInt(
+          this.info.stateQuestions.OR_36_53_KICKER_OREGON_SURPLUS_CREDIT ?? '0'
+        )
+      )
+    } else {
+      return '0'
+    }
   }
 
   f132 = (): string | undefined => this.KickerDonation53b()

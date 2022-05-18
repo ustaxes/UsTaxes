@@ -414,7 +414,7 @@ export const questionTagNames: QuestionTagName[] = [
   'LIVE_APART_FROM_SPOUSE'
 ]
 
-export type ValueTag = 'string' | 'boolean' | 'combobox'
+export type ValueTag = 'string' | 'boolean' | 'combobox' | 'none'
 
 export type Responses = Partial<QuestionTag> // Defines usable tag names for each question later defined,
 
@@ -429,7 +429,12 @@ export interface StateQuestionTag {
   OR_32_OREGON_INCOME_TAX_WITHHELD: string
   OR_33_AMOUNT_APPLIED_FROM_PRIOR_YEAR_REFUND: string
   OR_34_ESTIMATED_TAX_PAYMENTS: string
+  OR_36_53_KICKER_OREGON_SURPLUS_CREDIT: string
   OR_37_TOTAL_REFUNDABLE_CREDITS_FROM_OR_ASC: string
+  OR_41_PENALTY_FOR_FILING_LATE: string
+  OR_42_INTEREST_ON_UNDERPAYMENT_OF_EST_TAX: string
+  OR_42a_EXCEPTION_NUMBER: string
+  OR_42b_ANNUALIZED: boolean
   // page 6
   OR_46_ESTIMATED_TAX: string
   OR_47_CHARITABLE_CHECKOFF_DONATIONS: string
@@ -437,6 +442,7 @@ export interface StateQuestionTag {
   OR_48a_TAXPAYER_POLITICAL_PARTY_CODE: string
   OR_48b_SPOUSE_POLITICAL_PARTY_CODE: string
   OR_49_529_COLLEGE_SAVINGS_PLAN_DEPOSITS: string
+  OR_53_DONATE_TO_STATE_SCHOOL_FUND: boolean
 }
 
 export type StateQuestionTagName = keyof StateQuestionTag
@@ -452,14 +458,20 @@ export const stateQuestionTagNames: StateQuestionTagName[] = [
   'OR_32_OREGON_INCOME_TAX_WITHHELD',
   'OR_33_AMOUNT_APPLIED_FROM_PRIOR_YEAR_REFUND',
   'OR_34_ESTIMATED_TAX_PAYMENTS',
+  'OR_36_53_KICKER_OREGON_SURPLUS_CREDIT',
   'OR_37_TOTAL_REFUNDABLE_CREDITS_FROM_OR_ASC',
+  'OR_41_PENALTY_FOR_FILING_LATE',
+  'OR_42_INTEREST_ON_UNDERPAYMENT_OF_EST_TAX',
+  'OR_42a_EXCEPTION_NUMBER',
+  'OR_42b_ANNUALIZED',
   // page 6
   'OR_46_ESTIMATED_TAX',
   'OR_47_CHARITABLE_CHECKOFF_DONATIONS',
   'OR_48_POLITICAL_PARTY_3DOLLAR_CHECKOFF',
   'OR_48a_TAXPAYER_POLITICAL_PARTY_CODE',
   'OR_48b_SPOUSE_POLITICAL_PARTY_CODE',
-  'OR_49_529_COLLEGE_SAVINGS_PLAN_DEPOSITS'
+  'OR_49_529_COLLEGE_SAVINGS_PLAN_DEPOSITS',
+  'OR_53_DONATE_TO_STATE_SCHOOL_FUND'
 ]
 
 export type StateResponses = Partial<StateQuestionTag> // Defines usable tag names for each question later defined,

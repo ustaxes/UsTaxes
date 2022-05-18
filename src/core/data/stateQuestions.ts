@@ -83,12 +83,60 @@ export const stateQuestions: StateQuestion[] = [
     (s: Information) => s.stateResidencies[0].state == 'OR'
   ),
   q(
+    'OR_36_53_KICKER_OREGON_SURPLUS_CREDIT',
+    'Enter amount here',
+    escapeHtmlTags(
+      '<p><strong><u>36 / 53.</u> Kicker (Oregon surplus) credit.</strong> See instructions.</p>'
+    ),
+    'string',
+    (s: Information) => s.stateResidencies[0].state == 'OR'
+  ),
+  q(
+    'OR_53_DONATE_TO_STATE_SCHOOL_FUND',
+    'If you elect to donate your kicker to the State School Fund, check this box.',
+    '',
+    'boolean',
+    (s: Information) => s.stateResidencies[0].state == 'OR'
+  ),
+  q(
     'OR_37_TOTAL_REFUNDABLE_CREDITS_FROM_OR_ASC',
     'Enter amount here',
     escapeHtmlTags(
       '<p><strong><u>37.</u> Total refundable credits from Schedule OR-ASC.</strong> Enter your total refundable credits from Schedule OR-ASC, Section F. <strong>Include Schedule OR-ASC with your return.</strong></p>'
     ),
     'string',
+    (s: Information) => s.stateResidencies[0].state == 'OR'
+  ),
+  q(
+    'OR_41_PENALTY_FOR_FILING_LATE',
+    'Enter amount here',
+    escapeHtmlTags(
+      '<p><strong><u>41.</u> Penalty and interest for filing or paying late.</strong> See instructions.</p>'
+    ),
+    'string',
+    (s: Information) => s.stateResidencies[0].state == 'OR'
+  ),
+  q(
+    'OR_42_INTEREST_ON_UNDERPAYMENT_OF_EST_TAX',
+    'Enter amount here',
+    escapeHtmlTags(
+      '<p><strong><u>42.</u> Interest on underpayment of estimated tax.</strong> Underpayment interest is charged if:</p>'
+    ),
+    'string',
+    (s: Information) => s.stateResidencies[0].state == 'OR'
+  ),
+  q(
+    'OR_42a_EXCEPTION_NUMBER',
+    'Exception number from Form OR-10, line 1',
+    '',
+    'combobox',
+    (s: Information) => s.stateResidencies[0].state == 'OR'
+  ),
+  q(
+    'OR_42b_ANNUALIZED',
+    'Check box if you annualized',
+    '',
+    'boolean',
     (s: Information) => s.stateResidencies[0].state == 'OR'
   ),
   q(
