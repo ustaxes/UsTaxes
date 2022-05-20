@@ -1,20 +1,16 @@
-import { TaxPayer as TP } from 'ustaxes/core/data'
-import Form, { FormTag } from 'ustaxes/core/irsForms/Form'
+import F1040Attachment from './F1040Attachment'
+import { FormTag } from 'ustaxes/core/irsForms/Form'
 import { sumFields } from 'ustaxes/core/irsForms/util'
-import TaxPayer from 'ustaxes/core/data/TaxPayer'
 import F1040 from './F1040'
+import { Field } from 'ustaxes/core/pdfFiller'
 
-export default class Schedule2 extends Form {
+export default class Schedule2 extends F1040Attachment {
   tag: FormTag = 'f1040s2'
   sequenceIndex = 2
-  tp: TaxPayer
-  f1040: F1040
   otherIncomeStrings: Set<string>
 
-  constructor(tp: TP, f1040: F1040) {
-    super()
-    this.tp = new TaxPayer(tp)
-    this.f1040 = f1040
+  constructor(f1040: F1040) {
+    super(f1040)
     this.otherIncomeStrings = new Set<string>()
   }
 
@@ -36,13 +32,13 @@ export default class Schedule2 extends Form {
     ) {
       this.otherIncomeStrings.add('HSA')
     }
-    if (this.f1040.f8889?.l21() !== undefined && this.f1040.f8889?.l21() > 0) {
+    if (this.f1040.f8889?.l21() !== undefined && this.f1040.f8889.l21() > 0) {
       this.otherIncomeStrings.add('HDHP')
     }
 
     if (
       this.f1040.f8889Spouse?.l21() !== undefined &&
-      this.f1040.f8889Spouse?.l21() > 0
+      this.f1040.f8889Spouse.l21() > 0
     ) {
       this.otherIncomeStrings.add('HDHP')
     }
@@ -67,29 +63,27 @@ export default class Schedule2 extends Form {
       this.l8()
     ])
 
-  fields = (): Array<string | number | boolean | undefined> => {
-    return [
-      this.tp.namesString(),
-      this.tp.tp.primaryPerson?.ssid,
+  fields = (): Field[] => [
+    this.f1040.namesString(),
+    this.f1040.info.taxPayer.primaryPerson.ssid,
 
-      this.l1(),
-      this.l2(),
-      this.l3(),
+    this.l1(),
+    this.l2(),
+    this.l3(),
 
-      this.l4(),
-      undefined,
-      undefined /* checkboxes */,
-      this.l5(),
-      this.l6(),
-      this.l7a(),
-      this.l7b(),
-      this.f1040.f8959 !== undefined, // Form 8959 checkbox
-      this.f1040.f8960 !== undefined, // Form 8960 checkbox
-      undefined, //others checkbox
-      Array.from(this.otherIncomeStrings).join(' '), // others textbox
-      this.l8(),
-      this.l9(),
-      this.l10()
-    ]
-  }
+    this.l4(),
+    undefined,
+    undefined /* checkboxes */,
+    this.l5(),
+    this.l6(),
+    this.l7a(),
+    this.l7b(),
+    this.f1040.f8959 !== undefined, // Form 8959 checkbox
+    this.f1040.f8960 !== undefined, // Form 8960 checkbox
+    undefined, //others checkbox
+    Array.from(this.otherIncomeStrings).join(' '), // others textbox
+    this.l8(),
+    this.l9(),
+    this.l10()
+  ]
 }

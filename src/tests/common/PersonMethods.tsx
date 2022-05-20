@@ -5,9 +5,7 @@ import DomMethods from './DomMethods'
 
 export class PersonMethods extends DomMethods {
   firstNameField = (): HTMLInputElement | null =>
-    within(this.dom()).queryByLabelText(
-      personLabels.fname
-    ) as HTMLInputElement | null
+    within(this.dom()).queryByLabelText(personLabels.fname)
 
   setIfAble = (f: HTMLInputElement | null, v: string): boolean => {
     if (f !== null) {
@@ -21,32 +19,37 @@ export class PersonMethods extends DomMethods {
     this.setIfAble(this.firstNameField(), v)
 
   lastNameField = (): HTMLInputElement | null =>
-    within(this.dom()).queryByLabelText(
-      personLabels.lname
-    ) as HTMLInputElement | null
+    within(this.dom()).queryByLabelText(personLabels.lname)
 
   setLastName = (v: string): boolean => this.setIfAble(this.lastNameField(), v)
 
   ssnField = (): HTMLInputElement | null =>
-    within(this.dom()).queryByLabelText(
-      personLabels.ssn
-    ) as HTMLInputElement | null
+    within(this.dom()).queryByLabelText(personLabels.ssn)
+
+  dateOfBirthField = (): HTMLInputElement | null =>
+    // not sure why querying by label is not working.
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    within(this.dom()).queryByTestId('dateOfBirth')!.children[1]
+      .children[0] as HTMLInputElement | null
 
   requiredErrors = (): HTMLElement[] =>
     within(this.dom()).queryAllByText('Input is required')
 
-  saveButton = async (): Promise<HTMLButtonElement> =>
-    (await within(this.dom()).findByRole('button', {
+  dateOfBirthErrors = (): HTMLElement[] =>
+    within(this.dom()).queryAllByText('Invalid Date Format')
+
+  saveButton = (): HTMLButtonElement | null =>
+    within(this.dom()).queryByRole('button', {
       name: /Save/
-    })) as HTMLButtonElement
+    })
 
-  closeButton = async (): Promise<HTMLButtonElement> =>
-    (await within(this.dom()).findByRole('button', {
+  closeButton = (): HTMLButtonElement | null =>
+    within(this.dom()).queryByRole('button', {
       name: /Discard/i
-    })) as HTMLButtonElement
+    })
 
-  deleteButtons = async (): Promise<HTMLButtonElement[]> =>
-    (await within(this.dom()).findAllByRole('button', {
+  deleteButtons = (): HTMLButtonElement[] =>
+    within(this.dom()).queryAllByRole('button', {
       name: /delete/
-    })) as HTMLButtonElement[]
+    })
 }

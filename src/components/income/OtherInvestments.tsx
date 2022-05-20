@@ -1,47 +1,33 @@
-import { ReactElement } from 'react'
+import { ReactElement, useState } from 'react'
 import { Helmet } from 'react-helmet'
 import { useForm, FormProvider } from 'react-hook-form'
 import { useDispatch, YearsTaxesState } from 'ustaxes/redux'
 import { useSelector } from 'react-redux'
-import { addAsset, editAsset, removeAsset } from 'ustaxes/redux/actions'
+import { addAsset } from 'ustaxes/redux/actions'
 import { usePager } from 'ustaxes/components/pager'
-import { Asset, AssetType, State } from 'ustaxes/core/data'
+import { Asset, AssetType, State, TaxYears } from 'ustaxes/core/data'
 import {
   GenericLabeledDropdown,
   USStateDropDown,
   LabeledInput
 } from 'ustaxes/components/input'
 import { Patterns } from 'ustaxes/components/Patterns'
-import { FormListContainer } from 'ustaxes/components/FormContainer'
-import { Currency } from 'ustaxes/components/input'
-import { DatePicker } from '../input/DatePicker'
+import { OpenableFormContainer } from 'ustaxes/components/FormContainer'
 import { Grid } from '@material-ui/core'
-import {
-  HouseOutlined as RealEstateIcon,
-  ShowChartOutlined as StockIcon
-} from '@material-ui/icons'
 import { Alert } from '@material-ui/lab'
-import { TaxYears } from 'ustaxes/data'
+import { TransactionImporter } from './assets/TransactionImporter'
+import FilteredAssetsTable from './assets/FilteredAssetsTable'
+import { DatePicker } from '../input/DatePicker'
+import { intentionallyFloat } from 'ustaxes/core/util'
 
-interface Show<A> {
-  (a: A): string
-}
-
-const toShow = <A,>(f: (a: A) => string): Show<A> => f
-
-const show =
-  <A,>(shows: Show<A>) =>
-  (a: A): string =>
-    shows(a)
-
-const showAssetType: Show<AssetType> = toShow((p) => {
+const showAssetType = (p: AssetType) => {
   switch (p) {
     case 'Security':
       return 'Security (Stock, bond, option, mutual fund, etc.)'
     case 'Real Estate':
       return 'Real Estate'
   }
-})
+}
 
 interface AssetUserInput {
   name: string
@@ -50,25 +36,20 @@ interface AssetUserInput {
   closeDate?: Date
   openPrice: string
   closePrice?: string
+  openFee: string
+  closeFee: string
   quantity: string
   state?: State
 }
 
-const blankUserInput: AssetUserInput = {
+const blankAssetUserInput: AssetUserInput = {
   name: '',
   positionType: 'Security',
   openPrice: '',
-  closePrice: '',
+  openFee: '',
+  closeFee: '',
   quantity: ''
 }
-
-const toUserInput = (f: Asset<Date>): AssetUserInput => ({
-  ...blankUserInput,
-  ...f,
-  openPrice: f.openPrice.toString(),
-  closePrice: f.closePrice?.toString() ?? '',
-  quantity: f.quantity.toString()
-})
 
 const toAsset = (input: AssetUserInput): Asset<Date> | undefined => {
   const {
@@ -79,6 +60,8 @@ const toAsset = (input: AssetUserInput): Asset<Date> | undefined => {
     closePrice,
     quantity,
     state,
+    openFee,
+    closeFee,
     positionType
   } = input
   if (name === '' || openDate === undefined) {
@@ -89,6 +72,8 @@ const toAsset = (input: AssetUserInput): Asset<Date> | undefined => {
     name,
     openDate,
     closeDate,
+    openFee: Number(openFee),
+    closeFee: Number(closeFee),
     openPrice: Number(openPrice),
     closePrice: Number(closePrice),
     quantity: input.positionType === 'Real Estate' ? 1 : Number(quantity),
@@ -96,11 +81,11 @@ const toAsset = (input: AssetUserInput): Asset<Date> | undefined => {
   }
 }
 
-export default function OtherInvestments(): ReactElement {
-  const assets = useSelector((state: YearsTaxesState) => state.assets)
+export const OtherInvestments = (): ReactElement => {
   const year = useSelector((state: YearsTaxesState) => state.activeYear)
-
-  const methods = useForm<AssetUserInput>()
+  const [isOpen, setOpen] = useState(false)
+  const defaultValues = blankAssetUserInput
+  const methods = useForm<AssetUserInput>({ defaultValues })
   const { handleSubmit, watch } = methods
   const positionType = watch('positionType')
   const closeDate = watch('closeDate')
@@ -115,54 +100,21 @@ export default function OtherInvestments(): ReactElement {
     }
   }
 
-  const onSubmitEdit =
-    (index: number) =>
-    (formData: AssetUserInput): void => {
-      const payload = toAsset(formData)
-      if (payload !== undefined) {
-        dispatch(editAsset({ value: payload, index }))
-      }
-    }
-
   const form: ReactElement | undefined = (
-    <FormListContainer<AssetUserInput>
-      onSubmitAdd={onSubmitAdd}
-      onSubmitEdit={onSubmitEdit}
-      items={assets.map((a) => toUserInput(a))}
-      removeItem={(i) => dispatch(removeAsset(i))}
-      icon={(a) =>
-        a.positionType === 'Real Estate' ? <RealEstateIcon /> : <StockIcon />
-      }
-      primary={(f) => f.name}
-      secondary={(f) => {
-        const asset = toAsset(f)
-        if (asset === undefined) return ''
-        const dates = `${asset.openDate?.toLocaleDateString() ?? ''}-${
-          asset.closeDate?.toLocaleDateString() ?? ''
-        }`
-        const money =
-          asset.closeDate === undefined || asset.closePrice === undefined
-            ? asset.openPrice * asset.quantity
-            : (asset.closePrice - asset.openPrice) * asset.quantity
-        const moneyEl = (
-          <Currency plain={asset.closeDate === undefined} value={money} />
-        )
-        return (
-          <span>
-            {dates}: {moneyEl}
-          </span>
-        )
-      }}
+    <OpenableFormContainer
+      defaultValues={defaultValues}
+      isOpen={isOpen}
+      onOpenStateChange={setOpen}
+      onSave={onSubmitAdd}
     >
-      {' '}
       <Grid container spacing={2}>
-        <h3>Manage Assets</h3>
-        <GenericLabeledDropdown<AssetType>
+        <h3>Add Assets</h3>
+        <GenericLabeledDropdown<AssetType, AssetUserInput>
           label="Asset Type"
           name="positionType"
           dropDownData={['Security', 'Real Estate']}
           keyMapping={(x) => x}
-          textMapping={show(showAssetType)}
+          textMapping={showAssetType}
           valueMapping={(x) => x}
         />
         <LabeledInput
@@ -200,7 +152,7 @@ export default function OtherInvestments(): ReactElement {
             return (
               <>
                 <LabeledInput
-                  label="Cost basis per unit"
+                  label="Price per unit"
                   patternConfig={Patterns.currency}
                   name="openPrice"
                 />
@@ -210,9 +162,19 @@ export default function OtherInvestments(): ReactElement {
                   name="quantity"
                 />
                 <LabeledInput
+                  label="Fee / comissions at purchase"
+                  patternConfig={Patterns.number}
+                  name="openFee"
+                />
+                <LabeledInput
                   label="Proceeds (sales price)"
                   patternConfig={Patterns.currency}
                   name="closePrice"
+                />
+                <LabeledInput
+                  label="Fee / comissions at sale"
+                  patternConfig={Patterns.number}
+                  name="closeFee"
                 />
               </>
             )
@@ -232,19 +194,28 @@ export default function OtherInvestments(): ReactElement {
           }
         })()}
       </Grid>
-    </FormListContainer>
+    </OpenableFormContainer>
   )
 
   return (
-    <FormProvider {...methods}>
-      <form tabIndex={-1} onSubmit={handleSubmit(onAdvance)}>
-        <Helmet>
-          <title>Other Investments | Income | UsTaxes.org</title>
-        </Helmet>
-        <h2>Other Investments</h2>
-        {form}
-        {navButtons}
-      </form>
-    </FormProvider>
+    <>
+      <Helmet>
+        <title>Other Investments | Income | UsTaxes.org</title>
+      </Helmet>
+      <h2>Other Investments</h2>
+      <FilteredAssetsTable />
+      <FormProvider {...methods}>
+        <form
+          tabIndex={-1}
+          onSubmit={intentionallyFloat(handleSubmit(onAdvance))}
+        >
+          {form}
+          {navButtons}
+        </form>
+      </FormProvider>
+      <TransactionImporter />
+    </>
   )
 }
+
+export default OtherInvestments

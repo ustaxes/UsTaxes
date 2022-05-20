@@ -1,43 +1,49 @@
-import { Information, IncomeW2 } from 'ustaxes/core/data'
+import F1040Attachment from './F1040Attachment'
+import { IncomeW2, PersonRole } from 'ustaxes/core/data'
 import { sumFields } from 'ustaxes/core/irsForms/util'
-import Form, { FormTag } from 'ustaxes/core/irsForms/Form'
-import TaxPayer from 'ustaxes/core/data/TaxPayer'
+import { FormTag } from 'ustaxes/core/irsForms/Form'
 import { fica } from '../data/federal'
-import F1040 from './F1040'
+import { Field } from 'ustaxes/core/pdfFiller'
 
 export const claimableExcessSSTaxWithholding = (w2s: IncomeW2[]): number => {
-  // 1040 instructions:
-  // If you had more than one employer and total wages of more than $137,700, too
-  // much SS or RRTA tax may have been withheld. You can take a credit for the amount
-  // withtheld in excess of $8,537.40.
-  // If any one employer withheld more than $8,537.40, you can't claim the excess on
-  // your return.
+  /* Excess FICA taxes are calculated per person. If an individual person
+     has greater than the applicable amount then they are entitled to a refund
+     of that amount
+   */
+  let claimableExcessFica = 0
+  const primaryFica = w2s
+    .filter((w2) => w2.personRole == PersonRole.PRIMARY)
+    .map((w2) => w2.ssWithholding)
+    .reduce((l, r) => l + r, 0)
+  const spouseFica = w2s
+    .filter((w2) => w2.personRole == PersonRole.SPOUSE)
+    .map((w2) => w2.ssWithholding)
+    .reduce((l, r) => l + r, 0)
+
   if (
-    w2s.length > 1 &&
-    w2s.map((w2) => w2.income).reduce((l, r) => l + r, 0) >
-      fica.maxIncomeSSTaxApplies &&
-    w2s.every((w2) => w2.ssWithholding <= fica.maxSSTax)
+    primaryFica > fica.maxSSTax &&
+    w2s
+      .filter((w2) => w2.personRole == PersonRole.PRIMARY)
+      .every((w2) => w2.ssWithholding <= fica.maxSSTax)
   ) {
-    return (
-      w2s.map((w2) => w2.ssWithholding).reduce((l, r) => l + r, 0) -
-      fica.maxSSTax
-    )
-  } else {
-    return 0 // Cannot claim credit for excess SS tax
+    claimableExcessFica += primaryFica - fica.maxSSTax
   }
+
+  if (
+    spouseFica > fica.maxSSTax &&
+    w2s
+      .filter((w2) => w2.personRole == PersonRole.SPOUSE)
+      .every((w2) => w2.ssWithholding <= fica.maxSSTax)
+  ) {
+    claimableExcessFica += spouseFica - fica.maxSSTax
+  }
+
+  return claimableExcessFica
 }
 
-export default class Schedule3 extends Form {
+export default class Schedule3 extends F1040Attachment {
   tag: FormTag = 'f1040s3'
   sequenceIndex = 3
-  state: Information
-  f1040: F1040
-
-  constructor(state: Information, f1040: F1040) {
-    super()
-    this.state = state
-    this.f1040 = f1040
-  }
 
   deductions = (): number => 0
   // Part I: Nonrefundable credits
@@ -146,51 +152,49 @@ export default class Schedule3 extends Form {
 
   // Credit for child and dependent care expenses form 2441, line 10
 
-  fields = (): Array<string | number | boolean | undefined> => {
-    const tp = new TaxPayer(this.state.taxPayer)
-    return [
-      tp.namesString(),
-      tp.tp.primaryPerson?.ssid,
-      this.l1(),
-      this.l2(),
-      this.l3(),
-      this.l4(),
-      this.l5(),
-      this.l6a(),
-      this.l6b(),
-      this.l6c(),
-      this.l6d(),
-      this.l6e(),
-      this.l6f(),
-      this.l6g(),
-      this.l6h(),
-      this.l6j(),
-      this.l6k(),
-      this.l6l(),
-      this.l6zDesc1(),
-      this.l6zDesc2(),
-      this.l6z(),
-      this.l7(),
-      this.l8(),
+  fields = (): Field[] => [
+    this.f1040.namesString(),
+    this.f1040.info.taxPayer.primaryPerson.ssid,
+    this.l1(),
+    this.l2(),
+    this.l3(),
+    this.l4(),
+    this.l5(),
+    this.l6a(),
+    this.l6b(),
+    this.l6c(),
+    this.l6d(),
+    this.l6e(),
+    this.l6f(),
+    this.l6g(),
+    this.l6h(),
+    this.l6i(),
+    this.l6j(),
+    this.l6k(),
+    this.l6l(),
+    this.l6zDesc1(),
+    this.l6zDesc2(),
+    this.l6z(),
+    this.l7(),
+    this.l8(),
 
-      this.l9(),
-      this.l10(),
-      this.l11(),
-      this.l12(),
+    this.l9(),
+    this.l10(),
+    this.l11(),
+    this.l12(),
 
-      this.l13a(),
-      this.l13b(),
-      this.l13c(),
-      this.l13d(),
-      this.l13e(),
-      this.l13f(),
-      this.l13g(),
-      this.l13h(),
-      this.l13zDesc1(),
-      this.l13zDesc2(),
-      this.l13z(),
-      this.l14(),
-      this.l15()
-    ]
-  }
+    this.l13a(),
+    this.l13b(),
+    this.l13c(),
+    this.l13d(),
+    //this.l13e(),  // this field is left for future use and is not fillable
+    this.l13f(),
+    this.l13g(),
+    this.l13h(),
+    this.l13zDesc1(),
+    this.l13zDesc2(),
+    this.l13z(),
+    this.l14(),
+    this.l15()
+  ]
 }

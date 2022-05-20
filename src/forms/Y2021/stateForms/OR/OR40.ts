@@ -2,19 +2,14 @@ import Form, { FormMethods } from 'ustaxes/core/stateForms/Form'
 import F1040 from '../../irsForms/F1040'
 import { Field } from 'ustaxes/core/pdfFiller'
 // import { sumFields } from 'ustaxes/core/irsForms/util'
-import {
-  AccountType,
-  FilingStatus,
-  Information,
-  // PersonRole,
-  State
-} from 'ustaxes/core/data'
+import { AccountType, FilingStatus, State } from 'ustaxes/core/data'
 // import parameters from './Parameters'
 import { ORWFHDC } from './ORWFHDC'
 import OR40V from './OR40V'
+import { ValidatedInformation } from 'ustaxes/forms/F1040Base'
 
 export class OR40 extends Form {
-  info: Information
+  info: ValidatedInformation
   f1040: F1040
   formName: string
   state: State
@@ -23,14 +18,14 @@ export class OR40 extends Form {
   formOrder = 0
   methods: FormMethods
 
-  constructor(info: Information, f1040: F1040) {
+  constructor(f1040: F1040) {
     super()
-    this.info = info
+    this.info = f1040.info
     this.f1040 = f1040
     this.formName = 'OR-40'
     this.state = 'OR'
-    this.scheduleWFHDC = new ORWFHDC(info, f1040)
-    this.or40V = new OR40V(info, f1040, this)
+    this.scheduleWFHDC = new ORWFHDC(f1040)
+    this.or40V = new OR40V(f1040, this)
     this.methods = new FormMethods(this)
   }
 
@@ -217,7 +212,7 @@ export class OR40 extends Form {
    * Index 16: LastName (53)
    */
   LastName53 = (): string | undefined => {
-    return this.info.taxPayer.primaryPerson?.lastName
+    return this.info.taxPayer.primaryPerson.lastName
   }
 
   f16 = (): string | undefined => this.LastName53()
@@ -227,7 +222,7 @@ export class OR40 extends Form {
    */
   SocialSecurityNumber53 = (): string | undefined => {
     // format: 'xxx xx xxxx'
-    return this.formatSocialSecurity(this.info.taxPayer.primaryPerson?.ssid)
+    return this.formatSocialSecurity(this.info.taxPayer.primaryPerson.ssid)
   }
 
   f17 = (): string | undefined => this.SocialSecurityNumber53()
@@ -255,7 +250,7 @@ export class OR40 extends Form {
    * Index 20: Claim As Dependent (6a)
    */
   ClaimAsDependent6a = (): boolean | undefined => {
-    return this.info.taxPayer.primaryPerson?.isTaxpayerDependent
+    return this.info.taxPayer.primaryPerson.isTaxpayerDependent
   }
 
   f20 = (): boolean | undefined => this.ClaimAsDependent6a()
@@ -1746,7 +1741,6 @@ export class OR40 extends Form {
   // 134, 139 -> radio button idx's
 }
 
-const makeOR40 = (info: Information, f1040: F1040): OR40 =>
-  new OR40(info, f1040)
+const makeOR40 = (f1040: F1040): OR40 => new OR40(f1040)
 
 export default makeOR40

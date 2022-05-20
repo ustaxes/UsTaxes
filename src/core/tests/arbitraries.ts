@@ -12,6 +12,11 @@ import {
 import * as types from '../data'
 import * as util from '../util'
 import _ from 'lodash'
+import {
+  ValidatedInformation,
+  ValidatedTaxpayer
+} from 'ustaxes/forms/F1040Base'
+import { blankYearTaxesState, YearsTaxesState } from 'ustaxes/redux'
 
 const lower: Arbitrary<string> = fc
   .integer({ min: 0x61, max: 0x7a })
@@ -67,6 +72,7 @@ const investmentResult = posNegCurrency(100000)
 const expense: Arbitrary<number> = posCurrency(10000)
 const interest: Arbitrary<number> = posCurrency(10000)
 const payment: Arbitrary<number> = fc.nat({ max: 100000 })
+const ssWitholding: Arbitrary<number> = fc.nat({ max: 10000 })
 
 const payerName: Arbitrary<string> = maxWords(3)
 
@@ -113,6 +119,7 @@ const w2: Arbitrary<types.IncomeW2> = wages.chain((income) =>
       fc.nat({ max: 2 * income }),
       fc.nat({ max: income }),
       fc.nat({ max: income }),
+      ssWitholding,
       fc.nat({ max: income }),
       employer,
       w2Box12Info(income),
@@ -125,6 +132,7 @@ const w2: Arbitrary<types.IncomeW2> = wages.chain((income) =>
         occupation,
         medicareIncome,
         fedWithholding,
+        ssWages,
         ssWithholding,
         medicareWithholding,
         employer,
@@ -139,6 +147,7 @@ const w2: Arbitrary<types.IncomeW2> = wages.chain((income) =>
         fedWithholding,
         employer,
         personRole: types.PersonRole.PRIMARY,
+        ssWages,
         ssWithholding,
         medicareWithholding,
         state,
@@ -156,8 +165,12 @@ export const f1099IntData: Arbitrary<types.F1099IntData> = fc
 export const f1099DivData: Arbitrary<types.F1099DivData> = interest.chain(
   (dividends) =>
     fc
-      .nat({ max: Math.round(dividends * 100) })
-      .map((qdiv) => ({ dividends, qualifiedDividends: qdiv / 100 }))
+      .tuple(fc.nat({ max: Math.round(dividends * 100) }), posCurrency(100000))
+      .map(([qdiv, totalCapitalGainsDistributions]) => ({
+        dividends,
+        qualifiedDividends: qdiv / 100,
+        totalCapitalGainsDistributions
+      }))
 )
 
 export const f1099BData: Arbitrary<types.F1099BData> = fc
@@ -236,6 +249,113 @@ const f1098e: Arbitrary<types.F1098e> = fc
     interest
   }))
 
+const f3921: Arbitrary<types.F3921> = fc
+  .tuple(maxWords(2), posCurrency(100), fc.integer({ min: 1, max: 500 }))
+  .map(([name, exercisePricePerShare, numShares]) => {
+    const fmv = exercisePricePerShare + 1
+    return {
+      name,
+      personRole: types.PersonRole.PRIMARY,
+      exercisePricePerShare,
+      fmv,
+      numShares
+    }
+  })
+
+const scheduleK1Form1065: Arbitrary<types.ScheduleK1Form1065> = fc
+  .tuple(
+    maxWords(2),
+    ein,
+    posCurrency(1000000),
+    posCurrency(100000),
+    posCurrency(100000),
+    posCurrency(100000),
+    posCurrency(100000),
+    posCurrency(100000),
+    posCurrency(100000),
+    posCurrency(100000),
+    posCurrency(100000)
+  )
+  .map(
+    ([
+      partnershipName,
+      ein,
+      ordinaryBusinessIncome,
+      interestIncome,
+      guaranteedPaymentsForServices,
+      guaranteedPaymentsForCapital,
+      selfEmploymentEarningsA,
+      selfEmploymentEarningsB,
+      selfEmploymentEarningsC,
+      distributionsCodeAAmount,
+      section199AQBI
+    ]) => {
+      return {
+        personRole: types.PersonRole.PRIMARY,
+        partnershipName,
+        partnershipEin: ein,
+        partnerOrSCorp: 'P',
+        isForeign: false,
+        isPassive: false,
+        ordinaryBusinessIncome,
+        interestIncome,
+        guaranteedPaymentsForServices,
+        guaranteedPaymentsForCapital,
+        selfEmploymentEarningsA,
+        selfEmploymentEarningsB,
+        selfEmploymentEarningsC,
+        distributionsCodeAAmount,
+        section199AQBI
+      }
+    }
+  )
+
+const itemizedDeductions: Arbitrary<types.ItemizedDeductions> = fc
+  .tuple(
+    posCurrency(2500),
+    posCurrency(12500),
+    fc.boolean(),
+    posCurrency(10000),
+    posCurrency(5000),
+    posCurrency(10000),
+    posCurrency(10000),
+    posCurrency(10000),
+    posCurrency(10000),
+    posCurrency(10000),
+    posCurrency(7500),
+    posCurrency(2500),
+    posCurrency(1000)
+  )
+  .map(
+    ([
+      medicalAndDental,
+      stateAndLocalTaxes,
+      isSalesTax,
+      stateAndLocalRealEstateTaxes,
+      stateAndLocalPropertyTaxes,
+      interest8a,
+      interest8b,
+      interest8c,
+      interest8d,
+      investmentInterest,
+      charityCashCheck,
+      charityOther
+    ]) => ({
+      medicalAndDental,
+      stateAndLocalTaxes,
+      isSalesTax,
+      stateAndLocalRealEstateTaxes,
+      stateAndLocalPropertyTaxes,
+      interest8a,
+      interest8b,
+      interest8c,
+      interest8d,
+      investmentInterest,
+      charityCashCheck,
+      charityOther
+    })
+  )
+
 const estTax: Arbitrary<types.EstimatedTaxPayments> = fc
   .tuple(maxWords(5), payment)
   .map(([label, payment]) => ({
@@ -261,11 +381,22 @@ export const filingStatus: Arbitrary<types.FilingStatus> = fc.constantFrom(
 )
 
 export const person: Arbitrary<types.Person> = fc
-  .tuple(word, word, ein)
-  .map(([firstName, lastName, ssid]) => ({
+  .tuple(
+    word,
+    word,
+    ein,
+    fc.boolean(),
+    fc.date({
+      min: new Date(1900, 0, 1),
+      max: new Date()
+    })
+  )
+  .map(([firstName, lastName, ssid, isBlind, dateOfBirth]) => ({
     firstName,
     lastName,
     ssid,
+    isBlind,
+    dateOfBirth,
     role: types.PersonRole.PRIMARY
   }))
 
@@ -299,11 +430,11 @@ const questionTagArbs = {
 }
 
 export const questions: Arbitrary<Responses> = fc
-  .set(questionTag)
+  .uniqueArray(questionTag, { comparator: 'IsStrictlyEqual' })
   .chain((tags) =>
     fc
       .tuple(...tags.map((t) => questionTagArbs[t].map((v) => [t, v])))
-      .map((kvs) => Object.fromEntries(kvs))
+      .map((kvs) => Object.fromEntries(kvs) as Responses)
   )
 
 const stateQuestionTag: Arbitrary<StateQuestionTagName> = fc.constantFrom(
@@ -331,12 +462,14 @@ const stateQuestionTagArbs = {
 }
 
 export const stateQuestions: Arbitrary<StateResponses> = fc
-  .set(stateQuestionTag)
+  .uniqueArray(stateQuestionTag, { comparator: 'IsStrictlyEqual' })
   .chain((tags) =>
     fc
       .tuple(...tags.map((t) => stateQuestionTagArbs[t].map((v) => [t, v])))
-      .map((kvs) => Object.fromEntries(kvs))
+      .map((kvs) => Object.fromEntries(kvs) as StateResponses)
   )
+
+// const iraPlan: Arbitrary<IraPlanName> = fc.constantFrom(...iraPlanNames)
 
 export class Arbitraries {
   currentYear: number
@@ -397,9 +530,8 @@ export class Arbitraries {
 
   qualifyingInformation = (): Arbitrary<types.QualifyingInformation> =>
     fc
-      .tuple(this.birthYear(), fc.nat({ max: 12 }), fc.boolean())
-      .map(([birthYear, numberOfMonths, isStudent]) => ({
-        birthYear,
+      .tuple(fc.nat({ max: 12 }), fc.boolean())
+      .map(([numberOfMonths, isStudent]) => ({
         numberOfMonths,
         isStudent
       }))
@@ -413,7 +545,7 @@ export class Arbitraries {
         qualifyingInfo
       }))
 
-  taxPayer = (): Arbitrary<types.TaxPayer> =>
+  taxPayer = (): Arbitrary<ValidatedTaxpayer> =>
     fc
       .tuple(
         filingStatus,
@@ -483,14 +615,84 @@ export class Arbitraries {
           coverageType,
           contributions,
           personRole,
-          startDate: startDate.toISOString(),
-          endDate: endDate.toISOString(),
+          startDate,
+          endDate,
           totalDistributions,
           qualifiedDistributions
         })
       )
 
-  information = (): Arbitrary<types.Information> =>
+  ira = (): Arbitrary<types.Ira> =>
+    fc
+      .tuple(
+        words, //payer
+        fc.constantFrom<types.PersonRole.PRIMARY | types.PersonRole.SPOUSE>(
+          types.PersonRole.PRIMARY,
+          types.PersonRole.SPOUSE
+        ),
+        fc.nat({ max: 100000 }), // gross distribution
+        fc.nat({ max: 100000 }), // taxable amount
+        fc.boolean(), // taxable amount not determined
+        fc.boolean(), // total distribution
+        fc.nat({ max: 100000 }), // federal income tax withheld
+        fc.constantFrom<types.IraPlanType>(
+          types.IraPlanType.IRA,
+          types.IraPlanType.SepIRA,
+          types.IraPlanType.SimpleIRA,
+          types.IraPlanType.RothIRA
+        ), // plan type
+        fc.nat({ max: 100000 }), // contributions
+        fc.nat({ max: 100000 }), // rollover contributions
+        fc.nat({ max: 100000 }), // roth IRA conversion
+        fc.nat({ max: 100000 }), // recharacterized contributions
+        fc.nat({ max: 100000 }), // required minimum distributions
+        fc.nat({ max: 100000 }), // late contributions
+        fc.nat({ max: 100000 })
+      )
+      .map(
+        ([
+          payer,
+          personRole,
+          grossDistribution,
+          taxableAmount,
+          taxableAmountNotDetermined,
+          totalDistribution,
+          federalIncomeTaxWithheld,
+          planType,
+          contributions,
+          rolloverContributions,
+          rothIraConversion,
+          recharacterizedContributions,
+          requiredMinimumDistributions,
+          lateContributions,
+          repayments
+        ]) => ({
+          payer,
+          personRole,
+          grossDistribution,
+          taxableAmount,
+          taxableAmountNotDetermined,
+          totalDistribution,
+          federalIncomeTaxWithheld,
+          planType,
+          contributions,
+          rolloverContributions,
+          rothIraConversion,
+          recharacterizedContributions,
+          requiredMinimumDistributions,
+          lateContributions,
+          repayments
+        })
+      )
+
+  credit = (): Arbitrary<types.Credit> =>
+    fc.tuple(fc.nat({ max: 100000 }).map((x) => x / 100)).map(([amount]) => ({
+      recipient: types.PersonRole.PRIMARY,
+      amount,
+      type: types.CreditType.AdvanceChildTaxCredit
+    }))
+
+  information = (): Arbitrary<ValidatedInformation> =>
     fc
       .tuple(
         fc.array(f1099),
@@ -498,12 +700,17 @@ export class Arbitraries {
         fc.array(this.property()),
         fc.array(estTax),
         fc.array(f1098e),
+        fc.array(f3921),
+        fc.array(scheduleK1Form1065),
+        itemizedDeductions,
         refund,
         this.taxPayer(),
         questions,
         state,
         fc.array(this.healthSavingsAccount()),
-        stateQuestions
+        stateQuestions,
+        fc.array(this.credit(), { maxLength: 2 }),
+        fc.array(this.ira())
       )
       .map(
         ([
@@ -512,26 +719,63 @@ export class Arbitraries {
           realEstate,
           estimatedTaxes,
           f1098es,
+          f3921s,
+          scheduleK1Form1065s,
+          itemizedDeductions,
           refund,
           taxPayer,
           questions,
           state,
           healthSavingsAccounts,
-          stateQuestions
+          stateQuestions,
+          credits,
+          individualRetirementArrangements
         ]) => ({
           f1099s,
           w2s,
           realEstate,
           estimatedTaxes,
           f1098es,
+          f3921s,
+          scheduleK1Form1065s,
+          itemizedDeductions,
           refund,
           taxPayer,
           questions,
           stateResidencies: [{ state }],
           healthSavingsAccounts,
-          stateQuestions
+          stateQuestions,
+          credits,
+          individualRetirementArrangements
         })
       )
 }
 
 export const forYear = (year: number): Arbitraries => new Arbitraries(year)
+
+export const asset: Arbitrary<types.Asset> = fc
+  .tuple(
+    fc.string(),
+    fc.constantFrom<types.AssetType>('Security', 'Real Estate'),
+    fc.date(),
+    fc.nat({ max: 100000 }),
+    fc.nat({ max: 100 }),
+    fc.nat({ max: 100 })
+  )
+  .map(([name, positionType, openDate, openPrice, openFee, quantity]) => ({
+    name,
+    positionType,
+    openPrice,
+    openDate,
+    openFee,
+    quantity
+  }))
+
+export const yearsTaxesState: Arbitrary<YearsTaxesState> = fc
+  .tuple(forYear(2021).information(), fc.array(asset))
+  .map(([Y2021, assets]) => ({
+    ...blankYearTaxesState,
+    Y2021,
+    assets,
+    activeYear: 'Y2021'
+  }))

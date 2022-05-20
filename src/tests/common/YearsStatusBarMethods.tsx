@@ -7,7 +7,7 @@ import {
 } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { enumKeys } from 'ustaxes/core/util'
-import { TaxYear, TaxYears } from 'ustaxes/data'
+import { TaxYear, TaxYears } from 'ustaxes/core/data'
 import DomMethods from './DomMethods'
 
 export default class YearStatusBarMethods extends DomMethods {
@@ -18,13 +18,10 @@ export default class YearStatusBarMethods extends DomMethods {
     userEvent.click(this.yearDropdownButton()!)
   }
 
-  yearSelect = (): HTMLSelectElement =>
-    within(this.dom()).getByRole('combobox') as HTMLSelectElement
+  yearSelect = (): HTMLSelectElement => within(this.dom()).getByRole('combobox')
 
   year = (): HTMLInputElement | null =>
-    within(this.dom()).queryByLabelText(
-      'Select Tax Year'
-    ) as HTMLInputElement | null
+    within(this.dom()).queryByLabelText('Select Tax Year')
 
   yearValue = (): TaxYear | undefined => {
     const y = this.year()
@@ -43,7 +40,7 @@ export default class YearStatusBarMethods extends DomMethods {
   yearSelectConfirm = (): HTMLButtonElement | null =>
     within(this.dom()).queryByRole('button', {
       name: /Update/
-    }) as HTMLButtonElement | null
+    })
 
   getOption = (y: TaxYear): HTMLOptionElement | null =>
     (within(this.dom())
@@ -54,7 +51,7 @@ export default class YearStatusBarMethods extends DomMethods {
 
   setYear = async (y: TaxYear): Promise<void> => {
     this.openDropdown()
-    await waitFor(async () => {
+    await waitFor(() => {
       expect(this.yearSelectConfirm()).toBeInTheDocument()
     })
 

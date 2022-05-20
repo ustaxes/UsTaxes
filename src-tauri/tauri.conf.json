@@ -21,16 +21,14 @@
       "shortDescription": "",
       "longDescription": "",
       "deb": {
-        "depends": [],
-        "useBootstrapper": false
+        "depends": []
       },
       "macOS": {
         "frameworks": [],
         "exceptionDomain": "",
         "signingIdentity": null,
         "entitlements": null,
-        "minimumSystemVersion": "",
-        "useBootstrapper": false
+        "minimumSystemVersion": ""
       },
       "windows": {
         "certificateThumbprint": null,

@@ -2,33 +2,6 @@
 
 Thank you for your interest in this project. The below should summarize the general design framework used in this project, and hopefully guide you in understanding the code and getting ready to contribute to the project. If anything at all is unclear please join the discord linked on the readme and feel free to ask any questions you might have.
 
-## Stack and developer requirements
-
-This project uses TypeScript and is built with [NPM 8][npm-install].
-
-## Desktop application requirements
-
-The desktop application is built with [Tauri][tauri-root], see [this reference for setting up your environment for Tauri](https://tauri.studio/en/docs/getting-started/intro/#setting-up-your-environment). While this project does not have any significant rust code yet, this may be built out in the future. Running the application as a desktop app requires [Rust][rust-root] installed.
-
-Specific architecture setup requirements we have run into are:
-
-### Windows
-
-For Windows users, please install [Microsoft Edge WebView2][webview2] before running the desktop application.
-
-### Linux
-
-Running the desktop version requires at least the following to be installed:
-
-```
-libssl-dev
-libgtk3-dev
-libgtk-3-dev
-libsoup2.4-dev
-webkit2gtk-driver
-libwebkit2gtk-4.0-dev
-```
-
 ## Project design
 
 There are four main concerns separated in this project:

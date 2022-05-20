@@ -1,10 +1,4 @@
-import {
-  FilingStatus,
-  Income1099Type,
-  Information,
-  StateQuestionTagName,
-  ValueTag
-} from '.'
+import { FilingStatus, Information, StateQuestionTagName, ValueTag } from '.'
 
 export interface StateQuestion {
   text: string
@@ -25,14 +19,14 @@ function q(
   return { text, description, tag, required, valueTag }
 }
 
-function qr(
-  tag: StateQuestionTagName,
-  text: string,
-  description: string,
-  valueTag: ValueTag = 'boolean'
-): StateQuestion {
-  return { text, description, tag, valueTag }
-}
+// function qr(
+//   tag: StateQuestionTagName,
+//   text: string,
+//   description: string,
+//   valueTag: ValueTag = 'boolean'
+// ): StateQuestion {
+//   return { text, description, tag, valueTag }
+// }
 
 function escapeHtmlTags(str: string): string {
   return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')

@@ -1,5 +1,7 @@
 import { ReactElement } from 'react'
 import { Helmet } from 'react-helmet'
+import { Link } from 'react-router-dom'
+import Alert from '@material-ui/lab/Alert'
 import { useForm, FormProvider } from 'react-hook-form'
 import { Icon, Grid } from '@material-ui/core'
 import { useDispatch, useSelector, TaxesState } from 'ustaxes/redux'
@@ -17,10 +19,12 @@ import {
   Currency,
   formatSSID,
   GenericLabeledDropdown,
-  LabeledInput
+  LabeledInput,
+  boxLabel
 } from 'ustaxes/components/input'
 import { Patterns } from 'ustaxes/components/Patterns'
 import { FormListContainer } from 'ustaxes/components/FormContainer'
+import { intentionallyFloat } from 'ustaxes/core/util'
 
 const showIncome = (a: Supported1099): ReactElement => {
   switch (a.type) {
@@ -85,7 +89,8 @@ interface F1099UserInput {
   // Div fields
   dividends: string | number
   qualifiedDividends: string | number
-  personRole: PersonRole.PRIMARY | PersonRole.SPOUSE
+  totalCapitalGainsDistributions: string | number
+  personRole?: PersonRole.PRIMARY | PersonRole.SPOUSE
   // R fields
   grossDistribution: string | number
   taxableAmount: string | number
@@ -100,7 +105,6 @@ interface F1099UserInput {
 const blankUserInput: F1099UserInput = {
   formType: undefined,
   payer: '',
-  personRole: PersonRole.PRIMARY,
   interest: '',
   // B Fields
   shortTermProceeds: '',
@@ -110,11 +114,12 @@ const blankUserInput: F1099UserInput = {
   // Div fields
   dividends: '',
   qualifiedDividends: '',
+  totalCapitalGainsDistributions: '',
   // R fields
   grossDistribution: '',
   taxableAmount: '',
   federalIncomeTaxWithheld: '',
-  RPlanType: PlanType1099.IRA,
+  RPlanType: PlanType1099.Pension,
   // SSA fields
   // benefitsPaid: '',
   // benefitsRepaid: '',
@@ -155,7 +160,7 @@ const toF1099 = (input: F1099UserInput): Supported1099 | undefined => {
     case Income1099Type.INT: {
       return {
         payer: input.payer,
-        personRole: input.personRole,
+        personRole: input.personRole ?? PersonRole.PRIMARY,
         type: input.formType,
         form: {
           income: Number(input.interest)
@@ -165,7 +170,7 @@ const toF1099 = (input: F1099UserInput): Supported1099 | undefined => {
     case Income1099Type.B: {
       return {
         payer: input.payer,
-        personRole: input.personRole,
+        personRole: input.personRole ?? PersonRole.PRIMARY,
         type: input.formType,
         form: {
           shortTermCostBasis: Number(input.shortTermCostBasis),
@@ -178,32 +183,34 @@ const toF1099 = (input: F1099UserInput): Supported1099 | undefined => {
     case Income1099Type.DIV: {
       return {
         payer: input.payer,
-        personRole: input.personRole,
+        personRole: input.personRole ?? PersonRole.PRIMARY,
         type: input.formType,
         form: {
           dividends: Number(input.dividends),
-          qualifiedDividends: Number(input.qualifiedDividends)
+          qualifiedDividends: Number(input.qualifiedDividends),
+          totalCapitalGainsDistributions: Number(
+            input.totalCapitalGainsDistributions
+          )
         }
       }
     }
     case Income1099Type.R: {
       return {
         payer: input.payer,
-        personRole: input.personRole,
+        personRole: input.personRole ?? PersonRole.PRIMARY,
         type: input.formType,
         form: {
           grossDistribution: Number(input.grossDistribution),
           taxableAmount: Number(input.taxableAmount),
           federalIncomeTaxWithheld: Number(input.federalIncomeTaxWithheld),
-          planType:
-            input.RPlanType == 'IRA' ? PlanType1099.IRA : PlanType1099.Pension
+          planType: PlanType1099.Pension
         }
       }
     }
     case Income1099Type.SSA: {
       return {
         payer: input.payer,
-        personRole: input.personRole,
+        personRole: input.personRole ?? PersonRole.PRIMARY,
         type: input.formType,
         form: {
           // benefitsPaid: Number(input.benefitsPaid),
@@ -219,7 +226,9 @@ const toF1099 = (input: F1099UserInput): Supported1099 | undefined => {
 export default function F1099Info(): ReactElement {
   const f1099s = useSelector((state: TaxesState) => state.information.f1099s)
 
-  const methods = useForm<F1099UserInput>()
+  const defaultValues = blankUserInput
+
+  const methods = useForm<F1099UserInput>({ defaultValues })
   const { handleSubmit, watch } = methods
   const selectedType: Income1099Type | undefined = watch('formType')
 
@@ -244,8 +253,8 @@ export default function F1099Info(): ReactElement {
     }
 
   const people: Person[] = useSelector((state: TaxesState) => [
-    state.information.taxPayer?.primaryPerson,
-    state.information.taxPayer?.spouse
+    state.information.taxPayer.primaryPerson,
+    state.information.taxPayer.spouse
   ])
     .filter((p) => p !== undefined)
     .map((p) => p as Person)
@@ -302,48 +311,46 @@ export default function F1099Info(): ReactElement {
   const divFields = (
     <Grid container spacing={2}>
       <LabeledInput
-        label="Total Dividends"
+        label={boxLabel('1a', 'Total Dividends')}
         patternConfig={Patterns.currency}
         name="dividends"
       />
       <LabeledInput
-        label="Qualified Dividends"
+        label={boxLabel('1b', 'Qualified Dividends')}
         patternConfig={Patterns.currency}
         name="qualifiedDividends"
+      />
+      <LabeledInput
+        label={boxLabel('2a', 'Total capital gains distributions')}
+        patternConfig={Patterns.currency}
+        name="totalCapitalGainsDistributions"
       />
     </Grid>
   )
 
   const rFields = (
     <Grid container spacing={2}>
+      <Alert severity="warning">
+        Use this form only for 1099-R forms related to your 401(k) or other
+        retirement plans. If you have 1099-R forms from IRA accounts please see
+        the <Link to="/savingsaccounts/ira">IRA page</Link>
+      </Alert>
       <LabeledInput
-        label={
-          <>
-            <strong>Box 1</strong> - Gross Distribution
-          </>
-        }
+        label={boxLabel('1', 'Gross Distribution')}
         patternConfig={Patterns.currency}
         name="grossDistribution"
       />
       <LabeledInput
-        label={
-          <>
-            <strong>Box 2a</strong> - Taxable Amount
-          </>
-        }
+        label={boxLabel('2a', 'Taxable Amount')}
         patternConfig={Patterns.currency}
         name="taxableAmount"
       />
       <LabeledInput
-        label={
-          <>
-            <strong>Box 4</strong> - Federal Income Tax Withheld
-          </>
-        }
+        label={boxLabel('4', 'Federal Income Tax Withheld')}
         patternConfig={Patterns.currency}
         name="federalIncomeTaxWithheld"
       />
-      <GenericLabeledDropdown<PlanType1099>
+      <GenericLabeledDropdown<PlanType1099, F1099UserInput>
         label="Type of 1099-R"
         dropDownData={Object.values(PlanType1099)}
         valueMapping={(x) => x}
@@ -405,6 +412,7 @@ export default function F1099Info(): ReactElement {
 
   const form: ReactElement | undefined = (
     <FormListContainer
+      defaultValues={defaultValues}
       onSubmitAdd={onSubmitAdd}
       onSubmitEdit={onSubmitEdit}
       items={f1099s.map((a) => toUserInput(a))}
@@ -440,7 +448,7 @@ export default function F1099Info(): ReactElement {
 
         <LabeledInput
           label="Enter name of bank, broker firm, or other payer"
-          patternConfig={Patterns.name}
+          required={true}
           name="payer"
         />
       </Grid>
@@ -464,7 +472,10 @@ export default function F1099Info(): ReactElement {
 
   return (
     <FormProvider {...methods}>
-      <form tabIndex={-1} onSubmit={handleSubmit(onAdvance)}>
+      <form
+        tabIndex={-1}
+        onSubmit={intentionallyFloat(handleSubmit(onAdvance))}
+      >
         <Helmet>
           <title>1099 Information | Income | UsTaxes.org</title>
         </Helmet>

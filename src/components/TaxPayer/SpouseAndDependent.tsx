@@ -32,22 +32,26 @@ import { usePager } from 'ustaxes/components/pager'
 import { Box, Grid } from '@material-ui/core'
 import { Person } from '@material-ui/icons'
 import { Alert } from '@material-ui/lab'
+import { intentionallyFloat } from 'ustaxes/core/util'
 
 interface UserPersonForm {
   firstName: string
   lastName: string
   ssid: string
+  isBlind: boolean
+  dateOfBirth?: Date
 }
 
 const blankUserPersonForm: UserPersonForm = {
   firstName: '',
   lastName: '',
-  ssid: ''
+  ssid: '',
+  isBlind: false,
+  dateOfBirth: undefined
 }
 
 interface UserDependentForm extends UserPersonForm {
   relationship: string
-  birthYear: string
   isStudent: boolean
   numberOfMonths: string
 }
@@ -55,33 +59,35 @@ interface UserDependentForm extends UserPersonForm {
 const blankUserDependentForm: UserDependentForm = {
   ...blankUserPersonForm,
   relationship: '',
-  birthYear: '',
   isStudent: false,
   numberOfMonths: ''
 }
 
-const toDependent = (formData: UserDependentForm): Dependent => {
-  const { birthYear, isStudent, numberOfMonths, ...rest } = formData
+const toDependent = (formData: UserDependentForm): Dependent<string> => {
+  const { isStudent, numberOfMonths, ...rest } = formData
+  if (formData.dateOfBirth === undefined) {
+    throw new Error('Called with undefined date of birth')
+  }
 
   return {
     ...rest,
     role: PersonRole.DEPENDENT,
     qualifyingInfo: {
-      birthYear: parseInt(birthYear),
       numberOfMonths: parseInt(numberOfMonths),
       isStudent
-    }
+    },
+    dateOfBirth: formData.dateOfBirth.toISOString()
   }
 }
 
 const toDependentForm = (dependent: Dependent): UserDependentForm => {
-  const { qualifyingInfo, ...rest } = dependent
+  const { qualifyingInfo, dateOfBirth, ...rest } = dependent
 
   return {
     ...rest,
-    birthYear: qualifyingInfo?.birthYear.toString() ?? '',
     numberOfMonths: qualifyingInfo?.numberOfMonths.toString() ?? '',
-    isStudent: qualifyingInfo?.isStudent ?? false
+    isStudent: qualifyingInfo?.isStudent ?? false,
+    dateOfBirth
   }
 }
 
@@ -94,24 +100,34 @@ const blankUserSpouseForm = {
   isTaxpayerDependent: false
 }
 
-const toSpouse = (formData: UserSpouseForm): Spouse => ({
-  ...formData,
-  role: PersonRole.SPOUSE
-})
+const toSpouse = (formData: UserSpouseForm): Spouse<string> => {
+  if (formData.dateOfBirth === undefined) {
+    throw new Error('Called with undefined date of birth')
+  }
+
+  return {
+    ...formData,
+    role: PersonRole.SPOUSE,
+    dateOfBirth: formData.dateOfBirth.toISOString()
+  }
+}
 
 const toSpouseForm = (spouse: Spouse): UserSpouseForm => ({
-  ...spouse
+  ...spouse,
+  dateOfBirth: new Date(spouse.dateOfBirth)
 })
 
 export const AddDependentForm = (): ReactElement => {
   const dependents = useSelector(
-    (state: TaxesState) => state.information.taxPayer?.dependents ?? []
+    (state: TaxesState) => state.information.taxPayer.dependents
   )
+
+  const defaultValues = blankUserDependentForm
 
   const dispatch = useDispatch()
 
   const methods = useForm<UserDependentForm>({
-    defaultValues: blankUserDependentForm
+    defaultValues
   })
 
   const onSubmitAdd = (formData: UserDependentForm): void => {
@@ -121,11 +137,17 @@ export const AddDependentForm = (): ReactElement => {
   const onSubmitEdit =
     (index: number) =>
     (formData: UserDependentForm): void => {
-      dispatch(editDependent({ index, value: toDependent(formData) }))
+      dispatch(
+        editDependent({
+          index,
+          value: toDependent(formData)
+        })
+      )
     }
 
   const page = (
     <FormListContainer<UserDependentForm>
+      defaultValues={defaultValues}
       onSubmitAdd={onSubmitAdd}
       onSubmitEdit={onSubmitEdit}
       items={dependents.map((a) => toDependentForm(a))}
@@ -140,11 +162,6 @@ export const AddDependentForm = (): ReactElement => {
           label="Relationship to Taxpayer"
           name="relationship"
           patternConfig={Patterns.name}
-        />
-        <LabeledInput
-          label="Birth Year"
-          patternConfig={Patterns.year}
-          name="birthYear"
         />
         <LabeledInput
           label="How many months did you live together this year?"
@@ -163,14 +180,15 @@ export const AddDependentForm = (): ReactElement => {
 }
 
 export const SpouseInfo = (): ReactElement => {
+  const defaultValues = blankUserSpouseForm
   const methods = useForm<UserSpouseForm>({
-    defaultValues: blankUserSpouseForm
+    defaultValues
   })
   const { getValues } = methods
   const dispatch = useDispatch()
 
   const spouse: Spouse | undefined = useSelector((state: TaxesState) => {
-    return state.information.taxPayer?.spouse
+    return state.information.taxPayer.spouse
   })
 
   const onSubmit = (): void => {
@@ -181,6 +199,7 @@ export const SpouseInfo = (): ReactElement => {
 
   const page = (
     <FormListContainer
+      defaultValues={defaultValues}
       items={spouse !== undefined ? [toSpouseForm(spouse)] : []}
       primary={(s) => `${s.firstName} ${s.lastName}`}
       secondary={(s) => formatSSID(s.ssid)}
@@ -277,9 +296,9 @@ export const FilingStatusDropdown = (): ReactElement => {
 
   return (
     <FormProvider {...methods}>
-      <form tabIndex={-1} onSubmit={handleSubmit(onSubmit)}>
+      <form tabIndex={-1} onSubmit={intentionallyFloat(handleSubmit(onSubmit))}>
         <Box marginBottom={2}>
-          <GenericLabeledDropdown<FilingStatus>
+          <GenericLabeledDropdown<FilingStatus, { filingStatus: FilingStatus }>
             label="Filing Status"
             dropDownData={allowedFilingStatuses}
             valueMapping={(x) => x}

@@ -1,14 +1,13 @@
 import { ReactElement } from 'react'
 import { useSelector } from 'react-redux'
 import { YearsTaxesState } from 'ustaxes/redux'
-import { Information } from 'ustaxes/core/data'
+import { Information, TaxYears } from 'ustaxes/core/data'
 import _ from 'lodash'
 import { enumKeys } from 'ustaxes/core/util'
 import { useDispatch } from 'ustaxes/redux'
 import { setInfo } from 'ustaxes/redux/actions'
 import { Button } from '@material-ui/core'
 import { Alert } from '@material-ui/lab'
-import { TaxYears } from 'ustaxes/data'
 
 const DataPropagator = (): ReactElement => {
   const wholeState = useSelector((state: YearsTaxesState) => state)
@@ -21,8 +20,8 @@ const DataPropagator = (): ReactElement => {
 
   const canPropagate =
     yearIndex > 0 &&
-    currentYear?.taxPayer?.primaryPerson?.firstName === undefined &&
-    priorYear?.taxPayer?.primaryPerson?.firstName !== undefined
+    currentYear.taxPayer.primaryPerson?.firstName === undefined &&
+    priorYear.taxPayer.primaryPerson?.firstName !== undefined
 
   const onClick = () => {
     if (canPropagate) {

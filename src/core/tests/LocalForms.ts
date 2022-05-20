@@ -5,7 +5,7 @@ import {
 } from 'ustaxes/core/pdfFiller/pdfHandler'
 import fs from 'fs/promises'
 import path from 'path'
-import { TaxYear } from 'ustaxes/data'
+import { TaxYear } from 'ustaxes/core/data'
 
 const localPath = (url: string) => path.join(__dirname, '../../../public', url)
 

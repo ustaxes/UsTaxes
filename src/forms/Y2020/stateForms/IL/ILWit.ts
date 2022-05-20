@@ -1,8 +1,9 @@
 import Form, { FormMethods } from 'ustaxes/core/stateForms/Form'
 import F1040 from '../../irsForms/F1040'
 import { Field } from 'ustaxes/core/pdfFiller'
-import { IncomeW2, Information, PersonRole, State } from 'ustaxes/core/data'
+import { IncomeW2, PersonRole, PrimaryPerson, State } from 'ustaxes/core/data'
 import _ from 'lodash'
+import { ValidatedInformation } from 'ustaxes/forms/F1040Base'
 
 type FormType =
   | 'W' // W-2
@@ -35,7 +36,7 @@ const toWithholdingForm = (w2: IncomeW2): WithholdingForm | undefined => {
   ) {
     return {
       formType: 'W',
-      ein: w2.employer?.EIN ?? '',
+      ein: w2.employer.EIN,
       federalWages: w2.income,
       ilWages: w2.stateWages,
       ilTax: w2.stateWithholding,
@@ -50,7 +51,7 @@ const toWithholdingForm = (w2: IncomeW2): WithholdingForm | undefined => {
  * TODO: support more than 5 for each
  */
 export class ILWIT extends Form {
-  info: Information
+  info: ValidatedInformation
   f1040: F1040
   formName = 'IL-WIT'
   state: State = 'IL'
@@ -60,12 +61,16 @@ export class ILWIT extends Form {
 
   static WITHHOLDING_FORMS_PER_PAGE = 5
 
-  constructor(info: Information, f1040: F1040, subFormIndex = 0) {
+  constructor(f1040: F1040, subFormIndex = 0) {
     super()
-    this.info = info
+    this.info = f1040.info
     this.f1040 = f1040
     this.methods = new FormMethods(this)
     this.formIndex = subFormIndex
+  }
+
+  get primary(): PrimaryPerson | undefined {
+    return this.info.taxPayer.primaryPerson
   }
 
   attachments = (): Form[] => {
@@ -89,7 +94,7 @@ export class ILWIT extends Form {
 
       return Array(copiesNeeded)
         .fill(undefined)
-        .map((x, i) => new ILWIT(this.info, this.f1040, i + 1))
+        .map((x, i) => new ILWIT(this.f1040, i + 1))
     }
 
     return []
@@ -125,10 +130,8 @@ export class ILWIT extends Form {
   /**
    * Index 3: Your name
    */
-  Yourname = (): string | undefined => {
-    const person = this.info.taxPayer.primaryPerson
-    return `${person?.firstName} ${person?.lastName}`
-  }
+  Yourname = (): string | undefined =>
+    [this.primary?.firstName, this.primary?.lastName].flat().join(' ')
 
   f3 = (): string | undefined => this.Yourname()
 
@@ -136,7 +139,7 @@ export class ILWIT extends Form {
    * Index 4: Your SSN-3
    */
   YourSSN3 = (): string | undefined =>
-    this.info.taxPayer.primaryPerson?.ssid.slice(0, 3)
+    this.info.taxPayer.primaryPerson.ssid.slice(0, 3)
 
   f4 = (): string | undefined => this.YourSSN3()
 
@@ -144,7 +147,7 @@ export class ILWIT extends Form {
    * Index 5: Your SSN-2
    */
   YourSSN2 = (): string | undefined =>
-    this.info.taxPayer.primaryPerson?.ssid.slice(3, 5)
+    this.info.taxPayer.primaryPerson.ssid.slice(3, 5)
 
   f5 = (): string | undefined => this.YourSSN2()
 
@@ -152,7 +155,7 @@ export class ILWIT extends Form {
    * Index 6: Your SSN-4
    */
   YourSSN4 = (): string | undefined =>
-    this.info.taxPayer.primaryPerson?.ssid.slice(5)
+    this.info.taxPayer.primaryPerson.ssid.slice(5)
 
   f6 = (): string | undefined => this.YourSSN4()
 
@@ -189,7 +192,7 @@ export class ILWIT extends Form {
       forms.map((form) => form.ilTax)
     ].flatMap((column) => [
       ...column,
-      ...Array(5 - column.length).fill(undefined)
+      ...Array<undefined>(5 - column.length).fill(undefined)
     ])
 
   /**
@@ -258,7 +261,7 @@ export class ILWIT extends Form {
 
   formTypesColumn = (forms: WithholdingForm[]): (string | undefined)[] => [
     ...forms.map((f) => f.formType),
-    ...Array(5 - forms.length).fill(undefined)
+    ...Array<undefined>(5 - forms.length).fill(undefined)
   ]
 
   f52to56 = (): (string | undefined)[] =>
@@ -275,7 +278,7 @@ export class ILWIT extends Form {
    * There's a second field in the Column A column,
    * purpose not clear.
    */
-  f62to71 = (): undefined[] => Array(10).fill(undefined)
+  f62to71 = (): undefined[] => Array<undefined>(10).fill(undefined)
 
   fields = (): Field[] => [
     this.f0(),
@@ -298,7 +301,6 @@ export class ILWIT extends Form {
   ]
 }
 
-const makeILWIT = (info: Information, f1040: F1040): ILWIT =>
-  new ILWIT(info, f1040)
+const makeILWIT = (f1040: F1040): ILWIT => new ILWIT(f1040)
 
 export default makeILWIT

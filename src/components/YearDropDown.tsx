@@ -4,9 +4,9 @@ import { FormProvider, useForm } from 'react-hook-form'
 import { useSelector } from 'react-redux'
 import { setActiveYear } from 'ustaxes/redux/actions'
 import { YearsTaxesState, useDispatch } from 'ustaxes/redux'
-import { enumKeys } from 'ustaxes/core/util'
+import { enumKeys, intentionallyFloat } from 'ustaxes/core/util'
 import { GenericLabeledDropdown } from './input'
-import { TaxYear, TaxYears } from 'ustaxes/data'
+import { TaxYear, TaxYears } from 'ustaxes/core/data'
 
 interface YearForm {
   year: TaxYear
@@ -42,7 +42,7 @@ const YearDropDown = (props: YearDropProps): ReactElement => {
   return (
     <FormProvider {...methods}>
       <Grid container spacing={1} alignItems="center">
-        <GenericLabeledDropdown<TaxYear>
+        <GenericLabeledDropdown<TaxYear, YearForm>
           dropDownData={enumKeys(TaxYears)}
           name="year"
           label="Select Tax Year"
@@ -55,7 +55,7 @@ const YearDropDown = (props: YearDropProps): ReactElement => {
           <Button
             variant="contained"
             color={dirty ? 'primary' : 'secondary'}
-            onClick={() => handleSubmit(onSubmit)()}
+            onClick={intentionallyFloat(handleSubmit(onSubmit))}
           >
             Update
           </Button>

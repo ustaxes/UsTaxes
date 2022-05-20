@@ -53,7 +53,7 @@ describe('CreatePDF Page', () => {
 
     await waitFor(() =>
       expect(
-        page.rendered().queryByText('No data entered yet')
+        page.rendered().queryByText(F1040Error.filingStatusUndefined)
       ).toBeInTheDocument()
     )
 
@@ -64,13 +64,15 @@ describe('CreatePDF Page', () => {
     const information = arbitraries.forYear(2020).information()
     await fc.assert(
       fc.asyncProperty(information, async (info) => {
-        info.taxPayer.filingStatus = undefined
+        const newInfo: Information = info
+        newInfo.taxPayer.filingStatus = undefined
+        const page = taxpayerComponent(newInfo)
 
-        const page = taxpayerComponent(info)
-
-        await waitFor(async () =>
+        await waitFor(() =>
           expect(
-            page.rendered().queryByText(F1040Error.filingStatusUndefined)
+            page
+              .rendered()
+              .queryByText(F1040Error.filingStatusRequirementsNotMet)
           ).toBeInTheDocument()
         )
 

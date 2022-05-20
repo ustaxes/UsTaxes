@@ -2,9 +2,8 @@ import * as fc from 'fast-check'
 import * as util from 'ustaxes/core/util'
 import * as arbitraries from 'ustaxes/core/tests/arbitraries'
 import { YearsTaxesState } from 'ustaxes/redux'
-import { TaxYear, TaxYears } from 'ustaxes/data'
 import prand from 'pure-rand'
-import { Asset, AssetType } from 'ustaxes/core/data'
+import { Asset, AssetType, TaxYear, TaxYears } from 'ustaxes/core/data'
 
 export const taxYear: fc.Arbitrary<TaxYear> = fc.constantFrom(
   ...util.enumKeys(TaxYears)
@@ -38,19 +37,34 @@ export const positionDate: fc.Arbitrary<Asset<Date>> = fc
         fc.nat(),
         fc.nat(),
         fc.nat(),
+        fc.nat(),
+        fc.nat(),
         arbitraries.state
       )
-      .map(([name, giftedDate, openPrice, closePrice, quantity, state]) => ({
-        name,
-        openDate,
-        closeDate,
-        giftedDate: closeDate === undefined ? giftedDate : undefined,
-        openPrice,
-        closePrice,
-        positionType,
-        quantity: positionType === 'Real Estate' ? 1 : quantity,
-        state
-      }))
+      .map(
+        ([
+          name,
+          giftedDate,
+          openPrice,
+          closePrice,
+          quantity,
+          openFee,
+          closeFee,
+          state
+        ]) => ({
+          name,
+          openDate,
+          closeDate,
+          giftedDate: closeDate === undefined ? giftedDate : undefined,
+          openPrice,
+          closePrice,
+          openFee,
+          closeFee: closeDate === undefined ? undefined : closeFee,
+          positionType,
+          quantity: positionType === 'Real Estate' ? 1 : quantity,
+          state
+        })
+      )
   )
 
 export const position: fc.Arbitrary<Asset<string>> = positionDate.map((p) => ({

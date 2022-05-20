@@ -17,9 +17,12 @@ afterEach(async () => {
 })
 
 jest.mock('redux-persist', () => {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const real = jest.requireActual('redux-persist')
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
   return {
     ...real,
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     persistReducer: jest.fn().mockImplementation((config, reducers) => reducers)
   }
 })
@@ -65,7 +68,7 @@ describe('Questions', () => {
 
     await waitFor(() => {})
     expect(
-      new TaxesStateMethods(store.getState()).info()?.questions.CRYPTO
+      new TaxesStateMethods(store.getState()).info().questions.CRYPTO
     ).toEqual(true)
   })
 })

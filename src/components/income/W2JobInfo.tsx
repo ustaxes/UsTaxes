@@ -44,6 +44,7 @@ interface IncomeW2UserInput {
   income: string
   medicareIncome: string
   fedWithholding: string
+  ssWages: string
   ssWithholding: string
   medicareWithholding: string
   personRole?: PersonRole.PRIMARY | PersonRole.SPOUSE
@@ -61,6 +62,7 @@ const blankW2UserInput: IncomeW2UserInput = {
   income: '',
   medicareIncome: '',
   fedWithholding: '',
+  ssWages: '',
   ssWithholding: '',
   medicareWithholding: '',
   stateWages: '',
@@ -76,6 +78,7 @@ const toIncomeW2 = (formData: IncomeW2UserInput): IncomeW2 => ({
   income: parseFormNumberOrThrow(formData.income),
   medicareIncome: parseFormNumberOrThrow(formData.medicareIncome),
   fedWithholding: parseFormNumberOrThrow(formData.fedWithholding),
+  ssWages: parseFormNumberOrThrow(formData.ssWages),
   ssWithholding: parseFormNumberOrThrow(formData.ssWithholding),
   medicareWithholding: parseFormNumberOrThrow(formData.medicareWithholding),
   state: formData.state,
@@ -91,6 +94,7 @@ const toIncomeW2UserInput = (data: IncomeW2): IncomeW2UserInput => ({
   income: data.income.toString(),
   medicareIncome: data.medicareIncome.toString(),
   fedWithholding: data.fedWithholding.toString(),
+  ssWages: data.ssWages.toString(),
   ssWithholding: data.ssWithholding.toString(),
   medicareWithholding: data.medicareWithholding.toString(),
   state: data.state,
@@ -161,9 +165,9 @@ const Box12Data = (): ReactElement => {
 
 export default function W2JobInfo(): ReactElement {
   const dispatch = useDispatch()
-
+  const defaultValues = blankW2UserInput
   const methods = useForm<IncomeW2UserInput>({
-    defaultValues: blankW2UserInput
+    defaultValues
   })
 
   const { navButtons, onAdvance } = usePager()
@@ -172,9 +176,9 @@ export default function W2JobInfo(): ReactElement {
     (state: TaxesState) => state.information
   )
 
-  const spouse: Spouse | undefined = information.taxPayer?.spouse
+  const spouse: Spouse | undefined = information.taxPayer.spouse
 
-  const primary: PrimaryPerson | undefined = information.taxPayer?.primaryPerson
+  const primary: PrimaryPerson | undefined = information.taxPayer.primaryPerson
 
   const filingStatus: FilingStatus | undefined =
     information.taxPayer.filingStatus
@@ -199,6 +203,7 @@ export default function W2JobInfo(): ReactElement {
 
   const w2sBlock = (
     <FormListContainer<IncomeW2UserInput>
+      defaultValues={defaultValues}
       items={w2s.map((a) => toIncomeW2UserInput(a))}
       onSubmitAdd={onSubmitAdd}
       onSubmitEdit={onSubmitEdit}
@@ -247,6 +252,12 @@ export default function W2JobInfo(): ReactElement {
         <LabeledInput
           name="fedWithholding"
           label={boxLabel('2', 'Federal income tax withheld')}
+          patternConfig={Patterns.currency}
+          sizes={{ xs: 12, lg: 6 }}
+        />
+        <LabeledInput
+          name="ssWages"
+          label={boxLabel('3', 'Social security wages')}
           patternConfig={Patterns.currency}
           sizes={{ xs: 12, lg: 6 }}
         />

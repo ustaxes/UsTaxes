@@ -13,6 +13,7 @@ import { Alert } from '@material-ui/lab'
 import { PersonFields } from '../../TaxPayer/PersonFields'
 import AddressFields from '../../TaxPayer/Address'
 import { usePager } from 'ustaxes/components/pager'
+import { intentionallyFloat } from 'ustaxes/core/util'
 
 import {
   formatSSID,
@@ -65,8 +66,8 @@ const toOR40WFHDCDependent = (
   userExpense: Number(formData.userExpense),
   otherExpense: Number(formData.otherExpense),
   personRelation: formData.personRelation,
-  isDisabled: formData.isDisabled ?? false,
-  isChild13: formData.isChild13 ?? false
+  isDisabled: formData.isDisabled,
+  isChild13: formData.isChild13
 })
 
 const toOR40WFHDCDependentInput = (
@@ -78,8 +79,8 @@ const toOR40WFHDCDependentInput = (
   userExpense: data.userExpense.toString(),
   otherExpense: data.otherExpense.toString(),
   personRelation: data.personRelation,
-  isDisabled: data.isDisabled ?? false,
-  isChild13: data.isChild13 ?? false
+  isDisabled: data.isDisabled,
+  isChild13: data.isChild13
 })
 
 export const QualifyingIndividual = (): ReactElement => {
@@ -92,8 +93,8 @@ export const QualifyingIndividual = (): ReactElement => {
   )
 
   const people: Person[] = [
-    information.taxPayer?.spouse,
-    ...(information.taxPayer?.dependents).map((x) => {
+    information.taxPayer.spouse,
+    ...information.taxPayer.dependents.map((x) => {
       x.role = PersonRole.DEPENDENT
       return x
     })
@@ -107,8 +108,10 @@ export const QualifyingIndividual = (): ReactElement => {
     })
   })
 
+  const defaultValues = blankUserInputDependent
+
   const methods = useForm<OR40WFHDCDependentUserInput>({
-    defaultValues: blankUserInputDependent
+    defaultValues
   })
 
   const { watch } = methods
@@ -161,7 +164,7 @@ export const QualifyingIndividual = (): ReactElement => {
 
   const onSubmit = (formData: OR40WFHDCDependentUserInput): void => {
     const payload = toOR40WFHDCDependent(formData)
-    if (payload !== undefined && error === undefined) {
+    if (error === undefined) {
       setWfhdcDependent((prevWfhdc) => [...prevWfhdc, payload])
     }
   }
@@ -170,7 +173,7 @@ export const QualifyingIndividual = (): ReactElement => {
     (index: number) =>
     (formData: OR40WFHDCDependentUserInput): void => {
       const payload = toOR40WFHDCDependent(formData)
-      if (payload !== undefined && error === undefined) {
+      if (error === undefined) {
         setWfhdcDependent((prevWfhdc) => {
           const newArray = [...prevWfhdc]
           newArray[index] = payload
@@ -207,6 +210,7 @@ export const QualifyingIndividual = (): ReactElement => {
 
   const page = (
     <FormListContainer<OR40WFHDCDependentUserInput>
+      defaultValues={defaultValues}
       onSubmitAdd={onSubmit}
       onSubmitEdit={onSubmitEdit}
       removeItem={(i) => removeField(i)}
@@ -236,7 +240,7 @@ export const QualifyingIndividual = (): ReactElement => {
             `${p.firstName} ${p.lastName} ${formatSSID(p.ssid)}`
           }
         />
-        {selectedIndex !== undefined && selectedIndex !== ''
+        {selectedIndex !== ''
           ? specificFields[
               people.find((x) => x.ssid === selectedIndex)?.role as
                 | PersonRole.SPOUSE
@@ -287,7 +291,9 @@ const blankUserInputProvider: OR40WFHDCProviderUserInput = {
     state: undefined,
     zip: undefined
   },
-  relationshipCode: ''
+  relationshipCode: '',
+  isBlind: false,
+  dateOfBirth: new Date(0, 0, 0)
 }
 
 const toOR40WFHDCProvider = (
@@ -325,28 +331,26 @@ const toOR40WFHDCProviderInput = (
 export const Provider = (): ReactElement => {
   const [wfhdcProvider, setWfhdcProvider] = useState<OR40WFHDCProvider[]>([])
 
+  const defaultValues = blankUserInputProvider
+
   const methods = useForm<OR40WFHDCProviderUserInput>({
-    defaultValues: blankUserInputProvider
+    defaultValues
   })
 
   const onSubmit = (formData: OR40WFHDCProviderUserInput): void => {
     const payload = toOR40WFHDCProvider(formData)
-    if (payload !== undefined) {
-      setWfhdcProvider((prevWfhdc) => [...prevWfhdc, payload])
-    }
+    setWfhdcProvider((prevWfhdc) => [...prevWfhdc, payload])
   }
 
   const onSubmitEdit =
     (index: number) =>
     (formData: OR40WFHDCProviderUserInput): void => {
       const payload = toOR40WFHDCProvider(formData)
-      if (payload !== undefined) {
-        setWfhdcProvider((prevWfhdc) => {
-          const newArray = [...prevWfhdc]
-          newArray[index] = payload
-          return newArray
-        })
-      }
+      setWfhdcProvider((prevWfhdc) => {
+        const newArray = [...prevWfhdc]
+        newArray[index] = payload
+        return newArray
+      })
     }
 
   const removeField = (index: number) => {
@@ -406,6 +410,7 @@ export const Provider = (): ReactElement => {
 
   const page = (
     <FormListContainer<OR40WFHDCProviderUserInput>
+      defaultValues={defaultValues}
       items={wfhdcProvider.map((a) => toOR40WFHDCProviderInput(a))}
       icon={() => <PersonIcon />}
       onSubmitAdd={onSubmit}
@@ -413,7 +418,9 @@ export const Provider = (): ReactElement => {
       removeItem={(i) => removeField(i)}
       primary={(wfhdc) => wfhdc.firstName + ' ' + wfhdc.lastName}
       secondary={(wfhdc) =>
-        `Contact Phone Number: ${toOR40WFHDCProvider(wfhdc).contactPhoneNumber}`
+        `Contact Phone Number: ${
+          toOR40WFHDCProvider(wfhdc).contactPhoneNumber ?? ''
+        }`
       }
     >
       <p>Add Provider</p>
@@ -512,15 +519,13 @@ export const HouseHoldFields = (): ReactElement => {
 
   const onSubmit = (form: OR40WFHDCHouseHoldUserInput): void => {
     const payload = toOR40WFHDCHouseHold(form)
-    if (payload !== undefined) {
-      console.log(payload)
-      setWfhdcHouseHold(payload)
-      onAdvance()
-    }
+    console.log(payload)
+    setWfhdcHouseHold(payload)
+    onAdvance()
   }
 
   const page = (
-    <form tabIndex={-1} onSubmit={handleSubmit(onSubmit)}>
+    <form tabIndex={-1} onSubmit={intentionallyFloat(handleSubmit(onSubmit))}>
       <Grid container spacing={2}>
         <LabeledInput
           label="Unclaimed Exemptions"

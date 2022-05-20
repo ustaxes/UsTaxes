@@ -1,28 +1,20 @@
-import { TaxPayer } from 'ustaxes/core/data'
-import ScheduleE, { MatrixRow } from './ScheduleE'
-import log from 'ustaxes/core/log'
-
-const unimplemented = (message: string): void => {
-  log.warn(`[Form 8582]: ${message}`)
-}
+import { MatrixRow } from './ScheduleE'
+import F1040Attachment from './F1040Attachment'
+import { Field } from 'ustaxes/core/pdfFiller'
 
 /**
  * Referenced from line 22 of Schedule E
+ * TODO: Not implemented
  */
-export default class F8582 {
-  tp: TaxPayer
-  scheduleE: ScheduleE
+export default class F8582 extends F1040Attachment {
+  tag = 'f8562'
+  sequenceIndex = 999
 
-  constructor(tp: TaxPayer, scheduleE: ScheduleE) {
-    this.tp = tp
-    this.scheduleE = scheduleE
-  }
-
+  // TODO: 'Deducible rental estate loss after limitation, assuming all allowed'
   deductibleRealEstateLossAfterLimitation = (): MatrixRow => {
-    unimplemented(
-      'Deducible rental estate loss after limitation, assuming all allowed'
-    )
-    const rentalNet = this.scheduleE.rentalNet()
+    const rentalNet = this.f1040.scheduleE?.rentalNet()
+    if (rentalNet === undefined) return [undefined, undefined, undefined]
+
     return rentalNet.map((v) => {
       if (v === undefined || v >= 0) {
         return undefined
@@ -30,4 +22,6 @@ export default class F8582 {
       return v
     }) as MatrixRow
   }
+
+  fields = (): Field[] => []
 }

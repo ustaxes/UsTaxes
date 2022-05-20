@@ -10,6 +10,7 @@ import { F1098e } from 'ustaxes/core/data'
 import { Patterns } from 'ustaxes/components/Patterns'
 import { FormListContainer } from 'ustaxes/components/FormContainer'
 import { Grid } from '@material-ui/core'
+import { intentionallyFloat } from 'ustaxes/core/util'
 
 const showInterest = (a: F1098e): ReactElement => {
   return <Currency value={a.interest} />
@@ -62,6 +63,7 @@ export default function F1098eInfo(): ReactElement {
 
   const form: ReactElement | undefined = (
     <FormListContainer
+      defaultValues={defaultValues}
       onSubmitAdd={onAdd1098e}
       onSubmitEdit={onEdit1098e}
       items={f1098es.map((a) => toUserInput(a))}
@@ -75,7 +77,7 @@ export default function F1098eInfo(): ReactElement {
         <LabeledInput
           autofocus={true}
           label="Enter name of Lender"
-          patternConfig={Patterns.name}
+          required={true}
           name="lender"
         />
         <LabeledInput
@@ -89,7 +91,10 @@ export default function F1098eInfo(): ReactElement {
 
   return (
     <FormProvider {...methods}>
-      <form tabIndex={-1} onSubmit={handleSubmit(onAdvance)}>
+      <form
+        tabIndex={-1}
+        onSubmit={intentionallyFloat(handleSubmit(onAdvance))}
+      >
         <Helmet>
           <title>1098-E Information | Deductions | UsTaxes.org</title>
         </Helmet>

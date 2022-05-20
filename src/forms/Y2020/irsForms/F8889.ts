@@ -1,8 +1,10 @@
 import { Information, Person, HealthSavingsAccount } from 'ustaxes/core/data'
 import { sumFields } from 'ustaxes/core/irsForms/util'
-import Form, { FormTag } from 'ustaxes/core/irsForms/Form'
-import F8853 from './F8853'
+import { FormTag } from 'ustaxes/core/irsForms/Form'
 import { CURRENT_YEAR, healthSavingsAccounts } from '../data/federal'
+import F1040Attachment from './F1040Attachment'
+import F1040 from './F1040'
+import { Field } from 'ustaxes/core/pdfFiller'
 
 export const needsF8889 = (state: Information, person: Person): boolean => {
   return state.healthSavingsAccounts.some(
@@ -10,32 +12,29 @@ export const needsF8889 = (state: Information, person: Person): boolean => {
   )
 }
 
+type ContributionType = 'self-only' | 'family'
 type PerMonthContributionType = {
-  amount: Array<number>
-  type: Array<'self-only' | 'family'>
+  amount: number[]
+  type: ContributionType[]
 }
 
-export default class F8889 extends Form {
+export default class F8889 extends F1040Attachment {
   tag: FormTag = 'f8889'
   sequenceIndex = 52
   // these should only be the HSAs that belong to this person
   // the person can be either the primary person or the spouse
   hsas: HealthSavingsAccount<Date>[]
-  f8853?: F8853
   person: Person
-  state: Information
   calculatedCoverageType: 'self-only' | 'family'
   perMonthContributions: PerMonthContributionType
   readonly firstDayOfLastMonth: Date
 
-  constructor(state: Information, person: Person, f8853?: F8853) {
-    super()
-    this.f8853 = f8853
+  constructor(f1040: F1040, person: Person) {
+    super(f1040)
     this.person = person
-    this.state = state
     // The relevant HSAs are the ones either for this person or any that
     // have family coverage.
-    this.hsas = state.healthSavingsAccounts
+    this.hsas = this.f1040.info.healthSavingsAccounts
       .filter((h) => {
         if (h.personRole == person.role || h.coverageType == 'family') {
           return true
@@ -53,7 +52,7 @@ export default class F8889 extends Form {
     this.firstDayOfLastMonth = new Date(CURRENT_YEAR, 11, 1)
     this.perMonthContributions = {
       amount: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      type: new Array(12)
+      type: Array<ContributionType>(12)
     }
   }
 
@@ -102,10 +101,10 @@ export default class F8889 extends Form {
     }
   }
 
-  /* If you are an eligible individual on the first day of the last month of your tax year 
-     (December 1 for most taxpayers), you are considered to be an eligible individual 
-     for the entire year.
-    */
+  /* If you are an eligible individual on the first day of the last month of your tax year
+   * (December 1 for most taxpayers), you are considered to be an eligible individual
+   * for the entire year.
+   */
   lastMonthRule = (): boolean => {
     return this.hsas.some((hsa) => hsa.endDate >= this.firstDayOfLastMonth)
   }
@@ -187,7 +186,7 @@ export default class F8889 extends Form {
     if (this.lastMonthCoverage() === 'family') {
       // TODO: This hard codes the allocation at 50% for each spouse but the
       // rules say any contribution allowcation is allowed
-      return Math.round(this.l5() ?? 0 / 2)
+      return Math.round(this.l5() / 2)
     } else {
       // get the number of months of family coverage
       const familyMonths: number = this.perMonthContributions.type.filter(
@@ -222,15 +221,17 @@ export default class F8889 extends Form {
     this.hsas.reduce((total, hsa) => hsa.contributions + total, 0)
 
   l3 = (): number => this.contributionLimit()
-  l4 = (): number => sumFields([this.f8853?.l1(), this.f8853?.l2()])
-  l5 = (): number => (this.l3() ?? 0) - this.l4()
+  l4 = (): number => sumFields([this.f1040.f8853?.l1(), this.f1040.f8853?.l2()])
+  l5 = (): number => this.l3() - this.l4()
   l6 = (): number | undefined => this.splitFamilyContributionLimit()
   // TODO: Additional contirbution amount. Need to know the age of the user
   l7 = (): number | undefined => undefined
   l8 = (): number => sumFields([this.l6(), this.l7()])
   // Employer contributions are listed in W2 box 12 with code W
   l9 = (): number =>
-    this.state.w2s.reduce((res, w2) => res + (w2.box12?.W ?? 0), 0)
+    this.f1040.info.w2s
+      .filter((w2) => w2.personRole == this.person.role)
+      .reduce((res, w2) => res + (w2.box12?.W ?? 0), 0)
   l10 = (): number | undefined => undefined
   l11 = (): number => sumFields([this.l9(), this.l10()])
   l12 = (): number => {
@@ -255,35 +256,33 @@ export default class F8889 extends Form {
   l20 = (): number => sumFields([this.l18(), this.l19()])
   l21 = (): number => Math.round(this.l20() * 0.1)
 
-  fields = (): Array<string | number | boolean | undefined> => {
-    return [
-      `${this.person.firstName} ${this.person.lastName}`,
-      this.person.ssid,
-      this.calculatedCoverageType === 'self-only', // line 1: self-only check box
-      this.calculatedCoverageType === 'family', // line 1: family checkbox
-      this.l2(),
-      this.l3(),
-      this.l4(),
-      this.l5(),
-      this.l6(),
-      this.l7(),
-      this.l8(),
-      this.l9(),
-      this.l10(),
-      this.l11(),
-      this.l12(),
-      this.l13(),
-      this.l14a(),
-      this.l14b(),
-      this.l14c(),
-      this.l15(),
-      this.l16(),
-      this.l17a(),
-      this.l17b(),
-      this.l18(),
-      this.l19(),
-      this.l20(),
-      this.l21()
-    ]
-  }
+  fields = (): Field[] => [
+    `${this.person.firstName} ${this.person.lastName}`,
+    this.person.ssid,
+    this.calculatedCoverageType === 'self-only', // line 1: self-only check box
+    this.calculatedCoverageType === 'family', // line 1: family checkbox
+    this.l2(),
+    this.l3(),
+    this.l4(),
+    this.l5(),
+    this.l6(),
+    this.l7(),
+    this.l8(),
+    this.l9(),
+    this.l10(),
+    this.l11(),
+    this.l12(),
+    this.l13(),
+    this.l14a(),
+    this.l14b(),
+    this.l14c(),
+    this.l15(),
+    this.l16(),
+    this.l17a(),
+    this.l17b(),
+    this.l18(),
+    this.l19(),
+    this.l20(),
+    this.l21()
+  ]
 }

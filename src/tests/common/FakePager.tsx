@@ -20,7 +20,7 @@ export class PagerMethods extends DomMethods {
   saveButton = (): HTMLButtonElement =>
     within(this.dom()).getByRole('button', {
       name: /Save/i
-    }) as HTMLButtonElement
+    })
 
   save = (): void => userEvent.click(this.saveButton())
 }

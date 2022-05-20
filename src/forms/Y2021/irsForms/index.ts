@@ -14,7 +14,7 @@ export const create1040PDFs =
   async (
     downloader: PDFDownloader
   ): Promise<Either<F1040Error[], PDFDocument[]>> => {
-    if (state.taxPayer !== undefined) {
+    if (state.taxPayer.primaryPerson !== undefined) {
       const f1040Result = create1040(state, assets)
       // Get data and pdf links applicable to the model state
       if (isLeft(f1040Result)) {
