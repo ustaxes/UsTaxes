@@ -300,7 +300,13 @@ export class OR40 extends Form {
    */
   Dependent1DateOfBirth = (): string | undefined => {
     // format: 'xx xx xxxx'
-    return undefined
+    return this.info.taxPayer.dependents[0].dateOfBirth
+      .toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+      })
+      .replaceAll('/', ' ')
   }
 
   f25 = (): string | undefined => this.Dependent1DateOfBirth()
@@ -318,7 +324,7 @@ export class OR40 extends Form {
    * Index 27: Dependent 1 Has Disability
    */
   Dependent1HasDisability = (): boolean | undefined => {
-    return true
+    return this.info.taxPayer.dependents[0].isBlind
   }
 
   f27 = (): boolean | undefined => this.Dependent1HasDisability()
@@ -355,7 +361,13 @@ export class OR40 extends Form {
    */
   Dependent2DateOfBirth = (): string | undefined => {
     // format: 'xx xx xxxx'
-    return undefined
+    return this.info.taxPayer.dependents[1].dateOfBirth
+      .toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+      })
+      .replaceAll('/', ' ')
   }
 
   f31 = (): string | undefined => this.Dependent2DateOfBirth()
@@ -374,7 +386,7 @@ export class OR40 extends Form {
    * Index 33: Dependent 2 Has Disability
    */
   Dependent2HasDisability = (): boolean | undefined => {
-    return false
+    return this.info.taxPayer.dependents[1].isBlind
   }
 
   f33 = (): boolean | undefined => this.Dependent2HasDisability()
@@ -420,7 +432,7 @@ export class OR40 extends Form {
    * Index 38: Dependent 3 Has Disability
    */
   Dependent3HasDisability = (): boolean | undefined => {
-    return false
+    return this.info.taxPayer.dependents[2].isBlind
   }
 
   f38 = (): boolean | undefined => this.Dependent3HasDisability()
@@ -430,7 +442,11 @@ export class OR40 extends Form {
    * # of dependent children with disability
    */
   Question6d = (): string | undefined => {
-    return undefined
+    let count = 0
+    this.info.taxPayer.dependents.forEach((d) => {
+      if (d.isBlind) count++
+    })
+    return count.toString()
   }
 
   f39 = (): string | undefined => this.Question6d()
@@ -509,7 +525,13 @@ export class OR40 extends Form {
    */
   Dependent3DateOfBirth = (): string | undefined => {
     // format 'xx xx xxxx'
-    return undefined
+    return this.info.taxPayer.dependents[2].dateOfBirth
+      .toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+      })
+      .replaceAll('/', ' ')
   }
 
   f46 = (): string | undefined => this.Dependent3DateOfBirth()
@@ -1133,21 +1155,23 @@ export class OR40 extends Form {
    * Index 111: Earned Income Credit (35)
    */
   EarnedIncomeCredit35 = (): string | undefined => {
-    // const earnedIncomeCredit = 13145 // TODO: Call `calculateEICForIncome()` in src\forms\Y2021\irsForms\ScheduleEIC.ts here
     // The multiplier is 9% for taxpayers with no dependents or dependents strictly >=3 years old
-    // let multiplier = 0.09
-    // if (this.info.taxPayer.dependents.length > 0) {
-    //   for (const dependent of this.info.taxPayer.dependents) {
-    //     // The multiplier is 12% for taxpayers with one or more dependents strictly <3 years old
-    //     if (CHECK AGE HERE)
-    //       // TODO: Check dependent's age here
-    //       multiplier = 0.12
-    //   }
-    // }
-    // return this.formatDollarAmount(
-    //   parseInt((earnedIncomeCredit * multiplier).toString())
-    // )
-    return undefined
+    let multiplier = 0.09
+    for (const dependent of this.info.taxPayer.dependents) {
+      const dependentAge = Math.abs(
+        new Date(
+          new Date('12/31/2021').getTime() - dependent.dateOfBirth.getTime()
+        ).getUTCFullYear() - 1970
+      )
+      // The multiplier is 12% for taxpayers with one or more dependents strictly <3 years old
+      if (dependentAge < 3) {
+        multiplier = 0.12
+        break
+      }
+    }
+    return this.formatDollarAmount(
+      this.f1040.scheduleEIC?.credit() ?? 0 * multiplier
+    )
   }
 
   f111 = (): string | undefined => this.EarnedIncomeCredit35()
