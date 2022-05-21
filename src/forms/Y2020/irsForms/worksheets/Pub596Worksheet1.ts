@@ -1,19 +1,12 @@
 import { EIC } from '../../data/federal'
-import { TaxPayer } from 'ustaxes/core/data'
 import { ifNegative, ifPositive } from 'ustaxes/core/util'
 import F1040 from '../../irsForms/F1040'
 import { sumFields } from 'ustaxes/core/irsForms/util'
-import log from 'ustaxes/core/log'
-
-const unimplemented = (message: string): void =>
-  log.warn(`[Pub 596 Worksheet 1] unimplemented ${message}`)
 
 export default class Pub596Worksheet1 {
-  tp: TaxPayer
   f1040: F1040
 
-  constructor(tp: TaxPayer, f1040: F1040) {
-    this.tp = tp
+  constructor(f1040: F1040) {
     this.f1040 = f1040
   }
 
@@ -21,10 +14,9 @@ export default class Pub596Worksheet1 {
   l2 = (): number | undefined =>
     sumFields([this.f1040.l2a(), this.f1040.f8814?.l1b()])
   l3 = (): number | undefined => this.f1040.l3b()
-  l4 = (): number | undefined => {
-    unimplemented("Unchecked child's Alaska permanent fund dividend")
-    return this.f1040.schedule1?.l8()
-  }
+
+  // TODO: Unchecked child's Alaska permanent fund dividend
+  l4 = (): number | undefined => this.f1040.schedule1?.l8()
 
   l5 = (): number => ((this.f1040.l7() ?? 0) < 0 ? 0 : this.f1040.l7() ?? 0)
   l6 = (): number => {

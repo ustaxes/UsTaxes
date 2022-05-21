@@ -1,11 +1,12 @@
 import Form from 'ustaxes/core/stateForms/Form'
 import F1040 from '../../irsForms/F1040'
 import { Field } from 'ustaxes/core/pdfFiller'
-import { Dependent, Information, State } from 'ustaxes/core/data'
+import { Dependent, PrimaryPerson, State } from 'ustaxes/core/data'
 import parameters from './Parameters'
+import { ValidatedInformation } from 'ustaxes/forms/F1040Base'
 
 export class IL1040scheduleileeic extends Form {
-  info: Information
+  info: ValidatedInformation
   f1040: F1040
   formName: string
   state: State
@@ -13,7 +14,7 @@ export class IL1040scheduleileeic extends Form {
   attachments: () => Form[] = () => []
   qualifyingDependents: Dependent[]
 
-  constructor(info: Information, f1040: F1040) {
+  constructor(info: ValidatedInformation, f1040: F1040) {
     super()
     this.info = info
     this.f1040 = f1040
@@ -21,6 +22,10 @@ export class IL1040scheduleileeic extends Form {
     this.state = 'IL'
     this.qualifyingDependents =
       this.f1040.scheduleEIC?.qualifyingDependents() ?? []
+  }
+
+  get primary(): PrimaryPerson | undefined {
+    return this.info.taxPayer.primaryPerson
   }
 
   isRequired = (): boolean => (this.earnedIncomeCredit() ?? 0) > 0
@@ -65,7 +70,7 @@ export class IL1040scheduleileeic extends Form {
    * Index 4: Your name
    */
   Yourname = (): string | undefined =>
-    `${this.info.taxPayer.primaryPerson?.firstName} ${this.info.taxPayer.primaryPerson?.lastName}`
+    [this.primary?.firstName, this.primary?.lastName].flat().join(' ')
 
   f4 = (): string | undefined => this.Yourname()
 
@@ -725,8 +730,8 @@ export class IL1040scheduleileeic extends Form {
    * Index 84: Eligible for Earned Income Credit - 1
    * TODO: Confirm this checkbox
    */
-  EligibleforEarnedIncomeCredit1 = (): boolean | undefined =>
-    this.info.taxPayer.dependents[0] !== undefined
+  EligibleforEarnedIncomeCredit1 = (): boolean =>
+    this.info.taxPayer.dependents.length > 0
 
   f84 = (): boolean | undefined => this.EligibleforEarnedIncomeCredit1()
 
@@ -735,7 +740,7 @@ export class IL1040scheduleileeic extends Form {
    * TODO: Confirm this checkbox
    */
   EligibleforEarnedIncomeCredit2 = (): boolean | undefined =>
-    this.info.taxPayer.dependents[1] !== undefined
+    this.info.taxPayer.dependents.length > 1
 
   f85 = (): boolean | undefined => this.EligibleforEarnedIncomeCredit2()
 
@@ -744,7 +749,7 @@ export class IL1040scheduleileeic extends Form {
    * TODO: Confirm this checkbox
    */
   EligibleforEarnedIncomeCredit3 = (): boolean | undefined =>
-    this.info.taxPayer.dependents[2] !== undefined
+    this.info.taxPayer.dependents.length > 2
 
   f86 = (): boolean | undefined => this.EligibleforEarnedIncomeCredit3()
 
@@ -753,7 +758,7 @@ export class IL1040scheduleileeic extends Form {
    * TODO: Confirm this checkbox
    */
   EligibleforEarnedIncomeCredit4 = (): boolean | undefined =>
-    this.info.taxPayer.dependents[3] !== undefined
+    this.info.taxPayer.dependents.length > 3
 
   f87 = (): boolean | undefined => this.EligibleforEarnedIncomeCredit4()
 
@@ -762,7 +767,7 @@ export class IL1040scheduleileeic extends Form {
    * TODO: Confirm this checkbox
    */
   EligibleforEarnedIncomeCredit5 = (): boolean | undefined =>
-    this.info.taxPayer.dependents[4] !== undefined
+    this.info.taxPayer.dependents.length > 4
 
   f88 = (): boolean | undefined => this.EligibleforEarnedIncomeCredit5()
 
@@ -771,7 +776,7 @@ export class IL1040scheduleileeic extends Form {
    * TODO: Confirm this checkbox
    */
   EligibleforEarnedIncomeCredit6 = (): boolean | undefined =>
-    this.info.taxPayer.dependents[5] !== undefined
+    this.info.taxPayer.dependents.length > 5
 
   f89 = (): boolean | undefined => this.EligibleforEarnedIncomeCredit6()
 
@@ -780,7 +785,7 @@ export class IL1040scheduleileeic extends Form {
    * TODO: Confirm this checkbox
    */
   EligibleforEarnedIncomeCredit7 = (): boolean | undefined =>
-    this.info.taxPayer.dependents[6] !== undefined
+    this.info.taxPayer.dependents.length > 6
 
   f90 = (): boolean | undefined => this.EligibleforEarnedIncomeCredit7()
 
@@ -789,7 +794,7 @@ export class IL1040scheduleileeic extends Form {
    * TODO: Confirm this checkbox
    */
   EligibleforEarnedIncomeCredit8 = (): boolean | undefined =>
-    this.info.taxPayer.dependents[7] !== undefined
+    this.info.taxPayer.dependents.length > 7
 
   f91 = (): boolean | undefined => this.EligibleforEarnedIncomeCredit8()
 
@@ -798,7 +803,7 @@ export class IL1040scheduleileeic extends Form {
    * TODO: Confirm this checkbox
    */
   EligibleforEarnedIncomeCredit9 = (): boolean | undefined =>
-    this.info.taxPayer.dependents[8] !== undefined
+    this.info.taxPayer.dependents.length > 8
 
   f92 = (): boolean | undefined => this.EligibleforEarnedIncomeCredit9()
 
@@ -807,7 +812,7 @@ export class IL1040scheduleileeic extends Form {
    * TODO: Confirm this checkbox
    */
   EligibleforEarnedIncomeCredit10 = (): boolean | undefined =>
-    this.info.taxPayer.dependents[9] !== undefined
+    this.info.taxPayer.dependents.length > 9
 
   f93 = (): boolean | undefined => this.EligibleforEarnedIncomeCredit10()
 
@@ -1624,7 +1629,7 @@ export class IL1040scheduleileeic extends Form {
    * Index 183: Your SSN3
    */
   YourSSN3 = (): string | undefined =>
-    this.info.taxPayer.primaryPerson?.ssid.slice(0, 3)
+    this.info.taxPayer.primaryPerson.ssid.slice(0, 3)
 
   f183 = (): string | undefined => this.YourSSN3()
 
@@ -1632,7 +1637,7 @@ export class IL1040scheduleileeic extends Form {
    * Index 184: Your SSN2
    */
   YourSSN2 = (): string | undefined =>
-    this.info.taxPayer.primaryPerson?.ssid.slice(3, 5)
+    this.info.taxPayer.primaryPerson.ssid.slice(3, 5)
 
   f184 = (): string | undefined => this.YourSSN2()
 
@@ -1640,7 +1645,7 @@ export class IL1040scheduleileeic extends Form {
    * Index 185: Your SSN4
    */
   YourSSN4 = (): string | undefined =>
-    this.info.taxPayer.primaryPerson?.ssid.slice(5)
+    this.info.taxPayer.primaryPerson.ssid.slice(5)
 
   f185 = (): string | undefined => this.YourSSN4()
 
@@ -1835,7 +1840,7 @@ export class IL1040scheduleileeic extends Form {
 }
 
 const makeil1040scheduleileeic = (
-  info: Information,
+  info: ValidatedInformation,
   f1040: F1040
 ): IL1040scheduleileeic => new IL1040scheduleileeic(info, f1040)
 

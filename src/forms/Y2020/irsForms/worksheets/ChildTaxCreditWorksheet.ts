@@ -12,13 +12,12 @@ export default class ChildTaxCreditWorksheet {
   }
 
   qualifiesChild = (d: Dependent): boolean =>
-    d.qualifyingInfo !== undefined &&
-    this.year - d.qualifyingInfo.birthYear < QualifyingDependents.childMaxAge
+    this.year - d.dateOfBirth.getFullYear() < QualifyingDependents.childMaxAge
 
   qualifiesOther = (d: Dependent): boolean =>
     d.qualifyingInfo !== undefined &&
     !this.qualifiesChild(d) &&
-    this.year - d.qualifyingInfo.birthYear <
+    this.year - d.dateOfBirth.getFullYear() <
       (d.qualifyingInfo.isStudent
         ? QualifyingDependents.qualifyingDependentMaxAge
         : QualifyingDependents.qualifyingStudentMaxAge)
@@ -47,7 +46,7 @@ export default class ChildTaxCreditWorksheet {
   l3 = (): number => this.l1() + this.l2()
 
   // worksheet line 4
-  l4 = (): number => this.f1040.l11() ?? 0
+  l4 = (): number => this.f1040.l11()
 
   // worksheet line 5
   l5 = (): number =>
@@ -64,7 +63,7 @@ export default class ChildTaxCreditWorksheet {
     this.l3() > this.l7() ? this.l3() - this.l7() : undefined
 
   // worksheet line 9
-  l9 = (): number => this.f1040.l18() ?? 0
+  l9 = (): number => this.f1040.l18()
 
   // worksheet line 10
   l10 = (): number =>

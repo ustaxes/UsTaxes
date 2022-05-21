@@ -1,6 +1,6 @@
 import { Dispatch, Fragment, ReactElement, SetStateAction } from 'react'
 import { useLocation, NavLink, Link } from 'react-router-dom'
-import { isMobile } from 'react-device-detect'
+import { isMobileOnly as isMobile } from 'react-device-detect'
 import {
   createStyles,
   makeStyles,
@@ -16,7 +16,7 @@ import {
 } from '@material-ui/core'
 import GitHubIcon from '@material-ui/icons/GitHub'
 import TwitterIcon from '@material-ui/icons/Twitter'
-import { Settings } from '@material-ui/icons'
+import { HelpOutlineRounded, Settings } from '@material-ui/icons'
 import Urls from 'ustaxes/data/urls'
 
 const drawerWidth = 240
@@ -128,6 +128,11 @@ function ResponsiveDrawer(props: DrawerItemsProps): ReactElement {
       ))}
       <List className={classes.listSocial}>
         <ListItem className={classes.listItemSocial}>
+          <Link to={Urls.help}>
+            <IconButton color="secondary" aria-label="help, support, feedback">
+              <HelpOutlineRounded />
+            </IconButton>
+          </Link>
           <IconButton
             color="secondary"
             aria-label="github, opens in new tab"

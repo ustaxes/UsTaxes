@@ -1,21 +1,5 @@
-import { TaxYear } from 'ustaxes/data'
-import {
-  Dependent,
-  IncomeW2,
-  EstimatedTaxPayments,
-  Supported1099,
-  Property,
-  F1098e,
-  Information,
-  HealthSavingsAccount,
-  Asset
-} from 'ustaxes/core/data'
+import { Asset, Information, Person, TaxYear } from 'ustaxes/core/data'
 import { blankState } from './reducer'
-
-export interface ArrayItemEditAction<A> {
-  index: number
-  value: A
-}
 
 /**
  * This is a simplified form of our global TaxesState
@@ -24,8 +8,8 @@ export interface ArrayItemEditAction<A> {
  */
 export type TaxesState = { information: Information }
 
-export type YearsTaxesState = { [K in TaxYear]: Information } & {
-  assets: Asset<Date>[]
+export type YearsTaxesState<D = Date> = { [K in TaxYear]: Information<D> } & {
+  assets: Asset<D>[]
   activeYear: TaxYear
 }
 
@@ -37,11 +21,58 @@ export const blankYearTaxesState: YearsTaxesState = {
   activeYear: 'Y2020'
 }
 
-export type EditDependentAction = ArrayItemEditAction<Dependent>
-export type EditW2Action = ArrayItemEditAction<IncomeW2>
-export type EditEstimatedTaxesAction = ArrayItemEditAction<EstimatedTaxPayments>
-export type Edit1099Action = ArrayItemEditAction<Supported1099>
-export type EditPropertyAction = ArrayItemEditAction<Property>
-export type Edit1098eAction = ArrayItemEditAction<F1098e>
-export type EditHSAAction = ArrayItemEditAction<HealthSavingsAccount>
-export type EditAssetAction = ArrayItemEditAction<Asset<Date>>
+export const dateToStringPerson = <P extends Person<Date>>(
+  p: P
+): Omit<P, 'dateOfBirth'> & { dateOfBirth: string } => ({
+  ...p,
+  dateOfBirth: p.dateOfBirth.toISOString()
+})
+
+export const stringToDatePerson = <P extends Person<string>>(
+  p: P
+): Omit<P, 'dateOfBirth'> & { dateOfBirth: Date } => ({
+  ...p,
+  dateOfBirth: new Date(p.dateOfBirth)
+})
+
+export const stringToDateInfo = <I extends Information<string>>(
+  info: I
+): Information<Date> => ({
+  ...info,
+  healthSavingsAccounts: info.healthSavingsAccounts.map((h) => ({
+    ...h,
+    startDate: new Date(h.startDate),
+    endDate: new Date(h.endDate)
+  })),
+  taxPayer: {
+    ...info.taxPayer,
+    primaryPerson: info.taxPayer.primaryPerson
+      ? stringToDatePerson(info.taxPayer.primaryPerson)
+      : undefined,
+    dependents: info.taxPayer.dependents.map((d) => stringToDatePerson(d)),
+    spouse: info.taxPayer.spouse
+      ? stringToDatePerson(info.taxPayer.spouse)
+      : undefined
+  }
+})
+
+export const infoToStringInfo = <I extends Information<Date>>(
+  info: I
+): Information<string> => ({
+  ...info,
+  healthSavingsAccounts: info.healthSavingsAccounts.map((h) => ({
+    ...h,
+    startDate: h.startDate.toISOString(),
+    endDate: h.endDate.toISOString()
+  })),
+  taxPayer: {
+    ...info.taxPayer,
+    primaryPerson: info.taxPayer.primaryPerson
+      ? dateToStringPerson(info.taxPayer.primaryPerson)
+      : undefined,
+    dependents: info.taxPayer.dependents.map((d) => dateToStringPerson(d)),
+    spouse: info.taxPayer.spouse
+      ? dateToStringPerson(info.taxPayer.spouse)
+      : undefined
+  }
+})

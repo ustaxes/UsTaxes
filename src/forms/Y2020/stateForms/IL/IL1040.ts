@@ -1,20 +1,16 @@
 import Form, { FormMethods } from 'ustaxes/core/stateForms/Form'
 import F1040 from '../../irsForms/F1040'
-import { Field } from 'ustaxes/core/pdfFiller'
+import { Field, RadioSelect } from 'ustaxes/core/pdfFiller'
 import { sumFields } from 'ustaxes/core/irsForms/util'
-import {
-  AccountType,
-  FilingStatus,
-  Information,
-  State
-} from 'ustaxes/core/data'
+import { AccountType, FilingStatus, State } from 'ustaxes/core/data'
 import parameters from './Parameters'
 import { IL1040scheduleileeic } from './IL1040ScheduleILEIC'
 import IL1040V from './IL1040V'
 import { ILWIT } from './ILWit'
+import { ValidatedInformation } from 'ustaxes/forms/F1040Base'
 
 export class IL1040 extends Form {
-  info: Information
+  info: ValidatedInformation
   f1040: F1040
   formName: string
   state: State
@@ -23,14 +19,14 @@ export class IL1040 extends Form {
   formOrder = 0
   methods: FormMethods
 
-  constructor(info: Information, f1040: F1040) {
+  constructor(f1040: F1040) {
     super()
-    this.info = info
+    this.info = f1040.info
     this.f1040 = f1040
     this.formName = 'IL-1040'
     this.state = 'IL'
-    this.scheduleEIC = new IL1040scheduleileeic(info, f1040)
-    this.il1040V = new IL1040V(info, f1040, this)
+    this.scheduleEIC = new IL1040scheduleileeic(this.info, f1040)
+    this.il1040V = new IL1040V(this.info, f1040, this)
     this.methods = new FormMethods(this)
   }
 
@@ -44,7 +40,7 @@ export class IL1040 extends Form {
       result.push(this.scheduleEIC)
     }
     if (this.methods.stateWithholding() > 0) {
-      const ilwit = new ILWIT(this.info, this.f1040)
+      const ilwit = new ILWIT(this.f1040)
       result.push(ilwit)
       ilwit.attachments().forEach((f) => result.push(f))
     }
@@ -82,14 +78,14 @@ export class IL1040 extends Form {
   /**
    * Index 3: name1
    */
-  name1 = (): string | undefined => this.info.taxPayer.primaryPerson?.firstName
+  name1 = (): string | undefined => this.info.taxPayer.primaryPerson.firstName
 
   f3 = (): string | undefined => this.name1()
 
   /**
    * Index 4: name2
    */
-  name2 = (): string | undefined => this.info.taxPayer.primaryPerson?.lastName
+  name2 = (): string | undefined => this.info.taxPayer.primaryPerson.lastName
 
   f4 = (): string | undefined => this.name2()
 
@@ -105,7 +101,7 @@ export class IL1040 extends Form {
    * Index 6: ssn1
    */
   ssn1 = (): string | undefined =>
-    this.info.taxPayer.primaryPerson?.ssid.slice(0, 3)
+    this.info.taxPayer.primaryPerson.ssid.slice(0, 3)
 
   f6 = (): string | undefined => this.ssn1()
 
@@ -113,7 +109,7 @@ export class IL1040 extends Form {
    * Index 7: ssn2
    */
   ssn2 = (): string | undefined =>
-    this.info.taxPayer.primaryPerson?.ssid.slice(3, 5)
+    this.info.taxPayer.primaryPerson.ssid.slice(3, 5)
 
   f7 = (): string | undefined => this.ssn2()
 
@@ -121,7 +117,7 @@ export class IL1040 extends Form {
    * Index 8: ssn3
    */
   ssn3 = (): string | undefined =>
-    this.info.taxPayer.primaryPerson?.ssid.slice(5)
+    this.info.taxPayer.primaryPerson.ssid.slice(5)
 
   f8 = (): string | undefined => this.ssn3()
 
@@ -172,15 +168,14 @@ export class IL1040 extends Form {
    * Index 15: address
    */
   address = (): string | undefined =>
-    this.info.taxPayer.primaryPerson?.address.address
+    this.info.taxPayer.primaryPerson.address.address
 
   f15 = (): string | undefined => this.address()
 
   /**
    * Index 16: apt
    */
-  apt = (): string | undefined =>
-    this.info.taxPayer.primaryPerson?.address.aptNo
+  apt = (): string | undefined => this.info.taxPayer.primaryPerson.address.aptNo
 
   f16 = (): string | undefined => this.apt()
 
@@ -195,8 +190,7 @@ export class IL1040 extends Form {
   /**
    * Index 18: city
    */
-  city = (): string | undefined =>
-    this.info.taxPayer.primaryPerson?.address.city
+  city = (): string | undefined => this.info.taxPayer.primaryPerson.address.city
 
   f18 = (): string | undefined => this.city()
 
@@ -204,15 +198,15 @@ export class IL1040 extends Form {
    * Index 19: st
    */
   st = (): string | undefined =>
-    this.info.taxPayer.primaryPerson?.address.state ??
-    this.info.taxPayer.primaryPerson?.address.province
+    this.info.taxPayer.primaryPerson.address.state ??
+    this.info.taxPayer.primaryPerson.address.province
 
   f19 = (): string | undefined => this.st()
 
   /**
    * Index 20: zip
    */
-  zip = (): string | undefined => this.info.taxPayer.primaryPerson?.address.zip
+  zip = (): string | undefined => this.info.taxPayer.primaryPerson.address.zip
 
   f20 = (): string | undefined => this.zip()
 
@@ -220,23 +214,32 @@ export class IL1040 extends Form {
    * Index 21: foreign
    */
   foreign = (): string | undefined =>
-    this.info.taxPayer.primaryPerson?.address.foreignCountry
+    this.info.taxPayer.primaryPerson.address.foreignCountry
 
   f21 = (): string | undefined => this.foreign()
 
   /**
    * Index 22: Check Box1
+   * This is actually a radio group, so indicate the correct selection
+   * by index.
    */
-  CheckBox1 = (): boolean | undefined =>
-    this.info.taxPayer.filingStatus === FilingStatus.S
+  CheckBox1 = (): RadioSelect | undefined => ({
+    select: [
+      FilingStatus.S,
+      FilingStatus.MFJ,
+      FilingStatus.MFS,
+      FilingStatus.W,
+      FilingStatus.HOH
+    ].findIndex((x) => x === this.info.taxPayer.filingStatus)
+  })
 
-  f22 = (): boolean | undefined => this.CheckBox1()
+  f22 = (): RadioSelect | undefined => this.CheckBox1()
 
   /**
    * Index 23: Check Box1c
    */
   CheckBox1c = (): boolean | undefined =>
-    this.info.taxPayer.primaryPerson?.isTaxpayerDependent
+    this.info.taxPayer.primaryPerson.isTaxpayerDependent
 
   f23 = (): boolean | undefined => this.CheckBox1c()
 
@@ -268,7 +271,7 @@ export class IL1040 extends Form {
 
   /**
    * Index 28: 3
-   * Schedule M, other additions
+   * TODO: Schedule M, other additions
    */
   l3 = (): number | undefined => undefined
 
@@ -312,12 +315,12 @@ export class IL1040 extends Form {
    * Index 35: 9
    * IL base income
    */
-  l9 = (): number => this.l4() - this.l8()
+  l9 = (): number => Math.max(0, this.l4() - this.l8())
 
   /**
    * Index 36: 10a
    */
-  l10a = (): number | undefined => {
+  l10a = (): number => {
     if (this.info.taxPayer.filingStatus === FilingStatus.MFJ)
       return parameters.exemptions.MFJ.exemptionAmount
     return parameters.exemptions.S.exemptionAmount
@@ -327,27 +330,25 @@ export class IL1040 extends Form {
    * Index 37: Check Box3
    * Check if TP senior
    */
-  CheckBox3 = (): boolean | undefined => undefined
+  primarySenior = (): boolean | undefined => undefined
 
-  f37 = (): boolean | undefined => this.CheckBox3()
+  f37 = (): boolean | undefined => this.primarySenior()
 
   /**
    * Index 38: Check Box4
    * Check if spouse senior
    */
-  CheckBox4 = (): boolean | undefined => undefined
+  spouseSenior = (): boolean | undefined => undefined
 
-  f38 = (): boolean | undefined => this.CheckBox4()
+  f38 = (): boolean | undefined => this.spouseSenior()
 
   /**
    * Index 39: 10b
    */
-  l10b = (): number | undefined => {
-    return (
-      [this.CheckBox3() ?? false, this.CheckBox4() ?? false].filter((x) => x)
-        .length * parameters.seniorExemption
-    )
-  }
+  l10b = (): number =>
+    [this.primarySenior() ?? false, this.spouseSenior() ?? false].filter(
+      (x) => x
+    ).length * parameters.seniorExemption
 
   /**
    * Index 40: Check Box5
@@ -368,12 +369,9 @@ export class IL1040 extends Form {
   /**
    * Index 42: 10c
    */
-  l10c = (): number | undefined => {
-    return (
-      [this.CheckBox5(), this.CheckBox6()].filter((x) => x).length *
-      parameters.blindExemption
-    )
-  }
+  l10c = (): number | undefined =>
+    [this.CheckBox5(), this.CheckBox6()].filter((x) => x).length *
+    parameters.blindExemption
 
   /**
    * Index 43: 10d
@@ -392,12 +390,12 @@ export class IL1040 extends Form {
    * Index 45: 11
    * TODO: handle non-residents, part year residents
    */
-  l11 = (): number => this.l9() - this.l10()
+  l11 = (): number => Math.max(0, this.l9() - this.l10())
 
   /**
    * Index 46: 12
    */
-  l12 = (): number | undefined => this.l11() * parameters.taxRate
+  l12 = (): number => this.l11() * parameters.taxRate
 
   /**
    * Index 47: 13
@@ -439,7 +437,7 @@ export class IL1040 extends Form {
    * Index 53: 19
    * Total non-refundable credits
    */
-  l19 = (): number => this.l14() - this.l18()
+  l19 = (): number => Math.max(0, this.l14() - this.l18())
 
   /**
    * Index 54: 20
@@ -475,7 +473,7 @@ export class IL1040 extends Form {
    * Index 59: 25
    * IL Income tax withheld
    */
-  l25 = (): number | undefined => this.methods.stateWithholding()
+  l25 = (): number | undefined => this.methods.witholdingForState('IL')
 
   /**
    * Index 60: 26
@@ -544,7 +542,7 @@ export class IL1040 extends Form {
 
   /**
    * Index 70: Check Box8d
-   * TODO: Check if you were not required to file an IL individual tax return int eh previous tax year.
+   * TODO: Check if you were not required to file an IL individual tax return in the previous tax year.
    */
   CheckBox8d = (): boolean | undefined => undefined
 
@@ -623,174 +621,7 @@ export class IL1040 extends Form {
   }
   payment = (): number | undefined => this.l39()
 
-  /**
-   * Index 81: YourSignatureDate
-   */
-  YourSignatureDate = (): string | undefined => {
-    return undefined
-  }
-
-  f81 = (): string | undefined => this.YourSignatureDate()
-
-  /**
-   * Index 82: SpouseSignatureDate
-   */
-  SpouseSignatureDate = (): string | undefined => {
-    return undefined
-  }
-
-  f82 = (): string | undefined => this.SpouseSignatureDate()
-
-  /**
-   * Index 83: DaytimeAreaCode
-   */
-  DaytimeAreaCode = (): string | undefined =>
-    this.info.taxPayer.contactPhoneNumber?.slice(0, 3)
-
-  f83 = (): string | undefined => this.DaytimeAreaCode()
-
-  /**
-   * Index 84: DaytimePhoneNumber
-   */
-  DaytimePhoneNumber = (): string | undefined =>
-    this.info.taxPayer.contactPhoneNumber?.slice(3)
-
-  f84 = (): string | undefined => this.DaytimePhoneNumber()
-
-  /**
-   * Index 85: PreparerName
-   */
-  PreparerName = (): string | undefined => {
-    return undefined
-  }
-
-  f85 = (): string | undefined => this.PreparerName()
-
-  /**
-   * Index 86: PreparerSignatureDate
-   */
-  PreparerSignatureDate = (): string | undefined => {
-    return undefined
-  }
-
-  f86 = (): string | undefined => this.PreparerSignatureDate()
-
-  /**
-   * Index 87: CheckBoxSelfEmployed
-   */
-  CheckBoxSelfEmployed = (): boolean | undefined => {
-    return undefined
-  }
-
-  f87 = (): boolean | undefined => this.CheckBoxSelfEmployed()
-
-  /**
-   * Index 88: PreparerPTIN
-   */
-  PreparerPTIN = (): string | undefined => {
-    return undefined
-  }
-
-  f88 = (): string | undefined => this.PreparerPTIN()
-
-  /**
-   * Index 89: PreparerFirmName
-   */
-  PreparerFirmName = (): string | undefined => {
-    return undefined
-  }
-
-  f89 = (): string | undefined => this.PreparerFirmName()
-
-  /**
-   * Index 90: PreparerFirmFEIN
-   */
-  PreparerFirmFEIN = (): string | undefined => {
-    return undefined
-  }
-
-  f90 = (): string | undefined => this.PreparerFirmFEIN()
-
-  /**
-   * Index 91: PreparerFirmAddress
-   */
-  PreparerFirmAddress = (): string | undefined => {
-    return undefined
-  }
-
-  f91 = (): string | undefined => this.PreparerFirmAddress()
-
-  /**
-   * Index 92: PreparerFirmAreaCode
-   */
-  PreparerFirmAreaCode = (): string | undefined => {
-    return undefined
-  }
-
-  f92 = (): string | undefined => this.PreparerFirmAreaCode()
-
-  /**
-   * Index 93: PreparerFirmPhoneNumber
-   */
-  PreparerFirmPhoneNumber = (): string | undefined => {
-    return undefined
-  }
-
-  f93 = (): string | undefined => this.PreparerFirmPhoneNumber()
-
-  /**
-   * Index 94: ThirdPartyName
-   */
-  ThirdPartyName = (): string | undefined => {
-    return undefined
-  }
-
-  f94 = (): string | undefined => this.ThirdPartyName()
-
-  /**
-   * Index 95: ThirdPartyAreaCode
-   */
-  ThirdPartyAreaCode = (): string | undefined => {
-    return undefined
-  }
-
-  f95 = (): string | undefined => this.ThirdPartyAreaCode()
-
-  /**
-   * Index 96: ThirdPartyPhoneNumber
-   */
-  ThirdPartyPhoneNumber = (): string | undefined => {
-    return undefined
-  }
-
-  f96 = (): string | undefined => this.ThirdPartyPhoneNumber()
-
-  /**
-   * Index 97: CheckBoxDiscuss
-   */
-  CheckBoxDiscuss = (): boolean | undefined => {
-    return undefined
-  }
-
-  f97 = (): boolean | undefined => this.CheckBoxDiscuss()
-
-  /**
-   * Index 98: Reset
-   */
-  Reset = (): string | undefined => {
-    return undefined
-  }
-
-  f98 = (): string | undefined => this.Reset()
-
-  /**
-   * Index 99: Print
-   */
-  Print = (): string | undefined => {
-    return undefined
-  }
-
-  f99 = (): string | undefined => this.Print()
+  // Signature block fields omitted
 
   fields = (): Field[] => [
     this.f0(),
@@ -873,30 +704,10 @@ export class IL1040 extends Form {
     this.f77(),
     this.f78(),
     this.l38(),
-    this.l39(),
-    this.f81(),
-    this.f82(),
-    this.f83(),
-    this.f84(),
-    this.f85(),
-    this.f86(),
-    this.f87(),
-    this.f88(),
-    this.f89(),
-    this.f90(),
-    this.f91(),
-    this.f92(),
-    this.f93(),
-    this.f94(),
-    this.f95(),
-    this.f96(),
-    this.f97(),
-    this.f98(),
-    this.f99()
+    this.l39()
   ]
 }
 
-const makeIL1040 = (info: Information, f1040: F1040): IL1040 =>
-  new IL1040(info, f1040)
+const makeIL1040 = (f1040: F1040): IL1040 => new IL1040(f1040)
 
 export default makeIL1040

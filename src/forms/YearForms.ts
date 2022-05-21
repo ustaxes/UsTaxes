@@ -1,6 +1,6 @@
 import { Information, Asset } from 'ustaxes/core/data'
-import { Either, isRight, left, run, runAsync } from 'ustaxes/core/util'
-import { TaxYear } from 'ustaxes/data'
+import { Either, isLeft, isRight, left, run, runAsync } from 'ustaxes/core/util'
+import { TaxYear } from 'ustaxes/core/data'
 import { create1040 as create1040For2020 } from 'ustaxes/forms/Y2020/irsForms/Main'
 import { create1040 as create1040For2021 } from 'ustaxes/forms/Y2021/irsForms/Main'
 
@@ -21,17 +21,23 @@ import {
 } from 'ustaxes/core/pdfFiller/pdfHandler'
 import { F1040Error } from './errors'
 import { StateFormError } from './StateForms'
+import { validate } from './F1040Base'
 
 interface CreateFormConfig {
-  createF1040: (info: Information, assets: Asset[]) => Either<string[], Form[]>
+  createF1040: (
+    info: Information,
+    assets: Asset[]
+  ) => Either<F1040Error[], Form[]>
   getPDF: (f: Form) => Promise<PDFDocument>
   getStatePDF: (f: StateForm) => Promise<PDFDocument>
-  createStateReturn: (f1040: Form) => Either<string[], StateForm[]>
+  createStateReturn: (
+    f1040: Form
+  ) => Either<Array<F1040Error | StateFormError>, StateForm[]>
 }
 
 export class YearCreateForm {
   year: TaxYear
-  info: Information
+  unvalidatedInfo: Information
   assets: Asset[]
   config: CreateFormConfig
 
@@ -42,14 +48,21 @@ export class YearCreateForm {
     config: CreateFormConfig
   ) {
     this.year = year
-    this.info = info
+    this.unvalidatedInfo = info
     this.assets = assets
 
     this.config = config
   }
 
-  f1040 = (): Either<string[], Form[]> =>
-    this.config.createF1040(this.info, this.assets)
+  errors = (): F1040Error[] => {
+    const errors = validate(this.unvalidatedInfo)
+    return isLeft(errors) ? errors.left : []
+  }
+
+  f1040 = (): Either<F1040Error[], Form[]> =>
+    run(validate(this.unvalidatedInfo))
+      .chain((info) => this.config.createF1040(info, this.assets))
+      .value()
 
   f1040Pdfs = async (): Promise<Either<string[], PDFDocument[]>> => {
     const r1 = await run(this.f1040()).mapAsync((forms) =>
@@ -74,8 +87,9 @@ export class YearCreateForm {
     return r2.value()
   }
 
-  makeStateReturn = (): Either<string[], StateForm[]> =>
+  makeStateReturn = (): Either<(F1040Error | StateFormError)[], StateForm[]> =>
     run(this.f1040())
+      .mapLeft<Array<F1040Error | StateFormError>>((e) => e)
       .chain((forms) => {
         if (forms.length < 1) {
           throw new Error('No forms to create state return')
@@ -158,14 +172,12 @@ export class CreateForms {
       Y2020: {
         ...baseConfig,
         createF1040: takeSecond(create1040For2020),
-        createStateReturn: (f: Form) =>
-          createStateReturn2020(info, f as F1040For2020)
+        createStateReturn: (f: Form) => createStateReturn2020(f as F1040For2020)
       },
       Y2021: {
         ...baseConfig,
         createF1040: takeSecond(create1040For2021),
-        createStateReturn: (f: Form) =>
-          createStateReturn2021(info, f as F1040For2021)
+        createStateReturn: (f: Form) => createStateReturn2021(f as F1040For2021)
       }
     }
 

@@ -12,6 +12,7 @@ describe('ScheduleD', () => {
             -(f1040.scheduleD?.l21Min() ?? Number.POSITIVE_INFINITY)
           )
         }
+        return Promise.resolve()
       })
     )
   })

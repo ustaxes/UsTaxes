@@ -15,11 +15,14 @@ import userEvent from '@testing-library/user-event'
 import { BrowserRouter as Router } from 'react-router-dom'
 
 jest.mock('redux-persist', () => {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const real = jest.requireActual('redux-persist')
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
   return {
     ...real,
     persistReducer: jest
       .fn()
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
       .mockImplementation((_config, reducers) => reducers)
   }
 })
@@ -32,6 +35,7 @@ const testW2sSpouse: IncomeW2 = {
   income: 111,
   medicareIncome: 222,
   fedWithholding: 333,
+  ssWages: 111,
   ssWithholding: 444,
   medicareWithholding: 555,
   stateWages: 666,
@@ -39,6 +43,7 @@ const testW2sSpouse: IncomeW2 = {
 }
 
 const testInfo: Information = {
+  ...blankState,
   f1099s: [
     {
       payer: 'payer-name',
@@ -75,10 +80,7 @@ const testInfo: Information = {
     dependents: [],
     filingStatus: FilingStatus.MFS
   },
-  questions: {},
-  f1098es: [],
-  stateResidencies: [{ state: 'AL' }],
-  healthSavingsAccounts: []
+  stateResidencies: [{ state: 'AL' }]
 }
 
 const errors = {
@@ -161,7 +163,7 @@ describe('W2JobInfo', () => {
       clickButton('Save')
 
       await waitFor(() => {
-        expect(errors.inputRequired()).toHaveLength(10)
+        expect(errors.inputRequired()).toHaveLength(11)
         expect(errors.selectionRequired()).toHaveLength(2)
       })
     })
@@ -197,7 +199,7 @@ describe('W2JobInfo', () => {
     })
   })
 
-  it('shows spouse W2 message', async () => {
+  it('shows spouse W2 message', () => {
     setup(testInfo)
 
     expect(
@@ -213,8 +215,9 @@ describe('W2JobInfo', () => {
     changeByLabelText('Employer name', 'test employer')
     changeByLabelText(/Employer's Identification Number/, '111111111')
     changeByLabelText('Occupation', 'test occupation')
-    changeByLabelText(/Wages, tips, other compensation/, '2222')
+    changeByLabelText(/Wages, tips, other compensation/, '123456')
     changeByLabelText(/Federal income tax withheld/, '3333')
+    changeByLabelText(/Social security wages/, '12345')
     changeByLabelText(/Social security tax withheld/, '4444')
     changeByLabelText(/Medicare Income/, '5555')
     changeByLabelText(/Medicare tax withheld/, '6666')
@@ -227,7 +230,7 @@ describe('W2JobInfo', () => {
 
     await waitFor(() => {
       expect(screen.getByText('test employer')).toBeInTheDocument()
-      expect(screen.getByText('$2,222')).toBeInTheDocument()
+      expect(screen.getByText('$123,456')).toBeInTheDocument()
     })
   })
 
@@ -258,9 +261,9 @@ describe('W2JobInfo', () => {
     expect(
       screen.getByLabelText(/Employer's Identification Number/)
     ).toHaveValue(
-      testW2sSpouse.employer?.EIN?.slice(0, 2) +
+      (testW2sSpouse.employer?.EIN?.slice(0, 2) ?? '') +
         '-' +
-        testW2sSpouse.employer?.EIN?.slice(2)
+        (testW2sSpouse.employer?.EIN?.slice(2) ?? '')
     )
     expect(screen.getByLabelText('Occupation')).toHaveValue(
       testW2sSpouse.occupation

@@ -1,19 +1,13 @@
+import F1040Attachment from './F1040Attachment'
 import { Field } from 'ustaxes/core/pdfFiller'
-import { TaxPayer } from 'ustaxes/core/data'
-import Form, { FormTag } from 'ustaxes/core/irsForms/Form'
+import { FormTag } from 'ustaxes/core/irsForms/Form'
 
 /**
  * Not implemented yet
  */
-export default class F5695 extends Form {
-  tp: TaxPayer
+export default class F5695 extends F1040Attachment {
   tag: FormTag = 'f5695'
   sequenceIndex = 999
-
-  constructor(tp: TaxPayer) {
-    super()
-    this.tp = tp
-  }
 
   l30 = (): number | undefined => undefined
 

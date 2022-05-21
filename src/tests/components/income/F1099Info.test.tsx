@@ -22,6 +22,7 @@ const testW2sSpouse: IncomeW2 = {
   income: 111,
   medicareIncome: 222,
   fedWithholding: 333,
+  ssWages: 111,
   ssWithholding: 444,
   medicareWithholding: 555,
   stateWages: 666,
@@ -29,6 +30,7 @@ const testW2sSpouse: IncomeW2 = {
 }
 
 const testInformationState: Information = {
+  ...blankState,
   f1099s: [
     {
       payer: 'payer-name',
@@ -67,7 +69,8 @@ const testInformationState: Information = {
   },
   questions: {},
   f1098es: [],
-  stateResidencies: [{ state: 'AL' }]
+  stateResidencies: [{ state: 'AL' }],
+  healthSavingsAccounts: []
 }
 
 describe('F1099Info', () => {
@@ -139,20 +142,15 @@ describe('F1099Info', () => {
       const { labelTextChange, buttonClick } = setup()
 
       buttonClick('Add')
-      labelTextChange(
-        'Enter name of bank, broker firm, or other payer',
-        'payer-name'
-      )
+      labelTextChange('Enter name of bank, broker firm, or other payer', '')
       buttonClick('Save')
 
       await waitFor(() =>
-        expect(
-          screen.getByText('Input should only include letters and spaces')
-        ).toBeInTheDocument()
+        expect(screen.getByText('Input is required')).toBeInTheDocument()
       )
     })
 
-    it('Form Type', async () => {
+    it('Form Type', () => {
       const { selectOption, buttonClick } = setup()
 
       buttonClick('Add')
@@ -160,7 +158,7 @@ describe('F1099Info', () => {
       buttonClick('Save')
     })
 
-    it('Recipient', async () => {
+    it('Recipient', () => {
       const { selectOption, buttonClick } = setup()
 
       buttonClick('Add')

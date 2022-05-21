@@ -1,26 +1,20 @@
 import Form, { FormMethods } from 'ustaxes/core/stateForms/Form'
 import F1040 from '../../irsForms/F1040'
 import { Field } from 'ustaxes/core/pdfFiller'
-// import { sumFields } from 'ustaxes/core/irsForms/util'
-import {
-  // AccountType,
-  // FilingStatus,
-  Information,
-  State
-} from 'ustaxes/core/data'
-// import parameters from './Parameters'
+import { State } from 'ustaxes/core/data'
+import { ValidatedInformation } from 'ustaxes/forms/F1040Base'
 
 export class ORASC extends Form {
-  info: Information
+  info: ValidatedInformation
   f1040: F1040
   formName: string
   state: State
   formOrder = 0
   methods: FormMethods
 
-  constructor(info: Information, f1040: F1040) {
+  constructor(f1040: F1040) {
     super()
-    this.info = info
+    this.info = f1040.info
     this.f1040 = f1040
     this.formName = 'OR-ASC'
     this.state = 'OR'
@@ -569,7 +563,6 @@ export class ORASC extends Form {
   ]
 }
 
-const makeORASC = (info: Information, f1040: F1040): ORASC =>
-  new ORASC(info, f1040)
+const makeORASC = (f1040: F1040): ORASC => new ORASC(f1040)
 
 export default makeORASC

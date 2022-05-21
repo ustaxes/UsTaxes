@@ -1,15 +1,20 @@
 import { Button, ButtonProps } from '@material-ui/core'
 import { ChangeEvent, PropsWithChildren, ReactElement } from 'react'
+import { intentionallyFloat } from 'ustaxes/core/util'
 import { loadFile } from '.'
 
 interface LoadProps<S> {
   handleData: (s: S) => void
 }
 
-const Load = <S,>(
-  props: PropsWithChildren<LoadProps<S> & ButtonProps>
+interface Accept {
+  accept?: string
+}
+
+export const LoadRaw = (
+  props: PropsWithChildren<LoadProps<string> & Accept & ButtonProps>
 ): ReactElement => {
-  const { children, handleData, ...rest } = props
+  const { children, handleData, accept = '.*,text', ...rest } = props
 
   const onClick = async (e: ChangeEvent<HTMLInputElement>): Promise<void> => {
     e.preventDefault()
@@ -25,8 +30,28 @@ const Load = <S,>(
   return (
     <Button {...{ ...rest, component: 'label' }}>
       {children}
-      <input type="file" hidden accept=".json,text/json" onChange={onClick} />
+      <input
+        type="file"
+        hidden
+        accept={accept}
+        onChange={intentionallyFloat(onClick)}
+      />
     </Button>
+  )
+}
+
+const Load = <S,>(
+  props: PropsWithChildren<LoadProps<S> & ButtonProps & Accept>
+): ReactElement => {
+  const { children, handleData, ...rest } = props
+
+  return (
+    <LoadRaw
+      {...rest}
+      handleData={(contents: string) => handleData(JSON.parse(contents) as S)}
+    >
+      {children}
+    </LoadRaw>
   )
 }
 

@@ -4,7 +4,13 @@ import { useSelector } from 'react-redux'
 import { useYearSelector, useYearDispatch } from 'ustaxes/redux/yearDispatch'
 import { FormProvider, useForm } from 'react-hook-form'
 import { usePager } from 'ustaxes/components/pager'
-import { HealthSavingsAccount, Person, PersonRole } from 'ustaxes/core/data'
+import {
+  HealthSavingsAccount,
+  Person,
+  PersonRole,
+  TaxYear,
+  TaxYears
+} from 'ustaxes/core/data'
 
 import {
   Currency,
@@ -21,9 +27,9 @@ import { Work } from '@material-ui/icons'
 import { TaxesState } from 'ustaxes/redux'
 import { addHSA, editHSA, removeHSA } from 'ustaxes/redux/actions'
 import { YearsTaxesState } from 'ustaxes/redux'
-import { TaxYear, TaxYears } from 'ustaxes/data'
 
 import { format } from 'date-fns'
+import { intentionallyFloat } from 'ustaxes/core/util'
 
 interface HSAUserInput {
   label: string
@@ -47,7 +53,7 @@ const blankUserInput: HSAUserInput = {
   qualifiedDistributions: ''
 }
 
-const toHSA = (formData: HSAUserInput): HealthSavingsAccount => ({
+const toHSA = (formData: HSAUserInput): HealthSavingsAccount<string> => ({
   ...formData,
   // Note we are not error checking here because
   // we are already in the input validated happy path
@@ -74,20 +80,21 @@ const toHSAUserInput = (data: HealthSavingsAccount): HSAUserInput => ({
 })
 
 export default function HealthSavingsAccounts(): ReactElement {
+  const defaultValues = blankUserInput
   const hsa = useYearSelector(
     (state: TaxesState) => state.information.healthSavingsAccounts
   )
 
   const people: Person[] = useYearSelector((state: TaxesState) => [
-    state.information.taxPayer?.primaryPerson,
-    state.information.taxPayer?.spouse
+    state.information.taxPayer.primaryPerson,
+    state.information.taxPayer.spouse
   ])
     .filter((p) => p !== undefined)
     .map((p) => p as Person)
 
   const dispatch = useYearDispatch()
 
-  const methods = useForm<HSAUserInput>()
+  const methods = useForm<HSAUserInput>({ defaultValues })
   const { handleSubmit } = methods
 
   const activeYear: TaxYear = useSelector(
@@ -108,6 +115,7 @@ export default function HealthSavingsAccounts(): ReactElement {
 
   const hsaBlock = (
     <FormListContainer<HSAUserInput>
+      defaultValues={defaultValues}
       items={hsa.map((a) => toHSAUserInput(a))}
       onSubmitAdd={onSubmitAdd}
       onSubmitEdit={onSubmitEdit}
@@ -132,36 +140,36 @@ export default function HealthSavingsAccounts(): ReactElement {
       )}
     >
       <Grid container spacing={2}>
-        <LabeledInput
+        <LabeledInput<HSAUserInput>
           name="label"
           label="label for this account"
           patternConfig={Patterns.plain}
           sizes={{ xs: 12, lg: 6 }}
         />
-        <LabeledInput
+        <LabeledInput<HSAUserInput>
           name="contributions"
           label="Your total contributions to this account."
           patternConfig={Patterns.currency}
           sizes={{ xs: 12, lg: 6 }}
         />
-        <LabeledInput
+        <LabeledInput<HSAUserInput>
           name="totalDistributions"
           label="Total distributions from this account."
           patternConfig={Patterns.currency}
           sizes={{ xs: 12, lg: 6 }}
         />
-        <LabeledInput
+        <LabeledInput<HSAUserInput>
           name="qualifiedDistributions"
           label="Qualified medical distributions from this account."
           patternConfig={Patterns.currency}
           sizes={{ xs: 12, lg: 6 }}
         />
-        <LabeledDropdown
+        <LabeledDropdown<HSAUserInput>
           dropDownData={['self-only', 'family']}
           label="Coverage Type"
           name="coverageType"
         />
-        <GenericLabeledDropdown
+        <GenericLabeledDropdown<Person, HSAUserInput>
           dropDownData={people}
           label="Recipient"
           valueMapping={(p: Person, i: number) =>
@@ -195,9 +203,14 @@ export default function HealthSavingsAccounts(): ReactElement {
 
   return (
     <FormProvider {...methods}>
-      <form tabIndex={-1} onSubmit={handleSubmit(onAdvance)}>
+      <form
+        tabIndex={-1}
+        onSubmit={intentionallyFloat(handleSubmit(onAdvance))}
+      >
         <Helmet>
-          <title>Health Savings Accounts (HSA) | Income | UsTaxes.org</title>
+          <title>
+            Health Savings Accounts (HSA) | Savings Accounts | UsTaxes.org
+          </title>
         </Helmet>
         <h2>Health Savings Accounts (HSA)</h2>
         {form}

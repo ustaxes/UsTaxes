@@ -8,16 +8,16 @@ export interface FSPersist extends FSAction {
   readonly type: 'fs/persist'
 }
 
-export interface FSRecover<S> extends FSAction {
+export interface FSRecover extends FSAction {
   readonly type: 'fs/recover'
-  data: S
+  data: string
 }
 
 export const fsPersist = (): FSPersist => ({
   type: 'fs/persist'
 })
 
-export const fsRecover = <S>(data: S): FSRecover<S> => ({
+export const fsRecover = (data: string): FSRecover => ({
   type: 'fs/recover',
   data
 })

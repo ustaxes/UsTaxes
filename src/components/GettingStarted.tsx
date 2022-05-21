@@ -9,8 +9,8 @@ const urls = {
   releases: 'https://github.com/ustaxes/UsTaxes/releases',
   issues: 'https://github.com/ustaxes/ustaxes/issues',
   twitter: 'https://twitter.com/ustaxesorg',
-  discord: 'https://discord.gg/xm5HmqX6',
-  aidan: 'https://github.com/aidangrimshaw',
+  discord: 'https://discord.gg/dAaz472mPz',
+  aidan: 'https://github.com/thegrims',
   zak: 'https://github.com/zakpatterson',
   startPage: '/info'
 }
@@ -62,18 +62,22 @@ export default function GettingStarted(): ReactElement {
       </ul>
       UsTaxes can attach the following to your 1040:
       <ul>
-        <li>Schedule 1 (as related to Schedule E only)</li>
+        <li>Schedule 1 (as related to Schedule E and Schedule SE only)</li>
         <li>Schedule 2</li>
         <li>Schedule 3 (as related to excess FICA only)</li>
         <li>Schedule 8812</li>
+        <li>Schedule A</li>
         <li>Schedule B</li>
         <li>Schedule D</li>
         <li>Schedule E</li>
+        <li>Schedule SE</li>
         <li>F1040-V</li>
+        <li>F6251 (AMT; only supports exercise of incentive stock options)</li>
         <li>F8889 (Health Savings Accounts)</li>
         <li>F8949 (Uncovered Investment Transactions)</li>
         <li>F8959 (Additional Medicare Tax)</li>
         <li>F8960 (Net Investment Income Tax)</li>
+        <li>F8995/F8995-A (Qualified Business Income Deduction)</li>
       </ul>
       These federal income tax credits are supported:
       <ul>
