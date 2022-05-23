@@ -30,7 +30,7 @@
     "redux": "^4.2.0",
     "redux-logger": "^3.0.6",
     "redux-persist": "^6.0.0",
-    "rooks": "^5.11.0",
+    "rooks": "^5.11.2",
     "ts-json-schema-generator": "^1.0.0",
     "typescript": "^4.6.4"
   },
