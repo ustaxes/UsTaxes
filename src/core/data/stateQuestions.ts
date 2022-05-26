@@ -50,6 +50,55 @@ export const stateQuestions: StateQuestion[] = [
     (s: Information) => s.stateResidencies[0].state == 'OR'
   ),
   q(
+    'OR_21_INTEREST_ON_INSTALLMENT_SALES',
+    'Enter amount here',
+    escapeHtmlTags(`<p><strong><u>21.</u> Interest on certain installment sales. </strong> Did you have installment sales that required you to pay
+    interest on the deferred tax liability for federal purposes? If so, you must also compute interest for Oregon
+    using the same method as for federal. The annual interest rate is 4 percent for 2021 and 2022.</p>`),
+    'string',
+    (s: Information) => s.stateResidencies[0].state == 'OR'
+  ),
+  q(
+    'OR_24_POLITICAL_CONTRIBUTION_CREDIT',
+    'Enter amount here',
+    escapeHtmlTags(`<p><strong><u>24.</u> Political Contribution Credit. </strong> If your federal AGI isn’t more than $75,000 ($150,000 if you’re filing
+    a joint return), you may claim a standard credit of up to $50 ($100 if you’re filing a joint return) for cash contributions you made during 2021 to any
+    <ul>
+      <li>Qualified political party</li>
+      <li>Qualified candidate for federal, state, or local elective office, or the candidate’s campaign, for an election in Oregon</li>
+      <li>Political action committee certified in Oregon</li>
+    </ul></p>`),
+    'string',
+    (s: Information) => s.stateResidencies[0].state == 'OR'
+  ),
+  q(
+    'OR_25_TOTAL_STANDARD_CREDITS_FROM_OR_ASC',
+    'Enter amount here',
+    escapeHtmlTags(
+      `<p><strong><u>25.</u> Total standard credits from Schedule OR-ASC, Section C. </strong> Enter your total standard credits from Schedule OR-ASC. <strong>Include Schedule OR-ASC with your return.</strong></p>`
+    ),
+    'string',
+    (s: Information) => s.stateResidencies[0].state == 'OR'
+  ),
+  q(
+    'OR_28_TOTAL_CARRYFORWARD_CREDITS_FROM_OR_ASC',
+    'Enter amount here',
+    escapeHtmlTags(
+      `<p><strong><u>28.</u> Total carryforward credits from Schedule OR-ASC, Section D. </strong> Enter your total carryforward credits from Schedule OR-ASC. Line 28 can’t be more than line 27.  <strong>Include Schedule OR-ASC with your return.</strong></p>`
+    ),
+    'string',
+    (s: Information) => s.stateResidencies[0].state == 'OR'
+  ),
+  q(
+    'OR_30_TOTAL_CREDIT_RECAPTURES_FROM_OR_ASC',
+    'Enter amount here',
+    escapeHtmlTags(
+      '<p><strong><u>30.</u> Total credit recaptures from Schedule OR-ASC, Section E. </strong> Enter your total credit recaptures from Schedule OR-ASC. <strong>Include Schedule OR-ASC with your return.</strong></p>'
+    ),
+    'string',
+    (s: Information) => s.stateResidencies[0].state == 'OR'
+  ),
+  q(
     'OR_32_OREGON_INCOME_TAX_WITHHELD',
     'Enter amount here',
     escapeHtmlTags(

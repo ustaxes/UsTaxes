@@ -3,7 +3,7 @@ import F1040 from '../../irsForms/F1040'
 import { Field } from 'ustaxes/core/pdfFiller'
 // import { sumFields } from 'ustaxes/core/irsForms/util'
 import { AccountType, FilingStatus, State } from 'ustaxes/core/data'
-// import parameters from './Parameters'
+import parameters from './Parameters'
 import { ORWFHDC } from './ORWFHDC'
 import OR40V from './OR40V'
 import { ValidatedInformation } from 'ustaxes/forms/F1040Base'
@@ -76,7 +76,7 @@ export class OR40 extends Form {
    */
   FiscalYearEndingDate = (): string | undefined => {
     // format: 'xx xx xxxx'
-    return undefined
+    return parameters.fiscal_year_end_date
   }
 
   f1 = (): string | undefined => this.FiscalYearEndingDate()
@@ -1049,7 +1049,48 @@ export class OR40 extends Form {
    * Index 101: Tax (20)
    */
   Tax20 = (): string | undefined => {
-    return undefined
+    const taxable_income = parseInt(
+      this.OregonTaxableIncome19()?.replace(/\s/g, '') ?? '0'
+    )
+    let filingStatus: FilingStatus
+    if (
+      this.info.taxPayer.filingStatus == FilingStatus.S ||
+      this.info.taxPayer.filingStatus == FilingStatus.MFS
+    ) {
+      filingStatus = FilingStatus.S
+    } else {
+      filingStatus = FilingStatus.MFJ
+    }
+    // Check if calculation needs tax chart or rates
+    if (taxable_income < parameters.tax.table_limit) {
+      // Covers non-uniform indexes
+      for (let i = 0; i < parameters.tax.non_uniform_index.length; i++) {
+        if (taxable_income < parameters.tax.non_uniform_index[i]) {
+          return this.formatDollarAmount(parameters.tax.table[filingStatus][i])
+        }
+      }
+      // Return value from tax table
+      return this.formatDollarAmount(
+        parameters.tax.table[filingStatus][Math.floor(taxable_income / 100) + 2]
+      )
+    } else {
+      //Calculate using rates
+      const bracketLimit = parameters.tax.rates[filingStatus].lowerBracketLimit
+      if (taxable_income < bracketLimit) {
+        // Lower Tax Rate Calculation
+        return this.formatDollarAmount(
+          parameters.tax.rates[filingStatus].lowerBaseAmt +
+            parameters.tax.rates.lowerTaxRate *
+              (taxable_income - parameters.tax.table_limit)
+        )
+      } else {
+        // Upper Tax Rate Calculation
+        return this.formatDollarAmount(
+          parameters.tax.rates[filingStatus].upperBaseAmt +
+            parameters.tax.rates.upperTaxRate * (taxable_income - bracketLimit)
+        )
+      }
+    }
   }
 
   f101 = (): string | undefined => this.Tax20()
@@ -1058,7 +1099,14 @@ export class OR40 extends Form {
    * Index 102: Intrest On Certain Installments (21)
    */
   IntrestOnCertainInstallments21 = (): string | undefined => {
-    return undefined
+    return this.formatDollarAmount(
+      parseInt(
+        this.info.stateQuestions.OR_21_INTEREST_ON_INSTALLMENT_SALES?.replace(
+          /\s/g,
+          ''
+        ) ?? '0'
+      )
+    )
   }
 
   f102 = (): string | undefined => this.IntrestOnCertainInstallments21()
@@ -1068,7 +1116,12 @@ export class OR40 extends Form {
    * Sum lines 20, 21
    */
   TotalTaxBeforeCredits22 = (): string | undefined => {
-    return undefined
+    return this.formatDollarAmount(
+      parseInt(this.Tax20()?.replace(/\s/g, '') ?? '0') +
+        parseInt(
+          this.IntrestOnCertainInstallments21()?.replace(/\s/g, '') ?? '0'
+        )
+    )
   }
 
   f103 = (): string | undefined => this.TotalTaxBeforeCredits22()
@@ -1080,7 +1133,26 @@ export class OR40 extends Form {
    * Otherwise, see instructions
    */
   ExemptionCredit23 = (): string | undefined => {
-    return undefined
+    let filingStatus = FilingStatus.S
+    if (
+      this.info.taxPayer.filingStatus == FilingStatus.S ||
+      this.info.taxPayer.filingStatus == FilingStatus.MFS
+    ) {
+      filingStatus = FilingStatus.S
+    } else {
+      filingStatus = FilingStatus.MFJ
+    }
+    const agi = parseInt(
+      this.FedAdjustedGrossIncome7()?.replace(/\s/g, '') ?? '0'
+    )
+    if (agi > parameters.exemptions[filingStatus]) {
+      return '0'
+    } else {
+      return this.formatDollarAmount(
+        parseInt(this.TotalExemptions6e()?.replace(/\s/g, '') ?? '0') *
+          parameters.exemptions.multiplier
+      )
+    }
   }
 
   f104 = (): string | undefined => this.ExemptionCredit23()
@@ -1089,7 +1161,14 @@ export class OR40 extends Form {
    * Index 105: Political Contribution Credit (24)
    */
   PoliticalContributionCredit24 = (): string | undefined => {
-    return undefined
+    return this.formatDollarAmount(
+      parseInt(
+        this.info.stateQuestions.OR_24_POLITICAL_CONTRIBUTION_CREDIT?.replace(
+          /\s/g,
+          ''
+        ) ?? '0'
+      )
+    )
   }
 
   f105 = (): string | undefined => this.PoliticalContributionCredit24()
@@ -1099,7 +1178,14 @@ export class OR40 extends Form {
    * Section C
    */
   StandardCreditsScheduleASC25 = (): string | undefined => {
-    return undefined
+    return this.formatDollarAmount(
+      parseInt(
+        this.info.stateQuestions.OR_25_TOTAL_STANDARD_CREDITS_FROM_OR_ASC?.replace(
+          /\s/g,
+          ''
+        ) ?? '0'
+      )
+    )
   }
 
   f106 = (): string | undefined => this.StandardCreditsScheduleASC25()
@@ -1109,7 +1195,13 @@ export class OR40 extends Form {
    * Sum lines 23-25
    */
   TotalStandardCredits26 = (): string | undefined => {
-    return undefined
+    return this.formatDollarAmount(
+      parseInt(this.ExemptionCredit23()?.replace(/\s/g, '') ?? '0') +
+        parseInt(
+          this.PoliticalContributionCredit24()?.replace(/\s/g, '') ?? '0'
+        ) +
+        parseInt(this.StandardCreditsScheduleASC25()?.replace(/\s/g, '') ?? '0')
+    )
   }
 
   f107 = (): string | undefined => this.TotalStandardCredits26()
@@ -1312,7 +1404,17 @@ export class OR40 extends Form {
    * Line 22 - line 26, min 0
    */
   TaxMinusStandardCredits27 = (): string | undefined => {
-    return undefined
+    const l26 = parseInt(
+      this.TotalStandardCredits26()?.replace(/\s/g, '') ?? '0'
+    )
+    const l22 = parseInt(
+      this.TotalTaxBeforeCredits22()?.replace(/\s/g, '') ?? '0'
+    )
+    if (l26 > l22) {
+      return '0'
+    } else {
+      return this.formatDollarAmount(l22 - l26)
+    }
   }
 
   f120 = (): string | undefined => this.TaxMinusStandardCredits27()
@@ -1322,7 +1424,14 @@ export class OR40 extends Form {
    * Section D, no larger than line 27
    */
   TotalCarryforwardCreditsScheduleASC28 = (): string | undefined => {
-    return undefined
+    return this.formatDollarAmount(
+      parseInt(
+        this.info.stateQuestions.OR_28_TOTAL_CARRYFORWARD_CREDITS_FROM_OR_ASC?.replace(
+          /\s/g,
+          ''
+        ) ?? '0'
+      )
+    )
   }
 
   f121 = (): string | undefined => this.TotalCarryforwardCreditsScheduleASC28()
@@ -1332,7 +1441,13 @@ export class OR40 extends Form {
    * Line 27 - Line 28
    */
   TaxAfterStandardCarryforwardCredits29 = (): string | undefined => {
-    return undefined
+    const l27 = parseInt(
+      this.TaxMinusStandardCredits27()?.replace(/\s/g, '') ?? '0'
+    )
+    const l28 = parseInt(
+      this.TotalCarryforwardCreditsScheduleASC28()?.replace(/\s/g, '') ?? '0'
+    )
+    return this.formatDollarAmount(l27 - l28)
   }
 
   f122 = (): string | undefined => this.TaxAfterStandardCarryforwardCredits29()
@@ -1342,7 +1457,14 @@ export class OR40 extends Form {
    * OR-ASC, Section E
    */
   TotalCreditRecapturesScheduleASC30 = (): string | undefined => {
-    return undefined
+    return this.formatDollarAmount(
+      parseInt(
+        this.info.stateQuestions.OR_30_TOTAL_CREDIT_RECAPTURES_FROM_OR_ASC?.replace(
+          /\s/g,
+          ''
+        ) ?? '0'
+      )
+    )
   }
 
   f123 = (): string | undefined => this.TotalCreditRecapturesScheduleASC30()
@@ -1352,7 +1474,13 @@ export class OR40 extends Form {
    * Line 29 + Line 30
    */
   TaxAfterCreditRecaptures31 = (): string | undefined => {
-    return undefined
+    const l29 = parseInt(
+      this.TaxAfterStandardCarryforwardCredits29()?.replace(/\s/g, '') ?? '0'
+    )
+    const l30 = parseInt(
+      this.TotalCreditRecapturesScheduleASC30()?.replace(/\s/g, '') ?? '0'
+    )
+    return this.formatDollarAmount(l29 + l30)
   }
 
   f124 = (): string | undefined => this.TaxAfterCreditRecaptures31()
