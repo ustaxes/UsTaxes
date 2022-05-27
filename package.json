@@ -21,7 +21,7 @@
     "react-device-detect": "^2.2.2",
     "react-dom": "^18.1.0",
     "react-helmet": "^6.1.0",
-    "react-hook-form": "^7.22.5",
+    "react-hook-form": "^7.31.2",
     "react-number-format": "^4.9.3",
     "react-redux": "^8.0.2",
     "react-router": "^6.3.0",
