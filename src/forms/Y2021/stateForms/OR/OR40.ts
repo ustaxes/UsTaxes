@@ -7,6 +7,9 @@ import { AccountType, FilingStatus, State } from 'ustaxes/core/data'
 import { ORWFHDC } from './ORWFHDC'
 import OR40V from './OR40V'
 import { ValidatedInformation } from 'ustaxes/forms/F1040Base'
+import { findAllByDisplayValue } from '@testing-library/react'
+import { count } from 'console'
+import { has } from 'lodash'
 
 export class OR40 extends Form {
   info: ValidatedInformation
@@ -62,6 +65,30 @@ export class OR40 extends Form {
     return result?.padStart(11)
   }
 
+  formatPhoneNumber(phoneNumber: string | undefined): string | undefined {
+    const cleaned = phoneNumber?.replace(/\D/g, '')
+    const match = cleaned?.match(/^(\d{3})(\d{3})(\d{4})$/)
+    if (match) {
+      return match[1] + ' ' + match[2] + ' ' + match[3]
+    }
+    return undefined
+  }
+
+  formatZip(zip: string | undefined, ext: boolean): string | undefined {
+    const cleaned = zip?.replace(/\D/g, '')
+    const hasExt = cleaned?.length === 9
+
+    if (ext && hasExt) {
+      return cleaned.substring(5)
+    }
+
+    if (!ext) {
+      return cleaned?.substring(0, 5)
+    }
+
+    return undefined
+  }
+
   /**
    * Index 0: Button - Clear form
    */
@@ -76,7 +103,7 @@ export class OR40 extends Form {
    */
   FiscalYearEndingDate = (): string | undefined => {
     // format: 'xx xx xxxx'
-    return undefined
+    return '04 18 2022'
   }
 
   f1 = (): string | undefined => this.FiscalYearEndingDate()
@@ -85,7 +112,7 @@ export class OR40 extends Form {
    * Index 2: Ammended Return
    */
   AmmendedReturn = (): boolean | undefined => {
-    return true
+    return false
   }
 
   f2 = (): boolean | undefined => this.AmmendedReturn()
@@ -94,7 +121,7 @@ export class OR40 extends Form {
    * Index 3: Calculated "As If" Federal Return
    */
   CalcAsIfFedReturn = (): boolean | undefined => {
-    return true
+    return false
   }
 
   f3 = (): boolean | undefined => this.CalcAsIfFedReturn()
@@ -103,7 +130,7 @@ export class OR40 extends Form {
    * Index 4: Short-Year Tax Election
    */
   ShortYearTaxElection = (): boolean | undefined => {
-    return true
+    return false
   }
 
   f4 = (): boolean | undefined => this.ShortYearTaxElection()
@@ -112,7 +139,7 @@ export class OR40 extends Form {
    * Index 5: Extension Field
    */
   ExtensionField = (): boolean | undefined => {
-    return true
+    return false
   }
 
   f5 = (): boolean | undefined => this.ExtensionField()
@@ -121,7 +148,7 @@ export class OR40 extends Form {
    * Index 6: Form OR-24
    */
   FormOR24 = (): boolean | undefined => {
-    return true
+    return false
   }
 
   f6 = (): boolean | undefined => this.FormOR24()
@@ -130,7 +157,7 @@ export class OR40 extends Form {
    * Index 7: Federal Form 8379
    */
   FederalForm8379 = (): boolean | undefined => {
-    return true
+    return false
   }
 
   f7 = (): boolean | undefined => this.FederalForm8379()
@@ -139,7 +166,7 @@ export class OR40 extends Form {
    * Index 8: Federal Form 8886
    */
   FederalForm8886 = (): boolean | undefined => {
-    return true
+    return false
   }
 
   f8 = (): boolean | undefined => this.FederalForm8886()
@@ -148,7 +175,7 @@ export class OR40 extends Form {
    * Index 9: Disaster Relief
    */
   DisasterRelief = (): boolean | undefined => {
-    return true
+    return false
   }
 
   f9 = (): boolean | undefined => this.DisasterRelief()
@@ -157,7 +184,7 @@ export class OR40 extends Form {
    * Index 10: First Name
    */
   FirstName = (): string | undefined => {
-    return undefined
+    return this.info.taxPayer.primaryPerson.firstName
   }
 
   f10 = (): string | undefined => this.FirstName()
@@ -176,7 +203,13 @@ export class OR40 extends Form {
    */
   DateOfBirth = (): string | undefined => {
     // format: 'xx xx xxxx'
-    return undefined
+    return this.info.taxPayer.primaryPerson.dateOfBirth
+      .toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+      })
+      .replaceAll('/', ' ')
   }
 
   f12 = (): string | undefined => this.DateOfBirth()
@@ -185,7 +218,7 @@ export class OR40 extends Form {
    * Index 13: First Time Using This SSN
    */
   FirstTimeUsingThisSSN = (): boolean | undefined => {
-    return true
+    return false
   }
 
   f13 = (): boolean | undefined => this.FirstTimeUsingThisSSN()
@@ -194,7 +227,7 @@ export class OR40 extends Form {
    * Index 14: Applied for ITIN
    */
   AppliedForITIN = (): boolean | undefined => {
-    return true
+    return false
   }
 
   f14 = (): boolean | undefined => this.AppliedForITIN()
@@ -203,7 +236,7 @@ export class OR40 extends Form {
    * Index 15: Deceased
    */
   Deceased = (): boolean | undefined => {
-    return true
+    return false
   }
 
   f15 = (): boolean | undefined => this.Deceased()
@@ -540,7 +573,7 @@ export class OR40 extends Form {
    * Index 47: Spouse's First Name
    */
   SpouseFirstName = (): string | undefined => {
-    return undefined
+    return this.info.taxPayer.spouse?.firstName
   }
 
   f47 = (): string | undefined => this.SpouseFirstName()
@@ -559,7 +592,13 @@ export class OR40 extends Form {
    */
   SpouseDateOfBirth = (): string | undefined => {
     // format: 'xx xx xxxx'
-    return undefined
+    return this.info.taxPayer.spouse?.dateOfBirth
+      .toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+      })
+      .replaceAll('/', ' ')
   }
 
   f49 = (): string | undefined => this.SpouseDateOfBirth()
@@ -568,7 +607,7 @@ export class OR40 extends Form {
    * Index 50: Spouse's Last Name
    */
   SpouseLastName = (): string | undefined => {
-    return undefined
+    return this.info.taxPayer.spouse?.lastName
   }
 
   f50 = (): string | undefined => this.SpouseLastName()
@@ -578,7 +617,7 @@ export class OR40 extends Form {
    */
   SpouseSocialSecurityNumber = (): string | undefined => {
     // format: 'xxx xx xxxx'
-    return undefined
+    return this.formatSocialSecurity(this.info.taxPayer.spouse?.ssid)
   }
 
   f51 = (): string | undefined => this.SpouseSocialSecurityNumber()
@@ -587,7 +626,7 @@ export class OR40 extends Form {
    * Index 52: Spouse First Time Using SSN
    */
   SpouseFirstTimeUsingSSN = (): boolean | undefined => {
-    return true
+    return false
   }
 
   f52 = (): boolean | undefined => this.SpouseFirstTimeUsingSSN()
@@ -596,7 +635,7 @@ export class OR40 extends Form {
    * Index 53: Spouse Applied For ITIN
    */
   SpouseAppliedForITIN = (): boolean | undefined => {
-    return true
+    return false
   }
 
   f53 = (): boolean | undefined => this.SpouseAppliedForITIN()
@@ -605,7 +644,7 @@ export class OR40 extends Form {
    * Index 54: Spouse Deceased
    */
   SpouseDeceased = (): boolean | undefined => {
-    return true
+    return false
   }
 
   f54 = (): boolean | undefined => this.SpouseDeceased()
@@ -614,7 +653,10 @@ export class OR40 extends Form {
    * Index 55: Current Address
    */
   CurrentAddress = (): string | undefined => {
-    return undefined
+    let address = this.info.taxPayer.primaryPerson.address.address
+    const apartment = this.info.taxPayer.primaryPerson.address.aptNo
+    if (apartment) address = address + ' Unit ' + apartment
+    return address ? address : undefined
   }
 
   f55 = (): string | undefined => this.CurrentAddress()
@@ -623,7 +665,7 @@ export class OR40 extends Form {
    * Index 56: City
    */
   City = (): string | undefined => {
-    return undefined
+    return this.info.taxPayer.primaryPerson.address.city
   }
 
   f56 = (): string | undefined => this.City()
@@ -632,7 +674,11 @@ export class OR40 extends Form {
    * Index 57: Country
    */
   Country = (): string | undefined => {
-    return undefined
+    let country = 'USA' //United States of America
+    if (this.info.taxPayer.primaryPerson.address.foreignCountry != undefined) {
+      country = this.info.taxPayer.primaryPerson.address.foreignCountry
+    }
+    return country ? country : undefined
   }
 
   f57 = (): string | undefined => this.Country()
@@ -642,7 +688,7 @@ export class OR40 extends Form {
    */
   Phone = (): string | undefined => {
     // format: 'xxx xxx xxxx'
-    return undefined
+    return this.formatPhoneNumber(this.info.taxPayer.contactPhoneNumber)
   }
 
   f58 = (): string | undefined => this.Phone()
@@ -1546,7 +1592,7 @@ export class OR40 extends Form {
    * Index 135: Tax Payer's State
    */
   TaxPayerState = (): string | undefined => {
-    return undefined
+    return this.info.taxPayer.primaryPerson.address.state
   }
 
   f135 = (): string | undefined => this.TaxPayerState()
@@ -1613,7 +1659,10 @@ export class OR40 extends Form {
    * Index 142: ZIPCode ()
    */
   ZipCode = (): string | undefined => {
-    return undefined
+    const zip = this.info.taxPayer.primaryPerson.address.zip
+    const getExtension = false
+    const formattedZip = this.formatZip(zip, getExtension)
+    return formattedZip ? formattedZip : undefined
   }
 
   f142 = (): string | undefined => this.ZipCode()
@@ -1622,7 +1671,10 @@ export class OR40 extends Form {
    * Index 143: ZIP extension
    */
   ZipExtension = (): string | undefined => {
-    return undefined
+    const zip = this.info.taxPayer.primaryPerson.address.zip
+    const getExtension = true
+    const formattedZip = this.formatZip(zip, getExtension)
+    return formattedZip ? formattedZip : undefined
   }
 
   f143 = (): string | undefined => this.ZipExtension()
