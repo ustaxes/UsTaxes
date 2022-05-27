@@ -1,6 +1,6 @@
 import { ReactElement, useEffect } from 'react'
 import { Helmet } from 'react-helmet'
-import { Grid, List, ListItem } from '@material-ui/core'
+import { Grid, List, ListItem, Link } from '@material-ui/core'
 import { useDispatch, useSelector, TaxesState } from 'ustaxes/redux'
 import { StateQuestionTagName, StateResponses } from 'ustaxes/core/data'
 import { getRequiredStateQuestions } from 'ustaxes/core/data/stateQuestions'
@@ -149,13 +149,13 @@ const StateQuestions = (): ReactElement => {
           switch (stateResidency) {
             case 'OR': {
               return (
-                <a
+                <Link
                   href="https://www.oregon.gov/dor/forms/FormsPubs/form-or-40-inst_101-040-1_2021.pdf"
                   target="_blank"
                   rel="noreferrer"
                 >
                   2021 Oregon Income Tax - Form OR-40 Instructions
-                </a>
+                </Link>
               )
             }
           }
