@@ -32,6 +32,7 @@ import GettingStarted from './GettingStarted'
 import F1098eInfo from './deductions/F1098eInfo'
 import ItemizedDeductions from './deductions/ItemizedDeductions'
 import Questions from './Questions'
+import HelpAndFeedback from './HelpAndFeedback'
 import UserSettings from './UserSettings'
 import Urls from 'ustaxes/data/urls'
 
@@ -94,6 +95,11 @@ export const backPages: SectionItem[] = [
     title: 'User Settings',
     url: Urls.settings,
     element: <UserSettings />
+  },
+  {
+    title: 'Help and Feedback',
+    url: Urls.help,
+    element: <HelpAndFeedback />
   }
 ]
 

@@ -36,6 +36,7 @@ const toCreditUserInput = (c: Credit): CreditUserInput => {
 }
 
 export const AdvanceChildTaxCredit = (): ReactElement => {
+  const defaultValues = blankCreditUserInput
   const credits = useSelector(({ information }) => information.credits)
   const taxPayer = useSelector(({ information }) => information.taxPayer)
   const spouse = taxPayer.spouse
@@ -58,7 +59,7 @@ export const AdvanceChildTaxCredit = (): ReactElement => {
   const dispatch = useDispatch()
 
   const methods = useForm<CreditUserInput>({
-    defaultValues: blankCreditUserInput
+    defaultValues
   })
 
   const onSubmitAdd = (formData: CreditUserInput): void => {
@@ -84,6 +85,7 @@ export const AdvanceChildTaxCredit = (): ReactElement => {
         indicated on Letter 6419.
       </p>
       <FormListContainer<CreditUserInput>
+        defaultValues={defaultValues}
         primary={(c) =>
           c.recipient === PersonRole.PRIMARY ? primaryName : spouseName
         }

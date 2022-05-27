@@ -8,6 +8,7 @@ import { claimableExcessSSTaxWithholding } from 'ustaxes/forms/Y2021/irsForms/Sc
 import { displayRound } from 'ustaxes/core/irsForms/util'
 import { testKit, commonTests } from '.'
 import { PersonRole } from 'ustaxes/core/data'
+import * as fc from 'fast-check'
 
 jest.setTimeout(100000)
 
@@ -92,6 +93,8 @@ describe('fica', () => {
             .reduce((l, r) => l + r, 0)
 
         expect(ssRefund).toEqual(ssWithheld - fica.maxSSTax)
+      } else {
+        fc.pre(false)
       }
       return Promise.resolve()
     })

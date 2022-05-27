@@ -34,6 +34,7 @@ export abstract class TestPage {
       const rendered = renderWithProviders(this.renderComponent(), {
         baseElement
       })
+      rendered.debug(undefined, Infinity)
       this._baseElement = baseElement
       this._rendered = rendered
     }

@@ -3,6 +3,7 @@ import { CombinedState, combineReducers, Reducer } from 'redux'
 import { Asset, FilingStatus, Information, TaxYear } from 'ustaxes/core/data'
 import { YearsTaxesState } from '.'
 import { ActionName, Actions } from './actions'
+import { stringToDateInfo } from './data'
 
 const DEFAULT_TAX_YEAR: TaxYear = 'Y2021'
 
@@ -35,7 +36,10 @@ const formReducer = (
         ...newState,
         taxPayer: {
           ...newState.taxPayer,
-          primaryPerson: action.formData
+          primaryPerson: {
+            ...action.formData,
+            dateOfBirth: new Date(action.formData.dateOfBirth)
+          }
         }
       }
     }
@@ -68,7 +72,13 @@ const formReducer = (
         ...newState,
         taxPayer: {
           ...newState.taxPayer,
-          dependents: [...newState.taxPayer.dependents, action.formData]
+          dependents: [
+            ...newState.taxPayer.dependents,
+            {
+              ...action.formData,
+              dateOfBirth: new Date(action.formData.dateOfBirth)
+            }
+          ]
         }
       }
     }
@@ -76,7 +86,10 @@ const formReducer = (
     // Replace dependent by index with a new object.
     case ActionName.EDIT_DEPENDENT: {
       const newDependents = [...newState.taxPayer.dependents]
-      newDependents.splice(action.formData.index, 1, action.formData.value)
+      newDependents.splice(action.formData.index, 1, {
+        ...action.formData.value,
+        dateOfBirth: new Date(action.formData.value.dateOfBirth)
+      })
 
       return {
         ...newState,
@@ -187,7 +200,10 @@ const formReducer = (
         ...newState,
         taxPayer: {
           ...newState.taxPayer,
-          spouse: action.formData
+          spouse: {
+            ...action.formData,
+            dateOfBirth: new Date(action.formData.dateOfBirth)
+          }
         }
       }
     }
@@ -313,7 +329,7 @@ const formReducer = (
     case ActionName.SET_INFO: {
       return {
         ...newState,
-        ...action.formData
+        ...stringToDateInfo(action.formData)
       }
     }
     case ActionName.ADD_HSA: {
@@ -321,13 +337,21 @@ const formReducer = (
         ...newState,
         healthSavingsAccounts: [
           ...newState.healthSavingsAccounts,
-          action.formData
+          {
+            ...action.formData,
+            endDate: new Date(action.formData.endDate),
+            startDate: new Date(action.formData.startDate)
+          }
         ]
       }
     }
     case ActionName.EDIT_HSA: {
       const newHsa = [...newState.healthSavingsAccounts]
-      newHsa.splice(action.formData.index, 1, action.formData.value)
+      newHsa.splice(action.formData.index, 1, {
+        ...action.formData.value,
+        endDate: new Date(action.formData.value.endDate),
+        startDate: new Date(action.formData.value.startDate)
+      })
       return {
         ...newState,
         healthSavingsAccounts: newHsa
