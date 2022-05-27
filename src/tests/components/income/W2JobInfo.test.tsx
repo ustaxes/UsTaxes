@@ -12,7 +12,6 @@ import {
 import { blankState } from 'ustaxes/redux/reducer'
 import W2JobInfo from 'ustaxes/components/income/W2JobInfo'
 import userEvent from '@testing-library/user-event'
-import { BrowserRouter as Router } from 'react-router-dom'
 
 jest.mock('redux-persist', () => {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -119,13 +118,11 @@ describe('W2JobInfo', () => {
     const navButtons = <PagerButtons submitText="Save and Continue" />
 
     render(
-      <Router>
-        <Provider store={store}>
-          <PagerContext.Provider value={{ onAdvance: jest.fn(), navButtons }}>
-            <W2JobInfo />
-          </PagerContext.Provider>
-        </Provider>
-      </Router>
+      <Provider store={store}>
+        <PagerContext.Provider value={{ onAdvance: jest.fn(), navButtons }}>
+          <W2JobInfo />
+        </PagerContext.Provider>
+      </Provider>
     )
 
     const changeByLabelText = (labelText: string | RegExp, input: string) => {
