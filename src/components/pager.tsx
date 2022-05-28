@@ -1,25 +1,24 @@
 import {
   createContext,
   useContext,
-  useState,
   PropsWithChildren,
   ReactElement,
   ReactNode
 } from 'react'
 import { useMediaQuery, Button, Grid } from '@material-ui/core'
 import { isMobileOnly as isMobile } from 'react-device-detect'
-import { Link, useHistory } from 'react-router-dom'
+import { Link } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router'
 
 export interface PagerProps {
   onAdvance: () => void
-  navButtons: ReactElement
+  navButtons?: ReactElement
 }
 
 export const PagerContext = createContext<PagerProps>({
   onAdvance: () => {
-    /* just a placeholder */
-  },
-  navButtons: <></>
+    // do nothing
+  }
 })
 
 interface PagerProviderProps<A> {
@@ -34,32 +33,20 @@ export const PagerProvider = <A extends Page>({
   children,
   pages
 }: PropsWithChildren<PagerProviderProps<A>>): ReactElement => {
-  const history = useHistory()
-
   const lookup = new Map(pages.map((p, i) => [p.url, i]))
 
-  const [curPage, update] = useState(lookup.get(history.location.pathname) ?? 0)
+  const currentLoc = useLocation()
+  const currentPage = lookup.get(currentLoc.pathname) ?? 0
 
-  history.listen((e) => {
-    const newPage = lookup.get(e.pathname)
-
-    if (newPage !== undefined) {
-      update(newPage)
-    }
-  })
+  const navigate = useNavigate()
 
   const onAdvance: (() => void) | undefined = (() => {
-    if (curPage < pages.length - 1) {
-      return () => history.push(pages[curPage + 1].url)
+    if (currentPage < pages.length - 1) {
+      return () => navigate(pages[currentPage + 1].url)
     }
-    return undefined
   })()
 
-  const prev = (() => {
-    if (curPage > 0) {
-      return pages[curPage - 1]
-    }
-  })()
+  const prev = currentPage > 0 ? pages[currentPage - 1] : undefined
 
   const navButtons: ReactElement = (
     <PagerButtons
@@ -86,6 +73,7 @@ export const PagerProvider = <A extends Page>({
 
 interface PagerButtonsProps {
   previousUrl?: string
+  nextUrl?: string
   submitText?: string
 }
 
