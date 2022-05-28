@@ -2,7 +2,7 @@ import { ReactElement, useEffect } from 'react'
 import { Helmet } from 'react-helmet'
 import { Grid, List, ListItem, Link } from '@material-ui/core'
 import { useDispatch, useSelector, TaxesState } from 'ustaxes/redux'
-import { StateQuestionTagName, StateResponses } from 'ustaxes/core/data'
+import { StateQuestionTagName, StateResponses, State } from 'ustaxes/core/data'
 import { getRequiredStateQuestions } from 'ustaxes/core/data/stateQuestions'
 import { LabeledCheckbox, LabeledInput, GenericLabeledDropdown } from './input'
 import { answerStateQuestion } from 'ustaxes/redux/actions'
@@ -78,9 +78,9 @@ const ORPoliticalParties = [
 
 const StateQuestions = (): ReactElement => {
   const information = useSelector((state: TaxesState) => state.information)
-  const stateResidency = useSelector(
-    (state: TaxesState) => state.information.stateResidencies[0].state
-  )
+
+  const stateResidency: State | undefined =
+    information.stateResidencies[0]?.state
 
   const stateAnswers: StateResponses = {
     ...emptyQuestions,
