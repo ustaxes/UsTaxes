@@ -7,7 +7,6 @@ import { BrowserRouter as Router } from 'react-router-dom'
 
 import { store, persistor } from './redux/store'
 import { PersistGate } from 'redux-persist/integration/react'
-import { LastLocationProvider } from 'react-router-last-location'
 
 import './index.css'
 
@@ -19,9 +18,7 @@ ReactDOM.render(
         persistor={persistor}
       >
         <Router>
-          <LastLocationProvider>
-            <App />
-          </LastLocationProvider>
+          <App />
         </Router>
       </PersistGate>
     </Provider>

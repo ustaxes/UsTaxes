@@ -18,7 +18,6 @@ import { DefaultValues, SubmitHandler, useFormContext } from 'react-hook-form'
 import _ from 'lodash'
 import { ReactNode } from 'react'
 import { FormContainerProvider } from './FormContainer/Context'
-import { Prompt } from 'ustaxes/components/Prompt'
 import { intentionallyFloat } from 'ustaxes/core/util'
 
 interface FormContainerProps {
@@ -173,11 +172,7 @@ export const OpenableFormContainer = <A,>(
 
   // Note useFormContext here instead of useForm reuses the
   // existing form context from the parent.
-  const {
-    reset,
-    handleSubmit,
-    formState: { isDirty, errors }
-  } = useFormContext()
+  const { reset, handleSubmit } = useFormContext()
 
   const closeForm = (): void => {
     props.onOpenStateChange(false)
@@ -200,7 +195,6 @@ export const OpenableFormContainer = <A,>(
 
   return (
     <>
-      <Prompt when={!_.isEmpty(errors) || isDirty} />
       {(() => {
         if (isOpen) {
           return (
