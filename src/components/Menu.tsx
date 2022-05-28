@@ -37,8 +37,6 @@ import UserSettings from './UserSettings'
 import Urls from 'ustaxes/data/urls'
 import StateQuestions from './StateQuestions'
 
-import ORWFHDCInput from './stateForms/OR/ORWFHDC'
-
 import { isMobileOnly as isMobile } from 'react-device-detect'
 import HealthSavingsAccounts from './savingsAccounts/healthSavingsAccounts'
 import IRA from './savingsAccounts/IRA'
@@ -178,10 +176,6 @@ export const drawerSections: Section[] = [
     items: [item('State Questions', Urls.stateQuestions, <StateQuestions />)]
   },
   {
-    title: 'OR Forms',
-    items: [item('OR-WFHDC', Urls.orforms.orwfhdc, <ORWFHDCInput />)]
-  },
-  {
     title: 'Results',
     items: [
       item('Refund Information', Urls.refund, <RefundBankAccount />),
@@ -207,7 +201,7 @@ const yearSpecificPages: Partial<{ [k in TaxYear]: Section[] }> = {
 }
 
 export const drawerSectionsForYear = (year: TaxYear): Section[] => [
-  ...drawerSections.slice(0, -2),
+  ...drawerSections.slice(0, -1),
   ...(yearSpecificPages[year] || []),
   drawerSections[drawerSections.length - 1]
 ]

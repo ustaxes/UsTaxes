@@ -3,8 +3,14 @@ import { Helmet } from 'react-helmet'
 import { Grid, List, ListItem, Link } from '@material-ui/core'
 import { useDispatch, useSelector, TaxesState } from 'ustaxes/redux'
 import { StateQuestionTagName, StateResponses, State } from 'ustaxes/core/data'
+import { Patterns } from 'ustaxes/components/Patterns'
 import { getRequiredStateQuestions } from 'ustaxes/core/data/stateQuestions'
-import { LabeledCheckbox, LabeledInput, GenericLabeledDropdown } from './input'
+import {
+  LabeledCheckbox,
+  LabeledInput,
+  GenericLabeledDropdown,
+  boxLabel
+} from './input'
 import { answerStateQuestion } from 'ustaxes/redux/actions'
 import { FormProvider, useForm } from 'react-hook-form'
 import { usePager } from './pager'
@@ -210,7 +216,13 @@ const StateQuestions = (): ReactElement => {
                       />
                     )
                   } else {
-                    return <LabeledInput name={q.tag} label={q.text} />
+                    return (
+                      <LabeledInput
+                        label={boxLabel(q.tag.slice(3, 5), q.text)}
+                        patternConfig={Patterns.currency}
+                        name={q.tag}
+                      />
+                    )
                   }
                 })()}
               </div>

@@ -35,9 +35,6 @@ const Urls = {
   createPdf: '/createpdf',
   settings: '/settings',
   stateQuestions: '/statequestions',
-  orforms: {
-    orwfhdc: '/state/oregon/orwfhdc'
-  },
   help: '/help',
   Y2021: {
     credits: `/Y2021/credits`
