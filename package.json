@@ -95,7 +95,7 @@
     "lint-staged": "^13.0.0",
     "prettier": "2.6.2",
     "react-router-last-location": "^2.0.1",
-    "ts-node": "^10.8.0",
+    "ts-node": "^10.8.1",
     "typescript-eslint": "0.0.1-alpha.0"
   },
   "lint-staged": {
