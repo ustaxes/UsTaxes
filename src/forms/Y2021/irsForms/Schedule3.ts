@@ -1,49 +1,53 @@
 import F1040Attachment from './F1040Attachment'
-import { IncomeW2, PersonRole } from 'ustaxes/core/data'
+import { PersonRole } from 'ustaxes/core/data'
 import { sumFields } from 'ustaxes/core/irsForms/util'
 import { FormTag } from 'ustaxes/core/irsForms/Form'
 import { fica } from '../data/federal'
 import { Field } from 'ustaxes/core/pdfFiller'
 
-export const claimableExcessSSTaxWithholding = (w2s: IncomeW2[]): number => {
-  /* Excess FICA taxes are calculated per person. If an individual person
-     has greater than the applicable amount then they are entitled to a refund
-     of that amount
-   */
-  let claimableExcessFica = 0
-  const primaryFica = w2s
-    .filter((w2) => w2.personRole == PersonRole.PRIMARY)
-    .map((w2) => w2.ssWithholding)
-    .reduce((l, r) => l + r, 0)
-  const spouseFica = w2s
-    .filter((w2) => w2.personRole == PersonRole.SPOUSE)
-    .map((w2) => w2.ssWithholding)
-    .reduce((l, r) => l + r, 0)
-
-  if (
-    primaryFica > fica.maxSSTax &&
-    w2s
-      .filter((w2) => w2.personRole == PersonRole.PRIMARY)
-      .every((w2) => w2.ssWithholding <= fica.maxSSTax)
-  ) {
-    claimableExcessFica += primaryFica - fica.maxSSTax
-  }
-
-  if (
-    spouseFica > fica.maxSSTax &&
-    w2s
-      .filter((w2) => w2.personRole == PersonRole.SPOUSE)
-      .every((w2) => w2.ssWithholding <= fica.maxSSTax)
-  ) {
-    claimableExcessFica += spouseFica - fica.maxSSTax
-  }
-
-  return claimableExcessFica
-}
-
 export default class Schedule3 extends F1040Attachment {
   tag: FormTag = 'f1040s3'
   sequenceIndex = 3
+
+  claimableExcessSSTaxWithholding = (): number => {
+    const w2s = this.f1040.validW2s()
+
+    // Excess FICA taxes are calculated per person. If an individual person
+    //    has greater than the applicable amount then they are entitled to a refund
+    //    of that amount
+
+    let claimableExcessFica = 0
+    const primaryFica = w2s
+      .filter((w2) => w2.personRole == PersonRole.PRIMARY)
+      .map((w2) => w2.ssWithholding)
+      .reduce((l, r) => l + r, 0)
+    const spouseFica = w2s
+      .filter((w2) => w2.personRole == PersonRole.SPOUSE)
+      .map((w2) => w2.ssWithholding)
+      .reduce((l, r) => l + r, 0)
+
+    if (
+      primaryFica > fica.maxSSTax &&
+      w2s
+        .filter((w2) => w2.personRole == PersonRole.PRIMARY)
+        .every((w2) => w2.ssWithholding <= fica.maxSSTax)
+    ) {
+      claimableExcessFica += primaryFica - fica.maxSSTax
+    }
+
+    if (
+      spouseFica > fica.maxSSTax &&
+      w2s
+        .filter((w2) => w2.personRole == PersonRole.SPOUSE)
+        .every((w2) => w2.ssWithholding <= fica.maxSSTax)
+    ) {
+      claimableExcessFica += spouseFica - fica.maxSSTax
+    }
+
+    return claimableExcessFica
+  }
+
+  isNeeded = (): boolean => this.claimableExcessSSTaxWithholding() > 0
 
   deductions = (): number => 0
   // Part I: Nonrefundable credits
@@ -103,7 +107,7 @@ export default class Schedule3 extends F1040Attachment {
 
   l11 = (): number =>
     // TODO: also applies to RRTA tax
-    claimableExcessSSTaxWithholding(this.f1040.validW2s())
+    this.claimableExcessSSTaxWithholding()
 
   l12 = (): number | undefined => this.f1040.f4136?.credit()
 

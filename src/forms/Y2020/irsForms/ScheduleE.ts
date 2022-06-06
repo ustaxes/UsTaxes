@@ -40,6 +40,8 @@ export default class ScheduleE extends F1040Attachment {
   tag: FormTag = 'f1040se'
   sequenceIndex = 13
 
+  isNeeded = (): boolean => this.f1040.info.realEstate.length > 0
+
   addressString = (address: Address): string =>
     [
       address.address,

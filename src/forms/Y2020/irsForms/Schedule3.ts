@@ -45,6 +45,9 @@ export default class Schedule3 extends F1040Attachment {
   tag: FormTag = 'f1040s3'
   sequenceIndex = 3
 
+  isNeeded = (): boolean =>
+    claimableExcessSSTaxWithholding(this.f1040.info.w2s) > 0
+
   deductions = (): number => 0
   // Part I: Nonrefundable credits
   l1 = (): number | undefined => undefined

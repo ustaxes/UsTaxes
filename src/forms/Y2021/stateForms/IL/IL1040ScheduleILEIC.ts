@@ -20,8 +20,7 @@ export class IL1040scheduleileeic extends Form {
     this.f1040 = f1040
     this.formName = 'il-1040-schedule-il-e-eic'
     this.state = 'IL'
-    this.qualifyingDependents =
-      this.f1040.scheduleEIC?.qualifyingDependents() ?? []
+    this.qualifyingDependents = this.f1040.scheduleEIC.qualifyingDependents()
   }
 
   get primary(): PrimaryPerson | undefined {
@@ -1462,7 +1461,7 @@ export class IL1040scheduleileeic extends Form {
   /**
    * Index 161: Business income/loss
    */
-  Businessincomeloss = (): number | undefined => this.f1040.schedule1?.l3()
+  Businessincomeloss = (): number | undefined => this.f1040.schedule1.l3()
 
   f161 = (): number | undefined => this.Businessincomeloss()
 

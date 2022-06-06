@@ -57,6 +57,8 @@ export default class ScheduleEIC extends F1040Attachment {
     this.pub596Worksheet1 = new Pub596Worksheet1(f1040)
   }
 
+  isNeeded = (): boolean => this.allowed()
+
   // instructions step 1.1
   passIncomeLimit = (): boolean => {
     const filingStatus = this.f1040.info.taxPayer.filingStatus
@@ -107,7 +109,7 @@ export default class ScheduleEIC extends F1040Attachment {
   f4797AllowsEIC = (): boolean => !precludesEIC(checks4797)(this.f4797)
 
   // Todo, instruction 2.4.1
-  filingScheduleE = (): boolean => this.f1040.scheduleE !== undefined
+  filingScheduleE = (): boolean => this.f1040.scheduleE.isNeeded()
 
   //
   // TODO: Not checking personal property income 2.4.2

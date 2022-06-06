@@ -35,10 +35,10 @@ export default class QualDivAndCGWorksheetReference {
       qualDiv: f1040.l3a() ?? 0,
       taxableIncome: f1040.l15(),
       f1040l7: f1040.l7(),
-      sdl15: f1040.scheduleD?.l15(),
-      sdl16: f1040.scheduleD?.l16(),
-      sdl18: f1040.scheduleD?.l18(),
-      sdl19: f1040.scheduleD?.l19(),
+      sdl15: f1040.scheduleD.l15(),
+      sdl16: f1040.scheduleD.l16(),
+      sdl18: f1040.scheduleD.l18(),
+      sdl19: f1040.scheduleD.l19(),
       filingStatus
     }
   }

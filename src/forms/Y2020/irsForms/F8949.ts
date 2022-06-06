@@ -59,24 +59,24 @@ export default class F8949 extends F1040Attachment {
 
   index = 0
 
-  copies: F8949[] = []
-
   constructor(f1040: F1040, index = 0) {
     super(f1040)
-    if (index === 0) {
+    this.index = index
+  }
+
+  copies = (): F8949[] => {
+    if (this.index === 0) {
       const extraCopiesNeeded = Math.round(
         Math.max(
           this.thisYearShortTermSales().length / NUM_SHORT_LINES,
           this.thisYearLongTermSales().length / NUM_LONG_LINES
         )
       )
-      this.copies = Array.from(Array(extraCopiesNeeded)).map(
-        (_, i) => new F8949(f1040, i + 1)
+      return Array.from(Array(extraCopiesNeeded)).map(
+        (_, i) => new F8949(this.f1040, i + 1)
       )
-    } else {
-      this.copies = []
     }
-    this.index = index
+    return []
   }
 
   isNeeded = (): boolean => this.thisYearSales().length > 0

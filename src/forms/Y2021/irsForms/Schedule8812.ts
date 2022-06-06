@@ -76,6 +76,13 @@ export default class Schedule8812 extends F1040Attachment {
   tag: FormTag = 'f1040s8'
   sequenceIndex = 47
 
+  isNeeded = (): boolean =>
+    this.f1040.info.taxPayer.dependents.some(
+      (dep) =>
+        this.f1040.qualifyingDependents.qualifiesChild(dep) ||
+        this.f1040.qualifyingDependents.qualifiesOther(dep)
+    )
+
   l1 = (): number => this.f1040.l11()
 
   // TODO: Puerto Rico income
@@ -182,12 +189,18 @@ export default class Schedule8812 extends F1040Attachment {
 
   creditLimitWorksheetA = (): number => {
     const wsl1 = this.f1040.l18()
+    const schedule3Fields = this.f1040.schedule3.isNeeded()
+      ? [
+          this.f1040.schedule3.l1(),
+          this.f1040.schedule3.l2(),
+          this.f1040.schedule3.l3(),
+          this.f1040.schedule3.l4(),
+          this.f1040.schedule3.l6l()
+        ]
+      : []
+
     const wsl2 = sumFields([
-      this.f1040.schedule3?.l1(),
-      this.f1040.schedule3?.l2(),
-      this.f1040.schedule3?.l3(),
-      this.f1040.schedule3?.l4(),
-      this.f1040.schedule3?.l6l(),
+      ...schedule3Fields,
       this.f1040.f5695?.l30(),
       this.f1040.f8936?.l15(),
       this.f1040.f8936?.l23(),
@@ -318,7 +331,7 @@ export default class Schedule8812 extends F1040Attachment {
     // or choose to include in earned income, then enter 0.
     const l4d = !allowed ? undefined : 0
 
-    const l5 = this.f1040.schedule1?.l15() ?? 0
+    const l5 = this.f1040.schedule1.l15() ?? 0
 
     const l6 = sumFields([l4a, l4b, l4c, l4d, l5])
 
@@ -396,15 +409,15 @@ export default class Schedule8812 extends F1040Attachment {
     const l21 = ssWithholding + medicareWithholding
 
     const l22 = sumFields([
-      this.f1040.schedule1?.l15(),
-      this.f1040.schedule2?.l5(),
-      this.f1040.schedule2?.l6(),
-      this.f1040.schedule2?.l13()
+      this.f1040.schedule1.l15(),
+      this.f1040.schedule2.l5(),
+      this.f1040.schedule2.l6(),
+      this.f1040.schedule2.l13()
     ])
 
     const l23 = sumFields([l21, l22])
 
-    const l24 = sumFields([this.f1040.l27a(), this.f1040.schedule3?.l11()])
+    const l24 = sumFields([this.f1040.l27a(), this.f1040.schedule3.l11()])
 
     const l25 = Math.max(0, l23 - l24)
 

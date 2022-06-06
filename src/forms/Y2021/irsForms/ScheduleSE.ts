@@ -7,6 +7,16 @@ export default class ScheduleSE extends F1040Attachment {
   tag: FormTag = 'f1040sse'
   sequenceIndex = 14
 
+  isNeeded = (): boolean =>
+    this.f1040.info.scheduleK1Form1065s
+      .map(
+        (k1) =>
+          k1.selfEmploymentEarningsA +
+          k1.selfEmploymentEarningsB +
+          k1.selfEmploymentEarningsC
+      )
+      .reduce((a, b) => a + b, 0) > 0
+
   postL4Field = (f: () => number | undefined): number | undefined => {
     if (this.l4c() < 400) {
       return undefined

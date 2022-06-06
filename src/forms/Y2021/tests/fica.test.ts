@@ -4,13 +4,15 @@ import F8959 from '../irsForms/F8959'
 import Form from 'ustaxes/core/irsForms/Form'
 import Schedule2 from '../irsForms/Schedule2'
 import Schedule3 from '../irsForms/Schedule3'
-import { claimableExcessSSTaxWithholding } from 'ustaxes/forms/Y2021/irsForms/Schedule3'
 import { displayRound } from 'ustaxes/core/irsForms/util'
 import { testKit, commonTests } from '.'
-import { PersonRole } from 'ustaxes/core/data'
+import { FilingStatus, IncomeW2, PersonRole } from 'ustaxes/core/data'
+import { run } from 'ustaxes/core/util'
+import { blankState } from 'ustaxes/redux/reducer'
+import { ValidatedInformation } from 'ustaxes/forms/F1040Base'
 import * as fc from 'fast-check'
 
-jest.setTimeout(100000)
+jest.setTimeout(10000)
 
 beforeAll(() => {
   jest.spyOn(console, 'warn').mockImplementation(() => {
@@ -18,15 +20,56 @@ beforeAll(() => {
   })
 })
 
-function hasSSRefund(f1040: F1040): boolean {
-  const s3 = f1040.schedule3
-  const ssRefund = s3?.l11()
-  return ssRefund !== undefined && ssRefund > 0
+const sampleW2: IncomeW2 = {
+  employer: { EIN: '111111111', employerName: 'w2s employer name' },
+  personRole: PersonRole.PRIMARY,
+  occupation: 'w2s-occupation',
+  state: 'AL',
+  income: 111,
+  medicareIncome: 222,
+  fedWithholding: 333,
+  ssWages: 111,
+  ssWithholding: fica.maxSSTax,
+  medicareWithholding: 555,
+  stateWages: 666,
+  stateWithholding: 777
 }
 
+const sampleInfo: ValidatedInformation = {
+  ...blankState,
+  taxPayer: {
+    dependents: [],
+    filingStatus: FilingStatus.MFJ,
+    primaryPerson: {
+      address: {
+        address: '',
+        city: ''
+      },
+      firstName: '',
+      isTaxpayerDependent: false,
+      lastName: '',
+      role: PersonRole.PRIMARY,
+      ssid: '',
+      isBlind: false,
+      dateOfBirth: new Date('2000-01-01')
+    },
+    spouse: {
+      firstName: '',
+      isTaxpayerDependent: false,
+      lastName: '',
+      role: PersonRole.SPOUSE,
+      ssid: '',
+      isBlind: false,
+      dateOfBirth: new Date('2000-01-01')
+    }
+  }
+}
+
+const hasSSRefund = (f1040: F1040): boolean => f1040.schedule3.l11() > 0
+
 function hasAdditionalMedicareTax(f1040: F1040): boolean {
-  const medicareTax = f1040.f8959?.l18()
-  return medicareTax !== undefined && medicareTax > 0
+  const medicareTax = f1040.f8959.l18()
+  return medicareTax > 0
 }
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -76,7 +119,7 @@ describe('fica', () => {
     await testKit.with1040Assert((forms) => {
       const f1040 = commonTests.findF1040OrFail(forms)
       if (hasSSRefund(f1040)) {
-        const ssRefund = f1040.schedule3?.l11()
+        const ssRefund = f1040.schedule3.l11()
         expect(displayRound(ssRefund)).not.toBeUndefined()
         expect(ssRefund).toBeGreaterThan(0)
 
@@ -96,99 +139,62 @@ describe('fica', () => {
       } else {
         fc.pre(false)
       }
+
       return Promise.resolve()
     })
   })
 
-  it('should not give a refund if each person has less than the max', async () => {
-    await testKit.with1040Assert((forms): Promise<void> => {
-      const f1040 = commonTests.findF1040OrFail(forms)
-      f1040.info.w2s = [
+  it('should not give a refund if each person has less than the max', () => {
+    const testInfo: ValidatedInformation = {
+      ...sampleInfo,
+      w2s: [
         {
-          employer: { EIN: '111111111', employerName: 'w2s employer name' },
+          ...sampleW2,
           personRole: PersonRole.SPOUSE,
-          occupation: 'w2s-occupation',
-          state: 'AL',
-          income: 111,
-          medicareIncome: 222,
-          fedWithholding: 333,
-          ssWages: 111,
-          ssWithholding: fica.maxSSTax,
-          medicareWithholding: 555,
-          stateWages: 666,
-          stateWithholding: 777
+          ssWithholding: fica.maxSSTax
         },
         {
-          employer: { EIN: '111111111', employerName: 'w2s employer name' },
+          ...sampleW2,
           personRole: PersonRole.PRIMARY,
-          occupation: 'w2s-occupation',
-          state: 'AL',
-          income: 111,
-          medicareIncome: 222,
-          fedWithholding: 333,
-          ssWages: 111,
-          ssWithholding: fica.maxSSTax,
-          medicareWithholding: 555,
-          stateWages: 666,
-          stateWithholding: 777
+          ssWithholding: fica.maxSSTax
         }
       ]
-      expect(claimableExcessSSTaxWithholding(f1040.info.w2s)).toEqual(0)
-      return Promise.resolve()
-    })
+    }
+
+    const f1040 = run(testKit.builder.build(testInfo, []).f1040())
+      .map(commonTests.findF1040OrFail)
+      .orThrow()
+
+    expect(f1040.schedule3.claimableExcessSSTaxWithholding()).toEqual(0)
   })
 
-  it('should give a refund if a person has more than the max if they have two w2s', async () => {
-    await testKit.with1040Assert((forms) => {
-      const f1040 = commonTests.findF1040OrFail(forms)
-      f1040.info.w2s = [
+  it('should give a refund if a person has more than the max if they have two w2s', () => {
+    const testInfo: ValidatedInformation = {
+      ...sampleInfo,
+      w2s: [
         {
-          employer: { EIN: '111111111', employerName: 'w2s employer name' },
+          ...sampleW2,
           personRole: PersonRole.SPOUSE,
-          occupation: 'w2s-occupation',
-          state: 'AL',
-          income: 111,
-          medicareIncome: 222,
-          fedWithholding: 333,
-          ssWages: 111,
-          ssWithholding: fica.maxSSTax,
-          medicareWithholding: 555,
-          stateWages: 666,
-          stateWithholding: 777
+          ssWithholding: fica.maxSSTax
         },
         {
-          employer: { EIN: '111111111', employerName: 'w2s employer name' },
+          ...sampleW2,
           personRole: PersonRole.SPOUSE,
-          occupation: 'w2s-occupation',
-          state: 'AL',
-          income: 111,
-          medicareIncome: 222,
-          fedWithholding: 333,
-          ssWages: 111,
           // This person has already contributed to the max for their other w2 so the refund should equal this amount
-          ssWithholding: 1000,
-          medicareWithholding: 555,
-          stateWages: 666,
-          stateWithholding: 777
+          ssWithholding: 1000
         },
         {
-          employer: { EIN: '111111111', employerName: 'w2s employer name' },
+          ...sampleW2,
           personRole: PersonRole.PRIMARY,
-          occupation: 'w2s-occupation',
-          state: 'AL',
-          income: 111,
-          medicareIncome: 222,
-          fedWithholding: 333,
-          ssWages: 111,
-          ssWithholding: fica.maxSSTax,
-          medicareWithholding: 555,
-          stateWages: 666,
-          stateWithholding: 777
+          ssWithholding: fica.maxSSTax
         }
       ]
-      expect(claimableExcessSSTaxWithholding(f1040.info.w2s)).toEqual(1000)
-      return Promise.resolve()
-    })
+    }
+
+    const f1040 = run(testKit.builder.build(testInfo, []).f1040())
+      .map(commonTests.findF1040OrFail)
+      .orThrow()
+    expect(f1040.schedule3.claimableExcessSSTaxWithholding()).toEqual(1000)
   })
 
   it('should add Additional Medicare Tax form 8959', async () => {
@@ -206,7 +212,7 @@ describe('fica', () => {
         expect(hasAttachment(forms, Schedule2)).toEqual(true)
         expect(hasAttachment(forms, F8959)).toEqual(true)
       } else {
-        const selfEmploymentWages = f1040.scheduleSE?.l6() ?? 0
+        const selfEmploymentWages = f1040.scheduleSE.l6() ?? 0
         const hasTax =
           f1040.medicareWages() + selfEmploymentWages >
           fica.additionalMedicareTaxThreshold(filingStatus)
@@ -222,7 +228,7 @@ describe('fica', () => {
       const f1040 = commonTests.findF1040OrFail(forms)
       if (hasAdditionalMedicareTax(f1040)) {
         const filingStatus = f1040.info.taxPayer.filingStatus
-        const selfEmploymentWages = f1040.scheduleSE?.l6() ?? 0
+        const selfEmploymentWages = f1040.scheduleSE.l6() ?? 0
         const incomeOverThreshold =
           f1040.medicareWages() +
           selfEmploymentWages -
@@ -230,9 +236,9 @@ describe('fica', () => {
         expect(incomeOverThreshold).toBeGreaterThan(0)
 
         // Adds the right amount of additional tax
-        const s2l8 = f1040.f8959?.l18()
+        const s2l8 = f1040.f8959.l18()
         expect(s2l8).not.toBeUndefined()
-        expect(Math.round(s2l8 ?? 0)).toEqual(
+        expect(Math.round(s2l8)).toEqual(
           Math.round(incomeOverThreshold * fica.additionalMedicareTaxRate)
         )
 

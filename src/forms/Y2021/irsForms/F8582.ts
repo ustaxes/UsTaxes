@@ -11,17 +11,13 @@ export default class F8582 extends F1040Attachment {
   sequenceIndex = 999
 
   // TODO: 'Deducible rental estate loss after limitation, assuming all allowed'
-  deductibleRealEstateLossAfterLimitation = (): MatrixRow => {
-    const rentalNet = this.f1040.scheduleE?.rentalNet()
-    if (rentalNet === undefined) return [undefined, undefined, undefined]
-
-    return rentalNet.map((v) => {
+  deductibleRealEstateLossAfterLimitation = (): MatrixRow =>
+    this.f1040.scheduleE.rentalNet().map((v) => {
       if (v === undefined || v >= 0) {
         return undefined
       }
       return v
     }) as MatrixRow
-  }
 
   fields = (): Field[] => []
 }

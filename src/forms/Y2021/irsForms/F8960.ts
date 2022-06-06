@@ -3,19 +3,18 @@ import { sumFields } from 'ustaxes/core/irsForms/util'
 import { FormTag } from 'ustaxes/core/irsForms/Form'
 import { netInvestmentIncomeTax } from '../data/federal'
 import { Field } from 'ustaxes/core/pdfFiller'
-import { ValidatedInformation } from 'ustaxes/forms/F1040Base'
-
-export const needsF8960 = (state: ValidatedInformation): boolean => {
-  const filingStatus = state.taxPayer.filingStatus
-  const totalW2Income = state.w2s
-    .map((w2) => w2.income)
-    .reduce((l, r) => l + r, 0)
-  return netInvestmentIncomeTax.taxThreshold(filingStatus) < totalW2Income
-}
 
 export default class F8960 extends F1040Attachment {
   tag: FormTag = 'f8960'
   sequenceIndex = 72
+
+  isNeeded = (): boolean => {
+    const filingStatus = this.f1040.info.taxPayer.filingStatus
+    const totalW2Income = this.f1040.info.w2s
+      .map((w2) => w2.income)
+      .reduce((l, r) => l + r, 0)
+    return netInvestmentIncomeTax.taxThreshold(filingStatus) < totalW2Income
+  }
 
   //Taxable Interest
   l1 = (): number | undefined => this.f1040.l2b()
@@ -54,14 +53,14 @@ export default class F8960 extends F1040Attachment {
       representing the amount that you would properly include on Schedule 1 (Form 1040), line 5, 
       if you were filing Form 1040 or 1040‐SR and including income and loss only for your period of U.S. residency.
   */
-  l4a = (): number | undefined => this.f1040.schedule1?.l5()
+  l4a = (): number | undefined => this.f1040.schedule1.l5()
 
   l4b = (): number | undefined => undefined
 
   l4c = (): number => sumFields([this.l4a(), this.l4b()])
 
   // Line 5a-5d: Gains and Losses on the Disassets of Property
-  l5a = (): number => sumFields([this.f1040.l7(), this.f1040.schedule1?.l4()])
+  l5a = (): number => sumFields([this.f1040.l7(), this.f1040.schedule1.l4()])
   // TODO: implement line 5b and 5c from worksheet.
   l5b = (): number | undefined => undefined
   l5c = (): number | undefined => undefined
@@ -84,7 +83,8 @@ export default class F8960 extends F1040Attachment {
       this.l7()
     ])
   // Todo: Implement Schedule A
-  l9a = (): number | undefined => this.f1040.scheduleA?.l9()
+  l9a = (): number | undefined =>
+    this.f1040.scheduleA.isNeeded() ? this.f1040.scheduleA.l9() : undefined
   // Line 9b Reasonable method: Total state tax from W2 * Form 8960 Line 8 / 1040 Line 11, Adjusted gross income
   l9b = (): number | undefined => {
     const totalStateWithholding = this.f1040

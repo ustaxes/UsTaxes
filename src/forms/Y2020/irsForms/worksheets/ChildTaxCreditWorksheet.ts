@@ -68,10 +68,10 @@ export default class ChildTaxCreditWorksheet {
   // worksheet line 10
   l10 = (): number =>
     sumFields([
-      this.f1040.schedule3?.l1(),
-      this.f1040.schedule3?.l2(),
-      this.f1040.schedule3?.l3(),
-      this.f1040.schedule3?.l4(),
+      this.f1040.schedule3.l1(),
+      this.f1040.schedule3.l2(),
+      this.f1040.schedule3.l3(),
+      this.f1040.schedule3.l4(),
       this.f1040.f5695?.l30(),
       this.f1040.f8910?.l15(),
       this.f1040.f8936?.l23(),

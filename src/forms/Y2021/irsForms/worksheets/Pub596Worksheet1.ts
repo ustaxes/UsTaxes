@@ -15,7 +15,7 @@ export default class Pub596Worksheet1 {
     sumFields([this.f1040.l2a(), this.f1040.f8814?.l1b()])
   l3 = (): number | undefined => this.f1040.l3b()
   l4 = (): number | undefined => {
-    return this.f1040.schedule1?.l8f()
+    return this.f1040.schedule1.l8f()
   }
 
   l5 = (): number => ((this.f1040.l7() ?? 0) < 0 ? 0 : this.f1040.l7() ?? 0)
@@ -36,32 +36,32 @@ export default class Pub596Worksheet1 {
   }
 
   l8 = (): number | undefined =>
-    sumFields([this.f1040.scheduleE?.l23b(), this.f1040.schedule1?.l8k()])
+    sumFields([this.f1040.scheduleE.l23b(), this.f1040.schedule1.l8k()])
 
   l9 = (): number | undefined =>
     sumFields([
-      this.f1040.scheduleE?.royaltyExpenses(),
-      this.f1040.schedule1?.l24b()
+      this.f1040.scheduleE.royaltyExpenses(),
+      this.f1040.schedule1.l24b()
     ])
 
   l10 = (): number => Math.max(0, (this.l9() ?? 0) - (this.l8() ?? 0))
 
   l11 = (): number | undefined =>
     sumFields([
-      ifPositive(this.f1040.scheduleE?.l26() ?? 0),
-      this.f1040.scheduleE?.l29ah(),
-      this.f1040.scheduleE?.l34ad(),
-      this.f1040.scheduleE?.l40()
+      ifPositive(this.f1040.scheduleE.l26()),
+      this.f1040.scheduleE.l29ah(),
+      this.f1040.scheduleE.l34ad(),
+      this.f1040.scheduleE.l40()
       // todo: FPA form 4797 line 10
     ])
 
   l12 = (): number | undefined =>
     sumFields(
       [
-        this.f1040.scheduleE?.l26() ?? 0,
-        this.f1040.scheduleE?.l29bg() ?? 0,
-        this.f1040.scheduleE?.l34bc() ?? 0,
-        this.f1040.scheduleE?.l40() ?? 0
+        this.f1040.scheduleE.l26(),
+        this.f1040.scheduleE.l29bg() ?? 0,
+        this.f1040.scheduleE.l34bc() ?? 0,
+        this.f1040.scheduleE.l40() ?? 0
         // TODO: PAL Loss form 4797
       ].map((x) => ifNegative(x))
     )
