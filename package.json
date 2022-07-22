@@ -11,7 +11,7 @@
     "@tauri-apps/api": "^1.0.2",
     "@tauri-apps/cli": "^1.0.4",
     "ajv": "^8.11.0",
-    "date-fns": "^2.28.0",
+    "date-fns": "^2.29.0",
     "lodash": "^4.17.21",
     "loglevel": "^1.8.0",
     "papaparse": "^5.3.2",
