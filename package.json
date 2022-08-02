@@ -30,7 +30,7 @@
     "redux": "^4.2.0",
     "redux-logger": "^3.0.6",
     "redux-persist": "^6.0.0",
-    "rooks": "^5.14.0",
+    "rooks": "^6.0.1",
     "ts-json-schema-generator": "^1.0.0",
     "typescript": "^4.7.4"
   },
@@ -82,7 +82,7 @@
     "@types/react-router-dom": "^5.3.3",
     "@types/redux-logger": "^3.0.9",
     "@typescript-eslint/eslint-plugin": "^5.31.0",
-    "@typescript-eslint/parser": "^5.31.0",
+    "@typescript-eslint/parser": "^5.32.0",
     "concurrently": "^7.3.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-import": "^2.26.0",
