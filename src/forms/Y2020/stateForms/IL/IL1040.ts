@@ -621,6 +621,12 @@ export class IL1040 extends Form {
   }
   payment = (): number | undefined => this.l39()
 
+  /**
+   * Index 81: name1
+   */
+  initial = (): string | undefined => this.info.taxPayer.primaryPerson.initial
+
+  f79 = (): string | undefined => this.initial()
   // Signature block fields omitted
 
   fields = (): Field[] => [
@@ -704,7 +710,8 @@ export class IL1040 extends Form {
     this.f77(),
     this.f78(),
     this.l38(),
-    this.l39()
+    this.l39(),
+    this.f79()
   ]
 }
 

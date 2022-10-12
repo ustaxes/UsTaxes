@@ -463,7 +463,7 @@ export default function F1099Info(): ReactElement {
           name="personRole"
           keyMapping={(p: Person, i: number) => i}
           textMapping={(p: Person) =>
-            `${p.firstName} ${p.lastName} (${formatSSID(p.ssid)})`
+            `${p.firstName} ${p.initial} ${p.lastName} (${formatSSID(p.ssid)})`
           }
         />
       </Grid>

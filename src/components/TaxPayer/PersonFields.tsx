@@ -22,7 +22,8 @@ import ListItemText from '@material-ui/core/ListItemText'
 import PersonIcon from '@material-ui/icons/Person'
 
 export const labels = {
-  fname: 'First Name and Initial',
+  fname: 'First Name',
+  initial: 'Initial',
   lname: 'Last Name',
   dateOfBirth: 'Date of Birth',
   ssn: 'SSN / TIN'
@@ -39,6 +40,11 @@ export const PersonFields = ({
         label={labels.fname}
         name="firstName"
         required={true}
+      />
+      <LabeledInput
+        autofocus={autofocus}
+        label={labels.initial}
+        name="initial"
       />
       <LabeledInput label={labels.lname} name="lastName" required={true} />
       <LabeledInput

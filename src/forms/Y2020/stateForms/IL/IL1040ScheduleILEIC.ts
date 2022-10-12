@@ -69,7 +69,9 @@ export class IL1040scheduleileeic extends Form {
    * Index 4: Your name
    */
   Yourname = (): string | undefined =>
-    [this.primary?.firstName, this.primary?.lastName].flat().join(' ')
+    [this.primary?.firstName, this.primary?.initial, this.primary?.lastName]
+      .flat()
+      .join(' ')
 
   f4 = (): string | undefined => this.Yourname()
 

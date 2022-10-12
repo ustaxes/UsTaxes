@@ -48,6 +48,7 @@ const baseInformation: ValidatedInformation = {
         zip: '1234567'
       },
       firstName: 'payer-first-name',
+      initial: '',
       lastName: 'payer-last-name',
       isTaxpayerDependent: false,
       role: PersonRole.PRIMARY,

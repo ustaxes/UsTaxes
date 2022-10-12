@@ -377,6 +377,7 @@ export const person: Arbitrary<types.Person> = fc
   .tuple(
     word,
     word,
+    word,
     ein,
     fc.boolean(),
     fc.date({
@@ -384,8 +385,9 @@ export const person: Arbitrary<types.Person> = fc
       max: new Date()
     })
   )
-  .map(([firstName, lastName, ssid, isBlind, dateOfBirth]) => ({
+  .map(([firstName, initial, lastName, ssid, isBlind, dateOfBirth]) => ({
     firstName,
+    initial,
     lastName,
     ssid,
     isBlind,

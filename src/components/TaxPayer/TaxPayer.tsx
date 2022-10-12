@@ -32,6 +32,7 @@ import { intentionallyFloat } from 'ustaxes/core/util'
 
 interface TaxPayerUserForm {
   firstName: string
+  initial?: string
   lastName: string
   ssid: string
   contactPhoneNumber?: string
@@ -47,6 +48,7 @@ interface TaxPayerUserForm {
 
 const defaultTaxpayerUserForm: TaxPayerUserForm = {
   firstName: '',
+  initial: '',
   lastName: '',
   ssid: '',
   contactPhoneNumber: '',
@@ -72,6 +74,7 @@ const asPrimaryPerson = (formData: TaxPayerUserForm): PrimaryPerson<string> => {
   return {
     address: formData.address,
     firstName: formData.firstName,
+    initial: formData.initial,
     lastName: formData.lastName,
     ssid: formData.ssid.replace(/-/g, ''),
     isTaxpayerDependent: formData.isTaxpayerDependent,
