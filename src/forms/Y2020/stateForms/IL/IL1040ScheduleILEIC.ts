@@ -1650,6 +1650,86 @@ export class IL1040scheduleileeic extends Form {
 
   f185 = (): string | undefined => this.YourSSN4()
 
+  /**
+   * Index 5: Dependents initial - 1
+   */
+  Dependentsinitial1 = (): string | undefined =>
+    this.info.taxPayer.dependents[0]?.initial
+
+  f186 = (): string | undefined => this.Dependentsinitial1()
+
+  /**
+   * Index 6: Dependent's initial - 2
+   */
+  Dependentsinitial2 = (): string | undefined =>
+    this.info.taxPayer.dependents[1]?.initial
+
+  f187 = (): string | undefined => this.Dependentsinitial2()
+
+  /**
+   * Index 7: Dependent's initial - 3
+   */
+  Dependentsinitial3 = (): string | undefined =>
+    this.info.taxPayer.dependents[2]?.initial
+
+  f188 = (): string | undefined => this.Dependentsinitial3()
+
+  /**
+   * Index 8: Dependent's initial - 4
+   */
+  Dependentsinitial4 = (): string | undefined =>
+    this.info.taxPayer.dependents[3]?.initial
+
+  f189 = (): string | undefined => this.Dependentsinitial4()
+
+  /**
+   * Index 9: Dependent's initial - 5
+   */
+  Dependentsinitial5 = (): string | undefined =>
+    this.info.taxPayer.dependents[4]?.initial
+
+  f190 = (): string | undefined => this.Dependentsinitial5()
+
+  /**
+   * Index 10: Dependent's initial - 6
+   */
+  Dependentsinitial6 = (): string | undefined =>
+    this.info.taxPayer.dependents[5]?.initial
+
+  f191 = (): string | undefined => this.Dependentsinitial6()
+
+  /**
+   * Index 11: Dependent's initial - 7
+   */
+  Dependentsinitial7 = (): string | undefined =>
+    this.info.taxPayer.dependents[6]?.initial
+
+  f192 = (): string | undefined => this.Dependentsinitial7()
+
+  /**
+   * Index 12: Dependent's initial - 8
+   */
+  Dependentsinitial8 = (): string | undefined =>
+    this.info.taxPayer.dependents[7]?.initial
+
+  f193 = (): string | undefined => this.Dependentsinitial8()
+
+  /**
+   * Index 13: Dependent's initial - 9
+   */
+  Dependentsinitial9 = (): string | undefined =>
+    this.info.taxPayer.dependents[8]?.initial
+
+  f194 = (): string | undefined => this.Dependentsinitial9()
+
+  /**
+   * Index 14: Dependent's initial - 10
+   */
+  Dependentsinitial10 = (): string | undefined =>
+    this.info.taxPayer.dependents[9]?.initial
+
+  f195 = (): string | undefined => this.Dependentsinitial10()
+
   fields = (): Field[] => [
     this.f0(),
     this.f1(),
@@ -1836,7 +1916,17 @@ export class IL1040scheduleileeic extends Form {
     this.f182(),
     this.f183(),
     this.f184(),
-    this.f185()
+    this.f185(),
+    this.f186(),
+    this.f187(),
+    this.f188(),
+    this.f189(),
+    this.f190(),
+    this.f191(),
+    this.f192(),
+    this.f193(),
+    this.f194(),
+    this.f195()
   ]
 }
 

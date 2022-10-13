@@ -748,6 +748,22 @@ export class IL1040 extends Form {
 
   f97 = (): boolean | undefined => this.CheckBox8d()
 
+  /**
+   * Index 3: initial1
+   * Primary Initial
+   */
+  initial1 = (): string | undefined =>
+    this.f1040.info.taxPayer.primaryPerson.initial
+
+  f98 = (): string | undefined => this.name2()
+  /**
+   * Spouse Initial
+   * Index 98: initial2
+   */
+  initial2 = (): string | undefined => this.f1040.info.taxPayer.spouse?.initial
+
+  f99 = (): string | undefined => this.name4()
+
   fields = (): Field[] => [
     this.f0(),
     this.f1(),
@@ -846,7 +862,9 @@ export class IL1040 extends Form {
     this.l37(),
     this.l39(),
     this.l40(),
-    this.f97()
+    this.f97(),
+    this.f98(),
+    this.f99()
   ]
 }
 

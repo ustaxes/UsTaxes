@@ -18,6 +18,11 @@ export class PersonMethods extends DomMethods {
   setFirstName = (v: string): boolean =>
     this.setIfAble(this.firstNameField(), v)
 
+  initialField = (): HTMLInputElement | null =>
+    within(this.dom()).queryByLabelText(personLabels.initial)
+
+  setInitial = (v: string): boolean => this.setIfAble(this.initialField(), v)
+
   lastNameField = (): HTMLInputElement | null =>
     within(this.dom()).queryByLabelText(personLabels.lname)
 

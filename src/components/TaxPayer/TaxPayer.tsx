@@ -32,7 +32,7 @@ import { intentionallyFloat } from 'ustaxes/core/util'
 
 interface TaxPayerUserForm {
   firstName: string
-  initial?: string
+  initial: string
   lastName: string
   ssid: string
   contactPhoneNumber?: string

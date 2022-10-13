@@ -5,6 +5,7 @@ import F1040 from '../irsForms/F1040'
 import F6251 from '../irsForms/F6251'
 import { cloneDeep } from 'lodash'
 import { ValidatedInformation } from 'ustaxes/forms/F1040Base'
+import { CURRENT_YEAR } from 'ustaxes/forms/Y2020/data/federal'
 
 const baseInformation: ValidatedInformation = {
   f1099s: [],
@@ -52,7 +53,9 @@ const baseInformation: ValidatedInformation = {
       lastName: 'payer-last-name',
       isTaxpayerDependent: false,
       role: PersonRole.PRIMARY,
-      ssid: '111111111'
+      ssid: '111111111',
+      isBlind: false,
+      dateOfBirth: new Date(CURRENT_YEAR, 0, 1)
     },
     spouse: undefined,
     dependents: [],

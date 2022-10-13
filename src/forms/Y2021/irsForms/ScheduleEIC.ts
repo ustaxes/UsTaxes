@@ -327,7 +327,7 @@ export default class ScheduleEIC extends F1040Attachment {
   // EIC line 1
   nameFields = (): Array<string | undefined> =>
     this.qualifyingDependentsFilled().map(
-      (d) => `${d?.firstName ?? ''} ${d?.lastName ?? ''}`
+      (d) => `${d?.firstName ?? ''} ${d?.initial ?? ''} ${d?.lastName ?? ''}`
     )
 
   // EIC line 2

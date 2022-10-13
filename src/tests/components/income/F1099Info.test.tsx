@@ -13,6 +13,7 @@ import {
 import { blankState } from 'ustaxes/redux/reducer'
 import userEvent from '@testing-library/user-event'
 import { renderWithProviders } from 'ustaxes/testUtil'
+import { CURRENT_YEAR } from 'ustaxes/forms/Y2020/data/federal'
 
 const testW2sSpouse: IncomeW2 = {
   employer: { EIN: '111111111', employerName: 'w2s employer name' },
@@ -52,17 +53,23 @@ const testInformationState: Information = {
         zip: '1234567'
       },
       firstName: 'payer-first-name',
+      initial: 'pfn',
       lastName: 'payer-last-name',
       isTaxpayerDependent: false,
       role: PersonRole.PRIMARY,
-      ssid: '111111111'
+      ssid: '111111111',
+      isBlind: false,
+      dateOfBirth: new Date(CURRENT_YEAR, 0, 1)
     },
     spouse: {
       firstName: 'spouse-first-name',
+      initial: 'sfn',
       isTaxpayerDependent: false,
       lastName: 'spouse-last-name',
       role: PersonRole.SPOUSE,
-      ssid: '222222222'
+      ssid: '222222222',
+      isBlind: false,
+      dateOfBirth: new Date(CURRENT_YEAR, 0, 1)
     },
     dependents: [],
     filingStatus: FilingStatus.MFS

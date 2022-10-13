@@ -262,7 +262,7 @@ export default class F8889 extends F1040Attachment {
   l21 = (): number => Math.round(this.l20() * 0.1)
 
   fields = (): Field[] => [
-    `${this.person.firstName} ${this.person.lastName}`,
+    `${this.person.firstName} ${this.person.initial} ${this.person.lastName}`,
     this.person.ssid,
     this.calculatedCoverageType === 'self-only', // line 1: self-only check box
     this.calculatedCoverageType === 'family', // line 1: family checkbox

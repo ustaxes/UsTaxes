@@ -131,7 +131,9 @@ export class ILWIT extends Form {
    * Index 3: Your name
    */
   Yourname = (): string | undefined =>
-    [this.primary?.firstName, this.primary?.lastName].flat().join(' ')
+    [this.primary?.firstName, this.primary?.initial, this.primary?.lastName]
+      .flat()
+      .join(' ')
 
   f3 = (): string | undefined => this.Yourname()
 
@@ -207,7 +209,7 @@ export class ILWIT extends Form {
   Spousesname = (): string | undefined => {
     const spouse = this.info.taxPayer.spouse
     if (spouse !== undefined) {
-      return `${spouse.firstName} ${spouse.lastName}`
+      return `${spouse.firstName} ${spouse.initial} ${spouse.lastName}`
     }
   }
 
