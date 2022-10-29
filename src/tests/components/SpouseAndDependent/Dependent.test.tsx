@@ -58,7 +58,7 @@ describe('Dependents', () => {
     userEvent.click(dependent.addButton()!)
 
     const dependentFormLabels = [
-      'First Name and Initial',
+      'First Name',
       'Last Name',
       'SSN / TIN',
       'Relationship to Taxpayer',
@@ -311,7 +311,7 @@ describe('Dependents', () => {
     userEvent.click(dependent.addButton()!)
 
     const labels = [
-      'First Name and Initial',
+      'First Name',
       'Last Name',
       'SSN / TIN',
       'Relationship to Taxpayer',
