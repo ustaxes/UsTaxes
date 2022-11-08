@@ -72,7 +72,7 @@
     "@testing-library/react": "^12.1.5",
     "@testing-library/user-event": "^13.5.0",
     "@types/jest": "^29.2.1",
-    "@types/lodash": "^4.14.187",
+    "@types/lodash": "^4.14.188",
     "@types/node": "^18.11.9",
     "@types/papaparse": "^5.3.5",
     "@types/react": "^17.0.47",
