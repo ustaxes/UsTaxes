@@ -2795,9 +2795,9 @@ dependencies = [
 
 [[package]]
 name = "tauri-build"
-version = "2.0.0-alpha.0"
+version = "2.0.0-alpha.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bbc1552c7312ef9d455db00d403314904fdd8c1c7e7c0fde9ae78df0a49fc799"
+checksum = "c273e6fd861c23b537b4d8d0175775e472e9f856bbd2b2c4422df80506ff8fb0"
 dependencies = [
  "anyhow",
  "cargo_toml",
@@ -2805,7 +2805,7 @@ dependencies = [
  "json-patch",
  "semver 1.0.3",
  "serde_json",
- "tauri-utils 2.0.0-alpha.0",
+ "tauri-utils 2.0.0-alpha.1",
  "winres",
 ]
 
@@ -2919,9 +2919,9 @@ dependencies = [
 
 [[package]]
 name = "tauri-utils"
-version = "2.0.0-alpha.0"
+version = "2.0.0-alpha.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8c7ee9f908d975a116f2fe3db47d65b18e568aa7913aa333b7a5cd990f179e5e"
+checksum = "34ad593254f413f37d8fb85a2a189869a01c17ed995c633a3c36b0e5f8a3d696"
 dependencies = [
  "ctor",
  "glob",
