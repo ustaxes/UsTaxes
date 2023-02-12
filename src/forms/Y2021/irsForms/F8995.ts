@@ -29,7 +29,7 @@ export default class F8995 extends F1040Attachment {
 
   netCapitalGains = (): number => {
     let rtn = this.f1040.l3a() ?? 0
-    if (this.f1040.scheduleD) {
+    if (this.f1040.scheduleD.isNeeded()) {
       const l15 = this.f1040.scheduleD.l15()
       const l16 = this.f1040.scheduleD.l16()
       const min = Math.min(l15, l16)

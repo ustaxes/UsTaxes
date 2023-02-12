@@ -58,13 +58,21 @@ export const validate = (
     return left(result)
   }
 
+  if (!isValidInformation(info)) {
+    result.push(F1040Error.incompletePrimaryTaxpayer)
+  }
+
+  if (result.length > 0) {
+    return left(result)
+  }
+
+  // Calling this a second time for typechecking.
   if (isValidInformation(info)) {
     return right(info)
   }
 
-  // Should never get here. Types from above are not exhaustive but
-  // logic is.
-  throw new Error('Invalid information')
+  // Should not get here. Above logic should be exhaustive
+  throw new Error('Invalid information.')
 }
 
 export default abstract class F1040Base extends Form {

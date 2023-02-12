@@ -1,14 +1,14 @@
 import { commonTests } from '.'
+import * as fc from 'fast-check'
 
 describe('ScheduleA', () => {
   it('should make deduction > standard deduction if Schedule A is attached', async () => {
     await commonTests.withValid1040((f1040) => {
       // If Schedule A is attached, the deduction should be greater than the standard deduction
-      if (f1040.scheduleA !== undefined) {
-        expect(f1040.l12a() ?? 0).toBeGreaterThan(
-          f1040.standardDeduction() ?? 0
-        )
-      }
+      // Cancel test if Schedule A is not attached
+      fc.pre(f1040.scheduleA.isNeeded())
+
+      expect(f1040.l12a() ?? 0).toBeGreaterThan(f1040.standardDeduction() ?? 0)
     })
   })
 

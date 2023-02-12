@@ -8,6 +8,9 @@ abstract class F1040Attachment extends Form {
     super()
     this.f1040 = f1040
   }
+
+  isNeeded = (): boolean => true
+  copies = (): F1040Attachment[] => []
 }
 
 export abstract class Worksheet {

@@ -7,7 +7,7 @@ const withSchedule8812 = async (
 ): Promise<void> =>
   await commonTests.withValid1040(
     (f1040: F1040): void => {
-      if (f1040.schedule8812 !== undefined) {
+      if (f1040.schedule8812.isNeeded()) {
         f(f1040, f1040.schedule8812)
       }
     },

@@ -8,20 +8,20 @@ export default class Schedule2 extends F1040Attachment {
   sequenceIndex = 2
 
   // Part I: Tax
-  l1 = (): number | undefined => this.f1040.f6251?.l11()
+  l1 = (): number | undefined => this.f1040.f6251.l11()
   l2 = (): number | undefined => undefined // TODO: excess advance premium tax credit repayment (form 8962)
   l3 = (): number => sumFields([this.l1(), this.l2()])
 
   // Part II: Other Tax
-  l4 = (): number | undefined => this.f1040.scheduleSE?.l12() // self-employment tax (schedule SE)
+  l4 = (): number | undefined => this.f1040.scheduleSE.l12() // self-employment tax (schedule SE)
   l5 = (): number | undefined => undefined // TODO: unreported FICA tax
   l6 = (): number | undefined => undefined // TODO: additional tax on retirement accounts
   l7 = (): number | undefined => undefined // TODO: total additional ss and medicare tax
   l8 = (): number | undefined => undefined // TODO: additional tax on IRAs or other tax favored accoutns, form 5329
   l9 = (): number | undefined => undefined // TODO: household employment taxes, schedule H
   l10 = (): number | undefined => undefined // repayment of firsttime homebuyer credit, form 5405
-  l11 = (): number | undefined => this.f1040.f8959?.toSchedule2l11()
-  l12 = (): number | undefined => this.f1040.f8960?.toSchedule2l12()
+  l11 = (): number | undefined => this.f1040.f8959.toSchedule2l11()
+  l12 = (): number | undefined => this.f1040.f8960.toSchedule2l12()
   l13 = (): number | undefined => undefined // TODO: uncollected ss and medicare or rrta tax on tips or group-term life insurance, w-2, box 12
   l14 = (): number | undefined => undefined // TODO - interest on tax due on installment income from the sale of residential lots and timeshares
   l15 = (): number | undefined => undefined //interest on the deferred tax on gain from certain installment sales with a sales price over 150000.
@@ -37,10 +37,10 @@ export default class Schedule2 extends F1040Attachment {
   l17b = (): number | undefined => undefined
 
   l17c = (): number | undefined =>
-    sumFields([this.f1040.f8889?.l17b(), this.f1040.f8889Spouse?.l17b()])
+    sumFields([this.f1040.f8889.l17b(), this.f1040.f8889Spouse?.l17b()])
 
   l17d = (): number | undefined =>
-    sumFields([this.f1040.f8889?.l21(), this.f1040.f8889Spouse?.l21()])
+    sumFields([this.f1040.f8889.l21(), this.f1040.f8889Spouse?.l21()])
   // TODO: Additional tax on Archer MSA distributions. Attach Form 8853
   l17e = (): number | undefined => undefined
   // TODO: Additional tax on Medicare Advantage MSA distributions. Attach
@@ -102,7 +102,7 @@ export default class Schedule2 extends F1040Attachment {
     ])
 
   // 19 Additional tax from Schedule 8812
-  l19 = (): number | undefined => this.f1040.schedule8812?.toSchedule2Line19()
+  l19 = (): number | undefined => this.f1040.schedule8812.toSchedule2Line19()
 
   // TODO: Section 965 net tax liability installment from Form 965-A. .
   l20 = (): number | undefined => undefined

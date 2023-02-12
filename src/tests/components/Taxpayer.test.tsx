@@ -1,5 +1,4 @@
 import { waitFor } from '@testing-library/react'
-import { BrowserRouter as Router } from 'react-router-dom'
 import TaxPayer from 'ustaxes/components/TaxPayer'
 import { Information } from 'ustaxes/core/data'
 import { blankYearTaxesState, YearsTaxesState } from 'ustaxes/redux'
@@ -42,13 +41,11 @@ class TaxPayerTestPage extends TestPage {
   }
 
   component = (
-    <Router>
-      <FakePagerProvider>
-        <div data-testid="taxpayer">
-          <TaxPayer />
-        </div>
-      </FakePagerProvider>
-    </Router>
+    <FakePagerProvider>
+      <div data-testid="taxpayer">
+        <TaxPayer />
+      </div>
+    </FakePagerProvider>
   )
 }
 

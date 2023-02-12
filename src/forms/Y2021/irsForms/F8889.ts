@@ -7,11 +7,6 @@ import F1040Attachment from './F1040Attachment'
 import F1040 from './F1040'
 import { Field } from 'ustaxes/core/pdfFiller'
 
-export const needsF8889 = (state: Information, person: Person): boolean => {
-  return state.healthSavingsAccounts.some(
-    (h) => h.personRole === person.role || h.coverageType === 'family'
-  )
-}
 type ContributionType = 'self-only' | 'family'
 type PerMonthContributionType = {
   amount: number[]
@@ -30,6 +25,12 @@ export default class F8889 extends F1040Attachment {
   calculatedCoverageType: 'self-only' | 'family'
   perMonthContributions: PerMonthContributionType
   readonly firstDayOfLastMonth: Date
+
+  isNeeded = (): boolean => {
+    return this.f1040.info.healthSavingsAccounts.some(
+      (h) => h.personRole === this.person.role || h.coverageType === 'family'
+    )
+  }
 
   constructor(f1040: F1040, person: Person) {
     super(f1040)

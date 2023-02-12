@@ -32,6 +32,17 @@ export default class ScheduleA extends F1040Attachment {
     }
   }
 
+  isNeeded = (): boolean => {
+    if (this.f1040.info.itemizedDeductions !== undefined) {
+      const standardDeduction = this.f1040.standardDeduction()
+      const itemizedAmount = this.deductions()
+      return (
+        standardDeduction === undefined || itemizedAmount > standardDeduction
+      )
+    }
+    return false
+  }
+
   deductions(): number {
     return (
       this.l4() + this.l7() + this.l10() + this.l14() + this.l15() + this.l16()

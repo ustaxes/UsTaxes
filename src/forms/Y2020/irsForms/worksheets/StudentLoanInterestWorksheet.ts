@@ -42,17 +42,17 @@ export default class StudentLoanInterestWorksheet {
   // Schedule 1 deductions
   l3 = (): number =>
     sumFields([
-      this.f1040.schedule1?.l10(),
-      this.f1040.schedule1?.l11(),
-      this.f1040.schedule1?.l12(),
-      this.f1040.schedule1?.l13(),
-      this.f1040.schedule1?.l14(),
-      this.f1040.schedule1?.l15(),
-      this.f1040.schedule1?.l16(),
-      this.f1040.schedule1?.l17(),
-      this.f1040.schedule1?.l18(),
-      this.f1040.schedule1?.l19(),
-      this.f1040.schedule1?.l22writeIn()
+      this.f1040.schedule1.l10(),
+      this.f1040.schedule1.l11(),
+      this.f1040.schedule1.l12(),
+      this.f1040.schedule1.l13(),
+      this.f1040.schedule1.l14(),
+      this.f1040.schedule1.l15(),
+      this.f1040.schedule1.l16(),
+      this.f1040.schedule1.l17(),
+      this.f1040.schedule1.l18(),
+      this.f1040.schedule1.l19(),
+      this.f1040.schedule1.l22writeIn()
     ])
 
   l4 = (): number => Math.max(0, this.l2() - this.l3())
