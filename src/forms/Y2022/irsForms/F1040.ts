@@ -378,11 +378,11 @@ export default class F1040 extends F1040Base {
 
   l11 = (): number => Math.max(0, this.l9() - (this.l10() ?? 0))
 
-  l12 = (): number | undefined => {
+  l12 = (): number => {
     if (this.scheduleA.isNeeded()) {
       return this.scheduleA.deductions()
     }
-    return this.standardDeduction()
+    return this.standardDeduction() ?? 0
   }
 
   l13 = (): number | undefined => this.f8995?.deductions()
