@@ -4,11 +4,9 @@ import { FilingStatus } from 'ustaxes/core/data'
 import { Field } from 'ustaxes/core/pdfFiller'
 
 export function getF8995PhaseOutIncome(filingStatus: FilingStatus): number {
-  let formAMinAmount = 164900
-  if (filingStatus === FilingStatus.MFS) {
-    formAMinAmount = 164925
-  } else if (filingStatus === FilingStatus.MFJ) {
-    formAMinAmount = 329800
+  let formAMinAmount = 170050
+  if (filingStatus === FilingStatus.MFJ) {
+    formAMinAmount = 340100
   }
   return formAMinAmount
 }
@@ -22,7 +20,7 @@ function ifNumber(
 
 export default class F8995 extends F1040Attachment {
   tag: FormTag = 'f8995'
-  sequenceIndex = 999
+  sequenceIndex = 55
 
   applicableK1s = () =>
     this.f1040.info.scheduleK1Form1065s.filter((k1) => k1.section199AQBI > 0)

@@ -14,6 +14,7 @@ function ifNumber(
 
 export default class F8995A extends F8995 {
   tag: FormTag = 'f8995a'
+  sequenceIndex = 55.5
 
   l2a = (): number | undefined => this.applicableK1s()[0]?.section199AQBI
   l2b = (): number | undefined => this.applicableK1s()[1]?.section199AQBI
