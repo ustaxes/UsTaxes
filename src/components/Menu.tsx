@@ -196,7 +196,7 @@ const yearSpecificPages: Partial<{ [k in TaxYear]: Section[] }> = {
 }
 
 export const drawerSectionsForYear = (year: TaxYear): Section[] => [
-  ...drawerSections.slice(0, -2),
+  ...drawerSections.slice(0, -1),
   ...(yearSpecificPages[year] || []),
   drawerSections[drawerSections.length - 1]
 ]
