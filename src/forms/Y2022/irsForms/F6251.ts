@@ -2,6 +2,7 @@ import F1040Attachment from './F1040Attachment'
 import { FilingStatus, PersonRole } from 'ustaxes/core/data'
 import { FormTag } from 'ustaxes/core/irsForms/Form'
 import { Field } from 'ustaxes/core/pdfFiller'
+import { amt } from '../data/federal'
 
 type Part3 = Partial<{
   l12: number
@@ -179,27 +180,7 @@ export default class F6251 extends F1040Attachment {
 
   l5 = (additionalAmount = 0): number | undefined => {
     const l4 = this.l4(additionalAmount) ?? 0
-    switch (this.f1040.info.taxPayer.filingStatus) {
-      case FilingStatus.S:
-        if (l4 <= 523600) {
-          return 73600
-        }
-        break
-      case FilingStatus.MFJ:
-        if (l4 <= 1047200) {
-          return 114600
-        }
-        break
-      case FilingStatus.MFS:
-        if (l4 <= 523600) {
-          return 57300
-        } else {
-          return 57300
-        }
-        break
-    }
-    // TODO: Handle "Exemption Worksheet"
-    return undefined
+    return amt.excemption(this.f1040.info.taxPayer.filingStatus, l4)
   }
 
   l6 = (additionalAmount = 0): number =>
@@ -240,14 +221,15 @@ export default class F6251 extends F1040Attachment {
       return this.part3().l40
     }
 
-    const cap =
-      this.f1040.info.taxPayer.filingStatus === FilingStatus.MFS
-        ? 99950
-        : 199900
+    const cap = amt.cap(this.f1040.info.taxPayer.filingStatus)
+
     if (l6 <= cap) {
       return l6 * 0.26
     }
-    return l6 * 0.28
+    return (
+      l6 * 0.28 -
+      (this.f1040.info.taxPayer.filingStatus === FilingStatus.MFS ? 2061 : 4122)
+    )
   }
 
   // TODO: Alternative minimum tax foreign tax credit
@@ -295,25 +277,25 @@ export default class F6251 extends F1040Attachment {
 
     const l18Consts: [number, number] = (() => {
       if (this.f1040.info.taxPayer.filingStatus === FilingStatus.MFS) {
-        return [99950, 1999]
+        return [103050, 2061]
       }
-      return [199900, 3998]
+      return [206100, 4122]
     })()
 
     const l19Value: { [k in FilingStatus]: number } = {
-      [FilingStatus.MFJ]: 80800,
-      [FilingStatus.W]: 80800,
-      [FilingStatus.S]: 40400,
-      [FilingStatus.MFS]: 40400,
-      [FilingStatus.HOH]: 54100
+      [FilingStatus.MFJ]: 83350,
+      [FilingStatus.W]: 83350,
+      [FilingStatus.S]: 41675,
+      [FilingStatus.MFS]: 41675,
+      [FilingStatus.HOH]: 55800
     }
 
     const l25Value: { [k in FilingStatus]: number } = {
-      [FilingStatus.MFJ]: 501600,
-      [FilingStatus.W]: 501600,
-      [FilingStatus.S]: 445860,
-      [FilingStatus.MFS]: 250800,
-      [FilingStatus.HOH]: 473750
+      [FilingStatus.MFJ]: 517200,
+      [FilingStatus.W]: 517200,
+      [FilingStatus.S]: 459750,
+      [FilingStatus.MFS]: 258600,
+      [FilingStatus.HOH]: 488500
     }
 
     const l12 = this.l6()

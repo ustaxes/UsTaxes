@@ -1,4 +1,5 @@
 import { FilingStatus } from 'ustaxes/core/data'
+import { filingStatus } from 'ustaxes/core/data/validate'
 import { linear, Piecewise } from 'ustaxes/core/util'
 
 export const CURRENT_YEAR = 2022
@@ -231,6 +232,41 @@ export const healthSavingsAccounts = {
   contributionLimit: {
     'self-only': 3650,
     family: 7300
+  }
+}
+
+export const amt = {
+  excemption: (
+    filingStatus: FilingStatus,
+    income: number
+  ): number | undefined => {
+    switch (filingStatus) {
+      case FilingStatus.S:
+        if (income <= 539900) {
+          return 75900
+        }
+        break
+      case FilingStatus.MFJ:
+        if (income <= 1079800) {
+          return 118100
+        }
+        break
+      case FilingStatus.MFS:
+        if (income <= 5399900) {
+          return 59050
+        } else {
+          return 59050
+        }
+    }
+    // TODO: Handle "Exemption Worksheet"
+    return undefined
+  },
+
+  cap: (filingStatus: FilingStatus): number => {
+    if (filingStatus === FilingStatus.MFS) {
+      return 103050
+    }
+    return 206100
   }
 }
 
