@@ -26,7 +26,7 @@ export default class ScheduleSE extends F1040Attachment {
 
   l8aRelatedField = (f: () => number | undefined): number | undefined => {
     return this.postL4Field(() => {
-      if ((this.l8a() ?? 0) >= 142800) {
+      if ((this.l8a() ?? 0) >= 147000) {
         return undefined
       }
       return f()
@@ -77,7 +77,7 @@ export default class ScheduleSE extends F1040Attachment {
   l6 = (): number | undefined =>
     this.postL4Field((): number => sumFields([this.l4c(), this.l5b()]))
 
-  l7 = (): number => 142800
+  l7 = (): number => 147000
 
   l8a = (): number | undefined =>
     this.postL4Field((): number =>
