@@ -53,9 +53,12 @@ export function fillPDF(pdf: PDFDocument, fieldValues: Field[]): PDFDocument {
       }
     } else if (pdfField instanceof PDFTextField) {
       try {
-        const showValue = !isNaN(value as number)
-          ? displayRound(value as number | undefined)?.toString()
-          : value?.toString()
+        const showValue =
+          !isNaN(value as number) &&
+          value &&
+          Array.from(value as string)[0] !== '0'
+            ? displayRound(value as number)?.toString()
+            : value?.toString()
         pdfField.setText(showValue)
       } catch (err) {
         throw error('text field')
