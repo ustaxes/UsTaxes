@@ -34,9 +34,9 @@ export default class Schedule1 extends F1040Attachment {
   l8b = (): number | undefined => undefined
   l8c = (): number | undefined => undefined
   l8d = (): number | undefined => undefined
-  l8e = (): number | undefined =>
+  l8e = (): number | undefined => undefined
+  l8f = (): number | undefined =>
     sumFields([this.f1040.f8889.l16(), this.f1040.f8889Spouse?.l16()])
-  l8f = (): number | undefined => undefined
   l8g = (): number | undefined => undefined
   l8h = (): number | undefined => undefined
   l8i = (): number | undefined => undefined
@@ -48,6 +48,10 @@ export default class Schedule1 extends F1040Attachment {
   l8o = (): number | undefined => undefined
   l8p = (): number | undefined => undefined
   l8q = (): number | undefined => undefined
+  l8r = (): number | undefined => undefined
+  l8s = (): number | undefined => undefined
+  l8t = (): number | undefined => undefined
+  l8u = (): number | undefined => undefined
   l8z = (): number => {
     if (
       (this.f1040.f8889.isNeeded() && this.f1040.f8889.l20() > 0) ||
@@ -80,6 +84,10 @@ export default class Schedule1 extends F1040Attachment {
       this.l8o(),
       this.l8p(),
       this.l8q(),
+      this.l8r(),
+      this.l8s(),
+      this.l8t(),
+      this.l8u(),
       this.l8z()
     ])
 
@@ -191,6 +199,11 @@ export default class Schedule1 extends F1040Attachment {
     this.l8n(),
     this.l8o(),
     this.l8p(),
+    this.l8q(),
+    this.l8r(),
+    this.l8s(),
+    this.l8t(),
+    this.l8u(),
     Array.from(this.otherIncomeStrings).join(' '),
     undefined,
     this.l8z(),
