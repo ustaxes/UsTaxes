@@ -100,55 +100,15 @@ export default class Schedule8812 extends F1040Attachment {
   creditDependents = (): Dependent[] =>
     this.f1040.qualifyingDependents.qualifyingChildren()
 
-  l4a = (): number => this.creditDependents().length
+  l4 = (): number => this.creditDependents().length
 
-  // Number of qualifying children under age 6 at EOY
-  l4b = (): number =>
-    this.creditDependents().filter(
-      (d) =>
-        d.qualifyingInfo !== undefined &&
-        d.dateOfBirth.getFullYear() > CURRENT_YEAR - 6
-    ).length
-
-  l4c = (): number => Math.max(0, this.l4a() - this.l4b())
-
-  /**
-   * Computed using the line 5 worksheet, Schedule 8812 instructions
-   */
-  l5 = (): number => {
-    const fs = this.f1040.info.taxPayer.filingStatus
-
-    const wsl1 = this.l4b() * 3600
-    const wsl2 = this.l4c() * 3000
-    const wsl3 = wsl1 + wsl2
-    const wsl4 = this.l4a() * 2000
-    // Note wsl3 >= wsl4
-    const wsl5 = wsl3 - wsl4
-    const wsl6values: Partial<{ [key in FilingStatus]: number }> = {
-      [FilingStatus.MFJ]: 12500,
-      [FilingStatus.W]: 2500,
-      [FilingStatus.HOH]: 4375
-    }
-    const wsl6 = wsl6values[fs] ?? 6250
-    const wsl7 = Math.min(wsl5, wsl6)
-    const wsl8values: Partial<{ [key in FilingStatus]: number }> = {
-      [FilingStatus.MFJ]: 150000,
-      [FilingStatus.W]: 150000,
-      [FilingStatus.HOH]: 112500
-    }
-    const wsl8 = wsl8values[fs] ?? 75000
-
-    const wsl9 = nextMultipleOf1000(Math.max(0, this.l3() - wsl8))
-    const wsl10 = wsl9 * 0.05
-    const wsl11 = Math.min(wsl7, wsl10)
-    return Math.max(0, wsl3 - wsl11)
-  }
+  l5 = (): number => this.l4() * 2000
 
   // TODO: Verify:
   // Number of other dependents, including any qualifying children, who are not under age 18 or who do not have the required SSN. Do not include yourself, your spouse,
   // or anyone who is not a US citizen/national/resident alien,
   // or do not have the required SSN.
-  l6 = (): number => this.f1040.info.taxPayer.dependents.length - this.l4a()
+  l6 = (): number => this.f1040.info.taxPayer.dependents.length - this.l4()
 
   l7 = (): number => this.l6() * 500
 
@@ -162,28 +122,17 @@ export default class Schedule8812 extends F1040Attachment {
   l11 = (): number => this.l10() * 0.05
 
   l12 = (): number => Math.max(0, this.l8() - this.l11())
-
+  l12no = (): boolean => this.l8() > this.l11()
+  l12yes = (): boolean => !this.l12no()
   // you and spouse have residence in US for more than half of year.
   // TODO: Assuming true
-  l13a = (): boolean => true
+  l13 = (): number => this.creditLimitWorksheetA()
 
-  // Resident of puerto rico for 2021
-  // TODO: assuming false
-  l13b = (): boolean => false
+  l14 = (): number => (this.l12no() ? 0 : Math.min(this.l12(), this.l13()))
 
-  // Part 1 B - requires a box on line 13
-  req =
-    <A>(pred: boolean) =>
-    (f: () => A) =>
-    (): A | undefined => {
-      if (pred) {
-        return f()
-      } else {
-        return undefined
-      }
-    }
-
-  req13 = this.req<number>(this.l13a() || this.l13b())
+  // Check this box if you do not want to file the additional tax credit
+  // TODO: Assuming that people do right now
+  l15 = (): boolean => true
 
   creditLimitWorksheetB = (): number | undefined => undefined
 
@@ -218,84 +167,9 @@ export default class Schedule8812 extends F1040Attachment {
       .filter((c) => c.type === CreditType.AdvanceChildTaxCredit)
       .reduce((sum, c) => sum + c.amount, 0)
 
-  part1b = (): Part1b => {
-    const allowed = this.l13a() || this.l13b()
-    if (!allowed) return { allowed: false }
+  to1040Line19 = (): number => this.l14()
 
-    const l14a = Math.min(this.l7(), this.l12())
-    const l14b = Math.max(this.l12() - l14a)
-    const l14c = l14a === 0 ? 0 : this.creditLimitWorksheetA()
-    const l14d = Math.min(l14a, l14c)
-    const l14e = sumFields([l14b, l14d])
-    // TODO:
-    // IMPORTANT: Letter 6419 advance child tax credit payments
-    const l14f = this.letter6419Payments() ?? 0
-    const l14g = Math.max(0, l14e - l14f)
-
-    // Credit for other dependents
-    const l14h = Math.min(l14d, l14g)
-
-    // Refundable child tax credit
-    const l14i = Math.max(0, l14g - l14h)
-
-    return {
-      allowed,
-      l14a,
-      l14b,
-      l14c,
-      l14d,
-      l14e,
-      l14f,
-      l14g,
-      l14h,
-      l14i
-    }
-  }
-
-  part1c = (): Part1c => {
-    const allowed = !(this.l13a() || this.l13b())
-    if (!allowed) return { allowed: false }
-
-    const l15a = this.creditLimitWorksheetA()
-    const l15b = Math.min(this.l12(), l15a)
-
-    //TODO - implement after 2a through 2c
-    const l15c = this.l27() ?? 0
-    const l15d = sumFields([l15b, l15c])
-    const l15e = this.letter6419Payments() ?? 0
-    const l15f = Math.max(0, l15d - l15e)
-    const l15g = Math.min(l15b, l15f)
-    const l15h = Math.max(0, l15f - l15g)
-
-    return {
-      allowed,
-      l15a,
-      l15b,
-      l15c,
-      l15d,
-      l15e,
-      l15f,
-      l15g,
-      l15h
-    }
-  }
-
-  // from Part 1-C, Line 15b 1 - 3
-  part2AllowedBy1C = (): boolean => {
-    const part1c = this.part1c()
-    return (
-      !part1c.allowed ||
-      (this.f1040.f2555 === undefined &&
-        this.l4a() > 0 &&
-        this.l12() > (part1c.l15a ?? 0))
-    )
-  }
-
-  to1040Line19 = (): number | undefined =>
-    this.part1b().l14h ?? this.part1c().l15g
-
-  to1040Line28 = (): number | undefined =>
-    this.part1b().l14i ?? this.part1c().l15h
+  to1040Line28 = (): number | undefined => this.l27()
 
   earnedIncomeWorksheet = (): number => {
     const l1a = this.f1040.l1z()
@@ -341,19 +215,10 @@ export default class Schedule8812 extends F1040Attachment {
   }
 
   part2a = (): Part2a => {
-    const l16a = Math.max(0, this.l12() - (this.part1c().l15b ?? 0))
-    const l16bdeps = this.l4a()
+    const l16a = Math.max(0, this.l12() - this.l14())
+    const l16bdeps = this.l4()
 
-    const allowed =
-      this.part2AllowedBy1C() &&
-      this.f1040.f2555 === undefined &&
-      !(this.l13a() || this.l13b()) &&
-      l16a > 0 &&
-      l16bdeps > 0
-
-    if (!allowed) return { allowed: false }
-
-    const l16b = l16bdeps * 1400
+    const l16b = l16bdeps * 1500
 
     const l17 = Math.min(l16a, l16b)
     const l18a = this.earnedIncomeWorksheet()
@@ -438,88 +303,11 @@ export default class Schedule8812 extends F1040Attachment {
   }
 
   l27 = (): number | undefined =>
-    this.part2a().toLine27 ?? this.part2b().toLine27
-
-  part3 = (): Part3 => {
-    const fs = this.f1040.info.taxPayer.filingStatus
-    const part1b = this.part1b()
-    const part1c = this.part1c()
-
-    const allowed =
-      (part1b.allowed && part1b.l14g === 0) ||
-      (part1c.allowed && part1c.l15f === 0)
-
-    if (!allowed) return { allowed: false }
-
-    const l28a = this.part1b().l14f ?? this.part1c().l15e
-
-    const l28b = part1b.l14e ?? part1c.l15d
-
-    const l29 = Math.max(0, (l28a ?? 0) - (l28b ?? 0))
-
-    // Enter the number of qualifying children taken into account in determining the annual advance amount you
-    // received for 2021. See your Letter 6419 for this number. If you are missing your Letter 6419, you are filing a joint
-    // return, or you received more than one Letter 6419, see the instructions before entering a number on this line
-    const l30 = this.l4a()
-
-    const l31 = Math.min(this.l4a(), l30)
-
-    const l32 = Math.max(0, l30 - l31)
-
-    const l33Values: { [key in FilingStatus]: number } = {
-      [FilingStatus.MFJ]: 60000,
-      [FilingStatus.W]: 60000,
-      [FilingStatus.HOH]: 50000,
-      [FilingStatus.S]: 40000,
-      [FilingStatus.MFS]: 40000
-    }
-
-    const l33 = l33Values[fs]
-
-    const l34 = Math.max(0, this.l3() - l33)
-
-    const l35 = l33
-
-    const l36 = Math.min(1, l34 / l35).toFixed(3)
-
-    const l37 = l32 * 2000
-
-    const l38 = l37 * parseFloat(l36)
-
-    const l39 = Math.max(0, l37 - l38)
-
-    const l40 = Math.max(0, l29 - l39)
-
-    return {
-      allowed: true,
-      l28a,
-      l28b,
-      l29,
-      l30,
-      l31,
-      l32,
-      l33,
-      l34,
-      l35,
-      l36,
-      l37,
-      l38,
-      l39,
-      l40
-    }
-  }
-
-  l40 = (): number => this.part3().l40 ?? 0
-
-  // This is your additional tax.
-  toSchedule2Line19: () => number = this.l40
+    this.l12no() ? 0 : this.part2a().toLine27 ?? this.part2b().toLine27
 
   fields = (): Field[] => {
-    const part1b = this.part1b()
-    const part1c = this.part1c()
     const part2a = this.part2a()
     const part2b = this.part2b()
-    const part3 = this.part3()
 
     return [
       this.f1040.namesString(),
@@ -530,9 +318,7 @@ export default class Schedule8812 extends F1040Attachment {
       this.l2c(),
       this.l2d(),
       this.l3(),
-      this.l4a(),
-      this.l4b(),
-      this.l4c(),
+      this.l4(),
       this.l5(),
       this.l6(),
       this.l7(),
@@ -541,25 +327,8 @@ export default class Schedule8812 extends F1040Attachment {
       this.l10(),
       this.l11(),
       this.l12(),
-      this.l13a(),
-      this.l13b(),
-      part1b.l14a,
-      part1b.l14b,
-      part1b.l14c,
-      part1b.l14d,
-      part1b.l14e,
-      part1b.l14f,
-      part1b.l14g,
-      part1b.l14h,
-      part1b.l14i,
-      part1c.l15a,
-      part1c.l15b,
-      part1c.l15c,
-      part1c.l15d,
-      part1c.l15e,
-      part1c.l15f,
-      part1c.l15g,
-      part1c.l15h,
+      this.l13(),
+      this.l15(),
       part2a.l16a,
       part2a.l16bdeps,
       part2a.l16b,
@@ -578,21 +347,7 @@ export default class Schedule8812 extends F1040Attachment {
       part2b.l24,
       part2b.l25,
       part2b.l26,
-      this.l27(),
-      part3.l28a,
-      part3.l28b,
-      part3.l29,
-      part3.l30,
-      part3.l31,
-      part3.l32,
-      part3.l33,
-      part3.l34,
-      part3.l35,
-      part3.l36,
-      part3.l37,
-      part3.l38,
-      part3.l39,
-      this.l40()
+      this.l27()
     ]
   }
 }
