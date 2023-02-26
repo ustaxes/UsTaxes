@@ -17,6 +17,7 @@ export default class Schedule2 extends F1040Attachment {
   l5 = (): number | undefined => undefined // TODO: unreported FICA tax
   l6 = (): number | undefined => undefined // TODO: additional tax on retirement accounts
   l7 = (): number | undefined => undefined // TODO: total additional ss and medicare tax
+  l8box = (): boolean => false // TODO: implement this after l8 is implemented.
   l8 = (): number | undefined => undefined // TODO: additional tax on IRAs or other tax favored accoutns, form 5329
   l9 = (): number | undefined => undefined // TODO: household employment taxes, schedule H
   l10 = (): number | undefined => undefined // repayment of firsttime homebuyer credit, form 5405
@@ -101,9 +102,6 @@ export default class Schedule2 extends F1040Attachment {
       this.l17z()
     ])
 
-  // 19 Additional tax from Schedule 8812
-  l19 = (): number | undefined => this.f1040.schedule8812.toSchedule2Line19()
-
   // TODO: Section 965 net tax liability installment from Form 965-A. .
   l20 = (): number | undefined => undefined
 
@@ -121,8 +119,7 @@ export default class Schedule2 extends F1040Attachment {
       this.l14(),
       this.l15(),
       this.l16(),
-      this.l18(),
-      this.l19()
+      this.l18()
     ])
 
   to1040l23 = (): number => this.l21()
@@ -140,6 +137,7 @@ export default class Schedule2 extends F1040Attachment {
     this.l5(),
     this.l6(),
     this.l7(),
+    this.l8box(),
     this.l8(),
     this.l9(),
     this.l10(),
@@ -171,7 +169,7 @@ export default class Schedule2 extends F1040Attachment {
     undefined,
     this.l17z(),
     this.l18(),
-    this.l19(),
+    //this.l19(),
     this.l20(),
     this.l21()
   ]
