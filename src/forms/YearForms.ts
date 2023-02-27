@@ -71,7 +71,11 @@ export class YearCreateForm {
     const r1 = await run(this.f1040()).mapAsync((forms) =>
       Promise.all(
         forms.map(async (form) =>
-          fillPDF(await this.config.getPDF(form), form.renderedFields())
+          fillPDF(
+            await this.config.getPDF(form),
+            form.renderedFields(),
+            form.tag
+          )
         )
       )
     )
@@ -110,7 +114,11 @@ export class YearCreateForm {
     const r2 = await r1.mapAsync((forms) =>
       Promise.all(
         forms.map(async (form) =>
-          fillPDF(await this.config.getStatePDF(form), form.renderedFields())
+          fillPDF(
+            await this.config.getStatePDF(form),
+            form.renderedFields(),
+            form.formName
+          )
         )
       )
     )

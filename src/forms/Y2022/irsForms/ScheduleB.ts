@@ -13,7 +13,7 @@ export default class ScheduleB extends F1040Attachment {
   tag: FormTag = 'f1040sb'
   sequenceIndex = 8
   readonly interestPayersLimit = 14
-  readonly dividendPayersLimit = 16
+  readonly dividendPayersLimit = 15
 
   index = 0
 
@@ -142,6 +142,7 @@ export default class ScheduleB extends F1040Attachment {
     ...this.l7a(),
     ...this.l7a2(),
     this.l7b(),
+    undefined, // there are two separate fields for line 7b.
     ...this.l8()
   ]
 }

@@ -17,7 +17,7 @@ export const createStatePDF =
       pdfs,
       forms,
       async (pdf, form) => {
-        fillPDF(await pdf, form.fields())
+        fillPDF(await pdf, form.fields(), form.formName)
         return pdf
       }
     )

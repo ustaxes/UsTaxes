@@ -40,7 +40,7 @@ export default class ScheduleEIC extends F1040Attachment {
   sequenceIndex = 43
   pub596Worksheet1: Pub596Worksheet1
   qualifyingStudentCutoffYear = 1996
-  qualifyingCutoffYear = 2001
+  qualifyingCutoffYear = 2003
   investmentIncomeLimit = 3650
 
   constructor(f1040: F1040) {
