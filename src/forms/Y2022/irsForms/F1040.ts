@@ -608,7 +608,7 @@ export default class F1040 extends F1040Base {
       this.l27(),
       this.l28(),
       this.l29(),
-      //this.l30(),
+      undefined, //this.l30(),
       this.l31(),
       this.l32(),
       this.l33(),
