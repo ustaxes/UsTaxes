@@ -27,6 +27,9 @@ interface FederalBrackets {
   longTermCapGains: Rates & { status: { [key in FilingStatus]: Brackets } }
 }
 
+// Tax brackets can be most easily found via google
+// The standard deduction amounts with the allowances can be most
+// easily found at the end of 1040-SR
 const federalBrackets: FederalBrackets = {
   ordinary: {
     rates: [10, 12, 22, 24, 32, 35, 37],
@@ -36,15 +39,15 @@ const federalBrackets: FederalBrackets = {
         deductions: [
           {
             name: 'Standard Deduction (Single)',
-            amount: 12550
+            amount: 12950
           },
           {
             name: 'Standard Deduction (Single) with 1 age or blindness allowance',
-            amount: 14250
+            amount: 14700
           },
           {
             name: 'Standard Deduction (Single) with 2 age or blindness allowances',
-            amount: 15950
+            amount: 16450
           }
         ],
         exemptions: [
@@ -59,23 +62,23 @@ const federalBrackets: FederalBrackets = {
         deductions: [
           {
             name: 'Standard Deduction (Married)',
-            amount: 25100
+            amount: 25900
           },
           {
             name: 'Standard Deduction (Married) with 1 age or blindness allowance',
-            amount: 26450
+            amount: 27300
           },
           {
             name: 'Standard Deduction (Married) with 2 age or blindness allowances',
-            amount: 27800
+            amount: 28700
           },
           {
             name: 'Standard Deduction (Married) with 3 age or blindness allowances',
-            amount: 29150
+            amount: 30100
           },
           {
             name: 'Standard Deduction (Married) with 4 age or blindness allowances',
-            amount: 30500
+            amount: 31500
           }
         ],
         exemptions: [
@@ -90,15 +93,15 @@ const federalBrackets: FederalBrackets = {
         deductions: [
           {
             name: 'Standard Deduction (Widowed)',
-            amount: 24800
+            amount: 25900
           },
           {
             name: 'Standard Deduction (Widowed) with 1 age or blindness allowance',
-            amount: 26450
+            amount: 27300
           },
           {
             name: 'Standard Deduction (Widowed) with 2 age or blindness allowances',
-            amount: 27800
+            amount: 28700
           }
         ],
         exemptions: [
@@ -113,23 +116,23 @@ const federalBrackets: FederalBrackets = {
         deductions: [
           {
             name: 'Standard Deduction (Married Filing Separately)',
-            amount: 12550
+            amount: 12950
           },
           {
             name: 'Standard Deduction (Married Filing Separately) with 1 age or blindness allowance',
-            amount: 13900
+            amount: 14350
           },
           {
             name: 'Standard Deduction (Married Filing Separately) with 2 age or blindness allowances',
-            amount: 15250
+            amount: 15750
           },
           {
             name: 'Standard Deduction (Married Filing Separately) with 3 age or blindness allowances',
-            amount: 16600
+            amount: 17150
           },
           {
             name: 'Standard Deduction (Married Filing Separately) with 4 age or blindness allowances',
-            amount: 17950
+            amount: 18550
           }
         ],
         exemptions: [
@@ -144,15 +147,15 @@ const federalBrackets: FederalBrackets = {
         deductions: [
           {
             name: 'Standard Deduction (Head of Household)',
-            amount: 18800
+            amount: 19400
           },
           {
             name: 'Standard Deduction (Head of Household) with 1 age or blindness allowance',
-            amount: 20500
+            amount: 21150
           },
           {
             name: 'Standard Deduction (Head of Household) with 2 age or blindness allowances',
-            amount: 22200
+            amount: 22900
           }
         ],
         exemptions: [
@@ -168,27 +171,27 @@ const federalBrackets: FederalBrackets = {
     rates: [0, 15, 20],
     status: {
       [FilingStatus.S]: {
-        brackets: [40400, 445850]
+        brackets: [41675, 459750]
       },
       [FilingStatus.MFJ]: {
-        brackets: [80800, 501600]
+        brackets: [83350, 517200]
       },
       [FilingStatus.W]: {
-        brackets: [80800, 501600]
+        brackets: [83350, 517200]
       },
       [FilingStatus.MFS]: {
-        brackets: [40400, 250800]
+        brackets: [41675, 258600]
       },
       [FilingStatus.HOH]: {
-        brackets: [54100, 473750]
+        brackets: [55800, 488500]
       }
     }
   }
 }
 
 export const fica = {
-  maxSSTax: 8853.6,
-  maxIncomeSSTaxApplies: 142800,
+  maxSSTax: 9114,
+  maxIncomeSSTaxApplies: 147000,
 
   regularMedicareTaxRate: 1.45 / 100,
   additionalMedicareTaxRate: 0.9 / 100,
@@ -270,9 +273,10 @@ export const amt = {
   }
 }
 
+// https://www.irs.gov/credits-deductions/individuals/earned-income-tax-credit/earned-income-and-earned-income-tax-credit-eitc-tables#EITC%20Tables
 // line 11 caps based on step one in instructions
-const line11Caps = [21430, 42158, 47915, 51464]
-const line11MfjCaps = [27830, 48108, 53865, 57414]
+const line11Caps = [16480, 43492, 49399, 53057]
+const line11MfjCaps = [22610, 49622, 55529, 59187]
 
 type Point = [number, number]
 
@@ -373,7 +377,7 @@ export const EIC: EICDef = {
     [FilingStatus.MFS]: undefined,
     [FilingStatus.MFJ]: line11MfjCaps
   },
-  maxInvestmentIncome: 10000,
+  maxInvestmentIncome: 10300,
   formulas: {
     [FilingStatus.S]: unmarriedFormulas,
     [FilingStatus.W]: unmarriedFormulas,
