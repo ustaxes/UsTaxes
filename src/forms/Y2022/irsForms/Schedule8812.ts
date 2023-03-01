@@ -2,32 +2,8 @@ import F1040Attachment from './F1040Attachment'
 import { CreditType, Dependent, FilingStatus } from 'ustaxes/core/data'
 import { sumFields } from 'ustaxes/core/irsForms/util'
 import { FormTag } from 'ustaxes/core/irsForms/Form'
-import { CURRENT_YEAR } from '../data/federal'
 import { Field } from 'ustaxes/core/pdfFiller'
 import { nextMultipleOf1000 } from 'ustaxes/core/util'
-
-type Part1b = { allowed: boolean } & Partial<{
-  l14a: number
-  l14b: number
-  l14c: number
-  l14d: number
-  l14e: number
-  l14f: number
-  l14g: number
-  l14h: number
-  l14i: number
-}>
-
-type Part1c = { allowed: boolean } & Partial<{
-  l15a: number
-  l15b: number
-  l15c: number
-  l15d: number
-  l15e: number
-  l15f: number
-  l15g: number
-  l15h: number
-}>
 
 type Part2a = { allowed: boolean } & Partial<{
   l16a: number
@@ -53,23 +29,6 @@ type Part2b = { allowed: boolean } & Partial<{
   l25: number
   l26: number
   toLine27: number
-}>
-
-type Part3 = { allowed: boolean } & Partial<{
-  l28a: number
-  l28b: number
-  l29: number
-  l30: number
-  l31: number
-  l32: number
-  l33: number
-  l34: number
-  l35: number
-  l36: string
-  l37: number
-  l38: number
-  l39: number
-  l40: number
 }>
 
 export default class Schedule8812 extends F1040Attachment {

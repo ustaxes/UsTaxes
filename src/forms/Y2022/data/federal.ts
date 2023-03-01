@@ -1,5 +1,4 @@
 import { FilingStatus } from 'ustaxes/core/data'
-import { filingStatus } from 'ustaxes/core/data/validate'
 import { linear, Piecewise } from 'ustaxes/core/util'
 
 export const CURRENT_YEAR = 2022
