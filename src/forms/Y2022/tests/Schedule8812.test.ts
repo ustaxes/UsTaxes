@@ -29,7 +29,7 @@ describe('Schedule 8812', () => {
   it('should not produce line 5 with no dependents', async () => {
     await withSchedule8812((f1040, s8812) => {
       // If Schedule A is attached, the deduction should be greater than the standard deduction
-      if (s8812.l4a() === 0) {
+      if (s8812.l4() === 0) {
         expect(s8812.l5()).toEqual(0)
       }
     })
