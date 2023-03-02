@@ -14,7 +14,7 @@
     "date-fns": "^2.29.3",
     "lodash": "^4.17.21",
     "loglevel": "^1.8.1",
-    "papaparse": "^5.3.2",
+    "papaparse": "^5.4.0",
     "pdf-lib": "^1.17.1",
     "react": "^17.0.2",
     "react-data-table-component": "^7.5.3",
