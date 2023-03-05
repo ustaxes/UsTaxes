@@ -26,6 +26,7 @@ export enum PersonRole {
  */
 export interface Person<D = Date> {
   firstName: string
+  initial: string
   lastName: string
   ssid: string
   role: PersonRole

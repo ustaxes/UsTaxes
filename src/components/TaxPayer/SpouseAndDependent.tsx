@@ -36,6 +36,7 @@ import { intentionallyFloat } from 'ustaxes/core/util'
 
 interface UserPersonForm {
   firstName: string
+  initial: string
   lastName: string
   ssid: string
   isBlind: boolean
@@ -44,6 +45,7 @@ interface UserPersonForm {
 
 const blankUserPersonForm: UserPersonForm = {
   firstName: '',
+  initial: '',
   lastName: '',
   ssid: '',
   isBlind: false,

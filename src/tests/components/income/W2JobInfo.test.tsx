@@ -12,6 +12,7 @@ import {
 import { blankState } from 'ustaxes/redux/reducer'
 import W2JobInfo from 'ustaxes/components/income/W2JobInfo'
 import userEvent from '@testing-library/user-event'
+import { CURRENT_YEAR } from 'ustaxes/forms/Y2020/data/federal'
 
 jest.mock('redux-persist', () => {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -64,17 +65,23 @@ const testInfo: Information = {
         zip: '1234567'
       },
       firstName: 'payer-first-name',
+      initial: 'pfn',
       lastName: 'payer-last-name',
       isTaxpayerDependent: false,
       role: PersonRole.PRIMARY,
-      ssid: '111111111'
+      ssid: '111111111',
+      isBlind: false,
+      dateOfBirth: new Date(CURRENT_YEAR, 0, 1)
     },
     spouse: {
       firstName: 'spouse-first-name',
+      initial: 'sfn',
       isTaxpayerDependent: false,
       lastName: 'spouse-last-name',
       role: PersonRole.SPOUSE,
-      ssid: '222222222'
+      ssid: '222222222',
+      isBlind: false,
+      dateOfBirth: new Date(CURRENT_YEAR, 0, 1)
     },
     dependents: [],
     filingStatus: FilingStatus.MFS

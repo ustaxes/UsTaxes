@@ -184,6 +184,20 @@ export default class IL1040V extends Form {
 
   f18 = (): string | undefined => this.scanline()
 
+  /**
+   * Index 19: Initial
+   */
+  Initial = (): string | undefined => this.info.taxPayer.primaryPerson.initial
+
+  f19 = (): string | undefined => this.Initial()
+
+  /**
+   * Index 20: SpouseInitial
+   */
+  SpouseInitial = (): string | undefined => this.info.taxPayer.spouse?.initial
+
+  f20 = (): string | undefined => this.SpouseInitial()
+
   fields = (): Field[] => [
     this.f0(),
     this.f1(),
@@ -203,6 +217,8 @@ export default class IL1040V extends Form {
     this.f15(),
     this.f16(),
     this.f17(),
-    this.f18()
+    this.f18(),
+    this.f19(),
+    this.f20()
   ]
 }

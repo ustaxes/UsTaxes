@@ -307,7 +307,7 @@ export default function W2JobInfo(): ReactElement {
           name="personRole"
           keyMapping={(p: Person, i: number) => i}
           textMapping={(p) =>
-            `${p.firstName} ${p.lastName} (${formatSSID(p.ssid)})`
+            `${p.firstName} ${p.initial} ${p.lastName} (${formatSSID(p.ssid)})`
           }
         />
       </Grid>

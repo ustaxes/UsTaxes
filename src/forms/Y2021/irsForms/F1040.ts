@@ -482,7 +482,7 @@ export default class F1040 extends F1040Base {
       const dep = deps[depIdx]
       // Based on the PDF column, select the correct field
       fieldArr = [
-        `${dep.firstName} ${dep.lastName}`,
+        `${dep.firstName} ${dep.initial} ${dep.lastName}`,
         dep.ssid,
         dep.relationship,
         this.qualifyingDependents.qualifiesChild(dep),
@@ -508,10 +508,14 @@ export default class F1040 extends F1040Base {
       // TODO: implement non dependent child for HOH and QW
       this.info.taxPayer.filingStatus === 'MFS' ? this.spouseFullName() : '',
       this.info.taxPayer.primaryPerson.firstName,
+      this.info.taxPayer.primaryPerson.initial,
       this.info.taxPayer.primaryPerson.lastName,
       this.info.taxPayer.primaryPerson.ssid,
       this.info.taxPayer.filingStatus === FilingStatus.MFJ
         ? this.info.taxPayer.spouse?.firstName
+        : '',
+      this.info.taxPayer.filingStatus === FilingStatus.MFJ
+        ? this.info.taxPayer.spouse?.initial
         : '',
       this.info.taxPayer.filingStatus === FilingStatus.MFJ
         ? this.info.taxPayer.spouse?.lastName ?? ''

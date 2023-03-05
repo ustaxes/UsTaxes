@@ -46,6 +46,7 @@ const sampleInfo: ValidatedInformation = {
         city: ''
       },
       firstName: '',
+      initial: '',
       isTaxpayerDependent: false,
       lastName: '',
       role: PersonRole.PRIMARY,
@@ -55,6 +56,7 @@ const sampleInfo: ValidatedInformation = {
     },
     spouse: {
       firstName: '',
+      initial: '',
       isTaxpayerDependent: false,
       lastName: '',
       role: PersonRole.SPOUSE,

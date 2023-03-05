@@ -16,8 +16,10 @@ export default class F1040V extends F1040Attachment {
       tp.spouse?.ssid,
       taxOwed.toFixed(2), // dollars
       tp.primaryPerson.firstName,
+      tp.primaryPerson.initial,
       tp.primaryPerson.lastName,
       tp.spouse?.firstName,
+      tp.spouse?.initial,
       tp.spouse?.lastName,
       tp.primaryPerson.address.address,
       tp.primaryPerson.address.aptNo,

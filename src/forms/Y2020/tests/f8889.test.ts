@@ -49,17 +49,23 @@ const baseInformation: ValidatedInformation = {
         zip: '1234567'
       },
       firstName: 'payer-first-name',
+      initial: 'PFN',
       lastName: 'payer-last-name',
       isTaxpayerDependent: false,
+      isBlind: false,
+      dateOfBirth: new Date(CURRENT_YEAR, 0, 1),
       role: PersonRole.PRIMARY,
       ssid: '111111111'
     },
     spouse: {
       firstName: 'spouse-first-name',
+      initial: 'SFN',
       isTaxpayerDependent: false,
       lastName: 'spouse-last-name',
       role: PersonRole.SPOUSE,
-      ssid: '222222222'
+      ssid: '222222222',
+      isBlind: false,
+      dateOfBirth: new Date(CURRENT_YEAR, 0, 1)
     },
     dependents: [],
     filingStatus: FilingStatus.MFS
@@ -84,8 +90,8 @@ describe('Health Savings Accounts', () => {
         coverageType: 'self-only',
         contributions: 3550,
         personRole: PersonRole.PRIMARY,
-        startDate: new Date(CURRENT_YEAR, 0, 1).toISOString(),
-        endDate: new Date(CURRENT_YEAR, 11, 31).toISOString(),
+        startDate: new Date(CURRENT_YEAR, 0, 1),
+        endDate: new Date(CURRENT_YEAR, 11, 31),
         label: 'test',
         totalDistributions: 500,
         qualifiedDistributions: 500
@@ -110,8 +116,8 @@ describe('Health Savings Accounts', () => {
         coverageType: 'self-only',
         contributions: 3550,
         personRole: PersonRole.PRIMARY,
-        startDate: new Date(CURRENT_YEAR, 0, 1).toISOString(),
-        endDate: new Date(CURRENT_YEAR, 11, 31).toISOString(),
+        startDate: new Date(CURRENT_YEAR, 0, 1),
+        endDate: new Date(CURRENT_YEAR, 11, 31),
         label: 'test',
         totalDistributions: 500,
         qualifiedDistributions: 500
@@ -120,8 +126,8 @@ describe('Health Savings Accounts', () => {
         coverageType: 'family',
         contributions: 7100,
         personRole: PersonRole.SPOUSE,
-        startDate: new Date(CURRENT_YEAR, 0, 1).toISOString(),
-        endDate: new Date(CURRENT_YEAR, 11, 31).toISOString(),
+        startDate: new Date(CURRENT_YEAR, 0, 1),
+        endDate: new Date(CURRENT_YEAR, 11, 31),
         label: 'test',
         totalDistributions: 500,
         qualifiedDistributions: 500
@@ -146,8 +152,8 @@ describe('Health Savings Accounts', () => {
         coverageType: 'family',
         contributions: 3550,
         personRole: PersonRole.PRIMARY,
-        startDate: new Date(CURRENT_YEAR, 0, 1).toISOString(), // Jan 1st
-        endDate: new Date(CURRENT_YEAR, 5, 30).toISOString(), // Jun 30th
+        startDate: new Date(CURRENT_YEAR, 0, 1), // Jan 1st
+        endDate: new Date(CURRENT_YEAR, 5, 30), // Jun 30th
         label: 'test',
         totalDistributions: 500,
         qualifiedDistributions: 500
@@ -171,8 +177,8 @@ describe('Health Savings Accounts', () => {
         coverageType: 'family',
         contributions: 3550,
         personRole: PersonRole.PRIMARY,
-        startDate: new Date(CURRENT_YEAR, 0, 1).toISOString(), // Jan 1st
-        endDate: new Date(CURRENT_YEAR, 5, 30).toISOString(), // Jun 30th
+        startDate: new Date(CURRENT_YEAR, 0, 1), // Jan 1st
+        endDate: new Date(CURRENT_YEAR, 5, 30), // Jun 30th
         label: 'test',
         totalDistributions: 500,
         qualifiedDistributions: 500
@@ -181,8 +187,8 @@ describe('Health Savings Accounts', () => {
         coverageType: 'self-only',
         contributions: 1750,
         personRole: PersonRole.PRIMARY,
-        startDate: new Date(CURRENT_YEAR, 6, 1).toISOString(), // Jul 1st
-        endDate: new Date(CURRENT_YEAR, 10, 30).toISOString(), // Nov 30st
+        startDate: new Date(CURRENT_YEAR, 6, 1), // Jul 1st
+        endDate: new Date(CURRENT_YEAR, 10, 30), // Nov 30st
         label: 'test',
         totalDistributions: 500,
         qualifiedDistributions: 500
@@ -209,8 +215,8 @@ describe('Health Savings Accounts', () => {
         coverageType: 'family',
         contributions: 3550,
         personRole: PersonRole.PRIMARY,
-        startDate: new Date(CURRENT_YEAR, 0, 1).toISOString(), // Jan 1st
-        endDate: new Date(CURRENT_YEAR, 5, 30).toISOString(), // Jun 30th
+        startDate: new Date(CURRENT_YEAR, 0, 1), // Jan 1st
+        endDate: new Date(CURRENT_YEAR, 5, 30), // Jun 30th
         label: 'test',
         totalDistributions: 500,
         qualifiedDistributions: 500
@@ -219,8 +225,8 @@ describe('Health Savings Accounts', () => {
         coverageType: 'self-only',
         contributions: 1750,
         personRole: PersonRole.PRIMARY,
-        startDate: new Date(CURRENT_YEAR, 3, 1).toISOString(), // Apr 1st
-        endDate: new Date(CURRENT_YEAR, 10, 30).toISOString(), // Nov 30st
+        startDate: new Date(CURRENT_YEAR, 3, 1), // Apr 1st
+        endDate: new Date(CURRENT_YEAR, 10, 30), // Nov 30st
         label: 'test',
         totalDistributions: 500,
         qualifiedDistributions: 500
@@ -247,8 +253,8 @@ describe('Health Savings Accounts', () => {
         coverageType: 'family',
         contributions: 3550,
         personRole: PersonRole.PRIMARY,
-        startDate: new Date(CURRENT_YEAR, 0, 1).toISOString(), // Jan 1st
-        endDate: new Date(CURRENT_YEAR, 4, 31).toISOString(), // May 31st
+        startDate: new Date(CURRENT_YEAR, 0, 1), // Jan 1st
+        endDate: new Date(CURRENT_YEAR, 4, 31), // May 31st
         label: 'test',
         totalDistributions: 500,
         qualifiedDistributions: 500
@@ -257,8 +263,8 @@ describe('Health Savings Accounts', () => {
         coverageType: 'self-only',
         contributions: 1750,
         personRole: PersonRole.PRIMARY,
-        startDate: new Date(CURRENT_YEAR, 5, 1).toISOString(), // Jun 1st
-        endDate: new Date(CURRENT_YEAR, 11, 31).toISOString(), // Dec 31st
+        startDate: new Date(CURRENT_YEAR, 5, 1), // Jun 1st
+        endDate: new Date(CURRENT_YEAR, 11, 31), // Dec 31st
         label: 'test',
         totalDistributions: 500,
         qualifiedDistributions: 500
@@ -279,8 +285,8 @@ describe('Health Savings Accounts', () => {
         coverageType: 'self-only',
         contributions: 3550,
         personRole: PersonRole.PRIMARY,
-        startDate: new Date(CURRENT_YEAR, 0, 1).toISOString(),
-        endDate: new Date(CURRENT_YEAR, 11, 31).toISOString(),
+        startDate: new Date(CURRENT_YEAR, 0, 1),
+        endDate: new Date(CURRENT_YEAR, 11, 31),
         label: 'test',
         totalDistributions: 500,
         qualifiedDistributions: 500
@@ -289,8 +295,8 @@ describe('Health Savings Accounts', () => {
         coverageType: 'self-only',
         contributions: 3550,
         personRole: PersonRole.SPOUSE,
-        startDate: new Date(CURRENT_YEAR, 0, 1).toISOString(),
-        endDate: new Date(CURRENT_YEAR, 11, 31).toISOString(),
+        startDate: new Date(CURRENT_YEAR, 0, 1),
+        endDate: new Date(CURRENT_YEAR, 11, 31),
         label: 'test',
         totalDistributions: 500,
         qualifiedDistributions: 500

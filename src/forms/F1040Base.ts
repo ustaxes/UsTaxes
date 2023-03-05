@@ -91,7 +91,9 @@ export default abstract class F1040Base extends Form {
       .filter((p: Person | undefined) => p !== undefined)
       .map((p: Person | undefined) => p as Person)
 
-    return ps.map((p: Person) => `${p.firstName} ${p.lastName}`).join(', ')
+    return ps
+      .map((p: Person) => `${p.firstName} ${p.initial} ${p.lastName}`)
+      .join(', ')
   }
 
   k1sWithInterest = (): ScheduleK1Form1065[] =>
@@ -116,7 +118,7 @@ export default abstract class F1040Base extends Form {
     this.f1099sByType(Income1099Type.SSA) as Income1099SSA[]
 
   fullName = (person: Person): string =>
-    `${person.firstName} ${person.lastName}`
+    `${person.firstName} ${person.initial} ${person.lastName}`
 
   primaryFullName = (): string | undefined =>
     this.fullName(this.info.taxPayer.primaryPerson)

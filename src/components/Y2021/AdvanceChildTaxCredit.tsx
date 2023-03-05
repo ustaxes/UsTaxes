@@ -109,7 +109,7 @@ export const AdvanceChildTaxCredit = (): ReactElement => {
             }
             name="recipient"
             keyMapping={(p: Person, i: number) => i}
-            textMapping={(p) => `${p.firstName} ${p.lastName}`}
+            textMapping={(p) => `${p.firstName} ${p.initial} ${p.lastName}`}
           />
         </Grid>
       </FormListContainer>
