@@ -67,14 +67,18 @@ const testInfo: Information = {
       lastName: 'payer-last-name',
       isTaxpayerDependent: false,
       role: PersonRole.PRIMARY,
-      ssid: '111111111'
+      ssid: '111111111',
+      dateOfBirth: new Date('01/01/1970'),
+      isBlind: false
     },
     spouse: {
       firstName: 'spouse-first-name',
       isTaxpayerDependent: false,
       lastName: 'spouse-last-name',
       role: PersonRole.SPOUSE,
-      ssid: '222222222'
+      ssid: '222222222',
+      dateOfBirth: new Date('01/01/1970'),
+      isBlind: false
     },
     dependents: [],
     filingStatus: FilingStatus.MFS
