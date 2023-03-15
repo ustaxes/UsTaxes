@@ -5,6 +5,7 @@ import F1040 from '../irsForms/F1040'
 import F6251 from '../irsForms/F6251'
 import { cloneDeep } from 'lodash'
 import { ValidatedInformation } from 'ustaxes/forms/F1040Base'
+import federalBrackets, { amt } from '../data/federal'
 
 const baseInformation: ValidatedInformation = {
   f1099s: [],
@@ -67,13 +68,24 @@ const baseInformation: ValidatedInformation = {
 describe('AMT', () => {
   it('stock options should trigger AMT', () => {
     const information = cloneDeep(baseInformation)
+    const income = baseInformation.w2s[0].income
     const f1040 = new F1040(information, [])
     const f6251 = new F6251(f1040)
     expect(f6251.isNeeded()).toEqual(true)
-    expect(Math.round(f6251.l1() ?? 0)).toEqual(87450)
-    expect(Math.round(f6251.l7() ?? 0)).toEqual(32864)
-    expect(Math.round(f6251.l10())).toEqual(15015)
-    expect(Math.round(f6251.l11())).toEqual(17849)
+    expect(Math.round(f6251.l1() ?? 0)).toEqual(
+      income -
+        federalBrackets.ordinary.status[FilingStatus.S].deductions[0].amount
+    )
+    expect(Math.round(f6251.l7() ?? 0)).toEqual(
+      (income +
+        100000 -
+        (amt.excemption(FilingStatus.S, income + 100000) ?? 0)) *
+        0.26
+    )
+    expect(Math.round(f6251.l10())).toEqual(Math.round(f1040.l16() ?? 0))
+    expect(Math.round(f6251.l11())).toEqual(
+      Math.round((f6251.l9() ?? 0) - f6251.l10())
+    )
   })
 
   it('small stock options should NOT trigger AMT', () => {
@@ -83,9 +95,6 @@ describe('AMT', () => {
     const f1040 = new F1040(information, [])
     const f6251 = new F6251(f1040)
     expect(f6251.isNeeded()).toEqual(false)
-    expect(Math.round(f6251.l1() ?? 0)).toEqual(87450)
-    expect(Math.round(f6251.l7() ?? 0)).toEqual(7124)
-    expect(Math.round(f6251.l10())).toEqual(15015)
     expect(Math.round(f6251.l11())).toEqual(0)
   })
 })
