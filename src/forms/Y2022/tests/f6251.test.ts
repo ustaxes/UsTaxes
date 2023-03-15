@@ -84,7 +84,7 @@ describe('AMT', () => {
     )
     expect(Math.round(f6251.l10())).toEqual(Math.round(f1040.l16() ?? 0))
     expect(Math.round(f6251.l11())).toEqual(
-      Math.round((f6251.l9() ?? 0) - f6251.l10())
+      Math.round(f6251.l9() - f6251.l10())
     )
   })
 
