@@ -5,7 +5,7 @@ import fs from 'fs/promises'
 import { parseCsvOrThrow } from 'ustaxes/data/csvImport'
 
 const getTaxTable = async (): Promise<number[][]> => {
-  const path = './src/forms/Y2021/tests/taxTable.csv'
+  const path = './src/forms/Y2022/tests/taxTable.csv'
   const taxTableCsv = (await fs.readFile(path)).toString('utf-8')
   return parseCsvOrThrow(taxTableCsv, (r: string[], rowNum) =>
     // ignore heading row.
