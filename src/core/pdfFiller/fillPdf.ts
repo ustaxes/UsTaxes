@@ -9,7 +9,11 @@ import _ from 'lodash'
  * Make sense by type (checkbox => boolean, textField => string / number)
  * Side-effecting! Modifies the pdf document.
  */
-export function fillPDF(pdf: PDFDocument, fieldValues: Field[]): PDFDocument {
+export function fillPDF(
+  pdf: PDFDocument,
+  fieldValues: Field[],
+  formName: string
+): PDFDocument {
   const formFields = pdf.getForm().getFields()
 
   formFields.forEach((pdfField, index) => {
@@ -17,7 +21,7 @@ export function fillPDF(pdf: PDFDocument, fieldValues: Field[]): PDFDocument {
 
     const error = (expected: string): Error => {
       return new Error(
-        `Field ${index}, ${pdfField.getName()} expected ${expected}`
+        `${formName} Field ${index}, ${pdfField.getName()} expected ${expected}`
       )
     }
     // First handle radio groups. If the value for this field

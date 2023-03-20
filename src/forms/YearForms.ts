@@ -3,15 +3,18 @@ import { Either, isLeft, isRight, left, run, runAsync } from 'ustaxes/core/util'
 import { TaxYear } from 'ustaxes/core/data'
 import { create1040 as create1040For2020 } from 'ustaxes/forms/Y2020/irsForms/Main'
 import { create1040 as create1040For2021 } from 'ustaxes/forms/Y2021/irsForms/Main'
+import { create1040 as create1040For2022 } from 'ustaxes/forms/Y2022/irsForms/Main'
 
 import F1040For2020 from 'ustaxes/forms/Y2020/irsForms/F1040'
 import F1040For2021 from 'ustaxes/forms/Y2021/irsForms/F1040'
+import F1040For2022 from 'ustaxes/forms/Y2022/irsForms/F1040'
 
 import Form from 'ustaxes/core/irsForms/Form'
 import StateForm from 'ustaxes/core/stateForms/Form'
 
 import { createStateReturn as createStateReturn2020 } from 'ustaxes/forms/Y2020/stateForms'
 import { createStateReturn as createStateReturn2021 } from 'ustaxes/forms/Y2021/stateForms'
+import { createStateReturn as createStateReturn2022 } from 'ustaxes/forms/Y2022/stateForms'
 import { PDFDocument } from 'pdf-lib'
 import { fillPDF } from 'ustaxes/core/pdfFiller/fillPdf'
 import {
@@ -68,7 +71,11 @@ export class YearCreateForm {
     const r1 = await run(this.f1040()).mapAsync((forms) =>
       Promise.all(
         forms.map(async (form) =>
-          fillPDF(await this.config.getPDF(form), form.renderedFields())
+          fillPDF(
+            await this.config.getPDF(form),
+            form.renderedFields(),
+            form.tag
+          )
         )
       )
     )
@@ -107,7 +114,11 @@ export class YearCreateForm {
     const r2 = await r1.mapAsync((forms) =>
       Promise.all(
         forms.map(async (form) =>
-          fillPDF(await this.config.getStatePDF(form), form.renderedFields())
+          fillPDF(
+            await this.config.getStatePDF(form),
+            form.renderedFields(),
+            form.formName
+          )
         )
       )
     )
@@ -178,6 +189,11 @@ export class CreateForms {
         ...baseConfig,
         createF1040: takeSecond(create1040For2021),
         createStateReturn: (f: Form) => createStateReturn2021(f as F1040For2021)
+      },
+      Y2022: {
+        ...baseConfig,
+        createF1040: takeSecond(create1040For2022),
+        createStateReturn: (f: Form) => createStateReturn2022(f as F1040For2022)
       }
     }
 

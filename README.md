@@ -47,7 +47,7 @@ So far, this project can attach the following schedules to form 1040:
 
 ### Implemented State returns
 
-The states below have been implemented partially. See the `/src/stateForms/<state>/<relevant form>` file for details on unimplemented portions.
+The states below have been implemented partially for tax year 2021. See the `/src/stateForms/<state>/<relevant form>` file for details on unimplemented portions.
 
 - Illinois
 
