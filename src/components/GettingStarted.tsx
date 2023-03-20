@@ -85,11 +85,6 @@ export default function GettingStarted(): ReactElement {
         <li>Earned Income Tax Credit</li>
       </ul>
       <h2>State Income Tax</h2>
-      <p>State tax returns are now in development.</p>
-      <p>The following states are currently implemented:</p>
-      <ul>
-        <li>Illinois</li>
-      </ul>
       Note the following states have no income tax filing:
       <ul>
         <li>Alaska</li>
