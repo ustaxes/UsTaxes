@@ -218,8 +218,8 @@ export default function W2JobInfo(): ReactElement {
         </span>
       )}
       grouping={(w2) => (w2.personRole === PersonRole.PRIMARY ? 0 : 1)}
-      groupHeaders={[primary?.firstName, spouse?.firstName].map((x) =>
-        x !== undefined ? <h2>{x}&apos; W2s</h2> : undefined
+      groupHeaders={[primary?.firstName, spouse?.firstName].map((x, i) =>
+        x !== undefined ? <h2 key={i}>{x}&apos; W2s</h2> : undefined
       )}
     >
       <p>Input data from W-2</p>

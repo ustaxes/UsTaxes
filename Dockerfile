@@ -24,3 +24,6 @@ ADD ./scripts ./scripts
 RUN npm ci
 
 ADD . .
+USER root
+RUN chown -R node /home/node/app
+USER node

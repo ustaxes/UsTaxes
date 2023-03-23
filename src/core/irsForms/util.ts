@@ -1,5 +1,5 @@
-export const displayRound = (n: number | undefined): number | undefined =>
-  Math.round(n ?? 0) === 0 ? undefined : Math.round(n ?? 0)
+export const displayRound = (n: number): number | undefined =>
+  Math.round(n) === 0 ? undefined : Math.round(n)
 
 export const displayNegPos = (n: number | undefined): string => {
   const r = Math.round(n ?? 0)

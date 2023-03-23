@@ -3,7 +3,8 @@ import { enumKeys } from '../util'
 export enum TaxYears {
   Y2019 = 2019,
   Y2020 = 2020,
-  Y2021 = 2021
+  Y2021 = 2021,
+  Y2022 = 2022
 }
 
 export type TaxYear = keyof typeof TaxYears
