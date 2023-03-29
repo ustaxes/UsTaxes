@@ -169,7 +169,7 @@ export default class Schedule2 extends F1040Attachment {
     undefined,
     this.l17z(),
     this.l18(),
-    //this.l19(),
+    undefined, //this.l19(),
     this.l20(),
     this.l21()
   ]
