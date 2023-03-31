@@ -82,20 +82,20 @@ export default class F8960 extends F1040Attachment {
       this.l6(),
       this.l7()
     ])
-  // Todo: Implement Schedule A
+
   l9a = (): number | undefined =>
     this.f1040.scheduleA.isNeeded() ? this.f1040.scheduleA.l9() : undefined
-  // Line 9b Reasonable method: Total state tax from W2 * Form 8960 Line 8 / 1040 Line 11, Adjusted gross income
+  // Line 9b Reasonable method: Deductible state tax from Schedule A * Form 8960 Line 8 / 1040 Line 11, Adjusted gross income
   l9b = (): number | undefined => {
-    const totalStateWithholding = this.f1040
-      .validW2s()
-      .map((w2) => w2.stateWithholding ?? 0)
-      .reduce((l, r) => l + r, 0)
-    const f1040L11 = this.f1040.l11()
-    if (f1040L11 === 0) {
-      return 0
+    if (this.f1040.scheduleA.isNeeded()) {
+      const deducibleStateTaxes = this.f1040.scheduleA.l5e()
+      const f1040L11 = this.f1040.l11()
+      if (f1040L11 === 0) {
+        return 0
+      }
+      return (deducibleStateTaxes * this.l8()) / f1040L11
     }
-    return (totalStateWithholding * this.l8()) / f1040L11
+    return undefined
   }
   l9c = (): number | undefined => undefined
   l9d = (): number => sumFields([this.l9a(), this.l9b(), this.l9c()])
