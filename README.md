@@ -13,7 +13,7 @@ UsTaxes is a free, open-source tax filing application that can be used to file t
 
 ## Supported Income data
 
-Most income and deduction information from the following forms are supported for tax years 2020 and 2021.
+Most income and deduction information from the following forms are supported for tax years 2022, 2021 and 2020.
 
 - W2
 - 1099-INT
