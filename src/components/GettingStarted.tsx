@@ -98,7 +98,7 @@ export default function GettingStarted(): ReactElement {
         <li>Nevada</li>
       </ul>
       <p>
-        <strong>9</strong>/51 states are supported. If your types of income and
+        <strong>9</strong>/50 states are supported. If your types of income and
         state residency are supported, you should be able to use UsTaxes to
         paper file your return!
       </p>
