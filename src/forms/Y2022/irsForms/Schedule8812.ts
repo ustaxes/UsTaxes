@@ -81,8 +81,8 @@ export default class Schedule8812 extends F1040Attachment {
   l11 = (): number => this.l10() * 0.05
 
   l12 = (): number => Math.max(0, this.l8() - this.l11())
-  l12no = (): boolean => this.l8() > this.l11()
-  l12yes = (): boolean => !this.l12no()
+  l12yes = (): boolean => this.l8() > this.l11()
+  l12no = (): boolean => !this.l12yes()
   // you and spouse have residence in US for more than half of year.
   // TODO: Assuming true
   l13 = (): number => this.creditLimitWorksheetA()
