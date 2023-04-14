@@ -88,6 +88,10 @@ export default class F8960 extends F1040Attachment {
   // Line 9b Reasonable method: Deductible state tax from Schedule A * Form 8960 Line 8 / 1040 Line 11, Adjusted gross income
   l9b = (): number | undefined => {
     if (this.f1040.scheduleA.isNeeded()) {
+      // Sales taxes aren’t deductible in computing net investment income
+      if (this.f1040.scheduleA.l5aSalesTax()) {
+        return 0
+      }
       const deducibleStateTaxes = this.f1040.scheduleA.l5e()
       const f1040L11 = this.f1040.l11()
       if (f1040L11 === 0) {
