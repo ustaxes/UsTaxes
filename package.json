@@ -1,6 +1,6 @@
 {
   "name": "ustaxes",
-  "version": "0.1.22",
+  "version": "0.1.23",
   "private": true,
   "dependencies": {
     "@date-io/date-fns": "^1.3.13",
