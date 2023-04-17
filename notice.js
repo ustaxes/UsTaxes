@@ -1,6 +1,6 @@
 const notice = `
     ustaxes helps you build your tax return forms for free
-    Copyright (C) 2021  Aidan Grimshaw and contributors
+    Copyright (C) ${new Date().getFullYear()}  Aidan Grimshaw and contributors
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as published
