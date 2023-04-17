@@ -24,7 +24,6 @@ export async function savePDF(
     const defaultPath = await (window as any).__TAURI__.path.documentDir()
 
     // path can be null if user cancels save.
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
     const path: string | null = (await save({
       filters: [{ name: 'PDF Documents (.pdf)', extensions: ['pdf'] }],
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
