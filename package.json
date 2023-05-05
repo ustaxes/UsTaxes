@@ -90,7 +90,7 @@
     "eslint-plugin-prettier": "^4.2.1",
     "eslint-plugin-promise": "^6.1.1",
     "eslint-plugin-react": "^7.32.2",
-    "fast-check": "^2.25.0",
+    "fast-check": "^3.8.1",
     "husky": "^8.0.3",
     "lint-staged": "^13.2.2",
     "prettier": "2.8.8",
