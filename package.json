@@ -70,7 +70,7 @@
     "@craco/craco": "^6.4.5",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^12.1.5",
-    "@testing-library/user-event": "^13.5.0",
+    "@testing-library/user-event": "^14.5.0",
     "@types/jest": "^29.5.3",
     "@types/lodash": "^4.14.197",
     "@types/node": "^20.5.6",
