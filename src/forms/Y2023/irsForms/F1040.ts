@@ -334,7 +334,7 @@ export default class F1040 extends F1040Base {
       this.l1e(),
       this.l1f(),
       this.l1g(),
-      this.l1h(),
+      this.l1h()
     ])
   l2a = (): number | undefined => this.scheduleB.l3()
   l2b = (): number | undefined => this.scheduleB.to1040l2b()
