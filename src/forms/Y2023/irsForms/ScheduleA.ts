@@ -90,7 +90,7 @@ export default class ScheduleA extends F1040Attachment {
   l8b = (): number => Number(this.itemizedDeductions.interest8b)
   l8c = (): number => Number(this.itemizedDeductions.interest8c)
   //l8d = (): number => Number(this.itemizedDeductions.interest8d) // Reserved for future use
-  l8e = (): number => this.l8a() + this.l8b() + this.l8c() + this.l8d()
+  l8e = (): number => this.l8a() + this.l8b() + this.l8c()
 
   // Used in Form 8960
   l9 = (): number | undefined =>
