@@ -2,7 +2,7 @@ import { useEffect, useRef, ReactElement } from 'react'
 import _ from 'lodash'
 import { useForkRef } from 'rooks'
 import { Grid, TextField } from '@material-ui/core'
-import { Controller, useFormContext } from 'react-hook-form'
+import { Controller, FieldValues, useFormContext } from 'react-hook-form'
 import locationPostalCodes from 'ustaxes/core/data/locationPostalCodes'
 import countries from 'ustaxes/core/data/countries'
 import { State } from 'ustaxes/core/data'
@@ -10,14 +10,14 @@ import useStyles from './styles'
 import { BaseDropdownProps, LabeledDropdownProps } from './types'
 import ConditionallyWrap from 'ustaxes/components/ConditionallyWrap'
 
-export function GenericLabeledDropdown<A, TFormValues>(
+export function GenericLabeledDropdown<A, TFormValues extends FieldValues>(
   props: LabeledDropdownProps<A, TFormValues>
 ): ReactElement {
   const classes = useStyles()
   const {
     control,
     formState: { errors }
-  } = useFormContext<TFormValues>()
+  } = useFormContext()
   const {
     autofocus,
     label,
@@ -102,7 +102,7 @@ export function GenericLabeledDropdown<A, TFormValues>(
  *
  * @param props
  */
-export const LabeledDropdown = <TFormValues,>(
+export const LabeledDropdown = <TFormValues extends FieldValues>(
   props: BaseDropdownProps<TFormValues> & { dropDownData: string[] }
 ): ReactElement => (
   <GenericLabeledDropdown<string, TFormValues>
@@ -113,7 +113,7 @@ export const LabeledDropdown = <TFormValues,>(
   />
 )
 
-export const USStateDropDown = <TFormValues,>(
+export const USStateDropDown = <TFormValues extends FieldValues>(
   props: BaseDropdownProps<TFormValues>
 ): ReactElement => (
   <GenericLabeledDropdown<[string, State], TFormValues>
@@ -125,7 +125,7 @@ export const USStateDropDown = <TFormValues,>(
   />
 )
 
-export const CountryDropDown = <TFormValues,>(
+export const CountryDropDown = <TFormValues extends FieldValues>(
   props: BaseDropdownProps<TFormValues>
 ): ReactElement => (
   <GenericLabeledDropdown<string, TFormValues>

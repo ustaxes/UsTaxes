@@ -1,6 +1,6 @@
 import { ReactElement } from 'react'
 import { FormControl, Grid } from '@material-ui/core'
-import { Controller, useFormContext } from 'react-hook-form'
+import { Controller, FieldValues, useFormContext } from 'react-hook-form'
 import useStyles from './styles'
 import ConditionallyWrap from 'ustaxes/components/ConditionallyWrap'
 import {
@@ -10,7 +10,7 @@ import {
 import DateFnsUtils from '@date-io/date-fns'
 import { DatePickerProps } from './types'
 
-export function DatePicker<TFormValues>(
+export function DatePicker<TFormValues extends FieldValues>(
   props: DatePickerProps<TFormValues>
 ): ReactElement {
   const {
@@ -27,7 +27,7 @@ export function DatePicker<TFormValues>(
   const {
     control,
     formState: { isSubmitted }
-  } = useFormContext<TFormValues>()
+  } = useFormContext()
 
   return (
     <ConditionallyWrap

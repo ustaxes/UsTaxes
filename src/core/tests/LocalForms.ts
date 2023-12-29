@@ -1,17 +1,10 @@
 import { PDFDocument } from 'pdf-lib'
-import {
-  FileDownloader,
-  PDFDownloader
-} from 'ustaxes/core/pdfFiller/pdfHandler'
-import fs from 'fs/promises'
+import { PDFDownloader } from 'ustaxes/core/pdfFiller/pdfHandler'
+import fs from 'fs'
 import path from 'path'
 import { TaxYear } from 'ustaxes/core/data'
 
 const localPath = (url: string) => path.join(__dirname, '../../../public', url)
-
-export const localFiles: FileDownloader<Uint8Array> = (
-  url: string
-): Promise<Uint8Array> => fs.readFile(localPath(url))
 
 const compiledPDFs: { [key: string]: PDFDocument } = {}
 
@@ -26,9 +19,11 @@ export const localPDFs =
       return compiledPDFs[lookedUpAt]
     }
 
-    const bytes = await localFiles(fileUrl)
+    // Async method can't be used here, hitting error
+    // described in https://github.com/Hopding/pdf-lib/issues/1186
+    const bytes = fs.readFileSync(lookedUpAt).toString('base64')
 
-    const pdf = await PDFDocument.load(bytes.buffer)
+    const pdf = await PDFDocument.load(bytes)
 
     compiledPDFs[lookedUpAt] = pdf
 

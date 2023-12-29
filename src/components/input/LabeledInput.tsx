@@ -3,14 +3,19 @@ import { useForkRef } from 'rooks'
 import { InputAdornment, Grid, TextField } from '@material-ui/core'
 import { LabeledInputProps } from './types'
 import NumberFormat from 'react-number-format'
-import { Controller, FieldError, useFormContext } from 'react-hook-form'
+import {
+  Controller,
+  FieldError,
+  FieldValues,
+  useFormContext,
+  get
+} from 'react-hook-form'
 import { isNumeric, Patterns } from 'ustaxes/components/Patterns'
 import ConditionallyWrap from 'ustaxes/components/ConditionallyWrap'
 import useStyles from './styles'
 import { useFormContainer } from 'ustaxes/components/FormContainer/Context'
-import { getNestedValue } from 'ustaxes/core/util'
 
-export function LabeledInput<TFormValues>(
+export function LabeledInput<TFormValues extends FieldValues>(
   props: LabeledInputProps<TFormValues>
 ): ReactElement {
   const { onSubmit } = useFormContainer()
@@ -38,7 +43,9 @@ export function LabeledInput<TFormValues>(
     formState: { errors }
   } = useFormContext<TFormValues>()
 
-  const error: FieldError | undefined = getNestedValue(errors, name, undefined)
+  const error: FieldError | undefined = get(errors, name, undefined) as
+    | FieldError
+    | undefined
 
   const errorMessage: string | undefined = (() => {
     if (error?.message !== undefined && error.message !== '') {
@@ -129,6 +136,8 @@ export function LabeledInput<TFormValues>(
             {...register(name, {
               ...rules,
               required: required ? 'Input is required' : undefined,
+              valueAsNumber: false,
+              valueAsDate: false,
               pattern: {
                 value: patternConfig.regexp ?? (required ? /.+/ : /.*/),
                 message:

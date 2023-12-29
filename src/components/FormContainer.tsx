@@ -14,7 +14,12 @@ import {
   Theme
 } from '@material-ui/core'
 import { Delete, Edit } from '@material-ui/icons'
-import { DefaultValues, SubmitHandler, useFormContext } from 'react-hook-form'
+import {
+  DefaultValues,
+  FieldValues,
+  SubmitHandler,
+  useFormContext
+} from 'react-hook-form'
 import _ from 'lodash'
 import { ReactNode } from 'react'
 import { FormContainerProvider } from './FormContainer/Context'
@@ -128,7 +133,7 @@ export const MutableListItem = ({
   )
 }
 
-interface FormListContainerProps<A> {
+interface FormListContainerProps<A extends FieldValues> {
   onSubmitAdd: SubmitHandler<A>
   onSubmitEdit: (index: number) => SubmitHandler<A>
   onCancel?: () => void
@@ -154,7 +159,7 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 )
 
-export interface OpenableFormContainerProps<A> {
+export interface OpenableFormContainerProps<A extends FieldValues> {
   onCancel?: () => void
   onSave: SubmitHandler<A>
   isOpen?: boolean
@@ -163,7 +168,7 @@ export interface OpenableFormContainerProps<A> {
   allowAdd?: boolean
 }
 
-export const OpenableFormContainer = <A,>(
+export const OpenableFormContainer = <A extends FieldValues>(
   props: PropsWithChildren<OpenableFormContainerProps<A>>
 ): ReactElement => {
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)')
@@ -172,7 +177,7 @@ export const OpenableFormContainer = <A,>(
 
   // Note useFormContext here instead of useForm reuses the
   // existing form context from the parent.
-  const { reset, handleSubmit } = useFormContext()
+  const { reset, handleSubmit } = useFormContext<A>()
 
   const closeForm = (): void => {
     props.onOpenStateChange(false)
@@ -224,7 +229,7 @@ export const OpenableFormContainer = <A,>(
   )
 }
 
-const FormListContainer = <A,>(
+const FormListContainer = <A extends FieldValues>(
   props: PropsWithChildren<FormListContainerProps<A>>
 ): ReactElement => {
   const {

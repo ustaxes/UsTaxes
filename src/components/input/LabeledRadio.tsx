@@ -7,12 +7,14 @@ import {
   Radio,
   RadioGroup
 } from '@material-ui/core'
-import { Controller, useFormContext } from 'react-hook-form'
+import { Controller, FieldValues, useFormContext } from 'react-hook-form'
 import { LabeledRadioProps } from './types'
 import useStyles from './styles'
 import ConditionallyWrap from 'ustaxes/components/ConditionallyWrap'
 
-export function LabeledRadio<A>(props: LabeledRadioProps<A>): ReactElement {
+export function LabeledRadio<A extends FieldValues>(
+  props: LabeledRadioProps<A>
+): ReactElement {
   const { label, name, values, useGrid = true, sizes = { xs: 12 } } = props
 
   const classes = useStyles()
