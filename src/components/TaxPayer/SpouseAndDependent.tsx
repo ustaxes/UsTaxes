@@ -226,9 +226,11 @@ export const SpouseInfo = (): ReactElement => {
 export const FilingStatusDropdown = (): ReactElement => {
   const dispatch = useDispatch()
 
-  const onSubmit = (formData: { filingStatus: FilingStatus }): void => {
-    dispatch(saveFilingStatusInfo(formData.filingStatus))
-    onAdvance()
+  const onSubmit = (formData: { filingStatus: FilingStatus | '' }): void => {
+    if (formData.filingStatus !== '') {
+      dispatch(saveFilingStatusInfo(formData.filingStatus))
+      onAdvance()
+    }
   }
   const taxPayer: TaxPayer | undefined = useSelector((state: TaxesState) => {
     return state.information.taxPayer

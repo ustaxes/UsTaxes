@@ -1,5 +1,5 @@
 import { ReactElement } from 'react'
-import { Path, RegisterOptions } from 'react-hook-form'
+import { FieldValues, Path, RegisterOptions } from 'react-hook-form'
 import { PatternConfig } from 'ustaxes/components/Patterns'
 import { GridSize } from '@material-ui/core/Grid'
 export interface BaseDropdownProps<TFormValues> {
@@ -33,7 +33,7 @@ export interface LabeledDropdownProps<A, TFormValues>
   noUndefined?: boolean
 }
 
-export interface LabeledInputProps<TFormValues> {
+export interface LabeledInputProps<TFormValues extends FieldValues> {
   autofocus?: boolean
   useGrid?: boolean
   sizes?: SizeList

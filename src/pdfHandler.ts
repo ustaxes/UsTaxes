@@ -24,11 +24,11 @@ export async function savePDF(
     const defaultPath = await (window as any).__TAURI__.path.documentDir()
 
     // path can be null if user cancels save.
-    const path: string | null = (await save({
+    const path: string | null = await save({
       filters: [{ name: 'PDF Documents (.pdf)', extensions: ['pdf'] }],
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       defaultPath
-    })) as string | null
+    })
 
     if (path !== null) {
       return await writeBinaryFile({ contents, path }, {})

@@ -52,7 +52,9 @@ const baseInformation: ValidatedInformation = {
       lastName: 'payer-last-name',
       isTaxpayerDependent: false,
       role: PersonRole.PRIMARY,
-      ssid: '111111111'
+      ssid: '111111111',
+      dateOfBirth: new Date('01/01/1970'),
+      isBlind: false
     },
     spouse: undefined,
     dependents: [],

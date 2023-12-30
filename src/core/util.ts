@@ -5,10 +5,7 @@
  * @returns tyepsafe array of keys
  */
 
-import _ from 'lodash'
-import { DeepMap, DeepPartial } from 'react-hook-form'
-
-export const enumKeys = <A>(a: A): Array<keyof typeof a> =>
+export const enumKeys = <A extends object>(a: A): Array<keyof typeof a> =>
   Object.keys(a).filter((k) => isNaN(Number(k))) as Array<keyof typeof a>
 
 export const linear =
@@ -214,9 +211,3 @@ export const intentionallyFloat = <A extends unknown[]>(
     void fn(...args)
   }
 }
-
-export const getNestedValue = <A, E, V>(
-  obj: DeepMap<DeepPartial<A>, E>,
-  path: string,
-  defaultValue: V
-): E | V => _.get(obj, path, defaultValue) as E | V

@@ -6,11 +6,11 @@ import {
   FormGroup,
   Grid
 } from '@material-ui/core'
-import { Controller, useFormContext } from 'react-hook-form'
+import { Controller, FieldValues, useFormContext } from 'react-hook-form'
 import { LabeledCheckboxProps } from './types'
 import ConditionallyWrap from 'ustaxes/components/ConditionallyWrap'
 
-export function LabeledCheckbox<TFormValues>(
+export function LabeledCheckbox<TFormValues extends FieldValues>(
   props: LabeledCheckboxProps<TFormValues>
 ): ReactElement {
   const { label, name, useGrid = true, sizes = { xs: 12 } } = props

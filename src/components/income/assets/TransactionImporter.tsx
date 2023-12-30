@@ -249,7 +249,7 @@ export const TransactionImporter = (): ReactElement => {
       (csvReadErrors) => {
         setPortfolioError({
           messages: ['Could not parse CSV', csvReadErrors[0].message],
-          errorIndex: csvReadErrors[0].row
+          errorIndex: csvReadErrors[0].row ?? 0
         })
       },
       (rows) => {
