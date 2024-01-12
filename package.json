@@ -17,7 +17,7 @@
     "papaparse": "^5.4.1",
     "pdf-lib": "^1.17.1",
     "react": "^17.0.2",
-    "react-data-table-component": "^7.5.4",
+    "react-data-table-component": "^7.6.1",
     "react-device-detect": "^2.2.3",
     "react-dom": "^17.0.2",
     "react-helmet": "^6.1.0",
