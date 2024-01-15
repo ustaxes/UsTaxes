@@ -34,7 +34,7 @@ const federalBrackets: FederalBrackets = {
     rates: [10, 12, 22, 24, 32, 35, 37],
     status: {
       [FilingStatus.S]: {
-        brackets: [11000, 44275, 95375, 182100, 231250, 578125],
+        brackets: [11000, 44725, 95375, 182100, 231250, 578125],
         deductions: [
           {
             name: 'Standard Deduction (Single)',
@@ -190,7 +190,7 @@ const federalBrackets: FederalBrackets = {
 
 export const fica = {
   maxSSTax: 9932.4,
-  maxIncomeSSTaxApplies: 147000,
+  maxIncomeSSTaxApplies: 160200,
 
   regularMedicareTaxRate: 1.45 / 100,
   additionalMedicareTaxRate: 0.9 / 100,

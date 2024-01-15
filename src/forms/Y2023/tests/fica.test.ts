@@ -255,11 +255,11 @@ describe('fica', () => {
           const f1040l25c = f1040.l25c()
           expect(f1040l25c).not.toBeUndefined()
           const additionalWithheld = medicareWithheld - regularWithholding
-          expect(displayRound(f1040l25c)).toEqual(
+          expect(displayRound(f1040l25c ?? 0)).toEqual(
             displayRound(additionalWithheld)
           )
         } else {
-          expect(displayRound(f1040.l25c()) ?? 0).toEqual(0)
+          expect(displayRound(f1040.l25c() ?? 0) ?? 0).toEqual(0)
         }
       }
       return Promise.resolve()

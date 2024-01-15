@@ -5,7 +5,7 @@ import fs from 'fs/promises'
 import { parseCsvOrThrow } from 'ustaxes/data/csvImport'
 
 const getTaxTable = async (): Promise<number[][]> => {
-  const path = './src/forms/Y2022/tests/taxTable.csv'
+  const path = './src/forms/Y2023/tests/taxTable.csv'
   const taxTableCsv = (await fs.readFile(path)).toString('utf-8')
   return parseCsvOrThrow(taxTableCsv, (r: string[], rowNum) =>
     // ignore heading row.
@@ -36,7 +36,7 @@ const expectTaxUnder100KRange = (
 describe('Tax rates', () => {
   it('test should be updated for new year', () => {
     // WARNING! Do not just change the year. Also update the CSV and expected tax amounts below!
-    expect(CURRENT_YEAR).toEqual(2022)
+    expect(CURRENT_YEAR).toEqual(2023)
   })
   it('ordinary taxes for single status should be correct', async () => {
     const rows = await getTaxTable()
@@ -46,13 +46,13 @@ describe('Tax rates', () => {
 
     // Over $100,000
     const amounts = [
-      [100000, 17836],
-      [170050, 34648],
-      [170051, 34648],
-      [215950, 49336],
-      [215951, 49336],
-      [539900, 162718],
-      [539901, 162718]
+      [100000, 17400],
+      [182100, 37104],
+      [182101, 37104],
+      [231250, 52832],
+      [231251, 52832],
+      [578125, 174238],
+      [578126, 174239]
     ]
     amounts.forEach(([amount, tax]) => {
       expectTax(FilingStatus.S, amount, tax)
@@ -67,15 +67,15 @@ describe('Tax rates', () => {
 
     // Over $100,000
     const amounts = [
-      [100000, 13234],
-      [178150, 30427],
-      [178151, 30427],
-      [340100, 69295],
-      [340101, 69295],
-      [431900, 98671],
-      [431901, 98671],
-      [647850, 174254],
-      [647851, 174254]
+      [100000, 12615],
+      [190750, 32580],
+      [190751, 32580],
+      [364200, 74208],
+      [364201, 74208],
+      [462500, 105664],
+      [462501, 105664],
+      [693750, 186602],
+      [693751, 186602]
     ]
     amounts.forEach(([amount, tax]) => {
       expectTax(FilingStatus.MFJ, amount, tax)
@@ -90,13 +90,13 @@ describe('Tax rates', () => {
 
     // Over $100,000
     const amounts = [
-      [100000, 17836],
-      [170050, 34648],
-      [170051, 34648],
-      [215950, 49336],
-      [215951, 49336],
-      [323925, 87127],
-      [323925, 87127]
+      [100000, 17400],
+      [182100, 37104],
+      [182101, 37104],
+      [231250, 52832],
+      [231251, 52832],
+      [346875, 93301],
+      [346876, 93301]
     ]
     amounts.forEach(([amount, tax]) => {
       expectTax(FilingStatus.MFS, amount, tax)
@@ -111,13 +111,13 @@ describe('Tax rates', () => {
 
     // Over $100,000
     const amounts = [
-      [100000, 16336],
-      [170050, 33148],
-      [170051, 33148],
-      [215950, 47836],
-      [215951, 47836],
-      [539900, 161219],
-      [539901, 161219]
+      [100000, 15794],
+      [182100, 35498],
+      [182101, 35498],
+      [231250, 51226],
+      [231251, 51226],
+      [578100, 172624],
+      [578101, 172624]
     ]
     amounts.forEach(([amount, tax]) => {
       expectTax(FilingStatus.HOH, amount, tax)
