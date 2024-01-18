@@ -93,7 +93,7 @@
     "fast-check": "^2.25.0",
     "husky": "^8.0.3",
     "lint-staged": "^13.3.0",
-    "prettier": "2.8.8",
+    "prettier": "3.2.4",
     "ts-node": "^10.9.2",
     "typescript-eslint": "0.0.1-alpha.0"
   },
