@@ -60,7 +60,7 @@ export default class ScheduleE extends F1040Attachment {
 
   /**
    * Whether or not you can deduct expenses for the unit depends on whether or not you used
-   * the unit as a home in 2020. You used the unit as a home if your personal use of the unit
+   * the unit as a home in 2023. You used the unit as a home if your personal use of the unit
    * was more than the greater of:
    * 14 days, or
    * 10% of the total days it was rented to others at a fair rental price.

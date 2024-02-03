@@ -39,8 +39,8 @@ export default class ScheduleEIC extends F1040Attachment {
   tag: FormTag = 'f1040sei'
   sequenceIndex = 43
   pub596Worksheet1: Pub596Worksheet1
-  qualifyingStudentCutoffYear = 1996
-  qualifyingCutoffYear = 2003
+  qualifyingStudentCutoffYear = 1999
+  qualifyingCutoffYear = 2004
   investmentIncomeLimit = 3650
 
   constructor(f1040: F1040) {
@@ -350,7 +350,7 @@ export default class ScheduleEIC extends F1040Attachment {
   ageFields = (): Array<boolean | undefined> =>
     this.years().flatMap((year) => {
       if (year !== undefined) {
-        const qualifies = year > 1996
+        const qualifies = year > this.qualifyingStudentCutoffYear
         return [qualifies, !qualifies]
       }
       return [undefined, undefined]

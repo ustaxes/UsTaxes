@@ -2,6 +2,7 @@ import F1040Attachment from './F1040Attachment'
 import { FormTag } from 'ustaxes/core/irsForms/Form'
 import { sumFields } from 'ustaxes/core/irsForms/util'
 import { Field } from 'ustaxes/core/pdfFiller'
+import { fica } from '../data/federal'
 
 export default class ScheduleSE extends F1040Attachment {
   tag: FormTag = 'f1040sse'
@@ -26,7 +27,7 @@ export default class ScheduleSE extends F1040Attachment {
 
   l8aRelatedField = (f: () => number | undefined): number | undefined => {
     return this.postL4Field(() => {
-      if ((this.l8a() ?? 0) >= 147000) {
+      if ((this.l8a() ?? 0) >= fica.maxIncomeSSTaxApplies) {
         return undefined
       }
       return f()
@@ -42,16 +43,17 @@ export default class ScheduleSE extends F1040Attachment {
   l1b = (): number => 0
 
   l2 = (): number => {
-    const schFL34 = 0 // TODO: Net farm profit or (loss) from Schedule F, line 34
+    const schCL31 = 0 // TODO: Net profit or (loss) from Schedule C, line 31
     const k1B14 = this.f1040.info.scheduleK1Form1065s.reduce(
       (c, k1) => c + k1.selfEmploymentEarningsA,
       0
     )
-    return schFL34 + k1B14
+    return schCL31 + k1B14
   }
 
   l3 = (): number => sumFields([this.l1a(), this.l1b(), this.l2()])
 
+  // TODO: Handle line 4A being less than 400 due to the Conservation Reserve Program
   l4a = (): number => {
     const l3 = this.l3()
     if (l3 > 0) {
@@ -77,7 +79,7 @@ export default class ScheduleSE extends F1040Attachment {
   l6 = (): number | undefined =>
     this.postL4Field((): number => sumFields([this.l4c(), this.l5b()]))
 
-  l7 = (): number => 147000
+  l7 = (): number => fica.maxIncomeSSTaxApplies
 
   l8a = (): number | undefined =>
     this.postL4Field((): number =>

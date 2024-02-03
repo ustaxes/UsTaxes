@@ -228,7 +228,7 @@ export default class F6251 extends F1040Attachment {
     }
     return (
       l6 * 0.28 -
-      (this.f1040.info.taxPayer.filingStatus === FilingStatus.MFS ? 2061 : 4122)
+      (this.f1040.info.taxPayer.filingStatus === FilingStatus.MFS ? 2207 : 4414)
     )
   }
 
@@ -277,25 +277,25 @@ export default class F6251 extends F1040Attachment {
 
     const l18Consts: [number, number] = (() => {
       if (this.f1040.info.taxPayer.filingStatus === FilingStatus.MFS) {
-        return [103050, 2061]
+        return [110350, 2207]
       }
-      return [206100, 4122]
+      return [220700, 4414]
     })()
 
     const l19Value: { [k in FilingStatus]: number } = {
-      [FilingStatus.MFJ]: 83350,
-      [FilingStatus.W]: 83350,
-      [FilingStatus.S]: 41675,
-      [FilingStatus.MFS]: 41675,
-      [FilingStatus.HOH]: 55800
+      [FilingStatus.MFJ]: 89950,
+      [FilingStatus.W]: 89950,
+      [FilingStatus.S]: 446275,
+      [FilingStatus.MFS]: 44625,
+      [FilingStatus.HOH]: 59750
     }
 
     const l25Value: { [k in FilingStatus]: number } = {
-      [FilingStatus.MFJ]: 517200,
-      [FilingStatus.W]: 517200,
-      [FilingStatus.S]: 459750,
-      [FilingStatus.MFS]: 258600,
-      [FilingStatus.HOH]: 488500
+      [FilingStatus.MFJ]: 553850,
+      [FilingStatus.W]: 553850,
+      [FilingStatus.S]: 492300,
+      [FilingStatus.MFS]: 276900,
+      [FilingStatus.HOH]: 523050
     }
 
     const l12 = this.l6()
