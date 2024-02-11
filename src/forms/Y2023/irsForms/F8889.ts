@@ -227,7 +227,7 @@ export default class F8889 extends F1040Attachment {
 
   l3 = (): number => this.contributionLimit()
   l4 = (): number => sumFields([this.f8853?.l1(), this.f8853?.l2()])
-  l5 = (): number => this.l3() - this.l4()
+  l5 = (): number => Math.max(0, this.l3() - this.l4())
   l6 = (): number | undefined => this.splitFamilyContributionLimit()
   // TODO: Additional contirbution amount. Need to know the age of the user
   l7 = (): number | undefined => undefined
@@ -239,12 +239,8 @@ export default class F8889 extends F1040Attachment {
       .reduce((res, w2) => res + (w2.box12?.W ?? 0), 0)
   l10 = (): number | undefined => undefined
   l11 = (): number => sumFields([this.l9(), this.l10()])
-  l12 = (): number => {
-    const tmp = this.l8() - this.l11()
-    return tmp < 0 ? 0 : tmp
-  }
-  l13 = (): number | undefined =>
-    this.l2() < this.l12() ? this.l2() : this.l12()
+  l12 = (): number => Math.max(0, this.l8() - this.l11())
+  l13 = (): number => Math.min(this.l2(), this.l12())
   l14a = (): number =>
     this.hsas.reduce((total, hsa) => hsa.totalDistributions + total, 0)
   l14b = (): number | undefined => undefined
