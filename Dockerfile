@@ -1,4 +1,4 @@
-FROM rust:1.51-slim-buster
+FROM rust:1.76-slim-bookworm
 
 RUN mkdir -p /home/node/app
 
@@ -11,7 +11,7 @@ RUN apt-get update && apt-get -y upgrade && apt-get install -y curl
 USER node
 # Install nvm, node, npm
 ARG NVM_DIR="/home/node/.nvm"
-ARG NODE_VERSION=16.7.0
+ARG NODE_VERSION=20.10.0
 RUN curl https://raw.githubusercontent.com/creationix/nvm/v0.38.0/install.sh | bash
 RUN . $NVM_DIR/nvm.sh && nvm install $NODE_VERSION --latest-npm
 ENV PATH $NVM_DIR/versions/node/v$NODE_VERSION/bin:$PATH
