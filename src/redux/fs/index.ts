@@ -30,25 +30,4 @@ export const download = (filename: string, text: string): void => {
   document.body.removeChild(element)
 }
 
-export const loadFile = async (file: File): Promise<string> => {
-  const fileReader: FileReader = new FileReader()
-
-  return new Promise((resolve, reject) => {
-    fileReader.onload = function (
-      this: FileReader,
-      e: ProgressEvent<FileReader>
-    ): any {
-      e.preventDefault()
-      // type known here because of readAsText
-      const contents: string | null = fileReader.result as string | null
-      if (contents === null) {
-        reject('file contents were null')
-      } else {
-        resolve(contents)
-      }
-    }
-    fileReader.readAsText(file)
-  })
-}
-
 export { Load }
