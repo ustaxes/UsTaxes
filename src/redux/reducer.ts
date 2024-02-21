@@ -20,6 +20,7 @@ export const blankState: Information = {
   itemizedDeductions: undefined,
   stateResidencies: [],
   healthSavingsAccounts: [],
+  stateQuestions: {},
   credits: [],
   individualRetirementArrangements: []
 }
@@ -363,6 +364,13 @@ const formReducer = (
       return {
         ...newState,
         healthSavingsAccounts: newHsa
+      }
+    }
+    case ActionName.ANSWER_STATE_QUESTION: {
+      // must reset all questions
+      return {
+        ...newState,
+        stateQuestions: action.formData
       }
     }
     case ActionName.ADD_IRA: {
