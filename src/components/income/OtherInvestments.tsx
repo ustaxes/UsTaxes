@@ -88,6 +88,7 @@ export const OtherInvestments = (): ReactElement => {
   const methods = useForm<AssetUserInput>({ defaultValues })
   const { handleSubmit, watch } = methods
   const positionType = watch('positionType')
+  const openDate = watch('openDate')
   const closeDate = watch('closeDate')
   const dispatch = useDispatch()
 
@@ -122,12 +123,13 @@ export const OtherInvestments = (): ReactElement => {
           name="name"
         />
         <DatePicker
-          maxDate={new Date(2021, 12, 31)}
+          maxDate={new Date()}
           label="Date acquired"
           name="openDate"
         />
         <DatePicker
-          maxDate={new Date(2021, 12, 31)}
+          maxDate={new Date()}
+          minDate={openDate}
           label="Date sold or disposed of"
           name="closeDate"
         />
