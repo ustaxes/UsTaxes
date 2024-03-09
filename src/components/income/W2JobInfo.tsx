@@ -279,10 +279,10 @@ export default function W2JobInfo(): ReactElement {
           patternConfig={Patterns.currency}
           sizes={{ xs: 12, lg: 6 }}
         />
-        <USStateDropDown name="state" label={boxLabel('15', 'State')} />
         <Grid item xs={12} lg={12}>
           <Box12Data />
         </Grid>
+        <USStateDropDown name="state" label={boxLabel('15', 'State')} />
         <LabeledInput
           name="stateWages"
           label={boxLabel('16', 'State wages, tips, etc')}
