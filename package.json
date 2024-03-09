@@ -13,7 +13,7 @@
     "ajv": "^8.12.0",
     "date-fns": "^2.30.0",
     "lodash": "^4.17.21",
-    "loglevel": "^1.8.1",
+    "loglevel": "^1.9.1",
     "papaparse": "^5.4.1",
     "pdf-lib": "^1.17.1",
     "react": "^17.0.2",
@@ -21,7 +21,7 @@
     "react-device-detect": "^2.2.3",
     "react-dom": "^17.0.2",
     "react-helmet": "^6.1.0",
-    "react-hook-form": "^7.49.2",
+    "react-hook-form": "^7.50.1",
     "react-number-format": "^4.9.4",
     "react-redux": "^8.1.3",
     "react-router": "^6.3.0",
@@ -49,7 +49,7 @@
     "lint:fix": "eslint ./src --fix --ext ts,js,tsx,jsx && prettier --write .",
     "prettier": "prettier --write .",
     "formgen": "ts-node ./scripts/formgen.ts",
-    "prepare": "ts-node ./scripts/env.ts && husky install"
+    "prepare": "ts-node ./scripts/env.ts && husky"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -71,9 +71,9 @@
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^12.1.5",
     "@testing-library/user-event": "^13.5.0",
-    "@types/jest": "^29.5.11",
+    "@types/jest": "^29.5.12",
     "@types/lodash": "^4.14.202",
-    "@types/node": "^20.10.6",
+    "@types/node": "^20.11.17",
     "@types/papaparse": "^5.3.14",
     "@types/react": "^17.0.73",
     "@types/react-dom": "^18.2.18",
@@ -91,8 +91,8 @@
     "eslint-plugin-promise": "^6.1.1",
     "eslint-plugin-react": "^7.33.2",
     "fast-check": "^2.25.0",
-    "husky": "^8.0.3",
-    "lint-staged": "^13.3.0",
+    "husky": "^9.0.11",
+    "lint-staged": "^15.2.2",
     "prettier": "2.8.8",
     "ts-node": "^10.9.2",
     "typescript-eslint": "0.0.1-alpha.0"
