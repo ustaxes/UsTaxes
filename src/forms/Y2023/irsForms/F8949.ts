@@ -2,6 +2,7 @@ import { FormTag } from 'ustaxes/core/irsForms/Form'
 import { Asset, isSold, SoldAsset } from 'ustaxes/core/data'
 import F1040Attachment from './F1040Attachment'
 import F1040 from './F1040'
+import { CURRENT_YEAR } from '../data/federal'
 import { Field } from 'ustaxes/core/pdfFiller'
 
 type EmptyLine = [
@@ -91,7 +92,7 @@ export default class F8949 extends F1040Attachment {
 
   thisYearSales = (): SoldAsset<Date>[] =>
     this.f1040.assets.filter(
-      (p) => isSold(p) && p.closeDate.getFullYear() === 2021
+      (p) => isSold(p) && p.closeDate.getFullYear() === CURRENT_YEAR
     ) as SoldAsset<Date>[]
 
   thisYearLongTermSales = (): SoldAsset<Date>[] =>
