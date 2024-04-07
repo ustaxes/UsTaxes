@@ -84,14 +84,16 @@ export const taxesState: fc.Arbitrary<YearsTaxesState> = taxYear.chain(
         information,
         information,
         information,
+        information,
         information
       )
-      .map(([assets, Y2019, Y2020, Y2021, Y2022]) => ({
+      .map(([assets, Y2019, Y2020, Y2021, Y2022, Y2023]) => ({
         assets,
         Y2019,
         Y2020,
         Y2021,
         Y2022,
+        Y2023,
         activeYear
       }))
   }
