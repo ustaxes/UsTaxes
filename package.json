@@ -8,7 +8,7 @@
     "@material-ui/icons": "^4.11.3",
     "@material-ui/lab": "^4.0.0-alpha.61",
     "@material-ui/pickers": "^3.3.11",
-    "@tauri-apps/api": "^1.5.4",
+    "@tauri-apps/api": "^1.5.5",
     "@tauri-apps/cli": "^1.5.13",
     "ajv": "^8.13.0",
     "date-fns": "^2.30.0",
