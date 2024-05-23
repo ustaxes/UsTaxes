@@ -95,7 +95,7 @@
     "lint-staged": "^15.2.2",
     "prettier": "2.8.8",
     "ts-node": "^10.9.2",
-    "typescript-eslint": "7.9.0"
+    "typescript-eslint": "7.10.0"
   },
   "lint-staged": {
     "**/*": "prettier --write --ignore-unknown .",
