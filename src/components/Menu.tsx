@@ -35,6 +35,7 @@ import Questions from './Questions'
 import HelpAndFeedback from './HelpAndFeedback'
 import UserSettings from './UserSettings'
 import Urls from 'ustaxes/data/urls'
+import StateQuestions from './StateQuestions'
 
 import { isMobileOnly as isMobile } from 'react-device-detect'
 import HealthSavingsAccounts from './savingsAccounts/healthSavingsAccounts'
@@ -169,6 +170,10 @@ export const drawerSections: Section[] = [
         <IRA />
       )
     ]
+  },
+  {
+    title: 'State Questions',
+    items: [item('State Questions', Urls.stateQuestions, <StateQuestions />)]
   },
   {
     title: 'Results',
