@@ -1,6 +1,5 @@
 import { Button, ButtonProps } from '@material-ui/core'
 import { PropsWithChildren, ReactElement } from 'react'
-import { useDispatch } from 'react-redux'
 
 const ClearLocalStorage = (
   props: PropsWithChildren<ButtonProps>
