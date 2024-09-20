@@ -91,7 +91,7 @@ This application can be run as either a web application or a [standalone desktop
 
 This project runs on Node 20. To ensure you're on the proper version, we recommend [nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
 
-With `nvm` installed, you may select a version 16 node using:
+With `nvm` installed, you may select a version 20 node using:
 
 ```sh
 nvm install 20

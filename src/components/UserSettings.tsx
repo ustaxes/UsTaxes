@@ -4,6 +4,7 @@ import { useDispatch } from 'react-redux'
 import { fsRecover } from 'ustaxes/redux/fs/Actions'
 import { LoadRaw } from 'ustaxes/redux/fs/Load'
 import SaveToFile from './SaveToFile'
+import ClearLocalStorage from './ClearLocalStorage'
 
 const UserSettings = (): ReactElement => {
   const dispatch = useDispatch()
@@ -36,6 +37,10 @@ const UserSettings = (): ReactElement => {
       >
         Load
       </LoadRaw>
+      <h3>Delete data</h3>
+      <ClearLocalStorage variant="contained" color="primary">
+        Clear Local Storage
+      </ClearLocalStorage>
     </>
   )
 }
