@@ -1,0 +1,25 @@
+{
+  "latest": {
+    "irs": {
+      "f1040": "https://www.irs.gov/pub/irs-pdf/f1040.pdf",
+      "f1040s1": "https://www.irs.gov/pub/irs-pdf/f1040s1.pdf",
+      "f1040s2": "https://www.irs.gov/pub/irs-pdf/f1040s2.pdf",
+      "f1040s3": "https://www.irs.gov/pub/irs-pdf/f1040s3.pdf",
+      "f1040s8": "https://www.irs.gov/pub/irs-pdf/f1040s8.pdf",
+      "f1040sa": "https://www.irs.gov/pub/irs-pdf/f1040sa.pdf",
+      "f1040sb": "https://www.irs.gov/pub/irs-pdf/f1040sb.pdf",
+      "f1040sd": "https://www.irs.gov/pub/irs-pdf/f1040sd.pdf",
+      "f1040se": "https://www.irs.gov/pub/irs-pdf/f1040se.pdf",
+      "f1040sei": "https://www.irs.gov/pub/irs-pdf/f1040sei.pdf",
+      "f1040sse": "https://www.irs.gov/pub/irs-pdf/f1040sse.pdf",
+      "f1040v": "https://www.irs.gov/pub/irs-pdf/f1040v.pdf",
+      "f6251": "https://www.irs.gov/pub/irs-pdf/f6251.pdf",
+      "f8889": "https://www.irs.gov/pub/irs-pdf/f8889.pdf",
+      "f8949": "https://www.irs.gov/pub/irs-pdf/f8949.pdf",
+      "f8959": "https://www.irs.gov/pub/irs-pdf/f8959.pdf",
+      "f8960": "https://www.irs.gov/pub/irs-pdf/f8960.pdf",
+      "f8995": "https://www.irs.gov/pub/irs-pdf/f8995.pdf",
+      "f8995a": "https://www.irs.gov/pub/irs-pdf/f8995a.pdf"
+    }
+  }
+}
