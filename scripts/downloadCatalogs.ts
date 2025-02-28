@@ -11,8 +11,15 @@ interface Catalogs {
   }
 }
 
-const catalogsPath = path.join(__dirname, '../public', 'catalogs.json')
-const outputDir = path.join(__dirname, '../public', 'forms', 'latest', 'irs')
+const taxYear = 'Y2024'
+const catalogsPath: string = path.join(__dirname, '../public', 'catalogs.json')
+const outputDir: string = path.join(
+  __dirname,
+  '../public',
+  'forms',
+  taxYear,
+  'irs'
+)
 
 if (!fs.existsSync(outputDir)) {
   fs.mkdirSync(outputDir, { recursive: true })
