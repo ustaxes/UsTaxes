@@ -232,8 +232,8 @@ export const netInvestmentIncomeTax = {
 
 export const healthSavingsAccounts = {
   contributionLimit: {
-    'self-only': 3850,
-    family: 7750
+    'self-only': 4150,
+    family: 8300
   }
 }
 
