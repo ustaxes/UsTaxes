@@ -170,19 +170,19 @@ const federalBrackets: FederalBrackets = {
     rates: [0, 15, 20],
     status: {
       [FilingStatus.S]: {
-        brackets: [44625, 492300]
+        brackets: [47025, 518900]
       },
       [FilingStatus.MFJ]: {
-        brackets: [89250, 553850]
+        brackets: [94050, 583750]
       },
       [FilingStatus.W]: {
-        brackets: [89250, 553850]
+        brackets: [94050, 583750]
       },
       [FilingStatus.MFS]: {
-        brackets: [44625, 276900]
+        brackets: [47025, 291850]
       },
       [FilingStatus.HOH]: {
-        brackets: [59750, 523050]
+        brackets: [63000, 551350]
       }
     }
   }
