@@ -38,15 +38,15 @@ const federalBrackets: FederalBrackets = {
         deductions: [
           {
             name: 'Standard Deduction (Single)',
-            amount: 13850
+            amount: 14600
           },
           {
             name: 'Standard Deduction (Single) with 1 age or blindness allowance',
-            amount: 15700
+            amount: 16550
           },
           {
             name: 'Standard Deduction (Single) with 2 age or blindness allowances',
-            amount: 17750
+            amount: 18500
           }
         ],
         exemptions: [
@@ -61,23 +61,23 @@ const federalBrackets: FederalBrackets = {
         deductions: [
           {
             name: 'Standard Deduction (Married)',
-            amount: 27700
-          },
-          {
-            name: 'Standard Deduction (Married) with 1 age or blindness allowance',
             amount: 29200
           },
           {
+            name: 'Standard Deduction (Married) with 1 age or blindness allowance',
+            amount: 30750
+          },
+          {
             name: 'Standard Deduction (Married) with 2 age or blindness allowances',
-            amount: 30700
+            amount: 32300
           },
           {
             name: 'Standard Deduction (Married) with 3 age or blindness allowances',
-            amount: 32200
+            amount: 33850
           },
           {
             name: 'Standard Deduction (Married) with 4 age or blindness allowances',
-            amount: 33700
+            amount: 35400
           }
         ],
         exemptions: [
@@ -92,15 +92,15 @@ const federalBrackets: FederalBrackets = {
         deductions: [
           {
             name: 'Standard Deduction (Widowed)',
-            amount: 27700
-          },
-          {
-            name: 'Standard Deduction (Widowed) with 1 age or blindness allowance',
             amount: 29200
           },
           {
+            name: 'Standard Deduction (Widowed) with 1 age or blindness allowance',
+            amount: 30750
+          },
+          {
             name: 'Standard Deduction (Widowed) with 2 age or blindness allowances',
-            amount: 30700
+            amount: 32300
           }
         ],
         exemptions: [
@@ -115,23 +115,23 @@ const federalBrackets: FederalBrackets = {
         deductions: [
           {
             name: 'Standard Deduction (Married Filing Separately)',
-            amount: 13850
+            amount: 14600
           },
           {
             name: 'Standard Deduction (Married Filing Separately) with 1 age or blindness allowance',
-            amount: 15350
+            amount: 16150
           },
           {
             name: 'Standard Deduction (Married Filing Separately) with 2 age or blindness allowances',
-            amount: 16850
+            amount: 17700
           },
           {
             name: 'Standard Deduction (Married Filing Separately) with 3 age or blindness allowances',
-            amount: 18350
+            amount: 19250
           },
           {
             name: 'Standard Deduction (Married Filing Separately) with 4 age or blindness allowances',
-            amount: 19850
+            amount: 20800
           }
         ],
         exemptions: [
@@ -146,15 +146,15 @@ const federalBrackets: FederalBrackets = {
         deductions: [
           {
             name: 'Standard Deduction (Head of Household)',
-            amount: 20800
+            amount: 21900
           },
           {
             name: 'Standard Deduction (Head of Household) with 1 age or blindness allowance',
-            amount: 22650
+            amount: 23850
           },
           {
             name: 'Standard Deduction (Head of Household) with 2 age or blindness allowances',
-            amount: 24500
+            amount: 25800
           }
         ],
         exemptions: [
