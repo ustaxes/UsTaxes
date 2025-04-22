@@ -274,8 +274,8 @@ export const amt = {
 
 // https://www.irs.gov/credits-deductions/individuals/earned-income-tax-credit/earned-income-and-earned-income-tax-credit-eitc-tables#EITC%20Tables
 // line 11 caps based on step one in instructions
-const line11Caps = [17640, 46450, 52918, 56838]
-const line11MfjCaps = [24210, 53120, 59478, 63398]
+const line11Caps = [18591, 49084, 55768, 59899]
+const line11MfjCaps = [25511, 56004, 62688, 66819]
 
 type Point = [number, number]
 
