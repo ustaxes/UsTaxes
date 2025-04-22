@@ -486,6 +486,7 @@ const rootReducer: Reducer<
   Y2021: guardByYear('Y2021'),
   Y2022: guardByYear('Y2022'),
   Y2023: guardByYear('Y2023'),
+  Y2024: guardByYear('Y2024'),
   activeYear
 }) as Reducer<CombinedState<YearsTaxesState>, Actions>
 
