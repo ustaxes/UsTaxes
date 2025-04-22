@@ -252,7 +252,7 @@ export default class F6251 extends F1040Attachment {
   l10 = (): number => {
     const f1040L16 = this.f1040.l16() ?? 0
     const f4972 = this.f1040.f4972?.tax() ?? 0
-    const sch2L2 = this.f1040.schedule2.l2() ?? 0
+    const sch2L2 = this.f1040.schedule2.l1z() ?? 0
     const sch3L1 = this.f1040.schedule3.l1() ?? 0
     const f8978L14 = Math.abs(0) // TODO: Form 8978
     return Math.max(0, f1040L16 - f4972 + sch2L2 - sch3L1 - f8978L14)

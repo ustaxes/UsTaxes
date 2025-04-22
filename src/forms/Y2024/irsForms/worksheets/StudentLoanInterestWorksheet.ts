@@ -42,7 +42,6 @@ export default class StudentLoanInterestWorksheet {
   // Schedule 1 deductions
   l3 = (): number =>
     sumFields([
-      // TODO: figure out Y2022 line number
       //this.f1040.l12b(),
       this.f1040.schedule1.l11(),
       this.f1040.schedule1.l12(),
