@@ -244,7 +244,7 @@ export default class F6251 extends F1040Attachment {
   }
 
   // Add Form 1040 or 1040-SR, line 16 (minus any tax from Form 4972),
-  // and Schedule 2 (Form 1040), line 2.
+  // and Schedule 2 (Form 1040), line 1z.
   // Subtract from the result Schedule 3 (Form 1040), line 1
   // and any negative amount reported on Form 8978, line 14 (treated as a positive number).
   // If zero or less, enter -0-.

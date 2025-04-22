@@ -547,6 +547,8 @@ export default class F1040 extends F1040Base {
       this.info.taxPayer.filingStatus === FilingStatus.W,
       // TODO: implement non dependent child for HOH and QW
       this.info.taxPayer.filingStatus === 'MFS' ? this.spouseFullName() : '',
+      false, //teating non-resident alien
+      '',
       this.info.questions.CRYPTO ?? false,
       !(this.info.questions.CRYPTO ?? false),
       this.info.taxPayer.primaryPerson.isTaxpayerDependent,
