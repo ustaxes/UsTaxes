@@ -8,9 +8,33 @@ export default class Schedule2 extends F1040Attachment {
   sequenceIndex = 2
 
   // Part I: Tax
-  l1 = (): number | undefined => this.f1040.f6251.l11()
-  l2 = (): number | undefined => undefined // TODO: excess advance premium tax credit repayment (form 8962)
-  l3 = (): number => sumFields([this.l1(), this.l2()])
+  l1a = (): number | undefined => undefined // TODO: excess advance premium tax credit repayment (form 8962)
+  l1b = (): number | undefined => undefined // TODO: Form 8936
+  l1c = (): number | undefined => undefined // TODO: Form 8936
+  l1d = (): number | undefined => undefined //TODO: Form 4255 line 2a column i
+  l1ei = (): boolean | undefined => undefined
+  l1eii = (): boolean | undefined => undefined
+  l1eiii = (): boolean | undefined => undefined
+  l1eiv = (): boolean | undefined => undefined
+  l1e = (): number | undefined => undefined
+  l1fi = (): boolean | undefined => undefined
+  l1fii = (): boolean | undefined => undefined
+  l1fiii = (): boolean | undefined => undefined
+  l1fiv = (): boolean | undefined => undefined
+  l1f = (): number | undefined => undefined
+  l1y = (): number | undefined => undefined
+  l1z = (): number =>
+    sumFields([
+      this.l1a(),
+      this.l1b(),
+      this.l1c(),
+      this.l1d(),
+      this.l1e(),
+      this.l1f()
+    ])
+
+  l2 = (): number | undefined => this.f1040.f6251.l11()
+  l3 = (): number => sumFields([this.l1z(), this.l2()])
 
   // Part II: Other Tax
   l4 = (): number | undefined => this.f1040.scheduleSE.l12() // self-employment tax (schedule SE)
@@ -102,6 +126,9 @@ export default class Schedule2 extends F1040Attachment {
       this.l17z()
     ])
 
+  // Recapture of net EPE from Form 4255, line 1d, column (l)
+  l19 = (): number | undefined => undefined
+
   // TODO: Section 965 net tax liability installment from Form 965-A. .
   l20 = (): number | undefined => undefined
 
@@ -129,7 +156,22 @@ export default class Schedule2 extends F1040Attachment {
     this.f1040.namesString(),
     this.f1040.info.taxPayer.primaryPerson.ssid,
 
-    this.l1(),
+    this.l1a(),
+    this.l1b(),
+    this.l1c(),
+    this.l1d(),
+    this.l1ei(),
+    this.l1eii(),
+    this.l1eiii(),
+    this.l1eiv(),
+    this.l1e(),
+    this.l1fi(),
+    this.l1fii(),
+    this.l1fiii(),
+    this.l1fiv(),
+    this.l1f(),
+    this.l1y(),
+    this.l1z(),
     this.l2(),
     this.l3(),
 
