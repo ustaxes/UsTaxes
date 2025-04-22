@@ -236,7 +236,8 @@ export const healthSavingsAccounts = {
     family: 8300
   }
 }
-
+// https://www.irs.gov/newsroom/irs-provides-tax-inflation-adjustments-for-tax-year-2024
+// https://www.irs.gov/instructions/i6251
 export const amt = {
   excemption: (
     filingStatus: FilingStatus,
@@ -244,17 +245,17 @@ export const amt = {
   ): number | undefined => {
     switch (filingStatus) {
       case FilingStatus.S:
-        if (income <= 578150) {
-          return 81300
+        if (income <= 609350) {
+          return 85700
         }
         break
       case FilingStatus.MFJ:
-        if (income <= 1156300) {
-          return 126500
+        if (income <= 1218700) {
+          return 133300
         }
         break
       case FilingStatus.MFS:
-        if (income <= 578150) {
+        if (income <= 66650) {
           return 63250
         }
     }
@@ -262,11 +263,12 @@ export const amt = {
     return undefined
   },
 
+  // Used for calculating Line 7 on form 6251. See instructions
   cap: (filingStatus: FilingStatus): number => {
     if (filingStatus === FilingStatus.MFS) {
-      return 110350
+      return 116300
     }
-    return 220700
+    return 232600
   }
 }
 
