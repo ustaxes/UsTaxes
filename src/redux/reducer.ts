@@ -5,7 +5,7 @@ import { YearsTaxesState } from '.'
 import { ActionName, Actions } from './actions'
 import { stringToDateInfo } from './data'
 
-const DEFAULT_TAX_YEAR: TaxYear = 'Y2023'
+const DEFAULT_TAX_YEAR: TaxYear = 'Y2024'
 
 export const blankState: Information = {
   f1099s: [],
