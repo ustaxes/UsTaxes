@@ -5,7 +5,8 @@ export enum TaxYears {
   Y2020 = 2020,
   Y2021 = 2021,
   Y2022 = 2022,
-  Y2023 = 2023
+  Y2023 = 2023,
+  Y2024 = 2024
 }
 
 export type TaxYear = keyof typeof TaxYears

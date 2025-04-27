@@ -20,6 +20,7 @@ export const blankYearTaxesState: YearsTaxesState = {
   Y2021: blankState,
   Y2022: blankState,
   Y2023: blankState,
+  Y2024: blankState,
   activeYear: 'Y2020'
 }
 
