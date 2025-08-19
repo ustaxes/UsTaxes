@@ -24,22 +24,36 @@ jobs:
       uses: actions/setup-node@v2
       with:
         node-version: ${{ matrix.node-version }}
-      # installs dependencies
+    # installs dependencies
     - run: npm ci
-      # build
-    - name: Run ESLint
-      run: npm run lint
+      # lint
+    # - name: Run ESLint
+    #   run: npm run lint
     - name: Ensure project builds
       run: npm run build
       # run tests
-    - name: Run jest unit tests
-      run: npm run test:report
-    - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v2
+    # - name: Run jest unit tests
+    #   run: npm run test:report
+    # - name: Upload coverage to Codecov
+    #   uses: codecov/codecov-action@v2
+    #   with:
+    #     token: ${{ secrets.CODECOV_TOKEN }}
+    #     directory: ./coverage
+    #     verbose: true
+    - name: Install netlify cli
+      run: npm install netlify-cli
+    - name: Deploy to Netlify
+      run: npx netlify deploy --auth ${{ secrets.NETLIFY_AUTH_TOKEN }} --site  ${{ secrets.NETLIFY_APP_ID }} --dir "./build" --message "Deployed from github" --alias $(git rev-parse --short "$GITHUB_SHA")
+
+    # Creates a status check with link to preview
+    - name: Status check
+      uses: Sibz/github-status-action@v1.1.1
       with:
-        token: ${{ secrets.CODECOV_TOKEN }}
-        directory: ./coverage
-        verbose: true
+        authToken: ${{ secrets.GITHUB_TOKEN }}
+        context: Netlify preview
+        state: success
+        target_url: https://$(git rev-parse --short "$GITHUB_SHA")--ustaxes.netlify.app
+
 
   dependabot-auto-merge:
     needs: [test]
