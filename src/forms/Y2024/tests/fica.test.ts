@@ -89,9 +89,10 @@ describe('fica', () => {
   it('should give refund SS tax overpayment only in some conditions', async () => {
     await testKit.with1040Assert((forms) => {
       const f1040 = commonTests.findF1040OrFail(forms)
+      const ssRefund = f1040.schedule3.l11()
       if (f1040.validW2s().length <= 1) {
         // Should never give SS refund with 1 or fewer W2s
-        expect(hasSSRefund(f1040)).toEqual(false)
+        expect(ssRefund).toEqual(0)
       } else {
         const ssWithheld = f1040
           .validW2s()
@@ -104,10 +105,10 @@ describe('fica', () => {
         ) {
           // Should never give SS refund if W2 income below max threshold, some W2 has
           // withheld over the max, or there is no SS withholding to refund.
-          expect(hasSSRefund(f1040)).toEqual(false)
+          expect(ssRefund).toEqual(0)
         } else {
           // Otherwise, should always give SS refund, and attach schedule 3
-          expect(hasSSRefund(f1040)).toEqual(true)
+          expect(ssRefund).toBeGreaterThan(0)
           expect(hasAttachment(forms, Schedule3)).toEqual(true)
         }
       }
