@@ -36,7 +36,7 @@ const expectTaxUnder100KRange = (
 describe('Tax rates', () => {
   it('test should be updated for new year', () => {
     // WARNING! Do not just change the year. Also update the CSV and expected tax amounts below!
-    expect(CURRENT_YEAR).toEqual(2023)
+    expect(CURRENT_YEAR).toEqual(2024)
   })
   it('ordinary taxes for single status should be correct', async () => {
     const rows = await getTaxTable()
