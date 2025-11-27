@@ -1,22 +1,18 @@
 {
-  "documentType": "1099-INT",
-  "taxYear": 2024,
-  "description": "Sample 1099-INT for bank interest income",
-  "extractedData": {
-    "form": "INT",
-    "form1099Int": {
-      "payer": "First National Bank",
-      "income": 450.25,
-      "taxExemptInterest": 0
-    },
-    "personRole": "PRIMARY"
-  },
-  "confidence": {
-    "payer": 100,
-    "income": 100,
-    "overall": 100
-  },
-  "ambiguities": [],
-  "validationErrors": [],
-  "readyForDispatch": true
+  "form": "1099-INT",
+  "payer": "XYZ Financial",
+  "payerTIN": "98-7654321",
+  "income": 1250.50,
+  "interest": 1250.50,
+  "taxExemptInterest": 0,
+  "foreignTaxPaid": 0,
+  "foreignCountry": null,
+  "investmentExpenses": 0,
+  "federalIncomeTaxWithheld": 0,
+  "specifiedPrivateActivityBondInterest": 0,
+  "marketDiscount": 0,
+  "bondPremium": 0,
+  "bondPremiumOnTreasuryObligations": 0,
+  "taxExemptBondPremium": 0,
+  "cusipNumber": ""
 }
