@@ -1,0 +1,284 @@
+{
+  "taxYear": 2024,
+  "standardDeductions": {
+    "single": 14600,
+    "marriedFilingJointly": 29200,
+    "marriedFilingSeparately": 14600,
+    "headOfHousehold": 21900,
+    "qualifyingWidow": 29200
+  },
+  "additionalStandardDeduction": {
+    "age65OrBlind": {
+      "single": 1950,
+      "headOfHousehold": 1950,
+      "marriedFilingJointly": 1550,
+      "marriedFilingSeparately": 1550,
+      "qualifyingWidow": 1550
+    },
+    "description": "Additional amount per person age 65+ or blind"
+  },
+  "ordinaryIncomeBrackets": {
+    "single": [
+      {"rate": 0.10, "min": 0, "max": 11600},
+      {"rate": 0.12, "min": 11601, "max": 47150},
+      {"rate": 0.22, "min": 47151, "max": 100525},
+      {"rate": 0.24, "min": 100526, "max": 191950},
+      {"rate": 0.32, "min": 191951, "max": 243725},
+      {"rate": 0.35, "min": 243726, "max": 609350},
+      {"rate": 0.37, "min": 609351, "max": null}
+    ],
+    "marriedFilingJointly": [
+      {"rate": 0.10, "min": 0, "max": 23200},
+      {"rate": 0.12, "min": 23201, "max": 94300},
+      {"rate": 0.22, "min": 94301, "max": 201050},
+      {"rate": 0.24, "min": 201051, "max": 383900},
+      {"rate": 0.32, "min": 383901, "max": 487450},
+      {"rate": 0.35, "min": 487451, "max": 731200},
+      {"rate": 0.37, "min": 731201, "max": null}
+    ],
+    "marriedFilingSeparately": [
+      {"rate": 0.10, "min": 0, "max": 11600},
+      {"rate": 0.12, "min": 11601, "max": 47150},
+      {"rate": 0.22, "min": 47151, "max": 100525},
+      {"rate": 0.24, "min": 100526, "max": 191950},
+      {"rate": 0.32, "min": 191951, "max": 243725},
+      {"rate": 0.35, "min": 243726, "max": 365600},
+      {"rate": 0.37, "min": 365601, "max": null}
+    ],
+    "headOfHousehold": [
+      {"rate": 0.10, "min": 0, "max": 16550},
+      {"rate": 0.12, "min": 16551, "max": 63100},
+      {"rate": 0.22, "min": 63101, "max": 100500},
+      {"rate": 0.24, "min": 100501, "max": 191950},
+      {"rate": 0.32, "min": 191951, "max": 243700},
+      {"rate": 0.35, "min": 243701, "max": 609350},
+      {"rate": 0.37, "min": 609351, "max": null}
+    ],
+    "qualifyingWidow": [
+      {"rate": 0.10, "min": 0, "max": 23200},
+      {"rate": 0.12, "min": 23201, "max": 94300},
+      {"rate": 0.22, "min": 94301, "max": 201050},
+      {"rate": 0.24, "min": 201051, "max": 383900},
+      {"rate": 0.32, "min": 383901, "max": 487450},
+      {"rate": 0.35, "min": 487451, "max": 731200},
+      {"rate": 0.37, "min": 731201, "max": null}
+    ]
+  },
+  "capitalGainsBrackets": {
+    "zeroPercent": {
+      "single": {"min": 0, "max": 47025},
+      "marriedFilingJointly": {"min": 0, "max": 94050},
+      "marriedFilingSeparately": {"min": 0, "max": 47025},
+      "headOfHousehold": {"min": 0, "max": 63000},
+      "qualifyingWidow": {"min": 0, "max": 94050}
+    },
+    "fifteenPercent": {
+      "single": {"min": 47026, "max": 518900},
+      "marriedFilingJointly": {"min": 94051, "max": 583750},
+      "marriedFilingSeparately": {"min": 47026, "max": 291850},
+      "headOfHousehold": {"min": 63001, "max": 551350},
+      "qualifyingWidow": {"min": 94051, "max": 583750}
+    },
+    "twentyPercent": {
+      "single": {"min": 518901, "max": null},
+      "marriedFilingJointly": {"min": 583751, "max": null},
+      "marriedFilingSeparately": {"min": 291851, "max": null},
+      "headOfHousehold": {"min": 551351, "max": null},
+      "qualifyingWidow": {"min": 583751, "max": null}
+    },
+    "description": "Long-term capital gains and qualified dividends tax rates"
+  },
+  "additionalTaxes": {
+    "netInvestmentIncomeTax": {
+      "rate": 0.038,
+      "thresholds": {
+        "single": 200000,
+        "marriedFilingJointly": 250000,
+        "marriedFilingSeparately": 125000,
+        "headOfHousehold": 200000,
+        "qualifyingWidow": 250000
+      },
+      "description": "3.8% tax on net investment income above threshold"
+    },
+    "additionalMedicareTax": {
+      "rate": 0.009,
+      "thresholds": {
+        "single": 200000,
+        "marriedFilingJointly": 250000,
+        "marriedFilingSeparately": 125000,
+        "headOfHousehold": 200000,
+        "qualifyingWidow": 250000
+      },
+      "description": "0.9% additional Medicare tax on wages/SE income above threshold"
+    },
+    "selfEmploymentTax": {
+      "rate": 0.153,
+      "socialSecurityWageBase": 168600,
+      "socialSecurityRate": 0.124,
+      "medicareRate": 0.029,
+      "selfEmploymentIncomeMultiplier": 0.9235,
+      "description": "15.3% SE tax (12.4% SS + 2.9% Medicare) on 92.35% of net SE income"
+    }
+  },
+  "personalExemption": {
+    "amount": 0,
+    "description": "Personal exemptions suspended for 2018-2025 under TCJA"
+  },
+  "dependentExemption": {
+    "amount": 0,
+    "description": "Dependent exemptions suspended for 2018-2025 under TCJA"
+  },
+  "childTaxCredit": {
+    "amountPerChild": 2000,
+    "ageLimit": 17,
+    "refundableAmount": 1700,
+    "phaseOutThresholds": {
+      "marriedFilingJointly": 400000,
+      "other": 200000
+    },
+    "phaseOutRate": 0.05,
+    "description": "$2,000 per child under 17, begins phasing out at threshold"
+  },
+  "earnedIncomeCredit": {
+    "maxCredits": {
+      "noChildren": 632,
+      "oneChild": 4213,
+      "twoChildren": 6960,
+      "threeOrMoreChildren": 7830
+    },
+    "phaseOutStarts": {
+      "noChildren": {"single": 9800, "married": 16370},
+      "oneChild": {"single": 12590, "married": 19160},
+      "twoChildren": {"single": 12590, "married": 19160},
+      "threeOrMore": {"single": 12590, "married": 19160}
+    },
+    "description": "Refundable credit for low-to-moderate income workers"
+  },
+  "americanOpportunityCredit": {
+    "maxCredit": 2500,
+    "refundablePercent": 0.40,
+    "phaseOutStarts": {
+      "single": 80000,
+      "marriedFilingJointly": 160000
+    },
+    "phaseOutEnds": {
+      "single": 90000,
+      "marriedFilingJointly": 180000
+    },
+    "description": "Education credit, up to $2,500, 40% refundable"
+  },
+  "lifetimeLearningCredit": {
+    "maxCredit": 2000,
+    "phaseOutStarts": {
+      "single": 80000,
+      "marriedFilingJointly": 160000
+    },
+    "phaseOutEnds": {
+      "single": 90000,
+      "marriedFilingJointly": 180000
+    },
+    "description": "Education credit, up to $2,000, nonrefundable"
+  },
+  "saversCredit": {
+    "maxContribution": 2000,
+    "rates": {
+      "50percent": {
+        "single": {"min": 0, "max": 23000},
+        "marriedFilingJointly": {"min": 0, "max": 46000}
+      },
+      "20percent": {
+        "single": {"min": 23001, "max": 25250},
+        "marriedFilingJointly": {"min": 46001, "max": 50500}
+      },
+      "10percent": {
+        "single": {"min": 25251, "max": 38250},
+        "marriedFilingJointly": {"min": 50501, "max": 76500}
+      }
+    },
+    "description": "Credit for retirement savings contributions"
+  },
+  "alternativeMinimumTax": {
+    "exemption": {
+      "single": 85700,
+      "marriedFilingJointly": 133300,
+      "marriedFilingSeparately": 66650,
+      "headOfHousehold": 85700
+    },
+    "exemptionPhaseOut": {
+      "single": 609350,
+      "marriedFilingJointly": 1218700,
+      "marriedFilingSeparately": 609350,
+      "headOfHousehold": 609350
+    },
+    "rates": {
+      "first": {"rate": 0.26, "max": 232600},
+      "second": {"rate": 0.28, "min": 232601}
+    },
+    "description": "Alternative Minimum Tax calculation thresholds"
+  },
+  "qualifiedBusinessIncomeDeduction": {
+    "percentage": 0.20,
+    "thresholdForPhaseIn": {
+      "single": 191950,
+      "marriedFilingJointly": 383900,
+      "marriedFilingSeparately": 191950,
+      "headOfHousehold": 191950
+    },
+    "thresholdForPhaseOut": {
+      "single": 241950,
+      "marriedFilingJointly": 483900,
+      "marriedFilingSeparately": 241950,
+      "headOfHousehold": 241950
+    },
+    "description": "20% deduction for qualified business income (Section 199A)"
+  },
+  "ira": {
+    "contributionLimit": {
+      "under50": 7000,
+      "age50Plus": 8000
+    },
+    "rothPhaseOut": {
+      "single": {"start": 146000, "end": 161000},
+      "marriedFilingJointly": {"start": 230000, "end": 240000},
+      "marriedFilingSeparately": {"start": 0, "end": 10000}
+    },
+    "traditionalDeductionPhaseOut": {
+      "single": {"start": 77000, "end": 87000},
+      "marriedFilingJointly": {"start": 123000, "end": 143000},
+      "marriedFilingSeparately": {"start": 0, "end": 10000}
+    }
+  },
+  "hsa": {
+    "contributionLimit": {
+      "selfOnly": 4150,
+      "family": 8300,
+      "age55Plus": 1000
+    }
+  },
+  "studentLoanInterestDeduction": {
+    "maxDeduction": 2500,
+    "phaseOutStarts": {
+      "single": 80000,
+      "marriedFilingJointly": 165000
+    },
+    "phaseOutEnds": {
+      "single": 95000,
+      "marriedFilingJointly": 195000
+    }
+  },
+  "estateTax": {
+    "exemption": 13610000,
+    "rate": 0.40,
+    "description": "Estate and gift tax exemption and rate"
+  },
+  "saltDeductionCap": {
+    "amount": 10000,
+    "description": "State and local tax deduction cap (SALT cap)"
+  },
+  "notes": {
+    "inflationAdjustment": "Tax brackets and deduction amounts are indexed for inflation annually",
+    "tcjaProvisions": "Many provisions from Tax Cuts and Jobs Act expire after 2025",
+    "marriagePenalty": "Some brackets/thresholds are not exactly double for MFJ vs Single",
+    "roundingRules": "IRS allows rounding to nearest dollar on tax returns"
+  }
+}

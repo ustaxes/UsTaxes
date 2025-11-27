@@ -1,0 +1,22 @@
+{
+  "documentType": "1099-INT",
+  "taxYear": 2024,
+  "description": "Sample 1099-INT for bank interest income",
+  "extractedData": {
+    "form": "INT",
+    "form1099Int": {
+      "payer": "First National Bank",
+      "income": 450.25,
+      "taxExemptInterest": 0
+    },
+    "personRole": "PRIMARY"
+  },
+  "confidence": {
+    "payer": 100,
+    "income": 100,
+    "overall": 100
+  },
+  "ambiguities": [],
+  "validationErrors": [],
+  "readyForDispatch": true
+}
