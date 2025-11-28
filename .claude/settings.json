@@ -33,22 +33,12 @@
     ]
   },
   "mcp": {
-    "tax-document-parser": {
-      "command": "node",
+    "ustaxes": {
+      "command": "npx",
       "args": [
-        "/mnt/nas/data/code/forks/UsTaxes/.claude/mcp-servers/tax-document-parser/dist/index.js"
-      ]
-    },
-    "irs-rules-engine": {
-      "command": "node",
-      "args": [
-        "/mnt/nas/data/code/forks/UsTaxes/.claude/mcp-servers/irs-rules-engine/dist/index.js"
-      ]
-    },
-    "form-validator": {
-      "command": "node",
-      "args": [
-        "/mnt/nas/data/code/forks/UsTaxes/.claude/mcp-servers/form-validator/dist/index.js"
+        "-y",
+        "tsx",
+        "/mnt/nas/data/code/forks/UsTaxes/.claude/mcp-servers/ustaxes-server/src/index.ts"
       ]
     }
   }
