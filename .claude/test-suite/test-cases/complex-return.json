@@ -1,0 +1,251 @@
+{
+  "name": "Complex Return with Multiple Income Sources",
+  "description": "Complex return with W-2, investment income, self-employment, rental property, itemized deductions, multiple credits",
+  "category": "complex",
+  "taxYear": 2024,
+  "documents": [
+    {
+      "type": "W2",
+      "path": "~/files/taxes/2024/w2-primary.pdf",
+      "source": "real",
+      "notes": "Primary employment income"
+    },
+    {
+      "type": "1099-INT",
+      "path": "~/files/taxes/2024/1099-int-bank.pdf",
+      "source": "real",
+      "notes": "Interest income"
+    },
+    {
+      "type": "1099-DIV",
+      "path": "~/files/taxes/2024/1099-div-brokerage.pdf",
+      "source": "real",
+      "notes": "Dividends and capital gains"
+    },
+    {
+      "type": "1099-B",
+      "path": "~/files/taxes/2024/1099-b-stock-sales.pdf",
+      "source": "real",
+      "notes": "Stock transactions"
+    },
+    {
+      "type": "1099-NEC",
+      "path": "~/files/taxes/2024/1099-nec-freelance.pdf",
+      "source": "real",
+      "notes": "Self-employment income from consulting"
+    },
+    {
+      "type": "1098",
+      "path": "~/files/taxes/2024/1098-mortgage.pdf",
+      "source": "real",
+      "notes": "Mortgage interest"
+    },
+    {
+      "type": "1098-E",
+      "path": "~/files/taxes/2024/1098-e-student-loan.pdf",
+      "source": "real",
+      "notes": "Student loan interest"
+    },
+    {
+      "type": "rental-records",
+      "path": "~/files/taxes/2024/rental-income-expenses.pdf",
+      "source": "real",
+      "notes": "Rental property income and expenses"
+    },
+    {
+      "type": "receipts",
+      "path": "~/files/taxes/2024/receipts/",
+      "source": "real",
+      "notes": "Charitable donations, business expenses, medical expenses"
+    }
+  ],
+  "userResponses": {
+    "filingStatus": "MFJ",
+    "primaryPerson": {
+      "firstName": "John",
+      "lastName": "Doe",
+      "dateOfBirth": "1980-06-15",
+      "isBlind": false,
+      "isTaxpayerDependent": false
+    },
+    "spouse": {
+      "firstName": "Jane",
+      "lastName": "Doe",
+      "dateOfBirth": "1982-03-22",
+      "isBlind": false,
+      "isTaxpayerDependent": false
+    },
+    "dependents": [
+      {
+        "firstName": "Emily",
+        "lastName": "Doe",
+        "dateOfBirth": "2016-09-10",
+        "relationship": "daughter",
+        "qualifyingInfo": {
+          "numberOfMonths": 12,
+          "isStudent": true
+        }
+      },
+      {
+        "firstName": "Michael",
+        "lastName": "Doe",
+        "dateOfBirth": "2019-05-22",
+        "relationship": "son",
+        "qualifyingInfo": {
+          "numberOfMonths": 12,
+          "isStudent": false
+        }
+      }
+    ],
+    "selfEmployment": {
+      "businessName": "Doe Consulting LLC",
+      "businessIncome": 35000,
+      "homeOffice": {
+        "squareFeet": 200,
+        "totalHomeSquareFeet": 2000,
+        "method": "simplified"
+      },
+      "vehicle": {
+        "totalMiles": 15000,
+        "businessMiles": 8000,
+        "method": "standard"
+      },
+      "expenses": {
+        "supplies": 1200,
+        "software": 2400,
+        "advertising": 800,
+        "insurance": 1500,
+        "professional": 2000
+      }
+    },
+    "rental": {
+      "address": "456 Rental Ave, Sacramento, CA 95814",
+      "rentalDays": 365,
+      "personalUseDays": 0,
+      "rentIncome": 24000,
+      "expenses": {
+        "mortgage": 8000,
+        "propertyTax": 3000,
+        "insurance": 1200,
+        "repairs": 1500,
+        "management": 1800,
+        "utilities": 2400,
+        "depreciation": 7272
+      }
+    },
+    "deductions": {
+      "choice": "itemized",
+      "stateAndLocalTaxes": 10000,
+      "mortgageInterest": 18000,
+      "charitableDonations": 12000,
+      "medicalExpenses": 15000
+    },
+    "ira": {
+      "contribution": 7000,
+      "type": "traditional"
+    },
+    "hsa": {
+      "contribution": 8300
+    },
+    "childcare": {
+      "provider": "ABC Daycare",
+      "ein": "12-3456789",
+      "amountPaid": 10000
+    },
+    "questions": {
+      "hasVirtualCurrency": true,
+      "virtualCurrencyTransactions": [
+        {
+          "type": "sale",
+          "proceeds": 5000,
+          "cost": 3000,
+          "gainLoss": 2000
+        }
+      ],
+      "hasForeignAccounts": false
+    }
+  },
+  "expectedState": {
+    "filingStatus": "MFJ",
+    "w2Count": 1,
+    "f1099Count": 4,
+    "dependentCount": 2,
+    "w2Income": 120000,
+    "interestIncome": 850,
+    "dividendIncome": 4500,
+    "businessIncome": 35000,
+    "rentalIncome": 24000,
+    "capitalGains": 12000,
+    "totalIncome": 196350,
+    "adjustments": {
+      "studentLoanInterest": 2500,
+      "selfEmploymentTax": 2473,
+      "ira": 7000,
+      "hsa": 8300,
+      "total": 20273
+    },
+    "agi": 176077,
+    "deductionType": "itemized",
+    "deductionAmount": 41125,
+    "taxableIncome": 134952,
+    "ordinaryTax": 20150,
+    "selfEmploymentTax": 4946,
+    "additionalMedicare": 0,
+    "netInvestmentIncomeTax": 0,
+    "totalTaxBeforeCredits": 25096,
+    "childTaxCredit": 4000,
+    "childCareCredit": 600,
+    "totalCredits": 4600,
+    "totalTax": 20496,
+    "federalWithholding": 22000,
+    "estimatedPayments": 3000,
+    "totalPayments": 25000,
+    "refund": 4504,
+    "amountOwed": 0
+  },
+  "expectedForms": [
+    "F1040",
+    "Schedule 1",
+    "Schedule A",
+    "Schedule B",
+    "Schedule C",
+    "Schedule D",
+    "Schedule E",
+    "Schedule SE",
+    "Form 8949",
+    "Form 8812",
+    "Form 2441",
+    "Form 8995"
+  ],
+  "validations": {
+    "mathCorrect": true,
+    "compliancePass": true,
+    "auditRisk": "medium",
+    "criticalIssues": 0,
+    "warnings": 3,
+    "warningMessages": [
+      "Home office deduction claimed - ensure exclusive business use and keep documentation",
+      "Rental property depreciation calculated - required even if not claiming loss",
+      "Cryptocurrency transactions reported - ensure all transactions disclosed"
+    ],
+    "recommendations": [
+      "Keep detailed mileage log for business vehicle use",
+      "Maintain separate records for rental property income and expenses",
+      "Consider SEP-IRA instead of Traditional IRA for higher contribution limit",
+      "Review QBI deduction eligibility (Form 8995)"
+    ]
+  },
+  "performance": {
+    "maxExecutionTime": 180,
+    "expectedTime": 120
+  },
+  "notes": [
+    "This is a complex return with multiple schedules and forms",
+    "Self-employment income requires Schedule C and SE tax",
+    "Rental property requires Schedule E with depreciation calculation",
+    "Medical expenses ($15,000) exceed 7.5% AGI threshold ($13,206), deductible amount: $1,794",
+    "QBI deduction (Form 8995) may apply to business and rental income",
+    "Higher audit risk due to home office, business expenses, and rental property",
+    "Ensure all documentation is organized and retained for 7 years"
+  ]
+}
