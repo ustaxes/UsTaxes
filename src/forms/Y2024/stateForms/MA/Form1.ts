@@ -25,7 +25,7 @@ export class MAForm1 extends Form {
     super()
     this.info = f1040.info
     this.f1040 = f1040
-    this.formName = 'MA Form 1'
+    this.formName = 'Form-1'
     this.state = 'MA'
     this.methods = new FormMethods(this)
   }
@@ -104,7 +104,7 @@ export class MAForm1 extends Form {
   /**
    * State (should be MA)
    */
-  state = (): string | undefined =>
+  stateCode = (): string | undefined =>
     this.info.taxPayer.primaryPerson.address.state ??
     this.info.taxPayer.primaryPerson.address.province
 
@@ -403,7 +403,7 @@ export class MAForm1 extends Form {
     this.SSNSP(),
     this.madd(),
     this.city(),
-    this.state(),
+    this.stateCode(),
     this.zip(),
     this.filingStatus(),
 
