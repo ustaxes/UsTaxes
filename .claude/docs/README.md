@@ -32,6 +32,15 @@ Welcome to the complete documentation for the Claude Code AI Automation Layer fo
 
 👉 **Read this for in-depth understanding**
 
+📗 **[State Returns Guide](STATE_RETURNS_GUIDE.md)** - State tax return support
+- Massachusetts implementation
+- How to contribute your state
+- State implementation template
+- Testing guidelines
+- Complete contributor guide
+
+👉 **For state tax returns and contributors**
+
 ---
 
 ### Technical Documentation
