@@ -1,1093 +1,664 @@
 ---
 name: optimize-deductions
-description: "Identify legitimate deduction opportunities and tax-saving strategies for your return"
+description: "Identify legitimate deduction opportunities and tax-saving strategies"
 args:
   - name: year
     description: "Tax year to optimize (default: 2024)"
     required: false
   - name: focus
-    description: "Focus area: itemized, business, retirement, education, all (default: all)"
+    description: "Focus area: itemized, retirement, credits, all (default: all)"
     required: false
 ---
 
 # Optimize Deductions
 
-Find every legitimate deduction and tax-saving opportunity.
+Find legitimate deduction opportunities and tax-saving strategies by analyzing your tax return.
 
-## Overview
+## What This Command Does
 
-This command invokes the **deduction-optimizer** skill to:
-- Analyze your current return for missed deductions
-- Compare itemized vs standard deduction
-- Identify retirement contribution opportunities
-- Find education credits
-- Suggest business expense deductions
-- Recommend timing strategies
-- Calculate potential tax savings for each opportunity
+This command:
+- ✅ Exports your current return data using `ustaxes_export_state`
+- ✅ Analyzes missed deduction opportunities
+- ✅ Compares itemized vs standard deduction
+- ✅ Identifies retirement contribution opportunities
+- ✅ Finds potential tax credits
+- ✅ Calculates potential tax savings
+- ✅ Provides actionable recommendations
 
-## When to Use
+## What This Command Does NOT Do
 
-Run this command:
-- **During tax preparation** - Before finalizing return
-- **After major life events** - Marriage, home purchase, child born
-- **Year-end planning** - December optimization for current year
-- **Before filing** - Final check for missed deductions
-- **After income changes** - New job, raise, bonus
+This command does NOT:
+- ❌ Use a separate deduction-optimizer MCP server (not implemented)
+- ❌ Automatically apply optimizations (you must update return manually)
+- ❌ Guarantee all recommendations are applicable to your situation
+- ❌ Replace professional tax advice for complex situations
 
-## Optimization Categories
+## MCP Tools Used
 
-### 1. Above-the-Line Deductions
-- Traditional IRA contributions
-- HSA contributions
-- Student loan interest
-- Self-employment tax
-- Self-employed health insurance
-- Educator expenses
+- `ustaxes_export_state` - Export current return for analysis
 
-### 2. Itemized Deductions
-- Medical expenses
-- State and local taxes (SALT)
-- Mortgage interest
-- Charitable contributions
-- Casualty losses
+## Optimization Workflow
 
-### 3. Business Deductions
-- Home office
-- Vehicle expenses
-- Equipment and supplies
-- Professional services
-- Business meals and travel
-
-### 4. Tax Credits
-- Child tax credit
-- Dependent care credit
-- Education credits
-- Energy efficiency credits
-- Retirement savings contributions credit
-
-### 5. Timing Strategies
-- Income deferral
-- Deduction acceleration
-- Bunching strategy
-- Tax-loss harvesting
-
-## Optimization Process
-
-### Phase 1: Load Return Data
+### Phase 1: Export and Analyze Return Data
 
 ```typescript
 const taxYear = args.year ?? 2024
 const focus = args.focus ?? 'all'
-const state = store.getState()
-const yearState = state[`Y${taxYear}`]
-
-if (!yearState) {
-  throw new Error(`No ${taxYear} tax return found. Run /prepare-return first.`)
-}
 
 console.log(`Analyzing ${taxYear} return for optimization opportunities...`)
-console.log(`Focus area: ${focus}`)
+console.log(`Focus area: ${focus}\n`)
+
+// Export current return state
+const exportPath = `/tmp/tax-state-${taxYear}.json`
+
+try {
+  const exportResult = await mcp.ustaxes_export_state({
+    year: taxYear,
+    outputPath: exportPath
+  })
+
+  if (!exportResult.success) {
+    console.log('❌ No tax return found for year', taxYear)
+    console.log('Run /prepare-return first to create a return to optimize')
+    return
+  }
+
+  console.log(`✓ Exported tax state to ${exportPath}`)
+
+  // Load exported state for analysis
+  const stateData = JSON.parse(await fs.readFile(exportPath, 'utf-8'))
+
+  console.log('\n' + '='.repeat(60))
+  console.log('TAX OPTIMIZATION ANALYSIS')
+  console.log('='.repeat(60))
+  console.log()
+
+} catch (error) {
+  console.log('❌ Error exporting return:', error.message)
+  return
+}
 ```
 
-### Phase 2: Calculate Current Position
+### Phase 2: Calculate Current Tax Position
 
-```markdown
-## Current Tax Situation
+```typescript
+// Calculate total income
+let totalIncome = 0
 
-**Filing Status:** Married Filing Jointly
-**Adjusted Gross Income:** $187,500
-**Taxable Income:** $157,500
-**Tax Liability:** $24,326
-**Effective Tax Rate:** 13.0%
-**Marginal Tax Rate:** 22%
+if (stateData.w2s) {
+  totalIncome += stateData.w2s.reduce((sum, w2) => sum + (w2.income || 0), 0)
+}
 
-**Current Deductions:**
-- Standard deduction: $29,200 (not used)
-- Itemized deductions: $30,000 ✓
-  - SALT: $10,000
-  - Mortgage interest: $15,000
-  - Charitable: $5,000
+if (stateData.f1099s) {
+  totalIncome += stateData.f1099s.reduce((sum, f1099) => sum + (f1099.income || 0), 0)
+}
 
-**Current Credits:**
-- Child tax credit: $2,000
+// Calculate above-the-line deductions
+let aboveTheLine = 0
 
-**Refund/Owed:** $1,924 refund
+if (stateData.healthSavingsAccounts) {
+  const hsaDeduction = stateData.healthSavingsAccounts.reduce((sum, hsa) => {
+    return sum + (hsa.totalContributions || 0) - (hsa.employerContributions || 0)
+  }, 0)
+  aboveTheLine += hsaDeduction
+}
 
----
+if (stateData.individualRetirementArrangements) {
+  const iraDeduction = stateData.individualRetirementArrangements.reduce((sum, ira) => {
+    return sum + (ira.contribution || 0)
+  }, 0)
+  aboveTheLine += iraDeduction
+}
 
-Let me analyze opportunities to improve this position...
+if (stateData.f1098es) {
+  const studentLoan = stateData.f1098es.reduce((sum, f1098e) => {
+    return sum + Math.min(f1098e.interest || 0, 2500) // Cap at $2,500
+  }, 0)
+  aboveTheLine += studentLoan
+}
+
+const agi = totalIncome - aboveTheLine
+
+// Get filing status for calculations
+const filingStatus = stateData.taxPayer?.filingStatus || 'S'
+const standardDeductions = {
+  'S': 14600,
+  'MFJ': 29200,
+  'MFS': 14600,
+  'HOH': 21900,
+  'W': 29200
+}
+
+const standardDeduction = standardDeductions[filingStatus]
+
+// Calculate itemized deductions
+let itemizedTotal = 0
+const itemized = stateData.itemizedDeductions || {}
+
+if (itemized.medicalAndDental) itemizedTotal += itemized.medicalAndDental
+if (itemized.stateAndLocalTaxes) itemizedTotal += Math.min(itemized.stateAndLocalTaxes, 10000)
+if (itemized.mortgageInterest) itemizedTotal += itemized.mortgageInterest
+if (itemized.charitableCash) itemizedTotal += itemized.charitableCash
+if (itemized.charitableNonCash) itemizedTotal += itemized.charitableNonCash
+
+const usingItemized = itemizedTotal > standardDeduction
+
+console.log('## Current Tax Position')
+console.log()
+console.log(`Filing Status: ${getFilingStatusName(filingStatus)}`)
+console.log(`Total Income: $${totalIncome.toLocaleString()}`)
+console.log(`Above-the-Line Deductions: $${aboveTheLine.toLocaleString()}`)
+console.log(`Adjusted Gross Income (AGI): $${agi.toLocaleString()}`)
+console.log()
+console.log(`Standard Deduction: $${standardDeduction.toLocaleString()}`)
+console.log(`Itemized Deductions: $${itemizedTotal.toLocaleString()}`)
+console.log(`Using: ${usingItemized ? 'Itemized ✓' : 'Standard ✓'}`)
+console.log()
 ```
 
-### Phase 3: Itemized vs Standard Analysis
+### Phase 3: Analyze Retirement Contributions
 
-```markdown
-## Deduction Strategy Analysis
+```typescript
+if (focus === 'all' || focus === 'retirement') {
+  console.log('## Retirement Contribution Opportunities')
+  console.log()
 
-### Standard vs Itemized Comparison
+  // Check Traditional IRA
+  const currentIRA = stateData.individualRetirementArrangements?.reduce((sum, ira) => {
+    return sum + (ira.contribution || 0)
+  }, 0) || 0
 
-**Standard Deduction for MFJ:** $29,200
+  const iraLimit = 7000 // 2024 limit (under 50)
+  const iraOpportunity = iraLimit - currentIRA
 
-**Your Itemized Deductions:**
-| Category | Amount | Notes |
-|----------|--------|-------|
-| Medical expenses | $0 | Below 7.5% AGI threshold ($14,062) |
-| State/local taxes | $10,000 | SALT cap applied |
-| Mortgage interest | $15,000 | From Form 1098 |
-| Charitable contributions | $5,000 | Cash donations |
-| Other | $0 | - |
-| **Total** | **$30,000** | |
+  if (iraOpportunity > 0) {
+    const savings = iraOpportunity * 0.22 // Assume 22% bracket
 
-**Current Strategy:** Itemizing ✓
-**Savings over standard:** $800 in taxable income = ~$176 in tax
+    console.log('### Traditional IRA ⭐ HIGH PRIORITY')
+    console.log()
+    console.log(`Current contribution: $${currentIRA.toLocaleString()}`)
+    console.log(`2024 limit: $${iraLimit.toLocaleString()}`)
+    console.log(`Additional available: $${iraOpportunity.toLocaleString()}`)
+    console.log()
+    console.log(`Tax Savings: ~$${savings.toLocaleString()} (assumes 22% bracket)`)
+    console.log()
+    console.log('**How to contribute:**')
+    console.log('1. Open Traditional IRA if needed (Vanguard, Fidelity, Schwab)')
+    console.log('2. Contribute before April 15, 2025')
+    console.log('3. Update return using /prepare-return')
+    console.log()
+  } else {
+    console.log('### Traditional IRA ✓ MAXIMIZED')
+    console.log()
+    console.log(`Current contribution: $${currentIRA.toLocaleString()} (at limit)`)
+    console.log()
+  }
 
-### Optimization Opportunity
+  // Check HSA
+  const currentHSA = stateData.healthSavingsAccounts?.reduce((sum, hsa) => {
+    return sum + (hsa.totalContributions || 0) - (hsa.employerContributions || 0)
+  }, 0) || 0
 
-**Medical Expenses:**
-- Current total: $8,000
-- Threshold (7.5% AGI): $14,062
-- **Need additional:** $6,062 to get ANY deduction
+  const hsaLimit = 8300 // Family limit 2024
+  const hsaOpportunity = hsaLimit - currentHSA
 
-**Analysis:**
-- You're $6,062 away from deducting medical expenses
-- Even if you reached threshold, only expenses OVER $14,062 are deductible
-- Current excess: $0
+  if (currentHSA === 0) {
+    console.log('### Health Savings Account (HSA)')
+    console.log()
+    console.log('**Not currently using HSA**')
+    console.log()
+    console.log('If you have a High-Deductible Health Plan (HDHP):')
+    console.log(`- Family limit: $${hsaLimit.toLocaleString()}`)
+    console.log(`- Individual limit: $4,150`)
+    console.log(`- Tax savings: ~$1,826 (family) or ~$913 (individual) at 22% bracket`)
+    console.log()
+    console.log('**Benefits:**')
+    console.log('- Triple tax advantage (deductible, tax-free growth, tax-free withdrawals)')
+    console.log('- Rolls over year-to-year')
+    console.log('- Can invest for long-term growth')
+    console.log()
+  } else if (hsaOpportunity > 0) {
+    const savings = hsaOpportunity * 0.22
 
-**Recommendation:**
-If you have upcoming medical expenses (surgery, dental work, etc.):
-- Consider scheduling in one year to exceed threshold
-- **Example:** If you bunch $10,000 more medical in 2024:
-  - Total medical: $18,000
-  - Deductible amount: $18,000 - $14,062 = $3,938
-  - Tax savings: ~$866 (22% bracket)
+    console.log('### Health Savings Account (HSA) ⭐ HIGH PRIORITY')
+    console.log()
+    console.log(`Current contribution: $${currentHSA.toLocaleString()}`)
+    console.log(`Family limit: $${hsaLimit.toLocaleString()}`)
+    console.log(`Additional available: $${hsaOpportunity.toLocaleString()}`)
+    console.log()
+    console.log(`Tax Savings: ~$${savings.toLocaleString()} (assumes 22% bracket)`)
+    console.log()
+    console.log('**How to contribute:**')
+    console.log('1. Contact your HSA provider')
+    console.log('2. Make additional contribution before April 15, 2025')
+    console.log('3. Update return using /prepare-return')
+    console.log()
+  } else {
+    console.log('### HSA ✓ MAXIMIZED')
+    console.log()
+    console.log(`Current contribution: $${currentHSA.toLocaleString()} (at limit)`)
+    console.log()
+  }
 
-**Strategy: Medical Expense Bunching**
-- Schedule elective procedures in same year
-- Prepay prescriptions and medical equipment
-- Timing can save hundreds in taxes
-
----
-
-### Charitable Contribution Optimization
-
-**Current:** $5,000 cash donations
-
-**Opportunities:**
-
-**1. Donor-Advised Fund (DAF)**
-- Contribute $10,000 to DAF in 2024 (instead of $5,000)
-- Take full $10,000 deduction in 2024
-- Distribute $5,000/year to charities over 2 years
-
-**Tax Impact:**
-- 2024 itemized: $35,000 (vs $29,200 standard = save $1,276)
-- 2025 itemized: $25,000 (vs $29,200 standard = use standard)
-- **Net savings over 2 years: ~$1,276**
-
-**2. Donate Appreciated Stock**
-- Instead of cash: donate stock worth $5,000
-- Cost basis: $2,000 (gain of $3,000)
-- **Benefits:**
-  - Deduct full $5,000 fair market value
-  - Avoid $3,000 capital gains tax (~$450 at 15%)
-  - **Total savings: $450 vs cash donation**
-
-**Recommendation:** Use appreciated stock for charitable giving
-
----
-
-### SALT Deduction Analysis
-
-**Current:** $10,000 (at cap)
-
-**Breakdown:**
-- State income tax withheld: $9,400 (from W-2s)
-- Property tax paid: $4,200
-- **Total SALT:** $13,600
-- **Deduction allowed:** $10,000 (capped)
-
-**Optimization:**
-The SALT cap ($10,000) limits your deduction. You're "wasting" $3,600 in deductions.
-
-**Strategies:**
-1. **Not applicable** - SALT cap is federal law, cannot optimize
-2. **Timing:** Some states allow pre-payment of estimated taxes, but limited benefit
-3. **Consider:** Moving to state with no income tax (long-term strategy)
-
-**Analysis:** You've already optimized SALT within current law.
-
----
-
-### Mortgage Interest Optimization
-
-**Current:** $15,000 deduction
-
-**Analysis:**
-- Your mortgage interest is fully deductible
-- Verified against Form 1098
-- No additional optimization available
-
-**Future Consideration:**
-- As you pay down mortgage, interest decreases
-- May drop below standard deduction threshold in future years
-- **Example:** If interest drops to $14,200:
-  - Itemized total: $29,200 (equal to standard)
-  - No benefit to itemizing
-  - May switch to standard deduction
-
-**Recommendation:** Monitor annually as interest decreases
-
----
-
-### Summary: Itemized Deductions
-
-**Current Approach:** ✓ Correct (itemizing saves $176)
-
-**Improvements Available:**
-- Donate appreciated stock: Save $450
-- Bunch medical expenses: Save $866 (if applicable)
-- Use Donor-Advised Fund: Save $1,276 over 2 years
-
-**Total Additional Savings Potential:** $1,326-$2,592
+  console.log('---')
+  console.log()
+}
 ```
 
-### Phase 4: Above-the-Line Deductions
+### Phase 4: Analyze Itemized Deductions
 
-```markdown
-## Above-the-Line Deduction Opportunities
+```typescript
+if (focus === 'all' || focus === 'itemized') {
+  console.log('## Itemized Deduction Analysis')
+  console.log()
 
-These deductions reduce your AGI (better than itemized deductions).
+  if (usingItemized) {
+    const marginOver Standard = itemizedTotal - standardDeduction
 
-### 1. Traditional IRA Contribution ⭐ HIGH PRIORITY
+    console.log(`Current itemized: $${itemizedTotal.toLocaleString()}`)
+    console.log(`Standard deduction: $${standardDeduction.toLocaleString()}`)
+    console.log(`Margin: $${marginOverStandard.toLocaleString()}`)
+    console.log()
 
-**Current Status:**
-- IRA contribution: $0
-- You are eligible for Traditional IRA deduction
+    if (marginOverStandard < 3000) {
+      console.log('### Bunching Strategy 💡 RECOMMENDED')
+      console.log()
+      console.log('**Your itemized deductions barely exceed the standard deduction.**')
+      console.log()
+      console.log('**Strategy:** Bunch deductions every other year:')
+      console.log('- Year 1: Bunch 2 years of deductions (itemize)')
+      console.log('- Year 2: Take standard deduction')
+      console.log()
+      console.log('**Example tactics:**')
+      console.log('- Prepay January mortgage payment in December')
+      console.log('- Double up charitable donations in one year')
+      console.log('- Schedule elective medical procedures in one year')
+      console.log('- Prepay property taxes (if allowed by state)')
+      console.log()
+      console.log('**Estimated savings: $500-$2,000 over 2 years**')
+      console.log()
+    }
 
-**Opportunity:**
-- Maximum contribution: $7,000
-- Additional if age 50+: $1,000 (total $8,000)
-- **Your age:** 39 (from DOB)
-- **Available contribution:** $7,000
+    // SALT analysis
+    if (itemized.stateAndLocalTaxes) {
+      const saltCurrent = itemized.stateAndLocalTaxes
 
-**Tax Impact:**
-- Reduces AGI: $187,500 → $180,500
-- Reduces taxable income by: $7,000
-- **Tax savings: $1,540** (22% marginal rate)
+      console.log('### State and Local Taxes (SALT)')
+      console.log()
+      console.log(`Current SALT: $${saltCurrent.toLocaleString()}`)
 
-**Additional Benefits:**
-- Tax-deferred growth until retirement
-- Potential for employer match (if eligible)
-- Reduces MAGI for other credits/deductions
+      if (saltCurrent >= 10000) {
+        console.log(`SALT cap: $10,000 (you're at the cap)`)
+        console.log()
+        console.log('**No optimization available** - federal cap limits deduction')
+      } else {
+        console.log(`SALT cap: $10,000 (you have room)`)
+      }
+      console.log()
+    }
 
-**Deadline:** April 15, 2025
+    // Charitable analysis
+    const totalCharity = (itemized.charitableCash || 0) + (itemized.charitableNonCash || 0)
 
-**How to Contribute:**
-1. Open Traditional IRA if you don't have one
-2. Contribute up to $7,000 before April 15
-3. Amend return or include when filing
-4. Report on Schedule 1, Line 20
+    if (totalCharity > 0) {
+      console.log('### Charitable Contributions')
+      console.log()
+      console.log(`Current donations: $${totalCharity.toLocaleString()}`)
+      console.log()
+      console.log('**Optimization: Donate Appreciated Stock**')
+      console.log('Instead of cash:')
+      console.log('- Donate stock that has increased in value')
+      console.log('- Deduct full market value')
+      console.log('- Avoid capital gains tax on appreciation')
+      console.log('- **Tax savings: 15-20% on the appreciation**')
+      console.log()
+      console.log('**Example:**')
+      console.log('- Stock cost: $2,000, worth: $5,000')
+      console.log('- Cash donation: $5,000 deduction')
+      console.log('- Stock donation: $5,000 deduction + avoid $450 capital gains tax')
+      console.log('- **Extra savings: $450**')
+      console.log()
+    }
 
-**Recommendation:** ⭐ **STRONGLY RECOMMENDED** - Easy $1,540 savings
+  } else {
+    console.log('**Currently using standard deduction**')
+    console.log()
+    console.log(`Standard: $${standardDeduction.toLocaleString()}`)
+    console.log(`Your itemized: $${itemizedTotal.toLocaleString()}`)
+    console.log()
+    console.log('To benefit from itemizing, you need additional:')
+    console.log(`$${(standardDeduction - itemizedTotal + 1).toLocaleString()} in deductions`)
+    console.log()
+  }
 
----
-
-### 2. Health Savings Account (HSA) ⭐ HIGH PRIORITY
-
-**Current Status:**
-- Current HSA contribution: $2,000 (from W-2 Box 12, Code W)
-- Your health plan: High-Deductible Health Plan (HDHP)
-
-**Opportunity:**
-- Maximum family contribution: $8,300
-- Current contribution: $2,000
-- **Additional available:** $6,300
-- Additional if age 55+: $1,000 (you're 39, not eligible yet)
-
-**Tax Impact:**
-- Additional deduction: $6,300
-- **Tax savings: $1,386** (22% marginal rate)
-
-**Additional Benefits:**
-- **Triple tax advantage:**
-  1. Contributions are tax-deductible
-  2. Growth is tax-free
-  3. Withdrawals for medical expenses are tax-free
-- Rolls over year-to-year (unlike FSA)
-- Can invest for long-term growth
-- Becomes retirement account at age 65
-
-**Deadline:** April 15, 2025
-
-**How to Contribute:**
-1. Verify HDHP coverage (check with insurance)
-2. Make additional $6,300 contribution to HSA
-3. Report on Schedule 1, Line 13
-
-**Recommendation:** ⭐ **STRONGLY RECOMMENDED** - Best tax deal available
-
-**Note:** HSA is better than Traditional IRA for medical expenses (triple tax-free vs deferred)
-
----
-
-### 3. Student Loan Interest Deduction ✓ ALREADY CLAIMED
-
-**Current Status:**
-- Student loan interest paid: $1,200 (Form 1098-E)
-- Deduction claimed: $1,200 ✓
-
-**Analysis:**
-- Maximum deduction: $2,500
-- You've claimed all eligible interest
-- No additional optimization available
-
-**Future Note:**
-- Deduction phases out at higher incomes
-- Phase-out range (MFJ): $165,000-$195,000 AGI
-- Your AGI: $187,500 (in phase-out range)
-- **Current deduction allowed:** $1,200 (partial phase-out)
-
----
-
-### 4. Self-Employment Tax Deduction
-
-**Current Status:** Not applicable (no self-employment income)
-
-**Opportunity:**
-If you have ANY self-employment income (freelance, side business, gig work):
-- Can deduct 50% of self-employment tax
-- Includes home office, vehicle, equipment, supplies
-- **Potential savings:** 10-30% of business income
-
-**Example:**
-- Side business income: $10,000
-- Self-employment tax: $1,530
-- Deduct 50%: $765
-- **Tax savings: $168**
-
-**Recommendation:**
-If you do any freelance/contract work, report it as business income to access deductions.
-
----
-
-### 5. Educator Expenses
-
-**Current Status:** Not applicable
-
-**Eligibility:**
-- K-12 teacher, instructor, counselor, principal, aide
-- Worked 900+ hours during school year
-
-**Opportunity:**
-- Deduct up to $300 in unreimbursed classroom expenses
-- $600 if both spouses are educators
-- **Tax savings: $66-$132**
-
-**Qualifying Expenses:**
-- Books, supplies, equipment
-- Computer equipment and software
-- COVID-19 protective items
-- Professional development courses
-
-**Recommendation:**
-If you're an educator, track all out-of-pocket classroom expenses.
-
----
-
-### Summary: Above-the-Line Deductions
-
-**Available Opportunities:**
-1. Traditional IRA ($7,000) → Save $1,540 ⭐
-2. HSA contribution ($6,300) → Save $1,386 ⭐
-3. Student loan interest → Already optimized ✓
-
-**Total Additional Savings:** $2,926
-
-**ROI on Implementation:**
-- Time to contribute: 15-30 minutes
-- Tax savings: $2,926
-- **Return on time investment: $5,852/hour**
-
-**Recommendation:** ⭐⭐⭐ **IMPLEMENT IMMEDIATELY**
+  console.log('---')
+  console.log()
+}
 ```
 
-### Phase 5: Tax Credits Analysis
+### Phase 5: Analyze Tax Credits
 
-```markdown
-## Tax Credits Optimization
+```typescript
+if (focus === 'all' || focus === 'credits') {
+  console.log('## Tax Credit Opportunities')
+  console.log()
 
-Credits are better than deductions (dollar-for-dollar tax reduction).
+  // Child tax credit
+  const dependents = stateData.taxPayer?.dependents || []
+  const qualifyingChildren = dependents.filter(dep => {
+    const age = taxYear - (dep.birthYear || taxYear)
+    return age < 17
+  })
 
-### 1. Child Tax Credit ✓ ALREADY CLAIMED
+  if (qualifyingChildren.length > 0) {
+    console.log('### Child Tax Credit ✓ AVAILABLE')
+    console.log()
+    console.log(`Qualifying children: ${qualifyingChildren.length}`)
+    console.log(`Credit: $${(qualifyingChildren.length * 2000).toLocaleString()}`)
+    console.log()
+    console.log('**Status:** Should be automatically calculated in return')
+    console.log()
+  }
 
-**Current Status:**
-- Qualifying child: Emily Doe (age 6)
-- Credit claimed: $2,000 ✓
+  // Child care credit
+  console.log('### Child and Dependent Care Credit 💡 CHECK ELIGIBILITY')
+  console.log()
 
-**Analysis:**
-- Maximum credit per child: $2,000
-- Refundable portion: Up to $1,700
-- Phase-out threshold (MFJ): $400,000
-- Your AGI: $187,500 (well below threshold)
-- **You've claimed the maximum available** ✓
+  if (qualifyingChildren.length > 0 || dependents.length > 0) {
+    console.log('**Do you pay for childcare to enable you to work?**')
+    console.log()
+    console.log('If yes:')
+    console.log('- Maximum credit: $600-$1,050 (depending on AGI)')
+    console.log('- Eligible expenses: Daycare, after-school care, summer camp')
+    console.log('- Required: Provider name and Tax ID')
+    console.log()
+    console.log('**To claim:** Update return with childcare expenses using /prepare-return')
+    console.log()
+  }
 
-**No additional optimization available.**
+  // Education credits
+  console.log('### Education Credits 💡 CHECK ELIGIBILITY')
+  console.log()
+  console.log('**Did you or your spouse attend college in 2024?**')
+  console.log()
+  console.log('**American Opportunity Credit (AOTC):**')
+  console.log('- Up to $2,500 per student')
+  console.log('- First 4 years of college only')
+  console.log('- Phase-out: $160K-$180K AGI (MFJ)')
+  console.log()
+  console.log('**Lifetime Learning Credit:**')
+  console.log('- Up to $2,000 per return')
+  console.log('- Any post-secondary education')
+  console.log('- Phase-out: $160K-$180K AGI (MFJ)')
+  console.log()
 
----
+  if (agi > 180000) {
+    console.log('⚠️  Your AGI ($' + agi.toLocaleString() + ') may be above phase-out range')
+    console.log('   Consider IRA/HSA contributions to lower AGI')
+  }
 
-### 2. Child and Dependent Care Credit 💡 POTENTIAL OPPORTUNITY
+  console.log()
 
-**Current Status:** Not claimed
+  // Energy credits
+  console.log('### Energy Efficiency Credits 💡 CHECK ELIGIBILITY')
+  console.log()
+  console.log('**Did you install energy-efficient improvements in 2024?**')
+  console.log()
+  console.log('**Eligible improvements:**')
+  console.log('- Heat pumps, insulation, windows, doors (up to $2,000 credit)')
+  console.log('- Solar panels, solar water heaters (30% of cost, no cap)')
+  console.log('- Battery storage, geothermal (30% of cost)')
+  console.log()
+  console.log('**Example savings:**')
+  console.log('- $10,000 heat pump → $2,000 credit')
+  console.log('- $25,000 solar panels → $7,500 credit')
+  console.log()
+  console.log('**To claim:** Gather receipts and manufacturer certifications')
+  console.log()
 
-**Eligibility:**
-- Paid for childcare to enable you to work
-- Child under 13 years old
-- Qualifying care provider (not spouse or dependent)
-
-**Your Situation:**
-- Qualifying child: Emily (age 6) ✓
-- Both spouses work: Yes ✓
-
-**Opportunity:**
-If you pay for childcare (daycare, after-school care, summer camp):
-
-**Credit Calculation:**
-- Maximum eligible expenses: $3,000 (one child)
-- Credit percentage: 20-35% based on AGI
-- Your AGI: $187,500 → 20% credit rate
-- **Maximum credit: $600**
-
-**Example:**
-- Daycare costs: $8,000/year
-- Eligible expenses: $3,000 (capped)
-- Credit: $3,000 × 20% = $600
-- **Tax savings: $600**
-
-**How to Claim:**
-- Form 2441 (Child and Dependent Care Expenses)
-- Provide: Childcare provider name, address, Tax ID
-- Report on Form 1040, Schedule 3
-
-**Question for You:**
-Do you pay for childcare for Emily? If yes, gather:
-- Provider name and Tax ID
-- Total amount paid in 2024
-- Dates of service
-
-**Recommendation:**
-If you pay for childcare, claim this credit (free $600).
-
----
-
-### 3. Education Credits 💡 POTENTIAL OPPORTUNITY
-
-**Current Status:** Not claimed
-
-**Two Options (cannot claim both for same student):**
-
-**Option A: American Opportunity Credit (AOTC)**
-- **Maximum credit:** $2,500 per student
-- **40% refundable** (up to $1,000)
-- **Requirements:**
-  - Student enrolled at least half-time
-  - Pursuing degree or credential
-  - First 4 years of post-secondary education
-  - No felony drug conviction
-- **Phase-out (MFJ):** $160,000-$180,000 AGI
-- **Your AGI:** $187,500 → Not eligible (above phase-out)
-
-**Option B: Lifetime Learning Credit (LLC)**
-- **Maximum credit:** $2,000 per return
-- **Not refundable**
-- **Requirements:**
-  - Any post-secondary education
-  - No enrollment requirement (even one class qualifies)
-  - No limit on years
-- **Phase-out (MFJ):** $160,000-$180,000 AGI
-- **Your AGI:** $187,500 → Not eligible (above phase-out)
-
-**Analysis:**
-Unfortunately, your AGI ($187,500) exceeds the phase-out range for both credits.
-
-**Opportunity:**
-If you contribute to Traditional IRA ($7,000):
-- Reduces AGI to $180,500 → Still above phase-out
-- **No education credit available**
-
-If you contribute to Traditional IRA + HSA ($13,300):
-- Reduces AGI to $174,200 → Within phase-out range!
-- **Partial credit available**
-
-**Calculation with IRA + HSA:**
-- AOTC phase-out: Linear from $160K-$180K
-- Your AGI: $174,200
-- Into phase-out: $14,200 / $20,000 = 71%
-- Credit reduction: 71%
-- Remaining credit: 29% of $2,500 = $725
-
-**Recommendation:**
-If you or spouse attend college:
-1. Contribute to IRA + HSA to lower AGI
-2. Claim education credit
-3. **Additional savings: $725**
-
-**Question for You:**
-Did you or your spouse attend college in 2024? If yes, did you receive Form 1098-T?
-
----
-
-### 4. Retirement Savings Contributions Credit (Saver's Credit)
-
-**Current Status:** Not eligible
-
-**Eligibility:**
-- Make retirement contributions (IRA, 401k)
-- AGI limits (MFJ): $76,500
-
-**Your AGI:** $187,500 → Not eligible (too high)
-
-**No opportunity available.**
-
----
-
-### 5. Residential Energy Credits 💡 POTENTIAL OPPORTUNITY
-
-**Two Types:**
-
-**A. Energy Efficient Home Improvement Credit**
-- Heat pumps, insulation, windows, doors
-- **Credit:** 30% of cost
-- **Maximum:** $1,200/year (windows/doors), $2,000/year (heat pump)
-- **No income limit**
-
-**B. Residential Clean Energy Credit**
-- Solar panels, solar water heaters, geothermal
-- **Credit:** 30% of cost
-- **No maximum**
-- **No income limit**
-
-**Example Savings:**
-
-**Heat Pump Installation:**
-- Cost: $10,000
-- Credit: $2,000 (30% up to $2,000 cap)
-- **Tax savings: $2,000**
-
-**Solar Panel Installation:**
-- Cost: $25,000
-- Credit: $7,500 (30% of cost)
-- **Tax savings: $7,500**
-
-**How to Claim:**
-- Form 5695 (Residential Energy Credits)
-- Keep manufacturer certifications
-- Report on Form 1040, Schedule 3
-
-**Question for You:**
-Did you install any energy-efficient improvements in 2024?
-- Heat pump, insulation, windows, doors
-- Solar panels, solar water heaters
-- Battery storage, geothermal
-
-If yes, gather:
-- Receipts and invoices
-- Manufacturer certification statements
-- Installation dates
-
-**Recommendation:**
-If you made qualifying improvements, claim the credit (30% back).
-
----
-
-### Summary: Tax Credits
-
-**Currently Claimed:**
-- Child tax credit: $2,000 ✓
-
-**Potential Opportunities:**
-1. Child care credit: $600 (if you pay for daycare)
-2. Education credit: $725 (if attending college + contribute to IRA/HSA)
-3. Energy credits: $2,000-$7,500+ (if made improvements)
-
-**Additional Savings Potential:** $600-$8,825
-
-**Next Steps:**
-Answer the questions above to unlock these credits.
+  console.log('---')
+  console.log()
+}
 ```
 
-### Phase 6: Business Deductions (if applicable)
+### Phase 6: Summary and Recommendations
 
-```markdown
-## Business Deductions (Self-Employment)
+```typescript
+console.log('## Summary & Action Plan')
+console.log()
 
-**Current Status:** No self-employment income reported
+const opportunities = []
+let totalSavings = 0
 
-**Opportunity:**
-If you have ANY business or freelance income:
-- All business expenses are deductible
-- Reduces both income tax AND self-employment tax
-- **Typical savings: 25-40% of expenses**
+// Add identified opportunities
+if (iraOpportunity > 0) {
+  const savings = iraOpportunity * 0.22
+  opportunities.push({
+    priority: 1,
+    name: 'Traditional IRA contribution',
+    amount: iraOpportunity,
+    savings: savings,
+    deadline: 'April 15, 2025'
+  })
+  totalSavings += savings
+}
 
-### Common Business Deductions
+if (hsaOpportunity > 0) {
+  const savings = hsaOpportunity * 0.22
+  opportunities.push({
+    priority: 1,
+    name: 'Additional HSA contribution',
+    amount: hsaOpportunity,
+    savings: savings,
+    deadline: 'April 15, 2025'
+  })
+  totalSavings += savings
+}
 
-**1. Home Office**
-- Simplified method: $5/sq ft (max $1,500)
-- Regular method: Actual expenses × business %
-- **Average savings: $1,200-$2,500/year**
+if (usingItemized && (itemizedTotal - standardDeduction) < 3000) {
+  opportunities.push({
+    priority: 2,
+    name: 'Bunching strategy',
+    amount: null,
+    savings: 1000, // Estimate
+    deadline: 'Year-end planning'
+  })
+}
 
-**2. Vehicle Expenses**
-- Standard mileage: 67¢/mile (2024)
-- Actual method: Gas, repairs, depreciation
-- **Average savings: $3,000-$6,000/year**
+// Display opportunities
+if (opportunities.length > 0) {
+  console.log('### Priority Actions')
+  console.log()
 
-**3. Supplies & Equipment**
-- Section 179: Immediate expensing up to $1,220,000
-- Computers, software, furniture, equipment
-- **Average savings: $500-$5,000/year**
+  opportunities.sort((a, b) => a.priority - b.priority).forEach((opp, idx) => {
+    console.log(`${idx + 1}. **${opp.name}**`)
+    if (opp.amount) {
+      console.log(`   Amount: $${opp.amount.toLocaleString()}`)
+    }
+    console.log(`   Est. savings: ~$${opp.savings.toLocaleString()}`)
+    console.log(`   Deadline: ${opp.deadline}`)
+    console.log()
+  })
 
-**4. Professional Services**
-- Legal, accounting, consulting
-- Web hosting, software subscriptions
-- **Average savings: $500-$2,000/year**
+  console.log(`**Total Estimated Savings: ~$${totalSavings.toLocaleString()}**`)
+  console.log()
+} else {
+  console.log('✓ Your return appears well-optimized!')
+  console.log('No major optimization opportunities found.')
+  console.log()
+}
 
-**5. Other Common Expenses**
-- Internet and phone (business portion)
-- Business meals (50% deductible)
-- Advertising and marketing
-- Insurance, licenses, fees
-- Professional development
+console.log('### Next Steps')
+console.log()
+console.log('1. Review opportunities above')
+console.log('2. Make contributions before April 15, 2025')
+console.log('3. Run /prepare-return to update return with contributions')
+console.log('4. Run /validate-return to verify changes')
+console.log()
 
-### Example: $20,000 Side Business
+console.log('---')
+console.log()
 
-**Income:** $20,000
-**Expenses:**
-- Home office: $1,500
-- Vehicle: $2,000
-- Supplies: $800
-- Software: $600
-- Phone/internet: $400
-- **Total: $5,300**
+console.log('## Disclaimers')
+console.log()
+console.log('- Tax savings estimates assume 22% marginal tax bracket')
+console.log('- Actual savings depend on your complete tax situation')
+console.log('- IRA contributions require earned income')
+console.log('- HSA contributions require HDHP coverage')
+console.log('- Credits require documentation and eligibility verification')
+console.log('- This is optimization guidance, not professional tax advice')
+console.log()
 
-**Tax Calculation:**
-- Net business income: $14,700
-- Self-employment tax (15.3%): $2,249
-- Deduct 50% SE tax: -$1,125
-- Income tax (22% bracket): $2,987
-- **Total tax: $4,111**
-
-**vs. Not Deducting Expenses:**
-- Income tax on $20,000: $6,475
-- **Savings from deductions: $2,364**
-
-**Recommendation:**
-If you do ANY freelance/contract work, even part-time:
-1. Report as business income (Schedule C)
-2. Deduct all legitimate expenses
-3. Consider home office if applicable
-4. Track mileage for business driving
-
----
-
-**Question for You:**
-Do you have any self-employment or side business income?
-- Freelancing, consulting, contract work
-- Gig economy (Uber, DoorDash, TaskRabbit)
-- Online business (Etsy, eBay, Amazon)
-- Rental property (Schedule E, not Schedule C)
-
-If yes, I can help optimize your business deductions.
+console.log('='.repeat(60))
+console.log('OPTIMIZATION ANALYSIS COMPLETE')
+console.log('='.repeat(60))
 ```
 
-### Phase 7: Timing Strategies
+## Example Output
 
-```markdown
-## Year-End Tax Planning Strategies
-
-### 1. Bunching Deductions ⭐ RECOMMENDED
-
-**The Problem:**
-Your itemized deductions ($30,000) barely exceed standard ($29,200).
-
-**The Solution:**
-Alternate years: itemize one year, standard the next.
-
-**Strategy:**
-- **2024 (Itemize):** Bunch 2 years of deductions into one
-  - Prepay January 2025 mortgage payment in December 2024
-  - Make 2 years of charitable donations in 2024
-  - Schedule elective medical procedures in 2024
-  - Prepay property taxes (if allowed by state)
-
-- **2025 (Standard):** Minimize deductions
-  - Skip charitable donations
-  - Defer medical procedures
-  - Take standard deduction ($29,200)
-
-**Example Calculation:**
-
-**Without Bunching (2 years):**
-- 2024: Itemize $30,000 vs standard $29,200 = save $800
-- 2025: Itemize $30,000 vs standard $29,200 = save $800
-- Total deductions over 2 years: $60,000
-- Tax savings: $1,600
-
-**With Bunching (2 years):**
-- 2024: Itemize $45,000 vs standard $29,200 = save $15,800
-- 2025: Standard $29,200 vs itemize $15,000 = use standard
-- Total deductions over 2 years: $74,200
-- Tax savings: $3,124
-
-**Additional savings: $1,524 over 2 years**
-
-**How to Implement:**
-1. Prepay January 2025 mortgage in December 2024 (+$1,250)
-2. Double up charitable donations in 2024 (+$5,000)
-3. Bunch medical procedures in 2024 (+$6,000)
-4. Prepay property taxes if allowed (+$2,100)
-5. **2024 itemized total:** ~$45,000
-
-**Tax savings in 2024: $3,476**
-**Take standard in 2025: $0 out-of-pocket**
-
-**Recommendation:** ⭐ Implement bunching for 2024/2025
-
----
-
-### 2. Donor-Advised Fund (DAF)
-
-**Strategy:**
-- Contribute large amount to DAF in one year
-- Take full tax deduction immediately
-- Distribute to charities over multiple years
-
-**Example:**
-- 2024: Contribute $15,000 to DAF
-  - Deduction: $15,000
-  - Tax savings: $3,300 (22% bracket)
-
-- 2025-2027: Distribute $5,000/year from DAF to charities
-  - No additional tax benefit (already deducted)
-  - Invest funds tax-free while waiting
-
-**Benefits:**
-- Immediate tax deduction
-- Tax-free growth while in DAF
-- Flexibility in timing charitable giving
-- Can donate appreciated stock to DAF (avoid capital gains)
-
-**Recommendation:**
-If you're charitably inclined, DAF is superior to direct donations.
-
----
-
-### 3. Tax-Loss Harvesting
-
-**Current Status:**
-Your capital gains: $10,000
-- Short-term: $3,000 (taxed as ordinary income = 22%)
-- Long-term: $7,000 (taxed at 15%)
-
-**Strategy:**
-Sell investments at a loss to offset gains.
-
-**Example:**
-- If you have stock with $5,000 unrealized loss
-- Sell before year-end
-- Offsets $5,000 of capital gains
-- **Tax savings: $750-$1,100**
-
-**Rules:**
-- Losses offset gains dollar-for-dollar
-- Excess losses offset ordinary income (up to $3,000)
-- Remaining losses carry forward indefinitely
-- Watch for wash-sale rule (30-day repurchase restriction)
-
-**Recommendation:**
-Review your portfolio for unrealized losses before year-end.
-
----
-
-### 4. Roth Conversion
-
-**Not applicable for your current year return, but future planning:**
-
-**Strategy:**
-Convert Traditional IRA to Roth IRA in low-income years.
-
-**Benefits:**
-- Pay tax now at current rate
-- Future growth is tax-free
-- No RMDs (Required Minimum Distributions) at age 73
-- Tax-free withdrawals in retirement
-
-**When to Consider:**
-- Income lower than normal (job loss, sabbatical)
-- Early in career (low tax bracket)
-- Expecting higher future tax rates
-
-**Your Situation:**
-- Marginal rate: 22%
-- This is moderate - could be good time for partial conversion
-- Especially if you expect to be in 24%+ bracket later
-
-**Recommendation:**
-Consider in year with lower income (not necessarily 2024).
-
----
-
-### Summary: Timing Strategies
-
-**Immediate (Before Filing 2024):**
-- Contribute to IRA by April 15 → Save $1,540
-- Contribute to HSA by April 15 → Save $1,386
-
-**Year-End 2025 (Future Planning):**
-- Bunch deductions in 2025 → Save $1,524 (2025/2026)
-- Tax-loss harvest → Save $750-$1,100
-- Set up Donor-Advised Fund → Maximize charitable deduction
-
-**Long-Term:**
-- Consider Roth conversion in lower-income year
-- Plan bunching strategy for 2026/2027
-- Max out retirement contributions annually
 ```
+===========================================================
+TAX OPTIMIZATION ANALYSIS
+============================================================
 
-### Phase 8: Final Recommendations Summary
+## Current Tax Position
 
-```markdown
-## 🎯 Optimization Summary & Action Plan
+Filing Status: Married Filing Jointly
+Total Income: $187,500
+Above-the-Line Deductions: $1,200
+Adjusted Gross Income (AGI): $186,300
 
-### Immediate Actions (Before Filing 2024)
+Standard Deduction: $29,200
+Itemized Deductions: $30,000
+Using: Itemized ✓
 
-**Priority 1: Retirement Contributions** ⭐⭐⭐
-- [ ] Contribute $7,000 to Traditional IRA
-  - Tax savings: $1,540
-  - Deadline: April 15, 2025
-  - Opens: Fidelity, Vanguard, Schwab accounts (15 min setup)
+## Retirement Contribution Opportunities
 
-- [ ] Contribute $6,300 additional to HSA
-  - Tax savings: $1,386
-  - Deadline: April 15, 2025
-  - Contact: Your health insurance HSA provider
+### Traditional IRA ⭐ HIGH PRIORITY
 
-**Total immediate savings: $2,926**
-**Time required: 1-2 hours**
-**ROI: $1,463/hour**
+Current contribution: $0
+2024 limit: $7,000
+Additional available: $7,000
 
----
+Tax Savings: ~$1,540 (assumes 22% bracket)
 
-**Priority 2: Verify Credits** ⭐⭐
-- [ ] Child care credit: Do you pay for daycare?
-  - Potential savings: $600
-  - Action: Gather provider name and Tax ID
+**How to contribute:**
+1. Open Traditional IRA if needed (Vanguard, Fidelity, Schwab)
+2. Contribute before April 15, 2025
+3. Update return using /prepare-return
 
-- [ ] Education credit: Did you/spouse attend college?
-  - Potential savings: $725
-  - Action: Provide Form 1098-T
+### Health Savings Account (HSA) ⭐ HIGH PRIORITY
 
-- [ ] Energy credits: Install any energy improvements?
-  - Potential savings: $2,000-$7,500
-  - Action: Gather receipts and certifications
+Current contribution: $2,000
+Family limit: $8,300
+Additional available: $6,300
 
-**Potential additional savings: $600-$8,825**
+Tax Savings: ~$1,386 (assumes 22% bracket)
 
----
-
-**Priority 3: Charitable Optimization** ⭐
-- [ ] Donate appreciated stock instead of cash
-  - Current: $5,000 cash donation
-  - Switch to: Donate stock with $2,000 cost basis
-  - Tax savings: $450 (avoid capital gains)
-  - Action: Transfer stock to charity directly
+**How to contribute:**
+1. Contact your HSA provider
+2. Make additional contribution before April 15, 2025
+3. Update return using /prepare-return
 
 ---
 
-### Year-End 2025 Planning
+## Summary & Action Plan
 
-**Bunching Strategy:**
-- [ ] Prepay January 2026 mortgage in December 2025
-- [ ] Double charitable donations in 2025
-- [ ] Schedule medical procedures in 2025
-- [ ] Prepay 2026 property taxes (if allowed)
+### Priority Actions
 
-**Result:**
-- 2025: Itemize ~$45,000
-- 2026: Take standard ~$30,000
-- **Savings: $1,524 over 2 years**
+1. **Traditional IRA contribution**
+   Amount: $7,000
+   Est. savings: ~$1,540
+   Deadline: April 15, 2025
 
----
+2. **Additional HSA contribution**
+   Amount: $6,300
+   Est. savings: ~$1,386
+   Deadline: April 15, 2025
 
-### Total Potential Savings
+**Total Estimated Savings: ~$2,926**
 
-**Immediate (2024 Return):**
-- IRA contribution: $1,540
-- HSA contribution: $1,386
-- Child care credit: $600 (if applicable)
-- Energy credits: $2,000-$7,500 (if applicable)
-- Stock donation: $450 (vs cash)
-- **Total: $3,976 to $11,876**
+### Next Steps
 
-**Future (2025-2026):**
-- Bunching strategy: $1,524
-- **Grand Total: $5,500 to $13,400**
+1. Review opportunities above
+2. Make contributions before April 15, 2025
+3. Run /prepare-return to update return with contributions
+4. Run /validate-return to verify changes
 
----
-
-### How to Implement
-
-**Step 1: Make Contributions (This Week)**
-1. Open Traditional IRA if needed (online, 15 min)
-2. Transfer $7,000 to IRA
-3. Contribute $6,300 to HSA (call provider)
-4. **Time: 1-2 hours**
-5. **Savings: $2,926**
-
-**Step 2: Answer Credit Questions (Now)**
-1. Do you pay for childcare? → Form 2441
-2. Did you attend college? → Form 8995
-3. Energy improvements? → Form 5695
-4. **Time: 5-10 minutes**
-5. **Savings: $600-$8,825**
-
-**Step 3: Charitable Strategy (Next Donation)**
-1. Identify appreciated stock (cost < current value)
-2. Transfer directly to charity
-3. Get written acknowledgment
-4. **Time: 30 minutes**
-5. **Savings: $450**
-
-**Step 4: Update Return**
-1. Run `/prepare-return 2024` again
-2. Include new contributions and credits
-3. Review updated tax calculation
-4. **New refund:** $4,876 (vs $1,924 = $2,952 improvement)
-
-**Step 5: Plan Ahead (December 2025)**
-1. Review bunching strategy
-2. Schedule medical procedures
-3. Make charitable contributions
-4. Prepay eligible expenses
-5. **Savings: $1,524 in 2025-2026**
-
----
-
-## Questions to Answer
-
-To unlock all available savings, please answer:
-
-1. **Childcare:** Do you pay for daycare/after-school care for Emily?
-   - If yes, provide: Provider name, Tax ID, amount paid
-
-2. **Education:** Did you or your spouse attend college in 2024?
-   - If yes, provide: Form 1098-T
-
-3. **Energy:** Did you install energy-efficient improvements?
-   - If yes, provide: Receipts, manufacturer certifications
-
-4. **Self-Employment:** Do you have any side income?
-   - If yes, I can analyze business deduction opportunities
-
-5. **Stock Donations:** Do you have appreciated stock to donate?
-   - If yes, I can guide you through the transfer process
-
----
-
-## Confidence & Disclaimers
-
-**Analysis Confidence:** HIGH (98%)
-
-**Based on:**
-- Complete review of your 2024 return
-- Current IRS rules and regulations
-- Standard deduction optimization strategies
-- Historical savings data
-
-**Disclaimers:**
-- IRA contribution requires earned income (you qualify ✓)
-- HSA contribution requires HDHP coverage (verify with insurer)
-- Credits require documentation (gather before claiming)
-- State rules may differ (review state-specific opportunities)
-- This is tax planning guidance, not legal advice
-
-**Professional Review:**
-Consider professional review if:
-- Self-employment income > $50,000
-- Rental property income
-- Complex investment transactions
-- Foreign income or assets
-- Estate planning concerns
-
-**For your standard W-2 return:** Professional review not required.
-
----
-
-## Next Steps
-
-**Option 1: Implement All Optimizations**
-Run `/prepare-return 2024` to update return with IRA and HSA contributions.
-
-**Option 2: Ask Questions**
-I'm here to help. Ask about any optimization you'd like to explore.
-
-**Option 3: File Current Return**
-Your current return is accurate. You can file as-is and implement optimizations later.
-
----
-
-**Optimization Analysis Complete** ✓
-
-**Time spent:** 3 minutes
-**Opportunities found:** 8
-**Total savings potential:** $5,500-$13,400
-**Recommended priority:** IRA + HSA ($2,926 immediate savings)
-
-**Your move:** What would you like to do next?
+============================================================
+OPTIMIZATION ANALYSIS COMPLETE
+============================================================
 ```
 
 ## Error Handling
 
 **No Return Found:**
-```markdown
-❌ No tax return found for 2024.
+```
+❌ No tax return found for year 2024
 
-Run `/prepare-return 2024` first to create a return.
+Run /prepare-return first to create a return to optimize
 ```
 
-**Incomplete Data:**
-```markdown
-⚠️  Limited optimization possible - return is incomplete.
+**Export Failed:**
+```
+❌ Error exporting return: [error message]
 
-**Available analysis:**
-- General strategies
-- Contribution limits
+This may occur if:
+- Return data is corrupted
+- Year is invalid
+- MCP server is not available
 
-**For personalized recommendations:**
-Run `/prepare-return 2024` to complete your return first.
+Solution: Try /prepare-return to rebuild return data
 ```
 
-## Integration Points
+## Focus Areas
 
-Coordinates with:
-- **deduction-optimizer** skill (performs analysis)
-- **irs-rule-lookup** skill (verifies eligibility)
-- **tax-liability-calculator** skill (calculates savings)
-- **question-asker** agent (gathers missing info)
+Use `--focus` to analyze specific categories:
 
-## Output
+**Retirement:**
+```bash
+/optimize-deductions --focus=retirement
+```
+Shows only IRA and HSA opportunities
 
-- Detailed optimization report (markdown)
-- Prioritized action list
-- Specific dollar savings for each opportunity
-- Implementation instructions
-- Questions to unlock additional savings
-- Future planning strategies
+**Itemized:**
+```bash
+/optimize-deductions --focus=itemized
+```
+Shows only itemized deduction analysis
+
+**Credits:**
+```bash
+/optimize-deductions --focus=credits
+```
+Shows only tax credit opportunities
+
+**All (default):**
+```bash
+/optimize-deductions
+```
+Comprehensive analysis of all categories
 
 ## Best Practices
 
-1. **Run before filing** - Find every legitimate deduction
-2. **Implement high-priority items** - IRA/HSA contributions are easy wins
-3. **Answer all questions** - Unlock credit opportunities
-4. **Plan ahead** - Use timing strategies for next year
-5. **Keep documentation** - Required for all claimed deductions
+1. **Run before filing** - Find opportunities before submission deadline
+2. **Implement high-priority items first** - IRA/HSA have largest impact
+3. **Verify eligibility** - Not all opportunities apply to everyone
+4. **Keep documentation** - Required for all claimed deductions/credits
+5. **Consult professional for complex situations** - Self-employment, investments, etc.
+
+## Limitations
+
+This optimization analysis:
+- ✅ **Can** identify common missed opportunities
+- ✅ **Can** calculate estimated tax savings
+- ✅ **Can** provide implementation guidance
+- ❌ **Cannot** guarantee all recommendations apply to your situation
+- ❌ **Cannot** account for all edge cases and special situations
+- ❌ **Cannot** replace professional tax advice for complex returns
+
+**Estimates are based on standard assumptions** (22% bracket, full eligibility, etc.)
+**Always verify eligibility and actual savings before implementing**
 
 ## Example Usage
 
@@ -1098,20 +669,25 @@ Coordinates with:
 # Optimize specific year
 /optimize-deductions 2023
 
-# Focus on specific area
-/optimize-deductions --focus=retirement
-/optimize-deductions --focus=itemized
-/optimize-deductions --focus=business
+# Focus on retirement
+/optimize-deductions 2024 retirement
+
+# Focus on credits
+/optimize-deductions 2024 credits
 ```
 
-## Performance
+## After Optimization
 
-- **Analysis time:** 2-3 minutes
-- **Opportunities found:** Typically 3-8
-- **Average savings:** $2,000-$5,000
-- **High earners:** $5,000-$15,000
-- **Business owners:** $10,000-$50,000+
+Once you've identified opportunities:
+1. **Make contributions/changes** - IRA, HSA, etc.
+2. **Update return** - Run `/prepare-return` with new data
+3. **Validate** - Run `/validate-return` to verify
+4. **File** - Generate PDFs and submit
 
 ---
 
-**Recommendation:** Run this optimization on every return. The time invested (2-3 min) typically returns hundreds to thousands in tax savings.
+**Important:** This analysis uses `ustaxes_export_state` to get your return data and provides optimization recommendations based on standard tax strategies. It does NOT use a separate deduction-optimizer MCP server. Recommendations are analytical guidance, not guaranteed savings.
+
+---
+
+*This command uses the real UsTaxes MCP Server's `ustaxes_export_state` tool to analyze return data. Optimization recommendations are provided by Claude based on standard tax planning strategies.*

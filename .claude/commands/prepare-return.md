@@ -1,695 +1,681 @@
 ---
 name: prepare-return
-description: "Complete tax return preparation workflow: extract documents, ask questions, fill forms, audit, generate PDF"
+description: "Complete tax return using MCP server: gather info, populate return, generate PDF"
 args:
   - name: year
     description: "Tax year to prepare (default: 2024)"
     required: false
 ---
 
-# Prepare Tax Return
+# Prepare Tax Return (MCP-Powered)
 
-Complete autonomous tax return preparation workflow.
+Complete autonomous tax return preparation using the UsTaxes MCP server.
 
 ## Overview
 
-This command orchestrates the full tax return completion process:
-1. Initialize session and Redux state
-2. Collect and extract source documents
-3. Identify data gaps
-4. Ask intelligent questions to fill gaps
-5. Populate forms via Redux actions
-6. Audit completed return
-7. Optimize for deductions and credits
-8. Generate final PDF
+This command uses the **ustaxes-server MCP** to programmatically complete a tax return through intelligent questioning and form population.
 
-## Workflow Phases
+**What it does:**
+1. Gathers personal information through questions
+2. Collects income and deduction data
+3. Populates return using MCP tools
+4. Validates completeness
+5. Generates PDF
 
-### Phase 1: Initialization
+**What it doesn't do:**
+- OCR/document scanning (manual data entry only)
+- Provide tax advice
+- Guarantee audit protection
 
-**Step 1: Verify Tax Year**
+## Workflow
+
+### Phase 1: Setup
+
 ```typescript
 const taxYear = args.year ?? 2024
-console.log(`Preparing ${taxYear} tax return`)
 
-// Verify year is supported (2019-2024)
-if (taxYear < 2019 || taxYear > 2024) {
-  throw new Error(`Tax year ${taxYear} not supported. Supported: 2019-2024`)
-}
+// Verify MCP server is available
+// Tools should include: ustaxes_set_filing_status, ustaxes_add_w2, etc.
 ```
 
-**Step 2: Initialize Redux State**
-```typescript
-// Load persisted state or create new
-const state = store.getState()
-const yearState = state[`Y${taxYear}`]
-
-if (!yearState) {
-  console.log('Creating new tax return')
-} else {
-  console.log('Resuming existing tax return')
-  console.log(`Last modified: ${yearState.lastModified}`)
-}
-```
-
-**Step 3: Create Session Directory**
-```bash
-# Create session directory for this return
-SESSION_DIR="/tmp/tax-return-${taxYear}-$(date +%s)"
-mkdir -p "$SESSION_DIR"/{documents,extracts,audit,output}
-
-echo "Session directory: $SESSION_DIR"
-```
-
-### Phase 2: Document Collection
-
-**Step 1: Prompt for Documents**
+**Ask user:**
 ```markdown
-## Document Collection
+I'll help you prepare your ${taxYear} tax return using step-by-step questions.
 
-To complete your ${taxYear} tax return, I need copies of your tax documents.
+This will take approximately 15-30 minutes depending on complexity.
 
-**Required Documents:**
-- [ ] All W-2 forms (from employers)
-- [ ] Form 1099-INT (interest income from banks)
-- [ ] Form 1099-DIV (dividend income from investments)
-- [ ] Form 1099-B (broker transactions/stock sales)
-- [ ] Form 1099-MISC / 1099-NEC (self-employment income)
-- [ ] Form 1098 (mortgage interest)
-- [ ] Form 1098-E (student loan interest)
-- [ ] Form 1098-T (education expenses)
+**What I'll need from you:**
+- Personal information (name, SSN, address)
+- Filing status and dependent information
+- Income information (W-2s, 1099s, etc.)
+- Deduction information (mortgage, student loans, etc.)
+- Payment information (withholding, estimated payments)
 
-**Optional Documents (if applicable):**
-- [ ] Receipts for charitable donations
-- [ ] Medical expense receipts
-- [ ] Property tax statements
-- [ ] Business expense receipts
-- [ ] Rental property records
-- [ ] Childcare provider information
-- [ ] Prior year tax return (for carryovers)
-
-**How to provide documents:**
-1. Upload scanned documents or photos
-2. Or provide file paths to existing documents
-3. Or manually enter information (I'll ask questions)
-
-Please provide documents in any order. I'll process them as you upload.
+**Ready to begin?** (yes/no)
 ```
 
-**Step 2: Process Each Document**
-```bash
-# For each document provided
-for doc in $DOCUMENTS; do
-  echo "Processing: $(basename $doc)"
+### Phase 2: Personal Information
 
-  # Invoke tax-document-analyzer skill
-  # This happens automatically when documents are provided
-  # Skill extracts data and saves to $SESSION_DIR/extracts/
-
-  # Example output:
-  # {
-  #   "documentType": "W2",
-  #   "extractedData": {...},
-  #   "confidence": 0.95,
-  #   "ambiguities": [],
-  #   "validationErrors": []
-  # }
-done
-```
-
-**Step 3: Summarize Collected Data**
+**Filing Status:**
 ```markdown
-## Documents Processed
+## Filing Status
 
-**Income Sources:**
-✓ W-2 from Tech Company Inc: $120,000
-✓ W-2 from School District: $55,000
-✓ 1099-INT from First National Bank: $450
-✓ 1099-DIV from Vanguard: $3,250
+What is your filing status for ${taxYear}?
 
-**Deductions:**
-✓ 1098-E Student Loan Interest: $1,200
-✓ 1098 Mortgage Interest: $15,000
+1. **Single** - Unmarried, legally separated, or divorced
+2. **Married Filing Jointly** - Married and filing together (usually saves money)
+3. **Married Filing Separately** - Married but filing separate returns
+4. **Head of Household** - Unmarried and paid >50% household costs for qualifying person
+5. **Qualifying Surviving Spouse** - Spouse died in previous 2 years, have dependent child
 
-**Total Income:** $178,700
-**Data Quality:** 95% confidence
-
-Proceeding to next phase...
+Choose 1-5:
 ```
 
-### Phase 3: Data Gap Analysis
-
-**Step 1: Check Required Fields**
+**Collect response and set via MCP:**
 ```typescript
-// Check for required personal information
-const gaps = {
-  personal: [],
-  income: [],
-  deductions: [],
-  credits: [],
-  other: []
+const filingStatusMap = {
+  '1': 'S',
+  '2': 'MFJ',
+  '3': 'MFS',
+  '4': 'HOH',
+  '5': 'W'
 }
 
-// Personal info
-if (!state.taxPayer.primaryPerson.firstName) gaps.personal.push('Primary taxpayer name')
-if (!state.taxPayer.primaryPerson.ssid) gaps.personal.push('Primary taxpayer SSN')
-if (!state.taxPayer.primaryPerson.dateOfBirth) gaps.personal.push('Primary taxpayer DOB')
-if (!state.taxPayer.filingStatus) gaps.personal.push('Filing status')
+await mcp.ustaxes_set_filing_status({
+  year: taxYear,
+  status: filingStatusMap[response]
+})
+```
 
-// Spouse (if MFJ)
-if (state.taxPayer.filingStatus === 'MFJ') {
-  if (!state.taxPayer.spouse) gaps.personal.push('Spouse information')
-}
+**Primary Taxpayer:**
+```markdown
+## Your Information
 
-// Dependents
-if (state.taxPayer.dependents.length > 0) {
-  state.taxPayer.dependents.forEach((dep, i) => {
-    if (!dep.ssid) gaps.personal.push(`Dependent ${i+1} SSN`)
-    if (!dep.dateOfBirth) gaps.personal.push(`Dependent ${i+1} DOB`)
+**Legal First Name:** ___________
+**Middle Initial (optional):** ___
+**Last Name:** ___________
+**Social Security Number:** ___-__-____
+**Date of Birth:** MM/DD/YYYY
+
+**Mailing Address:**
+Street Address: ___________
+Apartment/Unit (optional): ___
+City: ___________
+State: ___
+ZIP Code: _____
+
+**Occupation:** ___________
+```
+
+**Collect and add via MCP:**
+```typescript
+await mcp.ustaxes_add_primary_person({
+  year: taxYear,
+  person: {
+    firstName: responses.firstName,
+    lastName: responses.lastName,
+    ssid: responses.ssn,
+    role: 'PRIMARY',
+    address: {
+      address: responses.street,
+      city: responses.city,
+      state: responses.state,
+      zip: responses.zip
+    }
+  }
+})
+```
+
+**Spouse (if MFJ/MFS):**
+```markdown
+## Spouse Information
+
+**First Name:** ___________
+**Last Name:** ___________
+**SSN:** ___-__-____
+**Occupation:** ___________
+```
+
+```typescript
+if (filingStatus === 'MFJ' || filingStatus === 'MFS') {
+  await mcp.ustaxes_add_spouse({
+    year: taxYear,
+    spouse: {
+      firstName: responses.spouseFirst,
+      lastName: responses.spouseLast,
+      ssid: responses.spouseSSN,
+      role: 'SPOUSE'
+    }
   })
 }
-
-// W-2s
-if (state.w2s.length === 0) {
-  gaps.income.push('At least one W-2 required')
-}
-
-// Other income sources
-// Check for common income types not yet reported
 ```
 
-**Step 2: Prioritize Gaps**
-```typescript
-// Priority order:
-// 1. Blocking - prevents form generation
-// 2. High-value - significant tax impact
-// 3. Optimization - potential savings
-// 4. Completeness - nice to have
-
-const prioritizedGaps = {
-  blocking: gaps.personal.concat(gaps.income.filter(g => g.includes('required'))),
-  highValue: gaps.deductions.filter(g => estimatedValue(g) > 1000),
-  optimization: gaps.credits,
-  completeness: [...remaining gaps]
-}
-```
-
-### Phase 4: Intelligent Questioning
-
-**Invoke question-asker agent:**
+**Dependents:**
 ```markdown
-I have your basic income information. Now I need some additional details:
+## Dependents
 
-## Personal Information
+Do you have any dependents (children or qualifying relatives)? (yes/no)
 
-**1. Filing Status:** (Choose one)
-a) Single
-b) Married Filing Jointly
-c) Married Filing Separately
-d) Head of Household
-e) Qualifying Widow(er)
+If yes, for each dependent:
 
-*Current selection based on documents: Married Filing Jointly*
-*Is this correct?* Yes / No
+**Dependent 1:**
+- First Name: ___________
+- Last Name: ___________
+- SSN: ___-__-____
+- Relationship: (son/daughter/parent/grandchild/other)
+- Date of Birth: MM/DD/YYYY
+- Lived with you all year? (yes/no)
 
-**2. Do you have any dependents?** Yes / No
+Add another dependent? (yes/no)
+```
 
-If Yes:
-- Number of children under 17: ___
-- Number of other dependents: ___
+```typescript
+for (const dep of dependents) {
+  await mcp.ustaxes_add_dependent({
+    year: taxYear,
+    dependent: {
+      firstName: dep.firstName,
+      lastName: dep.lastName,
+      ssid: dep.ssn,
+      role: 'DEPENDENT',
+      birthYear: new Date(dep.dob).getFullYear(),
+      relationship: dep.relationship.toUpperCase()
+    }
+  })
+}
+```
 
-**3. Can anyone claim you as a dependent?** Yes / No
+### Phase 3: Income
 
-## Income Verification
+**W-2 Wage Income:**
+```markdown
+## W-2 Wage Income
 
-I found W-2 income totaling $175,000 from 2 employers.
+How many W-2 forms did you receive in ${taxYear}? ___
 
-**Did you have any OTHER income in 2024?**
-- [ ] Self-employment income
+For each W-2, I'll need the following information from the form:
+
+**W-2 #1:**
+
+**Employer Information:**
+- Employer Name (Box c): ___________
+- Employer ID Number/EIN (Box b): __-_______
+
+**Income (from boxes):**
+- Box 1 - Wages, tips, other compensation: $_________
+- Box 2 - Federal income tax withheld: $_________
+- Box 3 - Social security wages: $_________
+- Box 4 - Social security tax withheld: $_________
+- Box 5 - Medicare wages: $_________
+- Box 6 - Medicare tax withheld: $_________
+
+**State Information (if applicable):**
+- Box 15 - State: ___
+- Box 16 - State wages: $_________
+- Box 17 - State income tax withheld: $_________
+
+**Who earned this?** (you/spouse)
+**Occupation:** ___________
+
+Add another W-2? (yes/no)
+```
+
+```typescript
+for (const w2 of w2Forms) {
+  await mcp.ustaxes_add_w2({
+    year: taxYear,
+    w2: {
+      occupation: w2.occupation,
+      income: w2.box1,
+      medicareIncome: w2.box5,
+      fedWithholding: w2.box2,
+      ssWages: w2.box3,
+      ssWithholding: w2.box4,
+      medicareWithholding: w2.box6,
+      ein: w2.ein,
+      employerName: w2.employer,
+      personRole: w2.earner, // 'PRIMARY' or 'SPOUSE'
+      state: w2.state || undefined,
+      stateWages: w2.stateWages || undefined,
+      stateWithholding: w2.stateWithholding || undefined
+    }
+  })
+}
+```
+
+**Other Income:**
+```markdown
+## Other Income
+
+Did you have any of the following income in ${taxYear}?
+
+- [ ] Interest income (1099-INT from banks, savings accounts)
+- [ ] Dividend income (1099-DIV from investments)
+- [ ] Self-employment income (1099-NEC, 1099-MISC)
+- [ ] Capital gains (1099-B from stock sales)
 - [ ] Rental property income
 - [ ] Unemployment compensation
-- [ ] Social Security benefits
-- [ ] Retirement distributions (401k, IRA, pension)
-- [ ] Alimony received
-- [ ] Other income
-- [✓] None of the above
-
-## Deductions
-
-Your standard deduction is $29,200 (Married Filing Jointly).
-
-I found:
-- Mortgage interest: $15,000
-- Student loan interest: $1,200
-
-To determine if itemizing saves money, I need to know:
-
-**1. State and Local Taxes Paid**
-- State income tax withheld: $_____ (from W-2 Box 17)
-- Property tax paid: $_____
-- *Max deduction: $10,000 total*
-
-**2. Charitable Contributions**
-Total cash donations in 2024: $_____
-Total non-cash donations: $_____
-
-**3. Medical Expenses**
-Total out-of-pocket medical expenses: $_____
-*Only deductible if over $13,402 (7.5% of income)*
-
----
-
-I'll use your answers to complete your return...
+- [ ] None of the above
 ```
 
-**Step 5: Collect Responses**
-```typescript
-// question-asker agent collects and validates responses
-// Returns structured data ready for Redux dispatch
-const responses = {
-  filingStatus: 'MFJ',
-  dependents: [
-    { firstName: 'Emily', lastName: 'Doe', ssid: '111-22-3333', dateOfBirth: new Date('2018-09-10') }
-  ],
-  itemizedDeductions: {
-    stateAndLocalTaxes: 10000,
-    charitableDonations: 5000,
-    medicalExpenses: 8000  // Below threshold
-  },
-  otherIncome: []
-}
+**If 1099-INT:**
+```markdown
+**1099-INT Interest Income:**
+
+For each 1099-INT form:
+- Payer Name: ___________
+- Payer Tax ID: __-_______
+- Box 1 - Interest income: $_________
+- Box 3 - Tax-exempt interest (optional): $_________
+
+Add another 1099-INT? (yes/no)
 ```
 
-### Phase 5: Form Population
-
-**Invoke form-filler agent:**
 ```typescript
-import { FormFillerAgent } from '.claude/agents/form-filler'
-
-// Agent validates and dispatches all Redux actions
-const result = await FormFillerAgent.populate({
-  taxYear,
-  extractedDocuments: documents,
-  userResponses: responses
+await mcp.ustaxes_add_1099({
+  year: taxYear,
+  form1099: {
+    form: '1099-INT',
+    payer: responses.payer,
+    payerTin: responses.payerTin,
+    personRole: 'PRIMARY',
+    income: responses.box1,
+    interest: responses.box1
+  }
 })
+```
 
-// Example actions dispatched:
-// - saveFilingStatusInfo(FilingStatus.MFJ)
-// - savePrimaryPersonInfo(primaryPerson)
-// - addSpouse(spouse)
-// - addDependent(dependent)
-// - addW2(w2Data) x2
-// - add1099(f1099Int)
-// - add1099(f1099Div)
-// - add1098e(studentLoan)
-// - setItemizedDeductions(deductions)
+**If 1099-DIV:**
+```markdown
+**1099-DIV Dividend Income:**
 
-if (result.success) {
-  console.log(`✓ Forms populated: ${result.formsCount} forms`)
-  console.log(`✓ Redux actions dispatched: ${result.actionsCount}`)
-} else {
-  console.error(`✗ Form population failed: ${result.errors}`)
-  // Handle errors
+- Payer Name: ___________
+- Payer Tax ID: __-_______
+- Box 1a - Total ordinary dividends: $_________
+- Box 1b - Qualified dividends: $_________
+```
+
+```typescript
+await mcp.ustaxes_add_1099({
+  year: taxYear,
+  form1099: {
+    form: '1099-DIV',
+    payer: responses.payer,
+    payerTin: responses.payerTin,
+    personRole: 'PRIMARY',
+    income: responses.box1a,
+    dividends: responses.box1a,
+    qualifiedDividends: responses.box1b
+  }
+})
+```
+
+**If rental property:**
+```markdown
+**Rental Property:**
+
+**Property Address:**
+- Street: ___________
+- City: ___________
+- State: ___
+- ZIP: _____
+
+**Rental Activity:**
+- Days rented: ___
+- Days used personally: ___
+- Total rent received: $_________
+
+**Expenses:**
+- Mortgage interest: $_________
+- Property taxes: $_________
+- Insurance: $_________
+- Repairs & maintenance: $_________
+- Utilities (if paid by you): $_________
+- Management fees: $_________
+```
+
+```typescript
+await mcp.ustaxes_add_property({
+  year: taxYear,
+  property: {
+    address: {
+      address: responses.street,
+      city: responses.city,
+      state: responses.state,
+      zip: responses.zip
+    },
+    rentalDays: responses.rentalDays,
+    personalUseDays: responses.personalDays,
+    rentReceived: responses.rent,
+    expenses: {
+      mortgageInterest: responses.mortgageInt,
+      taxes: responses.propTax,
+      insurance: responses.insurance,
+      repairs: responses.repairs,
+      utilities: responses.utilities,
+      managementFees: responses.mgmtFees
+    }
+  }
+})
+```
+
+### Phase 4: Deductions & Adjustments
+
+**Student Loan Interest:**
+```markdown
+## Student Loan Interest
+
+Did you pay student loan interest in ${taxYear}? (yes/no)
+
+If yes:
+- Lender Name: ___________
+- Box 1 - Student loan interest paid: $_________
+
+(Form 1098-E)
+```
+
+```typescript
+if (hasStudentLoanInt) {
+  await mcp.ustaxes_add_student_loan({
+    year: taxYear,
+    f1098e: {
+      lender: responses.lender,
+      interest: responses.interest
+    }
+  })
 }
 ```
 
-### Phase 6: Optimization
-
-**Invoke deduction-optimizer skill:**
+**HSA Contributions:**
 ```markdown
-## Optimization Analysis
+## Health Savings Account (HSA)
 
-### Itemized vs Standard Deduction
-- **Standard Deduction:** $29,200
-- **Itemized Deductions:**
-  - Mortgage Interest: $15,000
-  - SALT (capped): $10,000
-  - Charitable: $5,000
-  - Medical (below threshold): $0
-  - **Total Itemized:** $30,000
+Did you contribute to an HSA in ${taxYear}? (yes/no)
 
-**✓ Recommendation:** Itemize (saves $800 in taxable income = ~$176 tax savings)
-
-### Missed Opportunities
-
-**1. IRA Contribution**
-- Current contribution: $0
-- Maximum allowed: $7,000 (or $8,000 if age 50+)
-- **Deadline:** April 15, 2025 (you still have time!)
-- **Estimated tax savings:** ~$1,540 (22% bracket)
-
-**2. HSA Contribution**
-Based on your W-2, you have a high-deductible health plan.
-- Current HSA contribution: $2,000
-- Maximum: $8,300 (family coverage)
-- **Additional contribution available:** $6,300
-- **Tax savings:** ~$1,386
-
-**Total potential additional savings: $2,926**
-
-Would you like to include these optimizations in your return?
+If yes:
+- Total contributions: $_________
+- Employer contributions (from W-2 Box 12, code W): $_________
+- Who's account? (yours/spouse's)
 ```
 
-### Phase 7: Audit and Validation
-
-**Invoke tax-return-auditor agent:**
-```markdown
-## Tax Return Audit Report
-
-**Taxpayer:** John & Jane Doe
-**Filing Status:** Married Filing Jointly
-**Tax Year:** 2024
-**Audit Date:** 2025-11-27
-
----
-
-### Executive Summary
-
-**Overall Status:** ✅ PASS
-
-**Key Findings:**
-- 0 Critical Issues
-- 1 Warning (review recommended)
-- 2 Optimization Opportunities
-
-**Total Tax Liability:** $28,450
-**Federal Withholding:** $30,000
-**Refund:** $1,550
-**Effective Tax Rate:** 15.9%
-
----
-
-### Warnings ⚠️
-
-**1. Charitable Contribution Documentation**
-- Location: Schedule A, Line 12
-- Concern: $5,000 in charitable contributions claimed
-- Risk Level: Low
-- Recommendation: Ensure you have receipts for all donations over $250
-- Reference: IRS Pub 526
-
----
-
-### Mathematical Verification ✓
-
-**Income:**
-- W-2 Income: $175,000 ✓
-- Interest: $450 ✓
-- Dividends: $3,250 ✓
-- **Total Income:** $178,700 ✓
-
-**Deductions:**
-- Student Loan Interest: $1,200 ✓
-- Itemized Deductions: $30,000 ✓
-- **AGI:** $177,500 ✓
-- **Taxable Income:** $147,500 ✓
-
-**Tax:**
-- Ordinary Tax: $26,450 ✓
-- Additional Taxes: $0 ✓
-- **Total Tax:** $26,450 ✓
-
-**Credits:**
-- Child Tax Credit: $2,000 ✓
-- **Tax After Credits:** $24,450 ✓
-
-**Payments:**
-- Federal Withholding: $30,000 ✓
-- **Refund:** $1,550 ✓
-
----
-
-### Audit Risk Assessment
-
-**Risk Rating:** LOW
-
-Standard W-2 return with common deductions. No unusual items.
-
-**Documentation Checklist:**
-- [✓] W-2 copies
-- [✓] 1099 copies
-- [✓] 1098 mortgage statement
-- [✓] 1098-E student loan statement
-- [✓] Charitable contribution receipts
-
----
-
-**Recommended Next Step:** Review optimizations, then proceed to PDF generation
+```typescript
+if (hasHSA) {
+  await mcp.ustaxes_add_hsa({
+    year: taxYear,
+    hsa: {
+      personRole: responses.whose === 'yours' ? 'PRIMARY' : 'SPOUSE',
+      totalContributions: responses.total,
+      employerContributions: responses.employer
+    }
+  })
+}
 ```
 
-### Phase 8: Final Review and PDF Generation
+**IRA Contributions:**
+```markdown
+## IRA Contributions
 
-**Step 1: Present Summary**
+Did you contribute to a Traditional IRA in ${taxYear}? (yes/no)
+
+If yes:
+- Contribution amount: $_________
+- Who contributed? (you/spouse)
+```
+
+```typescript
+if (hasIRA) {
+  await mcp.ustaxes_add_ira({
+    year: taxYear,
+    ira: {
+      personRole: responses.who === 'you' ? 'PRIMARY' : 'SPOUSE',
+      contributionType: 'traditional',
+      contribution: responses.amount
+    }
+  })
+}
+```
+
+**Itemized Deductions:**
+```markdown
+## Itemized Deductions
+
+The standard deduction for your filing status is $${standardDeduction}.
+
+You may save money by itemizing if you have:
+- Mortgage interest
+- Charitable donations
+- Medical expenses (if high)
+- State/local taxes
+
+Do you want to explore itemized deductions? (yes/no)
+
+If yes:
+
+**Mortgage Interest (Form 1098):**
+- Total mortgage interest paid: $_________
+
+**State and Local Taxes:**
+- State income tax paid (from W-2 Box 17): $_________
+- Property tax paid: $_________
+- Note: Total SALT deduction capped at $10,000
+
+**Charitable Donations:**
+- Cash donations: $_________
+- Non-cash donations (goods, property): $_________
+
+**Medical Expenses:**
+- Total out-of-pocket medical/dental: $_________
+- Note: Only amount over ${medicalThreshold} is deductible
+```
+
+```typescript
+if (wantsItemized) {
+  await mcp.ustaxes_set_itemized_deductions({
+    year: taxYear,
+    deductions: {
+      mortgageInterest: responses.mortgageInt,
+      stateAndLocalTaxes: Math.min(responses.stateTax + responses.propTax, 10000),
+      charitableCash: responses.charityC ash,
+      charitableNonCash: responses.charityNonCash,
+      medicalAndDental: responses.medical
+    }
+  })
+}
+```
+
+### Phase 5: Review & Summary
+
 ```markdown
 ## Tax Return Summary
 
-**Your 2024 Federal Tax Return is Ready**
+Let me calculate your ${taxYear} taxes...
 
-### Overview
-- **Filing Status:** Married Filing Jointly
-- **Adjusted Gross Income:** $177,500
-- **Taxable Income:** $147,500
-- **Total Tax:** $24,450
-- **Withholding:** $30,000
-- **Refund:** $1,550
+**Income:**
+- W-2 wages: $${w2Total.toLocaleString()}
+- Interest: $${interestTotal.toLocaleString()}
+- Dividends: $${divTotal.toLocaleString()}
+- Rental income: $${rentalNet.toLocaleString()}
+**Total Income:** $${totalIncome.toLocaleString()}
 
-### Forms Included
-- Form 1040: U.S. Individual Income Tax Return
-- Schedule 1: Additional Income and Adjustments to Income
-- Schedule A: Itemized Deductions
-- Schedule B: Interest and Ordinary Dividends
-- Form 8812: Credits for Qualifying Children
+**Adjustments:**
+- Student loan interest: -$${studentLoanInt.toLocaleString()}
+- IRA deduction: -$${iraDeduction.toLocaleString()}
+- HSA deduction: -$${hsaDeduction.toLocaleString()}
 
-### Optimizations Applied
-✓ Itemized deductions (saves $800)
-✓ Student loan interest deduction ($1,200)
-✓ Child tax credit ($2,000)
+**Adjusted Gross Income:** $${agi.toLocaleString()}
 
-### Potential Additional Savings
-💡 IRA contribution: $1,540
-💡 HSA contribution: $1,386
+**Deductions:**
+- Standard deduction: $${standardDed.toLocaleString()}
+- OR Itemized deductions: $${itemizedDed.toLocaleString()}
+**Using:** ${usingItemized ? 'Itemized' : 'Standard'} ($${deduction.toLocaleString()})
 
-### Next Steps
-1. Review the complete return below
-2. Download PDF for your records
-3. E-file or mail before April 15, 2025
-4. Consider suggested optimizations (can contribute to IRA until deadline)
+**Taxable Income:** $${taxableIncome.toLocaleString()}
 
-**Ready to generate PDF?** Yes / No
+**Tax Calculation:**
+- Regular income tax: $${regularTax.toLocaleString()}
+- Additional taxes: $${additionalTax.toLocaleString()}
+**Total Tax:** $${totalTax.toLocaleString()}
+
+**Credits:**
+- Child tax credit: -$${childCredit.toLocaleString()}
+- Other credits: -$${otherCredits.toLocaleString()}
+
+**Tax After Credits:** $${taxAfterCredits.toLocaleString()}
+
+**Payments:**
+- Federal withholding: $${fedWithholding.toLocaleString()}
+- Estimated payments: $${estimatedPayments.toLocaleString()}
+
+**${isRefund ? 'REFUND' : 'AMOUNT OWED'}:** $${Math.abs(refundOrOwed).toLocaleString()}
+
+**Effective Tax Rate:** ${effectiveRate}%
+
+Does this look correct? (yes/no)
 ```
 
-**Step 2: Generate PDF**
-```typescript
-import { create1040PDFs } from 'src/forms/Y2024/irsForms/index'
+### Phase 6: PDF Generation
 
-console.log('Generating PDF...')
-
-try {
-  const pdfBytes = await create1040PDFs(state, assets)
-
-  // Save to session directory
-  const pdfPath = `${SESSION_DIR}/output/tax-return-${taxYear}.pdf`
-  fs.writeFileSync(pdfPath, pdfBytes)
-
-  console.log(`✓ PDF generated: ${pdfPath}`)
-  console.log(`Size: ${(pdfBytes.length / 1024).toFixed(2)} KB`)
-
-  // Also save to user's preferred location
-  const userPath = `/home/user/Documents/Taxes/${taxYear}/`
-  fs.mkdirSync(userPath, { recursive: true })
-  fs.copyFileSync(pdfPath, `${userPath}/federal-return.pdf`)
-
-  console.log(`✓ Saved to: ${userPath}/federal-return.pdf`)
-
-} catch (error) {
-  console.error('PDF generation failed:', error)
-  throw error
-}
-```
-
-**Step 3: Generate Supporting Documents**
-```typescript
-// Save Redux state backup
-const stateBackup = JSON.stringify(state[`Y${taxYear}`], null, 2)
-fs.writeFileSync(`${SESSION_DIR}/output/state-backup.json`, stateBackup)
-
-// Generate audit trail
-const auditTrail = {
-  taxYear,
-  timestamp: new Date().toISOString(),
-  documents: extractedDocuments,
-  userResponses,
-  reduxActions: actionLog,
-  auditFindings,
-  optimizations,
-  pdfGenerated: true
-}
-fs.writeFileSync(`${SESSION_DIR}/output/audit-trail.json`, JSON.stringify(auditTrail, null, 2))
-
-// Generate checklist
-const checklist = `
-# Tax Return Filing Checklist - ${taxYear}
-
-## Before Filing
-- [ ] Review all pages of PDF
-- [ ] Verify all numbers match source documents
-- [ ] Check that SSNs are correct
-- [ ] Verify bank account for direct deposit
-- [ ] Sign and date the return
-
-## Filing Options
-- [ ] E-file through IRS Free File (recommended)
-- [ ] E-file through tax software
-- [ ] Mail paper return (Form 1040-V if payment due)
-
-## Keep for Records (7 years)
-- [ ] Copy of filed return (PDF)
-- [ ] All W-2s and 1099s
-- [ ] Receipts for deductions
-- [ ] Proof of estimated tax payments
-- [ ] State return (if applicable)
-
-## Important Dates
-- **Tax Day:** April 15, ${taxYear + 1}
-- **Extension Deadline:** October 15, ${taxYear + 1}
-- **IRA Contribution Deadline:** April 15, ${taxYear + 1}
-
-## Expected Refund
-- **Amount:** $${refundAmount.toLocaleString()}
-- **Direct Deposit ETA:** 2-3 weeks after e-filing
-- **Paper Check ETA:** 6-8 weeks
-
-## Questions or Issues?
-- IRS Website: https://www.irs.gov
-- IRS Help Line: 1-800-829-1040
-- Free File: https://www.irs.gov/freefile
-- Where's My Refund: https://www.irs.gov/refunds
-`
-
-fs.writeFileSync(`${SESSION_DIR}/output/filing-checklist.md`, checklist)
-```
-
-**Step 4: Final Output**
 ```markdown
-## 🎉 Tax Return Complete!
+## Generate Tax Return PDF
 
-Your 2024 federal tax return has been prepared and saved.
+Your return is complete. Ready to generate the PDF? (yes/no)
 
-### Files Generated
-- `tax-return-2024.pdf` - Complete tax return (ready to file)
-- `state-backup.json` - Redux state backup
-- `audit-trail.json` - Complete audit trail
-- `filing-checklist.md` - Filing instructions and checklist
+Generating PDF...
+```
 
-### Summary
-- **Refund:** $1,550
-- **Forms:** 5 forms included
-- **Confidence:** High (95%+ data quality)
-- **Audit Risk:** Low
+```typescript
+// Generate federal PDF
+const federalResult = await mcp.ustaxes_generate_federal_pdf({
+  year: taxYear,
+  outputPath: `/tmp/federal-${taxYear}.pdf`
+})
 
-### Recommended Actions
-1. ✅ Review PDF thoroughly
-2. ✅ Gather receipts for charitable deductions ($5,000)
-3. 💡 Consider IRA contribution ($7,000) for additional $1,540 savings
-4. 💡 Consider additional HSA contribution ($6,300) for $1,386 savings
-5. ✅ E-file before April 15, 2025
+if (federalResult.success) {
+  console.log(`✓ Federal return: ${federalResult.data.outputPath} (${(federalResult.data.fileSize / 1024).toFixed(1)} KB)`)
+  console.log(`  Forms included: ${federalResult.data.formsIncluded.join(', ')}`)
+}
+```
 
-**Total session time:** 12 minutes
-**Documents processed:** 6
-**Questions asked:** 8
-**Optimizations found:** 2
+**If state residency:**
+```markdown
+Do you need a state return? (yes/no)
 
----
+If yes, which state? ___
 
-**Disclaimer:** This return was prepared using automated tax software. While we've validated all calculations and cross-checked IRS rules, you should review the return carefully before filing. Consider having a tax professional review if you have complex situations. You are ultimately responsible for the accuracy of your filed return.
+Generating state return...
+```
+
+```typescript
+if (needsState) {
+  await mcp.ustaxes_add_state_residency({
+    year: taxYear,
+    state: stateCode
+  })
+
+  const stateResult = await mcp.ustaxes_generate_state_pdf({
+    year: taxYear,
+    state: stateCode,
+    outputPath: `/tmp/state-${stateCode}-${taxYear}.pdf`
+  })
+
+  if (stateResult.success) {
+    console.log(`✓ State return: ${stateResult.data.outputPath} (${(stateResult.data.fileSize / 1024).toFixed(1)} KB)`)
+  }
+}
+```
+
+### Phase 7: Next Steps
+
+```markdown
+## 🎉 Your ${taxYear} Tax Return is Complete!
+
+**Files generated:**
+- Federal: `/tmp/federal-${taxYear}.pdf`
+${stateGenerated ? `- State (${stateCode}): /tmp/state-${stateCode}-${taxYear}.pdf` : ''}
+
+**${isRefund ? 'Expected refund' : 'Amount owed'}:** $${Math.abs(refundOrOwed).toLocaleString()}
+
+**Next Steps:**
+1. ✅ Review both PDFs carefully
+2. ✅ Verify all numbers match your documents
+3. ✅ Check SSNs and bank account numbers
+4. ✅ Sign and date the return
+5. ✅ File before April 15, ${taxYear + 1}
+
+**Filing Options:**
+- **E-file (recommended):** Fastest, most secure, 2-3 weeks for refund
+- **Mail:** Send to IRS service center for your state
+
+**Important:**
+- Keep copies of all documents for 7 years
+- Keep W-2s, 1099s, receipts for deductions
+- Save a copy of the filed return
+
+**Disclaimer:** This return was prepared using automated software. You are responsible for reviewing accuracy before filing. Consider professional review for complex situations.
 
 Would you like me to:
-- [ ] Generate state return (if applicable)
 - [ ] Explain any specific line items
-- [ ] Research additional deduction opportunities
-- [ ] Create estimated tax payment plan for next year
+- [ ] Calculate estimated taxes for next year
+- [ ] Export return data for safekeeping
 ```
 
 ## Error Handling
 
-### Common Issues
-
-**1. Missing Required Documents**
+**Missing required data:**
 ```markdown
-⚠️ Cannot complete return - missing required documents:
-- W-2 from [employer name]
-- Social Security Number for dependent [name]
+⚠️ Cannot complete return - missing required information:
+- [List missing items]
 
-Please provide these documents to continue.
+Please provide this information to continue.
 ```
 
-**2. Validation Errors**
+**Validation errors:**
 ```markdown
 ❌ Data validation failed:
-- SSN format invalid: "123456789" (expected: XXX-XX-XXXX)
-- W-2 Box 1 (income) cannot be negative: -$5000
+- [List validation errors]
 
-Please correct these errors and retry.
+Please correct and retry.
 ```
 
-**3. Calculation Errors**
-```markdown
-⚠️ Tax calculation resulted in unusual value:
-- Effective tax rate: 45% (expected: 10-37%)
-- Likely cause: Missing deductions or credits
+## MCP Tools Used
 
-Recommend professional review before filing.
-```
-
-## Integration Points
-
-This command orchestrates:
-- **tax-document-analyzer** skill (extraction)
-- **question-asker** agent (gathering data)
-- **form-filler** agent (Redux population)
-- **deduction-optimizer** skill (optimization)
-- **tax-return-auditor** agent (validation)
-- **tax-liability-calculator** skill (calculations)
-
-## Output
-
-- PDF tax return ready to file
-- Complete audit trail
-- Filing checklist
-- Redux state backup
-- Session logs
-
-## Best Practices
-
-1. **Save early, save often** - Redux state persisted after each phase
-2. **Validate everything** - All data validated before dispatch
-3. **Explain decisions** - Clear rationale for all recommendations
-4. **Flag uncertainty** - When unsure, recommend professional review
-5. **Document thoroughly** - Complete audit trail for all actions
+This command uses the following MCP tools:
+- `ustaxes_set_filing_status`
+- `ustaxes_add_primary_person`
+- `ustaxes_add_spouse`
+- `ustaxes_add_dependent`
+- `ustaxes_add_w2`
+- `ustaxes_add_1099`
+- `ustaxes_add_property`
+- `ustaxes_add_student_loan`
+- `ustaxes_add_hsa`
+- `ustaxes_add_ira`
+- `ustaxes_set_itemized_deductions`
+- `ustaxes_add_state_residency`
+- `ustaxes_generate_federal_pdf`
+- `ustaxes_generate_state_pdf`
 
 ## Example Usage
 
 ```bash
-# Prepare 2024 return (default)
+# Prepare 2024 return
 /prepare-return
 
 # Prepare 2023 return
 /prepare-return 2023
-
-# Resume existing return
-/prepare-return 2024
 ```
 
 ## Success Criteria
 
-Return is ready to file when:
-- ✅ All required fields populated
-- ✅ All validations passed
-- ✅ Audit found no critical issues
+Return is complete when:
+- ✅ All personal information collected
+- ✅ All income sources documented
+- ✅ Deductions and credits applied
 - ✅ PDF generated successfully
 - ✅ User reviewed and approved
 
+**Estimated Time:** 15-30 minutes
+
 ---
 
-**Estimated Time:** 10-20 minutes for simple return, 30-60 minutes for complex return
-**Confidence Level:** Provides confidence score based on data quality and validation results
+**Note:** This is an interactive command that guides you through tax preparation with step-by-step questions. Have your tax documents ready before starting.

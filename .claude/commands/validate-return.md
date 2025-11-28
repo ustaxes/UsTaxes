@@ -1,743 +1,597 @@
 ---
 name: validate-return
-description: "Audit and validate tax return for accuracy, compliance, and optimization before filing"
+description: "Audit and validate tax return for accuracy, compliance, and completeness before filing"
 args:
   - name: year
     description: "Tax year to validate (default: 2024)"
+    required: false
+  - name: outputPath
+    description: "Path to save validation report (default: /tmp/validation-report-{year}.md)"
     required: false
 ---
 
 # Validate Tax Return
 
-Perform comprehensive audit of completed tax return before filing.
+Perform comprehensive validation of completed tax return before filing using the **UsTaxes MCP Server**.
 
-## Overview
+## What This Command Does
 
-This command invokes the **tax-return-auditor** agent to:
-- Verify all mathematical calculations
-- Check IRS compliance
-- Identify potential issues or errors
-- Assess audit risk
-- Suggest optimizations
-- Generate detailed audit report
+This command:
+- ✅ Exports and analyzes your tax return state
+- ✅ Validates data completeness and consistency
+- ✅ Checks mathematical accuracy via PDF generation
+- ✅ Identifies missing required information
+- ✅ Generates detailed validation report
 
-## When to Use
+## What This Command Does NOT Do
 
-Run this command:
-- **Before filing** - Always validate before submitting to IRS
-- **After making changes** - Re-validate if you update any data
-- **For peace of mind** - Double-check a return prepared elsewhere
-- **Before professional review** - Clean up issues before paying for CPA time
+This command does NOT:
+- ❌ Check IRS rule compliance (no irs-rules-engine implemented)
+- ❌ Assess audit risk (requires statistical analysis not available)
+- ❌ Suggest optimizations (use `/optimize-deductions` instead)
+- ❌ Verify against IRS publications (manual review recommended)
 
-## Validation Process
+## MCP Tools Used
 
-### Phase 1: Pre-Flight Checks
+1. **`ustaxes_export_state`** - Export tax return data for analysis
+2. **`ustaxes_generate_federal_pdf`** - Validate federal return via PDF generation
+3. **`ustaxes_generate_state_pdf`** - Validate state return (if applicable)
 
-**Step 1: Verify Return Exists**
+## Validation Workflow
+
+### Phase 1: Setup and Export State
+
 ```typescript
 const taxYear = args.year ?? 2024
-const state = store.getState()
-const yearState = state[`Y${taxYear}`]
-
-if (!yearState) {
-  throw new Error(`No ${taxYear} tax return found. Run /prepare-return first.`)
-}
+const outputPath = args.outputPath ?? `/tmp/validation-report-${taxYear}.md`
 
 console.log(`Validating ${taxYear} tax return...`)
-console.log(`Last modified: ${yearState.lastModified}`)
-```
+console.log(`This will export your return data and test PDF generation.\n`)
 
-**Step 2: Check Completeness**
-```typescript
-// Minimum viable return check
-const hasPersonal = yearState.taxPayer?.primaryPerson?.ssid
-const hasIncome = yearState.w2s?.length > 0 || yearState.f1099s?.length > 0
-const hasFilingStatus = yearState.taxPayer?.filingStatus
-
-if (!hasPersonal || !hasIncome || !hasFilingStatus) {
-  console.warn('⚠️  Return appears incomplete')
-  console.log('Missing required information:')
-  if (!hasPersonal) console.log('  - Personal information (name, SSN)')
-  if (!hasIncome) console.log('  - Income sources (W-2 or 1099)')
-  if (!hasFilingStatus) console.log('  - Filing status')
-  console.log('\nContinuing with partial validation...')
-}
-```
-
-### Phase 2: Invoke Tax Return Auditor
-
-**Load Auditor Agent:**
-```typescript
-import { TaxReturnAuditorAgent } from '.claude/agents/tax-return-auditor'
-
-const auditResult = await TaxReturnAuditorAgent.audit({
-  taxYear,
-  state: yearState,
-  comprehensiveMode: true,
-  checkOptimizations: true,
-  assessAuditRisk: true
+// Export current state for analysis
+const exportPath = `/tmp/tax-state-${taxYear}.json`
+const exportResult = await mcp.ustaxes_export_state({
+  year: taxYear,
+  outputPath: exportPath
 })
+
+if (!exportResult.success) {
+  throw new Error(`Failed to export tax state: ${exportResult.error}`)
+}
+
+console.log(`✓ Exported tax state to ${exportPath}`)
+
+// Load the exported state for analysis
+const stateData = JSON.parse(await fs.readFile(exportPath, 'utf-8'))
 ```
 
-The auditor performs 6 comprehensive phases:
-1. **Document Inventory** - Verify all required forms present
-2. **Data Validation** - Check accuracy of all entries
-3. **Mathematical Verification** - Validate all calculations
-4. **Compliance Checks** - Ensure IRS requirements met
-5. **Optimization Review** - Identify missed opportunities
-6. **Audit Risk Assessment** - Evaluate audit probability
+### Phase 2: Validate Personal Information
 
-### Phase 3: Present Results
+```typescript
+const validation = {
+  critical: [],
+  warnings: [],
+  passed: []
+}
 
-**Executive Summary:**
-```markdown
-# Tax Return Audit Report
+// Check filing status
+if (!stateData.taxPayer?.filingStatus) {
+  validation.critical.push({
+    category: 'Personal Information',
+    issue: 'Missing Filing Status',
+    location: 'Form 1040, Header',
+    impact: 'Return cannot be filed without filing status',
+    resolution: 'Run /prepare-return and select filing status'
+  })
+} else {
+  validation.passed.push('Filing status: ' + stateData.taxPayer.filingStatus)
+}
 
-**Taxpayer:** John & Jane Doe
-**Filing Status:** Married Filing Jointly
-**Tax Year:** 2024
-**Audit Date:** 2025-11-27
-**Forms Reviewed:** Form 1040, Schedule 1, Schedule A, Schedule B, Form 8812
+// Check primary taxpayer
+if (!stateData.taxPayer?.primaryPerson?.ssid) {
+  validation.critical.push({
+    category: 'Personal Information',
+    issue: 'Missing Primary Taxpayer SSN',
+    location: 'Form 1040, Header',
+    impact: 'Return will be rejected by IRS',
+    resolution: 'Add primary taxpayer SSN'
+  })
+} else if (!/^\d{3}-\d{2}-\d{4}$/.test(stateData.taxPayer.primaryPerson.ssid)) {
+  validation.warnings.push({
+    category: 'Personal Information',
+    issue: 'SSN format may be invalid',
+    location: 'Form 1040, Header',
+    recommendation: 'Verify SSN format: XXX-XX-XXXX'
+  })
+} else {
+  validation.passed.push('Primary taxpayer SSN present and formatted correctly')
+}
 
----
+// Check name
+if (!stateData.taxPayer?.primaryPerson?.firstName || !stateData.taxPayer?.primaryPerson?.lastName) {
+  validation.critical.push({
+    category: 'Personal Information',
+    issue: 'Missing Taxpayer Name',
+    location: 'Form 1040, Header',
+    impact: 'Return cannot be processed',
+    resolution: 'Add taxpayer first and last name'
+  })
+} else {
+  validation.passed.push(`Taxpayer name: ${stateData.taxPayer.primaryPerson.firstName} ${stateData.taxPayer.primaryPerson.lastName}`)
+}
 
-## Executive Summary
+// Check address
+const address = stateData.taxPayer?.primaryPerson?.address
+if (!address?.address || !address?.city || !address?.state || !address?.zip) {
+  validation.critical.push({
+    category: 'Personal Information',
+    issue: 'Incomplete Mailing Address',
+    location: 'Form 1040, Header',
+    impact: 'IRS cannot mail refund or notices',
+    resolution: 'Complete full mailing address'
+  })
+} else {
+  validation.passed.push(`Address: ${address.address}, ${address.city}, ${address.state} ${address.zip}`)
+}
 
-**Overall Status:** ✅ PASS
+// Check spouse (if MFJ or MFS)
+if (['MFJ', 'MFS'].includes(stateData.taxPayer?.filingStatus)) {
+  if (!stateData.taxPayer?.spouse?.ssid) {
+    validation.critical.push({
+      category: 'Personal Information',
+      issue: 'Missing Spouse SSN',
+      location: 'Form 1040, Header',
+      impact: 'Required for Married Filing Jointly/Separately',
+      resolution: 'Add spouse information'
+    })
+  } else {
+    validation.passed.push('Spouse information present')
+  }
+}
 
-**Key Findings:**
-- 0 Critical Issues (must fix before filing)
-- 2 Warnings (should review)
-- 3 Optimization Opportunities
-
-**Financial Summary:**
-- **Total Tax Liability:** $24,450
-- **Federal Withholding:** $30,000
-- **Refund:** $1,550
-- **Effective Tax Rate:** 13.7%
-- **Marginal Tax Rate:** 22%
-
-**Confidence Level:** HIGH (95%+ data quality)
-**Audit Risk:** LOW
-
----
+console.log(`✓ Personal information validated`)
 ```
 
-**Critical Issues Section:**
-```markdown
-## Critical Issues ❌
+### Phase 3: Validate Income
 
-*No critical issues found.*
+```typescript
+// Check for income sources
+const hasW2s = (stateData.w2s?.length ?? 0) > 0
+const has1099s = (stateData.f1099s?.length ?? 0) > 0
+const hasProperty = (stateData.realEstate?.length ?? 0) > 0
 
-Your return is ready to file from a compliance perspective.
+if (!hasW2s && !has1099s && !hasProperty) {
+  validation.critical.push({
+    category: 'Income',
+    issue: 'No Income Reported',
+    location: 'Form 1040, Lines 1-8',
+    impact: 'Return may be rejected or flagged',
+    resolution: 'Add at least one income source (W-2, 1099, or property)'
+  })
+} else {
+  validation.passed.push('Income sources present:')
 
----
+  if (hasW2s) {
+    const totalW2Income = stateData.w2s.reduce((sum, w2) => sum + (w2.income ?? 0), 0)
+    validation.passed.push(`  - ${stateData.w2s.length} W-2(s): $${totalW2Income.toLocaleString()}`)
+
+    // Validate W-2 data
+    stateData.w2s.forEach((w2, idx) => {
+      if (!w2.ein) {
+        validation.warnings.push({
+          category: 'Income',
+          issue: `W-2 #${idx + 1} missing EIN`,
+          location: `W-2 #${idx + 1}`,
+          recommendation: 'Add employer EIN for complete records'
+        })
+      }
+      if (!w2.employerName) {
+        validation.warnings.push({
+          category: 'Income',
+          issue: `W-2 #${idx + 1} missing employer name`,
+          location: `W-2 #${idx + 1}`,
+          recommendation: 'Add employer name for reference'
+        })
+      }
+    })
+  }
+
+  if (has1099s) {
+    const total1099 = stateData.f1099s.reduce((sum, f1099) => sum + (f1099.income ?? 0), 0)
+    validation.passed.push(`  - ${stateData.f1099s.length} 1099(s): $${total1099.toLocaleString()}`)
+  }
+
+  if (hasProperty) {
+    const totalRent = stateData.realEstate.reduce((sum, prop) => sum + (prop.rentReceived ?? 0), 0)
+    validation.passed.push(`  - ${stateData.realEstate.length} rental propert(ies): $${totalRent.toLocaleString()} income`)
+  }
+}
+
+console.log(`✓ Income validated`)
 ```
 
-Or if issues exist:
-```markdown
-## Critical Issues ❌
+### Phase 4: Validate Deductions
 
-### 1. Missing Spouse SSN
+```typescript
+// Check deductions
+if (stateData.itemizedDeductions) {
+  const itemized = stateData.itemizedDeductions
+  let totalItemized = 0
 
-- **Location:** Form 1040, Line 2
-- **Problem:** Spouse SSN is required for Married Filing Jointly status
-- **Impact:** Return will be rejected by IRS e-file system
-- **Resolution:** Provide spouse Social Security Number
-- **Reference:** Form 1040 Instructions, Page 15
+  if (itemized.mortgageInterest) totalItemized += itemized.mortgageInterest
+  if (itemized.stateAndLocalTaxes) totalItemized += itemized.stateAndLocalTaxes
+  if (itemized.charitableCash) totalItemized += itemized.charitableCash
+  if (itemized.charitableNonCash) totalItemized += itemized.charitableNonCash
+  if (itemized.medicalAndDental) totalItemized += itemized.medicalAndDental
 
-### 2. W-2 Income Mismatch
+  validation.passed.push(`Itemized deductions: $${totalItemized.toLocaleString()}`)
 
-- **Location:** Form 1040, Line 1z
-- **Problem:** Reported W-2 income ($120,000) doesn't match sum of provided W-2s ($175,000)
-- **Impact:** IRS will receive mismatch notification from employers
-- **Resolution:** Add missing W-2 or verify amounts
-- **Reference:** IRS Publication 17, Chapter 4
+  // SALT cap warning
+  if (itemized.stateAndLocalTaxes > 10000) {
+    validation.warnings.push({
+      category: 'Deductions',
+      issue: 'SALT deduction exceeds $10,000 cap',
+      location: 'Schedule A, Line 5e',
+      recommendation: 'SALT deduction will be limited to $10,000'
+    })
+  }
 
-**Action Required:** Fix these issues before filing. Run /prepare-return to update.
+  // Large charitable contribution warning
+  const totalCharity = (itemized.charitableCash ?? 0) + (itemized.charitableNonCash ?? 0)
+  if (totalCharity > 5000) {
+    validation.warnings.push({
+      category: 'Deductions',
+      issue: `Large charitable contribution: $${totalCharity.toLocaleString()}`,
+      location: 'Schedule A, Lines 11-12',
+      recommendation: 'Ensure you have receipts for all donations ≥$250'
+    })
+  }
+}
 
----
+// Check HSA
+if (stateData.healthSavingsAccounts?.length > 0) {
+  const totalHSA = stateData.healthSavingsAccounts.reduce((sum, hsa) => {
+    return sum + (hsa.totalContributions ?? 0) - (hsa.employerContributions ?? 0)
+  }, 0)
+  validation.passed.push(`HSA contributions: $${totalHSA.toLocaleString()}`)
+}
+
+// Check IRA
+if (stateData.individualRetirementArrangements?.length > 0) {
+  const totalIRA = stateData.individualRetirementArrangements.reduce((sum, ira) => {
+    return sum + (ira.contribution ?? 0)
+  }, 0)
+  validation.passed.push(`IRA contributions: $${totalIRA.toLocaleString()}`)
+}
+
+// Check student loan interest
+if (stateData.f1098es?.length > 0) {
+  const totalStudentLoan = stateData.f1098es.reduce((sum, f1098e) => {
+    return sum + (f1098e.interest ?? 0)
+  }, 0)
+  validation.passed.push(`Student loan interest: $${totalStudentLoan.toLocaleString()}`)
+
+  if (totalStudentLoan > 2500) {
+    validation.warnings.push({
+      category: 'Deductions',
+      issue: 'Student loan interest exceeds $2,500 limit',
+      location: 'Schedule 1, Line 21',
+      recommendation: 'Deduction will be capped at $2,500'
+    })
+  }
+}
+
+console.log(`✓ Deductions validated`)
 ```
 
-**Warnings Section:**
-```markdown
-## Warnings ⚠️
+### Phase 5: Validate Credits
 
-### 1. Large Charitable Deduction
+```typescript
+// Check dependents for child tax credit
+if (stateData.taxPayer?.dependents?.length > 0) {
+  const currentYear = taxYear
+  const qualifyingChildren = stateData.taxPayer.dependents.filter(dep => {
+    const age = currentYear - (dep.birthYear ?? currentYear)
+    return age < 17 // Qualifying child under 17
+  })
 
-- **Location:** Schedule A, Line 12
-- **Concern:** $15,000 in charitable contributions (8.4% of income)
-- **Risk Level:** Medium
-- **Recommendation:** Ensure you have:
-  - Receipts for all donations ≥$250
-  - Written acknowledgment from charity for each gift ≥$250
-  - Form 8283 for non-cash donations ≥$500
-  - Appraisal for non-cash donations ≥$5,000
-- **Reference:** IRS Publication 526, Recordkeeping
+  if (qualifyingChildren.length > 0) {
+    validation.passed.push(`${qualifyingChildren.length} qualifying child(ren) for Child Tax Credit`)
+  }
 
-### 2. Home Office Deduction
+  // Check for missing dependent info
+  stateData.taxPayer.dependents.forEach((dep, idx) => {
+    if (!dep.ssid) {
+      validation.critical.push({
+        category: 'Credits',
+        issue: `Dependent #${idx + 1} missing SSN`,
+        location: 'Form 1040, Dependents section',
+        impact: 'Cannot claim Child Tax Credit without dependent SSN',
+        resolution: 'Add dependent SSN'
+      })
+    }
+    if (!dep.birthYear) {
+      validation.warnings.push({
+        category: 'Credits',
+        issue: `Dependent #${idx + 1} missing birth year`,
+        location: 'Form 1040, Dependents section',
+        recommendation: 'Add birth year to verify age eligibility'
+      })
+    }
+  })
+}
 
-- **Location:** Schedule C, Line 30
-- **Concern:** Claiming $8,000 home office deduction
-- **Risk Level:** Medium
-- **Recommendation:** Audit red flag. Ensure:
-  - Space used EXCLUSIVELY for business
-  - Regular and consistent business use
-  - Principal place of business OR client meeting place
-  - Accurate square footage calculation
-  - Keep photos and floor plan
-- **Reference:** IRS Publication 587
-
-**These warnings don't block filing but increase audit risk. Ensure documentation.**
-
----
+console.log(`✓ Credits validated`)
 ```
 
-### Phase 4: Mathematical Verification
+### Phase 6: Test PDF Generation (Final Validation)
 
-**Income Verification:**
-```markdown
-## Mathematical Verification ✓
+```typescript
+console.log(`\nTesting PDF generation to validate calculations...\n`)
 
-### Income Cross-Check
+// Generate federal PDF as final validation test
+const federalPdfPath = `/tmp/validation-federal-${taxYear}.pdf`
 
-**W-2 Income:**
-- W-2 #1 (Tech Company): $120,000 ✓
-- W-2 #2 (School District): $55,000 ✓
-- **Total W-2 (Line 1z):** $175,000 ✓
+try {
+  const federalResult = await mcp.ustaxes_generate_federal_pdf({
+    year: taxYear,
+    outputPath: federalPdfPath
+  })
 
-**Interest Income:**
-- First National Bank: $450.25 ✓
-- **Total Interest (Line 2b):** $450 ✓
-  - *Rounded to nearest dollar per IRS instructions*
+  if (federalResult.success) {
+    validation.passed.push('Federal PDF generated successfully')
+    console.log(`✓ Federal PDF generated: ${federalPdfPath}`)
+    console.log(`  File size: ${(federalResult.data.fileSize / 1024).toFixed(2)} KB`)
+  } else {
+    validation.critical.push({
+      category: 'PDF Generation',
+      issue: 'Federal PDF generation failed',
+      location: 'Form 1040',
+      impact: 'Return has errors that prevent filing',
+      resolution: federalResult.error || 'Check return data for errors'
+    })
+  }
+} catch (error) {
+  validation.critical.push({
+    category: 'PDF Generation',
+    issue: 'Federal PDF generation error',
+    location: 'Form 1040',
+    impact: 'Return cannot be generated due to data errors',
+    resolution: error.message || 'Review and fix return data'
+  })
+}
 
-**Dividend Income:**
-- Vanguard ordinary dividends: $3,250 ✓
-- Vanguard qualified dividends: $2,800 ✓
-- **Total Dividends (Line 3b):** $3,250 ✓
-- **Qualified Dividends (Line 3a):** $2,800 ✓
+// Test state PDF if state residency is set
+if (stateData.taxPayer?.primaryPerson?.address?.state) {
+  const state = stateData.taxPayer.primaryPerson.address.state
+  const statePdfPath = `/tmp/validation-state-${state}-${taxYear}.pdf`
 
-**Capital Gains:**
-- Schedule D total: $10,000 ✓
-  - Short-term: $3,000
-  - Long-term: $7,000
-- **Capital Gain (Line 7):** $10,000 ✓
+  try {
+    const stateResult = await mcp.ustaxes_generate_state_pdf({
+      year: taxYear,
+      state: state,
+      outputPath: statePdfPath
+    })
 
-**Total Income (Line 9):** $188,700 ✓
+    if (stateResult.success) {
+      validation.passed.push(`State PDF generated successfully (${state})`)
+      console.log(`✓ State PDF generated: ${statePdfPath}`)
+      console.log(`  File size: ${(stateResult.data.fileSize / 1024).toFixed(2)} KB`)
+    } else {
+      validation.warnings.push({
+        category: 'PDF Generation',
+        issue: `State PDF generation failed (${state})`,
+        location: `${state} State Return`,
+        recommendation: stateResult.error || 'State return may not be supported or has errors'
+      })
+    }
+  } catch (error) {
+    validation.warnings.push({
+      category: 'PDF Generation',
+      issue: `State PDF generation error (${state})`,
+      location: `${state} State Return`,
+      recommendation: error.message || 'State return may need manual preparation'
+    })
+  }
+}
 
----
-
-### Adjustments to Income
-
-**Schedule 1:**
-- Student loan interest deduction: $1,200 ✓
-  - *Verified against Form 1098-E*
-  - *Within $2,500 limit*
-  - *Income under phase-out threshold*
-
-**Total Adjustments (Line 10):** $1,200 ✓
-
-**Adjusted Gross Income (Line 11):** $187,500 ✓
-
----
-
-### Deductions
-
-**Itemized Deductions (Schedule A):**
-- Medical expenses: $0 ✓
-  - *Total expenses: $8,000*
-  - *Threshold (7.5% AGI): $14,062*
-  - *Below threshold - not deductible*
-
-- State and local taxes: $10,000 ✓
-  - *SALT cap applied correctly*
-
-- Mortgage interest: $15,000 ✓
-  - *Form 1098 verified*
-
-- Charitable contributions: $5,000 ✓
-  - *Cash contributions documented*
-
-- **Total Itemized:** $30,000 ✓
-
-**Standard Deduction Alternative:** $29,200
-**Using Itemized:** $30,000 ✓ (saves $800 taxable income)
-
-**Taxable Income (Line 15):** $157,500 ✓
-  - AGI ($187,500) - Itemized ($30,000)
-
----
-
-### Tax Calculation
-
-**Tax on $157,500 (MFJ):**
-- First $23,200 @ 10%: $2,320
-- Next $70,100 @ 12%: $8,412
-- Remaining $64,200 @ 22%: $14,124
-- **Ordinary Income Tax:** $24,856 ✓
-
-**Qualified Dividends & Capital Gains:**
-- Qualified dividends: $2,800 @ 15%: $420 ✓
-- Long-term capital gains: $7,000 @ 15%: $1,050 ✓
-- **Investment Income Tax:** $1,470 ✓
-
-**Total Tax Before Credits (Line 16):** $26,326 ✓
-
----
-
-### Credits
-
-**Child Tax Credit (Form 8812):**
-- Qualifying child: Emily Doe (age 6) ✓
-- Credit amount: $2,000 ✓
-- Phase-out threshold (MFJ): $400,000
-- Your AGI: $187,500 - No phase-out ✓
-- **Credit claimed:** $2,000 ✓
-
-**Total Credits (Line 19):** $2,000 ✓
-
-**Tax After Credits (Line 24):** $24,326 ✓
-
----
-
-### Payments & Refund
-
-**Federal Withholding:**
-- W-2 #1: $18,000 ✓
-- W-2 #2: $8,250 ✓
-- **Total Withholding (Line 25a):** $26,250 ✓
-
-**Estimated Tax Payments:** $0
-
-**Total Payments (Line 33):** $26,250 ✓
-
-**Refund Calculation:**
-- Total Payments: $26,250
-- Tax Owed: $24,326
-- **Refund (Line 34):** $1,924 ✓
-
----
-
-**All calculations verified. No mathematical errors found.**
+console.log(`✓ PDF generation validation complete`)
 ```
 
-### Phase 5: Compliance Status
-
-```markdown
-## Compliance Status ✓
-
-### Required Forms
-
-- [✓] Form 1040 (main return)
-- [✓] Schedule 1 (adjustments to income)
-- [✓] Schedule A (itemized deductions)
-- [✓] Schedule B (interest and dividends)
-- [✓] Form 8812 (child tax credit)
-- [✓] Form 8949 (investment sales)
-- [✓] Schedule D (capital gains summary)
-
-**All required forms present.**
-
----
-
-### Personal Information Accuracy
-
-- [✓] Primary taxpayer name matches SSN
-- [✓] Spouse name matches SSN
-- [✓] Dependent information complete (name, SSN, DOB, relationship)
-- [✓] Address current and complete
-- [✓] Filing status appropriate for household
-
-**All personal information verified.**
-
----
-
-### Required Disclosures
-
-- [✓] Virtual currency question answered (No)
-- [✓] Presidential election campaign fund selected
-- [✓] Preparer information (if applicable)
-- [✓] Signature and date fields present
-
-**All disclosures complete.**
-
----
-
-### State Tax Considerations
-
-**State Residency:** California
-
-- [✓] State withholding matches state return
-- [⚠️] State return not yet prepared
-  - **Recommendation:** Prepare California state return
-  - **Command:** `/prepare-state-return CA 2024`
-
----
-
-**Compliance Status: PASS**
-
-Your return meets all IRS requirements and is ready to file.
-```
-
-### Phase 6: Optimization Opportunities
-
-```markdown
-## Optimization Opportunities 💡
-
-### 1. Traditional IRA Contribution
-
-**Current Situation:**
-- No IRA contribution claimed
-- You are eligible for Traditional IRA deduction
-
-**Opportunity:**
-- Maximum contribution: $7,000 ($8,000 if age 50+)
-- Your contribution: $0
-- **Additional deduction available: $7,000**
-
-**Tax Impact:**
-- Reduces AGI to $180,500
-- Reduces taxable income to $150,500
-- Tax savings: ~$1,540 (22% marginal rate)
-
-**Action:**
-- Contribute to Traditional IRA by April 15, 2025
-- Amend return or file with contribution included
-
-**Reference:** IRS Publication 590-A
-
----
-
-### 2. Health Savings Account (HSA)
-
-**Current Situation:**
-- Your W-2 indicates HDHP coverage
-- Current HSA contribution: $2,000 (from W-2 Box 12, Code W)
-
-**Opportunity:**
-- Maximum family contribution: $8,300
-- Your contribution: $2,000
-- **Additional contribution available: $6,300**
-
-**Tax Impact:**
-- Additional deduction: $6,300
-- Tax savings: ~$1,386 (22% marginal rate)
-
-**Action:**
-- Make additional HSA contribution before April 15, 2025
-- Triple tax benefit: deductible, tax-free growth, tax-free withdrawals
-
-**Reference:** IRS Publication 969
-
----
-
-### 3. Bunching Charitable Contributions
-
-**Current Situation:**
-- Itemized deductions: $30,000
-- Standard deduction: $29,200
-- Only $800 over standard
-
-**Strategy for Next Year:**
-- Alternate years: itemize one year, standard the next
-- Bunch 2 years of donations into one year
-
-**Example:**
-- 2024: Donate $10,000 (itemize)
-- 2025: Donate $0 (take standard)
-- **Net savings over 2 years: ~$1,760**
-
-**Action:**
-- Consider Donor-Advised Fund for bunching
-- Time large donations strategically
-
-**Reference:** IRS Publication 526
-
----
-
-### Summary
-
-**Total Immediate Savings Available:** $2,926
-- IRA contribution: $1,540
-- HSA contribution: $1,386
-
-**Action Required:**
-Would you like to update your return to include these optimizations?
-```
-
-### Phase 7: Audit Risk Assessment
-
-```markdown
-## Audit Risk Assessment
-
-**Overall Risk Rating:** 🟢 LOW (2.1% audit probability)
-
-### Risk Factors
-
-**Positive Factors (Low Risk):**
-✓ W-2 income only (employer-reported)
-✓ Standard deductions claimed (minimal Schedule A)
-✓ Income level ($187K) below high-audit threshold
-✓ All income third-party verified (W-2, 1099)
-✓ Round numbers avoided
-✓ No previous audit history
-✓ No business losses
-
-**Moderate Risk Factors:**
-⚠️ Itemized deductions (slightly elevated risk)
-⚠️ Charitable contribution ($5,000)
-⚠️ Mortgage interest deduction
-
-**High Risk Factors:**
-❌ None identified
-
----
-
-### Audit Probability by Income
-
-**Your Income:** $187,500 AGI
-**Historical Audit Rate:** 0.4% (IRS Data Book)
-
-**Comparison:**
-- Under $200K: 0.4%
-- $200K-$500K: 1.0%
-- $500K-$1M: 2.8%
-- Over $1M: 8.0%
-
-**Your return is in the lowest audit risk category.**
-
----
-
-### Red Flags Avoided ✓
-
-- [✓] No home office deduction
-- [✓] No 100% business vehicle use
-- [✓] No Schedule C losses
-- [✓] No rental property losses
-- [✓] No large cash business
-- [✓] No offshore accounts
-- [✓] No cryptocurrency gains
-- [✓] No early retirement withdrawal
-
----
-
-### Documentation Requirements
-
-**Keep These Records (7 years):**
-
-**Income:**
-- [✓] W-2 from Tech Company Inc
-- [✓] W-2 from School District
-- [✓] 1099-INT from First National Bank
-- [✓] 1099-DIV from Vanguard
-- [✓] 1099-B from Schwab
-
-**Deductions:**
-- [✓] Form 1098 (mortgage interest)
-- [✓] Form 1098-E (student loan interest)
-- [✓] Property tax statement
-- [✓] Charitable donation receipts
-  - ⚠️ **IMPORTANT:** Need written acknowledgment for donations ≥$250
-
-**Other:**
-- [✓] Copy of filed return
-- [✓] Proof of estimated tax payments (if any)
-- [✓] State tax return
-
----
-
-### If Audited
-
-**What to Expect:**
-1. IRS sends notice by mail (never by phone/email)
-2. Requests documentation for specific items
-3. 90% of audits handled by mail (no in-person meeting)
-4. Respond within 30 days
-
-**How to Respond:**
-- Provide only requested documents
-- Include cover letter explaining each item
-- Send via certified mail with return receipt
-- Keep copies of everything sent
-- Consider hiring tax professional if complex
-
-**Your Audit Risk:** Very low. Standard W-2 return.
-
----
-
-**Risk Mitigation Complete**
-
-Your documentation checklist is ready. Keep all receipts organized.
-```
-
-### Phase 8: Final Recommendations
-
-```markdown
-## Final Recommendations
-
-### Before Filing ✅
-
-**Required Actions:**
-- [✓] Review entire return page by page
-- [✓] Verify all SSNs are correct
-- [✓] Check direct deposit bank account numbers
-- [✓] Sign and date return (electronic signature if e-filing)
-- [✓] Gather charitable donation receipts ≥$250
-
-**Recommended Actions:**
-- [ ] Consider IRA contribution ($7,000) - saves $1,540
-- [ ] Consider additional HSA contribution ($6,300) - saves $1,386
-- [ ] Prepare California state return
-- [ ] Set up electronic filing account (IRS Free File)
-
----
-
-### Filing Options
-
-**E-Filing (Recommended):**
-- **Fastest:** Refund in 2-3 weeks with direct deposit
-- **Most accurate:** Built-in error checking
-- **Confirmation:** Email receipt and IRS acknowledgment
-- **Free options:** IRS Free File (income under $79,000)
-
-**Paper Filing:**
-- **Slower:** 6-8 weeks for refund
-- **Address:** See Form 1040 instructions based on state
-- **Include:** Form 1040-V if making payment
-- **Tracking:** Send certified mail with return receipt
-
-**Professional Review:**
-- Not required for your standard return
-- Consider if: major life changes, audit concerns, complex items
-
----
-
-### Important Dates
-
-- **April 15, 2025** - Filing deadline
-- **April 15, 2025** - IRA contribution deadline
-- **October 15, 2025** - Extension deadline (if filed Form 4868)
-- **July 15, 2025** - Expected refund if e-filed by April 15
-
----
-
-### Next Steps
-
-**1. Decide on Optimizations**
-Run `/optimize-deductions` for detailed analysis of IRA and HSA options.
-
-**2. Prepare State Return**
-Run `/prepare-state-return CA 2024` to complete California state taxes.
-
-**3. File Return**
-- E-file through IRS Free File or tax software
-- Or print PDF and mail certified
-- Track refund: https://www.irs.gov/refunds
-
-**4. Plan for Next Year**
-- Adjust W-4 withholding if needed
-- Set up quarterly estimated payments if required
-- Consider tax-advantaged retirement contributions
-
----
-
-## Validation Complete ✓
-
-**Summary:**
-- ✅ No critical errors
-- ⚠️ 2 minor warnings (documentation recommended)
-- 💡 $2,926 potential additional savings available
-- 🟢 Low audit risk (0.4%)
-- 📊 Confidence level: HIGH
-
-**Your return is ready to file.**
-
-**Estimated refund:** $1,924
-**Expected deposit date:** Mid-May 2025 (if e-filed in April)
-
----
-
-**Next Command:** `/prepare-return` to implement optimizations or proceed to filing.
-
----
-
-*This validation was performed by Claude Code Tax Automation. While we've thoroughly checked your return, you are ultimately responsible for its accuracy. Consider professional review for complex situations.*
-
-*Validation completed: 2025-11-27 14:32:15*
-*Audit confidence: 95%*
-*Processing time: 45 seconds*
+### Phase 7: Generate Validation Report
+
+```typescript
+// Generate markdown validation report
+const report = generateValidationReport(validation, stateData, taxYear)
+
+// Save report
+await fs.writeFile(outputPath, report, 'utf-8')
+console.log(`\n✓ Validation report saved to ${outputPath}\n`)
+
+// Display summary
+console.log('='.repeat(60))
+console.log('VALIDATION SUMMARY')
+console.log('='.repeat(60))
+
+if (validation.critical.length === 0) {
+  console.log('✅ VALIDATION PASSED')
+  console.log('\nNo critical issues found. Your return is ready to file.')
+} else {
+  console.log('❌ VALIDATION FAILED')
+  console.log(`\n${validation.critical.length} critical issue(s) must be fixed before filing.`)
+}
+
+if (validation.warnings.length > 0) {
+  console.log(`\n⚠️  ${validation.warnings.length} warning(s) - review recommended`)
+}
+
+console.log(`\n✓ ${validation.passed.length} checks passed`)
+
+console.log('\n' + '='.repeat(60))
+console.log(`\nFull report: ${outputPath}`)
+
+// Helper function to generate report
+function generateValidationReport(validation, stateData, taxYear) {
+  let report = `# Tax Return Validation Report\n\n`
+  report += `**Tax Year:** ${taxYear}\n`
+  report += `**Validation Date:** ${new Date().toISOString().split('T')[0]}\n`
+  report += `**Taxpayer:** ${stateData.taxPayer?.primaryPerson?.firstName} ${stateData.taxPayer?.primaryPerson?.lastName}\n`
+  report += `**Filing Status:** ${stateData.taxPayer?.filingStatus}\n\n`
+  report += `---\n\n`
+
+  // Overall status
+  if (validation.critical.length === 0) {
+    report += `## Overall Status: ✅ PASS\n\n`
+    report += `Your return is ready to file.\n\n`
+  } else {
+    report += `## Overall Status: ❌ FAIL\n\n`
+    report += `Critical issues must be resolved before filing.\n\n`
+  }
+
+  report += `**Summary:**\n`
+  report += `- Critical Issues: ${validation.critical.length}\n`
+  report += `- Warnings: ${validation.warnings.length}\n`
+  report += `- Checks Passed: ${validation.passed.length}\n\n`
+  report += `---\n\n`
+
+  // Critical issues
+  if (validation.critical.length > 0) {
+    report += `## Critical Issues ❌\n\n`
+    report += `These issues will prevent your return from being filed or accepted by the IRS.\n\n`
+
+    validation.critical.forEach((issue, idx) => {
+      report += `### ${idx + 1}. ${issue.issue}\n\n`
+      report += `- **Category:** ${issue.category}\n`
+      report += `- **Location:** ${issue.location}\n`
+      report += `- **Impact:** ${issue.impact}\n`
+      report += `- **Resolution:** ${issue.resolution}\n\n`
+    })
+
+    report += `**Action Required:** Fix these issues by running \`/prepare-return ${taxYear}\`\n\n`
+    report += `---\n\n`
+  }
+
+  // Warnings
+  if (validation.warnings.length > 0) {
+    report += `## Warnings ⚠️\n\n`
+    report += `These items don't prevent filing but should be reviewed.\n\n`
+
+    validation.warnings.forEach((warning, idx) => {
+      report += `### ${idx + 1}. ${warning.issue}\n\n`
+      report += `- **Category:** ${warning.category}\n`
+      report += `- **Location:** ${warning.location}\n`
+      report += `- **Recommendation:** ${warning.recommendation}\n\n`
+    })
+
+    report += `---\n\n`
+  }
+
+  // Passed checks
+  if (validation.passed.length > 0) {
+    report += `## Validation Checks Passed ✓\n\n`
+
+    validation.passed.forEach(check => {
+      report += `- ${check}\n`
+    })
+
+    report += `\n---\n\n`
+  }
+
+  // Next steps
+  report += `## Next Steps\n\n`
+
+  if (validation.critical.length === 0) {
+    report += `1. Review the validation report and warnings\n`
+    report += `2. Check generated PDF files in \`/tmp/\`\n`
+    report += `3. If everything looks correct, proceed to filing\n`
+    report += `4. Keep this validation report with your tax records\n\n`
+
+    report += `**Ready to File:**\n`
+    report += `- Generated federal PDF: \`/tmp/validation-federal-${taxYear}.pdf\`\n`
+    if (stateData.taxPayer?.primaryPerson?.address?.state) {
+      report += `- Generated state PDF: \`/tmp/validation-state-${stateData.taxPayer.primaryPerson.address.state}-${taxYear}.pdf\`\n`
+    }
+  } else {
+    report += `1. Fix critical issues listed above\n`
+    report += `2. Run \`/prepare-return ${taxYear}\` to update your return\n`
+    report += `3. Run \`/validate-return ${taxYear}\` again to verify fixes\n`
+    report += `4. Do not file until validation passes\n`
+  }
+
+  report += `\n---\n\n`
+
+  // Disclaimer
+  report += `## Disclaimer\n\n`
+  report += `This validation was performed by the UsTaxes MCP Server. While we check for common errors and completeness, you are ultimately responsible for the accuracy of your tax return. This validation:\n\n`
+  report += `- ✅ Checks data completeness\n`
+  report += `- ✅ Validates mathematical calculations via PDF generation\n`
+  report += `- ✅ Identifies missing required information\n`
+  report += `- ❌ Does NOT verify IRS rule compliance\n`
+  report += `- ❌ Does NOT assess audit risk\n`
+  report += `- ❌ Does NOT replace professional tax advice\n\n`
+  report += `**Recommendation:** Consider professional review for complex tax situations.\n\n`
+
+  report += `---\n\n`
+  report += `*Report generated: ${new Date().toISOString()}*\n`
+
+  return report
+}
 ```
 
 ## Error Handling
 
 **Return Not Found:**
-```markdown
-❌ No tax return found for year 2024.
+```
+❌ Failed to export tax state: No data found for year 2024
 
-**Solutions:**
-1. Run `/prepare-return 2024` to create new return
-2. Verify Redux state: `store.getState().Y2024`
-3. Check if return was saved to different year
+This means no tax return exists for the specified year.
 
-**Need help?** Type `/help prepare-return`
+Solution:
+1. Run /prepare-return 2024 to create a new return
+2. Verify you're checking the correct tax year
 ```
 
-**Incomplete Return:**
-```markdown
-⚠️  Tax return is incomplete and cannot be fully validated.
+**PDF Generation Fails:**
+```
+❌ Critical Issue: Federal PDF generation failed
 
-**Missing Required Information:**
-- Personal information (name, SSN)
-- Filing status
-- At least one income source
+This indicates errors in your tax return data that prevent form generation.
 
-**Partial Validation Results:**
-[... show what can be validated ...]
-
-**Action Required:**
-Run `/prepare-return 2024` to complete your return.
+Solution:
+1. Check the validation report for specific issues
+2. Fix identified problems using /prepare-return
+3. Re-run /validate-return to verify fixes
 ```
 
-**Validation Errors:**
-```markdown
-❌ Validation failed with critical errors.
-
-**Critical Issues Found:**
-1. Invalid SSN format
-2. Negative income amount
-3. Missing required form
-
-**Cannot proceed with filing until these are resolved.**
-
-Run `/prepare-return 2024` to fix these issues.
+**Invalid State Data:**
 ```
+⚠️  Tax return state file is corrupted or invalid
 
-## Integration Points
-
-Coordinates with:
-- **tax-return-auditor** agent (performs audit)
-- **tax-liability-calculator** skill (verifies calculations)
-- **irs-rule-lookup** skill (checks compliance)
-- **deduction-optimizer** skill (finds opportunities)
-
-## Output
-
-- Comprehensive audit report (markdown)
-- Pass/Fail status
-- List of critical issues
-- List of warnings
-- Optimization opportunities
-- Audit risk assessment
-- Filing checklist
-- Confidence score
+Solution:
+1. Try exporting state again
+2. If problem persists, rebuild return using /prepare-return
+```
 
 ## Best Practices
 
-1. **Always validate before filing** - Catches errors early
-2. **Re-validate after changes** - Ensure fixes didn't break anything
-3. **Keep audit report** - Part of permanent tax records
-4. **Address all critical issues** - Return will be rejected otherwise
-5. **Consider warnings** - Even if not blocking, reduce audit risk
+1. **Validate before filing** - Always run this before submitting to IRS
+2. **Fix all critical issues** - Don't ignore red flags
+3. **Review warnings** - Even non-blocking issues can cause problems
+4. **Keep validation reports** - Part of your permanent tax records
+5. **Validate after changes** - Re-run after any updates to your return
+6. **Check generated PDFs** - Manually review the PDF files in `/tmp/`
+
+## Limitations
+
+This validation command:
+- ✅ **Can** check data completeness
+- ✅ **Can** validate mathematical accuracy (via PDF generation)
+- ✅ **Can** identify formatting issues
+- ❌ **Cannot** verify IRS rule compliance (no rules engine)
+- ❌ **Cannot** assess audit risk (no statistical model)
+- ❌ **Cannot** suggest optimizations (use `/optimize-deductions`)
+
+**For comprehensive review:** Consider professional tax preparation services for complex returns.
 
 ## Example Usage
 
@@ -748,29 +602,35 @@ Coordinates with:
 # Validate specific year
 /validate-return 2023
 
-# Quick validation (skip optimizations)
-/validate-return --quick
-
-# Verbose validation (include all details)
-/validate-return --verbose
+# Save report to custom location
+/validate-return 2024 /home/user/taxes/validation-2024.md
 ```
+
+## Output Files
+
+- **Validation Report:** `/tmp/validation-report-{year}.md` (or custom path)
+- **Federal PDF:** `/tmp/validation-federal-{year}.pdf`
+- **State PDF:** `/tmp/validation-state-{STATE}-{year}.pdf`
+- **Exported State:** `/tmp/tax-state-{year}.json`
 
 ## Success Criteria
 
 Validation passes when:
-- ✅ No critical errors
-- ✅ All calculations verified
-- ✅ IRS compliance confirmed
-- ✅ Audit risk assessed
-- ✅ Documentation checklist generated
-
-## Performance
-
-- **Simple return:** 30-45 seconds
-- **Complex return:** 1-2 minutes
-- **Includes:** Full 6-phase audit process
-- **Confidence:** 95%+ accuracy
+- ✅ No critical errors found
+- ✅ Federal PDF generates successfully
+- ✅ All required personal information present
+- ✅ At least one income source reported
+- ✅ All dependents have SSNs (if claiming credits)
 
 ---
 
-**Recommendation:** Run this validation on every return before filing. It's your last line of defense against IRS notices and audit complications.
+**Next Steps After Validation:**
+
+- If **PASSED**: Review PDFs and proceed to filing
+- If **FAILED**: Run `/prepare-return` to fix issues
+- For **optimizations**: Run `/optimize-deductions`
+- For **questions**: Review IRS publications or consult tax professional
+
+---
+
+*This command uses only the real UsTaxes MCP Server tools. It does not rely on conceptual MCP servers that are not implemented.*
