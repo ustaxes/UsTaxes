@@ -39,6 +39,15 @@ Welcome to the complete documentation for the Claude Code AI Automation Layer fo
 - Testing guidelines
 - Complete contributor guide
 
+📘 **[Massachusetts Tax Guide](MASSACHUSETTS_GUIDE.md)** - Complete MA state tax reference
+- MA tax basics (5% flat rate)
+- Forms and schedules
+- Deductions and exemptions
+- Credits and payments
+- Common situations and examples
+- Claude Code automation
+- 25,000+ word complete guide
+
 👉 **For state tax returns and contributors**
 
 ---
@@ -98,6 +107,12 @@ Welcome to the complete documentation for the Claude Code AI Automation Layer fo
 
 **Understand security**
 → [AI Automation Guide - Security & Privacy](AI_AUTOMATION_GUIDE.md#security--privacy)
+
+**Prepare Massachusetts state return**
+→ [Massachusetts Tax Guide](MASSACHUSETTS_GUIDE.md)
+
+**Contribute a state implementation**
+→ [State Returns Guide](STATE_RETURNS_GUIDE.md)
 
 ---
 
@@ -355,7 +370,7 @@ A: This generates PDF forms. You must file yourself (e-file or mail).
 A: Yes, 100% free and open source. No hidden fees.
 
 **Q: Does it work for state taxes?**
-A: Currently federal only. State support is planned for future versions.
+A: Massachusetts is fully supported. See [Massachusetts Tax Guide](MASSACHUSETTS_GUIDE.md). Other states can be contributed following the [State Returns Guide](STATE_RETURNS_GUIDE.md).
 
 ### Technical
 
@@ -391,7 +406,8 @@ A: Clear browser localStorage and securely delete PDF files.
 
 ### Current Limitations
 
-❌ **State returns not supported** (federal only)
+✅ **Massachusetts state returns fully supported** ([See guide](MASSACHUSETTS_GUIDE.md))
+❌ **Other state returns** (contribution framework available)
 ❌ **No e-filing** (generates PDFs for you to file)
 ❌ **English only** (no translations yet)
 ❌ **US citizens only** (no non-resident alien support)
