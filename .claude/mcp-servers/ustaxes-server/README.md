@@ -2,6 +2,8 @@
 
 **Model Context Protocol (MCP) server for programmatic tax return preparation using UsTaxes.**
 
+Works with any LLM or AI agent that supports MCP over HTTP or stdio.
+
 ## Overview
 
 This MCP server provides programmatic access to the UsTaxes tax preparation engine, allowing AI agents and automation tools to:
@@ -27,33 +29,180 @@ UsTaxes MCP Server
 └── Resources (return state queries)
 ```
 
-## Installation
+## Quick Start
+
+### Option 1: HTTP Server (Recommended for LLM Integration)
+
+Run the HTTP-based MCP server that any LLM can connect to:
 
 ```bash
-cd .claude/mcp-servers/ustaxes-server
+# Install dependencies
 npm install
-npm run build
+
+# Start HTTP server
+npm run start:http
+
+# Server runs on http://localhost:3000
 ```
 
-## Usage
+The HTTP server provides:
 
-### In Claude Desktop Config
+- `GET /health` - Health check endpoint
+- `GET /info` - Server information and capabilities
+- `POST /message` - MCP JSON-RPC message endpoint
+
+### Option 2: Docker
+
+```bash
+# Build and run with Docker
+docker compose up -d
+
+# Or build manually
+docker build -t ustaxes-mcp .
+docker run -p 3000:3000 ustaxes-mcp
+```
+
+### Option 3: Stdio (for local MCP clients)
+
+```bash
+# Start stdio server
+npm start
+```
+
+## HTTP API Usage
+
+### Health Check
+
+```bash
+curl http://localhost:3000/health
+```
+
+Response:
+
+```json
+{
+  "status": "ok",
+  "service": "ustaxes-mcp-http-server",
+  "version": "1.0.0",
+  "availableTools": 25,
+  "activeSessions": 1
+}
+```
+
+### Server Information
+
+```bash
+curl http://localhost:3000/info
+```
+
+Response:
+
+```json
+{
+  "name": "ustaxes-http-server",
+  "version": "1.0.0",
+  "description": "MCP server for programmatic UsTaxes tax return preparation",
+  "protocol": "mcp",
+  "transport": "http",
+  "capabilities": {
+    "tools": ["ustaxes_set_filing_status", "ustaxes_add_w2", ...],
+    "resources": true
+  }
+}
+```
+
+### Call MCP Tools
+
+Send JSON-RPC 2.0 messages to `/message`:
+
+```bash
+curl -X POST http://localhost:3000/message \
+  -H "Content-Type: application/json" \
+  -H "X-Session-ID: my-session-123" \
+  -d '{
+    "jsonrpc": "2.0",
+    "id": 1,
+    "method": "tools/list",
+    "params": {}
+  }'
+```
+
+```bash
+curl -X POST http://localhost:3000/message \
+  -H "Content-Type: application/json" \
+  -H "X-Session-ID: my-session-123" \
+  -d '{
+    "jsonrpc": "2.0",
+    "id": 2,
+    "method": "tools/call",
+    "params": {
+      "name": "ustaxes_set_filing_status",
+      "arguments": {
+        "year": 2024,
+        "status": "S"
+      }
+    }
+  }'
+```
+
+### Session Management
+
+Use the `X-Session-ID` header to maintain separate tax return states:
+
+```bash
+# Session 1 - Client A's tax return
+curl -H "X-Session-ID: client-a" ...
+
+# Session 2 - Client B's tax return
+curl -H "X-Session-ID: client-b" ...
+```
+
+## Configuration for MCP Clients
+
+### Claude Desktop / Claude Code
+
+**stdio transport (local):**
 
 ```json
 {
   "mcpServers": {
     "ustaxes": {
-      "command": "node",
+      "command": "npx",
       "args": [
-        "/path/to/UsTaxes/.claude/mcp-servers/ustaxes-server/dist/index.js"
-      ],
-      "env": {}
+        "-y",
+        "tsx",
+        "/path/to/UsTaxes/.claude/mcp-servers/ustaxes-server/src/index.ts"
+      ]
     }
   }
 }
 ```
 
-### Tools Available
+**HTTP transport:**
+
+```json
+{
+  "mcpServers": {
+    "ustaxes": {
+      "url": "http://localhost:3000",
+      "transport": "http"
+    }
+  }
+}
+```
+
+### Custom LLM Integration
+
+Any LLM can integrate by:
+
+1. Sending JSON-RPC 2.0 messages to `POST /message`
+2. Using `tools/list` to discover available tools
+3. Using `tools/call` to execute tax preparation actions
+4. Using `resources/list` and `resources/read` to query return state
+
+See [Integration Guide](docs/INTEGRATION.md) for detailed examples.
+
+## Tools Available
 
 #### Personal Information
 
@@ -105,70 +254,91 @@ npm run build
 ### Resources
 
 - `return://[year]/federal` - Federal return summary
-- `return://[year]/state/[state]` - State return summary
+- `return://[year]/state` - State return summary
 - `return://[year]/summary` - Complete tax summary
 
-## Example: Complete Tax Return
+## Example: Complete Tax Return via HTTP
 
-```typescript
+```javascript
+const BASE_URL = 'http://localhost:3000/message'
+const SESSION_ID = 'client-session-123'
+
+async function mcpCall(method, params) {
+  const response = await fetch(BASE_URL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Session-ID': SESSION_ID
+    },
+    body: JSON.stringify({
+      jsonrpc: '2.0',
+      id: Math.random(),
+      method,
+      params
+    })
+  })
+  return response.json()
+}
+
 // 1. Set filing status
-await callTool('ustaxes_set_filing_status', {
-  year: 2024,
-  status: 'MFJ'
+await mcpCall('tools/call', {
+  name: 'ustaxes_set_filing_status',
+  arguments: { year: 2024, status: 'S' }
 })
 
 // 2. Add primary taxpayer
-await callTool('ustaxes_add_primary_person', {
-  year: 2024,
-  firstName: 'John',
-  lastName: 'Doe',
-  ssn: '123-45-6789',
-  dateOfBirth: '1980-01-15',
-  address: {
-    address: '123 Main St',
-    city: 'Boston',
-    state: 'MA',
-    zip: '02101'
+await mcpCall('tools/call', {
+  name: 'ustaxes_add_primary_person',
+  arguments: {
+    year: 2024,
+    firstName: 'John',
+    lastName: 'Doe',
+    ssn: '123-45-6789',
+    dateOfBirth: '1980-01-15',
+    address: {
+      address: '123 Main St',
+      city: 'Boston',
+      state: 'MA',
+      zip: '02101'
+    }
   }
 })
 
-// 3. Add spouse
-await callTool('ustaxes_add_spouse', {
-  year: 2024,
-  firstName: 'Jane',
-  lastName: 'Doe',
-  ssn: '987-65-4321',
-  dateOfBirth: '1982-03-20'
+// 3. Add W-2 income
+await mcpCall('tools/call', {
+  name: 'ustaxes_add_w2',
+  arguments: {
+    year: 2024,
+    personRole: 'PRIMARY',
+    employer: {
+      name: 'Tech Corp',
+      EIN: '12-3456789',
+      address: {
+        address: '456 Corporate Dr',
+        city: 'Boston',
+        state: 'MA',
+        zip: '02102'
+      }
+    },
+    occupation: 'Software Engineer',
+    wages: 85000,
+    federalWithholding: 12000,
+    socialSecurityWages: 85000,
+    socialSecurityWithholding: 5270,
+    medicareWages: 85000,
+    medicareWithholding: 1233,
+    stateWages: 85000,
+    stateWithholding: 4250
+  }
 })
 
-// 4. Add W-2 income
-await callTool('ustaxes_add_w2', {
-  year: 2024,
-  employer: {
-    name: 'Tech Corp',
-    EIN: '12-3456789',
-    address: {
-      address: '456 Corporate Dr',
-      city: 'Boston',
-      state: 'MA',
-      zip: '02102'
-    }
-  },
-  wages: 120000,
-  federalWithholding: 18000,
-  socialSecurityWages: 120000,
-  socialSecurityWithholding: 7440,
-  medicareWages: 120000,
-  medicareWithholding: 1740,
-  stateWages: 120000,
-  stateWithholding: 6000,
-  personRole: 'PRIMARY'
-})
-
-// 5. Generate PDFs
-await callTool('ustaxes_generate_all_pdfs', {
-  year: 2024,
-  outputDir: '/tmp/tax-returns-2024'
+// 4. Generate PDFs
+await mcpCall('tools/call', {
+  name: 'ustaxes_generate_all_pdfs',
+  arguments: {
+    year: 2024,
+    outputDir: '/tmp/tax-returns-2024'
+  }
 })
 ```
 
@@ -195,8 +365,11 @@ npm run test:coverage
 ## Development
 
 ```bash
-# Watch mode during development
+# Watch mode during development (stdio)
 npm run dev
+
+# Watch mode during development (HTTP)
+npm run dev:http
 
 # Lint code
 npm run lint
@@ -207,10 +380,26 @@ npm run lint:fix
 
 ## Security
 
+- **No authentication by default** - Deploy behind a reverse proxy with auth for production
 - SSNs and EINs are never logged
 - All PII is handled securely
 - State is stored in-memory only (not persisted by default)
 - PDF generation uses sandboxed environment
+- Use `X-Session-ID` header to isolate client sessions
+
+### Production Deployment
+
+For production use, deploy behind nginx or another reverse proxy with:
+
+- TLS/HTTPS encryption
+- Authentication (OAuth, API keys, etc.)
+- Rate limiting
+- IP whitelisting
+
+## Environment Variables
+
+- `PORT` - HTTP server port (default: 3000)
+- `NODE_ENV` - Environment (development/production)
 
 ## Limitations
 
@@ -220,6 +409,12 @@ npm run lint:fix
 - Does NOT provide tax advice
 - Does NOT guarantee audit protection
 - User responsible for accuracy of filed returns
+
+## Documentation
+
+- [API Reference](docs/API_REFERENCE.md) - Complete tool documentation
+- [Examples](docs/EXAMPLES.md) - Practical usage examples
+- [Integration Guide](docs/INTEGRATION.md) - LLM integration patterns
 
 ## License
 

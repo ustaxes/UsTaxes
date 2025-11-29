@@ -1,6 +1,7 @@
 {
   "extends": "../../../tsconfig.path.json",
   "compilerOptions": {
+    "baseUrl": "../../..",
     "target": "ES2022",
     "module": "ESNext",
     "moduleResolution": "bundler",
@@ -16,7 +17,10 @@
     "sourceMap": true,
     "types": ["node", "jest"],
     "allowImportingTsExtensions": true,
-    "noEmit": true
+    "noEmit": true,
+    "paths": {
+      "ustaxes/*": ["src/*"]
+    }
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist", "tests"]

@@ -5,12 +5,15 @@
   "type": "module",
   "main": "src/index.ts",
   "bin": {
-    "ustaxes-mcp": "./src/index.ts"
+    "ustaxes-mcp": "./src/index.ts",
+    "ustaxes-mcp-http": "./src/http-server.ts"
   },
   "scripts": {
     "build": "echo 'Using tsx - no build needed'",
-    "dev": "tsx watch src/index.ts",
-    "start": "tsx src/index.ts",
+    "dev": "tsx --tsconfig tsconfig.json src/index.ts",
+    "dev:http": "tsx --tsconfig tsconfig.json src/http-server.ts",
+    "start": "tsx --tsconfig tsconfig.json src/index.ts",
+    "start:http": "tsx --tsconfig tsconfig.json src/http-server.ts",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
@@ -19,9 +22,14 @@
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^0.5.0",
-    "pdf-lib": "^1.17.1"
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "pdf-lib": "^1.17.1",
+    "tsconfig-paths": "^4.2.0"
   },
   "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
     "@types/jest": "^29.5.12",
     "@types/node": "^22.10.5",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
