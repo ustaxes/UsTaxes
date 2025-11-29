@@ -27,6 +27,7 @@ Set the tax filing status for a given year.
 | `status` | string | ✅ | Filing status code |
 
 **Filing Status Codes:**
+
 - `S` - Single
 - `MFJ` - Married Filing Jointly
 - `MFS` - Married Filing Separately
@@ -34,6 +35,7 @@ Set the tax filing status for a given year.
 - `W` - Qualifying Widow(er)
 
 **Example:**
+
 ```typescript
 await callTool('ustaxes_set_filing_status', {
   year: 2024,
@@ -42,6 +44,7 @@ await callTool('ustaxes_set_filing_status', {
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -82,6 +85,7 @@ Add or update the primary taxpayer information.
 | `foreignPostalCode` | string | ❌ | Foreign postal code |
 
 **Example:**
+
 ```typescript
 await callTool('ustaxes_add_primary_person', {
   year: 2024,
@@ -99,6 +103,7 @@ await callTool('ustaxes_add_primary_person', {
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -126,6 +131,7 @@ Add or update spouse information (required for Married Filing Jointly).
 | `dateOfBirth` | string | ✅ | Date of birth (YYYY-MM-DD) |
 
 **Example:**
+
 ```typescript
 await callTool('ustaxes_add_spouse', {
   year: 2024,
@@ -137,6 +143,7 @@ await callTool('ustaxes_add_spouse', {
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -166,6 +173,7 @@ Add a dependent (child or qualifying relative).
 | `months` | number | ✅ | Months lived with you (0-12) |
 
 **Relationship Values:**
+
 - `SON`
 - `DAUGHTER`
 - `STEPCHILD`
@@ -175,6 +183,7 @@ Add a dependent (child or qualifying relative).
 - `OTHER`
 
 **Example:**
+
 ```typescript
 await callTool('ustaxes_add_dependent', {
   year: 2024,
@@ -188,6 +197,7 @@ await callTool('ustaxes_add_dependent', {
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -232,6 +242,7 @@ Add W-2 wage income from an employer.
 | `address` | object | ✅ | Employer address |
 
 **Example:**
+
 ```typescript
 await callTool('ustaxes_add_w2', {
   year: 2024,
@@ -260,6 +271,7 @@ await callTool('ustaxes_add_w2', {
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -288,6 +300,7 @@ Add 1099-INT interest income.
 | `payerTIN` | string | ❌ | Payer's EIN |
 
 **Example:**
+
 ```typescript
 await callTool('ustaxes_add_1099_int', {
   year: 2024,
@@ -314,6 +327,7 @@ Add 1099-DIV dividend income.
 | `capitalGains` | number | ❌ | Box 2a - Total capital gain distributions |
 
 **Example:**
+
 ```typescript
 await callTool('ustaxes_add_1099_div', {
   year: 2024,
@@ -343,6 +357,7 @@ Add 1099-B brokerage transactions (stocks, bonds, etc.).
 | `shortTerm` | boolean | ✅ | Short-term (true) or long-term (false) |
 
 **Example:**
+
 ```typescript
 await callTool('ustaxes_add_1099_b', {
   year: 2024,
@@ -389,6 +404,7 @@ Add rental property income and expenses.
 | `other` | number | Other expenses |
 
 **Example:**
+
 ```typescript
 await callTool('ustaxes_add_property', {
   year: 2024,
@@ -429,6 +445,7 @@ Set itemized deductions (use if total exceeds standard deduction).
 | `charitableNonCash` | number | ❌ | Charitable contributions (non-cash) |
 
 **Example:**
+
 ```typescript
 await callTool('ustaxes_set_itemized_deductions', {
   year: 2024,
@@ -453,6 +470,7 @@ Add student loan interest (Form 1098-E).
 | `interest` | number | ✅ | Box 1 - Student loan interest paid |
 
 **Example:**
+
 ```typescript
 await callTool('ustaxes_add_1098e', {
   year: 2024,
@@ -476,6 +494,7 @@ Add Health Savings Account contribution.
 | `employerContribution` | number | ❌ | Employer contribution portion |
 
 **Example:**
+
 ```typescript
 await callTool('ustaxes_add_hsa', {
   year: 2024,
@@ -500,6 +519,7 @@ Add Individual Retirement Arrangement contribution.
 | `contribution` | number | ✅ | Total contribution amount |
 
 **Example:**
+
 ```typescript
 await callTool('ustaxes_add_ira', {
   year: 2024,
@@ -524,6 +544,7 @@ Generate federal Form 1040 and all required schedules.
 | `outputPath` | string | ✅ | Full path for output PDF file |
 
 **Example:**
+
 ```typescript
 await callTool('ustaxes_generate_federal_pdf', {
   year: 2024,
@@ -532,19 +553,15 @@ await callTool('ustaxes_generate_federal_pdf', {
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
   "data": {
     "outputPath": "/tmp/federal-return-2024.pdf",
-    "formsIncluded": [
-      "Form 1040",
-      "Schedule 1",
-      "Schedule B",
-      "Schedule D"
-    ],
-    "totalTax": 15234.50,
-    "refundOrOwed": -2765.50
+    "formsIncluded": ["Form 1040", "Schedule 1", "Schedule B", "Schedule D"],
+    "totalTax": 15234.5,
+    "refundOrOwed": -2765.5
   },
   "message": "Federal PDF generated successfully"
 }
@@ -564,6 +581,7 @@ Generate state tax return PDF.
 | `outputPath` | string | ✅ | Full path for output PDF file |
 
 **Example:**
+
 ```typescript
 await callTool('ustaxes_generate_state_pdf', {
   year: 2024,
@@ -573,9 +591,10 @@ await callTool('ustaxes_generate_state_pdf', {
 ```
 
 **Supported States:**
+
 - `MA` - Massachusetts (Form 1)
 
-*(More states in development)*
+_(More states in development)_
 
 ---
 
@@ -590,6 +609,7 @@ Generate both federal and state PDFs in one call.
 | `outputDir` | string | ✅ | Directory for output PDFs |
 
 **Example:**
+
 ```typescript
 await callTool('ustaxes_generate_all_pdfs', {
   year: 2024,
@@ -598,6 +618,7 @@ await callTool('ustaxes_generate_all_pdfs', {
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -630,6 +651,7 @@ Export complete tax return state to JSON file.
 | `outputPath` | string | ✅ | Full path for output JSON file |
 
 **Example:**
+
 ```typescript
 await callTool('ustaxes_export_state', {
   year: 2024,
@@ -638,6 +660,7 @@ await callTool('ustaxes_export_state', {
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -666,6 +689,7 @@ Import tax return state from previously exported JSON file.
 | `statePath` | string | ✅ | Full path to JSON state file |
 
 **Example:**
+
 ```typescript
 await callTool('ustaxes_import_state', {
   year: 2024,
@@ -685,6 +709,7 @@ Clear all data for a specific tax year.
 | `year` | number | ✅ | Tax year to clear (2019-2024) |
 
 **Example:**
+
 ```typescript
 await callTool('ustaxes_clear_year', {
   year: 2024
@@ -704,6 +729,7 @@ The MCP server provides queryable resources using the `return://` URI scheme.
 **Description:** Summary of federal return data including income, deductions, and tax calculation.
 
 **Example Response:**
+
 ```json
 {
   "year": 2024,
@@ -735,6 +761,7 @@ The MCP server provides queryable resources using the `return://` URI scheme.
 **Description:** Summary of state return data.
 
 **Example Response:**
+
 ```json
 {
   "year": 2024,
@@ -756,21 +783,25 @@ The MCP server provides queryable resources using the `return://` URI scheme.
 ## Common Types
 
 ### FilingStatus
+
 ```typescript
 type FilingStatus = 'S' | 'MFJ' | 'MFS' | 'HOH' | 'W'
 ```
 
 ### PersonRole
+
 ```typescript
 type PersonRole = 'PRIMARY' | 'SPOUSE'
 ```
 
 ### TaxYear
+
 ```typescript
 type TaxYear = 2019 | 2020 | 2021 | 2022 | 2023 | 2024
 ```
 
 ### ToolResult
+
 ```typescript
 interface ToolResult {
   success: boolean
@@ -796,6 +827,7 @@ All tools return a consistent error format:
 ```
 
 **Common Errors:**
+
 - Invalid tax year (not 2019-2024)
 - Missing required fields
 - Invalid SSN format (must be XXX-XX-XXXX)

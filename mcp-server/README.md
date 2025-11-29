@@ -171,7 +171,7 @@ curl -H "X-Session-ID: client-b" ...
       "args": [
         "-y",
         "tsx",
-        "/path/to/UsTaxes/.claude/mcp-servers/ustaxes-server/src/index.ts"
+        "/path/to/UsTaxes/mcp-server/src/index.ts"
       ]
     }
   }

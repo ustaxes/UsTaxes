@@ -4,7 +4,7 @@ export default {
   roots: ['<rootDir>/tests'],
   testMatch: ['**/*.test.ts'],
   moduleNameMapper: {
-    '^ustaxes/(.*)$': '<rootDir>/../../../src/$1',
+    '^ustaxes/(.*)$': '<rootDir>/../src/$1',
     '^(\\.{1,2}/.*)\\.js$': '$1'
   },
   transform: {

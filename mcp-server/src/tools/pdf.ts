@@ -25,11 +25,8 @@ const downloadPDFFromFilesystem = async (url: string): Promise<PDFDocument> => {
   const urlPath = url.startsWith('/') ? url.slice(1) : url
 
   // Determine the base path for forms (assuming we're in MCP server directory)
-  // From .claude/mcp-servers/ustaxes-server/src/tools/ we need to go up 5 levels to reach project root
-  const formsBasePath = path.join(
-    __dirname,
-    '../../../../../public/forms/Y2024'
-  )
+  // From mcp-server/src/tools/ we need to go up 3 levels to reach project root
+  const formsBasePath = path.join(__dirname, '../../../public/forms/Y2024')
   const pdfPath = path.join(formsBasePath, urlPath)
 
   // Read the PDF file

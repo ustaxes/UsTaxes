@@ -17,6 +17,7 @@ Real-world examples of preparing complete tax returns using the UsTaxes MCP Serv
 ## Simple W-2 Employee
 
 ### Scenario
+
 Single filer, one W-2 job, standard deduction, no dependents.
 
 ### Workflow
@@ -63,7 +64,7 @@ await callTool('ustaxes_add_w2', {
   socialSecurityWages: 85000,
   socialSecurityWithholding: 5270,
   medicareWages: 85000,
-  medicareWithholding: 1232.50,
+  medicareWithholding: 1232.5,
   stateWages: 85000,
   stateWithholding: 4250,
   state: 'MA'
@@ -83,6 +84,7 @@ await callTool('ustaxes_generate_state_pdf', {
 ```
 
 ### Expected Tax Outcome
+
 - Gross Income: $85,000
 - Standard Deduction: $14,600
 - Taxable Income: $70,400
@@ -94,6 +96,7 @@ await callTool('ustaxes_generate_state_pdf', {
 ## Married Filing Jointly with Dependents
 
 ### Scenario
+
 Married couple, two W-2 jobs, two children, standard deduction, IRA contributions.
 
 ### Workflow
@@ -197,7 +200,7 @@ await callTool('ustaxes_add_w2', {
   socialSecurityWages: 95000,
   socialSecurityWithholding: 5890,
   medicareWages: 95000,
-  medicareWithholding: 1377.50,
+  medicareWithholding: 1377.5,
   stateWages: 95000,
   stateWithholding: 4750,
   state: 'MA'
@@ -226,6 +229,7 @@ await callTool('ustaxes_generate_all_pdfs', {
 ```
 
 ### Expected Tax Outcome
+
 - Combined Gross Income: $235,000
 - IRA Deductions: -$14,000
 - Adjusted Gross Income: $221,000
@@ -240,6 +244,7 @@ await callTool('ustaxes_generate_all_pdfs', {
 ## Self-Employed with Rental Property
 
 ### Scenario
+
 Head of Household, self-employed income (Schedule C), rental property income (Schedule E), HSA contributions.
 
 ### Workflow
@@ -330,6 +335,7 @@ await callTool('ustaxes_generate_all_pdfs', {
 ```
 
 ### Expected Forms Generated
+
 - Form 1040
 - Schedule 1 (Additional Income and Adjustments)
 - Schedule C (Self-Employment Income)
@@ -341,6 +347,7 @@ await callTool('ustaxes_generate_all_pdfs', {
 ## Investment Income and Capital Gains
 
 ### Scenario
+
 Single filer with W-2 income plus significant investment income (interest, dividends, capital gains).
 
 ### Workflow
@@ -439,12 +446,14 @@ await callTool('ustaxes_generate_federal_pdf', {
 ```
 
 ### Expected Forms
+
 - Form 1040
 - Schedule B (Interest and Dividend Income)
 - Schedule D (Capital Gains and Losses)
 - Form 8949 (Sales and Dispositions of Capital Assets)
 
 ### Expected Tax Treatment
+
 - W-2 Wages: $120,000 (ordinary income)
 - Interest: $1,200 (ordinary income)
 - Ordinary Dividends: $6,600 (ordinary income)
@@ -456,7 +465,9 @@ await callTool('ustaxes_generate_federal_pdf', {
 ## Complete Return with All Features
 
 ### Scenario
+
 Married Filing Jointly with comprehensive tax situation including:
+
 - Multiple W-2s
 - Investment income
 - Rental property
@@ -524,7 +535,7 @@ await callTool('ustaxes_add_w2', {
   wages: 180000,
   federalWithholding: 28000,
   socialSecurityWages: 168600, // SS wage cap
-  socialSecurityWithholding: 10453.20,
+  socialSecurityWithholding: 10453.2,
   medicareWages: 180000,
   medicareWithholding: 2610,
   stateWages: 180000,
@@ -658,6 +669,7 @@ await callTool('ustaxes_generate_all_pdfs', {
 ```
 
 ### Expected Forms
+
 - Form 1040
 - Schedule 1 (Additional Income and Adjustments to Income)
 - Schedule A (Itemized Deductions)

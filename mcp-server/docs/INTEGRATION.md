@@ -64,7 +64,7 @@ In Claude Code, the ustaxes MCP server should now be available. You can check av
 
 ```typescript
 // In conversation with Claude Code
-"List available MCP servers"
+'List available MCP servers'
 
 // Response should include "ustaxes"
 ```
@@ -73,7 +73,7 @@ In Claude Code, the ustaxes MCP server should now be available. You can check av
 
 ```typescript
 // Ask Claude Code to test the MCP server
-"Use the ustaxes MCP server to set filing status to Single for 2024"
+'Use the ustaxes MCP server to set filing status to Single for 2024'
 
 // Claude will call:
 await callTool('ustaxes_set_filing_status', {
@@ -110,10 +110,10 @@ Create `.claude/commands/prepare-return.md`:
 ```markdown
 ---
 name: prepare-return
-description: "Interactive tax return preparation workflow"
+description: 'Interactive tax return preparation workflow'
 args:
   - name: year
-    description: "Tax year (default: 2024)"
+    description: 'Tax year (default: 2024)'
     required: false
 ---
 
@@ -148,16 +148,19 @@ Then use it:
 ### Step 1: Locate Claude Desktop Config
 
 **macOS:**
+
 ```bash
 ~/Library/Application Support/Claude/claude_desktop_config.json
 ```
 
 **Windows:**
+
 ```
 %APPDATA%\Claude\claude_desktop_config.json
 ```
 
 **Linux:**
+
 ```bash
 ~/.config/Claude/claude_desktop_config.json
 ```
@@ -309,17 +312,20 @@ Configuration is similar - provide the command and args to start the server.
 ### Server Not Showing Up
 
 **Check 1: Verify Node.js version**
+
 ```bash
 node --version
 # Should be 18.0.0 or higher
 ```
 
 **Check 2: Verify tsx is available**
+
 ```bash
 npx tsx --version
 ```
 
 **Check 3: Check absolute paths**
+
 ```bash
 # Path must be absolute, not relative
 # ❌ Wrong:
@@ -330,6 +336,7 @@ npx tsx --version
 ```
 
 **Check 4: Verify file exists**
+
 ```bash
 ls -la /path/to/UsTaxes/.claude/mcp-servers/ustaxes-server/src/index.ts
 ```
@@ -337,12 +344,14 @@ ls -la /path/to/UsTaxes/.claude/mcp-servers/ustaxes-server/src/index.ts
 ### Server Crashes on Startup
 
 **Check 1: View logs (Claude Code)**
+
 ```bash
 # Check stderr output
 tail -f ~/.claude/logs/mcp-*.log
 ```
 
 **Check 2: Test server manually**
+
 ```bash
 cd /path/to/UsTaxes/.claude/mcp-servers/ustaxes-server
 npx tsx src/index.ts
@@ -354,6 +363,7 @@ npx tsx src/index.ts
 ```
 
 **Check 3: Check dependencies**
+
 ```bash
 cd /path/to/UsTaxes/.claude/mcp-servers/ustaxes-server
 npm install
@@ -362,13 +372,15 @@ npm install
 ### Tool Calls Failing
 
 **Check 1: Verify tool exists**
+
 ```typescript
 // List available tools first
 const tools = await listTools()
-console.log(tools.map(t => t.name))
+console.log(tools.map((t) => t.name))
 ```
 
 **Check 2: Check parameter types**
+
 ```typescript
 // ❌ Wrong: year as string
 {
@@ -384,28 +396,32 @@ console.log(tools.map(t => t.name))
 ```
 
 **Check 3: Check SSN format**
+
 ```typescript
 // ❌ Wrong
-ssn: "123456789"
+ssn: '123456789'
 
 // ✅ Correct
-ssn: "123-45-6789"
+ssn: '123-45-6789'
 ```
 
 ### PDF Generation Fails
 
 **Check 1: Verify output directory exists**
+
 ```bash
 mkdir -p /tmp/tax-returns
 ```
 
 **Check 2: Check file permissions**
+
 ```bash
 touch /tmp/test-return.pdf
 # Should succeed without errors
 ```
 
 **Check 3: Check return completeness**
+
 ```typescript
 // Export state to verify data
 await callTool('ustaxes_export_state', {
