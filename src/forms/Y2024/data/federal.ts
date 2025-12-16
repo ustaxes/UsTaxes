@@ -34,7 +34,7 @@ const federalBrackets: FederalBrackets = {
     rates: [10, 12, 22, 24, 32, 35, 37],
     status: {
       [FilingStatus.S]: {
-        brackets: [11600, 47500, 100525, 191950, 243725, 609350],
+        brackets: [11600, 47150, 100525, 191950, 243725, 609350],
         deductions: [
           {
             name: 'Standard Deduction (Single)',
