@@ -544,9 +544,79 @@ export const questionTagNames: QuestionTagName[] = [
   'LIVE_APART_FROM_SPOUSE'
 ]
 
-export type ValueTag = 'string' | 'boolean'
+export type ValueTag = 'string' | 'boolean' | 'combobox' | 'none'
 
 export type Responses = Partial<QuestionTag> // Defines usable tag names for each question later defined,
+
+// Defines usable tag names for each question later defined,
+// and maps to a type which is the expected response type.
+export interface StateQuestionTag {
+  // oregon state questions
+  // page 2
+  OR_6A_TAXPAYER_SEVERELY_DISABLED: boolean
+  OR_6B_SPOUSE_SEVERELY_DISABLED: boolean
+  // page 4
+  OR_21_INTEREST_ON_INSTALLMENT_SALES: string
+  OR_24_POLITICAL_CONTRIBUTION_CREDIT: string
+  OR_25_TOTAL_STANDARD_CREDITS_FROM_OR_ASC: string
+  OR_28_TOTAL_CARRYFORWARD_CREDITS_FROM_OR_ASC: string
+  OR_30_TOTAL_CREDIT_RECAPTURES_FROM_OR_ASC: string
+  // page 5
+  OR_32_OREGON_INCOME_TAX_WITHHELD: string
+  OR_33_AMOUNT_APPLIED_FROM_PRIOR_YEAR_REFUND: string
+  OR_34_ESTIMATED_TAX_PAYMENTS: string
+  OR_36_53_KICKER_OREGON_SURPLUS_CREDIT: string
+  OR_37_TOTAL_REFUNDABLE_CREDITS_FROM_OR_ASC: string
+  OR_41_PENALTY_FOR_FILING_LATE: string
+  OR_42_INTEREST_ON_UNDERPAYMENT_OF_EST_TAX: string
+  OR_42a_EXCEPTION_NUMBER: string
+  OR_42b_ANNUALIZED: boolean
+  // page 6
+  OR_46_ESTIMATED_TAX: string
+  OR_47_CHARITABLE_CHECKOFF_DONATIONS: string
+  OR_48_POLITICAL_PARTY_3DOLLAR_CHECKOFF: string
+  OR_48a_TAXPAYER_POLITICAL_PARTY_CODE: string
+  OR_48b_SPOUSE_POLITICAL_PARTY_CODE: string
+  OR_49_529_COLLEGE_SAVINGS_PLAN_DEPOSITS: string
+  OR_53_DONATE_TO_STATE_SCHOOL_FUND: boolean
+}
+
+export type StateQuestionTagName = keyof StateQuestionTag
+
+// Typescript provides no way to access
+// keys of an interface at runtime.
+export const stateQuestionTagNames: StateQuestionTagName[] = [
+  // oregon state questions
+  // page 2
+  'OR_6A_TAXPAYER_SEVERELY_DISABLED',
+  'OR_6B_SPOUSE_SEVERELY_DISABLED',
+  // page 4
+  'OR_21_INTEREST_ON_INSTALLMENT_SALES',
+  'OR_24_POLITICAL_CONTRIBUTION_CREDIT',
+  'OR_25_TOTAL_STANDARD_CREDITS_FROM_OR_ASC',
+  'OR_28_TOTAL_CARRYFORWARD_CREDITS_FROM_OR_ASC',
+  'OR_30_TOTAL_CREDIT_RECAPTURES_FROM_OR_ASC',
+  // page 5
+  'OR_32_OREGON_INCOME_TAX_WITHHELD',
+  'OR_33_AMOUNT_APPLIED_FROM_PRIOR_YEAR_REFUND',
+  'OR_34_ESTIMATED_TAX_PAYMENTS',
+  'OR_36_53_KICKER_OREGON_SURPLUS_CREDIT',
+  'OR_37_TOTAL_REFUNDABLE_CREDITS_FROM_OR_ASC',
+  'OR_41_PENALTY_FOR_FILING_LATE',
+  'OR_42_INTEREST_ON_UNDERPAYMENT_OF_EST_TAX',
+  'OR_42a_EXCEPTION_NUMBER',
+  'OR_42b_ANNUALIZED',
+  // page 6
+  'OR_46_ESTIMATED_TAX',
+  'OR_47_CHARITABLE_CHECKOFF_DONATIONS',
+  'OR_48_POLITICAL_PARTY_3DOLLAR_CHECKOFF',
+  'OR_48a_TAXPAYER_POLITICAL_PARTY_CODE',
+  'OR_48b_SPOUSE_POLITICAL_PARTY_CODE',
+  'OR_49_529_COLLEGE_SAVINGS_PLAN_DEPOSITS',
+  'OR_53_DONATE_TO_STATE_SCHOOL_FUND'
+]
+
+export type StateResponses = Partial<StateQuestionTag> // Defines usable tag names for each question later defined,
 
 export enum CreditType {
   AdvanceChildTaxCredit = 'CreditType/AdvanceChildTaxCredit',
@@ -573,6 +643,7 @@ export interface Information<D = Date> {
   questions: Responses
   credits: Credit[]
   stateResidencies: StateResidency[]
+  stateQuestions: StateResponses
   healthSavingsAccounts: HealthSavingsAccount<D>[]
   individualRetirementArrangements: Ira[]
 }
