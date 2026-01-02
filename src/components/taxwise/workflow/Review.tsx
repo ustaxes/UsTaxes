@@ -1,16 +1,18 @@
 import { ReactElement, useEffect, useMemo, useState } from 'react'
 import {
   Box,
+  Button,
   Chip,
   Divider,
   Grid,
   Paper,
+  Snackbar,
   Typography,
   makeStyles
 } from '@material-ui/core'
 import Alert from '@material-ui/lab/Alert'
 import { useSelector } from 'react-redux'
-import { Asset, Information, TaxYear } from 'ustaxes/core/data'
+import { Asset, Information, TaxYear, TaxYears } from 'ustaxes/core/data'
 import { YearsTaxesState } from 'ustaxes/redux'
 import yearFormBuilder from 'ustaxes/forms/YearForms'
 import Summary from 'ustaxes/components/Summary'
@@ -22,6 +24,10 @@ import { run } from 'ustaxes/core/util'
 import { buildDiagnostics } from '../validation/diagnostics'
 import { getModule } from 'ustaxes/core/stateModules/StateRegistry'
 import { buildReturnPacket } from 'ustaxes/core/returnPacket/adapters'
+import { TaxReturnPacket } from 'ustaxes/core/returnPacket/types'
+import { generateClientPacketPdf } from 'ustaxes/pdf/ClientPacketPdf'
+import { ComputedSummary, PdfDiagnostic } from 'ustaxes/pdf/pdfTypes'
+import { downloadBlob, openBlobInNewTab } from 'ustaxes/pdf/downloadPdf'
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -51,6 +57,8 @@ const Review = (): ReactElement => {
   const [stateErrors, setStateErrors] = useState<string[]>([])
   const [irsForms, setIrsForms] = useState<Form[]>([])
   const [stateForms, setStateForms] = useState<StateForm[]>([])
+  const [isGeneratingPdf, setIsGeneratingPdf] = useState(false)
+  const [pdfError, setPdfError] = useState<string | null>(null)
 
   const year: TaxYear = useSelector(
     (state: YearsTaxesState) => state.activeYear
@@ -86,6 +94,116 @@ const Review = (): ReactElement => {
     const computeResult = module.compute(packet)
     return computeResult.diagnostics
   }, [activeReturn, auditLog, info])
+
+  const packet = useMemo<TaxReturnPacket | null>(() => {
+    if (!activeReturn) {
+      return null
+    }
+    return buildReturnPacket(info, activeReturn, auditLog)
+  }, [activeReturn, auditLog, info])
+
+  const computedSummary = useMemo<ComputedSummary | null>(() => {
+    if (!activeReturn) {
+      return null
+    }
+    const f1040 = irsForms.find((form) => form.tag === 'f1040') as
+      | Record<string, () => number | undefined>
+      | undefined
+    const getLine = (line: string): number | undefined =>
+      f1040 && typeof f1040[line] === 'function' ? f1040[line]() : undefined
+
+    const mapDiagnostics = (items: { level: string; message: string }[]) =>
+      items.map(
+        (item): PdfDiagnostic => ({
+          level: item.level as PdfDiagnostic['level'],
+          message: item.message
+        })
+      )
+
+    const taxpayerName = packet?.taxpayer
+      ? `${packet.taxpayer.firstName ?? ''} ${
+          packet.taxpayer.lastName ?? ''
+        }`.trim()
+      : 'Taxpayer'
+    const spouseName = packet?.spouse
+      ? `${packet.spouse.firstName ?? ''} ${
+          packet.spouse.lastName ?? ''
+        }`.trim()
+      : ''
+    const displayName = spouseName
+      ? `${taxpayerName} & ${spouseName}`.trim()
+      : taxpayerName
+
+    return {
+      taxpayerDisplayName: displayName || 'Taxpayer',
+      taxYear: `${TaxYears[activeReturn.taxYear]}`,
+      state: activeReturn.state,
+      filingStatus: info.taxPayer.filingStatus,
+      status: activeReturn.status,
+      preparedAt: new Date(activeReturn.updatedAt).toLocaleString(),
+      totals: {
+        refundAmount: getLine('l35a'),
+        amountOwed: getLine('l37'),
+        adjustedGrossIncome: getLine('l11'),
+        taxableIncome: getLine('l15'),
+        totalTax: getLine('l24'),
+        payments: getLine('l33'),
+        credits: getLine('l32')
+      },
+      diagnostics: {
+        federal: mapDiagnostics(diagnostics),
+        state: mapDiagnostics(stateDiagnostics)
+      }
+    }
+  }, [activeReturn, diagnostics, irsForms, packet, stateDiagnostics])
+
+  const generatePdfBlob = async (): Promise<Blob | null> => {
+    if (!packet || !computedSummary) {
+      setPdfError('Create a return before generating the PDF packet.')
+      return null
+    }
+    setIsGeneratingPdf(true)
+    setPdfError(null)
+    try {
+      return await generateClientPacketPdf(packet, computedSummary, {
+        includeDiagnostics: true,
+        format: 'client'
+      })
+    } catch (error) {
+      setPdfError('Unable to generate PDF packet. Please try again.')
+      return null
+    } finally {
+      setIsGeneratingPdf(false)
+    }
+  }
+
+  const onDownloadPdf = async (): Promise<void> => {
+    const blob = await generatePdfBlob()
+    if (!blob || !computedSummary) {
+      return
+    }
+    const lastName = packet?.taxpayer?.lastName
+    const filename = lastName
+      ? `TaxReturn_${lastName}_${computedSummary.taxYear}_${computedSummary.state}.pdf`
+      : `TaxReturn_${computedSummary.taxYear}_${computedSummary.state}.pdf`
+    downloadBlob(blob, filename)
+  }
+
+  const onPrintPdf = async (): Promise<void> => {
+    const blob = await generatePdfBlob()
+    if (!blob) {
+      return
+    }
+    const tab = openBlobInNewTab(blob)
+    if (!tab) {
+      setPdfError('Pop-up blocked. Please allow pop-ups to print.')
+      return
+    }
+    tab.addEventListener('load', () => {
+      tab.focus()
+      tab.print()
+    })
+  }
 
   useEffect(() => {
     const builder = yearFormBuilder(year, info, assets)
@@ -182,6 +300,28 @@ const Review = (): ReactElement => {
                   </Typography>
                 )}
               </Box>
+              <Box marginTop={2} display="flex" style={{ gap: 12 }}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={() => {
+                    void onDownloadPdf()
+                  }}
+                  disabled={isGeneratingPdf}
+                >
+                  {isGeneratingPdf ? 'Generating PDF...' : 'Download PDF'}
+                </Button>
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  onClick={() => {
+                    void onPrintPdf()
+                  }}
+                  disabled={isGeneratingPdf}
+                >
+                  Print
+                </Button>
+              </Box>
             </Paper>
             <Box marginTop={2}>
               <Paper elevation={0} variant="outlined" className={classes.card}>
@@ -249,6 +389,15 @@ const Review = (): ReactElement => {
           </Grid>
         </Grid>
       </Box>
+      <Snackbar
+        open={pdfError !== null}
+        autoHideDuration={6000}
+        onClose={() => setPdfError(null)}
+      >
+        <Alert onClose={() => setPdfError(null)} severity="error">
+          {pdfError}
+        </Alert>
+      </Snackbar>
     </Box>
   )
 }
