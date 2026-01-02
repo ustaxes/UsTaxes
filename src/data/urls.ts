@@ -1,4 +1,12 @@
 const Urls = {
+  app: {
+    dashboard: '/dashboard',
+    newReturn: '/returns/new',
+    credits: '/credits',
+    state: '/state',
+    review: '/review',
+    pdf: '/pdf'
+  },
   usTaxes: {
     start: '/start'
   },
@@ -41,6 +49,6 @@ const Urls = {
   default: ''
 }
 
-Urls.default = Urls.usTaxes.start
+Urls.default = Urls.app.dashboard
 
 export default Urls

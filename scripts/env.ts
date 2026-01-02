@@ -1,8 +1,8 @@
 import { exec } from 'child_process'
 
 // fs.cp since 16.7
-export const requiredNodeVersion = [16, 7]
-export const requiredNpmVersion = [7, 0]
+export const requiredNodeVersion = [20, 0]
+export const requiredNpmVersion = [9, 0]
 
 const showError = (...errLines: string[]): void => {
   const maxLineLen = 78

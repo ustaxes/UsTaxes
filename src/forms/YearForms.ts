@@ -210,6 +210,11 @@ export class CreateForms {
         ...baseConfig,
         createF1040: takeSecond(create1040For2024),
         createStateReturn: (f: Form) => createStateReturn2024(f as F1040For2024)
+      },
+      Y2025: {
+        ...baseConfig,
+        createF1040: () => left([F1040Error.unsupportedTaxYear]),
+        createStateReturn: () => left([StateFormError.unsupportedTaxYear])
       }
     }
 
