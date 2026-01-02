@@ -27,6 +27,7 @@ import { TaxYears } from 'ustaxes/core/data'
 import TaxWiseNav from './TaxWiseNav'
 import TaxWiseRightPanel from './TaxWiseRightPanel'
 import { TaxWiseSection } from './routes'
+import { useAutosave } from './useAutosave'
 
 const drawerWidth = 240
 const panelWidth = 320
@@ -120,7 +121,8 @@ const TaxWiseShell = ({
 
   const progressValue = useMemo(() => 38, [])
   const returnStatus = useMemo(() => 'Draft', [])
-  const saveStatus = useMemo(() => 'Saved', [])
+  const saveStatus = useAutosave()
+  const saveLabel = saveStatus === 'saving' ? 'Saving...' : 'Saved'
 
   useEffect(() => {
     setNavOpen(!isMobile)
@@ -146,7 +148,7 @@ const TaxWiseShell = ({
               UsTaxes Pro · {TaxYears[activeYear]} Return
             </Typography>
             <div className={classes.grow} />
-            <Typography className={classes.saveStatus}>{saveStatus}</Typography>
+            <Typography className={classes.saveStatus}>{saveLabel}</Typography>
             <LinearProgress
               variant="determinate"
               value={progressValue}

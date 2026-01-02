@@ -2,6 +2,7 @@
 import { CombinedState, combineReducers, Reducer } from 'redux'
 import { Asset, FilingStatus, Information, TaxYear } from 'ustaxes/core/data'
 import { YearsTaxesState } from '.'
+import { AuditLogEntry, SaveStatus } from './types'
 import { ActionName, Actions } from './actions'
 import { stringToDateInfo } from './data'
 
@@ -476,6 +477,38 @@ const assetReducer = (
   }
 }
 
+const saveStatusReducer = (
+  state: SaveStatus | undefined,
+  action: Actions
+): SaveStatus => {
+  const newState = state ?? 'idle'
+
+  switch (action.type) {
+    case ActionName.SET_SAVE_STATUS: {
+      return action.formData
+    }
+    default: {
+      return newState
+    }
+  }
+}
+
+const auditLogReducer = (
+  state: AuditLogEntry[] | undefined,
+  action: Actions
+): AuditLogEntry[] => {
+  const newState = state ?? []
+
+  switch (action.type) {
+    case ActionName.ADD_AUDIT_LOG_ENTRY: {
+      return [action.formData, ...newState].slice(0, 200)
+    }
+    default: {
+      return newState
+    }
+  }
+}
+
 const rootReducer: Reducer<
   CombinedState<YearsTaxesState>,
   Actions
@@ -488,7 +521,9 @@ const rootReducer: Reducer<
   Y2023: guardByYear('Y2023'),
   Y2024: guardByYear('Y2024'),
   Y2025: guardByYear('Y2025'),
-  activeYear
+  auditLog: auditLogReducer,
+  activeYear,
+  saveStatus: saveStatusReducer
 }) as Reducer<CombinedState<YearsTaxesState>, Actions>
 
 export default rootReducer

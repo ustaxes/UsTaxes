@@ -26,6 +26,8 @@ import { migrateEachYear, migrateAgeAndBlindness } from './migration'
 type SerializedState = { [K in TaxYear]: Information } & {
   assets: Asset<string>[]
   activeYear: TaxYear
+  auditLog: { timestamp: string }[]
+  saveStatus: string
 }
 
 export type USTSerializedState = NonNullable<PersistedState> & SerializedState

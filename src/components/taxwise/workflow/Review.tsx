@@ -19,6 +19,7 @@ import StateForm from 'ustaxes/core/stateForms/Form'
 import { createSummary } from 'ustaxes/components/SummaryData'
 import { Currency } from 'ustaxes/components/input'
 import { run } from 'ustaxes/core/util'
+import { buildDiagnostics } from '../validation/diagnostics'
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -59,6 +60,10 @@ const Review = (): ReactElement => {
     (state: YearsTaxesState) => state.assets
   )
 
+  const diagnostics = useMemo(() => buildDiagnostics(info), [info])
+  const errorDiagnostics = diagnostics.filter((d) => d.level === 'error')
+  const warningDiagnostics = diagnostics.filter((d) => d.level === 'warning')
+
   useEffect(() => {
     const builder = yearFormBuilder(year, info, assets)
     const f1040Errors = builder.errors()
@@ -90,10 +95,12 @@ const Review = (): ReactElement => {
   )
 
   const checklistCompletion = useMemo(() => {
-    const total = 6
-    const missing = irsErrors.length > 0 ? 2 : 0
-    return Math.round(((total - missing) / total) * 100)
-  }, [irsErrors.length])
+    const total = 10
+    const issues =
+      irsErrors.length + errorDiagnostics.length + warningDiagnostics.length
+    const remaining = Math.max(total - issues, 0)
+    return Math.round((remaining / total) * 100)
+  }, [errorDiagnostics.length, irsErrors.length, warningDiagnostics.length])
 
   return (
     <Box>
@@ -155,12 +162,24 @@ const Review = (): ReactElement => {
                       {error}
                     </Alert>
                   ))}
+                  {errorDiagnostics.map((diagnostic) => (
+                    <Alert key={diagnostic.id} severity="error">
+                      {diagnostic.message}
+                    </Alert>
+                  ))}
+                  {warningDiagnostics.map((diagnostic) => (
+                    <Alert key={diagnostic.id} severity="warning">
+                      {diagnostic.message}
+                    </Alert>
+                  ))}
                   {stateErrors.map((error) => (
                     <Alert key={error} severity="info">
                       {error}
                     </Alert>
                   ))}
-                  {irsErrors.length === 0 && stateErrors.length === 0 ? (
+                  {irsErrors.length === 0 &&
+                  stateErrors.length === 0 &&
+                  diagnostics.length === 0 ? (
                     <Alert severity="success">
                       No blocking diagnostics found.
                     </Alert>

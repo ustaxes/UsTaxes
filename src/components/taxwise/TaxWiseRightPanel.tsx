@@ -1,4 +1,4 @@
-import { ReactElement, useState } from 'react'
+import { ReactElement, useMemo, useState } from 'react'
 import {
   Box,
   Divider,
@@ -10,6 +10,9 @@ import {
   Typography,
   makeStyles
 } from '@material-ui/core'
+import { useSelector } from 'react-redux'
+import { YearsTaxesState } from 'ustaxes/redux'
+import { buildDiagnostics } from './validation/diagnostics'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -42,6 +45,10 @@ const TabPanel = ({ index, value, children }: TabPanelProps): ReactElement => {
 const TaxWiseRightPanel = (): ReactElement => {
   const classes = useStyles()
   const [tab, setTab] = useState(0)
+  const info = useSelector((state: YearsTaxesState) => state[state.activeYear])
+
+  const diagnostics = useMemo(() => buildDiagnostics(info), [info])
+  const topDiagnostics = diagnostics.slice(0, 3)
 
   return (
     <div className={classes.root}>
@@ -83,12 +90,17 @@ const TaxWiseRightPanel = (): ReactElement => {
             Diagnostics highlight missing or inconsistent data.
           </Typography>
           <List className={classes.list}>
-            <ListItem>
-              <ListItemText primary="Missing SSN for dependent on 2024 return." />
-            </ListItem>
-            <ListItem>
-              <ListItemText primary="DOB required for Earned Income Credit." />
-            </ListItem>
+            {topDiagnostics.length > 0 ? (
+              topDiagnostics.map((diagnostic) => (
+                <ListItem key={diagnostic.id}>
+                  <ListItemText primary={diagnostic.message} />
+                </ListItem>
+              ))
+            ) : (
+              <ListItem>
+                <ListItemText primary="No diagnostics to review." />
+              </ListItem>
+            )}
           </List>
         </>
       </TabPanel>

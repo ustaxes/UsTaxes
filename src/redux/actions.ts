@@ -43,6 +43,7 @@ import * as validators from 'ustaxes/core/data/validate'
 import { index as indexValidator } from 'ustaxes/core/data/validate'
 import { ValidateFunction } from 'ajv'
 import { infoToStringInfo } from './data'
+import { AuditLogEntry, SaveStatus } from './types'
 
 export enum ActionName {
   SAVE_REFUND_INFO = 'SAVE_REFUND_INFO',
@@ -94,7 +95,9 @@ export enum ActionName {
   REMOVE_SCHEDULE_K1_F1065 = 'SCHEDULE_K1_F1065/REMOVE',
   ADD_CREDIT = 'CREDIT/ADD',
   EDIT_CREDIT = 'CREDIT/EDIT',
-  REMOVE_CREDIT = 'CREDIT/REMOVE'
+  REMOVE_CREDIT = 'CREDIT/REMOVE',
+  SET_SAVE_STATUS = 'SAVE_STATUS/SET',
+  ADD_AUDIT_LOG_ENTRY = 'AUDIT_LOG/ADD'
 }
 
 interface Save<T, R> {
@@ -179,6 +182,11 @@ type RemoveScheduleK1Form1065 = Save<
 type AddCredit = Save<typeof ActionName.ADD_CREDIT, Credit>
 type EditCredit = Save<typeof ActionName.EDIT_CREDIT, EditCreditAction>
 type RemoveCredit = Save<typeof ActionName.REMOVE_CREDIT, number>
+type SetSaveStatus = Save<typeof ActionName.SET_SAVE_STATUS, SaveStatus>
+type AddAuditLogEntry = Save<
+  typeof ActionName.ADD_AUDIT_LOG_ENTRY,
+  AuditLogEntry
+>
 
 export type Actions =
   | SaveRefundInfo
@@ -230,6 +238,8 @@ export type Actions =
   | AddCredit
   | EditCredit
   | RemoveCredit
+  | SetSaveStatus
+  | AddAuditLogEntry
 
 export type SignalAction = (year: TaxYear) => Actions
 export type ActionCreator<A> = (formData: A) => SignalAction
@@ -522,4 +532,12 @@ export const editCredit: ActionCreator<EditCreditAction> = makeActionCreator(
 export const removeCredit: ActionCreator<number> = makeActionCreator(
   ActionName.REMOVE_CREDIT,
   indexValidator
+)
+
+export const setSaveStatus: ActionCreator<SaveStatus> = makeActionCreator(
+  ActionName.SET_SAVE_STATUS
+)
+
+export const addAuditLogEntry: ActionCreator<AuditLogEntry> = makeActionCreator(
+  ActionName.ADD_AUDIT_LOG_ENTRY
 )
