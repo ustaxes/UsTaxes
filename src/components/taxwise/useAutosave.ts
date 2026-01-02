@@ -7,7 +7,7 @@ import { addAuditLogEntry, setSaveStatus } from 'ustaxes/redux/actions'
 import { AuditLogEntry, SaveStatus } from 'ustaxes/redux/types'
 import { TaxYear } from 'ustaxes/core/data'
 
-type AutosaveSnapshot = Omit<YearsTaxesState, 'auditLog' | 'saveStatus'>
+type AutosaveSnapshot = Omit<YearsTaxesState, 'auditLog' | 'ui'>
 
 const buildAuditEntry = (year: TaxYear): AuditLogEntry => ({
   id: `${Date.now()}-${Math.random().toString(16).slice(2)}`,
@@ -20,12 +20,14 @@ const buildAuditEntry = (year: TaxYear): AuditLogEntry => ({
 export const useAutosave = (): SaveStatus => {
   const dispatch = useDispatch()
   const activeYear = useSelector((state: YearsTaxesState) => state.activeYear)
-  const saveStatus = useSelector((state: YearsTaxesState) => state.saveStatus)
+  const saveStatus = useSelector(
+    (state: YearsTaxesState) => state.ui.saveStatus
+  )
 
   const autosaveSnapshot = useSelector((state: YearsTaxesState) => {
-    const { auditLog, saveStatus, ...snapshot } = state
+    const { auditLog, ui, ...snapshot } = state
     void auditLog
-    void saveStatus
+    void ui
     return snapshot
   })
 

@@ -2,7 +2,8 @@
 import { CombinedState, combineReducers, Reducer } from 'redux'
 import { Asset, FilingStatus, Information, TaxYear } from 'ustaxes/core/data'
 import { YearsTaxesState } from '.'
-import { AuditLogEntry, SaveStatus } from './types'
+import { AuditLogEntry, UiState } from './types'
+import { TaxReturn } from 'ustaxes/core/returnPacket/types'
 import { ActionName, Actions } from './actions'
 import { stringToDateInfo } from './data'
 
@@ -477,14 +478,51 @@ const assetReducer = (
   }
 }
 
-const saveStatusReducer = (
-  state: SaveStatus | undefined,
-  action: Actions
-): SaveStatus => {
-  const newState = state ?? 'idle'
+const uiReducer = (state: UiState | undefined, action: Actions): UiState => {
+  const newState = state ?? { saveStatus: 'idle' }
 
   switch (action.type) {
     case ActionName.SET_SAVE_STATUS: {
+      return {
+        ...newState,
+        saveStatus: action.formData
+      }
+    }
+    default: {
+      return newState
+    }
+  }
+}
+
+const returnsReducer = (
+  state: TaxReturn[] | undefined,
+  action: Actions
+): TaxReturn[] => {
+  const newState = state ?? []
+
+  switch (action.type) {
+    case ActionName.ADD_TAX_RETURN: {
+      return [action.formData, ...newState]
+    }
+    case ActionName.UPDATE_TAX_RETURN: {
+      return newState.map((item) =>
+        item.id === action.formData.id ? action.formData : item
+      )
+    }
+    default: {
+      return newState
+    }
+  }
+}
+
+const activeReturnReducer = (
+  state: string | null | undefined,
+  action: Actions
+): string | null => {
+  const newState = state ?? null
+
+  switch (action.type) {
+    case ActionName.SET_ACTIVE_RETURN: {
       return action.formData
     }
     default: {
@@ -523,7 +561,9 @@ const rootReducer: Reducer<
   Y2025: guardByYear('Y2025'),
   auditLog: auditLogReducer,
   activeYear,
-  saveStatus: saveStatusReducer
+  activeReturnId: activeReturnReducer,
+  returns: returnsReducer,
+  ui: uiReducer
 }) as Reducer<CombinedState<YearsTaxesState>, Actions>
 
 export default rootReducer

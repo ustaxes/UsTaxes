@@ -99,8 +99,10 @@ export const taxesState: fc.Arbitrary<YearsTaxesState> = taxYear.chain(
         Y2024,
         Y2025,
         activeYear,
+        activeReturnId: null,
         auditLog: [],
-        saveStatus: 'idle'
+        returns: [],
+        ui: { saveStatus: 'idle' }
       }))
   }
 )

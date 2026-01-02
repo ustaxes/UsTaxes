@@ -1,12 +1,9 @@
-import { TaxYear } from 'ustaxes/core/data'
+import { AuditLogEntry } from 'ustaxes/core/returnPacket/types'
 
 export type SaveStatus = 'idle' | 'saving' | 'saved'
 
-export type AuditLogEntry = {
-  id: string
-  timestamp: string
-  actor: string
-  action: string
-  year: TaxYear
-  details?: string
+export type { AuditLogEntry }
+
+export type UiState = {
+  saveStatus: SaveStatus
 }

@@ -20,6 +20,8 @@ import { createSummary } from 'ustaxes/components/SummaryData'
 import { Currency } from 'ustaxes/components/input'
 import { run } from 'ustaxes/core/util'
 import { buildDiagnostics } from '../validation/diagnostics'
+import { getModule } from 'ustaxes/core/stateModules/StateRegistry'
+import { buildReturnPacket } from 'ustaxes/core/returnPacket/adapters'
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -59,10 +61,31 @@ const Review = (): ReactElement => {
   const assets: Asset<Date>[] = useSelector(
     (state: YearsTaxesState) => state.assets
   )
+  const activeReturnId = useSelector(
+    (state: YearsTaxesState) => state.activeReturnId
+  )
+  const returns = useSelector((state: YearsTaxesState) => state.returns)
+  const auditLog = useSelector((state: YearsTaxesState) => state.auditLog)
 
   const diagnostics = useMemo(() => buildDiagnostics(info), [info])
   const errorDiagnostics = diagnostics.filter((d) => d.level === 'error')
   const warningDiagnostics = diagnostics.filter((d) => d.level === 'warning')
+  const activeReturn = useMemo(
+    () => returns.find((item) => item.id === activeReturnId),
+    [activeReturnId, returns]
+  )
+  const stateDiagnostics = useMemo(() => {
+    if (!activeReturn) {
+      return []
+    }
+    const packet = buildReturnPacket(info, activeReturn, auditLog)
+    const module = getModule(activeReturn.state)
+    if (!module) {
+      return []
+    }
+    const computeResult = module.compute(packet)
+    return computeResult.diagnostics
+  }, [activeReturn, auditLog, info])
 
   useEffect(() => {
     const builder = yearFormBuilder(year, info, assets)
@@ -97,10 +120,18 @@ const Review = (): ReactElement => {
   const checklistCompletion = useMemo(() => {
     const total = 10
     const issues =
-      irsErrors.length + errorDiagnostics.length + warningDiagnostics.length
+      irsErrors.length +
+      errorDiagnostics.length +
+      warningDiagnostics.length +
+      stateDiagnostics.length
     const remaining = Math.max(total - issues, 0)
     return Math.round((remaining / total) * 100)
-  }, [errorDiagnostics.length, irsErrors.length, warningDiagnostics.length])
+  }, [
+    errorDiagnostics.length,
+    irsErrors.length,
+    stateDiagnostics.length,
+    warningDiagnostics.length
+  ])
 
   return (
     <Box>
@@ -172,6 +203,11 @@ const Review = (): ReactElement => {
                       {diagnostic.message}
                     </Alert>
                   ))}
+                  {stateDiagnostics.map((diagnostic) => (
+                    <Alert key={diagnostic.id} severity="info">
+                      {diagnostic.message}
+                    </Alert>
+                  ))}
                   {stateErrors.map((error) => (
                     <Alert key={error} severity="info">
                       {error}
@@ -179,7 +215,8 @@ const Review = (): ReactElement => {
                   ))}
                   {irsErrors.length === 0 &&
                   stateErrors.length === 0 &&
-                  diagnostics.length === 0 ? (
+                  diagnostics.length === 0 &&
+                  stateDiagnostics.length === 0 ? (
                     <Alert severity="success">
                       No blocking diagnostics found.
                     </Alert>

@@ -25,6 +25,7 @@ import {
   Credit,
   EditCreditAction
 } from 'ustaxes/core/data'
+import { TaxReturn } from 'ustaxes/core/returnPacket/types'
 
 import {
   EditDependentAction,
@@ -97,7 +98,10 @@ export enum ActionName {
   EDIT_CREDIT = 'CREDIT/EDIT',
   REMOVE_CREDIT = 'CREDIT/REMOVE',
   SET_SAVE_STATUS = 'SAVE_STATUS/SET',
-  ADD_AUDIT_LOG_ENTRY = 'AUDIT_LOG/ADD'
+  ADD_AUDIT_LOG_ENTRY = 'AUDIT_LOG/ADD',
+  ADD_TAX_RETURN = 'RETURN/ADD',
+  SET_ACTIVE_RETURN = 'RETURN/SET_ACTIVE',
+  UPDATE_TAX_RETURN = 'RETURN/UPDATE'
 }
 
 interface Save<T, R> {
@@ -187,6 +191,9 @@ type AddAuditLogEntry = Save<
   typeof ActionName.ADD_AUDIT_LOG_ENTRY,
   AuditLogEntry
 >
+type AddTaxReturn = Save<typeof ActionName.ADD_TAX_RETURN, TaxReturn>
+type SetActiveReturn = Save<typeof ActionName.SET_ACTIVE_RETURN, string | null>
+type UpdateTaxReturn = Save<typeof ActionName.UPDATE_TAX_RETURN, TaxReturn>
 
 export type Actions =
   | SaveRefundInfo
@@ -240,6 +247,9 @@ export type Actions =
   | RemoveCredit
   | SetSaveStatus
   | AddAuditLogEntry
+  | AddTaxReturn
+  | SetActiveReturn
+  | UpdateTaxReturn
 
 export type SignalAction = (year: TaxYear) => Actions
 export type ActionCreator<A> = (formData: A) => SignalAction
@@ -540,4 +550,16 @@ export const setSaveStatus: ActionCreator<SaveStatus> = makeActionCreator(
 
 export const addAuditLogEntry: ActionCreator<AuditLogEntry> = makeActionCreator(
   ActionName.ADD_AUDIT_LOG_ENTRY
+)
+
+export const addTaxReturn: ActionCreator<TaxReturn> = makeActionCreator(
+  ActionName.ADD_TAX_RETURN
+)
+
+export const setActiveReturn: ActionCreator<string | null> = makeActionCreator(
+  ActionName.SET_ACTIVE_RETURN
+)
+
+export const updateTaxReturn: ActionCreator<TaxReturn> = makeActionCreator(
+  ActionName.UPDATE_TAX_RETURN
 )

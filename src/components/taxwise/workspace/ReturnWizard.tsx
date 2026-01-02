@@ -15,8 +15,13 @@ import {
 import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import Urls from 'ustaxes/data/urls'
-import { setActiveYear } from 'ustaxes/redux/actions'
-import { TaxYear } from 'ustaxes/core/data'
+import {
+  addTaxReturn,
+  setActiveReturn,
+  setActiveYear
+} from 'ustaxes/redux/actions'
+import { TaxYear, State } from 'ustaxes/core/data'
+import { buildTaxReturn } from 'ustaxes/core/returnPacket/adapters'
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -34,10 +39,13 @@ const ReturnWizard = (): ReactElement => {
   const navigate = useNavigate()
   const [taxYear, setTaxYear] = useState<TaxYear>('Y2024')
   const [filingStatus, setFilingStatus] = useState('Single')
-  const [state, setState] = useState('OH')
+  const [state, setState] = useState<State>('OH')
   const [clientName, setClientName] = useState('Acme Holdings LLC')
 
   const onCreate = (): void => {
+    const returnInfo = buildTaxReturn(taxYear, state)
+    dispatch(addTaxReturn(returnInfo)(taxYear))
+    dispatch(setActiveReturn(returnInfo.id)(taxYear))
     dispatch(setActiveYear(taxYear))
     navigate(Urls.taxPayer.info)
   }
