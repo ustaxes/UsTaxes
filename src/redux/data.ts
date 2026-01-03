@@ -28,7 +28,7 @@ export const blankYearTaxesState: YearsTaxesState = {
   Y2023: blankState,
   Y2024: blankState,
   Y2025: blankState,
-  activeYear: 'Y2020',
+  activeYear: 'Y2025',
   activeReturnId: null,
   auditLog: [],
   returns: [],

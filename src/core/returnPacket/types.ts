@@ -1,4 +1,4 @@
-import { PersonRole, TaxYear, State } from 'ustaxes/core/data'
+import { PersonRole, TaxYear, State, FilingStatus } from 'ustaxes/core/data'
 
 export type TaxReturnStatus = 'Draft' | 'Needs Review' | 'Ready to Sign'
 
@@ -16,6 +16,9 @@ export type Totals = {
   amountOwed?: number
   taxableIncome?: number
   totalIncome?: number
+  totalTax?: number
+  payments?: number
+  credits?: number
 }
 
 export type Taxpayer = {
@@ -39,14 +42,29 @@ export type IncomeItem =
       type: 'W2'
       payerName?: string
       amount: number
+      federalWithholding?: number
       personRole: PersonRole.PRIMARY | PersonRole.SPOUSE
     }
   | {
       type: '1099'
       payerName?: string
       amount?: number
+      federalWithholding?: number
       personRole: PersonRole.PRIMARY | PersonRole.SPOUSE
     }
+  | {
+      type: '1099-NEC'
+      payerName?: string
+      amount?: number
+      federalWithholding?: number
+      personRole: PersonRole.PRIMARY | PersonRole.SPOUSE
+    }
+
+export type ScheduleCItem = {
+  businessName: string
+  grossReceipts: number
+  expenses: number
+}
 
 export type DeductionsCredits = {
   itemized?: boolean
@@ -71,10 +89,13 @@ export type TaxReturn = {
 
 export type TaxReturnPacket = {
   returnInfo: TaxReturn
+  filingStatus?: FilingStatus
   taxpayer?: Taxpayer
   spouse?: Taxpayer
   dependents: Dependent[]
   incomes: IncomeItem[]
+  scheduleC: ScheduleCItem[]
+  estimatedPayments: number
   deductionsCredits: DeductionsCredits
   documents: Document[]
   auditLog: AuditLogEntry[]

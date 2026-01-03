@@ -1,4 +1,4 @@
-import { ReactElement, useEffect, useMemo, useState } from 'react'
+import { ReactElement, useMemo, useState } from 'react'
 import {
   Box,
   Button,
@@ -12,22 +12,16 @@ import {
 } from '@material-ui/core'
 import Alert from '@material-ui/lab/Alert'
 import { useSelector } from 'react-redux'
-import { Asset, Information, TaxYear, TaxYears } from 'ustaxes/core/data'
+import { Information, TaxYears } from 'ustaxes/core/data'
 import { YearsTaxesState } from 'ustaxes/redux'
-import yearFormBuilder from 'ustaxes/forms/YearForms'
-import Summary from 'ustaxes/components/Summary'
-import Form from 'ustaxes/core/irsForms/Form'
-import StateForm from 'ustaxes/core/stateForms/Form'
-import { createSummary } from 'ustaxes/components/SummaryData'
 import { Currency } from 'ustaxes/components/input'
-import { run } from 'ustaxes/core/util'
-import { buildDiagnostics } from '../validation/diagnostics'
 import { getModule } from 'ustaxes/core/stateModules/StateRegistry'
 import { buildReturnPacket } from 'ustaxes/core/returnPacket/adapters'
 import { TaxReturnPacket } from 'ustaxes/core/returnPacket/types'
 import { generateClientPacketPdf } from 'ustaxes/pdf/ClientPacketPdf'
 import { ComputedSummary, PdfDiagnostic } from 'ustaxes/pdf/pdfTypes'
 import { downloadBlob, openBlobInNewTab } from 'ustaxes/pdf/downloadPdf'
+import { computeFederalReturn } from 'ustaxes/core/engine/federal/computeFederalReturn'
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -53,21 +47,11 @@ const useStyles = makeStyles((theme) => ({
 
 const Review = (): ReactElement => {
   const classes = useStyles()
-  const [irsErrors, setIrsErrors] = useState<string[]>([])
-  const [stateErrors, setStateErrors] = useState<string[]>([])
-  const [irsForms, setIrsForms] = useState<Form[]>([])
-  const [stateForms, setStateForms] = useState<StateForm[]>([])
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false)
   const [pdfError, setPdfError] = useState<string | null>(null)
 
-  const year: TaxYear = useSelector(
-    (state: YearsTaxesState) => state.activeYear
-  )
   const info: Information = useSelector(
     (state: YearsTaxesState) => state[state.activeYear]
-  )
-  const assets: Asset<Date>[] = useSelector(
-    (state: YearsTaxesState) => state.assets
   )
   const activeReturnId = useSelector(
     (state: YearsTaxesState) => state.activeReturnId
@@ -75,26 +59,10 @@ const Review = (): ReactElement => {
   const returns = useSelector((state: YearsTaxesState) => state.returns)
   const auditLog = useSelector((state: YearsTaxesState) => state.auditLog)
 
-  const diagnostics = useMemo(() => buildDiagnostics(info), [info])
-  const errorDiagnostics = diagnostics.filter((d) => d.level === 'error')
-  const warningDiagnostics = diagnostics.filter((d) => d.level === 'warning')
   const activeReturn = useMemo(
     () => returns.find((item) => item.id === activeReturnId),
     [activeReturnId, returns]
   )
-  const stateDiagnostics = useMemo(() => {
-    if (!activeReturn) {
-      return []
-    }
-    const packet = buildReturnPacket(info, activeReturn, auditLog)
-    const module = getModule(activeReturn.state)
-    if (!module) {
-      return []
-    }
-    const computeResult = module.compute(packet)
-    return computeResult.diagnostics
-  }, [activeReturn, auditLog, info])
-
   const packet = useMemo<TaxReturnPacket | null>(() => {
     if (!activeReturn) {
       return null
@@ -102,16 +70,37 @@ const Review = (): ReactElement => {
     return buildReturnPacket(info, activeReturn, auditLog)
   }, [activeReturn, auditLog, info])
 
+  const computedReturn = useMemo(
+    () => (packet ? computeFederalReturn(packet) : null),
+    [packet]
+  )
+
+  const stateDiagnostics = useMemo(() => {
+    if (!packet || !activeReturn) {
+      return []
+    }
+    const module = getModule(activeReturn.state)
+    if (!module) {
+      return []
+    }
+    return module.compute(packet).diagnostics
+  }, [activeReturn, packet])
+
+  const federalDiagnostics = computedReturn?.diagnostics ?? []
+  const errorDiagnostics = federalDiagnostics.filter(
+    (diagnostic) => diagnostic.level === 'error'
+  )
+  const warningDiagnostics = federalDiagnostics.filter(
+    (diagnostic) => diagnostic.level === 'warning'
+  )
+
   const computedSummary = useMemo<ComputedSummary | null>(() => {
     if (!activeReturn) {
       return null
     }
-    const f1040 = irsForms.find((form) => form.tag === 'f1040') as
-      | Record<string, () => number | undefined>
-      | undefined
-    const getLine = (line: string): number | undefined =>
-      f1040 && typeof f1040[line] === 'function' ? f1040[line]() : undefined
-
+    if (!computedReturn) {
+      return null
+    }
     const mapDiagnostics = (items: { level: string; message: string }[]) =>
       items.map(
         (item): PdfDiagnostic => ({
@@ -142,20 +131,34 @@ const Review = (): ReactElement => {
       status: activeReturn.status,
       preparedAt: new Date(activeReturn.updatedAt).toLocaleString(),
       totals: {
-        refundAmount: getLine('l35a'),
-        amountOwed: getLine('l37'),
-        adjustedGrossIncome: getLine('l11'),
-        taxableIncome: getLine('l15'),
-        totalTax: getLine('l24'),
-        payments: getLine('l33'),
-        credits: getLine('l32')
+        refundAmount: computedReturn.refundAmount,
+        amountOwed: computedReturn.amountOwed,
+        adjustedGrossIncome: computedReturn.adjustedGrossIncome,
+        taxableIncome: computedReturn.taxableIncome,
+        totalTax: computedReturn.federalTax,
+        payments: computedReturn.payments,
+        credits: computedReturn.credits
       },
+      scheduleC:
+        packet?.scheduleC.map((item) => ({
+          businessName: item.businessName,
+          grossReceipts: item.grossReceipts,
+          expenses: item.expenses,
+          netProfit: item.grossReceipts - item.expenses
+        })) ?? [],
       diagnostics: {
-        federal: mapDiagnostics(diagnostics),
+        federal: mapDiagnostics(federalDiagnostics),
         state: mapDiagnostics(stateDiagnostics)
       }
     }
-  }, [activeReturn, diagnostics, irsForms, packet, stateDiagnostics])
+  }, [
+    activeReturn,
+    computedReturn,
+    federalDiagnostics,
+    info.taxPayer.filingStatus,
+    packet,
+    stateDiagnostics
+  ])
 
   const generatePdfBlob = async (): Promise<Blob | null> => {
     if (!packet || !computedSummary) {
@@ -205,40 +208,9 @@ const Review = (): ReactElement => {
     })
   }
 
-  useEffect(() => {
-    const builder = yearFormBuilder(year, info, assets)
-    const f1040Errors = builder.errors()
-    setIrsErrors(f1040Errors)
-
-    if (f1040Errors.length > 0) {
-      setStateErrors(['Resolve federal errors before preparing state return.'])
-      setStateForms([])
-      setIrsForms([])
-    } else {
-      const irsRes = builder.f1040()
-      const stateRes = builder.makeStateReturn()
-
-      run(irsRes).fold(setIrsErrors, (forms) => {
-        setIrsErrors([])
-        setIrsForms(forms)
-      })
-
-      run(stateRes).fold(setStateErrors, (forms) => {
-        setStateErrors([])
-        setStateForms(forms)
-      })
-    }
-  }, [assets, info, year])
-
-  const summary = useMemo(
-    () => (irsForms.length > 0 ? createSummary(year, irsForms) : undefined),
-    [irsForms, year]
-  )
-
   const checklistCompletion = useMemo(() => {
     const total = 10
     const issues =
-      irsErrors.length +
       errorDiagnostics.length +
       warningDiagnostics.length +
       stateDiagnostics.length
@@ -246,7 +218,6 @@ const Review = (): ReactElement => {
     return Math.round((remaining / total) * 100)
   }, [
     errorDiagnostics.length,
-    irsErrors.length,
     stateDiagnostics.length,
     warningDiagnostics.length
   ])
@@ -264,7 +235,7 @@ const Review = (): ReactElement => {
               <Typography variant="subtitle2">Return Totals</Typography>
               <Divider />
               <Box marginTop={2}>
-                {summary ? (
+                {computedReturn ? (
                   <Grid container spacing={2}>
                     <Grid item xs={6}>
                       <div className={classes.metric}>
@@ -272,10 +243,10 @@ const Review = (): ReactElement => {
                           Refund / Amount Owed
                         </Typography>
                         <Typography className={classes.metricValue}>
-                          {summary.refundAmount ? (
-                            <Currency value={summary.refundAmount} />
-                          ) : summary.amountOwed ? (
-                            <Currency value={-summary.amountOwed} />
+                          {computedReturn.refundAmount > 0 ? (
+                            <Currency value={computedReturn.refundAmount} />
+                          ) : computedReturn.amountOwed > 0 ? (
+                            <Currency value={-computedReturn.amountOwed} />
                           ) : (
                             '$0'
                           )}
@@ -288,15 +259,36 @@ const Review = (): ReactElement => {
                           Credits Applied
                         </Typography>
                         <Typography className={classes.metricValue}>
-                          {summary.credits.length}
+                          {computedReturn.credits}
+                        </Typography>
+                      </div>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <div className={classes.metric}>
+                        <Typography variant="caption" color="textSecondary">
+                          AGI
+                        </Typography>
+                        <Typography className={classes.metricValue}>
+                          <Currency
+                            value={computedReturn.adjustedGrossIncome}
+                          />
+                        </Typography>
+                      </div>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <div className={classes.metric}>
+                        <Typography variant="caption" color="textSecondary">
+                          Taxable Income
+                        </Typography>
+                        <Typography className={classes.metricValue}>
+                          <Currency value={computedReturn.taxableIncome} />
                         </Typography>
                       </div>
                     </Grid>
                   </Grid>
                 ) : (
                   <Typography variant="body2" color="textSecondary">
-                    Totals will populate once federal forms are generated for
-                    this year.
+                    Totals will populate once a return is created.
                   </Typography>
                 )}
               </Box>
@@ -328,11 +320,6 @@ const Review = (): ReactElement => {
                 <Typography variant="subtitle2">Diagnostics</Typography>
                 <Divider />
                 <Box marginTop={2} className={classes.checklist}>
-                  {irsErrors.map((error) => (
-                    <Alert key={error} severity="warning">
-                      {error}
-                    </Alert>
-                  ))}
                   {errorDiagnostics.map((diagnostic) => (
                     <Alert key={diagnostic.id} severity="error">
                       {diagnostic.message}
@@ -348,14 +335,7 @@ const Review = (): ReactElement => {
                       {diagnostic.message}
                     </Alert>
                   ))}
-                  {stateErrors.map((error) => (
-                    <Alert key={error} severity="info">
-                      {error}
-                    </Alert>
-                  ))}
-                  {irsErrors.length === 0 &&
-                  stateErrors.length === 0 &&
-                  diagnostics.length === 0 &&
+                  {federalDiagnostics.length === 0 &&
                   stateDiagnostics.length === 0 ? (
                     <Alert severity="success">
                       No blocking diagnostics found.
@@ -378,12 +358,12 @@ const Review = (): ReactElement => {
                 <Typography variant="body2" color="textSecondary">
                   Capture missing documents and clear validations to reach 100%.
                 </Typography>
-                <Summary
-                  errors={irsErrors}
-                  stateErrors={stateErrors}
-                  irsForms={irsForms}
-                  stateForms={stateForms}
-                />
+                <Typography variant="body2" color="textSecondary">
+                  Federal diagnostics: {federalDiagnostics.length}
+                </Typography>
+                <Typography variant="body2" color="textSecondary">
+                  State diagnostics: {stateDiagnostics.length}
+                </Typography>
               </Box>
             </Paper>
           </Grid>

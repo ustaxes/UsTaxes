@@ -18,9 +18,10 @@ import Urls from 'ustaxes/data/urls'
 import {
   addTaxReturn,
   setActiveReturn,
-  setActiveYear
+  setActiveYear,
+  saveFilingStatusInfo
 } from 'ustaxes/redux/actions'
-import { TaxYear, State } from 'ustaxes/core/data'
+import { TaxYear, State, FilingStatus } from 'ustaxes/core/data'
 import { buildTaxReturn } from 'ustaxes/core/returnPacket/adapters'
 
 const useStyles = makeStyles((theme) => ({
@@ -37,8 +38,8 @@ const ReturnWizard = (): ReactElement => {
   const classes = useStyles()
   const dispatch = useDispatch()
   const navigate = useNavigate()
-  const [taxYear, setTaxYear] = useState<TaxYear>('Y2024')
-  const [filingStatus, setFilingStatus] = useState('Single')
+  const [taxYear, setTaxYear] = useState<TaxYear>('Y2025')
+  const [filingStatus, setFilingStatus] = useState<FilingStatus>(FilingStatus.S)
   const [state, setState] = useState<State>('OH')
   const [clientName, setClientName] = useState('Acme Holdings LLC')
 
@@ -46,7 +47,8 @@ const ReturnWizard = (): ReactElement => {
     const returnInfo = buildTaxReturn(taxYear, state)
     dispatch(addTaxReturn(returnInfo)(taxYear))
     dispatch(setActiveReturn(returnInfo.id)(taxYear))
-    dispatch(setActiveYear(taxYear))
+    dispatch(setActiveYear(taxYear)(taxYear))
+    dispatch(saveFilingStatusInfo(filingStatus)(taxYear))
     navigate(Urls.taxPayer.info)
   }
 
@@ -93,14 +95,20 @@ const ReturnWizard = (): ReactElement => {
                   labelId="filing-status-label"
                   value={filingStatus}
                   onChange={(event) =>
-                    setFilingStatus(event.target.value as string)
+                    setFilingStatus(event.target.value as FilingStatus)
                   }
                   label="Filing Status"
                 >
-                  <MenuItem value="Single">Single</MenuItem>
-                  <MenuItem value="MFJ">Married Filing Jointly</MenuItem>
-                  <MenuItem value="MFS">Married Filing Separately</MenuItem>
-                  <MenuItem value="HOH">Head of Household</MenuItem>
+                  <MenuItem value={FilingStatus.S}>Single</MenuItem>
+                  <MenuItem value={FilingStatus.MFJ}>
+                    Married Filing Jointly
+                  </MenuItem>
+                  <MenuItem value={FilingStatus.MFS}>
+                    Married Filing Separately
+                  </MenuItem>
+                  <MenuItem value={FilingStatus.HOH}>
+                    Head of Household
+                  </MenuItem>
                 </Select>
               </FormControl>
             </Grid>

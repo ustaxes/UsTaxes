@@ -7,7 +7,7 @@ import { TaxReturn } from 'ustaxes/core/returnPacket/types'
 import { ActionName, Actions } from './actions'
 import { stringToDateInfo } from './data'
 
-const DEFAULT_TAX_YEAR: TaxYear = 'Y2024'
+const DEFAULT_TAX_YEAR: TaxYear = 'Y2025'
 
 export const blankState: Information = {
   f1099s: [],
@@ -19,6 +19,7 @@ export const blankState: Information = {
   f1098es: [],
   f3921s: [],
   scheduleK1Form1065s: [],
+  scheduleCs: [],
   itemizedDeductions: undefined,
   stateResidencies: [],
   healthSavingsAccounts: [],

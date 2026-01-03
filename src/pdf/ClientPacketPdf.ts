@@ -1,6 +1,6 @@
 import { PDFDocument, StandardFonts, rgb, PDFFont } from 'pdf-lib'
 import { TaxReturnPacket } from 'ustaxes/core/returnPacket/types'
-import { ComputedSummary, PdfDiagnostic } from './pdfTypes'
+import { ComputedSummary, PdfDiagnostic, PdfTotals } from './pdfTypes'
 
 export type ClientPacketOptions = {
   includeDiagnostics?: boolean
@@ -202,7 +202,7 @@ export const generateClientPacketPdf = async (
   const fontBold = await pdf.embedFont(StandardFonts.HelveticaBold)
 
   const cover = pdf.addPage([PAGE_WIDTH, PAGE_HEIGHT])
-  drawHeader(cover, `Client Packet - ${computed.taxYear}`, fontBold)
+  drawHeader(cover, `Tax Summary (Draft) - ${computed.taxYear}`, fontBold)
 
   cover.drawText(computed.taxpayerDisplayName || 'Taxpayer', {
     x: PAGE_MARGIN,
@@ -224,8 +224,15 @@ export const generateClientPacketPdf = async (
       color: rgb(0.4, 0.47, 0.55)
     }
   )
+  cover.drawText('For client review only. Not filed with the IRS.', {
+    x: PAGE_MARGIN,
+    y: PAGE_HEIGHT - 128,
+    size: 9,
+    font,
+    color: rgb(0.5, 0.56, 0.62)
+  })
 
-  const totals = computed.totals
+  const totals: PdfTotals = computed.totals
   drawLabelValue(
     cover,
     'Refund / Amount Owed',
@@ -281,6 +288,31 @@ export const generateClientPacketPdf = async (
     metricStartY - 96,
     font
   )
+
+  if (computed.scheduleC.length > 0) {
+    let scheduleY = metricStartY - 140
+    cover.drawText('Schedule C Summary', {
+      x: PAGE_MARGIN,
+      y: scheduleY,
+      size: 10,
+      font: fontBold,
+      color: rgb(0.2, 0.25, 0.3)
+    })
+    scheduleY -= 14
+    computed.scheduleC.forEach((item) => {
+      cover.drawText(
+        `${item.businessName}: ${formatCurrency(item.netProfit)}`,
+        {
+          x: PAGE_MARGIN,
+          y: scheduleY,
+          size: 9,
+          font,
+          color: rgb(0.35, 0.4, 0.45)
+        }
+      )
+      scheduleY -= 12
+    })
+  }
 
   cover.drawText(`Return Status: ${computed.status}`, {
     x: PAGE_MARGIN,

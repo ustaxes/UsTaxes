@@ -13,6 +13,13 @@ export type PdfTotals = {
   credits?: number
 }
 
+export type ScheduleCSummary = {
+  businessName: string
+  grossReceipts: number
+  expenses: number
+  netProfit: number
+}
+
 export type ComputedSummary = {
   taxpayerDisplayName: string
   taxYear: string
@@ -21,6 +28,7 @@ export type ComputedSummary = {
   status: string
   preparedAt: string
   totals: PdfTotals
+  scheduleC: ScheduleCSummary[]
   diagnostics: {
     federal: PdfDiagnostic[]
     state: PdfDiagnostic[]
