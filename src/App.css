@@ -2,6 +2,7 @@ body {
   height: 100vh;
 }
 
-.MuiGrid-container ~ .MuiGrid-container {
-  margin-top: 8px;
+#root,
+.App {
+  min-height: 100vh;
 }

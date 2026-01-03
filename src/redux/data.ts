@@ -1,5 +1,7 @@
 import { Asset, Information, Person, TaxYear } from 'ustaxes/core/data'
 import { blankState } from './reducer'
+import { AuditLogEntry, UiState } from './types'
+import { TaxReturn } from 'ustaxes/core/returnPacket/types'
 
 /**
  * This is a simplified form of our global TaxesState
@@ -11,6 +13,10 @@ export type TaxesState = { information: Information }
 export type YearsTaxesState<D = Date> = { [K in TaxYear]: Information<D> } & {
   assets: Asset<D>[]
   activeYear: TaxYear
+  activeReturnId: string | null
+  auditLog: AuditLogEntry[]
+  returns: TaxReturn[]
+  ui: UiState
 }
 
 export const blankYearTaxesState: YearsTaxesState = {
@@ -21,7 +27,12 @@ export const blankYearTaxesState: YearsTaxesState = {
   Y2022: blankState,
   Y2023: blankState,
   Y2024: blankState,
-  activeYear: 'Y2020'
+  Y2025: blankState,
+  activeYear: 'Y2025',
+  activeReturnId: null,
+  auditLog: [],
+  returns: [],
+  ui: { saveStatus: 'idle' }
 }
 
 export const dateToStringPerson = <P extends Person<Date>>(

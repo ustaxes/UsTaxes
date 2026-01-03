@@ -6,7 +6,8 @@ export enum TaxYears {
   Y2021 = 2021,
   Y2022 = 2022,
   Y2023 = 2023,
-  Y2024 = 2024
+  Y2024 = 2024,
+  Y2025 = 2025
 }
 
 export type TaxYear = keyof typeof TaxYears
@@ -117,7 +118,8 @@ export enum Income1099Type {
   INT = 'INT',
   DIV = 'DIV',
   R = 'R',
-  SSA = 'SSA'
+  SSA = 'SSA',
+  NEC = 'NEC'
 }
 
 export interface F1099BData {
@@ -135,6 +137,11 @@ export interface F1099DivData {
   dividends: number
   qualifiedDividends: number
   totalCapitalGainsDistributions: number
+}
+
+export interface F1099NECData {
+  compensation: number
+  federalIncomeTaxWithheld?: number
 }
 /*
  TODO: Add in logic for various different distributions
@@ -362,6 +369,7 @@ export type Income1099B = Income1099<Income1099Type.B, F1099BData>
 export type Income1099Div = Income1099<Income1099Type.DIV, F1099DivData>
 export type Income1099R = Income1099<Income1099Type.R, F1099RData>
 export type Income1099SSA = Income1099<Income1099Type.SSA, F1099SSAData>
+export type Income1099NEC = Income1099<Income1099Type.NEC, F1099NECData>
 
 export type Supported1099 =
   | Income1099Int
@@ -369,6 +377,13 @@ export type Supported1099 =
   | Income1099Div
   | Income1099R
   | Income1099SSA
+  | Income1099NEC
+
+export interface ScheduleC {
+  businessName: string
+  grossReceipts: number
+  expenses: number
+}
 
 export enum PropertyType {
   singleFamily,
@@ -567,6 +582,7 @@ export interface Information<D = Date> {
   f1098es: F1098e[]
   f3921s: F3921[]
   scheduleK1Form1065s: ScheduleK1Form1065[]
+  scheduleCs?: ScheduleC[]
   itemizedDeductions: ItemizedDeductions | undefined
   refund?: Refund
   taxPayer: TaxPayer<D>

@@ -102,7 +102,13 @@ To run,
 
 ```sh
 npm ci          # install package dependencies
-npm run start   # run app
+npm run dev     # run app
+```
+
+Optional local overrides:
+
+```sh
+cp .env.example .env
 ```
 
 Note: To avoid having to set your node versions, we suggest using a tool like [direnv](https://direnv.net). With the following configuration file as `.envrc` in project root:
@@ -139,6 +145,13 @@ The desktop application is built with [Tauri][tauri-root]. In addition to the ab
 Once your environment is set up for Tauri, run, `npm run desktop`. To avoid a browser window being spawned in addition to the desktop window, just set the BROWSER environment variable as in: `BROWSER=none npm run desktop`.
 
 To build executables, run `npm run desktop-release`.
+
+### Quality checks
+
+```sh
+npm run lint
+npm run test
+```
 
 ## Getting help
 

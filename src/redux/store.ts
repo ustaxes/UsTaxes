@@ -15,6 +15,7 @@ import {
 } from 'redux-persist'
 import storage from 'redux-persist/lib/storage' // defaults to localStorage for web
 import { Asset, Information, TaxYear } from 'ustaxes/core/data'
+import { TaxReturn } from 'ustaxes/core/returnPacket/types'
 import { blankYearTaxesState, YearsTaxesState } from '.'
 import { Actions } from './actions'
 import { PersistPartial } from 'redux-persist/es/persistReducer'
@@ -26,6 +27,9 @@ import { migrateEachYear, migrateAgeAndBlindness } from './migration'
 type SerializedState = { [K in TaxYear]: Information } & {
   assets: Asset<string>[]
   activeYear: TaxYear
+  activeReturnId: string | null
+  auditLog: { timestamp: string }[]
+  returns: TaxReturn[]
 }
 
 export type USTSerializedState = NonNullable<PersistedState> & SerializedState
@@ -132,7 +136,8 @@ const persistedReducer = fsReducer(
       version: 1,
       storage,
       migrate: createMigrate(migrations, { debug: false }),
-      transforms: [dateStringTransform]
+      transforms: [dateStringTransform],
+      blacklist: ['ui']
     },
     rootReducer
   )
