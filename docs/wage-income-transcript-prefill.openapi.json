@@ -1,0 +1,328 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "IRS Wage & Income Transcript Prefill",
+    "version": "1.0.0",
+    "description": "Normalized JSON output for prefill import into UsTaxes. Focused on Wage & Income transcript data."
+  },
+  "components": {
+    "schemas": {
+      "TranscriptPrefill": {
+        "type": "object",
+        "required": ["taxYear", "taxPayer"],
+        "properties": {
+          "taxYear": {
+            "type": "string",
+            "enum": ["Y2019", "Y2020", "Y2021", "Y2022", "Y2023", "Y2024"]
+          },
+          "source": {
+            "type": "string",
+            "description": "Identifier for the transcript source tool/version."
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "taxPayer": {
+            "$ref": "#/components/schemas/TaxPayer"
+          },
+          "w2s": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/W2" }
+          },
+          "f1099s": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/Supported1099" }
+          },
+          "f1098s": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/F1098MortgageInterest" }
+          }
+        },
+        "additionalProperties": false
+      },
+      "TaxPayer": {
+        "type": "object",
+        "required": ["primaryPerson", "dependents"],
+        "properties": {
+          "filingStatus": {
+            "type": "string",
+            "enum": ["S", "MFJ", "MFS", "HOH", "W"]
+          },
+          "primaryPerson": { "$ref": "#/components/schemas/Person" },
+          "spouse": { "$ref": "#/components/schemas/Person" },
+          "dependents": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/Dependent" }
+          },
+          "contactEmail": { "type": "string" },
+          "contactPhoneNumber": { "type": "string" }
+        },
+        "additionalProperties": false
+      },
+      "Person": {
+        "type": "object",
+        "required": [
+          "firstName",
+          "lastName",
+          "ssid",
+          "role",
+          "isBlind",
+          "dateOfBirth"
+        ],
+        "properties": {
+          "firstName": { "type": "string" },
+          "lastName": { "type": "string" },
+          "ssid": {
+            "type": "string",
+            "description": "9 digits or NRA for a nonresident spouse if provided."
+          },
+          "role": {
+            "type": "string",
+            "enum": ["PRIMARY", "SPOUSE", "DEPENDENT", "EMPLOYER"]
+          },
+          "isBlind": { "type": "boolean" },
+          "dateOfBirth": { "type": "string", "format": "date" },
+          "address": { "$ref": "#/components/schemas/Address" },
+          "isTaxpayerDependent": { "type": "boolean" }
+        },
+        "additionalProperties": false
+      },
+      "Dependent": {
+        "allOf": [
+          { "$ref": "#/components/schemas/Person" },
+          {
+            "type": "object",
+            "required": ["relationship"],
+            "properties": {
+              "relationship": { "type": "string" },
+              "qualifyingInfo": {
+                "type": "object",
+                "properties": {
+                  "numberOfMonths": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 12
+                  },
+                  "isStudent": { "type": "boolean" }
+                },
+                "additionalProperties": false
+              }
+            }
+          }
+        ]
+      },
+      "Address": {
+        "type": "object",
+        "required": ["address", "city"],
+        "properties": {
+          "address": { "type": "string" },
+          "aptNo": { "type": "string" },
+          "city": { "type": "string" },
+          "state": { "type": "string" },
+          "zip": { "type": "string" },
+          "foreignCountry": { "type": "string" },
+          "province": { "type": "string" },
+          "postalCode": { "type": "string" }
+        },
+        "additionalProperties": false
+      },
+      "Employer": {
+        "type": "object",
+        "properties": {
+          "EIN": { "type": "string" },
+          "employerName": { "type": "string" },
+          "address": { "$ref": "#/components/schemas/Address" }
+        },
+        "additionalProperties": false
+      },
+      "W2Box12Info": {
+        "type": "object",
+        "additionalProperties": {
+          "type": "number"
+        },
+        "description": "Map of W-2 box 12 codes to amounts, e.g. {\"D\": 1500}."
+      },
+      "W2": {
+        "type": "object",
+        "required": [
+          "occupation",
+          "income",
+          "medicareIncome",
+          "fedWithholding",
+          "ssWages",
+          "ssWithholding",
+          "medicareWithholding",
+          "personRole"
+        ],
+        "properties": {
+          "occupation": { "type": "string" },
+          "income": { "type": "number" },
+          "medicareIncome": { "type": "number" },
+          "fedWithholding": { "type": "number" },
+          "ssWages": { "type": "number" },
+          "ssWithholding": { "type": "number" },
+          "medicareWithholding": { "type": "number" },
+          "employer": { "$ref": "#/components/schemas/Employer" },
+          "personRole": { "type": "string", "enum": ["PRIMARY", "SPOUSE"] },
+          "state": { "type": "string" },
+          "stateWages": { "type": "number" },
+          "stateWithholding": { "type": "number" },
+          "box12": { "$ref": "#/components/schemas/W2Box12Info" }
+        },
+        "additionalProperties": false
+      },
+      "Income1099Int": {
+        "type": "object",
+        "required": ["type", "payer", "personRole", "form"],
+        "properties": {
+          "type": { "const": "INT" },
+          "payer": { "type": "string" },
+          "personRole": { "type": "string", "enum": ["PRIMARY", "SPOUSE"] },
+          "form": {
+            "type": "object",
+            "required": ["income"],
+            "properties": {
+              "income": { "type": "number" }
+            },
+            "additionalProperties": false
+          }
+        },
+        "additionalProperties": false
+      },
+      "Income1099Div": {
+        "type": "object",
+        "required": ["type", "payer", "personRole", "form"],
+        "properties": {
+          "type": { "const": "DIV" },
+          "payer": { "type": "string" },
+          "personRole": { "type": "string", "enum": ["PRIMARY", "SPOUSE"] },
+          "form": {
+            "type": "object",
+            "required": [
+              "dividends",
+              "qualifiedDividends",
+              "totalCapitalGainsDistributions"
+            ],
+            "properties": {
+              "dividends": { "type": "number" },
+              "qualifiedDividends": { "type": "number" },
+              "totalCapitalGainsDistributions": { "type": "number" }
+            },
+            "additionalProperties": false
+          }
+        },
+        "additionalProperties": false
+      },
+      "Income1099B": {
+        "type": "object",
+        "required": ["type", "payer", "personRole", "form"],
+        "properties": {
+          "type": { "const": "B" },
+          "payer": { "type": "string" },
+          "personRole": { "type": "string", "enum": ["PRIMARY", "SPOUSE"] },
+          "form": {
+            "type": "object",
+            "required": [
+              "shortTermProceeds",
+              "shortTermCostBasis",
+              "longTermProceeds",
+              "longTermCostBasis"
+            ],
+            "properties": {
+              "shortTermProceeds": { "type": "number" },
+              "shortTermCostBasis": { "type": "number" },
+              "longTermProceeds": { "type": "number" },
+              "longTermCostBasis": { "type": "number" }
+            },
+            "additionalProperties": false
+          }
+        },
+        "additionalProperties": false
+      },
+      "Income1099R": {
+        "type": "object",
+        "required": ["type", "payer", "personRole", "form"],
+        "properties": {
+          "type": { "const": "R" },
+          "payer": { "type": "string" },
+          "personRole": { "type": "string", "enum": ["PRIMARY", "SPOUSE"] },
+          "form": {
+            "type": "object",
+            "required": [
+              "grossDistribution",
+              "taxableAmount",
+              "federalIncomeTaxWithheld",
+              "planType"
+            ],
+            "properties": {
+              "grossDistribution": { "type": "number" },
+              "taxableAmount": { "type": "number" },
+              "federalIncomeTaxWithheld": { "type": "number" },
+              "planType": {
+                "type": "string",
+                "enum": ["IRA", "RothIRA", "SepIRA", "SimpleIRA", "Pension"]
+              },
+              "taxableAmountNotDetermined": { "type": "boolean" },
+              "totalDistribution": { "type": "boolean" }
+            },
+            "additionalProperties": false
+          }
+        },
+        "additionalProperties": false
+      },
+      "Income1099SSA": {
+        "type": "object",
+        "required": ["type", "payer", "personRole", "form"],
+        "properties": {
+          "type": { "const": "SSA" },
+          "payer": { "type": "string" },
+          "personRole": { "type": "string", "enum": ["PRIMARY", "SPOUSE"] },
+          "form": {
+            "type": "object",
+            "required": ["netBenefits", "federalIncomeTaxWithheld"],
+            "properties": {
+              "netBenefits": { "type": "number" },
+              "federalIncomeTaxWithheld": { "type": "number" }
+            },
+            "additionalProperties": false
+          }
+        },
+        "additionalProperties": false
+      },
+      "Supported1099": {
+        "oneOf": [
+          { "$ref": "#/components/schemas/Income1099Int" },
+          { "$ref": "#/components/schemas/Income1099Div" },
+          { "$ref": "#/components/schemas/Income1099B" },
+          { "$ref": "#/components/schemas/Income1099R" },
+          { "$ref": "#/components/schemas/Income1099SSA" }
+        ],
+        "discriminator": {
+          "propertyName": "type",
+          "mapping": {
+            "INT": "#/components/schemas/Income1099Int",
+            "DIV": "#/components/schemas/Income1099Div",
+            "B": "#/components/schemas/Income1099B",
+            "R": "#/components/schemas/Income1099R",
+            "SSA": "#/components/schemas/Income1099SSA"
+          }
+        }
+      },
+      "F1098MortgageInterest": {
+        "type": "object",
+        "required": ["lender", "interest"],
+        "properties": {
+          "lender": {
+            "type": "string"
+          },
+          "interest": {
+            "type": "number",
+            "description": "Home mortgage interest and points reported on Form 1098."
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  }
+}
