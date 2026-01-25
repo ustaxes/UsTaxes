@@ -12,6 +12,7 @@ export const blankState: Information = {
   w2s: [],
   estimatedTaxes: [],
   realEstate: [],
+  businesses: [],
   taxPayer: { dependents: [] },
   questions: {},
   f1098es: [],
