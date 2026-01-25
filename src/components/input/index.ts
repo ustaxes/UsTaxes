@@ -14,10 +14,14 @@ const ein = /^([0-9]{2})([0-9]{7})/
 
 /**
  * Format a string like "123456789" as "123-45-6789". If the string is not
- * exactly 9 digits long, it returns empty string
+ * exactly 9 digits long, it returns empty string. "NRA" returns as-is.
  */
-const formatSSID = (a: string): string =>
-  (ssid.exec(a) ?? []).slice(1).join('-')
+const formatSSID = (a: string): string => {
+  if (a.trim().toUpperCase() === 'NRA') {
+    return 'NRA'
+  }
+  return (ssid.exec(a) ?? []).slice(1).join('-')
+}
 
 /**
  * Format a string like "123456789" as "12-3456789". If the string is not
