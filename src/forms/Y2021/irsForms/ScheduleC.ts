@@ -10,10 +10,23 @@ export default class ScheduleC extends F1040Attachment {
 
   businesses = (): Business[] => this.f1040.info.businesses ?? []
 
-  isNeeded = (): boolean => this.businesses().length > 0
+  businessesWith1099Nec = (): Business[] => {
+    const necBusinesses = this.f1040.f1099necs().map((f) => ({
+      name: f.payer,
+      income: {
+        grossReceipts: f.form.nonemployeeCompensation,
+        returnsAndAllowances: 0
+      },
+      expenses: {}
+    }))
+
+    return [...this.businesses(), ...necBusinesses]
+  }
+
+  isNeeded = (): boolean => this.businessesWith1099Nec().length > 0
 
   sumBusinesses = (f: (b: Business) => number | undefined): number =>
-    sumFields(this.businesses().map((b) => f(b)))
+    sumFields(this.businessesWith1099Nec().map((b) => f(b)))
 
   totalExpenses = (b: Business): number => {
     const values = Object.values(b.expenses ?? {}) as Array<number | undefined>

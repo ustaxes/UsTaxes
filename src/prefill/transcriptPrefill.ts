@@ -5,6 +5,7 @@ import {
   Income1099B,
   Income1099Div,
   Income1099Int,
+  Income1099NEC,
   Income1099R,
   Income1099SSA,
   Income1099Type,
@@ -132,12 +133,20 @@ type Prefill1099SSA = Prefill1099Base & {
   }
 }
 
+type Prefill1099NEC = Prefill1099Base & {
+  type: Income1099Type.NEC
+  form: {
+    nonemployeeCompensation: number
+  }
+}
+
 type Prefill1099 =
   | Prefill1099Int
   | Prefill1099Div
   | Prefill1099B
   | Prefill1099R
   | Prefill1099SSA
+  | Prefill1099NEC
 
 type PrefillF1098 = {
   lender: string
@@ -271,6 +280,15 @@ const map1099 = (f1099: Prefill1099): Supported1099 => {
           federalIncomeTaxWithheld: f1099.form.federalIncomeTaxWithheld
         }
       } as Income1099SSA
+    case Income1099Type.NEC:
+      return {
+        type: Income1099Type.NEC,
+        payer: f1099.payer,
+        personRole: f1099.personRole,
+        form: {
+          nonemployeeCompensation: f1099.form.nonemployeeCompensation
+        }
+      } as Income1099NEC
     default:
       return f1099 as Supported1099
   }

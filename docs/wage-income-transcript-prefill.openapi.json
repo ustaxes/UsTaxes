@@ -290,13 +290,32 @@
         },
         "additionalProperties": false
       },
+      "Income1099NEC": {
+        "type": "object",
+        "required": ["type", "payer", "personRole", "form"],
+        "properties": {
+          "type": { "const": "NEC" },
+          "payer": { "type": "string" },
+          "personRole": { "type": "string", "enum": ["PRIMARY", "SPOUSE"] },
+          "form": {
+            "type": "object",
+            "required": ["nonemployeeCompensation"],
+            "properties": {
+              "nonemployeeCompensation": { "type": "number" }
+            },
+            "additionalProperties": false
+          }
+        },
+        "additionalProperties": false
+      },
       "Supported1099": {
         "oneOf": [
           { "$ref": "#/components/schemas/Income1099Int" },
           { "$ref": "#/components/schemas/Income1099Div" },
           { "$ref": "#/components/schemas/Income1099B" },
           { "$ref": "#/components/schemas/Income1099R" },
-          { "$ref": "#/components/schemas/Income1099SSA" }
+          { "$ref": "#/components/schemas/Income1099SSA" },
+          { "$ref": "#/components/schemas/Income1099NEC" }
         ],
         "discriminator": {
           "propertyName": "type",
@@ -305,7 +324,8 @@
             "DIV": "#/components/schemas/Income1099Div",
             "B": "#/components/schemas/Income1099B",
             "R": "#/components/schemas/Income1099R",
-            "SSA": "#/components/schemas/Income1099SSA"
+            "SSA": "#/components/schemas/Income1099SSA",
+            "NEC": "#/components/schemas/Income1099NEC"
           }
         }
       },

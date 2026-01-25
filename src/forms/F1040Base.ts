@@ -4,6 +4,7 @@ import {
   Income1099DA,
   Income1099Div,
   Income1099Int,
+  Income1099NEC,
   Income1099R,
   Income1099SSA,
   Income1099Type,
@@ -118,6 +119,9 @@ export default abstract class F1040Base extends Form {
 
   f1099ssas = (): Income1099SSA[] =>
     this.f1099sByType(Income1099Type.SSA) as Income1099SSA[]
+
+  f1099necs = (): Income1099NEC[] =>
+    this.f1099sByType(Income1099Type.NEC) as Income1099NEC[]
 
   fullName = (person: Person): string =>
     `${person.firstName} ${person.lastName}`

@@ -189,6 +189,10 @@ export const f1099BData: Arbitrary<types.F1099BData> = fc
     })
   )
 
+export const f1099NECData: Arbitrary<types.F1099NECData> = fc
+  .nat()
+  .map((nonemployeeCompensation) => ({ nonemployeeCompensation }))
+
 export const f1099Int: Arbitrary<types.Income1099Int> = fc
   .tuple(payerName, f1099IntData)
   .map(([payer, form]) => ({
@@ -216,10 +220,20 @@ export const f1099Div: Arbitrary<types.Income1099Div> = fc
     personRole: types.PersonRole.PRIMARY
   }))
 
+export const f1099NEC: Arbitrary<types.Income1099NEC> = fc
+  .tuple(payerName, f1099NECData)
+  .map(([payer, form]) => ({
+    type: types.Income1099Type.NEC,
+    form,
+    payer,
+    personRole: types.PersonRole.PRIMARY
+  }))
+
 export const f1099: Arbitrary<types.Supported1099> = fc.oneof(
   f1099B,
   f1099Div,
-  f1099Int
+  f1099Int,
+  f1099NEC
 )
 
 const propExpenseTypeName: Arbitrary<types.PropertyExpenseTypeName> =

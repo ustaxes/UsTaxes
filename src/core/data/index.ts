@@ -133,7 +133,8 @@ export enum Income1099Type {
   DIV = 'DIV',
   R = 'R',
   SSA = 'SSA',
-  DA = 'DA'
+  DA = 'DA',
+  NEC = 'NEC'
 }
 
 export interface F1099BData {
@@ -217,6 +218,10 @@ export interface F1099SSAData {
   // benefitsRepaid: number
   netBenefits: number
   federalIncomeTaxWithheld: number
+}
+
+export interface F1099NECData {
+  nonemployeeCompensation: number
 }
 
 export interface Income1099<T, D> {
@@ -442,6 +447,7 @@ export type Income1099Div = Income1099<Income1099Type.DIV, F1099DivData>
 export type Income1099R = Income1099<Income1099Type.R, F1099RData>
 export type Income1099SSA = Income1099<Income1099Type.SSA, F1099SSAData>
 export type Income1099DA = Income1099<Income1099Type.DA, F1099DAData>
+export type Income1099NEC = Income1099<Income1099Type.NEC, F1099NECData>
 
 export type Supported1099 =
   | Income1099Int
@@ -450,6 +456,7 @@ export type Supported1099 =
   | Income1099R
   | Income1099SSA
   | Income1099DA
+  | Income1099NEC
 
 export enum PropertyType {
   singleFamily,

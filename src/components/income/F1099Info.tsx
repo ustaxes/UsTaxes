@@ -84,6 +84,9 @@ const showIncome = (a: Supported1099): ReactElement => {
         </span>
       )
     }
+    case Income1099Type.NEC: {
+      return <Currency value={a.form.nonemployeeCompensation} />
+    }
   }
 }
 
@@ -111,6 +114,8 @@ interface F1099UserInput {
   // benefitsPaid: string | number
   // benefitsRepaid: string | number
   netBenefits: string | number
+  // NEC fields
+  nonemployeeCompensation: string | number
 }
 
 const blankUserInput: F1099UserInput = {
@@ -134,7 +139,9 @@ const blankUserInput: F1099UserInput = {
   // SSA fields
   // benefitsPaid: '',
   // benefitsRepaid: '',
-  netBenefits: ''
+  netBenefits: '',
+  // NEC fields
+  nonemployeeCompensation: ''
 }
 
 const toUserInput = (f: Supported1099): F1099UserInput => ({
@@ -162,7 +169,8 @@ const toUserInput = (f: Supported1099): F1099UserInput => ({
       case Income1099Type.SSA: {
         return f.form
       }
-      case Income1099Type.DA: {
+      case Income1099Type.DA:
+      case Income1099Type.NEC: {
         return f.form
       }
     }
@@ -244,6 +252,16 @@ const toF1099 = (input: F1099UserInput): Supported1099 | undefined => {
           shortTermProceeds: Number(input.shortTermProceeds),
           longTermCostBasis: Number(input.longTermCostBasis),
           longTermProceeds: Number(input.longTermProceeds)
+        }
+      }
+    }
+    case Income1099Type.NEC: {
+      return {
+        payer: input.payer,
+        personRole: input.personRole ?? PersonRole.PRIMARY,
+        type: input.formType,
+        form: {
+          nonemployeeCompensation: Number(input.nonemployeeCompensation)
         }
       }
     }
@@ -421,13 +439,28 @@ export default function F1099Info(): ReactElement {
     </Grid>
   )
 
+  const necFields = (
+    <Grid container spacing={2}>
+      <LabeledInput
+        label={
+          <>
+            <strong>Box 1</strong> - Nonemployee compensation
+          </>
+        }
+        patternConfig={Patterns.currency}
+        name="nonemployeeCompensation"
+      />
+    </Grid>
+  )
+
   const specificFields = {
     [Income1099Type.INT]: intFields,
     [Income1099Type.B]: bFields,
     [Income1099Type.DIV]: divFields,
     [Income1099Type.R]: rFields,
     [Income1099Type.SSA]: ssaFields,
-    [Income1099Type.DA]: bFields
+    [Income1099Type.DA]: bFields,
+    [Income1099Type.NEC]: necFields
   }
 
   const titles = {
@@ -436,7 +469,8 @@ export default function F1099Info(): ReactElement {
     [Income1099Type.DIV]: '1099-DIV',
     [Income1099Type.R]: '1099-R',
     [Income1099Type.SSA]: 'SSA-1099',
-    [Income1099Type.DA]: '1099-DA'
+    [Income1099Type.DA]: '1099-DA',
+    [Income1099Type.NEC]: '1099-NEC'
   }
 
   const form: ReactElement | undefined = (
