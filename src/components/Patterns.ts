@@ -94,6 +94,10 @@ export const Patterns = {
     undefined,
     '###-##-####'
   ),
+  ssnOrNra: text(
+    /^(?:NRA|[0-9]{9}|[0-9]{3}-[0-9]{2}-[0-9]{4})$/i,
+    'Input should be 9 digits (###-##-####) or NRA'
+  ),
   ein: numeric(
     /[0-9]{9}/,
     'Input should be filled with 9 digits',
