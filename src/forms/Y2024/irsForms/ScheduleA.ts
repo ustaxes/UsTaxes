@@ -19,6 +19,16 @@ const blankItemizedDeductions = {
   charityOther: 0
 }
 
+const sum1098Interest = (f1040: F1040): number =>
+  f1040.info.f1098s
+    .map((f) => f.interest + (f.points ?? 0))
+    .reduce((l, r) => l + r, 0)
+
+const sum1098MortgageInsurance = (f1040: F1040): number =>
+  f1040.info.f1098s
+    .map((f) => f.mortgageInsurancePremiums ?? 0)
+    .reduce((l, r) => l + r, 0)
+
 export default class ScheduleA extends F1040Attachment {
   tag: FormTag = 'f1040sa'
   itemizedDeductions: ItemizedDeductions
@@ -30,10 +40,18 @@ export default class ScheduleA extends F1040Attachment {
       ...blankItemizedDeductions,
       ...(f1040.info.itemizedDeductions ?? {})
     }
+    this.itemizedDeductions.interest8a =
+      Number(this.itemizedDeductions.interest8a) + sum1098Interest(f1040)
+    this.itemizedDeductions.interest8d =
+      Number(this.itemizedDeductions.interest8d) +
+      sum1098MortgageInsurance(f1040)
   }
 
   isNeeded = (): boolean => {
-    if (this.f1040.info.itemizedDeductions !== undefined) {
+    if (
+      this.f1040.info.itemizedDeductions !== undefined ||
+      this.f1040.info.f1098s.length > 0
+    ) {
       const standardDeduction = this.f1040.standardDeduction()
       const itemizedAmount = this.deductions()
       return (

@@ -70,6 +70,7 @@ export const information =
 export const property = fns.Property as ValidateFunction<types.Property>
 export const propertyType =
   fns.PropertyType as ValidateFunction<types.PropertyType>
+export const f1098 = fns.F1098 as ValidateFunction<types.F1098>
 export const f1098e = fns.F1098e as ValidateFunction<types.F1098e>
 export const itemizedDeductions =
   fns.ItemizedDeductions as ValidateFunction<types.ItemizedDeductions>

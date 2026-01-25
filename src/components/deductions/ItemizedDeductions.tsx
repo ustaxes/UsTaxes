@@ -82,10 +82,21 @@ export const ItemizedDeductionsInfo = (): ReactElement => {
       return state.information.itemizedDeductions
     }
   )
+  const f1098s = useSelector((state: TaxesState) => state.information.f1098s)
+  const f1098InterestTotal = f1098s
+    .map((f) => f.interest + (f.points ?? 0))
+    .reduce((l, r) => l + r, 0)
+  const f1098MortgageInsuranceTotal = f1098s
+    .map((f) => f.mortgageInsurancePremiums ?? 0)
+    .reduce((l, r) => l + r, 0)
 
   const defaultValues: ItemizedDeductionUserInput = {
     ...blankUserInput,
     ...(itemizedDeductions !== undefined ? toUserInput(itemizedDeductions) : {})
+  }
+  if (f1098s.length > 0) {
+    defaultValues.interest8a = f1098InterestTotal
+    defaultValues.interest8d = f1098MortgageInsuranceTotal
   }
 
   const { onAdvance, navButtons } = usePager()
@@ -174,6 +185,7 @@ export const ItemizedDeductionsInfo = (): ReactElement => {
           patternConfig={Patterns.currency}
           name="interest8a"
           required={false}
+          disabled={f1098s.length > 0}
         />
         <LabeledInput
           label="Home mortgage interest not reported to you on Form 1098"
@@ -192,6 +204,7 @@ export const ItemizedDeductionsInfo = (): ReactElement => {
           patternConfig={Patterns.currency}
           name="interest8d"
           required={false}
+          disabled={f1098s.length > 0}
         />
         <LabeledInput
           label="Investment interest"

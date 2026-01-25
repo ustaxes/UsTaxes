@@ -23,6 +23,7 @@ export function LabeledInput<TFormValues extends FieldValues>(
   const { required = patternConfigDefined !== undefined } = props
   const {
     autofocus,
+    disabled = false,
     patternConfig = Patterns.plain,
     useGrid = true,
     sizes = { xs: 12 }
@@ -88,6 +89,7 @@ export function LabeledInput<TFormValues extends FieldValues>(
               onValueChange={(v) => onChange(v.value)}
               value={value as number}
               error={error !== undefined}
+              disabled={disabled}
               fullWidth
               helperText={errorMessage}
               variant="filled"
@@ -152,6 +154,7 @@ export function LabeledInput<TFormValues extends FieldValues>(
             label={label}
             value={value}
             onChange={onChange}
+            disabled={disabled}
             onKeyDown={(e) => {
               if (e.key === 'Enter') {
                 void handleSubmit(() => {

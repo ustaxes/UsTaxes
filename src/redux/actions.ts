@@ -7,6 +7,7 @@ import {
   PrimaryPersonDateString,
   ContactInfo,
   Supported1099,
+  F1098,
   F1098e,
   SpouseDateString,
   Property,
@@ -32,6 +33,7 @@ import {
   Edit1099Action,
   EditW2Action,
   EditEstimatedTaxesAction,
+  Edit1098Action,
   Edit1098eAction,
   EditHSAAction,
   EditIraAction,
@@ -64,6 +66,9 @@ export enum ActionName {
   ADD_1099 = 'ADD_1099',
   EDIT_1099 = 'EDIT_1099',
   REMOVE_1099 = 'REMOVE_1099',
+  ADD_1098 = 'ADD_1098',
+  EDIT_1098 = 'EDIT_1098',
+  REMOVE_1098 = 'REMOVE_1098',
   ADD_PROPERTY = 'ADD_PROPERTY',
   EDIT_PROPERTY = 'EDIT_PROPERTY',
   REMOVE_PROPERTY = 'REMOVE_PROPERTY',
@@ -140,6 +145,9 @@ type RemoveHSA = Save<typeof ActionName.REMOVE_HSA, number>
 type Add1099 = Save<typeof ActionName.ADD_1099, Supported1099>
 type Edit1099 = Save<typeof ActionName.EDIT_1099, Edit1099Action>
 type Remove1099 = Save<typeof ActionName.REMOVE_1099, number>
+type Add1098 = Save<typeof ActionName.ADD_1098, F1098>
+type Edit1098 = Save<typeof ActionName.EDIT_1098, Edit1098Action>
+type Remove1098 = Save<typeof ActionName.REMOVE_1098, number>
 type AddProperty = Save<typeof ActionName.ADD_PROPERTY, Property>
 type EditProperty = Save<typeof ActionName.EDIT_PROPERTY, EditPropertyAction>
 type RemoveProperty = Save<typeof ActionName.REMOVE_PROPERTY, number>
@@ -200,6 +208,9 @@ export type Actions =
   | Add1099
   | Edit1099
   | Remove1099
+  | Add1098
+  | Edit1098
+  | Remove1098
   | AddProperty
   | EditProperty
   | RemoveProperty
@@ -417,6 +428,20 @@ export const removeProperty: ActionCreator<number> = makeActionCreator(
 export const answerQuestion: ActionCreator<Responses> = makeActionCreator(
   ActionName.ANSWER_QUESTION,
   validators.responses
+)
+
+export const add1098: ActionCreator<F1098> = makeActionCreator(
+  ActionName.ADD_1098,
+  validators.f1098
+)
+
+export const edit1098: ActionCreator<Edit1098Action> = makeActionCreator(
+  ActionName.EDIT_1098
+)
+
+export const remove1098: ActionCreator<number> = makeActionCreator(
+  ActionName.REMOVE_1098,
+  indexValidator
 )
 
 export const add1098e: ActionCreator<F1098e> = makeActionCreator(

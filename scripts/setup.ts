@@ -50,6 +50,7 @@ const moduleCode = standaloneCode(ajv, {
   Information: '#/definitions/InformationDateString',
   Property: '#/definitions/Property',
   PropertyType: '#/definitions/PropertyType',
+  F1098: '#/definitions/F1098',
   F1098e: '#/definitions/F1098e',
   ItemizedDeductions: '#/definitions/ItemizedDeductions',
   Responses: '#/definitions/Responses',

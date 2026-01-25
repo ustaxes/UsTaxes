@@ -35,6 +35,7 @@ export interface LabeledDropdownProps<A, TFormValues>
 
 export interface LabeledInputProps<TFormValues extends FieldValues> {
   autofocus?: boolean
+  disabled?: boolean
   useGrid?: boolean
   sizes?: SizeList
   patternConfig?: PatternConfig

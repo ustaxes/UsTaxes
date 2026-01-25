@@ -15,6 +15,7 @@ export const blankState: Information = {
   businesses: [],
   taxPayer: { dependents: [] },
   questions: {},
+  f1098s: [],
   f1098es: [],
   f3921s: [],
   scheduleK1Form1065s: [],
@@ -253,6 +254,28 @@ const formReducer = (
       return {
         ...newState,
         questions: action.formData
+      }
+    }
+    case ActionName.ADD_1098: {
+      return {
+        ...newState,
+        f1098s: [...newState.f1098s, action.formData]
+      }
+    }
+    case ActionName.EDIT_1098: {
+      const new1098s = [...newState.f1098s]
+      new1098s.splice(action.formData.index, 1, action.formData.value)
+      return {
+        ...newState,
+        f1098s: new1098s
+      }
+    }
+    case ActionName.REMOVE_1098: {
+      const new1098s = [...newState.f1098s]
+      new1098s.splice(action.formData, 1)
+      return {
+        ...newState,
+        f1098s: new1098s
       }
     }
     case ActionName.ADD_1098e: {

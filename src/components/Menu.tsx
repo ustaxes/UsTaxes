@@ -29,6 +29,7 @@ import F1099Info from './income/F1099Info'
 import EstimatedTaxes from './payments/EstimatedTaxes'
 import RealEstate from './income/RealEstate'
 import GettingStarted from './GettingStarted'
+import F1098Info from './deductions/F1098Info'
 import F1098eInfo from './deductions/F1098eInfo'
 import ItemizedDeductions from './deductions/ItemizedDeductions'
 import Questions from './Questions'
@@ -147,6 +148,7 @@ export const drawerSections: Section[] = [
   {
     title: 'Deductions',
     items: [
+      item('Mortgage Interest (1098)', Urls.deductions.f1098s, <F1098Info />),
       item('Student Loan Interest', Urls.deductions.f1098es, <F1098eInfo />),
       item(
         'Itemized Deductions',

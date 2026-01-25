@@ -319,6 +319,14 @@
           "interest": {
             "type": "number",
             "description": "Home mortgage interest and points reported on Form 1098."
+          },
+          "points": {
+            "type": "number",
+            "description": "Points reported on Form 1098."
+          },
+          "mortgageInsurancePremiums": {
+            "type": "number",
+            "description": "Mortgage insurance premiums reported on Form 1098."
           }
         },
         "additionalProperties": false

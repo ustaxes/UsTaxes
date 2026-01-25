@@ -249,6 +249,15 @@ const f1098e: Arbitrary<types.F1098e> = fc
     interest
   }))
 
+const f1098: Arbitrary<types.F1098> = fc
+  .tuple(maxWords(2), interest, fc.option(interest), fc.option(interest))
+  .map(([lender, interest, points, mortgageInsurancePremiums]) => ({
+    lender,
+    interest,
+    points: points ?? undefined,
+    mortgageInsurancePremiums: mortgageInsurancePremiums ?? undefined
+  }))
+
 const f3921: Arbitrary<types.F3921> = fc
   .tuple(maxWords(2), posCurrency(100), fc.integer({ min: 1, max: 500 }))
   .map(([name, exercisePricePerShare, numShares]) => {
@@ -675,6 +684,7 @@ export class Arbitraries {
         fc.array(w2),
         fc.array(this.property()),
         fc.array(estTax),
+        fc.array(f1098),
         fc.array(f1098e),
         fc.array(f3921),
         fc.array(scheduleK1Form1065),
@@ -693,6 +703,7 @@ export class Arbitraries {
           w2s,
           realEstate,
           estimatedTaxes,
+          f1098s,
           f1098es,
           f3921s,
           scheduleK1Form1065s,
@@ -709,6 +720,7 @@ export class Arbitraries {
           w2s,
           realEstate,
           estimatedTaxes,
+          f1098s,
           f1098es,
           f3921s,
           scheduleK1Form1065s,

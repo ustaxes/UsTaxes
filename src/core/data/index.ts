@@ -546,6 +546,13 @@ export interface F1098e {
   interest: number
 }
 
+export interface F1098 {
+  lender: string
+  interest: number
+  points?: number
+  mortgageInsurancePremiums?: number
+}
+
 export interface F3921 {
   name: string
   personRole: PersonRole.PRIMARY | PersonRole.SPOUSE
@@ -1146,6 +1153,7 @@ export interface Information<D = Date> {
   realEstate: Property[]
   businesses?: Business[]
   estimatedTaxes: EstimatedTaxPayments[]
+  f1098s: F1098[]
   f1098es: F1098e[]
   f3921s: F3921[]
   scheduleK1Form1065s: ScheduleK1Form1065[]
@@ -1265,6 +1273,7 @@ export type EditEstimatedTaxesAction = ArrayItemEditAction<EstimatedTaxPayments>
 export type Edit1099Action = ArrayItemEditAction<Supported1099>
 export type EditPropertyAction = ArrayItemEditAction<Property>
 export type Edit1098eAction = ArrayItemEditAction<F1098e>
+export type Edit1098Action = ArrayItemEditAction<F1098>
 export type EditHSAAction = ArrayItemEditAction<HealthSavingsAccountDateString>
 export type EditIraAction = ArrayItemEditAction<Ira>
 export type EditAssetAction = ArrayItemEditAction<Asset<Date>>
