@@ -640,19 +640,77 @@
       },
       "RentalProperty": {
         "type": "object",
-        "required": ["address", "rentsReceived", "totalExpenses", "netIncome"],
+        "required": [
+          "address",
+          "rentalDays",
+          "personalUseDays",
+          "rentReceived",
+          "propertyType",
+          "qualifiedJointVenture",
+          "expenses"
+        ],
         "properties": {
           "address": {
+            "$ref": "#/components/schemas/Address"
+          },
+          "rentalDays": {
+            "type": "number"
+          },
+          "personalUseDays": {
+            "type": "number"
+          },
+          "rentReceived": {
+            "type": "number"
+          },
+          "propertyType": {
+            "type": "string",
+            "enum": [
+              "singleFamily",
+              "multiFamily",
+              "vacation",
+              "commercial",
+              "land",
+              "selfRental",
+              "other"
+            ]
+          },
+          "isPassive": {
+            "type": "boolean"
+          },
+          "otherPropertyType": {
             "type": "string"
           },
-          "rentsReceived": {
-            "type": "number"
+          "qualifiedJointVenture": {
+            "type": "boolean"
           },
-          "totalExpenses": {
-            "type": "number"
+          "expenses": {
+            "type": "object",
+            "properties": {
+              "advertising": { "type": "number" },
+              "auto": { "type": "number" },
+              "cleaning": { "type": "number" },
+              "commissions": { "type": "number" },
+              "insurance": { "type": "number" },
+              "legal": { "type": "number" },
+              "management": { "type": "number" },
+              "mortgage": { "type": "number" },
+              "otherInterest": { "type": "number" },
+              "repairs": { "type": "number" },
+              "supplies": { "type": "number" },
+              "taxes": { "type": "number" },
+              "utilities": { "type": "number" },
+              "depreciation": { "type": "number" },
+              "other": { "type": "number" }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+              "^.+_source$": {
+                "$ref": "#/components/schemas/FieldSource"
+              }
+            }
           },
-          "netIncome": {
-            "type": "number"
+          "otherExpenseType": {
+            "type": "string"
           }
         },
         "additionalProperties": false,

@@ -62,7 +62,8 @@ const UserSettings = (): ReactElement => {
         createdAt: parsed.createdAt,
         w2s: parsed.w2s,
         f1099s: parsed.f1099s,
-        f1098s: parsed.f1098s
+        f1098s: parsed.f1098s,
+        rentalProperties: parsed.rentalProperties
       })
 
       dispatch(setInfo(nextInfo)(taxYear))

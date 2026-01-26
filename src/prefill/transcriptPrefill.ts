@@ -11,6 +11,9 @@ import {
   Income1099Type,
   IncomeW2,
   Information,
+  Property,
+  PropertyExpenseTypeName,
+  PropertyTypeName,
   PersonRole,
   PlanType1099,
   PrimaryPerson,
@@ -32,6 +35,7 @@ export type TranscriptPrefill = {
   w2s?: PrefillW2[]
   f1099s?: Prefill1099[]
   f1098s?: PrefillF1098[]
+  rentalProperties?: PrefillRentalProperty[]
 }
 
 type PrefillPerson = {
@@ -156,6 +160,19 @@ type PrefillF1098 = {
   interest: number
   points?: number
   mortgageInsurancePremiums?: number
+}
+
+type PrefillRentalProperty = {
+  address: Address
+  rentalDays: number
+  personalUseDays: number
+  rentReceived: number
+  propertyType: PropertyTypeName
+  isPassive?: boolean
+  otherPropertyType?: string
+  qualifiedJointVenture: boolean
+  expenses: Partial<{ [K in PropertyExpenseTypeName]: number }>
+  otherExpenseType?: string
 }
 
 type SourceTagged<T> = T & Record<string, unknown>
@@ -314,6 +331,19 @@ const mapF1098 = (f1098: PrefillF1098): F1098 => ({
   interest: f1098.interest,
   points: f1098.points,
   mortgageInsurancePremiums: f1098.mortgageInsurancePremiums
+})
+
+const mapRentalProperty = (property: PrefillRentalProperty): Property => ({
+  address: property.address,
+  rentalDays: property.rentalDays,
+  personalUseDays: property.personalUseDays,
+  rentReceived: property.rentReceived,
+  propertyType: property.propertyType,
+  isPassive: property.isPassive,
+  otherPropertyType: property.otherPropertyType,
+  qualifiedJointVenture: property.qualifiedJointVenture,
+  expenses: property.expenses,
+  otherExpenseType: property.otherExpenseType
 })
 
 const mapTaxPayer = (
@@ -771,6 +801,124 @@ const buildSources = (prefill: TranscriptPrefill): InformationSources => {
     })
   }
 
+  if (prefill.rentalProperties) {
+    prefill.rentalProperties.forEach((property, index) => {
+      const propertyRecord = property as Record<string, unknown>
+      sources = setSource(
+        sources,
+        ['realEstate', index, 'rentalDays'],
+        sourceFor(propertyRecord, 'rentalDays')
+      )
+      sources = setSource(
+        sources,
+        ['realEstate', index, 'personalUseDays'],
+        sourceFor(propertyRecord, 'personalUseDays')
+      )
+      sources = setSource(
+        sources,
+        ['realEstate', index, 'rentReceived'],
+        sourceFor(propertyRecord, 'rentReceived')
+      )
+      sources = setSource(
+        sources,
+        ['realEstate', index, 'propertyType'],
+        sourceFor(propertyRecord, 'propertyType')
+      )
+      sources = setSource(
+        sources,
+        ['realEstate', index, 'isPassive'],
+        sourceFor(propertyRecord, 'isPassive')
+      )
+      sources = setSource(
+        sources,
+        ['realEstate', index, 'otherPropertyType'],
+        sourceFor(propertyRecord, 'otherPropertyType')
+      )
+      sources = setSource(
+        sources,
+        ['realEstate', index, 'qualifiedJointVenture'],
+        sourceFor(propertyRecord, 'qualifiedJointVenture')
+      )
+      sources = setSource(
+        sources,
+        ['realEstate', index, 'otherExpenseType'],
+        sourceFor(propertyRecord, 'otherExpenseType')
+      )
+
+      const addressRecord = property.address as Record<string, unknown> | undefined
+      if (addressRecord) {
+        sources = setSource(
+          sources,
+          ['realEstate', index, 'address', 'address'],
+          sourceFor(addressRecord, 'address')
+        )
+        sources = setSource(
+          sources,
+          ['realEstate', index, 'address', 'city'],
+          sourceFor(addressRecord, 'city')
+        )
+        sources = setSource(
+          sources,
+          ['realEstate', index, 'address', 'state'],
+          sourceFor(addressRecord, 'state')
+        )
+        sources = setSource(
+          sources,
+          ['realEstate', index, 'address', 'zip'],
+          sourceFor(addressRecord, 'zip')
+        )
+        sources = setSource(
+          sources,
+          ['realEstate', index, 'address', 'aptNo'],
+          sourceFor(addressRecord, 'aptNo')
+        )
+        sources = setSource(
+          sources,
+          ['realEstate', index, 'address', 'foreignCountry'],
+          sourceFor(addressRecord, 'foreignCountry')
+        )
+        sources = setSource(
+          sources,
+          ['realEstate', index, 'address', 'province'],
+          sourceFor(addressRecord, 'province')
+        )
+        sources = setSource(
+          sources,
+          ['realEstate', index, 'address', 'postalCode'],
+          sourceFor(addressRecord, 'postalCode')
+        )
+      }
+
+      const expensesRecord = property.expenses as Record<string, unknown> | undefined
+      if (expensesRecord) {
+        const expenseFields: PropertyExpenseTypeName[] = [
+          'advertising',
+          'auto',
+          'cleaning',
+          'commissions',
+          'insurance',
+          'legal',
+          'management',
+          'mortgage',
+          'otherInterest',
+          'repairs',
+          'supplies',
+          'taxes',
+          'utilities',
+          'depreciation',
+          'other'
+        ]
+        expenseFields.forEach((field) => {
+          sources = setSource(
+            sources,
+            ['realEstate', index, 'expenses', field],
+            sourceFor(expensesRecord, field)
+          )
+        })
+      }
+    })
+  }
+
   return sources
 }
 
@@ -783,7 +931,10 @@ export const applyTranscriptPrefill = (
     taxPayer: mapTaxPayer(info.taxPayer, prefill.taxPayer),
     w2s: prefill.w2s ? prefill.w2s.map(mapW2) : info.w2s,
     f1099s: prefill.f1099s ? prefill.f1099s.map(map1099) : info.f1099s,
-    f1098s: prefill.f1098s ? prefill.f1098s.map(mapF1098) : info.f1098s
+    f1098s: prefill.f1098s ? prefill.f1098s.map(mapF1098) : info.f1098s,
+    realEstate: prefill.rentalProperties
+      ? prefill.rentalProperties.map(mapRentalProperty)
+      : info.realEstate
   }
 
   const importedSources = buildSources(prefill)
@@ -793,7 +944,10 @@ export const applyTranscriptPrefill = (
     taxPayer: importedSources.taxPayer,
     ...(prefill.w2s !== undefined ? { w2s: importedSources.w2s } : {}),
     ...(prefill.f1099s !== undefined ? { f1099s: importedSources.f1099s } : {}),
-    ...(prefill.f1098s !== undefined ? { f1098s: importedSources.f1098s } : {})
+    ...(prefill.f1098s !== undefined ? { f1098s: importedSources.f1098s } : {}),
+    ...(prefill.rentalProperties !== undefined
+      ? { realEstate: importedSources.realEstate }
+      : {})
   }
 
   return {
