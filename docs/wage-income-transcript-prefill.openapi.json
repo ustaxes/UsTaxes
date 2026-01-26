@@ -58,6 +58,24 @@
           }
         }
       },
+      "TranscriptPrefillBundle": {
+        "type": "object",
+        "required": ["prefills"],
+        "properties": {
+          "version": {
+            "type": "string",
+            "description": "Schema version for the bundle container."
+          },
+          "prefills": {
+            "type": "object",
+            "description": "Map of tax year (e.g., Y2023) to TranscriptPrefill payloads.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/TranscriptPrefill"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
       "TaxPayer": {
         "type": "object",
         "required": ["primaryPerson", "dependents"],
@@ -478,12 +496,6 @@
               "planType": {
                 "type": "string",
                 "enum": ["IRA", "RothIRA", "SepIRA", "SimpleIRA", "Pension"]
-              },
-              "taxableAmountNotDetermined": {
-                "type": "boolean"
-              },
-              "totalDistribution": {
-                "type": "boolean"
               }
             },
             "additionalProperties": false,

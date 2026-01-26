@@ -6,10 +6,12 @@ import { TaxYear, TaxYears } from 'ustaxes/core/data'
 import { enumKeys } from 'ustaxes/core/util'
 import {
   applyTranscriptPrefill,
+  buildTranscriptPrefill,
   TranscriptPrefill
 } from 'ustaxes/prefill/transcriptPrefill'
 import { setActiveYear, setInfo } from 'ustaxes/redux/actions'
 import { YearsTaxesState } from 'ustaxes/redux/data'
+import { download } from 'ustaxes/redux/fs'
 import { fsRecover } from 'ustaxes/redux/fs/Actions'
 import { LoadRaw } from 'ustaxes/redux/fs/Load'
 import SaveToFile from './SaveToFile'
@@ -32,6 +34,31 @@ const UserSettings = (): ReactElement => {
     undefined
   )
   const yearsState = useSelector((state: YearsTaxesState) => state)
+
+  const downloadPrefill = (taxYear: TaxYear): void => {
+    const payload = buildTranscriptPrefill(yearsState[taxYear], taxYear)
+    download(
+      `ustaxes_transcript_prefill_${taxYear}.json`,
+      JSON.stringify(payload, null, 2)
+    )
+  }
+
+  const downloadAllPrefills = (): void => {
+    const prefills = Object.fromEntries(
+      validTaxYears.map((year) => [
+        year,
+        buildTranscriptPrefill(yearsState[year], year)
+      ])
+    )
+    const payload = {
+      version: '1.0.0',
+      prefills
+    }
+    download(
+      'ustaxes_transcript_prefill_bundle.json',
+      JSON.stringify(payload, null, 2)
+    )
+  }
 
   const applyPrefill = (raw: string): void => {
     setPrefillError(undefined)
@@ -137,6 +164,20 @@ const UserSettings = (): ReactElement => {
       </Button>
       {prefillStatus ? <p>{prefillStatus}</p> : null}
       {prefillError ? <p>{prefillError}</p> : null}
+      <h3>Download transcript JSON</h3>
+      <p>
+        Download the active year only, or export all years in a single bundle.
+      </p>
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={() => downloadPrefill(yearsState.activeYear)}
+      >
+        Download active year transcript JSON
+      </Button>
+      <Button variant="outlined" color="primary" onClick={downloadAllPrefills}>
+        Download all years transcript JSON
+      </Button>
       <h3>Delete data</h3>
       <ClearLocalStorage variant="contained" color="primary">
         Clear Local Storage

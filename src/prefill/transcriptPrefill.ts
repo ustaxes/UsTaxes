@@ -15,6 +15,7 @@ import {
   PropertyExpenseTypeName,
   PropertyTypeName,
   PersonRole,
+  Person,
   PlanType1099,
   PrimaryPerson,
   Spouse,
@@ -25,7 +26,7 @@ import {
   DataSource,
   InformationSources
 } from 'ustaxes/core/data'
-import { setSource } from 'ustaxes/core/data/sources'
+import { getSource, setSource } from 'ustaxes/core/data/sources'
 
 export type TranscriptPrefill = {
   taxYear: TaxYear
@@ -127,8 +128,6 @@ type Prefill1099R = Prefill1099Base & {
     taxableAmount: number
     federalIncomeTaxWithheld: number
     planType: PlanType1099
-    taxableAmountNotDetermined?: boolean
-    totalDistribution?: boolean
   }
 }
 
@@ -189,6 +188,18 @@ const sourceFor = (
 
 const cleanSsid = (ssid: string): string => ssid.replace(/-/g, '')
 
+const formatDate = (value: Date): string => value.toISOString().split('T')[0]
+
+const tagField = (
+  target: Record<string, unknown>,
+  field: string,
+  source: DataSource | undefined
+): void => {
+  if (source !== undefined) {
+    target[`${field}_source`] = source
+  }
+}
+
 const mapPrimaryPerson = (
   person: PrefillPerson,
   fallbackAddress?: Address
@@ -231,6 +242,43 @@ const mapDependent = (person: PrefillDependent): Dependent<Date> => ({
     ? {
         numberOfMonths: person.qualifyingInfo.numberOfMonths ?? 0,
         isStudent: person.qualifyingInfo.isStudent ?? false
+      }
+    : undefined
+})
+
+const mapPersonToPrefill = (
+  person: Person<Date>,
+  extras?: Partial<PrefillPerson>
+): PrefillPerson => ({
+  firstName: person.firstName,
+  lastName: person.lastName,
+  ssid: person.ssid,
+  role: person.role,
+  isBlind: person.isBlind,
+  dateOfBirth: formatDate(person.dateOfBirth),
+  ...extras
+})
+
+const mapPrimaryToPrefill = (person: PrimaryPerson<Date>): PrefillPerson => ({
+  ...mapPersonToPrefill(person, {
+    address: person.address,
+    isTaxpayerDependent: person.isTaxpayerDependent
+  })
+})
+
+const mapSpouseToPrefill = (person: Spouse<Date>): PrefillPerson => ({
+  ...mapPersonToPrefill(person, {
+    isTaxpayerDependent: person.isTaxpayerDependent
+  })
+})
+
+const mapDependentToPrefill = (person: Dependent<Date>): PrefillDependent => ({
+  ...mapPersonToPrefill(person),
+  relationship: person.relationship,
+  qualifyingInfo: person.qualifyingInfo
+    ? {
+        numberOfMonths: person.qualifyingInfo.numberOfMonths,
+        isStudent: person.qualifyingInfo.isStudent
       }
     : undefined
 })
@@ -326,6 +374,95 @@ const map1099 = (f1099: Prefill1099): Supported1099 => {
   }
 }
 
+const mapW2ToPrefill = (w2: IncomeW2): PrefillW2 => ({
+  occupation: w2.occupation,
+  income: w2.income,
+  medicareIncome: w2.medicareIncome,
+  fedWithholding: w2.fedWithholding,
+  ssWages: w2.ssWages,
+  ssWithholding: w2.ssWithholding,
+  medicareWithholding: w2.medicareWithholding,
+  employer: w2.employer
+    ? {
+        EIN: w2.employer.EIN,
+        employerName: w2.employer.employerName,
+        address: w2.employer.address
+      }
+    : undefined,
+  personRole: w2.personRole,
+  state: w2.state,
+  stateWages: w2.stateWages,
+  stateWithholding: w2.stateWithholding,
+  box12: w2.box12
+})
+
+const map1099ToPrefill = (f1099: Supported1099): Prefill1099 => {
+  switch (f1099.type) {
+    case Income1099Type.INT:
+      return {
+        type: Income1099Type.INT,
+        payer: f1099.payer,
+        personRole: f1099.personRole,
+        form: { income: f1099.form.income }
+      }
+    case Income1099Type.DIV:
+      return {
+        type: Income1099Type.DIV,
+        payer: f1099.payer,
+        personRole: f1099.personRole,
+        form: {
+          dividends: f1099.form.dividends,
+          qualifiedDividends: f1099.form.qualifiedDividends,
+          totalCapitalGainsDistributions:
+            f1099.form.totalCapitalGainsDistributions
+        }
+      }
+    case Income1099Type.B:
+      return {
+        type: Income1099Type.B,
+        payer: f1099.payer,
+        personRole: f1099.personRole,
+        form: {
+          shortTermProceeds: f1099.form.shortTermProceeds,
+          shortTermCostBasis: f1099.form.shortTermCostBasis,
+          longTermProceeds: f1099.form.longTermProceeds,
+          longTermCostBasis: f1099.form.longTermCostBasis
+        }
+      }
+    case Income1099Type.R:
+      return {
+        type: Income1099Type.R,
+        payer: f1099.payer,
+        personRole: f1099.personRole,
+        form: {
+          grossDistribution: f1099.form.grossDistribution,
+          taxableAmount: f1099.form.taxableAmount,
+          federalIncomeTaxWithheld: f1099.form.federalIncomeTaxWithheld,
+          planType: f1099.form.planType
+        }
+      }
+    case Income1099Type.SSA:
+      return {
+        type: Income1099Type.SSA,
+        payer: f1099.payer,
+        personRole: f1099.personRole,
+        form: {
+          netBenefits: f1099.form.netBenefits,
+          federalIncomeTaxWithheld: f1099.form.federalIncomeTaxWithheld
+        }
+      }
+    case Income1099Type.NEC:
+      return {
+        type: Income1099Type.NEC,
+        payer: f1099.payer,
+        personRole: f1099.personRole,
+        form: { nonemployeeCompensation: f1099.form.nonemployeeCompensation }
+      }
+    default:
+      return f1099 as Prefill1099
+  }
+}
+
 const mapF1098 = (f1098: PrefillF1098): F1098 => ({
   lender: f1098.lender,
   interest: f1098.interest,
@@ -334,6 +471,28 @@ const mapF1098 = (f1098: PrefillF1098): F1098 => ({
 })
 
 const mapRentalProperty = (property: PrefillRentalProperty): Property => ({
+  address: property.address,
+  rentalDays: property.rentalDays,
+  personalUseDays: property.personalUseDays,
+  rentReceived: property.rentReceived,
+  propertyType: property.propertyType,
+  isPassive: property.isPassive,
+  otherPropertyType: property.otherPropertyType,
+  qualifiedJointVenture: property.qualifiedJointVenture,
+  expenses: property.expenses,
+  otherExpenseType: property.otherExpenseType
+})
+
+const mapF1098ToPrefill = (f1098: F1098): PrefillF1098 => ({
+  lender: f1098.lender,
+  interest: f1098.interest,
+  points: f1098.points,
+  mortgageInsurancePremiums: f1098.mortgageInsurancePremiums
+})
+
+const mapRentalPropertyToPrefill = (
+  property: Property
+): PrefillRentalProperty => ({
   address: property.address,
   rentalDays: property.rentalDays,
   personalUseDays: property.personalUseDays,
@@ -741,16 +900,6 @@ const buildSources = (prefill: TranscriptPrefill): InformationSources => {
             ['f1099s', index, 'form', 'planType'],
             sourceFor(formRecord, 'planType')
           )
-          sources = setSource(
-            sources,
-            ['f1099s', index, 'form', 'taxableAmountNotDetermined'],
-            sourceFor(formRecord, 'taxableAmountNotDetermined')
-          )
-          sources = setSource(
-            sources,
-            ['f1099s', index, 'form', 'totalDistribution'],
-            sourceFor(formRecord, 'totalDistribution')
-          )
           break
         case Income1099Type.SSA:
           sources = setSource(
@@ -926,6 +1075,567 @@ const buildSources = (prefill: TranscriptPrefill): InformationSources => {
   return sources
 }
 
+const applySourcesToPrefill = (
+  prefill: TranscriptPrefill,
+  sources: InformationSources | undefined
+): TranscriptPrefill => {
+  if (sources === undefined) {
+    return prefill
+  }
+
+  const taxPayer = prefill.taxPayer as Record<string, unknown>
+  tagField(
+    taxPayer,
+    'filingStatus',
+    getSource(sources, ['taxPayer', 'filingStatus'])
+  )
+  tagField(
+    taxPayer,
+    'contactEmail',
+    getSource(sources, ['taxPayer', 'contactEmail'])
+  )
+  tagField(
+    taxPayer,
+    'contactPhoneNumber',
+    getSource(sources, ['taxPayer', 'contactPhoneNumber'])
+  )
+
+  const primary = prefill.taxPayer.primaryPerson as
+    | Record<string, unknown>
+    | undefined
+  if (primary) {
+    tagField(
+      primary,
+      'firstName',
+      getSource(sources, ['taxPayer', 'primaryPerson', 'firstName'])
+    )
+    tagField(
+      primary,
+      'lastName',
+      getSource(sources, ['taxPayer', 'primaryPerson', 'lastName'])
+    )
+    tagField(
+      primary,
+      'ssid',
+      getSource(sources, ['taxPayer', 'primaryPerson', 'ssid'])
+    )
+    tagField(
+      primary,
+      'role',
+      getSource(sources, ['taxPayer', 'primaryPerson', 'role'])
+    )
+    tagField(
+      primary,
+      'isBlind',
+      getSource(sources, ['taxPayer', 'primaryPerson', 'isBlind'])
+    )
+    tagField(
+      primary,
+      'dateOfBirth',
+      getSource(sources, ['taxPayer', 'primaryPerson', 'dateOfBirth'])
+    )
+    tagField(
+      primary,
+      'isTaxpayerDependent',
+      getSource(sources, ['taxPayer', 'primaryPerson', 'isTaxpayerDependent'])
+    )
+
+    const address = primary.address as Record<string, unknown> | undefined
+    if (address) {
+      tagField(
+        address,
+        'address',
+        getSource(sources, ['taxPayer', 'primaryPerson', 'address', 'address'])
+      )
+      tagField(
+        address,
+        'city',
+        getSource(sources, ['taxPayer', 'primaryPerson', 'address', 'city'])
+      )
+      tagField(
+        address,
+        'state',
+        getSource(sources, ['taxPayer', 'primaryPerson', 'address', 'state'])
+      )
+      tagField(
+        address,
+        'zip',
+        getSource(sources, ['taxPayer', 'primaryPerson', 'address', 'zip'])
+      )
+      tagField(
+        address,
+        'aptNo',
+        getSource(sources, ['taxPayer', 'primaryPerson', 'address', 'aptNo'])
+      )
+      tagField(
+        address,
+        'foreignCountry',
+        getSource(sources, [
+          'taxPayer',
+          'primaryPerson',
+          'address',
+          'foreignCountry'
+        ])
+      )
+      tagField(
+        address,
+        'province',
+        getSource(sources, ['taxPayer', 'primaryPerson', 'address', 'province'])
+      )
+      tagField(
+        address,
+        'postalCode',
+        getSource(sources, [
+          'taxPayer',
+          'primaryPerson',
+          'address',
+          'postalCode'
+        ])
+      )
+    }
+  }
+
+  const spouse = prefill.taxPayer.spouse as Record<string, unknown> | undefined
+  if (spouse) {
+    tagField(
+      spouse,
+      'firstName',
+      getSource(sources, ['taxPayer', 'spouse', 'firstName'])
+    )
+    tagField(
+      spouse,
+      'lastName',
+      getSource(sources, ['taxPayer', 'spouse', 'lastName'])
+    )
+    tagField(spouse, 'ssid', getSource(sources, ['taxPayer', 'spouse', 'ssid']))
+    tagField(spouse, 'role', getSource(sources, ['taxPayer', 'spouse', 'role']))
+    tagField(
+      spouse,
+      'isBlind',
+      getSource(sources, ['taxPayer', 'spouse', 'isBlind'])
+    )
+    tagField(
+      spouse,
+      'dateOfBirth',
+      getSource(sources, ['taxPayer', 'spouse', 'dateOfBirth'])
+    )
+    tagField(
+      spouse,
+      'isTaxpayerDependent',
+      getSource(sources, ['taxPayer', 'spouse', 'isTaxpayerDependent'])
+    )
+  }
+
+  if (prefill.taxPayer.dependents) {
+    prefill.taxPayer.dependents.forEach((dependent, index) => {
+      const depRecord = dependent as Record<string, unknown>
+      tagField(
+        depRecord,
+        'firstName',
+        getSource(sources, ['taxPayer', 'dependents', index, 'firstName'])
+      )
+      tagField(
+        depRecord,
+        'lastName',
+        getSource(sources, ['taxPayer', 'dependents', index, 'lastName'])
+      )
+      tagField(
+        depRecord,
+        'ssid',
+        getSource(sources, ['taxPayer', 'dependents', index, 'ssid'])
+      )
+      tagField(
+        depRecord,
+        'role',
+        getSource(sources, ['taxPayer', 'dependents', index, 'role'])
+      )
+      tagField(
+        depRecord,
+        'isBlind',
+        getSource(sources, ['taxPayer', 'dependents', index, 'isBlind'])
+      )
+      tagField(
+        depRecord,
+        'dateOfBirth',
+        getSource(sources, ['taxPayer', 'dependents', index, 'dateOfBirth'])
+      )
+      tagField(
+        depRecord,
+        'relationship',
+        getSource(sources, ['taxPayer', 'dependents', index, 'relationship'])
+      )
+      const qualifyingInfo = dependent.qualifyingInfo as
+        | Record<string, unknown>
+        | undefined
+      if (qualifyingInfo) {
+        tagField(
+          qualifyingInfo,
+          'numberOfMonths',
+          getSource(sources, [
+            'taxPayer',
+            'dependents',
+            index,
+            'qualifyingInfo',
+            'numberOfMonths'
+          ])
+        )
+        tagField(
+          qualifyingInfo,
+          'isStudent',
+          getSource(sources, [
+            'taxPayer',
+            'dependents',
+            index,
+            'qualifyingInfo',
+            'isStudent'
+          ])
+        )
+      }
+    })
+  }
+
+  if (prefill.w2s) {
+    prefill.w2s.forEach((w2, index) => {
+      const w2Record = w2 as Record<string, unknown>
+      tagField(
+        w2Record,
+        'occupation',
+        getSource(sources, ['w2s', index, 'occupation'])
+      )
+      tagField(w2Record, 'income', getSource(sources, ['w2s', index, 'income']))
+      tagField(
+        w2Record,
+        'medicareIncome',
+        getSource(sources, ['w2s', index, 'medicareIncome'])
+      )
+      tagField(
+        w2Record,
+        'fedWithholding',
+        getSource(sources, ['w2s', index, 'fedWithholding'])
+      )
+      tagField(
+        w2Record,
+        'ssWages',
+        getSource(sources, ['w2s', index, 'ssWages'])
+      )
+      tagField(
+        w2Record,
+        'ssWithholding',
+        getSource(sources, ['w2s', index, 'ssWithholding'])
+      )
+      tagField(
+        w2Record,
+        'medicareWithholding',
+        getSource(sources, ['w2s', index, 'medicareWithholding'])
+      )
+      tagField(
+        w2Record,
+        'personRole',
+        getSource(sources, ['w2s', index, 'personRole'])
+      )
+      tagField(w2Record, 'state', getSource(sources, ['w2s', index, 'state']))
+      tagField(
+        w2Record,
+        'stateWages',
+        getSource(sources, ['w2s', index, 'stateWages'])
+      )
+      tagField(
+        w2Record,
+        'stateWithholding',
+        getSource(sources, ['w2s', index, 'stateWithholding'])
+      )
+      const employer = w2.employer as Record<string, unknown> | undefined
+      if (employer) {
+        tagField(
+          employer,
+          'EIN',
+          getSource(sources, ['w2s', index, 'employer', 'EIN'])
+        )
+        tagField(
+          employer,
+          'employerName',
+          getSource(sources, ['w2s', index, 'employer', 'employerName'])
+        )
+      }
+    })
+  }
+
+  if (prefill.f1099s) {
+    prefill.f1099s.forEach((f1099, index) => {
+      const formRecord = f1099.form as Record<string, unknown>
+      const f1099Record = f1099 as Record<string, unknown>
+      tagField(
+        f1099Record,
+        'type',
+        getSource(sources, ['f1099s', index, 'type'])
+      )
+      tagField(
+        f1099Record,
+        'payer',
+        getSource(sources, ['f1099s', index, 'payer'])
+      )
+      tagField(
+        f1099Record,
+        'personRole',
+        getSource(sources, ['f1099s', index, 'personRole'])
+      )
+      switch (f1099.type) {
+        case Income1099Type.INT:
+          tagField(
+            formRecord,
+            'income',
+            getSource(sources, ['f1099s', index, 'form', 'income'])
+          )
+          break
+        case Income1099Type.DIV:
+          tagField(
+            formRecord,
+            'dividends',
+            getSource(sources, ['f1099s', index, 'form', 'dividends'])
+          )
+          tagField(
+            formRecord,
+            'qualifiedDividends',
+            getSource(sources, ['f1099s', index, 'form', 'qualifiedDividends'])
+          )
+          tagField(
+            formRecord,
+            'totalCapitalGainsDistributions',
+            getSource(sources, [
+              'f1099s',
+              index,
+              'form',
+              'totalCapitalGainsDistributions'
+            ])
+          )
+          break
+        case Income1099Type.B:
+          tagField(
+            formRecord,
+            'shortTermProceeds',
+            getSource(sources, ['f1099s', index, 'form', 'shortTermProceeds'])
+          )
+          tagField(
+            formRecord,
+            'shortTermCostBasis',
+            getSource(sources, ['f1099s', index, 'form', 'shortTermCostBasis'])
+          )
+          tagField(
+            formRecord,
+            'longTermProceeds',
+            getSource(sources, ['f1099s', index, 'form', 'longTermProceeds'])
+          )
+          tagField(
+            formRecord,
+            'longTermCostBasis',
+            getSource(sources, ['f1099s', index, 'form', 'longTermCostBasis'])
+          )
+          break
+        case Income1099Type.R:
+          tagField(
+            formRecord,
+            'grossDistribution',
+            getSource(sources, ['f1099s', index, 'form', 'grossDistribution'])
+          )
+          tagField(
+            formRecord,
+            'taxableAmount',
+            getSource(sources, ['f1099s', index, 'form', 'taxableAmount'])
+          )
+          tagField(
+            formRecord,
+            'federalIncomeTaxWithheld',
+            getSource(sources, [
+              'f1099s',
+              index,
+              'form',
+              'federalIncomeTaxWithheld'
+            ])
+          )
+          tagField(
+            formRecord,
+            'planType',
+            getSource(sources, ['f1099s', index, 'form', 'planType'])
+          )
+          break
+        case Income1099Type.SSA:
+          tagField(
+            formRecord,
+            'netBenefits',
+            getSource(sources, ['f1099s', index, 'form', 'netBenefits'])
+          )
+          tagField(
+            formRecord,
+            'federalIncomeTaxWithheld',
+            getSource(sources, [
+              'f1099s',
+              index,
+              'form',
+              'federalIncomeTaxWithheld'
+            ])
+          )
+          break
+        case Income1099Type.NEC:
+          tagField(
+            formRecord,
+            'nonemployeeCompensation',
+            getSource(sources, [
+              'f1099s',
+              index,
+              'form',
+              'nonemployeeCompensation'
+            ])
+          )
+          break
+      }
+    })
+  }
+
+  if (prefill.f1098s) {
+    prefill.f1098s.forEach((f1098, index) => {
+      const f1098Record = f1098 as Record<string, unknown>
+      tagField(
+        f1098Record,
+        'lender',
+        getSource(sources, ['f1098s', index, 'lender'])
+      )
+      tagField(
+        f1098Record,
+        'interest',
+        getSource(sources, ['f1098s', index, 'interest'])
+      )
+      tagField(
+        f1098Record,
+        'points',
+        getSource(sources, ['f1098s', index, 'points'])
+      )
+      tagField(
+        f1098Record,
+        'mortgageInsurancePremiums',
+        getSource(sources, ['f1098s', index, 'mortgageInsurancePremiums'])
+      )
+    })
+  }
+
+  if (prefill.rentalProperties) {
+    const expenseFields: PropertyExpenseTypeName[] = [
+      'advertising',
+      'auto',
+      'cleaning',
+      'commissions',
+      'insurance',
+      'legal',
+      'management',
+      'mortgage',
+      'otherInterest',
+      'repairs',
+      'supplies',
+      'taxes',
+      'utilities',
+      'depreciation',
+      'other'
+    ]
+    prefill.rentalProperties.forEach((property, index) => {
+      const propertyRecord = property as Record<string, unknown>
+      tagField(
+        propertyRecord,
+        'rentalDays',
+        getSource(sources, ['realEstate', index, 'rentalDays'])
+      )
+      tagField(
+        propertyRecord,
+        'personalUseDays',
+        getSource(sources, ['realEstate', index, 'personalUseDays'])
+      )
+      tagField(
+        propertyRecord,
+        'rentReceived',
+        getSource(sources, ['realEstate', index, 'rentReceived'])
+      )
+      tagField(
+        propertyRecord,
+        'propertyType',
+        getSource(sources, ['realEstate', index, 'propertyType'])
+      )
+      tagField(
+        propertyRecord,
+        'isPassive',
+        getSource(sources, ['realEstate', index, 'isPassive'])
+      )
+      tagField(
+        propertyRecord,
+        'otherPropertyType',
+        getSource(sources, ['realEstate', index, 'otherPropertyType'])
+      )
+      tagField(
+        propertyRecord,
+        'qualifiedJointVenture',
+        getSource(sources, ['realEstate', index, 'qualifiedJointVenture'])
+      )
+      tagField(
+        propertyRecord,
+        'otherExpenseType',
+        getSource(sources, ['realEstate', index, 'otherExpenseType'])
+      )
+      const address = property.address as Record<string, unknown> | undefined
+      if (address) {
+        tagField(
+          address,
+          'address',
+          getSource(sources, ['realEstate', index, 'address', 'address'])
+        )
+        tagField(
+          address,
+          'city',
+          getSource(sources, ['realEstate', index, 'address', 'city'])
+        )
+        tagField(
+          address,
+          'state',
+          getSource(sources, ['realEstate', index, 'address', 'state'])
+        )
+        tagField(
+          address,
+          'zip',
+          getSource(sources, ['realEstate', index, 'address', 'zip'])
+        )
+        tagField(
+          address,
+          'aptNo',
+          getSource(sources, ['realEstate', index, 'address', 'aptNo'])
+        )
+        tagField(
+          address,
+          'foreignCountry',
+          getSource(sources, ['realEstate', index, 'address', 'foreignCountry'])
+        )
+        tagField(
+          address,
+          'province',
+          getSource(sources, ['realEstate', index, 'address', 'province'])
+        )
+        tagField(
+          address,
+          'postalCode',
+          getSource(sources, ['realEstate', index, 'address', 'postalCode'])
+        )
+      }
+      const expenses = property.expenses as Record<string, unknown> | undefined
+      if (expenses) {
+        expenseFields.forEach((field) => {
+          tagField(
+            expenses,
+            field,
+            getSource(sources, ['realEstate', index, 'expenses', field])
+          )
+        })
+      }
+    })
+  }
+
+  return prefill
+}
+
 export const applyTranscriptPrefill = (
   info: Information,
   prefill: TranscriptPrefill
@@ -958,4 +1668,31 @@ export const applyTranscriptPrefill = (
     ...nextInfo,
     sources: nextSources
   }
+}
+
+export const buildTranscriptPrefill = (
+  info: Information,
+  taxYear: TaxYear
+): TranscriptPrefill => {
+  const payload: TranscriptPrefill = {
+    taxYear,
+    taxPayer: {
+      filingStatus: info.taxPayer.filingStatus,
+      primaryPerson: info.taxPayer.primaryPerson
+        ? mapPrimaryToPrefill(info.taxPayer.primaryPerson)
+        : undefined,
+      spouse: info.taxPayer.spouse
+        ? mapSpouseToPrefill(info.taxPayer.spouse)
+        : undefined,
+      dependents: info.taxPayer.dependents.map(mapDependentToPrefill),
+      contactEmail: info.taxPayer.contactEmail,
+      contactPhoneNumber: info.taxPayer.contactPhoneNumber
+    },
+    w2s: info.w2s.map(mapW2ToPrefill),
+    f1099s: info.f1099s.map(map1099ToPrefill),
+    f1098s: info.f1098s.map(mapF1098ToPrefill),
+    rentalProperties: info.realEstate.map(mapRentalPropertyToPrefill)
+  }
+
+  return applySourcesToPrefill(payload, info.sources)
 }
