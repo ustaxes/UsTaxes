@@ -2,11 +2,10 @@
 /* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain */
 
 import { waitFor } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
+import { setupUserEvent, type UserEvent } from 'ustaxes/tests/userEventSetup'
 import { store } from 'ustaxes/redux/store'
 import log from 'ustaxes/core/log'
 import { SpouseTestPage } from './Pages'
-import 'ustaxes/tests/userEventSetup'
 
 afterEach(async () => {
   await waitFor(() => localStorage.clear())
@@ -17,10 +16,10 @@ beforeEach(() => {
   log.setLevel(log.levels.TRACE)
 })
 
-let user: ReturnType<typeof userEvent.setup>
+let user: UserEvent
 
 beforeEach(() => {
-  user = userEvent.setup()
+  user = setupUserEvent()
 })
 
 jest.setTimeout(30000)

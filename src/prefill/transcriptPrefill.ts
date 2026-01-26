@@ -845,7 +845,9 @@ const buildSources = (prefill: TranscriptPrefill): InformationSources => {
         sourceFor(propertyRecord, 'otherExpenseType')
       )
 
-      const addressRecord = property.address as Record<string, unknown> | undefined
+      const addressRecord = property.address as
+        | Record<string, unknown>
+        | undefined
       if (addressRecord) {
         sources = setSource(
           sources,
@@ -889,7 +891,9 @@ const buildSources = (prefill: TranscriptPrefill): InformationSources => {
         )
       }
 
-      const expensesRecord = property.expenses as Record<string, unknown> | undefined
+      const expensesRecord = property.expenses as
+        | Record<string, unknown>
+        | undefined
       if (expensesRecord) {
         const expenseFields: PropertyExpenseTypeName[] = [
           'advertising',

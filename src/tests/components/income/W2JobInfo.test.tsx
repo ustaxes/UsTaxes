@@ -11,8 +11,7 @@ import {
 } from 'ustaxes/core/data'
 import { blankState } from 'ustaxes/redux/reducer'
 import W2JobInfo from 'ustaxes/components/income/W2JobInfo'
-import userEvent from '@testing-library/user-event'
-import 'ustaxes/tests/userEventSetup'
+import { setupUserEvent, type UserEvent } from 'ustaxes/tests/userEventSetup'
 
 const escapeRegExp = (value: string): string =>
   value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
@@ -126,11 +125,11 @@ describe('W2JobInfo', () => {
     changeByLabelText: (labelText: string | RegExp, input: string) => void
     selectOption: (labelText: string | RegExp, input: string) => void
     clickButton: (buttonText: string) => Promise<void>
-    user: ReturnType<typeof userEvent.setup>
+    user: UserEvent
   } => {
     const store = createStoreUnpersisted(info)
     const navButtons = <PagerButtons submitText="Save and Continue" />
-    const user = userEvent.setup()
+    const user = setupUserEvent()
 
     render(
       <Provider store={store}>

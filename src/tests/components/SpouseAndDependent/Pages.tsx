@@ -15,8 +15,8 @@ export class SpouseTestPage extends TestPage {
 
   constructor(state: YearsTaxesState) {
     super(state)
-    this.spouse = new SpouseMethods(() =>
-      this.rendered().getByTestId('spouse-info'),
+    this.spouse = new SpouseMethods(
+      () => this.rendered().getByTestId('spouse-info'),
       this.user
     )
   }
@@ -45,7 +45,10 @@ export class SpouseAndDependentTestPage extends TestPage {
       this.user
     )
     this.spouse = new SpouseMethods(testId('spouse-info'), this.user)
-    this.dependent = new DependentMethods(testId('add-dependent-form'), this.user)
+    this.dependent = new DependentMethods(
+      testId('add-dependent-form'),
+      this.user
+    )
     this.filingStatus = new FilingStatusMethods(
       testId('filing-status-dropdown'),
       this.user

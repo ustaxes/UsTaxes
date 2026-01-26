@@ -2,11 +2,10 @@
 /* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain */
 
 import { waitFor } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
+import { setupUserEvent, type UserEvent } from 'ustaxes/tests/userEventSetup'
 import { store } from 'ustaxes/redux/store'
 import log from 'ustaxes/core/log'
 import { SpouseAndDependentTestPage } from './Pages'
-import 'ustaxes/tests/userEventSetup'
 
 const escapeRegExp = (value: string): string =>
   value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
@@ -23,10 +22,10 @@ beforeAll(() => {
   log.setLevel(log.levels.TRACE)
 })
 
-let user: ReturnType<typeof userEvent.setup>
+let user: UserEvent
 
 beforeEach(() => {
-  user = userEvent.setup()
+  user = setupUserEvent()
 })
 
 jest.setTimeout(10000)

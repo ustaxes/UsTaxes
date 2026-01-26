@@ -11,9 +11,8 @@ import {
   IncomeW2
 } from 'ustaxes/core/data'
 import { blankState } from 'ustaxes/redux/reducer'
-import userEvent from '@testing-library/user-event'
+import { setupUserEvent, type UserEvent } from 'ustaxes/tests/userEventSetup'
 import { renderWithProviders } from 'ustaxes/testUtil'
-import 'ustaxes/tests/userEventSetup'
 
 const escapeRegExp = (value: string): string =>
   value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
@@ -100,11 +99,11 @@ describe('F1099Info', () => {
     labelTextChange: (labelText: string | RegExp, input: string) => void
     selectOption: (labelText: string | RegExp, input: string) => void
     buttonClick: (buttonText: string) => Promise<void>
-    user: ReturnType<typeof userEvent.setup>
+    user: UserEvent
   } => {
     const store = createStoreUnpersisted(info)
     const navButtons = <PagerButtons submitText="Save and Continue" />
-    const user = userEvent.setup()
+    const user = setupUserEvent()
 
     renderWithProviders(
       <Provider store={store}>

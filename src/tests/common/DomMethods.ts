@@ -1,4 +1,4 @@
-import type { UserEvent } from '@testing-library/user-event'
+import type { UserEvent } from 'ustaxes/tests/userEventSetup'
 
 export default class DomMethods {
   dom: () => HTMLElement

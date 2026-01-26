@@ -5,9 +5,7 @@ import { Provider } from 'react-redux'
 import * as Queries from '@testing-library/dom/types/queries'
 import { RenderResult } from '@testing-library/react'
 import { renderWithProviders } from 'ustaxes/testUtil'
-import 'ustaxes/tests/userEventSetup'
-import userEvent from '@testing-library/user-event'
-import type { UserEvent } from '@testing-library/user-event'
+import { setupUserEvent, type UserEvent } from 'ustaxes/tests/userEventSetup'
 
 export type TestRenderResult = RenderResult<typeof Queries, HTMLElement>
 
@@ -22,7 +20,7 @@ export abstract class TestPage {
   constructor(state: YearsTaxesState) {
     this.initialState = state
     this.store = createWholeStoreUnpersisted(state)
-    this.user = userEvent.setup()
+    this.user = setupUserEvent()
   }
 
   renderComponent(): ReactElement {

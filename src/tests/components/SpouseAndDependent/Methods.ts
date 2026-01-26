@@ -2,7 +2,7 @@ import { PersonMethods } from '../../common/PersonMethods'
 import { within } from '@testing-library/react'
 import DomMethods from '../../common/DomMethods'
 import { FilingStatus } from 'ustaxes/core/data'
-import type { UserEvent } from '@testing-library/user-event'
+import type { UserEvent } from 'ustaxes/tests/userEventSetup'
 
 export class SpouseMethods extends PersonMethods {
   constructor(dom: () => HTMLElement, user: UserEvent) {
