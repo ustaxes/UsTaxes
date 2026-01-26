@@ -36,16 +36,22 @@ class TestForm extends TestPage {
 
   constructor(state: YearsTaxesState) {
     super(state)
-    this.yearStatus = new YearStatusBarMethods(() =>
-      this.rendered().getByTestId('year-status-bar')
+    this.yearStatus = new YearStatusBarMethods(
+      () => this.rendered().getByTestId('year-status-bar'),
+      this.user
     )
-    this.person = new PersonMethods(() =>
-      this.rendered().getByTestId('taxpayer')
+    this.person = new PersonMethods(
+      () => this.rendered().getByTestId('taxpayer'),
+      this.user
     )
-    this.taxPayer = new TaxPayerMethods(() =>
-      this.rendered().getByTestId('taxpayer')
+    this.taxPayer = new TaxPayerMethods(
+      () => this.rendered().getByTestId('taxpayer'),
+      this.user
     )
-    this.pager = new PagerMethods(() => this.rendered().getByTestId('taxpayer'))
+    this.pager = new PagerMethods(
+      () => this.rendered().getByTestId('taxpayer'),
+      this.user
+    )
   }
 
   component: ReactElement = (
@@ -102,7 +108,7 @@ describe('years', () => {
         expect(form.yearStatus.yearDropdownButton()).toBeInTheDocument()
       )
 
-      form.yearStatus.openDropdown()
+      await form.yearStatus.openDropdown()
 
       await waitFor(() =>
         expect(form.yearStatus.yearDropdownButton()).not.toBeInTheDocument()
@@ -147,7 +153,7 @@ describe('years', () => {
               await waitFor(() =>
                 expect(form.store.getState().activeYear).toEqual(year)
               )
-              form.yearStatus.openDropdown()
+              await form.yearStatus.openDropdown()
               await waitFor(() =>
                 expect(form.yearStatus.yearValue()).toEqual(year)
               )

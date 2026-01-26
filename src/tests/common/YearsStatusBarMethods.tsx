@@ -5,7 +5,6 @@ import {
   waitForElementToBeRemoved,
   within
 } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
 import { enumKeys } from 'ustaxes/core/util'
 import { TaxYear, TaxYears } from 'ustaxes/core/data'
 import DomMethods from './DomMethods'
@@ -14,8 +13,8 @@ export default class YearStatusBarMethods extends DomMethods {
   yearDropdownButton = (): HTMLElement | null =>
     within(this.dom()).queryByTestId('year-dropdown-button')
 
-  openDropdown = (): void => {
-    userEvent.click(this.yearDropdownButton()!)
+  openDropdown = async (): Promise<void> => {
+    await this.user.click(this.yearDropdownButton()!)
   }
 
   yearSelect = (): HTMLSelectElement => within(this.dom()).getByRole('combobox')
@@ -50,13 +49,13 @@ export default class YearStatusBarMethods extends DomMethods {
       | undefined) ?? null
 
   setYear = async (y: TaxYear): Promise<void> => {
-    this.openDropdown()
+    await this.openDropdown()
     await waitFor(() => {
       expect(this.yearSelectConfirm()).toBeInTheDocument()
     })
 
-    userEvent.selectOptions(this.yearSelect(), [y])
-    userEvent.click(this.yearSelectConfirm()!)
+    await this.user.selectOptions(this.yearSelect(), [y])
+    await this.user.click(this.yearSelectConfirm()!)
 
     await waitForElementToBeRemoved(() => this.yearSelectConfirm())
   }

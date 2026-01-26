@@ -2,8 +2,13 @@ import { PersonMethods } from '../../common/PersonMethods'
 import { within } from '@testing-library/react'
 import DomMethods from '../../common/DomMethods'
 import { FilingStatus } from 'ustaxes/core/data'
+import type { UserEvent } from '@testing-library/user-event'
 
 export class SpouseMethods extends PersonMethods {
+  constructor(dom: () => HTMLElement, user: UserEvent) {
+    super(dom, user)
+  }
+
   addButton = (): HTMLButtonElement | null =>
     within(this.dom()).queryByRole('button', {
       name: /Add/
@@ -14,6 +19,10 @@ export class SpouseMethods extends PersonMethods {
 }
 
 export class DependentMethods extends PersonMethods {
+  constructor(dom: () => HTMLElement, user: UserEvent) {
+    super(dom, user)
+  }
+
   relationField = (): HTMLInputElement | null =>
     within(this.dom()).queryByLabelText(/^Relationship to Taxpayer/)
 
@@ -33,6 +42,10 @@ export class DependentMethods extends PersonMethods {
 }
 
 export class FilingStatusMethods extends DomMethods {
+  constructor(dom: () => HTMLElement, user: UserEvent) {
+    super(dom, user)
+  }
+
   options = (): FilingStatus[] =>
     within(this.dom())
       .getAllByRole('option')

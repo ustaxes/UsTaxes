@@ -12,6 +12,7 @@ import {
 import { blankState } from 'ustaxes/redux/reducer'
 import W2JobInfo from 'ustaxes/components/income/W2JobInfo'
 import userEvent from '@testing-library/user-event'
+import 'ustaxes/tests/userEventSetup'
 
 const escapeRegExp = (value: string): string =>
   value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
@@ -124,10 +125,12 @@ describe('W2JobInfo', () => {
     store: InfoStore
     changeByLabelText: (labelText: string | RegExp, input: string) => void
     selectOption: (labelText: string | RegExp, input: string) => void
-    clickButton: (buttonText: string) => void
+    clickButton: (buttonText: string) => Promise<void>
+    user: ReturnType<typeof userEvent.setup>
   } => {
     const store = createStoreUnpersisted(info)
     const navButtons = <PagerButtons submitText="Save and Continue" />
+    const user = userEvent.setup()
 
     render(
       <Provider store={store}>
@@ -160,19 +163,19 @@ describe('W2JobInfo', () => {
       })
     }
 
-    const clickButton = (buttonText: string, index = 0) => {
-      userEvent.click(screen.getAllByText(buttonText)[index])
+    const clickButton = async (buttonText: string, index = 0) => {
+      await user.click(screen.getAllByText(buttonText)[index])
     }
 
-    return { store, changeByLabelText, selectOption, clickButton }
+    return { store, changeByLabelText, selectOption, clickButton, user }
   }
 
   describe('validations work', () => {
     it('shows empty error messages', async () => {
       const { clickButton } = setup()
 
-      clickButton('Add')
-      clickButton('Save')
+      await clickButton('Add')
+      await clickButton('Save')
 
       await waitFor(() => {
         expect(errors.inputRequired()).toHaveLength(11)
@@ -183,9 +186,9 @@ describe('W2JobInfo', () => {
     it('Employer name can be any string', async () => {
       const { changeByLabelText, clickButton } = setup()
 
-      clickButton('Add')
+      await clickButton('Add')
       changeByLabelText('Employer name', '123')
-      clickButton('Save')
+      await clickButton('Save')
 
       await waitFor(() => expect(errors.inputWordFormat()).toHaveLength(0))
     })
@@ -193,9 +196,9 @@ describe('W2JobInfo', () => {
     it('Employers Identification Number', async () => {
       const { changeByLabelText, clickButton } = setup()
 
-      clickButton('Add')
+      await clickButton('Add')
       changeByLabelText(/Employer's Identification Number/, '123')
-      clickButton('Save')
+      await clickButton('Save')
 
       await waitFor(() => expect(errors.einFormat()).toHaveLength(1))
     })
@@ -203,9 +206,9 @@ describe('W2JobInfo', () => {
     it('Occupation', async () => {
       const { changeByLabelText, clickButton } = setup()
 
-      clickButton('Add')
+      await clickButton('Add')
       changeByLabelText('Occupation', '123')
-      clickButton('Save')
+      await clickButton('Save')
 
       await waitFor(() => expect(errors.inputWordFormat()).toHaveLength(1))
     })
@@ -222,7 +225,7 @@ describe('W2JobInfo', () => {
   it('saves information', async () => {
     const { changeByLabelText, selectOption, clickButton } = setup(testInfo)
 
-    clickButton('Add')
+    await clickButton('Add')
 
     changeByLabelText('Employer name', 'test employer')
     changeByLabelText(/Employer's Identification Number/, '111111111')
@@ -238,7 +241,7 @@ describe('W2JobInfo', () => {
     selectOption('Employee', 'PRIMARY')
     selectOption(/State/, 'AL')
 
-    clickButton('Save')
+    await clickButton('Save')
 
     await waitFor(() => {
       expect(screen.getByText('test employer')).toBeInTheDocument()
@@ -248,13 +251,13 @@ describe('W2JobInfo', () => {
 
   it('removes item of list', async () => {
     if (testW2sSpouse.employer?.employerName) {
-      setup(testInfo)
+      const { user } = setup(testInfo)
 
       expect(
         screen.getByText(testW2sSpouse.employer.employerName)
       ).toBeInTheDocument()
 
-      userEvent.click(screen.getAllByRole('button')[1])
+      await user.click(screen.getAllByRole('button')[1])
 
       await waitFor(() =>
         expect(screen.queryByText('w2s employer name')).not.toBeInTheDocument()
@@ -262,10 +265,10 @@ describe('W2JobInfo', () => {
     }
   })
 
-  it('sets current information when editing', () => {
-    setup(testInfo)
+  it('sets current information when editing', async () => {
+    const { user } = setup(testInfo)
 
-    userEvent.click(screen.getAllByRole('button')[0])
+    await user.click(screen.getAllByRole('button')[0])
 
     expect(screen.getByLabelText(labelMatcher('Employer name'))).toHaveValue(
       testW2sSpouse.employer?.employerName
@@ -307,9 +310,10 @@ describe('W2JobInfo', () => {
   })
 
   it('updates information', async () => {
-    const { changeByLabelText, selectOption, clickButton } = setup(testInfo)
+    const { changeByLabelText, selectOption, clickButton, user } =
+      setup(testInfo)
 
-    userEvent.click(screen.getAllByRole('button')[0])
+    await user.click(screen.getAllByRole('button')[0])
 
     changeByLabelText('Employer name', 'updated employer name')
     changeByLabelText(/Employer's Identification Number/, '999999999')
@@ -324,7 +328,7 @@ describe('W2JobInfo', () => {
     selectOption('Employee', 'SPOUSE')
     selectOption(/State/, 'AR')
 
-    clickButton('Save')
+    await clickButton('Save')
 
     await waitFor(() => {
       expect(screen.getByText('updated employer name')).toBeInTheDocument()

@@ -1,5 +1,4 @@
 import { waitFor } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
 import { ReactElement } from 'react'
 import CreatePDF from 'ustaxes/components/CreatePDF'
 import { Information } from 'ustaxes/core/data'
@@ -22,7 +21,7 @@ export default class CreatePDFTestPage extends TestPage {
   pager: PagerMethods
   constructor(state: YearsTaxesState) {
     super(state)
-    this.pager = new PagerMethods(() => this.rendered().container)
+    this.pager = new PagerMethods(() => this.rendered().container, this.user)
   }
 
   component: ReactElement = (
@@ -36,7 +35,7 @@ export const tests = {
   incompleteData: async ({ pager }: CreatePDFTestPage): Promise<void> => {
     await waitFor(() => expect(pager.saveButton()).toBeInTheDocument())
 
-    userEvent.click(pager.saveButton())
+    await pager.save()
   }
 }
 

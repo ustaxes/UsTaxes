@@ -13,6 +13,7 @@ import {
 import { blankState } from 'ustaxes/redux/reducer'
 import userEvent from '@testing-library/user-event'
 import { renderWithProviders } from 'ustaxes/testUtil'
+import 'ustaxes/tests/userEventSetup'
 
 const escapeRegExp = (value: string): string =>
   value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
@@ -98,10 +99,12 @@ describe('F1099Info', () => {
     store: InfoStore
     labelTextChange: (labelText: string | RegExp, input: string) => void
     selectOption: (labelText: string | RegExp, input: string) => void
-    buttonClick: (buttonText: string) => void
+    buttonClick: (buttonText: string) => Promise<void>
+    user: ReturnType<typeof userEvent.setup>
   } => {
     const store = createStoreUnpersisted(info)
     const navButtons = <PagerButtons submitText="Save and Continue" />
+    const user = userEvent.setup()
 
     renderWithProviders(
       <Provider store={store}>
@@ -134,19 +137,19 @@ describe('F1099Info', () => {
       })
     }
 
-    const buttonClick = (buttonText: string, index = 0) => {
-      userEvent.click(screen.getAllByText(buttonText)[index])
+    const buttonClick = async (buttonText: string, index = 0) => {
+      await user.click(screen.getAllByText(buttonText)[index])
     }
 
-    return { store, labelTextChange, selectOption, buttonClick }
+    return { store, labelTextChange, selectOption, buttonClick, user }
   }
 
   describe('validations work', () => {
     it('shows empty error messages', async () => {
       const { buttonClick } = setup()
 
-      buttonClick('Add')
-      buttonClick('Save')
+      await buttonClick('Add')
+      await buttonClick('Save')
 
       await waitFor(() => {
         expect(screen.getAllByText('Make a selection')).toHaveLength(2)
@@ -157,36 +160,36 @@ describe('F1099Info', () => {
     it('Payer name', async () => {
       const { labelTextChange, buttonClick } = setup()
 
-      buttonClick('Add')
+      await buttonClick('Add')
       labelTextChange('Enter name of bank, broker firm, or other payer', '')
-      buttonClick('Save')
+      await buttonClick('Save')
 
       await waitFor(() =>
         expect(screen.getByText('Input is required')).toBeInTheDocument()
       )
     })
 
-    it('Form Type', () => {
+    it('Form Type', async () => {
       const { selectOption, buttonClick } = setup()
 
-      buttonClick('Add')
+      await buttonClick('Add')
       selectOption('Form Type', '1099-B')
-      buttonClick('Save')
+      await buttonClick('Save')
     })
 
-    it('Recipient', () => {
+    it('Recipient', async () => {
       const { selectOption, buttonClick } = setup()
 
-      buttonClick('Add')
+      await buttonClick('Add')
       selectOption('Recipient', 'John')
-      buttonClick('Save')
+      await buttonClick('Save')
     })
 
     it('saves information', async () => {
       const { labelTextChange, selectOption, buttonClick } =
         setup(testInformationState)
 
-      buttonClick('Add')
+      await buttonClick('Add')
 
       selectOption('Form Type', '1099-B')
       labelTextChange(
@@ -195,7 +198,7 @@ describe('F1099Info', () => {
       )
       selectOption(/Recipient/, 'John')
 
-      buttonClick('Save')
+      await buttonClick('Save')
 
       await waitFor(() => {
         expect(screen.getByText('1099-B')).toBeInTheDocument()
@@ -203,10 +206,10 @@ describe('F1099Info', () => {
     })
 
     it('updates information', async () => {
-      const { labelTextChange, selectOption, buttonClick } =
+      const { labelTextChange, selectOption, buttonClick, user } =
         setup(testInformationState)
 
-      userEvent.click(screen.getAllByRole('button')[0])
+      await user.click(screen.getAllByRole('button')[0])
 
       selectOption('Form Type', '1099-B')
       labelTextChange(
@@ -215,7 +218,7 @@ describe('F1099Info', () => {
       )
       selectOption(/Recipient/, 'John')
 
-      buttonClick('Save')
+      await buttonClick('Save')
 
       await waitFor(() => {
         expect(screen.getByText('1099-B')).toBeInTheDocument()
