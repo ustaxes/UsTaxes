@@ -19,6 +19,10 @@ export enum PersonRole {
   EMPLOYER = 'EMPLOYER'
 }
 
+export type DataSource = 'transcript' | 'return' | 'user'
+
+export type InformationSources = Record<string, unknown>
+
 /**
  * Types such as the following are generic with respect to the Date
  * type. AJV tests the typed serialization of these interfaces
@@ -1209,6 +1213,7 @@ export interface Information<D = Date> {
     /** Prior-year long-term capital loss carryover (Schedule D line 11). */
     longTerm?: number
   }
+  sources?: InformationSources
 }
 
 export type InformationDateString = Information<string>

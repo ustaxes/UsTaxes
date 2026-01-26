@@ -7,6 +7,12 @@ import { store } from 'ustaxes/redux/store'
 import log from 'ustaxes/core/log'
 import { SpouseAndDependentTestPage } from './Pages'
 
+const escapeRegExp = (value: string): string =>
+  value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+
+const labelMatcher = (label: string): RegExp =>
+  new RegExp(`^${escapeRegExp(label)}`)
+
 afterEach(async () => {
   await waitFor(() => localStorage.clear())
   jest.resetAllMocks()
@@ -71,7 +77,7 @@ describe('Dependents', () => {
     await waitFor(() => {
       dependentFormLabels.forEach((label) =>
         expect(
-          spouseAndDependent.rendered().getByText(label)
+          spouseAndDependent.rendered().getByText(labelMatcher(label))
         ).toBeInTheDocument()
       )
     })
@@ -82,7 +88,7 @@ describe('Dependents', () => {
     await waitFor(() => {
       dependentFormLabels.forEach((label) => {
         expect(
-          spouseAndDependent.rendered().queryByText(label)
+          spouseAndDependent.rendered().queryByText(labelMatcher(label))
         ).not.toBeInTheDocument()
       })
     })
@@ -323,7 +329,7 @@ describe('Dependents', () => {
     await waitFor(() => {
       labels.forEach((label) =>
         expect(
-          spouseAndDependent.rendered().getByText(label)
+          spouseAndDependent.rendered().getByText(labelMatcher(label))
         ).toBeInTheDocument()
       )
     })

@@ -51,6 +51,7 @@ const toF1098 = (f: F1098UserInput): F1098 => ({
 
 export default function F1098Info(): ReactElement {
   const f1098s = useSelector((state: TaxesState) => state.information.f1098s)
+  const sources = useSelector((state: TaxesState) => state.information.sources)
 
   const defaultValues: F1098UserInput = blankUserInput
 
@@ -81,6 +82,9 @@ export default function F1098Info(): ReactElement {
       primary={(f) => f.lender}
       secondary={(f) => showInterest(toF1098(f))}
       icon={() => <HomeIcon />}
+      sources={sources}
+      sourcePath={['f1098s']}
+      sourceForNew="user"
     >
       <p>Input data from Form 1098</p>
       <Grid container spacing={2}>

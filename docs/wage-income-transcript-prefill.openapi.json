@@ -28,18 +28,35 @@
           },
           "w2s": {
             "type": "array",
-            "items": { "$ref": "#/components/schemas/W2" }
+            "items": {
+              "$ref": "#/components/schemas/W2"
+            }
           },
           "f1099s": {
             "type": "array",
-            "items": { "$ref": "#/components/schemas/Supported1099" }
+            "items": {
+              "$ref": "#/components/schemas/Supported1099"
+            }
           },
           "f1098s": {
             "type": "array",
-            "items": { "$ref": "#/components/schemas/F1098MortgageInterest" }
+            "items": {
+              "$ref": "#/components/schemas/F1098MortgageInterest"
+            }
+          },
+          "rentalProperties": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RentalProperty"
+            }
           }
         },
-        "additionalProperties": false
+        "additionalProperties": false,
+        "patternProperties": {
+          "^.+_source$": {
+            "$ref": "#/components/schemas/FieldSource"
+          }
+        }
       },
       "TaxPayer": {
         "type": "object",
@@ -49,16 +66,31 @@
             "type": "string",
             "enum": ["S", "MFJ", "MFS", "HOH", "W"]
           },
-          "primaryPerson": { "$ref": "#/components/schemas/Person" },
-          "spouse": { "$ref": "#/components/schemas/Person" },
+          "primaryPerson": {
+            "$ref": "#/components/schemas/Person"
+          },
+          "spouse": {
+            "$ref": "#/components/schemas/Person"
+          },
           "dependents": {
             "type": "array",
-            "items": { "$ref": "#/components/schemas/Dependent" }
+            "items": {
+              "$ref": "#/components/schemas/Dependent"
+            }
           },
-          "contactEmail": { "type": "string" },
-          "contactPhoneNumber": { "type": "string" }
+          "contactEmail": {
+            "type": "string"
+          },
+          "contactPhoneNumber": {
+            "type": "string"
+          }
         },
-        "additionalProperties": false
+        "additionalProperties": false,
+        "patternProperties": {
+          "^.+_source$": {
+            "$ref": "#/components/schemas/FieldSource"
+          }
+        }
       },
       "Person": {
         "type": "object",
@@ -71,8 +103,12 @@
           "dateOfBirth"
         ],
         "properties": {
-          "firstName": { "type": "string" },
-          "lastName": { "type": "string" },
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
           "ssid": {
             "type": "string",
             "description": "9 digits or NRA for a nonresident spouse if provided."
@@ -81,21 +117,39 @@
             "type": "string",
             "enum": ["PRIMARY", "SPOUSE", "DEPENDENT", "EMPLOYER"]
           },
-          "isBlind": { "type": "boolean" },
-          "dateOfBirth": { "type": "string", "format": "date" },
-          "address": { "$ref": "#/components/schemas/Address" },
-          "isTaxpayerDependent": { "type": "boolean" }
+          "isBlind": {
+            "type": "boolean"
+          },
+          "dateOfBirth": {
+            "type": "string",
+            "format": "date"
+          },
+          "address": {
+            "$ref": "#/components/schemas/Address"
+          },
+          "isTaxpayerDependent": {
+            "type": "boolean"
+          }
         },
-        "additionalProperties": false
+        "additionalProperties": false,
+        "patternProperties": {
+          "^.+_source$": {
+            "$ref": "#/components/schemas/FieldSource"
+          }
+        }
       },
       "Dependent": {
         "allOf": [
-          { "$ref": "#/components/schemas/Person" },
+          {
+            "$ref": "#/components/schemas/Person"
+          },
           {
             "type": "object",
             "required": ["relationship"],
             "properties": {
-              "relationship": { "type": "string" },
+              "relationship": {
+                "type": "string"
+              },
               "qualifyingInfo": {
                 "type": "object",
                 "properties": {
@@ -104,9 +158,21 @@
                     "minimum": 0,
                     "maximum": 12
                   },
-                  "isStudent": { "type": "boolean" }
+                  "isStudent": {
+                    "type": "boolean"
+                  }
                 },
-                "additionalProperties": false
+                "additionalProperties": false,
+                "patternProperties": {
+                  "^.+_source$": {
+                    "$ref": "#/components/schemas/FieldSource"
+                  }
+                }
+              }
+            },
+            "patternProperties": {
+              "^.+_source$": {
+                "$ref": "#/components/schemas/FieldSource"
               }
             }
           }
@@ -116,31 +182,69 @@
         "type": "object",
         "required": ["address", "city"],
         "properties": {
-          "address": { "type": "string" },
-          "aptNo": { "type": "string" },
-          "city": { "type": "string" },
-          "state": { "type": "string" },
-          "zip": { "type": "string" },
-          "foreignCountry": { "type": "string" },
-          "province": { "type": "string" },
-          "postalCode": { "type": "string" }
+          "address": {
+            "type": "string"
+          },
+          "aptNo": {
+            "type": "string"
+          },
+          "city": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "zip": {
+            "type": "string"
+          },
+          "foreignCountry": {
+            "type": "string"
+          },
+          "province": {
+            "type": "string"
+          },
+          "postalCode": {
+            "type": "string"
+          }
         },
-        "additionalProperties": false
+        "additionalProperties": false,
+        "patternProperties": {
+          "^.+_source$": {
+            "$ref": "#/components/schemas/FieldSource"
+          }
+        }
       },
       "Employer": {
         "type": "object",
         "properties": {
-          "EIN": { "type": "string" },
-          "employerName": { "type": "string" },
-          "address": { "$ref": "#/components/schemas/Address" }
+          "EIN": {
+            "type": "string"
+          },
+          "employerName": {
+            "type": "string"
+          },
+          "address": {
+            "$ref": "#/components/schemas/Address"
+          }
         },
-        "additionalProperties": false
+        "additionalProperties": false,
+        "patternProperties": {
+          "^.+_source$": {
+            "$ref": "#/components/schemas/FieldSource"
+          }
+        }
       },
       "W2Box12Info": {
         "type": "object",
-        "additionalProperties": {
-          "type": "number"
+        "patternProperties": {
+          "^[A-Z0-9]{1,3}$": {
+            "type": "number"
+          },
+          "^[A-Z0-9]{1,3}_source$": {
+            "$ref": "#/components/schemas/FieldSource"
+          }
         },
+        "additionalProperties": false,
         "description": "Map of W-2 box 12 codes to amounts, e.g. {\"D\": 1500}."
       },
       "W2": {
@@ -156,47 +260,105 @@
           "personRole"
         ],
         "properties": {
-          "occupation": { "type": "string" },
-          "income": { "type": "number" },
-          "medicareIncome": { "type": "number" },
-          "fedWithholding": { "type": "number" },
-          "ssWages": { "type": "number" },
-          "ssWithholding": { "type": "number" },
-          "medicareWithholding": { "type": "number" },
-          "employer": { "$ref": "#/components/schemas/Employer" },
-          "personRole": { "type": "string", "enum": ["PRIMARY", "SPOUSE"] },
-          "state": { "type": "string" },
-          "stateWages": { "type": "number" },
-          "stateWithholding": { "type": "number" },
-          "box12": { "$ref": "#/components/schemas/W2Box12Info" }
+          "occupation": {
+            "type": "string"
+          },
+          "income": {
+            "type": "number"
+          },
+          "medicareIncome": {
+            "type": "number"
+          },
+          "fedWithholding": {
+            "type": "number"
+          },
+          "ssWages": {
+            "type": "number"
+          },
+          "ssWithholding": {
+            "type": "number"
+          },
+          "medicareWithholding": {
+            "type": "number"
+          },
+          "employer": {
+            "$ref": "#/components/schemas/Employer"
+          },
+          "personRole": {
+            "type": "string",
+            "enum": ["PRIMARY", "SPOUSE"]
+          },
+          "state": {
+            "type": "string"
+          },
+          "stateWages": {
+            "type": "number"
+          },
+          "stateWithholding": {
+            "type": "number"
+          },
+          "box12": {
+            "$ref": "#/components/schemas/W2Box12Info"
+          }
         },
-        "additionalProperties": false
+        "additionalProperties": false,
+        "patternProperties": {
+          "^.+_source$": {
+            "$ref": "#/components/schemas/FieldSource"
+          }
+        }
       },
       "Income1099Int": {
         "type": "object",
         "required": ["type", "payer", "personRole", "form"],
         "properties": {
-          "type": { "const": "INT" },
-          "payer": { "type": "string" },
-          "personRole": { "type": "string", "enum": ["PRIMARY", "SPOUSE"] },
+          "type": {
+            "const": "INT"
+          },
+          "payer": {
+            "type": "string"
+          },
+          "personRole": {
+            "type": "string",
+            "enum": ["PRIMARY", "SPOUSE"]
+          },
           "form": {
             "type": "object",
             "required": ["income"],
             "properties": {
-              "income": { "type": "number" }
+              "income": {
+                "type": "number"
+              }
             },
-            "additionalProperties": false
+            "additionalProperties": false,
+            "patternProperties": {
+              "^.+_source$": {
+                "$ref": "#/components/schemas/FieldSource"
+              }
+            }
           }
         },
-        "additionalProperties": false
+        "additionalProperties": false,
+        "patternProperties": {
+          "^.+_source$": {
+            "$ref": "#/components/schemas/FieldSource"
+          }
+        }
       },
       "Income1099Div": {
         "type": "object",
         "required": ["type", "payer", "personRole", "form"],
         "properties": {
-          "type": { "const": "DIV" },
-          "payer": { "type": "string" },
-          "personRole": { "type": "string", "enum": ["PRIMARY", "SPOUSE"] },
+          "type": {
+            "const": "DIV"
+          },
+          "payer": {
+            "type": "string"
+          },
+          "personRole": {
+            "type": "string",
+            "enum": ["PRIMARY", "SPOUSE"]
+          },
           "form": {
             "type": "object",
             "required": [
@@ -205,22 +367,45 @@
               "totalCapitalGainsDistributions"
             ],
             "properties": {
-              "dividends": { "type": "number" },
-              "qualifiedDividends": { "type": "number" },
-              "totalCapitalGainsDistributions": { "type": "number" }
+              "dividends": {
+                "type": "number"
+              },
+              "qualifiedDividends": {
+                "type": "number"
+              },
+              "totalCapitalGainsDistributions": {
+                "type": "number"
+              }
             },
-            "additionalProperties": false
+            "additionalProperties": false,
+            "patternProperties": {
+              "^.+_source$": {
+                "$ref": "#/components/schemas/FieldSource"
+              }
+            }
           }
         },
-        "additionalProperties": false
+        "additionalProperties": false,
+        "patternProperties": {
+          "^.+_source$": {
+            "$ref": "#/components/schemas/FieldSource"
+          }
+        }
       },
       "Income1099B": {
         "type": "object",
         "required": ["type", "payer", "personRole", "form"],
         "properties": {
-          "type": { "const": "B" },
-          "payer": { "type": "string" },
-          "personRole": { "type": "string", "enum": ["PRIMARY", "SPOUSE"] },
+          "type": {
+            "const": "B"
+          },
+          "payer": {
+            "type": "string"
+          },
+          "personRole": {
+            "type": "string",
+            "enum": ["PRIMARY", "SPOUSE"]
+          },
           "form": {
             "type": "object",
             "required": [
@@ -230,23 +415,48 @@
               "longTermCostBasis"
             ],
             "properties": {
-              "shortTermProceeds": { "type": "number" },
-              "shortTermCostBasis": { "type": "number" },
-              "longTermProceeds": { "type": "number" },
-              "longTermCostBasis": { "type": "number" }
+              "shortTermProceeds": {
+                "type": "number"
+              },
+              "shortTermCostBasis": {
+                "type": "number"
+              },
+              "longTermProceeds": {
+                "type": "number"
+              },
+              "longTermCostBasis": {
+                "type": "number"
+              }
             },
-            "additionalProperties": false
+            "additionalProperties": false,
+            "patternProperties": {
+              "^.+_source$": {
+                "$ref": "#/components/schemas/FieldSource"
+              }
+            }
           }
         },
-        "additionalProperties": false
+        "additionalProperties": false,
+        "patternProperties": {
+          "^.+_source$": {
+            "$ref": "#/components/schemas/FieldSource"
+          }
+        }
       },
       "Income1099R": {
         "type": "object",
         "required": ["type", "payer", "personRole", "form"],
         "properties": {
-          "type": { "const": "R" },
-          "payer": { "type": "string" },
-          "personRole": { "type": "string", "enum": ["PRIMARY", "SPOUSE"] },
+          "type": {
+            "const": "R"
+          },
+          "payer": {
+            "type": "string"
+          },
+          "personRole": {
+            "type": "string",
+            "enum": ["PRIMARY", "SPOUSE"]
+          },
           "form": {
             "type": "object",
             "required": [
@@ -256,66 +466,138 @@
               "planType"
             ],
             "properties": {
-              "grossDistribution": { "type": "number" },
-              "taxableAmount": { "type": "number" },
-              "federalIncomeTaxWithheld": { "type": "number" },
+              "grossDistribution": {
+                "type": "number"
+              },
+              "taxableAmount": {
+                "type": "number"
+              },
+              "federalIncomeTaxWithheld": {
+                "type": "number"
+              },
               "planType": {
                 "type": "string",
                 "enum": ["IRA", "RothIRA", "SepIRA", "SimpleIRA", "Pension"]
               },
-              "taxableAmountNotDetermined": { "type": "boolean" },
-              "totalDistribution": { "type": "boolean" }
+              "taxableAmountNotDetermined": {
+                "type": "boolean"
+              },
+              "totalDistribution": {
+                "type": "boolean"
+              }
             },
-            "additionalProperties": false
+            "additionalProperties": false,
+            "patternProperties": {
+              "^.+_source$": {
+                "$ref": "#/components/schemas/FieldSource"
+              }
+            }
           }
         },
-        "additionalProperties": false
+        "additionalProperties": false,
+        "patternProperties": {
+          "^.+_source$": {
+            "$ref": "#/components/schemas/FieldSource"
+          }
+        }
       },
       "Income1099SSA": {
         "type": "object",
         "required": ["type", "payer", "personRole", "form"],
         "properties": {
-          "type": { "const": "SSA" },
-          "payer": { "type": "string" },
-          "personRole": { "type": "string", "enum": ["PRIMARY", "SPOUSE"] },
+          "type": {
+            "const": "SSA"
+          },
+          "payer": {
+            "type": "string"
+          },
+          "personRole": {
+            "type": "string",
+            "enum": ["PRIMARY", "SPOUSE"]
+          },
           "form": {
             "type": "object",
             "required": ["netBenefits", "federalIncomeTaxWithheld"],
             "properties": {
-              "netBenefits": { "type": "number" },
-              "federalIncomeTaxWithheld": { "type": "number" }
+              "netBenefits": {
+                "type": "number"
+              },
+              "federalIncomeTaxWithheld": {
+                "type": "number"
+              }
             },
-            "additionalProperties": false
+            "additionalProperties": false,
+            "patternProperties": {
+              "^.+_source$": {
+                "$ref": "#/components/schemas/FieldSource"
+              }
+            }
           }
         },
-        "additionalProperties": false
+        "additionalProperties": false,
+        "patternProperties": {
+          "^.+_source$": {
+            "$ref": "#/components/schemas/FieldSource"
+          }
+        }
       },
       "Income1099NEC": {
         "type": "object",
         "required": ["type", "payer", "personRole", "form"],
         "properties": {
-          "type": { "const": "NEC" },
-          "payer": { "type": "string" },
-          "personRole": { "type": "string", "enum": ["PRIMARY", "SPOUSE"] },
+          "type": {
+            "const": "NEC"
+          },
+          "payer": {
+            "type": "string"
+          },
+          "personRole": {
+            "type": "string",
+            "enum": ["PRIMARY", "SPOUSE"]
+          },
           "form": {
             "type": "object",
             "required": ["nonemployeeCompensation"],
             "properties": {
-              "nonemployeeCompensation": { "type": "number" }
+              "nonemployeeCompensation": {
+                "type": "number"
+              }
             },
-            "additionalProperties": false
+            "additionalProperties": false,
+            "patternProperties": {
+              "^.+_source$": {
+                "$ref": "#/components/schemas/FieldSource"
+              }
+            }
           }
         },
-        "additionalProperties": false
+        "additionalProperties": false,
+        "patternProperties": {
+          "^.+_source$": {
+            "$ref": "#/components/schemas/FieldSource"
+          }
+        }
       },
       "Supported1099": {
         "oneOf": [
-          { "$ref": "#/components/schemas/Income1099Int" },
-          { "$ref": "#/components/schemas/Income1099Div" },
-          { "$ref": "#/components/schemas/Income1099B" },
-          { "$ref": "#/components/schemas/Income1099R" },
-          { "$ref": "#/components/schemas/Income1099SSA" },
-          { "$ref": "#/components/schemas/Income1099NEC" }
+          {
+            "$ref": "#/components/schemas/Income1099Int"
+          },
+          {
+            "$ref": "#/components/schemas/Income1099Div"
+          },
+          {
+            "$ref": "#/components/schemas/Income1099B"
+          },
+          {
+            "$ref": "#/components/schemas/Income1099R"
+          },
+          {
+            "$ref": "#/components/schemas/Income1099SSA"
+          },
+          {
+            "$ref": "#/components/schemas/Income1099NEC"
+          }
         ],
         "discriminator": {
           "propertyName": "type",
@@ -349,7 +631,41 @@
             "description": "Mortgage insurance premiums reported on Form 1098."
           }
         },
-        "additionalProperties": false
+        "additionalProperties": false,
+        "patternProperties": {
+          "^.+_source$": {
+            "$ref": "#/components/schemas/FieldSource"
+          }
+        }
+      },
+      "RentalProperty": {
+        "type": "object",
+        "required": ["address", "rentsReceived", "totalExpenses", "netIncome"],
+        "properties": {
+          "address": {
+            "type": "string"
+          },
+          "rentsReceived": {
+            "type": "number"
+          },
+          "totalExpenses": {
+            "type": "number"
+          },
+          "netIncome": {
+            "type": "number"
+          }
+        },
+        "additionalProperties": false,
+        "patternProperties": {
+          "^.+_source$": {
+            "$ref": "#/components/schemas/FieldSource"
+          }
+        }
+      },
+      "FieldSource": {
+        "type": "string",
+        "enum": ["return", "transcript", "user"],
+        "description": "Origin of the sibling field value."
       }
     }
   }

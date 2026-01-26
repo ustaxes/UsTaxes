@@ -3,9 +3,14 @@ import { within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import DomMethods from './DomMethods'
 
+const escapeRegExp = (value: string): string =>
+  value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+
+const labelMatcher = (label: string): RegExp => new RegExp(escapeRegExp(label))
+
 export class PersonMethods extends DomMethods {
   firstNameField = (): HTMLInputElement | null =>
-    within(this.dom()).queryByLabelText(personLabels.fname)
+    within(this.dom()).queryByLabelText(labelMatcher(personLabels.fname))
 
   setIfAble = (f: HTMLInputElement | null, v: string): boolean => {
     if (f !== null) {
@@ -19,7 +24,7 @@ export class PersonMethods extends DomMethods {
     this.setIfAble(this.firstNameField(), v)
 
   lastNameField = (): HTMLInputElement | null =>
-    within(this.dom()).queryByLabelText(personLabels.lname)
+    within(this.dom()).queryByLabelText(labelMatcher(personLabels.lname))
 
   setLastName = (v: string): boolean => this.setIfAble(this.lastNameField(), v)
 

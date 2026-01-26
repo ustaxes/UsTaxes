@@ -13,6 +13,14 @@ import { blankState } from 'ustaxes/redux/reducer'
 import W2JobInfo from 'ustaxes/components/income/W2JobInfo'
 import userEvent from '@testing-library/user-event'
 
+const escapeRegExp = (value: string): string =>
+  value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+
+const labelMatcher = (labelText: string | RegExp): RegExp =>
+  typeof labelText === 'string'
+    ? new RegExp(escapeRegExp(labelText))
+    : labelText
+
 jest.mock('redux-persist', () => {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const real = jest.requireActual('redux-persist')
@@ -131,7 +139,7 @@ describe('W2JobInfo', () => {
 
     const changeByLabelText = (labelText: string | RegExp, input: string) => {
       act(() => {
-        fireEvent.change(screen.getByLabelText(labelText), {
+        fireEvent.change(screen.getByLabelText(labelMatcher(labelText)), {
           target: { value: input }
         })
       })
@@ -143,9 +151,12 @@ describe('W2JobInfo', () => {
       index = 0
     ) => {
       act(() => {
-        fireEvent.change(screen.getAllByLabelText(labelText)[index], {
-          target: { value: input }
-        })
+        fireEvent.change(
+          screen.getAllByLabelText(labelMatcher(labelText))[index],
+          {
+            target: { value: input }
+          }
+        )
       })
     }
 
@@ -256,41 +267,41 @@ describe('W2JobInfo', () => {
 
     userEvent.click(screen.getAllByRole('button')[0])
 
-    expect(screen.getByLabelText('Employer name')).toHaveValue(
+    expect(screen.getByLabelText(labelMatcher('Employer name'))).toHaveValue(
       testW2sSpouse.employer?.employerName
     )
     expect(
-      screen.getByLabelText(/Employer's Identification Number/)
+      screen.getByLabelText(labelMatcher(/Employer's Identification Number/))
     ).toHaveValue(
       (testW2sSpouse.employer?.EIN?.slice(0, 2) ?? '') +
         '-' +
         (testW2sSpouse.employer?.EIN?.slice(2) ?? '')
     )
-    expect(screen.getByLabelText('Occupation')).toHaveValue(
+    expect(screen.getByLabelText(labelMatcher('Occupation'))).toHaveValue(
       testW2sSpouse.occupation
     )
     expect(
-      screen.getByLabelText(/Wages, tips, other compensation/)
+      screen.getByLabelText(labelMatcher(/Wages, tips, other compensation/))
     ).toHaveValue(testW2sSpouse.income.toLocaleString('en-US'))
-    expect(screen.getByLabelText(/Social security tax withheld/)).toHaveValue(
-      testW2sSpouse.ssWithholding.toLocaleString('en-US')
-    )
-    expect(screen.getByLabelText(/Medicare Income/)).toHaveValue(
+    expect(
+      screen.getByLabelText(labelMatcher(/Social security tax withheld/))
+    ).toHaveValue(testW2sSpouse.ssWithholding.toLocaleString('en-US'))
+    expect(screen.getByLabelText(labelMatcher(/Medicare Income/))).toHaveValue(
       testW2sSpouse.medicareIncome.toLocaleString('en-US')
     )
-    expect(screen.getByLabelText(/Medicare tax withheld/)).toHaveValue(
-      testW2sSpouse.medicareWithholding.toLocaleString('en-US')
-    )
+    expect(
+      screen.getByLabelText(labelMatcher(/Medicare tax withheld/))
+    ).toHaveValue(testW2sSpouse.medicareWithholding.toLocaleString('en-US'))
     expect(screen.getAllByLabelText(/State/)[0]).toHaveValue(
       testW2sSpouse.state
     )
-    expect(screen.getByLabelText(/State wages, tips, etc/)).toHaveValue(
-      testW2sSpouse.stateWages?.toLocaleString('en-US')
-    )
-    expect(screen.getByLabelText(/State income tax/)).toHaveValue(
+    expect(
+      screen.getByLabelText(labelMatcher(/State wages, tips, etc/))
+    ).toHaveValue(testW2sSpouse.stateWages?.toLocaleString('en-US'))
+    expect(screen.getByLabelText(labelMatcher(/State income tax/))).toHaveValue(
       testW2sSpouse.stateWithholding?.toLocaleString('en-US')
     )
-    expect(screen.getByLabelText('Employee')).toHaveValue(
+    expect(screen.getByLabelText(labelMatcher('Employee'))).toHaveValue(
       testW2sSpouse.personRole
     )
   })

@@ -14,6 +14,14 @@ import { blankState } from 'ustaxes/redux/reducer'
 import userEvent from '@testing-library/user-event'
 import { renderWithProviders } from 'ustaxes/testUtil'
 
+const escapeRegExp = (value: string): string =>
+  value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+
+const labelMatcher = (labelText: string | RegExp): RegExp =>
+  typeof labelText === 'string'
+    ? new RegExp(escapeRegExp(labelText))
+    : labelText
+
 const testW2sSpouse: IncomeW2 = {
   employer: { EIN: '111111111', employerName: 'w2s employer name' },
   personRole: PersonRole.SPOUSE,
@@ -105,7 +113,7 @@ describe('F1099Info', () => {
 
     const labelTextChange = (labelText: string | RegExp, input: string) => {
       act(() => {
-        fireEvent.change(screen.getByLabelText(labelText), {
+        fireEvent.change(screen.getByLabelText(labelMatcher(labelText)), {
           target: { value: input }
         })
       })
@@ -117,9 +125,12 @@ describe('F1099Info', () => {
       index = 0
     ) => {
       act(() => {
-        fireEvent.change(screen.getAllByLabelText(labelText)[index], {
-          target: { value: input }
-        })
+        fireEvent.change(
+          screen.getAllByLabelText(labelMatcher(labelText))[index],
+          {
+            target: { value: input }
+          }
+        )
       })
     }
 

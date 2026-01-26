@@ -24,22 +24,26 @@ import _ from 'lodash'
 import { ReactNode } from 'react'
 import { FormContainerProvider } from './FormContainer/Context'
 import { intentionallyFloat } from 'ustaxes/core/util'
+import { DataSource, InformationSources } from 'ustaxes/core/data'
+import { getSource, SourcePath } from 'ustaxes/core/data/sources'
 
 interface FormContainerProps {
   onDone: () => void
   onCancel?: () => void
+  getSource?: (name: string) => DataSource | undefined
 }
 
 export const FormContainer = ({
   onDone,
   onCancel,
+  getSource,
   children
 }: PropsWithChildren<FormContainerProps>): ReactElement => {
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)')
 
   return (
     <div>
-      <FormContainerProvider onSubmit={onDone}>
+      <FormContainerProvider onSubmit={onDone} getSource={getSource}>
         {children}
       </FormContainerProvider>
       <Box
@@ -149,6 +153,10 @@ interface FormListContainerProps<A extends FieldValues> {
   icon?: (a: A) => ReactElement
   grouping?: (a: A) => number
   groupHeaders?: (ReactNode | undefined)[]
+  sources?: InformationSources
+  sourcePath?: SourcePath
+  sourceForNew?: DataSource
+  sourceHasIndex?: boolean
 }
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -166,6 +174,7 @@ export interface OpenableFormContainerProps<A extends FieldValues> {
   defaultValues: DefaultValues<A>
   onOpenStateChange: (isOpen: boolean) => void
   allowAdd?: boolean
+  sourceLookup?: (name: string) => DataSource | undefined
 }
 
 export const OpenableFormContainer = <A extends FieldValues>(
@@ -206,6 +215,7 @@ export const OpenableFormContainer = <A extends FieldValues>(
             <FormContainer
               onDone={intentionallyFloat(handleSubmit(onSave))}
               onCancel={onClose}
+              getSource={props.sourceLookup}
             >
               {props.children}
             </FormContainer>
@@ -248,7 +258,11 @@ const FormListContainer = <A extends FieldValues>(
       // default do nothing
     },
     grouping = () => 0,
-    groupHeaders = []
+    groupHeaders = [],
+    sources,
+    sourcePath,
+    sourceForNew,
+    sourceHasIndex = true
   } = props
   const [isOpen, setOpen] = useState(false)
   const [editing, setEditing] = useState<number | undefined>(undefined)
@@ -290,6 +304,21 @@ const FormListContainer = <A extends FieldValues>(
       onSubmitAdd(formData)
     }
     closeForm()
+  }
+
+  const sourceLookup = (fieldName: string): DataSource | undefined => {
+    if (!sources || !sourcePath) {
+      return sourceForNew
+    }
+    const path = [...sourcePath]
+    if (sourceHasIndex) {
+      if (editing === undefined) {
+        return sourceForNew
+      }
+      path.push(editing)
+    }
+    const fieldPath = fieldName.split('.')
+    return getSource(sources, [...path, ...fieldPath]) ?? sourceForNew
   }
 
   const openEditForm = (n: number): (() => void) | undefined => {
@@ -344,6 +373,7 @@ const FormListContainer = <A extends FieldValues>(
         isOpen={isOpen}
         onOpenStateChange={setOpen}
         onCancel={cancel}
+        sourceLookup={sourceLookup}
       >
         {children}
       </OpenableFormContainer>

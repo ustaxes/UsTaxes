@@ -4,6 +4,21 @@ import { Asset, FilingStatus, Information, TaxYear } from 'ustaxes/core/data'
 import { YearsTaxesState } from '.'
 import { ActionName, Actions } from './actions'
 import { stringToDateInfo } from './data'
+import {
+  remove1098Sources,
+  remove1099Sources,
+  removeDependentSources,
+  removeW2Sources,
+  set1098Sources,
+  set1099Sources,
+  setContactInfoSource,
+  setDependentSources,
+  setFilingStatusSource,
+  setPrimaryPersonSources,
+  setSpouseSources,
+  setStateResidencySource,
+  setW2Sources
+} from './sources'
 
 const DEFAULT_TAX_YEAR: TaxYear = 'Y2025'
 
@@ -23,7 +38,8 @@ export const blankState: Information = {
   stateResidencies: [],
   healthSavingsAccounts: [],
   credits: [],
-  individualRetirementArrangements: []
+  individualRetirementArrangements: [],
+  sources: {}
 }
 
 const formReducer = (
@@ -34,6 +50,14 @@ const formReducer = (
 
   switch (action.type) {
     case ActionName.SAVE_PRIMARY_PERSON_INFO: {
+      const sources = setPrimaryPersonSources(
+        newState.sources,
+        {
+          ...action.formData,
+          dateOfBirth: new Date(action.formData.dateOfBirth)
+        },
+        'user'
+      )
       return {
         ...newState,
         taxPayer: {
@@ -42,34 +66,56 @@ const formReducer = (
             ...action.formData,
             dateOfBirth: new Date(action.formData.dateOfBirth)
           }
-        }
+        },
+        sources
       }
     }
     case ActionName.SAVE_CONTACT_INFO: {
+      let sources = newState.sources
+      if (action.formData.contactEmail !== undefined) {
+        sources = setContactInfoSource(sources, 'contactEmail', 'user')
+      }
+      if (action.formData.contactPhoneNumber !== undefined) {
+        sources = setContactInfoSource(sources, 'contactPhoneNumber', 'user')
+      }
       return {
         ...newState,
         taxPayer: {
           ...newState.taxPayer,
           ...action.formData
-        }
+        },
+        sources
       }
     }
     case ActionName.SAVE_STATE_RESIDENCY: {
+      const sources = setStateResidencySource(newState.sources, 'user')
       return {
         ...newState,
-        stateResidencies: [action.formData]
+        stateResidencies: [action.formData],
+        sources
       }
     }
     case ActionName.SAVE_FILING_STATUS_INFO: {
+      const sources = setFilingStatusSource(newState.sources, 'user')
       return {
         ...newState,
         taxPayer: {
           ...newState.taxPayer,
           filingStatus: action.formData
-        }
+        },
+        sources
       }
     }
     case ActionName.ADD_DEPENDENT: {
+      const sources = setDependentSources(
+        newState.sources,
+        newState.taxPayer.dependents.length,
+        {
+          ...action.formData,
+          dateOfBirth: new Date(action.formData.dateOfBirth)
+        },
+        'user'
+      )
       return {
         ...newState,
         taxPayer: {
@@ -81,7 +127,8 @@ const formReducer = (
               dateOfBirth: new Date(action.formData.dateOfBirth)
             }
           ]
-        }
+        },
+        sources
       }
     }
 
@@ -93,18 +140,30 @@ const formReducer = (
         dateOfBirth: new Date(action.formData.value.dateOfBirth)
       })
 
+      const sources = setDependentSources(
+        newState.sources,
+        action.formData.index,
+        {
+          ...action.formData.value,
+          dateOfBirth: new Date(action.formData.value.dateOfBirth)
+        },
+        'user'
+      )
+
       return {
         ...newState,
         taxPayer: {
           ...newState.taxPayer,
           dependents: newDependents
-        }
+        },
+        sources
       }
     }
 
     case ActionName.REMOVE_DEPENDENT: {
       const newDependents = [...newState.taxPayer.dependents]
       newDependents.splice(action.formData, 1)
+      const sources = removeDependentSources(newState.sources, action.formData)
 
       const filingStatus = (() => {
         if (
@@ -122,7 +181,8 @@ const formReducer = (
           ...newState.taxPayer,
           filingStatus,
           dependents: newDependents
-        }
+        },
+        sources
       }
     }
     case ActionName.SAVE_REFUND_INFO: {
@@ -132,25 +192,41 @@ const formReducer = (
       }
     }
     case ActionName.ADD_W2: {
+      const sources = setW2Sources(
+        newState.sources,
+        newState.w2s.length,
+        action.formData,
+        'user'
+      )
       return {
         ...newState,
-        w2s: [...newState.w2s, action.formData]
+        w2s: [...newState.w2s, action.formData],
+        sources
       }
     }
     case ActionName.EDIT_W2: {
       const newW2s = [...newState.w2s]
       newW2s.splice(action.formData.index, 1, action.formData.value)
+      const sources = setW2Sources(
+        newState.sources,
+        action.formData.index,
+        action.formData.value,
+        'user'
+      )
       return {
         ...newState,
-        w2s: newW2s
+        w2s: newW2s,
+        sources
       }
     }
     case ActionName.REMOVE_W2: {
       const newW2s = [...newState.w2s]
       newW2s.splice(action.formData, 1)
+      const sources = removeW2Sources(newState.sources, action.formData)
       return {
         ...newState,
-        w2s: newW2s
+        w2s: newW2s,
+        sources
       }
     }
     case ActionName.ADD_ESTIMATED_TAX: {
@@ -176,28 +252,52 @@ const formReducer = (
       }
     }
     case ActionName.ADD_1099: {
+      const sources = set1099Sources(
+        newState.sources,
+        newState.f1099s.length,
+        action.formData,
+        'user'
+      )
       return {
         ...newState,
-        f1099s: [...newState.f1099s, action.formData]
+        f1099s: [...newState.f1099s, action.formData],
+        sources
       }
     }
     case ActionName.EDIT_1099: {
       const new1099s = [...newState.f1099s]
       new1099s.splice(action.formData.index, 1, action.formData.value)
+      const sources = set1099Sources(
+        newState.sources,
+        action.formData.index,
+        action.formData.value,
+        'user'
+      )
       return {
         ...newState,
-        f1099s: new1099s
+        f1099s: new1099s,
+        sources
       }
     }
     case ActionName.REMOVE_1099: {
       const new1099s = [...newState.f1099s]
       new1099s.splice(action.formData, 1)
+      const sources = remove1099Sources(newState.sources, action.formData)
       return {
         ...newState,
-        f1099s: new1099s
+        f1099s: new1099s,
+        sources
       }
     }
     case ActionName.ADD_SPOUSE: {
+      const sources = setSpouseSources(
+        newState.sources,
+        {
+          ...action.formData,
+          dateOfBirth: new Date(action.formData.dateOfBirth)
+        },
+        'user'
+      )
       return {
         ...newState,
         taxPayer: {
@@ -206,7 +306,8 @@ const formReducer = (
             ...action.formData,
             dateOfBirth: new Date(action.formData.dateOfBirth)
           }
-        }
+        },
+        sources
       }
     }
     case ActionName.REMOVE_SPOUSE: {
@@ -224,6 +325,13 @@ const formReducer = (
           ...newState.taxPayer,
           filingStatus,
           spouse: undefined
+        },
+        sources: {
+          ...(newState.sources ?? {}),
+          taxPayer: {
+            ...(newState.sources?.taxPayer as Record<string, unknown>),
+            spouse: undefined
+          }
         }
       }
     }
@@ -257,25 +365,41 @@ const formReducer = (
       }
     }
     case ActionName.ADD_1098: {
+      const sources = set1098Sources(
+        newState.sources,
+        newState.f1098s.length,
+        action.formData,
+        'user'
+      )
       return {
         ...newState,
-        f1098s: [...newState.f1098s, action.formData]
+        f1098s: [...newState.f1098s, action.formData],
+        sources
       }
     }
     case ActionName.EDIT_1098: {
       const new1098s = [...newState.f1098s]
       new1098s.splice(action.formData.index, 1, action.formData.value)
+      const sources = set1098Sources(
+        newState.sources,
+        action.formData.index,
+        action.formData.value,
+        'user'
+      )
       return {
         ...newState,
-        f1098s: new1098s
+        f1098s: new1098s,
+        sources
       }
     }
     case ActionName.REMOVE_1098: {
       const new1098s = [...newState.f1098s]
       new1098s.splice(action.formData, 1)
+      const sources = remove1098Sources(newState.sources, action.formData)
       return {
         ...newState,
-        f1098s: new1098s
+        f1098s: new1098s,
+        sources
       }
     }
     case ActionName.ADD_1098e: {

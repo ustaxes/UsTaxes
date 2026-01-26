@@ -138,7 +138,7 @@ export default class ScheduleC extends F1040Attachment {
     sumFields(this.businessesWith1099Nec().map((b) => f(b)))
 
   totalExpenses = (b: Business): number => {
-    const values = Object.values(b.expenses ?? {}) as Array<number | undefined>
+    const values = Object.values(b.expenses) as Array<number | undefined>
     return sumFields(values)
   }
 

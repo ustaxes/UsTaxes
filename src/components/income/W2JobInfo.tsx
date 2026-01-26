@@ -175,6 +175,7 @@ export default function W2JobInfo(): ReactElement {
   const information: Information = useSelector(
     (state: TaxesState) => state.information
   )
+  const sources = useSelector((state: TaxesState) => state.information.sources)
 
   const spouse: Spouse | undefined = information.taxPayer.spouse
 
@@ -221,6 +222,9 @@ export default function W2JobInfo(): ReactElement {
       groupHeaders={[primary?.firstName, spouse?.firstName].map((x, i) =>
         x !== undefined ? <h2 key={i}>{x}&apos; W2s</h2> : undefined
       )}
+      sources={sources}
+      sourcePath={['w2s']}
+      sourceForNew="user"
     >
       <p>Input data from W-2</p>
       <Grid container spacing={2}>

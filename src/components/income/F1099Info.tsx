@@ -270,6 +270,7 @@ const toF1099 = (input: F1099UserInput): Supported1099 | undefined => {
 
 export default function F1099Info(): ReactElement {
   const f1099s = useSelector((state: TaxesState) => state.information.f1099s)
+  const sources = useSelector((state: TaxesState) => state.information.sources)
 
   const defaultValues = blankUserInput
 
@@ -496,6 +497,9 @@ export default function F1099Info(): ReactElement {
           {f.formType}
         </Icon>
       )}
+      sources={sources}
+      sourcePath={['f1099s']}
+      sourceForNew="user"
     >
       <p>Input data from 1099</p>
       <Grid container spacing={2}>

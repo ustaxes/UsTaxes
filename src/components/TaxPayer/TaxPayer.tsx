@@ -12,12 +12,14 @@ import {
 import {
   Address,
   ContactInfo,
+  DataSource,
   PersonRole,
   PrimaryPerson,
   State,
   StateResidency,
   TaxPayer
 } from 'ustaxes/core/data'
+import { getSource } from 'ustaxes/core/data/sources'
 import { PersonFields } from './PersonFields'
 import { usePager } from 'ustaxes/components/pager'
 import {
@@ -29,6 +31,7 @@ import AddressFields from './Address'
 import { Grid } from '@material-ui/core'
 import { Patterns } from 'ustaxes/components/Patterns'
 import { intentionallyFloat } from 'ustaxes/core/util'
+import { FormContainerProvider } from 'ustaxes/components/FormContainer/Context'
 
 interface TaxPayerUserForm {
   firstName: string
@@ -103,6 +106,8 @@ export default function PrimaryTaxpayer(): ReactElement {
     return state.information.taxPayer
   })
 
+  const sources = useSelector((state: TaxesState) => state.information.sources)
+
   const stateResidency: StateResidency[] = useSelector(
     (state: TaxesState) => state.information.stateResidencies
   )
@@ -148,6 +153,23 @@ export default function PrimaryTaxpayer(): ReactElement {
     onAdvance()
   }
 
+  const sourceLookup = (fieldName: string): DataSource | undefined => {
+    if (fieldName === 'contactPhoneNumber') {
+      return getSource(sources, ['taxPayer', 'contactPhoneNumber'])
+    }
+    if (fieldName === 'contactEmail') {
+      return getSource(sources, ['taxPayer', 'contactEmail'])
+    }
+    if (fieldName === 'stateResidency') {
+      return getSource(sources, ['stateResidencies', 0, 'state'])
+    }
+    return getSource(sources, [
+      'taxPayer',
+      'primaryPerson',
+      ...fieldName.split('.')
+    ])
+  }
+
   const page = (
     <form tabIndex={-1} onSubmit={intentionallyFloat(handleSubmit(onSubmit))}>
       <Helmet>
@@ -176,5 +198,11 @@ export default function PrimaryTaxpayer(): ReactElement {
       {navButtons}
     </form>
   )
-  return <FormProvider {...methods}>{page}</FormProvider>
+  return (
+    <FormProvider {...methods}>
+      <FormContainerProvider getSource={sourceLookup}>
+        {page}
+      </FormContainerProvider>
+    </FormProvider>
+  )
 }

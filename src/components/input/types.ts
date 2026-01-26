@@ -2,10 +2,12 @@ import { ReactElement } from 'react'
 import { FieldValues, Path, RegisterOptions } from 'react-hook-form'
 import { PatternConfig } from 'ustaxes/components/Patterns'
 import { GridSize } from '@material-ui/core/Grid'
+import { DataSource } from 'ustaxes/core/data'
 export interface BaseDropdownProps<TFormValues> {
   label: string | ReactElement
   required?: boolean
   name: Path<TFormValues>
+  source?: DataSource
 }
 
 export interface CurrencyProps {
@@ -43,6 +45,7 @@ export interface LabeledInputProps<TFormValues extends FieldValues> {
   required?: boolean
   name: Path<TFormValues>
   defaultValue?: string
+  source?: DataSource
   rules?: Exclude<
     RegisterOptions<TFormValues>,
     'valueAsNumber' | 'valueAsDate' | 'setValueAs'
@@ -54,6 +57,7 @@ export interface LabeledFormProps<TFormValues> {
   label: string
   useGrid?: boolean
   sizes?: SizeList
+  source?: DataSource
 }
 
 export type LabeledCheckboxProps<TFormValues> = LabeledFormProps<TFormValues>

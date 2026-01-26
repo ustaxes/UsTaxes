@@ -259,9 +259,11 @@ export default class ScheduleEIC extends F1040Attachment {
       return 0
     }
 
-    const formula = f[this.qualifyingDependents().length] as
-      | Piecewise
-      | undefined
+    const index = this.qualifyingDependents().length
+    if (index >= f.length) {
+      return 0
+    }
+    const formula = f[index] as Piecewise | undefined
     if (formula === undefined) {
       return 0
     }

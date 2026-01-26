@@ -14,12 +14,19 @@ import { isNumeric, Patterns } from 'ustaxes/components/Patterns'
 import ConditionallyWrap from 'ustaxes/components/ConditionallyWrap'
 import useStyles from './styles'
 import { useFormContainer } from 'ustaxes/components/FormContainer/Context'
+import { labelWithSource } from './SourceBadge'
 
 export function LabeledInput<TFormValues extends FieldValues>(
   props: LabeledInputProps<TFormValues>
 ): ReactElement {
-  const { onSubmit } = useFormContainer()
-  const { label, patternConfig: patternConfigDefined, name, rules = {} } = props
+  const { onSubmit, getSource } = useFormContainer()
+  const {
+    label,
+    patternConfig: patternConfigDefined,
+    name,
+    rules = {},
+    source
+  } = props
   const { required = patternConfigDefined !== undefined } = props
   const {
     autofocus,
@@ -66,6 +73,8 @@ export function LabeledInput<TFormValues extends FieldValues>(
     }
   })()
 
+  const resolvedSource = source ?? getSource?.(name as string)
+
   const input: ReactElement = (() => {
     if (isNumeric(patternConfig)) {
       return (
@@ -79,7 +88,7 @@ export function LabeledInput<TFormValues extends FieldValues>(
               id={name}
               name={name}
               className={classes.root}
-              label={label}
+              label={labelWithSource(label, resolvedSource)}
               mask={patternConfig.mask}
               thousandSeparator={patternConfig.thousandSeparator}
               // prefix={patternConfig.prefix}
@@ -151,7 +160,7 @@ export function LabeledInput<TFormValues extends FieldValues>(
             id={name}
             name={name}
             className={classes.root}
-            label={label}
+            label={labelWithSource(label, resolvedSource)}
             value={value}
             onChange={onChange}
             disabled={disabled}

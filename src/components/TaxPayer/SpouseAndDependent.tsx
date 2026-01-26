@@ -33,6 +33,7 @@ import { Box, Grid } from '@material-ui/core'
 import { Person } from '@material-ui/icons'
 import { Alert } from '@material-ui/lab'
 import { intentionallyFloat } from 'ustaxes/core/util'
+import { getSource } from 'ustaxes/core/data/sources'
 
 interface UserPersonForm {
   firstName: string
@@ -138,6 +139,7 @@ export const AddDependentForm = (): ReactElement => {
   const dependents = useSelector(
     (state: TaxesState) => state.information.taxPayer.dependents
   )
+  const sources = useSelector((state: TaxesState) => state.information.sources)
 
   const defaultValues = blankUserDependentForm
 
@@ -172,6 +174,9 @@ export const AddDependentForm = (): ReactElement => {
       secondary={(a) => formatSSID(a.ssid)}
       icon={() => <Person />}
       removeItem={(i) => dispatch(removeDependent(i))}
+      sources={sources}
+      sourcePath={['taxPayer', 'dependents']}
+      sourceForNew="user"
     >
       <Grid container spacing={2}>
         <PersonFields />
@@ -207,6 +212,7 @@ export const SpouseInfo = (): ReactElement => {
   const spouse: Spouse | undefined = useSelector((state: TaxesState) => {
     return state.information.taxPayer.spouse
   })
+  const sources = useSelector((state: TaxesState) => state.information.sources)
 
   const ssidValue = watch('ssid')
   const isNonResidentAlien = watch('isNonResidentAlien')
@@ -243,6 +249,10 @@ export const SpouseInfo = (): ReactElement => {
       onSubmitEdit={onSubmitEdit}
       max={1}
       removeItem={() => dispatch(removeSpouse)}
+      sources={sources}
+      sourcePath={['taxPayer', 'spouse']}
+      sourceHasIndex={false}
+      sourceForNew="user"
     >
       <Grid container spacing={2}>
         <PersonFields
@@ -278,6 +288,7 @@ export const FilingStatusDropdown = (): ReactElement => {
   const taxPayer: TaxPayer | undefined = useSelector((state: TaxesState) => {
     return state.information.taxPayer
   })
+  const sources = useSelector((state: TaxesState) => state.information.sources)
 
   const allowedFilingStatuses = filingStatuses(taxPayer)
 
@@ -350,6 +361,7 @@ export const FilingStatusDropdown = (): ReactElement => {
             keyMapping={(x, i) => i}
             textMapping={(status) => FilingStatusTexts[status]}
             name="filingStatus"
+            source={getSource(sources, ['taxPayer', 'filingStatus'])}
           />
         </Box>
         {error}

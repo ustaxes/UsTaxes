@@ -15,13 +15,13 @@ export class SpouseMethods extends PersonMethods {
 
 export class DependentMethods extends PersonMethods {
   relationField = (): HTMLInputElement | null =>
-    within(this.dom()).queryByLabelText('Relationship to Taxpayer')
+    within(this.dom()).queryByLabelText(/^Relationship to Taxpayer/)
 
   durationField = (): HTMLInputElement | null =>
     within(this.dom()).queryByLabelText(/How many months/)
 
   isStudent = (): HTMLInputElement | null =>
-    within(this.dom()).queryByText('Is this person a full-time student?')
+    within(this.dom()).queryByText(/Is this person a full-time student/i)
 
   addButton = (): HTMLButtonElement | null =>
     within(this.dom()).queryByRole('button', {

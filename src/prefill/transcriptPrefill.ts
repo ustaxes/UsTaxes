@@ -18,8 +18,11 @@ import {
   Dependent,
   Supported1099,
   TaxPayer,
-  TaxYear
+  TaxYear,
+  DataSource,
+  InformationSources
 } from 'ustaxes/core/data'
+import { setSource } from 'ustaxes/core/data/sources'
 
 export type TranscriptPrefill = {
   taxYear: TaxYear
@@ -154,6 +157,18 @@ type PrefillF1098 = {
   points?: number
   mortgageInsurancePremiums?: number
 }
+
+type SourceTagged<T> = T & Record<string, unknown>
+
+const parseSource = (value: unknown): DataSource | undefined =>
+  value === 'transcript' || value === 'return' || value === 'user'
+    ? value
+    : undefined
+
+const sourceFor = (
+  obj: Record<string, unknown> | undefined,
+  field: string
+): DataSource | undefined => parseSource(obj?.[`${field}_source`])
 
 const cleanSsid = (ssid: string): string => ssid.replace(/-/g, '')
 
@@ -333,13 +348,456 @@ const mapTaxPayer = (
   }
 }
 
+const buildSources = (prefill: TranscriptPrefill): InformationSources => {
+  let sources: InformationSources = {}
+  const taxPayer = prefill.taxPayer as SourceTagged<PrefillTaxPayer>
+  const taxPayerRecord = taxPayer as Record<string, unknown>
+
+  sources = setSource(
+    sources,
+    ['taxPayer', 'filingStatus'],
+    sourceFor(taxPayerRecord, 'filingStatus')
+  )
+  sources = setSource(
+    sources,
+    ['taxPayer', 'contactEmail'],
+    sourceFor(taxPayerRecord, 'contactEmail')
+  )
+  sources = setSource(
+    sources,
+    ['taxPayer', 'contactPhoneNumber'],
+    sourceFor(taxPayerRecord, 'contactPhoneNumber')
+  )
+
+  const primary = taxPayer.primaryPerson as
+    | SourceTagged<PrefillPerson>
+    | undefined
+  if (primary) {
+    const primaryRecord = primary as Record<string, unknown>
+    sources = setSource(
+      sources,
+      ['taxPayer', 'primaryPerson', 'firstName'],
+      sourceFor(primaryRecord, 'firstName')
+    )
+    sources = setSource(
+      sources,
+      ['taxPayer', 'primaryPerson', 'lastName'],
+      sourceFor(primaryRecord, 'lastName')
+    )
+    sources = setSource(
+      sources,
+      ['taxPayer', 'primaryPerson', 'ssid'],
+      sourceFor(primaryRecord, 'ssid')
+    )
+    sources = setSource(
+      sources,
+      ['taxPayer', 'primaryPerson', 'role'],
+      sourceFor(primaryRecord, 'role')
+    )
+    sources = setSource(
+      sources,
+      ['taxPayer', 'primaryPerson', 'isBlind'],
+      sourceFor(primaryRecord, 'isBlind')
+    )
+    sources = setSource(
+      sources,
+      ['taxPayer', 'primaryPerson', 'dateOfBirth'],
+      sourceFor(primaryRecord, 'dateOfBirth')
+    )
+    sources = setSource(
+      sources,
+      ['taxPayer', 'primaryPerson', 'isTaxpayerDependent'],
+      sourceFor(primaryRecord, 'isTaxpayerDependent')
+    )
+    const address = primary.address as Record<string, unknown> | undefined
+    if (address) {
+      sources = setSource(
+        sources,
+        ['taxPayer', 'primaryPerson', 'address', 'address'],
+        sourceFor(address, 'address')
+      )
+      sources = setSource(
+        sources,
+        ['taxPayer', 'primaryPerson', 'address', 'city'],
+        sourceFor(address, 'city')
+      )
+      sources = setSource(
+        sources,
+        ['taxPayer', 'primaryPerson', 'address', 'state'],
+        sourceFor(address, 'state')
+      )
+      sources = setSource(
+        sources,
+        ['taxPayer', 'primaryPerson', 'address', 'zip'],
+        sourceFor(address, 'zip')
+      )
+      sources = setSource(
+        sources,
+        ['taxPayer', 'primaryPerson', 'address', 'aptNo'],
+        sourceFor(address, 'aptNo')
+      )
+      sources = setSource(
+        sources,
+        ['taxPayer', 'primaryPerson', 'address', 'foreignCountry'],
+        sourceFor(address, 'foreignCountry')
+      )
+      sources = setSource(
+        sources,
+        ['taxPayer', 'primaryPerson', 'address', 'province'],
+        sourceFor(address, 'province')
+      )
+      sources = setSource(
+        sources,
+        ['taxPayer', 'primaryPerson', 'address', 'postalCode'],
+        sourceFor(address, 'postalCode')
+      )
+    }
+  }
+
+  const spouse = taxPayer.spouse as SourceTagged<PrefillPerson> | undefined
+  if (spouse) {
+    const spouseRecord = spouse as Record<string, unknown>
+    sources = setSource(
+      sources,
+      ['taxPayer', 'spouse', 'firstName'],
+      sourceFor(spouseRecord, 'firstName')
+    )
+    sources = setSource(
+      sources,
+      ['taxPayer', 'spouse', 'lastName'],
+      sourceFor(spouseRecord, 'lastName')
+    )
+    sources = setSource(
+      sources,
+      ['taxPayer', 'spouse', 'ssid'],
+      sourceFor(spouseRecord, 'ssid')
+    )
+    sources = setSource(
+      sources,
+      ['taxPayer', 'spouse', 'role'],
+      sourceFor(spouseRecord, 'role')
+    )
+    sources = setSource(
+      sources,
+      ['taxPayer', 'spouse', 'isBlind'],
+      sourceFor(spouseRecord, 'isBlind')
+    )
+    sources = setSource(
+      sources,
+      ['taxPayer', 'spouse', 'dateOfBirth'],
+      sourceFor(spouseRecord, 'dateOfBirth')
+    )
+    sources = setSource(
+      sources,
+      ['taxPayer', 'spouse', 'isTaxpayerDependent'],
+      sourceFor(spouseRecord, 'isTaxpayerDependent')
+    )
+  }
+
+  if (taxPayer.dependents) {
+    taxPayer.dependents.forEach((dependent, index) => {
+      const depRecord = dependent as Record<string, unknown>
+      sources = setSource(
+        sources,
+        ['taxPayer', 'dependents', index, 'firstName'],
+        sourceFor(depRecord, 'firstName')
+      )
+      sources = setSource(
+        sources,
+        ['taxPayer', 'dependents', index, 'lastName'],
+        sourceFor(depRecord, 'lastName')
+      )
+      sources = setSource(
+        sources,
+        ['taxPayer', 'dependents', index, 'ssid'],
+        sourceFor(depRecord, 'ssid')
+      )
+      sources = setSource(
+        sources,
+        ['taxPayer', 'dependents', index, 'role'],
+        sourceFor(depRecord, 'role')
+      )
+      sources = setSource(
+        sources,
+        ['taxPayer', 'dependents', index, 'isBlind'],
+        sourceFor(depRecord, 'isBlind')
+      )
+      sources = setSource(
+        sources,
+        ['taxPayer', 'dependents', index, 'dateOfBirth'],
+        sourceFor(depRecord, 'dateOfBirth')
+      )
+      sources = setSource(
+        sources,
+        ['taxPayer', 'dependents', index, 'relationship'],
+        sourceFor(depRecord, 'relationship')
+      )
+      const qualifyingInfo = dependent.qualifyingInfo as
+        | Record<string, unknown>
+        | undefined
+      if (qualifyingInfo) {
+        sources = setSource(
+          sources,
+          ['taxPayer', 'dependents', index, 'qualifyingInfo', 'numberOfMonths'],
+          sourceFor(qualifyingInfo, 'numberOfMonths')
+        )
+        sources = setSource(
+          sources,
+          ['taxPayer', 'dependents', index, 'qualifyingInfo', 'isStudent'],
+          sourceFor(qualifyingInfo, 'isStudent')
+        )
+      }
+    })
+  }
+
+  if (prefill.w2s) {
+    prefill.w2s.forEach((w2, index) => {
+      const w2Record = w2 as Record<string, unknown>
+      sources = setSource(
+        sources,
+        ['w2s', index, 'occupation'],
+        sourceFor(w2Record, 'occupation')
+      )
+      sources = setSource(
+        sources,
+        ['w2s', index, 'income'],
+        sourceFor(w2Record, 'income')
+      )
+      sources = setSource(
+        sources,
+        ['w2s', index, 'medicareIncome'],
+        sourceFor(w2Record, 'medicareIncome')
+      )
+      sources = setSource(
+        sources,
+        ['w2s', index, 'fedWithholding'],
+        sourceFor(w2Record, 'fedWithholding')
+      )
+      sources = setSource(
+        sources,
+        ['w2s', index, 'ssWages'],
+        sourceFor(w2Record, 'ssWages')
+      )
+      sources = setSource(
+        sources,
+        ['w2s', index, 'ssWithholding'],
+        sourceFor(w2Record, 'ssWithholding')
+      )
+      sources = setSource(
+        sources,
+        ['w2s', index, 'medicareWithholding'],
+        sourceFor(w2Record, 'medicareWithholding')
+      )
+      sources = setSource(
+        sources,
+        ['w2s', index, 'personRole'],
+        sourceFor(w2Record, 'personRole')
+      )
+      sources = setSource(
+        sources,
+        ['w2s', index, 'state'],
+        sourceFor(w2Record, 'state')
+      )
+      sources = setSource(
+        sources,
+        ['w2s', index, 'stateWages'],
+        sourceFor(w2Record, 'stateWages')
+      )
+      sources = setSource(
+        sources,
+        ['w2s', index, 'stateWithholding'],
+        sourceFor(w2Record, 'stateWithholding')
+      )
+      const employer = w2.employer as Record<string, unknown> | undefined
+      if (employer) {
+        sources = setSource(
+          sources,
+          ['w2s', index, 'employer', 'EIN'],
+          sourceFor(employer, 'EIN')
+        )
+        sources = setSource(
+          sources,
+          ['w2s', index, 'employer', 'employerName'],
+          sourceFor(employer, 'employerName')
+        )
+      }
+    })
+  }
+
+  if (prefill.f1099s) {
+    prefill.f1099s.forEach((f1099, index) => {
+      const formRecord = f1099.form as Record<string, unknown>
+      const f1099Record = f1099 as Record<string, unknown>
+      sources = setSource(
+        sources,
+        ['f1099s', index, 'type'],
+        sourceFor(f1099Record, 'type')
+      )
+      sources = setSource(
+        sources,
+        ['f1099s', index, 'payer'],
+        sourceFor(f1099Record, 'payer')
+      )
+      sources = setSource(
+        sources,
+        ['f1099s', index, 'personRole'],
+        sourceFor(f1099Record, 'personRole')
+      )
+      switch (f1099.type) {
+        case Income1099Type.INT:
+          sources = setSource(
+            sources,
+            ['f1099s', index, 'form', 'income'],
+            sourceFor(formRecord, 'income')
+          )
+          break
+        case Income1099Type.DIV:
+          sources = setSource(
+            sources,
+            ['f1099s', index, 'form', 'dividends'],
+            sourceFor(formRecord, 'dividends')
+          )
+          sources = setSource(
+            sources,
+            ['f1099s', index, 'form', 'qualifiedDividends'],
+            sourceFor(formRecord, 'qualifiedDividends')
+          )
+          sources = setSource(
+            sources,
+            ['f1099s', index, 'form', 'totalCapitalGainsDistributions'],
+            sourceFor(formRecord, 'totalCapitalGainsDistributions')
+          )
+          break
+        case Income1099Type.B:
+          sources = setSource(
+            sources,
+            ['f1099s', index, 'form', 'shortTermProceeds'],
+            sourceFor(formRecord, 'shortTermProceeds')
+          )
+          sources = setSource(
+            sources,
+            ['f1099s', index, 'form', 'shortTermCostBasis'],
+            sourceFor(formRecord, 'shortTermCostBasis')
+          )
+          sources = setSource(
+            sources,
+            ['f1099s', index, 'form', 'longTermProceeds'],
+            sourceFor(formRecord, 'longTermProceeds')
+          )
+          sources = setSource(
+            sources,
+            ['f1099s', index, 'form', 'longTermCostBasis'],
+            sourceFor(formRecord, 'longTermCostBasis')
+          )
+          break
+        case Income1099Type.R:
+          sources = setSource(
+            sources,
+            ['f1099s', index, 'form', 'grossDistribution'],
+            sourceFor(formRecord, 'grossDistribution')
+          )
+          sources = setSource(
+            sources,
+            ['f1099s', index, 'form', 'taxableAmount'],
+            sourceFor(formRecord, 'taxableAmount')
+          )
+          sources = setSource(
+            sources,
+            ['f1099s', index, 'form', 'federalIncomeTaxWithheld'],
+            sourceFor(formRecord, 'federalIncomeTaxWithheld')
+          )
+          sources = setSource(
+            sources,
+            ['f1099s', index, 'form', 'planType'],
+            sourceFor(formRecord, 'planType')
+          )
+          sources = setSource(
+            sources,
+            ['f1099s', index, 'form', 'taxableAmountNotDetermined'],
+            sourceFor(formRecord, 'taxableAmountNotDetermined')
+          )
+          sources = setSource(
+            sources,
+            ['f1099s', index, 'form', 'totalDistribution'],
+            sourceFor(formRecord, 'totalDistribution')
+          )
+          break
+        case Income1099Type.SSA:
+          sources = setSource(
+            sources,
+            ['f1099s', index, 'form', 'netBenefits'],
+            sourceFor(formRecord, 'netBenefits')
+          )
+          sources = setSource(
+            sources,
+            ['f1099s', index, 'form', 'federalIncomeTaxWithheld'],
+            sourceFor(formRecord, 'federalIncomeTaxWithheld')
+          )
+          break
+        case Income1099Type.NEC:
+          sources = setSource(
+            sources,
+            ['f1099s', index, 'form', 'nonemployeeCompensation'],
+            sourceFor(formRecord, 'nonemployeeCompensation')
+          )
+          break
+      }
+    })
+  }
+
+  if (prefill.f1098s) {
+    prefill.f1098s.forEach((f1098, index) => {
+      const f1098Record = f1098 as Record<string, unknown>
+      sources = setSource(
+        sources,
+        ['f1098s', index, 'lender'],
+        sourceFor(f1098Record, 'lender')
+      )
+      sources = setSource(
+        sources,
+        ['f1098s', index, 'interest'],
+        sourceFor(f1098Record, 'interest')
+      )
+      sources = setSource(
+        sources,
+        ['f1098s', index, 'points'],
+        sourceFor(f1098Record, 'points')
+      )
+      sources = setSource(
+        sources,
+        ['f1098s', index, 'mortgageInsurancePremiums'],
+        sourceFor(f1098Record, 'mortgageInsurancePremiums')
+      )
+    })
+  }
+
+  return sources
+}
+
 export const applyTranscriptPrefill = (
   info: Information,
   prefill: TranscriptPrefill
-): Information => ({
-  ...info,
-  taxPayer: mapTaxPayer(info.taxPayer, prefill.taxPayer),
-  w2s: prefill.w2s ? prefill.w2s.map(mapW2) : info.w2s,
-  f1099s: prefill.f1099s ? prefill.f1099s.map(map1099) : info.f1099s,
-  f1098s: prefill.f1098s ? prefill.f1098s.map(mapF1098) : info.f1098s
-})
+): Information => {
+  const nextInfo: Information = {
+    ...info,
+    taxPayer: mapTaxPayer(info.taxPayer, prefill.taxPayer),
+    w2s: prefill.w2s ? prefill.w2s.map(mapW2) : info.w2s,
+    f1099s: prefill.f1099s ? prefill.f1099s.map(map1099) : info.f1099s,
+    f1098s: prefill.f1098s ? prefill.f1098s.map(mapF1098) : info.f1098s
+  }
+
+  const importedSources = buildSources(prefill)
+  const existingSources = info.sources ?? {}
+  const nextSources: InformationSources = {
+    ...existingSources,
+    taxPayer: importedSources.taxPayer,
+    ...(prefill.w2s !== undefined ? { w2s: importedSources.w2s } : {}),
+    ...(prefill.f1099s !== undefined ? { f1099s: importedSources.f1099s } : {}),
+    ...(prefill.f1098s !== undefined ? { f1098s: importedSources.f1098s } : {})
+  }
+
+  return {
+    ...nextInfo,
+    sources: nextSources
+  }
+}
