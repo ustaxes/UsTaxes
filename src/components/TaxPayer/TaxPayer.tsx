@@ -91,9 +91,11 @@ const asContactInfo = (formData: TaxPayerUserForm): ContactInfo => ({
 
 const asTaxPayerUserForm = (person: PrimaryPerson): TaxPayerUserForm => ({
   ...person,
-  isForeignCountry: person.address.foreignCountry !== undefined,
+  address: person.address ?? defaultTaxpayerUserForm.address,
+  isForeignCountry: person.address?.foreignCountry !== undefined,
   role: PersonRole.PRIMARY,
-  dateOfBirth: new Date(person.dateOfBirth)
+  dateOfBirth: person.dateOfBirth ? new Date(person.dateOfBirth) : undefined,
+  isTaxpayerDependent: person.isTaxpayerDependent ?? false
 })
 
 export default function PrimaryTaxpayer(): ReactElement {
@@ -120,7 +122,7 @@ export default function PrimaryTaxpayer(): ReactElement {
           contactPhoneNumber: taxPayer.contactPhoneNumber,
           contactEmail: taxPayer.contactEmail,
           stateResidency:
-            stateResidency[0]?.state ?? taxPayer.primaryPerson.address.state
+            stateResidency[0]?.state ?? taxPayer.primaryPerson.address?.state
         }
       : {})
   }

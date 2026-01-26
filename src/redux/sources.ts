@@ -298,3 +298,14 @@ export const setStateResidencySource = (
   source: DataSource
 ): InformationSources =>
   setSource(sources, ['stateResidencies', 0, 'state'], source)
+
+export const setAdjustmentsSources = (
+  sources: InformationSources | undefined,
+  source: DataSource
+): InformationSources => {
+  let next = sources ?? {}
+  next = setSource(next, ['adjustments', 'alimonyPaid'], source)
+  next = setSource(next, ['adjustments', 'alimonyRecipientSsn'], source)
+  next = setSource(next, ['adjustments', 'alimonyDivorceDate'], source)
+  return next
+}

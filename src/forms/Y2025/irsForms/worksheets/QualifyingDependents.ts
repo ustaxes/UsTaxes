@@ -19,12 +19,14 @@ export default class QualifyingDependents {
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     d === undefined
       ? false
-      : this.year - d.dateOfBirth.getFullYear() <
+      : d.dateOfBirth instanceof Date &&
+        this.year - d.dateOfBirth.getFullYear() <
         federal.QualifyingDependents.childMaxAge
 
   qualifiesOther = (d: Dependent): boolean =>
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     d !== undefined &&
+    d.dateOfBirth instanceof Date &&
     d.qualifyingInfo !== undefined &&
     !this.qualifiesChild(d) &&
     this.year - d.dateOfBirth.getFullYear() <

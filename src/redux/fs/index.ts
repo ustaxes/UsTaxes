@@ -32,7 +32,7 @@ const buildReturnBundle = (state: YearsTaxesState): ReturnBundle => ({
   }
 })
 
-export const stateToString = (state: any): string =>
+export const stateToString = (state: YearsTaxesState): string =>
   JSON.stringify(serializeTransform(buildReturnBundle(state)))
 
 /**
@@ -75,9 +75,9 @@ export const stringToImportState = (str: string): USTState => {
       }
     }
     if (isReturnBundle(parsed)) {
-      const returns = parsed.returns ?? {}
+      const returns = parsed.returns as Partial<Record<TaxYear, ReturnPayload>>
       const byYear = (year: TaxYear): Information =>
-        (returns[year]?.information ?? blankYearTaxesState[year]) as Information
+        returns[year]?.information ?? blankYearTaxesState[year]
       return {
         ...blankYearTaxesState,
         activeYear: parsed.activeYear ?? blankYearTaxesState.activeYear,

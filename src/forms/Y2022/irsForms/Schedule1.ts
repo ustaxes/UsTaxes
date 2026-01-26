@@ -4,6 +4,9 @@ import { sumFields } from 'ustaxes/core/irsForms/util'
 import F1040 from './F1040'
 import { Field } from 'ustaxes/core/pdfFiller'
 
+const formatAgreementDate = (value: Date | undefined): string | undefined =>
+  value ? value.toLocaleDateString('en-US') : undefined
+
 export default class Schedule1 extends F1040Attachment {
   tag: FormTag = 'f1040s1'
   sequenceIndex = 1
@@ -21,7 +24,10 @@ export default class Schedule1 extends F1040Attachment {
       this.f1040.studentLoanInterestWorksheet.notMFS() &&
       this.f1040.studentLoanInterestWorksheet.isNotDependent()) ||
     this.f1040.f8889.isNeeded() ||
-    (this.f1040.f8889Spouse?.isNeeded() ?? false)
+    (this.f1040.f8889Spouse?.isNeeded() ?? false) ||
+    this.f1040.info.adjustments?.alimonyPaid !== undefined ||
+    this.f1040.info.adjustments?.alimonyRecipientSsn !== undefined ||
+    this.f1040.info.adjustments?.alimonyDivorceDate !== undefined
 
   l1 = (): number | undefined => undefined
   l2a = (): number | undefined => undefined
@@ -115,9 +121,11 @@ export default class Schedule1 extends F1040Attachment {
   l16 = (): number | undefined => undefined
   l17 = (): number | undefined => undefined
   l18 = (): number | undefined => undefined
-  l19a = (): number | undefined => undefined
-  l19b = (): string | undefined => undefined
-  l19c = (): string | undefined => undefined
+  l19a = (): number | undefined => this.f1040.info.adjustments?.alimonyPaid
+  l19b = (): string | undefined =>
+    this.f1040.info.adjustments?.alimonyRecipientSsn
+  l19c = (): string | undefined =>
+    formatAgreementDate(this.f1040.info.adjustments?.alimonyDivorceDate)
   l20 = (): number | undefined => undefined
   l21 = (): number | undefined => this.f1040.studentLoanInterestWorksheet?.l9()
   // Reserved for future use

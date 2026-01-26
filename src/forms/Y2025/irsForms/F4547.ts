@@ -5,6 +5,8 @@ import { Field, FillInstructions, text, checkbox } from 'ustaxes/core/pdfFiller'
 import F1040 from './F1040'
 import { CURRENT_YEAR } from '../data/federal'
 
+type EligibleDependent = Dependent & { dateOfBirth: Date }
+
 /** Children born 2025-2028 are eligible for the Trump Account pilot program. */
 const TRUMP_ACCOUNT_BIRTH_YEAR_MIN = 2025
 const TRUMP_ACCOUNT_BIRTH_YEAR_MAX = 2028
@@ -19,8 +21,11 @@ export default class F4547 extends F1040Attachment {
   }
 
   /** Dependents born within the pilot program window who are under 18. */
-  eligibleChildren = (): Dependent[] =>
-    this.f1040.info.taxPayer.dependents.filter((dep) => {
+  eligibleChildren = (): EligibleDependent[] =>
+    this.f1040.info.taxPayer.dependents.filter((dep): dep is EligibleDependent => {
+      if (!(dep.dateOfBirth instanceof Date)) {
+        return false
+      }
       const birthYear = dep.dateOfBirth.getFullYear()
       const age = CURRENT_YEAR - birthYear
       return (
@@ -42,78 +47,17 @@ export default class F4547 extends F1040Attachment {
   private dobYear = (d: Date): string => String(d.getFullYear())
 
   /** Eligible child at slot index (0-based), or undefined if none. */
-  private child = (i: number): Dependent | undefined =>
+  private child = (i: number): EligibleDependent | undefined =>
     this.eligibleChildren()[i]
 
-  fields = (): Field[] => {
-    const c0 = this.child(0)
-    const c1 = this.child(1)
-    return [
-      // Part I — filer identification
-      this.f1040.namesString(),
-      undefined,
-      undefined,
-      this.f1040.info.taxPayer.primaryPerson.ssid,
-      // Address block (9 fields)
-      this.f1040.info.taxPayer.primaryPerson.address.address,
-      this.f1040.info.taxPayer.primaryPerson.address.aptNo,
-      this.f1040.info.taxPayer.primaryPerson.address.city,
-      this.f1040.info.taxPayer.primaryPerson.address.state,
-      this.f1040.info.taxPayer.primaryPerson.address.zip,
-      undefined, // foreign country
-      undefined, // foreign province
-      undefined, // foreign postal code
-      undefined, // phone
-      // Part II — child 1 header fields
-      c0 ? `${c0.firstName} ${c0.lastName}` : undefined,
-      c0?.relationship,
-      undefined,
-      // Part II — child table rows (Row1a/1b/1c: name parts + DOB)
-      c0 ? `${c0.firstName} ${c0.lastName}` : undefined,
-      c0?.ssid,
-      c0 ? this.dobMonth(c0.dateOfBirth) : undefined,
-      c0 ? this.dobDay(c0.dateOfBirth) : undefined,
-      c0 ? this.dobYear(c0.dateOfBirth) : undefined,
-      undefined,
-      // Row2: SSNs for child 1 and child 2
-      c0?.ssid,
-      c1?.ssid,
-      // Row3-4 additional child info
-      c1 ? `${c1.firstName} ${c1.lastName}` : undefined,
-      c1?.relationship,
-      undefined,
-      undefined,
-      // Row5: eligibility checkboxes
-      this.electing(),
-      false,
-      // Row5a-5i: up to 9 additional children (2 fields each = 18 fields)
-      ...Array.from({ length: 9 }, (_, i) => {
-        const child = this.child(i + 2)
-        return [
-          child ? `${child.firstName} ${child.lastName}` : undefined,
-          child?.ssid
-        ]
-      }).flat(),
-      // Row6 checkboxes
-      undefined,
-      undefined,
-      // Part III — pilot program election
-      this.electing(), // c1_5: Yes — elect the $1,000 contribution
-      false, // c1_6: No
-      // Part IV
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined
-    ]
-  }
+  /** Keep legacy positional values aligned with native fillInstructions(). */
+  fields = (): Field[] => this.fillInstructions().map((instruction) => instruction.value)
 
   fillInstructions = (): FillInstructions => {
+    const tp = this.f1040.info.taxPayer
     const c0 = this.child(0)
     const c1 = this.child(1)
+    const address = tp.primaryPerson.address
 
     const childRows = Array.from({ length: 9 }, (_, i): FillInstructions => {
       const child = this.child(i + 2)
@@ -137,33 +81,42 @@ export default class F4547 extends F1040Attachment {
       text('form1[0].Page1[0].f1_03[0]', undefined),
       text(
         'form1[0].Page1[0].f1_04[0]',
-        this.f1040.info.taxPayer.primaryPerson.ssid
+        tp.primaryPerson.ssid
       ),
       // Address block
       text(
         'form1[0].Page1[0].Address_ReadOrder[0].f1_05[0]',
-        this.f1040.info.taxPayer.primaryPerson.address.address
+        address?.address
       ),
       text(
         'form1[0].Page1[0].Address_ReadOrder[0].f1_06[0]',
-        this.f1040.info.taxPayer.primaryPerson.address.aptNo
+        address?.aptNo
       ),
       text(
         'form1[0].Page1[0].Address_ReadOrder[0].f1_07[0]',
-        this.f1040.info.taxPayer.primaryPerson.address.city
+        address?.city
       ),
       text(
         'form1[0].Page1[0].Address_ReadOrder[0].f1_08[0]',
-        this.f1040.info.taxPayer.primaryPerson.address.state
+        address?.state
       ),
       text(
         'form1[0].Page1[0].Address_ReadOrder[0].f1_09[0]',
-        this.f1040.info.taxPayer.primaryPerson.address.zip
+        address?.zip
       ),
-      text('form1[0].Page1[0].Address_ReadOrder[0].f1_10[0]', undefined),
-      text('form1[0].Page1[0].Address_ReadOrder[0].f1_11[0]', undefined),
-      text('form1[0].Page1[0].Address_ReadOrder[0].f1_12[0]', undefined),
-      text('form1[0].Page1[0].Address_ReadOrder[0].f1_13[0]', undefined),
+      text(
+        'form1[0].Page1[0].Address_ReadOrder[0].f1_10[0]',
+        address?.foreignCountry
+      ),
+      text(
+        'form1[0].Page1[0].Address_ReadOrder[0].f1_11[0]',
+        address?.province
+      ),
+      text(
+        'form1[0].Page1[0].Address_ReadOrder[0].f1_12[0]',
+        address?.postalCode
+      ),
+      text('form1[0].Page1[0].Address_ReadOrder[0].f1_13[0]', tp.contactPhoneNumber),
       // Part II — child info header
       text(
         'form1[0].Page1[0].f1_14[0]',

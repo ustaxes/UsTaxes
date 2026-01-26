@@ -25,13 +25,16 @@ export const setupUserEvent = (): UserEvent => {
     typeof event.setup === 'function' ? event.setup() : userEvent
   return {
     click: async (...args) => {
-      baseEvent.click(...args)
+      const result = baseEvent.click(...args)
+      await Promise.resolve(result)
     },
     clear: async (...args) => {
-      baseEvent.clear(...args)
+      const result = baseEvent.clear(...args)
+      await Promise.resolve(result)
     },
     selectOptions: async (...args) => {
-      baseEvent.selectOptions(...args)
+      const result = baseEvent.selectOptions(...args)
+      await Promise.resolve(result)
     },
     type: async (element, text, options) => {
       const result = baseEvent.type(

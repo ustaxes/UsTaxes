@@ -1,6 +1,6 @@
 import { Button, TextField } from '@material-ui/core'
 import { Check } from '@material-ui/icons'
-import { ReactElement, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { TaxYear, TaxYears } from 'ustaxes/core/data'
 import { enumKeys } from 'ustaxes/core/util'
@@ -35,6 +35,15 @@ const UserSettings = (): ReactElement => {
   )
   const yearsState = useSelector((state: YearsTaxesState) => state)
 
+  useEffect(() => {
+    const storedStatus = sessionStorage.getItem('ustaxes.prefillStatus')
+    if (storedStatus) {
+      setPrefillStatus(storedStatus)
+      setPrefillDone(true)
+      sessionStorage.removeItem('ustaxes.prefillStatus')
+    }
+  }, [])
+
   const downloadPrefill = (taxYear: TaxYear): void => {
     const payload = buildReturnPayload(yearsState[taxYear], taxYear)
     download(`ustaxes_return_${taxYear}.json`, JSON.stringify(payload, null, 2))
@@ -64,9 +73,30 @@ const UserSettings = (): ReactElement => {
     }
 
     try {
-      const parsed = JSON.parse(raw) as Partial<ReturnPayload>
-      const taxYear = parsed.taxYear
-      const info = parsed.information
+      const parsed = JSON.parse(raw) as unknown
+      const record = parsed as Record<string, unknown>
+      const bundleReturns = record.returns as
+        | Record<string, ReturnPayload>
+        | undefined
+      const payload: ReturnPayload | undefined = bundleReturns
+        ? (() => {
+            const activeYear = record.activeYear
+            const yearFromActive = isValidTaxYear(String(activeYear))
+              ? (activeYear as TaxYear)
+              : undefined
+            const yearFromKeys = Object.keys(bundleReturns).find((key) =>
+              isValidTaxYear(key)
+            ) as TaxYear | undefined
+            const selectedYear = yearFromActive ?? yearFromKeys
+            if (selectedYear === undefined) {
+              return undefined
+            }
+            return bundleReturns[selectedYear]
+          })()
+        : (record as ReturnPayload)
+
+      const taxYear = payload?.taxYear
+      const info = payload?.information
 
       if (taxYear === undefined || info === undefined) {
         throw new Error('Missing taxYear or information in return payload.')
@@ -84,6 +114,7 @@ const UserSettings = (): ReactElement => {
           f1099s: info.f1099s,
           f1098s: info.f1098s,
           realEstate: info.realEstate,
+          adjustments: info.adjustments,
           sources: info.sources
         }
       })
@@ -91,7 +122,41 @@ const UserSettings = (): ReactElement => {
       dispatch(setInfo(nextInfo)(taxYear))
       dispatch(setActiveYear(taxYear)(taxYear))
       setPrefillDone(true)
-      setPrefillStatus(`Prefill applied for ${taxYear}.`)
+
+      const counts = {
+        w2s: info.w2s?.length ?? 0,
+        f1099s: info.f1099s?.length ?? 0,
+        f1098s: info.f1098s?.length ?? 0,
+        realEstate: info.realEstate?.length ?? 0,
+        taxPayer: info.taxPayer ? 1 : 0,
+        adjustments:
+          info.adjustments &&
+          (info.adjustments.alimonyPaid !== undefined ||
+            info.adjustments.alimonyRecipientSsn !== undefined ||
+            info.adjustments.alimonyDivorceDate !== undefined)
+            ? 1
+            : 0
+      }
+      const filledCount =
+        counts.w2s +
+        counts.f1099s +
+        counts.f1098s +
+        counts.realEstate +
+        counts.taxPayer +
+        counts.adjustments
+
+      const summary =
+        filledCount === 0
+          ? 'No importable fields found in the JSON.'
+          : `Imported ${counts.w2s} W-2s, ${counts.f1099s} 1099s, ${
+              counts.f1098s
+            } 1098s, ${counts.realEstate} rental properties${
+              counts.taxPayer ? ', tax payer info' : ''
+            }${counts.adjustments ? ', adjustments to income' : ''}.`
+
+      const status = `Prefill applied for ${taxYear}. ${summary}`
+      setPrefillStatus(status)
+      sessionStorage.setItem('ustaxes.prefillStatus', status)
     } catch (error) {
       const message =
         error instanceof Error ? error.message : 'Failed to parse return JSON.'

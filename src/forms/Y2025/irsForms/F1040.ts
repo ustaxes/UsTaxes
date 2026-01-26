@@ -289,7 +289,7 @@ export default class F1040 extends F1040Base {
 
   // born before 1961/01/02 (age 65 or older by end of 2025)
   bornBeforeDate = (): boolean =>
-    this.info.taxPayer.primaryPerson.dateOfBirth <
+    (this.info.taxPayer.primaryPerson.dateOfBirth ?? new Date()) <
     new Date(CURRENT_YEAR - 64, 0, 2)
 
   blind = (): boolean => this.info.taxPayer.primaryPerson.isBlind
@@ -330,7 +330,7 @@ export default class F1040 extends F1040Base {
     ].reduce((res, e) => res + +!!e, 0)
 
     if (
-      this.info.taxPayer.primaryPerson.isTaxpayerDependent ||
+      (this.info.taxPayer.primaryPerson.isTaxpayerDependent ?? false) ||
       (this.info.taxPayer.spouse?.isTaxpayerDependent ?? false)
     ) {
       const l4a = Math.min(
@@ -473,7 +473,7 @@ export default class F1040 extends F1040Base {
   l11b = (): number => this.l11a()
 
   l12aSelfDependent = (): boolean =>
-    this.info.taxPayer.primaryPerson.isTaxpayerDependent
+    this.info.taxPayer.primaryPerson.isTaxpayerDependent ?? false
   l12aSpouseDependent = (): boolean =>
     this.info.taxPayer.spouse?.isTaxpayerDependent ?? false
   l12b = (): boolean => false
@@ -632,7 +632,7 @@ export default class F1040 extends F1040Base {
         dep.firstName,
         dep.lastName,
         dep.ssid,
-        dep.relationship,
+        dep.relationship ?? '',
         this.qualifyingDependents.qualifiesChild(dep),
         this.qualifyingDependents.qualifiesOther(dep)
       ]
@@ -701,6 +701,7 @@ export default class F1040 extends F1040Base {
   // Generated from Y2025 PDF schema (schemas/Y2025/f1040.json) — 199 fields total
   fillInstructions = (): FillInstructions => {
     const deps: Dependent<Date>[] = this.info.taxPayer.dependents
+    const address = this.info.taxPayer.primaryPerson.address
 
     return [
       // Page 1 — header placeholders (0-2)
@@ -770,35 +771,35 @@ export default class F1040 extends F1040Base {
       // Address fields — renamed f1_20–f1_27 in Y2025 (23-30)
       text(
         'topmostSubform[0].Page1[0].Address_ReadOrder[0].f1_20[0]',
-        this.info.taxPayer.primaryPerson.address.address
+        address?.address
       ),
       text(
         'topmostSubform[0].Page1[0].Address_ReadOrder[0].f1_21[0]',
-        this.info.taxPayer.primaryPerson.address.aptNo
+        address?.aptNo
       ),
       text(
         'topmostSubform[0].Page1[0].Address_ReadOrder[0].f1_22[0]',
-        this.info.taxPayer.primaryPerson.address.city
+        address?.city
       ),
       text(
         'topmostSubform[0].Page1[0].Address_ReadOrder[0].f1_23[0]',
-        this.info.taxPayer.primaryPerson.address.state
+        address?.state
       ),
       text(
         'topmostSubform[0].Page1[0].Address_ReadOrder[0].f1_24[0]',
-        this.info.taxPayer.primaryPerson.address.zip
+        address?.zip
       ),
       text(
         'topmostSubform[0].Page1[0].Address_ReadOrder[0].f1_25[0]',
-        this.info.taxPayer.primaryPerson.address.foreignCountry
+        address?.foreignCountry
       ),
       text(
         'topmostSubform[0].Page1[0].Address_ReadOrder[0].f1_26[0]',
-        this.info.taxPayer.primaryPerson.address.province
+        address?.province
       ),
       text(
         'topmostSubform[0].Page1[0].Address_ReadOrder[0].f1_27[0]',
-        this.info.taxPayer.primaryPerson.address.postalCode
+        address?.postalCode
       ),
       // Spouse and payer main home in US
       // TODO: capture this?
@@ -1222,8 +1223,10 @@ export default class F1040 extends F1040Base {
   }
 
   // This is the original location based field set. here for education or something, I guess.
-  og_fields = (): Field[] =>
-    [
+  og_fields = (): Field[] => {
+    const address = this.info.taxPayer.primaryPerson.address
+
+    return [
       '',
       '',
       '',
@@ -1247,14 +1250,14 @@ export default class F1040 extends F1040Base {
         ? this.info.taxPayer.spouse?.lastName ?? ''
         : '',
       this.info.taxPayer.spouse?.ssid,
-      this.info.taxPayer.primaryPerson.address.address,
-      this.info.taxPayer.primaryPerson.address.aptNo,
-      this.info.taxPayer.primaryPerson.address.city,
-      this.info.taxPayer.primaryPerson.address.state,
-      this.info.taxPayer.primaryPerson.address.zip,
-      this.info.taxPayer.primaryPerson.address.foreignCountry,
-      this.info.taxPayer.primaryPerson.address.province,
-      this.info.taxPayer.primaryPerson.address.postalCode,
+      address?.address,
+      address?.aptNo,
+      address?.city,
+      address?.state,
+      address?.zip,
+      address?.foreignCountry,
+      address?.province,
+      address?.postalCode,
       false, // spouse and payer main home in US
       false, // election campaign boxes
       false,
@@ -1393,4 +1396,5 @@ export default class F1040 extends F1040Base {
       '',
       ''
     ].map((x) => (x === undefined ? '' : x))
+  }
 }

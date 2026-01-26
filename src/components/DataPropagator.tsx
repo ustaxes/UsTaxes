@@ -9,6 +9,31 @@ import { setInfo } from 'ustaxes/redux/actions'
 import { Button } from '@material-ui/core'
 import { Alert } from '@material-ui/lab'
 
+const stripSourceFields = (value: unknown): unknown => {
+  if (Array.isArray(value)) {
+    return value.map((item) => stripSourceFields(item))
+  }
+  if (value && typeof value === 'object' && !(value instanceof Date)) {
+    const record = value as Record<string, unknown>
+    const next = Object.entries(record).reduce<Record<string, unknown>>(
+      (acc, [key, val]) => {
+        if (key === 'sources') {
+          acc[key] = val
+          return acc
+        }
+        if (key.endsWith('_source')) {
+          return acc
+        }
+        acc[key] = stripSourceFields(val)
+        return acc
+      },
+      {}
+    )
+    return next
+  }
+  return value
+}
+
 const DataPropagator = (): ReactElement => {
   const wholeState = useSelector((state: YearsTaxesState) => state)
   const allYears = enumKeys(TaxYears)
@@ -25,7 +50,7 @@ const DataPropagator = (): ReactElement => {
 
   const onClick = () => {
     if (canPropagate) {
-      dispatch(setInfo(priorYear))
+      dispatch(setInfo(stripSourceFields(priorYear) as Information))
     }
   }
 

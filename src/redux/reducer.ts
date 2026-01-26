@@ -14,6 +14,7 @@ import {
   setContactInfoSource,
   setDependentSources,
   setFilingStatusSource,
+  setAdjustmentsSources,
   setPrimaryPersonSources,
   setSpouseSources,
   setStateResidencySource,
@@ -21,6 +22,9 @@ import {
 } from './sources'
 
 const DEFAULT_TAX_YEAR: TaxYear = 'Y2025'
+
+const toDate = (value: string | null | undefined): Date | undefined =>
+  value !== undefined && value !== null ? new Date(value) : undefined
 
 export const blankState: Information = {
   f1099s: [],
@@ -54,7 +58,7 @@ const formReducer = (
         newState.sources,
         {
           ...action.formData,
-          dateOfBirth: new Date(action.formData.dateOfBirth)
+          dateOfBirth: toDate(action.formData.dateOfBirth)
         },
         'user'
       )
@@ -64,7 +68,7 @@ const formReducer = (
           ...newState.taxPayer,
           primaryPerson: {
             ...action.formData,
-            dateOfBirth: new Date(action.formData.dateOfBirth)
+            dateOfBirth: toDate(action.formData.dateOfBirth)
           }
         },
         sources
@@ -112,7 +116,7 @@ const formReducer = (
         newState.taxPayer.dependents.length,
         {
           ...action.formData,
-          dateOfBirth: new Date(action.formData.dateOfBirth)
+          dateOfBirth: toDate(action.formData.dateOfBirth)
         },
         'user'
       )
@@ -124,7 +128,7 @@ const formReducer = (
             ...newState.taxPayer.dependents,
             {
               ...action.formData,
-              dateOfBirth: new Date(action.formData.dateOfBirth)
+              dateOfBirth: toDate(action.formData.dateOfBirth)
             }
           ]
         },
@@ -137,7 +141,7 @@ const formReducer = (
       const newDependents = [...newState.taxPayer.dependents]
       newDependents.splice(action.formData.index, 1, {
         ...action.formData.value,
-        dateOfBirth: new Date(action.formData.value.dateOfBirth)
+        dateOfBirth: toDate(action.formData.value.dateOfBirth)
       })
 
       const sources = setDependentSources(
@@ -145,7 +149,7 @@ const formReducer = (
         action.formData.index,
         {
           ...action.formData.value,
-          dateOfBirth: new Date(action.formData.value.dateOfBirth)
+          dateOfBirth: toDate(action.formData.value.dateOfBirth)
         },
         'user'
       )
@@ -294,7 +298,7 @@ const formReducer = (
         newState.sources,
         {
           ...action.formData,
-          dateOfBirth: new Date(action.formData.dateOfBirth)
+          dateOfBirth: toDate(action.formData.dateOfBirth)
         },
         'user'
       )
@@ -304,7 +308,7 @@ const formReducer = (
           ...newState.taxPayer,
           spouse: {
             ...action.formData,
-            dateOfBirth: new Date(action.formData.dateOfBirth)
+            dateOfBirth: toDate(action.formData.dateOfBirth)
           }
         },
         sources
@@ -472,6 +476,27 @@ const formReducer = (
       return {
         ...newState,
         itemizedDeductions: action.formData
+      }
+    }
+    case ActionName.SAVE_ADJUSTMENTS: {
+      const hasAdjustments =
+        action.formData.alimonyPaid !== undefined ||
+        action.formData.alimonyRecipientSsn !== undefined ||
+        action.formData.alimonyDivorceDate !== undefined
+
+      const sources = hasAdjustments
+        ? setAdjustmentsSources(newState.sources, 'user')
+        : newState.sources
+
+      const adjustments = {
+        ...action.formData,
+        alimonyDivorceDate: toDate(action.formData.alimonyDivorceDate)
+      }
+
+      return {
+        ...newState,
+        adjustments: hasAdjustments ? adjustments : undefined,
+        sources
       }
     }
     case ActionName.SET_INFO: {

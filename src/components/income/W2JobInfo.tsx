@@ -85,7 +85,16 @@ const toIncomeW2 = (formData: IncomeW2UserInput): IncomeW2 => ({
   stateWages: parseFormNumberOrThrow(formData.stateWages),
   stateWithholding: parseFormNumberOrThrow(formData.stateWithholding),
   personRole: formData.personRole ?? PersonRole.PRIMARY,
-  box12: _.mapValues(formData.box12, (v) => parseFormNumber(v))
+  box12: Object.entries(formData.box12).reduce<Record<string, number>>(
+    (acc, [code, value]) => {
+      const parsed = parseFormNumber(value)
+      if (parsed !== undefined) {
+        acc[code] = parsed
+      }
+      return acc
+    },
+    {}
+  )
 })
 
 const toIncomeW2UserInput = (data: IncomeW2): IncomeW2UserInput => ({
@@ -100,7 +109,7 @@ const toIncomeW2UserInput = (data: IncomeW2): IncomeW2UserInput => ({
   state: data.state,
   stateWages: data.stateWages?.toString() ?? '',
   stateWithholding: data.stateWithholding?.toString() ?? '',
-  box12: _.mapValues(data.box12, (v) => v?.toString())
+  box12: _.mapValues(data.box12, (v) => v.toString() ?? '')
 })
 
 const Box12Data = (): ReactElement => {
@@ -142,7 +151,7 @@ const Box12Data = (): ReactElement => {
   const box12Data = (
     <ul>
       {enumKeys(W2Box12Code)
-        .filter((code) => box12[code] !== undefined)
+        .filter((code) => box12[code] !== '')
         .map((code) => (
           <li key={`box-12-data-${code}`}>
             {code}: <Currency plain value={parseFormNumber(box12[code]) ?? 0} />{' '}
@@ -213,11 +222,14 @@ export default function W2JobInfo(): ReactElement {
       primary={(w2: IncomeW2UserInput) =>
         w2.employer?.employerName ?? w2.occupation
       }
-      secondary={(w2: IncomeW2UserInput) => (
-        <span>
-          Income: <Currency value={toIncomeW2(w2).income} />
-        </span>
-      )}
+      secondary={(w2: IncomeW2UserInput) => {
+        const income = parseFormNumber(w2.income) ?? 0
+        return (
+          <span>
+            Income: <Currency value={income} />
+          </span>
+        )
+      }}
       grouping={(w2) => (w2.personRole === PersonRole.PRIMARY ? 0 : 1)}
       groupHeaders={[primary?.firstName, spouse?.firstName].map((x, i) =>
         x !== undefined ? <h2 key={i}>{x}&apos; W2s</h2> : undefined

@@ -1075,6 +1075,20 @@
         },
         "additionalProperties": false
       },
+      "AdjustmentsToIncome": {
+        "type": "object",
+        "properties": {
+          "alimonyPaid": { "type": "number" },
+          "alimonyRecipientSsn": { "type": "string" },
+          "alimonyDivorceDate": { "type": "string", "format": "date" }
+        },
+        "additionalProperties": false,
+        "patternProperties": {
+          "^.+_source$": {
+            "$ref": "#/components/schemas/FieldSource"
+          }
+        }
+      },
       "InformationSources": {
         "type": "object",
         "description": "Parallel tree of field sources (DataSource tags).",
@@ -1144,6 +1158,7 @@
             "type": "array",
             "items": { "$ref": "#/components/schemas/Ira" }
           },
+          "adjustments": { "$ref": "#/components/schemas/AdjustmentsToIncome" },
           "sources": { "$ref": "#/components/schemas/InformationSources" }
         },
         "additionalProperties": false

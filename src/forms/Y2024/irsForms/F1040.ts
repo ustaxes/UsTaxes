@@ -234,7 +234,7 @@ export default class F1040 extends F1040Base {
 
   // born before 1959/01/02
   bornBeforeDate = (): boolean =>
-    this.info.taxPayer.primaryPerson.dateOfBirth <
+    (this.info.taxPayer.primaryPerson.dateOfBirth ?? new Date()) <
     new Date(CURRENT_YEAR - 64, 0, 2)
 
   blind = (): boolean => this.info.taxPayer.primaryPerson.isBlind
@@ -271,7 +271,7 @@ export default class F1040 extends F1040Base {
     ].reduce((res, e) => res + +!!e, 0)
 
     if (
-      this.info.taxPayer.primaryPerson.isTaxpayerDependent ||
+      (this.info.taxPayer.primaryPerson.isTaxpayerDependent ?? false) ||
       (this.info.taxPayer.spouse?.isTaxpayerDependent ?? false)
     ) {
       const l4a = Math.min(
@@ -508,7 +508,7 @@ export default class F1040 extends F1040Base {
       fieldArr = [
         `${dep.firstName} ${dep.lastName}`,
         dep.ssid,
-        dep.relationship,
+        dep.relationship ?? '',
         this.qualifyingDependents.qualifiesChild(dep),
         this.qualifyingDependents.qualifiesOther(dep)
       ]
@@ -522,8 +522,9 @@ export default class F1040 extends F1040Base {
   _depFieldMappings = (): Array<string | boolean> =>
     Array.from(Array(20)).map((u, n: number) => this._depField(n))
 
-  fields = (): Field[] =>
-    [
+  fields = (): Field[] => {
+    const address = this.info.taxPayer.primaryPerson.address
+    return [
       '',
       '',
       '',
@@ -537,14 +538,14 @@ export default class F1040 extends F1040Base {
         ? this.info.taxPayer.spouse?.lastName ?? ''
         : '',
       this.info.taxPayer.spouse?.ssid,
-      this.info.taxPayer.primaryPerson.address.address,
-      this.info.taxPayer.primaryPerson.address.aptNo,
-      this.info.taxPayer.primaryPerson.address.city,
-      this.info.taxPayer.primaryPerson.address.state,
-      this.info.taxPayer.primaryPerson.address.zip,
-      this.info.taxPayer.primaryPerson.address.foreignCountry,
-      this.info.taxPayer.primaryPerson.address.province,
-      this.info.taxPayer.primaryPerson.address.postalCode,
+      address?.address,
+      address?.aptNo,
+      address?.city,
+      address?.state,
+      address?.zip,
+      address?.foreignCountry,
+      address?.province,
+      address?.postalCode,
       false, // election campaign boxes
       false,
       this.info.taxPayer.filingStatus === FilingStatus.S,
@@ -558,7 +559,7 @@ export default class F1040 extends F1040Base {
       '',
       this.info.questions.CRYPTO ?? false,
       !(this.info.questions.CRYPTO ?? false),
-      this.info.taxPayer.primaryPerson.isTaxpayerDependent,
+      this.info.taxPayer.primaryPerson.isTaxpayerDependent ?? false,
       this.info.taxPayer.spouse?.isTaxpayerDependent ?? false,
       false, // TODO: spouse itemizes separately,
       this.bornBeforeDate(),
@@ -655,10 +656,12 @@ export default class F1040 extends F1040Base {
       '',
       ''
     ].map((x) => (x === undefined ? '' : x))
+  }
 
   // Generated from Y2024 PDF schema (schemas/Y2024/f1040.json) cross-referenced with fields()
   fillInstructions = (): FillInstructions => {
     const depFields = this._depFieldMappings()
+    const address = this.info.taxPayer.primaryPerson.address
 
     return [
       // Page 1 — header placeholders (0-2)
@@ -697,35 +700,35 @@ export default class F1040 extends F1040Base {
       // Address (9-16)
       text(
         'topmostSubform[0].Page1[0].Address_ReadOrder[0].f1_10[0]',
-        this.info.taxPayer.primaryPerson.address.address
+        address?.address
       ),
       text(
         'topmostSubform[0].Page1[0].Address_ReadOrder[0].f1_11[0]',
-        this.info.taxPayer.primaryPerson.address.aptNo
+        address?.aptNo
       ),
       text(
         'topmostSubform[0].Page1[0].Address_ReadOrder[0].f1_12[0]',
-        this.info.taxPayer.primaryPerson.address.city
+        address?.city
       ),
       text(
         'topmostSubform[0].Page1[0].Address_ReadOrder[0].f1_13[0]',
-        this.info.taxPayer.primaryPerson.address.state
+        address?.state
       ),
       text(
         'topmostSubform[0].Page1[0].Address_ReadOrder[0].f1_14[0]',
-        this.info.taxPayer.primaryPerson.address.zip
+        address?.zip
       ),
       text(
         'topmostSubform[0].Page1[0].Address_ReadOrder[0].f1_15[0]',
-        this.info.taxPayer.primaryPerson.address.foreignCountry
+        address?.foreignCountry
       ),
       text(
         'topmostSubform[0].Page1[0].Address_ReadOrder[0].f1_16[0]',
-        this.info.taxPayer.primaryPerson.address.province
+        address?.province
       ),
       text(
         'topmostSubform[0].Page1[0].Address_ReadOrder[0].f1_17[0]',
-        this.info.taxPayer.primaryPerson.address.postalCode
+        address?.postalCode
       ),
       // Campaign contribution checkboxes (17-18)
       checkbox('topmostSubform[0].Page1[0].c1_1[0]', false),
@@ -771,7 +774,7 @@ export default class F1040 extends F1040Base {
       // Standard deduction / dependent / age-blind checkboxes (29-35)
       checkbox(
         'topmostSubform[0].Page1[0].c1_6[0]',
-        this.info.taxPayer.primaryPerson.isTaxpayerDependent
+          this.info.taxPayer.primaryPerson.isTaxpayerDependent ?? false
       ),
       checkbox(
         'topmostSubform[0].Page1[0].c1_7[0]',

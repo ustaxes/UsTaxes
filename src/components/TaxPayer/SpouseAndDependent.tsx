@@ -86,9 +86,10 @@ const toDependentForm = (dependent: Dependent): UserDependentForm => {
 
   return {
     ...rest,
+    relationship: dependent.relationship ?? '',
     numberOfMonths: qualifyingInfo?.numberOfMonths.toString() ?? '',
     isStudent: qualifyingInfo?.isStudent ?? false,
-    dateOfBirth
+    dateOfBirth: dateOfBirth ? new Date(dateOfBirth) : undefined
   }
 }
 
@@ -132,7 +133,8 @@ const toSpouse = (formData: UserSpouseForm): Spouse<string> => {
 const toSpouseForm = (spouse: Spouse): UserSpouseForm => ({
   ...spouse,
   isNonResidentAlien: isNraSsid(spouse.ssid),
-  dateOfBirth: new Date(spouse.dateOfBirth)
+  dateOfBirth: spouse.dateOfBirth ? new Date(spouse.dateOfBirth) : undefined,
+  isTaxpayerDependent: spouse.isTaxpayerDependent ?? false
 })
 
 export const AddDependentForm = (): ReactElement => {

@@ -38,7 +38,7 @@ export interface Person<D = Date> {
   ssid: string
   role: PersonRole
   isBlind: boolean
-  dateOfBirth: D
+  dateOfBirth?: D | null
   // dateOfDeath: D // TODO: capture this.
 }
 
@@ -51,7 +51,7 @@ export interface QualifyingInformation {
 }
 
 export interface Dependent<D = Date> extends Person<D> {
-  relationship: string
+  relationship?: string
   qualifyingInfo?: QualifyingInformation
 }
 
@@ -69,13 +69,13 @@ export interface Address {
 }
 
 export interface PrimaryPerson<D = Date> extends Person<D> {
-  address: Address
-  isTaxpayerDependent: boolean
+  address?: Address
+  isTaxpayerDependent?: boolean
 }
 export type PrimaryPersonDateString = PrimaryPerson<string>
 
 export interface Spouse<D = Date> extends Person<D> {
-  isTaxpayerDependent: boolean
+  isTaxpayerDependent?: boolean
 }
 
 export type SpouseDateString = Spouse<string>
@@ -298,7 +298,7 @@ export const W2Box12CodeDescriptions: { [key in W2Box12Code]: string } = {
   HH: 'Aggregate deferrals under section 83(i) elections as of the close of the calendar year.'
 }
 
-export type W2Box12Info<A = number> = { [key in W2Box12Code]?: A }
+export type W2Box12Info<A = number> = Record<string, A>
 
 export interface HealthSavingsAccount<D = Date> {
   label: string
@@ -770,6 +770,14 @@ export enum CreditType {
   Other = 'CreditType/Other'
 }
 
+export interface AdjustmentsToIncome<D = Date> {
+  alimonyPaid?: number
+  alimonyRecipientSsn?: string
+  alimonyDivorceDate?: D
+}
+
+export type AdjustmentsToIncomeDateString = AdjustmentsToIncome<string>
+
 export interface Credit {
   recipient: PersonRole
   amount: number
@@ -1213,6 +1221,7 @@ export interface Information<D = Date> {
     /** Prior-year long-term capital loss carryover (Schedule D line 11). */
     longTerm?: number
   }
+  adjustments?: AdjustmentsToIncome<D>
   sources?: InformationSources
 }
 
