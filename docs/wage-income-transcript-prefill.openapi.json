@@ -1,54 +1,21 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "IRS Wage & Income Transcript Prefill",
+    "title": "UsTaxes Return Data Schema",
     "version": "1.0.0",
-    "description": "Normalized JSON output for prefill import into UsTaxes. Focused on Wage & Income transcript data."
+    "description": "Unified JSON schema for UsTaxes return data. Data sources may provide partial information."
   },
   "components": {
     "schemas": {
-      "TranscriptPrefill": {
+      "ReturnPayload": {
         "type": "object",
-        "required": ["taxYear", "taxPayer"],
+        "required": ["taxYear", "information"],
         "properties": {
           "taxYear": {
-            "type": "string",
-            "enum": ["Y2019", "Y2020", "Y2021", "Y2022", "Y2023", "Y2024"]
+            "$ref": "#/components/schemas/TaxYear"
           },
-          "source": {
-            "type": "string",
-            "description": "Identifier for the transcript source tool/version."
-          },
-          "createdAt": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "taxPayer": {
-            "$ref": "#/components/schemas/TaxPayer"
-          },
-          "w2s": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/W2"
-            }
-          },
-          "f1099s": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Supported1099"
-            }
-          },
-          "f1098s": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/F1098MortgageInterest"
-            }
-          },
-          "rentalProperties": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/RentalProperty"
-            }
+          "information": {
+            "$ref": "#/components/schemas/Information"
           }
         },
         "additionalProperties": false,
@@ -58,20 +25,25 @@
           }
         }
       },
-      "TranscriptPrefillBundle": {
+      "ReturnBundle": {
         "type": "object",
-        "required": ["prefills"],
+        "required": ["returns"],
         "properties": {
           "version": {
             "type": "string",
             "description": "Schema version for the bundle container."
           },
-          "prefills": {
+          "returns": {
             "type": "object",
-            "description": "Map of tax year (e.g., Y2023) to TranscriptPrefill payloads.",
+            "description": "Map of tax year (e.g., Y2023) to return payloads.",
             "additionalProperties": {
-              "$ref": "#/components/schemas/TranscriptPrefill"
+              "$ref": "#/components/schemas/ReturnPayload"
             }
+          },
+          "activeYear": { "$ref": "#/components/schemas/TaxYear" },
+          "assets": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/Asset" }
           }
         },
         "additionalProperties": false
@@ -210,7 +182,7 @@
             "type": "string"
           },
           "state": {
-            "type": "string"
+            "$ref": "#/components/schemas/State"
           },
           "zip": {
             "type": "string"
@@ -307,7 +279,7 @@
             "enum": ["PRIMARY", "SPOUSE"]
           },
           "state": {
-            "type": "string"
+            "$ref": "#/components/schemas/State"
           },
           "stateWages": {
             "type": "number"
@@ -731,6 +703,479 @@
             "$ref": "#/components/schemas/FieldSource"
           }
         }
+      },
+      "TaxYear": {
+        "type": "string",
+        "enum": ["Y2019", "Y2020", "Y2021", "Y2022", "Y2023", "Y2024"]
+      },
+      "AccountType": {
+        "type": "string",
+        "enum": ["checking", "savings"]
+      },
+      "Refund": {
+        "type": "object",
+        "required": ["routingNumber", "accountNumber", "accountType"],
+        "properties": {
+          "routingNumber": {
+            "type": "string"
+          },
+          "accountNumber": {
+            "type": "string"
+          },
+          "accountType": {
+            "$ref": "#/components/schemas/AccountType"
+          }
+        },
+        "additionalProperties": false,
+        "patternProperties": {
+          "^.+_source$": {
+            "$ref": "#/components/schemas/FieldSource"
+          }
+        }
+      },
+      "EstimatedTaxPayment": {
+        "type": "object",
+        "required": ["label", "payment"],
+        "properties": {
+          "label": { "type": "string" },
+          "payment": { "type": "number" }
+        },
+        "additionalProperties": false,
+        "patternProperties": {
+          "^.+_source$": {
+            "$ref": "#/components/schemas/FieldSource"
+          }
+        }
+      },
+      "HealthSavingsAccount": {
+        "type": "object",
+        "required": [
+          "label",
+          "coverageType",
+          "contributions",
+          "personRole",
+          "startDate",
+          "endDate",
+          "totalDistributions",
+          "qualifiedDistributions"
+        ],
+        "properties": {
+          "label": { "type": "string" },
+          "coverageType": { "type": "string", "enum": ["self-only", "family"] },
+          "contributions": { "type": "number" },
+          "personRole": { "type": "string", "enum": ["PRIMARY", "SPOUSE"] },
+          "startDate": { "type": "string", "format": "date" },
+          "endDate": { "type": "string", "format": "date" },
+          "totalDistributions": { "type": "number" },
+          "qualifiedDistributions": { "type": "number" }
+        },
+        "additionalProperties": false
+      },
+      "IraPlanType": {
+        "type": "string",
+        "enum": ["IRA", "RothIRA", "SepIRA", "SimpleIRA"]
+      },
+      "Ira": {
+        "type": "object",
+        "required": [
+          "payer",
+          "personRole",
+          "grossDistribution",
+          "taxableAmount",
+          "taxableAmountNotDetermined",
+          "totalDistribution",
+          "federalIncomeTaxWithheld",
+          "planType",
+          "contributions",
+          "rolloverContributions",
+          "rothIraConversion",
+          "recharacterizedContributions",
+          "requiredMinimumDistributions",
+          "lateContributions",
+          "repayments"
+        ],
+        "properties": {
+          "payer": { "type": "string" },
+          "personRole": { "type": "string", "enum": ["PRIMARY", "SPOUSE"] },
+          "grossDistribution": { "type": "number" },
+          "taxableAmount": { "type": "number" },
+          "taxableAmountNotDetermined": { "type": "boolean" },
+          "totalDistribution": { "type": "boolean" },
+          "federalIncomeTaxWithheld": { "type": "number" },
+          "planType": { "$ref": "#/components/schemas/IraPlanType" },
+          "contributions": { "type": "number" },
+          "rolloverContributions": { "type": "number" },
+          "rothIraConversion": { "type": "number" },
+          "recharacterizedContributions": { "type": "number" },
+          "requiredMinimumDistributions": { "type": "number" },
+          "lateContributions": { "type": "number" },
+          "repayments": { "type": "number" }
+        },
+        "additionalProperties": false
+      },
+      "Property": {
+        "$ref": "#/components/schemas/RentalProperty"
+      },
+      "BusinessIncome": {
+        "type": "object",
+        "required": ["grossReceipts", "returnsAndAllowances"],
+        "properties": {
+          "grossReceipts": { "type": "number" },
+          "returnsAndAllowances": { "type": "number" },
+          "otherIncome": { "type": "number" }
+        },
+        "additionalProperties": false,
+        "patternProperties": {
+          "^.+_source$": {
+            "$ref": "#/components/schemas/FieldSource"
+          }
+        }
+      },
+      "BusinessExpenses": {
+        "type": "object",
+        "properties": {
+          "advertising": { "type": "number" },
+          "carAndTruck": { "type": "number" },
+          "commissions": { "type": "number" },
+          "contractLabor": { "type": "number" },
+          "depletion": { "type": "number" },
+          "depreciation": { "type": "number" },
+          "employeeBenefit": { "type": "number" },
+          "insurance": { "type": "number" },
+          "interestMortgage": { "type": "number" },
+          "interestOther": { "type": "number" },
+          "legalAndProfessional": { "type": "number" },
+          "office": { "type": "number" },
+          "pensionProfitSharing": { "type": "number" },
+          "rentVehicles": { "type": "number" },
+          "rentOther": { "type": "number" },
+          "repairs": { "type": "number" },
+          "supplies": { "type": "number" },
+          "taxesAndLicenses": { "type": "number" },
+          "travel": { "type": "number" },
+          "meals": { "type": "number" },
+          "utilities": { "type": "number" },
+          "wages": { "type": "number" },
+          "other": { "type": "number" }
+        },
+        "additionalProperties": false,
+        "patternProperties": {
+          "^.+_source$": {
+            "$ref": "#/components/schemas/FieldSource"
+          }
+        }
+      },
+      "Business": {
+        "type": "object",
+        "required": ["name", "income", "expenses"],
+        "properties": {
+          "name": { "type": "string" },
+          "principalBusinessOrProfession": { "type": "string" },
+          "businessCode": { "type": "string" },
+          "ein": { "type": "string" },
+          "address": { "$ref": "#/components/schemas/Address" },
+          "income": { "$ref": "#/components/schemas/BusinessIncome" },
+          "expenses": { "$ref": "#/components/schemas/BusinessExpenses" },
+          "otherExpenseType": { "type": "string" },
+          "otherExpenseAmount": { "type": "number" },
+          "homeOfficeDeduction": { "type": "number" }
+        },
+        "additionalProperties": false,
+        "patternProperties": {
+          "^.+_source$": {
+            "$ref": "#/components/schemas/FieldSource"
+          }
+        }
+      },
+      "F1098e": {
+        "type": "object",
+        "required": ["lender", "interest"],
+        "properties": {
+          "lender": { "type": "string" },
+          "interest": { "type": "number" }
+        },
+        "additionalProperties": false
+      },
+      "F3921": {
+        "type": "object",
+        "required": [
+          "name",
+          "personRole",
+          "exercisePricePerShare",
+          "fmv",
+          "numShares"
+        ],
+        "properties": {
+          "name": { "type": "string" },
+          "personRole": { "type": "string", "enum": ["PRIMARY", "SPOUSE"] },
+          "exercisePricePerShare": { "type": "number" },
+          "fmv": { "type": "number" },
+          "numShares": { "type": "number" }
+        },
+        "additionalProperties": false
+      },
+      "ScheduleK1Form1065": {
+        "type": "object",
+        "required": [
+          "personRole",
+          "partnershipName",
+          "partnershipEin",
+          "partnerOrSCorp",
+          "isForeign",
+          "isPassive",
+          "ordinaryBusinessIncome",
+          "interestIncome",
+          "guaranteedPaymentsForServices",
+          "guaranteedPaymentsForCapital",
+          "selfEmploymentEarningsA",
+          "selfEmploymentEarningsB",
+          "selfEmploymentEarningsC",
+          "distributionsCodeAAmount",
+          "section199AQBI"
+        ],
+        "properties": {
+          "personRole": { "type": "string", "enum": ["PRIMARY", "SPOUSE"] },
+          "partnershipName": { "type": "string" },
+          "partnershipEin": { "type": "string" },
+          "partnerOrSCorp": { "type": "string", "enum": ["P", "S"] },
+          "isForeign": { "type": "boolean" },
+          "isPassive": { "type": "boolean" },
+          "ordinaryBusinessIncome": { "type": "number" },
+          "interestIncome": { "type": "number" },
+          "guaranteedPaymentsForServices": { "type": "number" },
+          "guaranteedPaymentsForCapital": { "type": "number" },
+          "selfEmploymentEarningsA": { "type": "number" },
+          "selfEmploymentEarningsB": { "type": "number" },
+          "selfEmploymentEarningsC": { "type": "number" },
+          "distributionsCodeAAmount": { "type": "number" },
+          "section199AQBI": { "type": "number" }
+        },
+        "additionalProperties": false
+      },
+      "ItemizedDeductions": {
+        "type": "object",
+        "properties": {
+          "medicalAndDental": { "type": ["string", "number"] },
+          "stateAndLocalTaxes": { "type": ["string", "number"] },
+          "isSalesTax": { "type": "boolean" },
+          "stateAndLocalRealEstateTaxes": { "type": ["string", "number"] },
+          "stateAndLocalPropertyTaxes": { "type": ["string", "number"] },
+          "interest8a": { "type": ["string", "number"] },
+          "interest8b": { "type": ["string", "number"] },
+          "interest8c": { "type": ["string", "number"] },
+          "interest8d": { "type": ["string", "number"] },
+          "investmentInterest": { "type": ["string", "number"] },
+          "charityCashCheck": { "type": ["string", "number"] },
+          "charityOther": { "type": ["string", "number"] }
+        },
+        "additionalProperties": false,
+        "patternProperties": {
+          "^.+_source$": {
+            "$ref": "#/components/schemas/FieldSource"
+          }
+        }
+      },
+      "State": {
+        "type": "string",
+        "enum": [
+          "AL",
+          "AK",
+          "AZ",
+          "CO",
+          "DC",
+          "FL",
+          "HI",
+          "ID",
+          "IN",
+          "KY",
+          "MA",
+          "ME",
+          "MN",
+          "MS",
+          "NC",
+          "NE",
+          "NJ",
+          "NV",
+          "OH",
+          "OR",
+          "RI",
+          "SD",
+          "TX",
+          "VA",
+          "WA",
+          "WV",
+          "AR",
+          "CA",
+          "CT",
+          "DE",
+          "GA",
+          "IA",
+          "IL",
+          "KS",
+          "LA",
+          "MD",
+          "MI",
+          "MO",
+          "MT",
+          "ND",
+          "NH",
+          "NM",
+          "NY",
+          "OK",
+          "PA",
+          "SC",
+          "TN",
+          "UT",
+          "VT",
+          "WI",
+          "WY"
+        ]
+      },
+      "StateResidency": {
+        "type": "object",
+        "required": ["state"],
+        "properties": {
+          "state": { "$ref": "#/components/schemas/State" }
+        },
+        "additionalProperties": false,
+        "patternProperties": {
+          "^.+_source$": {
+            "$ref": "#/components/schemas/FieldSource"
+          }
+        }
+      },
+      "QuestionResponses": {
+        "type": "object",
+        "properties": {
+          "CRYPTO": { "type": "boolean" },
+          "FOREIGN_ACCOUNT_EXISTS": { "type": "boolean" },
+          "FINCEN_114": { "type": "boolean" },
+          "FINCEN_114_ACCOUNT_COUNTRY": { "type": "string" },
+          "FOREIGN_TRUST_RELATIONSHIP": { "type": "boolean" },
+          "LIVE_APART_FROM_SPOUSE": { "type": "boolean" }
+        },
+        "additionalProperties": false,
+        "patternProperties": {
+          "^.+_source$": {
+            "$ref": "#/components/schemas/FieldSource"
+          }
+        }
+      },
+      "CreditType": {
+        "type": "string",
+        "enum": ["CreditType/AdvanceChildTaxCredit", "CreditType/Other"]
+      },
+      "Credit": {
+        "type": "object",
+        "required": ["recipient", "amount", "type"],
+        "properties": {
+          "recipient": { "type": "string", "enum": ["PRIMARY", "SPOUSE"] },
+          "amount": { "type": "number" },
+          "type": { "$ref": "#/components/schemas/CreditType" }
+        },
+        "additionalProperties": false
+      },
+      "InformationSources": {
+        "type": "object",
+        "description": "Parallel tree of field sources (DataSource tags).",
+        "additionalProperties": true
+      },
+      "Information": {
+        "type": "object",
+        "properties": {
+          "f1099s": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/Supported1099" }
+          },
+          "w2s": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/W2" }
+          },
+          "realEstate": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/Property" }
+          },
+          "businesses": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/Business" }
+          },
+          "estimatedTaxes": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/EstimatedTaxPayment" }
+          },
+          "f1098s": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/F1098MortgageInterest" }
+          },
+          "f1098es": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/F1098e" }
+          },
+          "f3921s": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/F3921" }
+          },
+          "scheduleK1Form1065s": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/ScheduleK1Form1065" }
+          },
+          "itemizedDeductions": {
+            "anyOf": [
+              { "$ref": "#/components/schemas/ItemizedDeductions" },
+              { "type": "null" }
+            ]
+          },
+          "refund": { "$ref": "#/components/schemas/Refund" },
+          "taxPayer": { "$ref": "#/components/schemas/TaxPayer" },
+          "questions": { "$ref": "#/components/schemas/QuestionResponses" },
+          "credits": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/Credit" }
+          },
+          "stateResidencies": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/StateResidency" }
+          },
+          "healthSavingsAccounts": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/HealthSavingsAccount" }
+          },
+          "individualRetirementArrangements": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/Ira" }
+          },
+          "sources": { "$ref": "#/components/schemas/InformationSources" }
+        },
+        "additionalProperties": false
+      },
+      "AssetType": {
+        "type": "string",
+        "enum": ["Security", "Real Estate"]
+      },
+      "Asset": {
+        "type": "object",
+        "required": [
+          "name",
+          "positionType",
+          "openDate",
+          "openPrice",
+          "openFee",
+          "quantity"
+        ],
+        "properties": {
+          "name": { "type": "string" },
+          "positionType": { "$ref": "#/components/schemas/AssetType" },
+          "openDate": { "type": "string", "format": "date" },
+          "closeDate": { "type": "string", "format": "date" },
+          "giftedDate": { "type": "string", "format": "date" },
+          "openPrice": { "type": "number" },
+          "openFee": { "type": "number" },
+          "closePrice": { "type": "number" },
+          "closeFee": { "type": "number" },
+          "quantity": { "type": "number" },
+          "state": { "$ref": "#/components/schemas/State" }
+        },
+        "additionalProperties": false
       },
       "FieldSource": {
         "type": "string",

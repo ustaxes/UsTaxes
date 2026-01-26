@@ -75,11 +75,11 @@ This project is built by a growing community. If you notice an error in the outp
 
 The project is available strictly via client side. Data is persisted to the site's localstorage so _no personal information ever leaves the user's computer._ For those who want extra security, the codebase can also be built as a [desktop application](#desktop-application).
 
-## Transcript Prefill Import/Export Coverage
+## Return JSON Import/Export Coverage
 
-The transcript prefill JSON is scoped to a single tax year (`taxYear`). The internal data model stores one `Information` object per year; a multi-year export could be represented as a wrapper object that maps tax years to `TranscriptPrefill` payloads, but the current OpenAPI spec describes a single-year payload.
+The OpenAPI spec describes a single return payload shape: `{ taxYear, information }`. All fields inside `information` are optional so different data sources can populate whatever they have. A multi-year bundle can wrap multiple payloads along with optional `activeYear` and `assets`.
 
-The table below shows each internal data point and whether it is currently represented by the transcript prefill OpenAPI spec for import/export.
+The table below shows each internal data point and whether it is represented by the OpenAPI spec for import/export.
 
 | Internal data path                                                | Import (prefill JSON) | Export (prefill JSON) | Notes                                                                             |
 | ----------------------------------------------------------------- | --------------------- | --------------------- | --------------------------------------------------------------------------------- |
@@ -191,7 +191,7 @@ The table below shows each internal data point and whether it is currently repre
 | `information.realEstate[].expenses.depreciation`                  | Yes                   | Yes                   |                                                                                   |
 | `information.realEstate[].expenses.other`                         | Yes                   | Yes                   |                                                                                   |
 | `information.realEstate[].otherExpenseType`                       | Yes                   | Yes                   |                                                                                   |
-| `information.sources`                                             | Yes                   | Yes                   | Stored as a parallel tree; exported/imported via `*_source` siblings in the JSON. |
+| `information.sources`                                             | Yes                   | Yes                   | Stored as a parallel tree under `information.sources`.                            |
 | `information.businesses[]`                                        | No                    | No                    | Not represented in transcript prefill spec.                                       |
 | `information.estimatedTaxes[]`                                    | No                    | No                    | Not represented in transcript prefill spec.                                       |
 | `information.f1098es[]`                                           | No                    | No                    | Not represented in transcript prefill spec.                                       |

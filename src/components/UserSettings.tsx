@@ -5,9 +5,9 @@ import { useDispatch, useSelector } from 'react-redux'
 import { TaxYear, TaxYears } from 'ustaxes/core/data'
 import { enumKeys } from 'ustaxes/core/util'
 import {
-  applyTranscriptPrefill,
-  buildTranscriptPrefill,
-  TranscriptPrefill
+  applyReturnPayload,
+  buildReturnPayload,
+  ReturnPayload
 } from 'ustaxes/prefill/transcriptPrefill'
 import { setActiveYear, setInfo } from 'ustaxes/redux/actions'
 import { YearsTaxesState } from 'ustaxes/redux/data'
@@ -36,28 +36,22 @@ const UserSettings = (): ReactElement => {
   const yearsState = useSelector((state: YearsTaxesState) => state)
 
   const downloadPrefill = (taxYear: TaxYear): void => {
-    const payload = buildTranscriptPrefill(yearsState[taxYear], taxYear)
-    download(
-      `ustaxes_transcript_prefill_${taxYear}.json`,
-      JSON.stringify(payload, null, 2)
-    )
+    const payload = buildReturnPayload(yearsState[taxYear], taxYear)
+    download(`ustaxes_return_${taxYear}.json`, JSON.stringify(payload, null, 2))
   }
 
   const downloadAllPrefills = (): void => {
-    const prefills = Object.fromEntries(
+    const returns = Object.fromEntries(
       validTaxYears.map((year) => [
         year,
-        buildTranscriptPrefill(yearsState[year], year)
+        buildReturnPayload(yearsState[year], year)
       ])
     )
     const payload = {
       version: '1.0.0',
-      prefills
+      returns
     }
-    download(
-      'ustaxes_transcript_prefill_bundle.json',
-      JSON.stringify(payload, null, 2)
-    )
+    download('ustaxes_return_bundle.json', JSON.stringify(payload, null, 2))
   }
 
   const applyPrefill = (raw: string): void => {
@@ -65,32 +59,33 @@ const UserSettings = (): ReactElement => {
     setPrefillStatus(undefined)
 
     if (raw.trim().length === 0) {
-      setPrefillError('Paste or upload transcript JSON to prefill.')
+      setPrefillError('Paste or upload return JSON to prefill.')
       return
     }
 
     try {
-      const parsed = JSON.parse(raw) as Partial<TranscriptPrefill>
+      const parsed = JSON.parse(raw) as Partial<ReturnPayload>
       const taxYear = parsed.taxYear
-      const taxPayer = parsed.taxPayer
+      const info = parsed.information
 
-      if (taxYear === undefined || taxPayer === undefined) {
-        throw new Error('Missing taxYear or taxPayer in transcript payload.')
+      if (taxYear === undefined || info === undefined) {
+        throw new Error('Missing taxYear or information in return payload.')
       }
       if (!isValidTaxYear(taxYear)) {
         throw new Error(`Unsupported tax year: ${String(taxYear)}`)
       }
 
       const currentInfo = yearsState[taxYear]
-      const nextInfo = applyTranscriptPrefill(currentInfo, {
+      const nextInfo = applyReturnPayload(currentInfo, {
         taxYear,
-        taxPayer,
-        source: parsed.source,
-        createdAt: parsed.createdAt,
-        w2s: parsed.w2s,
-        f1099s: parsed.f1099s,
-        f1098s: parsed.f1098s,
-        rentalProperties: parsed.rentalProperties
+        information: {
+          taxPayer: info.taxPayer,
+          w2s: info.w2s,
+          f1099s: info.f1099s,
+          f1098s: info.f1098s,
+          realEstate: info.realEstate,
+          sources: info.sources
+        }
       })
 
       dispatch(setInfo(nextInfo)(taxYear))
@@ -99,7 +94,7 @@ const UserSettings = (): ReactElement => {
       setPrefillStatus(`Prefill applied for ${taxYear}.`)
     } catch (error) {
       const message =
-        error instanceof Error ? error.message : 'Failed to parse transcript.'
+        error instanceof Error ? error.message : 'Failed to parse return JSON.'
       setPrefillError(message)
     }
   }
@@ -108,14 +103,17 @@ const UserSettings = (): ReactElement => {
     <>
       <h2>User Settings</h2>
       <h3>Save data</h3>
-      <p>Save your data for backup or to import into desktop application</p>
+      <p>
+        Save a full backup of all years and settings for import into another
+        UsTaxes install or the desktop application.
+      </p>
       <SaveToFile variant="contained" color="primary">
         Save data to file
       </SaveToFile>
       <h3>Load data</h3>
       <p>
-        Load your saved data from a file. Warning, this will overwrite present
-        state.
+        Load a full backup file. Warning, this will overwrite the current data
+        for all years.
       </p>
       <LoadRaw
         startIcon={done ? <Check /> : undefined}
@@ -131,10 +129,10 @@ const UserSettings = (): ReactElement => {
       >
         Load
       </LoadRaw>
-      <h3>Prefill from transcript JSON</h3>
+      <h3>Prefill from return JSON</h3>
       <p>
-        Upload or paste the Wage &amp; Income transcript JSON to prefill W-2s,
-        1099s, and 1098s. Existing entries for those forms will be replaced.
+        Upload or paste return JSON to prefill select forms (W-2s, 1099s, 1098s,
+        rental properties). Existing entries for those forms will be replaced.
       </p>
       <LoadRaw
         startIcon={prefillDone ? <Check /> : undefined}
@@ -143,10 +141,10 @@ const UserSettings = (): ReactElement => {
         variant="contained"
         color="primary"
       >
-        Upload transcript JSON
+        Upload return JSON
       </LoadRaw>
       <TextField
-        label="Paste transcript JSON"
+        label="Paste return JSON"
         multiline
         minRows={4}
         value={prefillText}
@@ -164,19 +162,20 @@ const UserSettings = (): ReactElement => {
       </Button>
       {prefillStatus ? <p>{prefillStatus}</p> : null}
       {prefillError ? <p>{prefillError}</p> : null}
-      <h3>Download transcript JSON</h3>
+      <h3>Download return JSON</h3>
       <p>
-        Download the active year only, or export all years in a single bundle.
+        Export a portable return JSON (subset of data), either for the active
+        year or all years in a single bundle.
       </p>
       <Button
         variant="contained"
         color="primary"
         onClick={() => downloadPrefill(yearsState.activeYear)}
       >
-        Download active year transcript JSON
+        Download active year return JSON
       </Button>
       <Button variant="outlined" color="primary" onClick={downloadAllPrefills}>
-        Download all years transcript JSON
+        Download all years return JSON
       </Button>
       <h3>Delete data</h3>
       <ClearLocalStorage variant="contained" color="primary">
