@@ -506,6 +506,7 @@ const formReducer = (
         worksheet !== undefined &&
         Object.values(worksheet).some((value) => value !== undefined)
       const hasAdjustments =
+        action.formData.educatorExpenses !== undefined ||
         action.formData.alimonyPaid !== undefined ||
         action.formData.alimonyRecipientSsn !== undefined ||
         action.formData.alimonyDivorceDate !== undefined ||

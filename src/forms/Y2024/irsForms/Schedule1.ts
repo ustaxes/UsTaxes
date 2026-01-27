@@ -60,6 +60,8 @@ export default class Schedule1 extends F1040Attachment {
   l8t = (): number | undefined => undefined
   l8u = (): number | undefined => undefined
   l8v = (): number | undefined => undefined
+  l8w = (): number | undefined => undefined
+  l8x = (): number | undefined => undefined
 
   l8z = (): number => {
     if (
@@ -98,6 +100,8 @@ export default class Schedule1 extends F1040Attachment {
       this.l8t(),
       this.l8u(),
       this.l8v(),
+      this.l8w(),
+      this.l8x(),
       this.l8z()
     ])
 
@@ -218,8 +222,9 @@ export default class Schedule1 extends F1040Attachment {
     this.l8t(),
     this.l8u(),
     this.l8v(),
+    this.l8w(),
+    this.l8x(),
     Array.from(this.otherIncomeStrings).join(' '),
-    undefined,
     this.l8z(),
     this.l9(),
     this.l10(),
