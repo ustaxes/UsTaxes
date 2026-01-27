@@ -104,14 +104,15 @@ export default class Schedule1 extends F1040Attachment {
 
   to1040Line8 = (): number => this.l10()
 
-  l11 = (): number | undefined => undefined
+  l11 = (): number | undefined => this.f1040.info.adjustments?.educatorExpenses
   l12 = (): number | undefined => undefined
   l13 = (): number | undefined =>
     sumFields([this.f1040.f8889.l13(), this.f1040.f8889Spouse?.l13()])
   l14 = (): number | undefined => undefined
   l15 = (): number | undefined => this.f1040.scheduleSE.l13()
   l16 = (): number | undefined => undefined
-  l17 = (): number | undefined => undefined
+  l17 = (): number | undefined =>
+    this.f1040.info.adjustments?.selfEmployedHealthInsuranceDeduction
   l18 = (): number | undefined => undefined
   l19a = (): number | undefined => this.f1040.info.adjustments?.alimonyPaid
   l19b = (): string | undefined =>

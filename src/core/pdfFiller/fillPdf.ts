@@ -29,7 +29,7 @@ export function deriveFillInstructionsFromPdf(
     .getFields()
     .map((pdfField, index) => {
       const name = pdfField.getName()
-      const value = values[index]
+      const value: Field = values[index]
 
       if (isRadioSelect(value)) {
         return { name, kind: 'radio' as const, value }

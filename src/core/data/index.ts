@@ -39,6 +39,7 @@ export interface Person<D = Date> {
   role: PersonRole
   isBlind: boolean
   dateOfBirth?: D | null
+  occupation?: string
   // dateOfDeath: D // TODO: capture this.
 }
 
@@ -71,11 +72,13 @@ export interface Address {
 export interface PrimaryPerson<D = Date> extends Person<D> {
   address?: Address
   isTaxpayerDependent?: boolean
+  occupation?: string
 }
 export type PrimaryPersonDateString = PrimaryPerson<string>
 
 export interface Spouse<D = Date> extends Person<D> {
   isTaxpayerDependent?: boolean
+  occupation?: string
 }
 
 export type SpouseDateString = Spouse<string>
@@ -774,9 +777,29 @@ export interface AdjustmentsToIncome<D = Date> {
   alimonyPaid?: number
   alimonyRecipientSsn?: string
   alimonyDivorceDate?: D
+  educatorExpenses?: number
+  selfEmployedHealthInsuranceDeduction?: number
+  selfEmployedHealthInsuranceWorksheet?: SelfEmployedHealthInsuranceWorksheet
 }
 
 export type AdjustmentsToIncomeDateString = AdjustmentsToIncome<string>
+
+export interface SelfEmployedHealthInsuranceWorksheet {
+  line1?: number
+  line2?: number
+  line3?: number
+  line4?: number
+  line5?: number
+  line6?: number
+  line7?: number
+  line8?: number
+  line9?: number
+  line10?: number
+  line11?: number
+  line12?: number
+  line13?: number
+  line14?: number
+}
 
 export interface Credit {
   recipient: PersonRole
@@ -1293,6 +1316,7 @@ export type EditW2Action = ArrayItemEditAction<IncomeW2>
 export type EditEstimatedTaxesAction = ArrayItemEditAction<EstimatedTaxPayments>
 export type Edit1099Action = ArrayItemEditAction<Supported1099>
 export type EditPropertyAction = ArrayItemEditAction<Property>
+export type EditBusinessAction = ArrayItemEditAction<Business>
 export type Edit1098eAction = ArrayItemEditAction<F1098e>
 export type Edit1098Action = ArrayItemEditAction<F1098>
 export type EditHSAAction = ArrayItemEditAction<HealthSavingsAccountDateString>

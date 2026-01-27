@@ -339,6 +339,28 @@ const formReducer = (
         }
       }
     }
+    case ActionName.ADD_BUSINESS: {
+      return {
+        ...newState,
+        businesses: [...(newState.businesses ?? []), action.formData]
+      }
+    }
+    case ActionName.EDIT_BUSINESS: {
+      const newBusinesses = [...(newState.businesses ?? [])]
+      newBusinesses.splice(action.formData.index, 1, action.formData.value)
+      return {
+        ...newState,
+        businesses: newBusinesses
+      }
+    }
+    case ActionName.REMOVE_BUSINESS: {
+      const newBusinesses = [...(newState.businesses ?? [])]
+      newBusinesses.splice(action.formData, 1)
+      return {
+        ...newState,
+        businesses: newBusinesses
+      }
+    }
     case ActionName.ADD_PROPERTY: {
       return {
         ...newState,
@@ -479,10 +501,16 @@ const formReducer = (
       }
     }
     case ActionName.SAVE_ADJUSTMENTS: {
+      const worksheet = action.formData.selfEmployedHealthInsuranceWorksheet
+      const hasWorksheet =
+        worksheet !== undefined &&
+        Object.values(worksheet).some((value) => value !== undefined)
       const hasAdjustments =
         action.formData.alimonyPaid !== undefined ||
         action.formData.alimonyRecipientSsn !== undefined ||
-        action.formData.alimonyDivorceDate !== undefined
+        action.formData.alimonyDivorceDate !== undefined ||
+        action.formData.selfEmployedHealthInsuranceDeduction !== undefined ||
+        hasWorksheet
 
       const sources = hasAdjustments
         ? setAdjustmentsSources(newState.sources, 'user')

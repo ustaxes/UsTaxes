@@ -114,6 +114,9 @@
             "type": "string",
             "format": "date"
           },
+          "occupation": {
+            "type": "string"
+          },
           "address": {
             "$ref": "#/components/schemas/Address"
           },
@@ -1080,7 +1083,37 @@
         "properties": {
           "alimonyPaid": { "type": "number" },
           "alimonyRecipientSsn": { "type": "string" },
-          "alimonyDivorceDate": { "type": "string", "format": "date" }
+          "alimonyDivorceDate": { "type": "string", "format": "date" },
+          "educatorExpenses": { "type": "number" },
+          "selfEmployedHealthInsuranceDeduction": { "type": "number" },
+          "selfEmployedHealthInsuranceWorksheet": {
+            "$ref": "#/components/schemas/SelfEmployedHealthInsuranceWorksheet"
+          }
+        },
+        "additionalProperties": false,
+        "patternProperties": {
+          "^.+_source$": {
+            "$ref": "#/components/schemas/FieldSource"
+          }
+        }
+      },
+      "SelfEmployedHealthInsuranceWorksheet": {
+        "type": "object",
+        "properties": {
+          "line1": { "type": "number" },
+          "line2": { "type": "number" },
+          "line3": { "type": "number" },
+          "line4": { "type": "number" },
+          "line5": { "type": "number" },
+          "line6": { "type": "number" },
+          "line7": { "type": "number" },
+          "line8": { "type": "number" },
+          "line9": { "type": "number" },
+          "line10": { "type": "number" },
+          "line11": { "type": "number" },
+          "line12": { "type": "number" },
+          "line13": { "type": "number" },
+          "line14": { "type": "number" }
         },
         "additionalProperties": false,
         "patternProperties": {

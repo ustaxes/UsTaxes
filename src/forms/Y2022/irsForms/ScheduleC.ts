@@ -151,7 +151,13 @@ export default class ScheduleC extends F1040Attachment {
   l6 = (): number | undefined =>
     this.sumBusinesses((b) => b.income.otherIncome ?? 0)
 
-  l7 = (): number => sumFields([this.l1(), this.l6()]) - (this.l2() ?? 0)
+  l3 = (): number => (this.l1() ?? 0) - (this.l2() ?? 0)
+
+  l4 = (): number | undefined => undefined
+
+  l5 = (): number => this.l3() - (this.l4() ?? 0)
+
+  l7 = (): number => this.l5() + (this.l6() ?? 0)
 
   l28 = (): number => this.sumBusinesses((b) => this.totalExpenses(b))
 
@@ -162,12 +168,21 @@ export default class ScheduleC extends F1040Attachment {
 
   l31 = (): number => this.l29() - (this.l30() ?? 0)
 
-  formatAddress = (address: Address | undefined): string | undefined => {
+  formatAddressLine1 = (address: Address | undefined): string | undefined => {
+    if (!address) {
+      return undefined
+    }
+    const parts = [address.address, address.aptNo].filter(
+      (p) => p && p.toString().trim().length > 0
+    )
+    return parts.join(' ')
+  }
+
+  formatAddressLine2 = (address: Address | undefined): string | undefined => {
     if (!address) {
       return undefined
     }
     const parts = [
-      address.address,
       address.city,
       address.state ?? address.province ?? '',
       address.zip ?? address.postalCode ?? ''
@@ -176,21 +191,34 @@ export default class ScheduleC extends F1040Attachment {
   }
 
   fields = (): Field[] => {
-    const business = this.businessesWith1099Nec()[0]
+    const business = this.businesses()[0]
     const values: Record<string, Field> = {
       'topmostSubform[0].Page1[0].Pg1Header[0].f1_1[0]':
         this.f1040.namesString(),
       'topmostSubform[0].Page1[0].f1_2[0]':
         this.f1040.info.taxPayer.primaryPerson.ssid,
-      'topmostSubform[0].Page1[0].f1_3[0]': business.name,
+      'topmostSubform[0].Page1[0].f1_3[0]':
+        business.principalBusinessOrProfession,
       'topmostSubform[0].Page1[0].BComb[0].f1_4[0]': business.businessCode,
-      'topmostSubform[0].Page1[0].f1_5[0]': this.formatAddress(
-        business.address
+      'topmostSubform[0].Page1[0].f1_5[0]': business.name,
+      'topmostSubform[0].Page1[0].DComb[0].f1_6[0]': business.ein,
+      'topmostSubform[0].Page1[0].f1_7[0]': this.formatAddressLine1(
+        business.address ?? this.f1040.info.taxPayer.primaryPerson.address
       ),
-      'topmostSubform[0].Page1[0].f1_10[0]': business.income.grossReceipts,
-      'topmostSubform[0].Page1[0].f1_12[0]': business.income.grossReceipts,
-      'topmostSubform[0].Page1[0].f1_16[0]': business.income.grossReceipts,
-      'topmostSubform[0].Page1[0].f1_41[0]': this.l31()
+      'topmostSubform[0].Page1[0].f1_8[0]': this.formatAddressLine2(
+        business.address ?? this.f1040.info.taxPayer.primaryPerson.address
+      ),
+      'topmostSubform[0].Page1[0].f1_10[0]': this.l1(),
+      'topmostSubform[0].Page1[0].f1_11[0]': this.l2(),
+      'topmostSubform[0].Page1[0].f1_12[0]': this.l3(),
+      'topmostSubform[0].Page1[0].f1_13[0]': this.l4(),
+      'topmostSubform[0].Page1[0].f1_14[0]': this.l5(),
+      'topmostSubform[0].Page1[0].f1_15[0]': this.l6(),
+      'topmostSubform[0].Page1[0].f1_16[0]': this.l7(),
+      'topmostSubform[0].Page1[0].f1_41[0]': this.l28(),
+      'topmostSubform[0].Page1[0].f1_42[0]': this.l29(),
+      'topmostSubform[0].Page1[0].f1_45[0]': this.l30(),
+      'topmostSubform[0].Page1[0].f1_46[0]': this.l31()
     }
 
     return FIELD_ORDER.map((name) => values[name])

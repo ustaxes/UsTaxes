@@ -18,31 +18,44 @@ import { YearsTaxesState } from 'ustaxes/redux'
 import { useSelector as useReduxSelector } from 'react-redux'
 import { intentionallyFloat } from 'ustaxes/core/util'
 import _ from 'lodash'
+import { Link } from 'react-router-dom'
+import Urls from 'ustaxes/data/urls'
 
 interface AdjustmentsForm {
+  educatorExpenses: string | number
   alimonyPaid: string | number
   alimonyRecipientSsn: string
   alimonyDivorceDate: Date | null
+  selfEmployedHealthInsuranceDeduction: string | number
 }
 
 const blankForm: AdjustmentsForm = {
+  educatorExpenses: '',
   alimonyPaid: '',
   alimonyRecipientSsn: '',
-  alimonyDivorceDate: null
+  alimonyDivorceDate: null,
+  selfEmployedHealthInsuranceDeduction: ''
 }
 
 const toFormValues = (
   adjustments?: AdjustmentsToIncomeData
 ): AdjustmentsForm => ({
   ...blankForm,
+  educatorExpenses: adjustments?.educatorExpenses ?? '',
   alimonyPaid: adjustments?.alimonyPaid ?? '',
   alimonyRecipientSsn: adjustments?.alimonyRecipientSsn ?? '',
-  alimonyDivorceDate: adjustments?.alimonyDivorceDate ?? null
+  alimonyDivorceDate: adjustments?.alimonyDivorceDate ?? null,
+  selfEmployedHealthInsuranceDeduction:
+    adjustments?.selfEmployedHealthInsuranceDeduction ?? ''
 })
 
 const toAdjustments = (
   formData: AdjustmentsForm
 ): AdjustmentsToIncomeDateString => ({
+  educatorExpenses:
+    formData.educatorExpenses === ''
+      ? undefined
+      : Number(formData.educatorExpenses),
   alimonyPaid:
     formData.alimonyPaid === '' ? undefined : Number(formData.alimonyPaid),
   alimonyRecipientSsn:
@@ -52,7 +65,11 @@ const toAdjustments = (
   alimonyDivorceDate:
     formData.alimonyDivorceDate instanceof Date
       ? formData.alimonyDivorceDate.toISOString().split('T')[0]
-      : undefined
+      : undefined,
+  selfEmployedHealthInsuranceDeduction:
+    formData.selfEmployedHealthInsuranceDeduction === ''
+      ? undefined
+      : Number(formData.selfEmployedHealthInsuranceDeduction)
 })
 
 export default function AdjustmentsToIncome(): ReactElement {
@@ -76,7 +93,13 @@ export default function AdjustmentsToIncome(): ReactElement {
   const dispatch = useDispatch()
 
   const onSubmit = (formData: AdjustmentsForm): void => {
-    dispatch(saveAdjustments(toAdjustments(formData)))
+    dispatch(
+      saveAdjustments({
+        ...toAdjustments(formData),
+        selfEmployedHealthInsuranceWorksheet:
+          adjustments?.selfEmployedHealthInsuranceWorksheet
+      })
+    )
     onAdvance()
   }
 
@@ -99,6 +122,11 @@ export default function AdjustmentsToIncome(): ReactElement {
       <p>Enter alimony details for Schedule 1, line 19.</p>
       <Grid container spacing={2}>
         <LabeledInput
+          label="Educator expenses (line 11)"
+          name="educatorExpenses"
+          patternConfig={Patterns.currency}
+        />
+        <LabeledInput
           label="Alimony paid (line 19a)"
           name="alimonyPaid"
           patternConfig={Patterns.currency}
@@ -114,7 +142,20 @@ export default function AdjustmentsToIncome(): ReactElement {
           minDate={new Date(1900, 0, 1)}
           maxDate={new Date(TaxYears[activeYear], 11, 31)}
         />
+        <LabeledInput
+          label="Self-employed health insurance deduction (line 17)"
+          name="selfEmployedHealthInsuranceDeduction"
+          patternConfig={Patterns.currency}
+        />
       </Grid>
+      <p>
+        For tax years 2023+, line 17 is derived from Form 7206. You can enter
+        the worksheet directly on the{' '}
+        <Link to={Urls.deductions.selfEmployedHealthInsuranceWorksheet}>
+          Form 7206 worksheet page
+        </Link>
+        .
+      </p>
       {navButtons}
     </form>
   )

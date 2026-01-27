@@ -25,7 +25,9 @@ import {
   InformationDateString,
   Credit,
   EditCreditAction,
-  AdjustmentsToIncomeDateString
+  AdjustmentsToIncomeDateString,
+  Business,
+  EditBusinessAction
 } from 'ustaxes/core/data'
 
 import {
@@ -70,6 +72,9 @@ export enum ActionName {
   ADD_1098 = 'ADD_1098',
   EDIT_1098 = 'EDIT_1098',
   REMOVE_1098 = 'REMOVE_1098',
+  ADD_BUSINESS = 'ADD_BUSINESS',
+  EDIT_BUSINESS = 'EDIT_BUSINESS',
+  REMOVE_BUSINESS = 'REMOVE_BUSINESS',
   ADD_PROPERTY = 'ADD_PROPERTY',
   EDIT_PROPERTY = 'EDIT_PROPERTY',
   REMOVE_PROPERTY = 'REMOVE_PROPERTY',
@@ -150,6 +155,9 @@ type Remove1099 = Save<typeof ActionName.REMOVE_1099, number>
 type Add1098 = Save<typeof ActionName.ADD_1098, F1098>
 type Edit1098 = Save<typeof ActionName.EDIT_1098, Edit1098Action>
 type Remove1098 = Save<typeof ActionName.REMOVE_1098, number>
+type AddBusiness = Save<typeof ActionName.ADD_BUSINESS, Business>
+type EditBusiness = Save<typeof ActionName.EDIT_BUSINESS, EditBusinessAction>
+type RemoveBusiness = Save<typeof ActionName.REMOVE_BUSINESS, number>
 type AddProperty = Save<typeof ActionName.ADD_PROPERTY, Property>
 type EditProperty = Save<typeof ActionName.EDIT_PROPERTY, EditPropertyAction>
 type RemoveProperty = Save<typeof ActionName.REMOVE_PROPERTY, number>
@@ -217,6 +225,9 @@ export type Actions =
   | Add1098
   | Edit1098
   | Remove1098
+  | AddBusiness
+  | EditBusiness
+  | RemoveBusiness
   | AddProperty
   | EditProperty
   | RemoveProperty
@@ -448,6 +459,18 @@ export const edit1098: ActionCreator<Edit1098Action> = makeActionCreator(
 
 export const remove1098: ActionCreator<number> = makeActionCreator(
   ActionName.REMOVE_1098,
+  indexValidator
+)
+
+export const addBusiness: ActionCreator<Business> = makeActionCreator(
+  ActionName.ADD_BUSINESS
+)
+
+export const editBusiness: ActionCreator<EditBusinessAction> =
+  makeActionCreator(ActionName.EDIT_BUSINESS)
+
+export const removeBusiness: ActionCreator<number> = makeActionCreator(
+  ActionName.REMOVE_BUSINESS,
   indexValidator
 )
 

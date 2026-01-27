@@ -96,12 +96,14 @@ const toDependentForm = (dependent: Dependent): UserDependentForm => {
 interface UserSpouseForm extends UserPersonForm {
   isTaxpayerDependent: boolean
   isNonResidentAlien: boolean
+  occupation?: string
 }
 
 const blankUserSpouseForm = {
   ...blankUserPersonForm,
   isTaxpayerDependent: false,
-  isNonResidentAlien: false
+  isNonResidentAlien: false,
+  occupation: ''
 }
 
 const isNraSsid = (ssid: string): boolean => ssid.trim().toUpperCase() === 'NRA'
@@ -126,7 +128,9 @@ const toSpouse = (formData: UserSpouseForm): Spouse<string> => {
     ...rest,
     ssid,
     role: PersonRole.SPOUSE,
-    dateOfBirth: formData.dateOfBirth.toISOString()
+    dateOfBirth: formData.dateOfBirth.toISOString(),
+    occupation:
+      formData.occupation?.trim() === '' ? undefined : formData.occupation
   }
 }
 
@@ -134,7 +138,8 @@ const toSpouseForm = (spouse: Spouse): UserSpouseForm => ({
   ...spouse,
   isNonResidentAlien: isNraSsid(spouse.ssid),
   dateOfBirth: spouse.dateOfBirth ? new Date(spouse.dateOfBirth) : undefined,
-  isTaxpayerDependent: spouse.isTaxpayerDependent ?? false
+  isTaxpayerDependent: spouse.isTaxpayerDependent ?? false,
+  occupation: spouse.occupation ?? ''
 })
 
 export const AddDependentForm = (): ReactElement => {
@@ -262,6 +267,7 @@ export const SpouseInfo = (): ReactElement => {
           ssidLabel="SSN / TIN (or NRA)"
           ssidPatternConfig={Patterns.ssnOrNra}
         >
+          <LabeledInput label="Spouse occupation" name="occupation" />
           <LabeledCheckbox
             label="Spouse is a nonresident alien (NRA)"
             name="isNonResidentAlien"

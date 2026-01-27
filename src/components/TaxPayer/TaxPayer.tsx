@@ -46,6 +46,7 @@ interface TaxPayerUserForm {
   stateResidency?: State
   isBlind: boolean
   dateOfBirth?: Date
+  occupation?: string
 }
 
 const defaultTaxpayerUserForm: TaxPayerUserForm = {
@@ -65,7 +66,8 @@ const defaultTaxpayerUserForm: TaxPayerUserForm = {
   },
   isTaxpayerDependent: false,
   isBlind: false,
-  dateOfBirth: undefined
+  dateOfBirth: undefined,
+  occupation: ''
 }
 
 const asPrimaryPerson = (formData: TaxPayerUserForm): PrimaryPerson<string> => {
@@ -80,7 +82,9 @@ const asPrimaryPerson = (formData: TaxPayerUserForm): PrimaryPerson<string> => {
     isTaxpayerDependent: formData.isTaxpayerDependent,
     role: PersonRole.PRIMARY,
     dateOfBirth: formData.dateOfBirth.toISOString(),
-    isBlind: formData.isBlind
+    isBlind: formData.isBlind,
+    occupation:
+      formData.occupation?.trim() === '' ? undefined : formData.occupation
   }
 }
 
@@ -95,7 +99,8 @@ const asTaxPayerUserForm = (person: PrimaryPerson): TaxPayerUserForm => ({
   isForeignCountry: person.address?.foreignCountry !== undefined,
   role: PersonRole.PRIMARY,
   dateOfBirth: person.dateOfBirth ? new Date(person.dateOfBirth) : undefined,
-  isTaxpayerDependent: person.isTaxpayerDependent ?? false
+  isTaxpayerDependent: person.isTaxpayerDependent ?? false,
+  occupation: person.occupation ?? ''
 })
 
 export default function PrimaryTaxpayer(): ReactElement {
@@ -180,6 +185,16 @@ export default function PrimaryTaxpayer(): ReactElement {
       <h2>Primary Taxpayer Information</h2>
       <Grid container spacing={2}>
         <PersonFields />
+        <LabeledInput label="Your occupation" name="occupation" />
+        <Grid item xs={12}>
+          <a
+            href="https://www.bls.gov/oes/2023/may/oes_stru.htm"
+            target="_blank"
+            rel="noreferrer"
+          >
+            View occupation list (BLS)
+          </a>
+        </Grid>
         <LabeledInput
           label="Contact phone number"
           patternConfig={Patterns.usPhoneNumber}

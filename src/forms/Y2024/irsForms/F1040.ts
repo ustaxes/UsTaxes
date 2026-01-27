@@ -49,6 +49,7 @@ import F4136 from './F4136'
 import F2439 from './F2439'
 import F2441 from './F2441'
 import ScheduleC from './ScheduleC'
+import F7206 from './F7206'
 import F8949 from './F8949'
 import F6251 from './F6251'
 import F4137 from './F4137'
@@ -95,6 +96,7 @@ export default class F1040 extends F1040Base {
   f8888?: F8888
   f8889: F8889
   f8889Spouse?: F8889
+  f7206?: F7206
   f8910?: F8910
   f8919?: F8919
   f8936?: F8936
@@ -140,6 +142,19 @@ export default class F1040 extends F1040Base {
     // add in separate form 8889 for the spouse
     if (this.info.taxPayer.spouse) {
       this.f8889Spouse = new F8889(this, this.info.taxPayer.spouse)
+    }
+
+    const worksheet =
+      this.info.adjustments?.selfEmployedHealthInsuranceWorksheet
+    const hasWorksheet =
+      worksheet !== undefined &&
+      Object.values(worksheet).some((value) => value !== undefined)
+    if (
+      this.info.adjustments?.selfEmployedHealthInsuranceDeduction !==
+        undefined ||
+      hasWorksheet
+    ) {
+      this.f7206 = new F7206(this)
     }
 
     this.f8959 = new F8959(this)
@@ -210,6 +225,7 @@ export default class F1040 extends F1040Base {
       this.f8888,
       this.f8889,
       this.f8889Spouse,
+      this.f7206,
       this.f8910,
       this.f8936,
       this.f8949,
@@ -257,8 +273,22 @@ export default class F1040 extends F1040Base {
     this.validW2s().reduce((res, w2) => res + w2.medicareIncome, 0)
 
   occupation = (r: PersonRole): string | undefined =>
-    this.info.w2s.find((w2) => w2.personRole === r && w2.occupation !== '')
-      ?.occupation
+    (() => {
+      const person =
+        r === PersonRole.PRIMARY
+          ? this.info.taxPayer.primaryPerson
+          : this.info.taxPayer.spouse
+      const explicit = person?.occupation?.trim()
+      if (explicit) {
+        return explicit
+      }
+      return this.info.w2s.find(
+        (w2) =>
+          w2.personRole === r &&
+          w2.occupation.trim() !== '' &&
+          w2.occupation.toUpperCase() !== 'UNKNOWN'
+      )?.occupation
+    })()
 
   standardDeduction = (): number | undefined => {
     const filingStatus = this.info.taxPayer.filingStatus

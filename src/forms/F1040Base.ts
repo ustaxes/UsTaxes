@@ -88,7 +88,9 @@ export default abstract class F1040Base extends Form {
   namesString = (): string => {
     const ps: Person[] = [
       this.info.taxPayer.primaryPerson,
-      this.info.taxPayer.spouse
+      this.info.taxPayer.filingStatus === FilingStatus.MFJ
+        ? this.info.taxPayer.spouse
+        : undefined
     ]
       .filter((p: Person | undefined) => p !== undefined)
       .map((p: Person | undefined) => p as Person)

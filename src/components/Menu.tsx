@@ -28,11 +28,13 @@ import SpouseAndDependent from './TaxPayer/SpouseAndDependent'
 import F1099Info from './income/F1099Info'
 import EstimatedTaxes from './payments/EstimatedTaxes'
 import RealEstate from './income/RealEstate'
+import BusinessInfo from './income/BusinessInfo'
 import GettingStarted from './GettingStarted'
 import F1098Info from './deductions/F1098Info'
 import F1098eInfo from './deductions/F1098eInfo'
 import ItemizedDeductions from './deductions/ItemizedDeductions'
 import AdjustmentsToIncome from './deductions/AdjustmentsToIncome'
+import SelfEmployedHealthInsuranceWorksheetInfo from './deductions/SelfEmployedHealthInsuranceWorksheet'
 import Questions from './Questions'
 import HelpAndFeedback from './HelpAndFeedback'
 import UserSettings from './UserSettings'
@@ -127,6 +129,7 @@ export const drawerSections: Section[] = [
       item('Wages (W2)', Urls.income.w2s, <W2JobInfo />),
       item('Income (1099)', Urls.income.f1099s, <F1099Info />),
       item('Rental income', Urls.income.realEstate, <RealEstate />),
+      item('Business details', Urls.income.businesses, <BusinessInfo />),
       item(
         'Other investments',
         Urls.income.otherInvestments,
@@ -155,6 +158,11 @@ export const drawerSections: Section[] = [
         'Adjustments to Income',
         Urls.deductions.adjustments,
         <AdjustmentsToIncome />
+      ),
+      item(
+        'Form 7206 Worksheet',
+        Urls.deductions.selfEmployedHealthInsuranceWorksheet,
+        <SelfEmployedHealthInsuranceWorksheetInfo />
       ),
       item(
         'Itemized Deductions',

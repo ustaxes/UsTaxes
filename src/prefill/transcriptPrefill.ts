@@ -100,6 +100,7 @@ type PrefillPerson = {
   dateOfBirth: string | null
   address?: Address
   isTaxpayerDependent?: boolean
+  occupation?: string
 }
 
 type PrefillDependent = PrefillPerson & {
@@ -228,6 +229,26 @@ type PrefillAdjustments = {
   alimonyPaid?: number
   alimonyRecipientSsn?: string
   alimonyDivorceDate?: string | null
+  educatorExpenses?: number
+  selfEmployedHealthInsuranceDeduction?: number
+  selfEmployedHealthInsuranceWorksheet?: PrefillSelfEmployedHealthInsuranceWorksheet
+}
+
+type PrefillSelfEmployedHealthInsuranceWorksheet = {
+  line1?: number
+  line2?: number
+  line3?: number
+  line4?: number
+  line5?: number
+  line6?: number
+  line7?: number
+  line8?: number
+  line9?: number
+  line10?: number
+  line11?: number
+  line12?: number
+  line13?: number
+  line14?: number
 }
 
 type PrefillRentalProperty = {
@@ -271,7 +292,8 @@ const mapPrimaryPerson = (
     isBlind: person.isBlind,
     dateOfBirth,
     address,
-    isTaxpayerDependent: person.isTaxpayerDependent ?? false
+    isTaxpayerDependent: person.isTaxpayerDependent ?? false,
+    occupation: person.occupation
   }
 }
 
@@ -287,7 +309,8 @@ const mapSpouse = (
     role: PersonRole.SPOUSE,
     isBlind: person.isBlind,
     dateOfBirth,
-    isTaxpayerDependent: person.isTaxpayerDependent ?? false
+    isTaxpayerDependent: person.isTaxpayerDependent ?? false,
+    occupation: person.occupation
   }
 }
 
@@ -321,8 +344,41 @@ const mapAdjustments = (
   alimonyRecipientSsn:
     adjustments.alimonyRecipientSsn ?? fallback?.alimonyRecipientSsn,
   alimonyDivorceDate:
-    parseDate(adjustments.alimonyDivorceDate) ?? fallback?.alimonyDivorceDate
+    parseDate(adjustments.alimonyDivorceDate) ?? fallback?.alimonyDivorceDate,
+  educatorExpenses: adjustments.educatorExpenses ?? fallback?.educatorExpenses,
+  selfEmployedHealthInsuranceDeduction:
+    adjustments.selfEmployedHealthInsuranceDeduction ??
+    fallback?.selfEmployedHealthInsuranceDeduction,
+  selfEmployedHealthInsuranceWorksheet: mapWorksheet(
+    adjustments.selfEmployedHealthInsuranceWorksheet,
+    fallback?.selfEmployedHealthInsuranceWorksheet
+  )
 })
+
+const mapWorksheet = (
+  worksheet?: PrefillSelfEmployedHealthInsuranceWorksheet,
+  fallback?: AdjustmentsToIncome<Date>['selfEmployedHealthInsuranceWorksheet']
+) => {
+  if (worksheet === undefined && fallback === undefined) {
+    return undefined
+  }
+  return {
+    line1: worksheet?.line1 ?? fallback?.line1,
+    line2: worksheet?.line2 ?? fallback?.line2,
+    line3: worksheet?.line3 ?? fallback?.line3,
+    line4: worksheet?.line4 ?? fallback?.line4,
+    line5: worksheet?.line5 ?? fallback?.line5,
+    line6: worksheet?.line6 ?? fallback?.line6,
+    line7: worksheet?.line7 ?? fallback?.line7,
+    line8: worksheet?.line8 ?? fallback?.line8,
+    line9: worksheet?.line9 ?? fallback?.line9,
+    line10: worksheet?.line10 ?? fallback?.line10,
+    line11: worksheet?.line11 ?? fallback?.line11,
+    line12: worksheet?.line12 ?? fallback?.line12,
+    line13: worksheet?.line13 ?? fallback?.line13,
+    line14: worksheet?.line14 ?? fallback?.line14
+  }
+}
 
 const mapPersonToPrefill = (
   person: Person<Date>,
@@ -334,6 +390,7 @@ const mapPersonToPrefill = (
   role: person.role,
   isBlind: person.isBlind,
   dateOfBirth: formatDate(person.dateOfBirth),
+  occupation: (person as PrimaryPerson<Date> | Spouse<Date>).occupation,
   ...extras
 })
 
@@ -618,7 +675,7 @@ const mapTaxPayer = (
           prefill.primaryPerson,
           existing.primaryPerson?.address,
           existing.primaryPerson?.dateOfBirth
-        ) ?? existing.primaryPerson
+        )
 
   const nextSpouse =
     prefill.spouse === undefined
@@ -701,6 +758,11 @@ const buildSources = (prefill: ReturnInformation): InformationSources => {
       sources,
       ['taxPayer', 'primaryPerson', 'dateOfBirth'],
       sourceFor(primaryRecord, 'dateOfBirth')
+    )
+    sources = setSource(
+      sources,
+      ['taxPayer', 'primaryPerson', 'occupation'],
+      sourceFor(primaryRecord, 'occupation')
     )
     sources = setSource(
       sources,
@@ -792,6 +854,11 @@ const buildSources = (prefill: ReturnInformation): InformationSources => {
     )
     sources = setSource(
       sources,
+      ['taxPayer', 'spouse', 'occupation'],
+      sourceFor(spouseRecord, 'occupation')
+    )
+    sources = setSource(
+      sources,
       ['taxPayer', 'spouse', 'isTaxpayerDependent'],
       sourceFor(spouseRecord, 'isTaxpayerDependent')
     )
@@ -873,6 +940,45 @@ const buildSources = (prefill: ReturnInformation): InformationSources => {
       ['adjustments', 'alimonyDivorceDate'],
       sourceFor(adjustmentsRecord, 'alimonyDivorceDate')
     )
+    sources = setSource(
+      sources,
+      ['adjustments', 'educatorExpenses'],
+      sourceFor(adjustmentsRecord, 'educatorExpenses')
+    )
+    sources = setSource(
+      sources,
+      ['adjustments', 'selfEmployedHealthInsuranceDeduction'],
+      sourceFor(adjustmentsRecord, 'selfEmployedHealthInsuranceDeduction')
+    )
+    const worksheetRecord =
+      adjustmentsRecord.selfEmployedHealthInsuranceWorksheet as
+        | Record<string, unknown>
+        | undefined
+    if (worksheetRecord) {
+      const worksheetFields = [
+        'line1',
+        'line2',
+        'line3',
+        'line4',
+        'line5',
+        'line6',
+        'line7',
+        'line8',
+        'line9',
+        'line10',
+        'line11',
+        'line12',
+        'line13',
+        'line14'
+      ]
+      worksheetFields.forEach((field) => {
+        sources = setSource(
+          sources,
+          ['adjustments', 'selfEmployedHealthInsuranceWorksheet', field],
+          sourceFor(worksheetRecord, field)
+        )
+      })
+    }
   }
 
   if (prefill.w2s) {
@@ -1252,6 +1358,51 @@ const applySourcesToPrefill = (
       'alimonyDivorceDate',
       getSource(sources, ['adjustments', 'alimonyDivorceDate'])
     )
+    tagField(
+      adjustments,
+      'educatorExpenses',
+      getSource(sources, ['adjustments', 'educatorExpenses'])
+    )
+    tagField(
+      adjustments,
+      'selfEmployedHealthInsuranceDeduction',
+      getSource(sources, [
+        'adjustments',
+        'selfEmployedHealthInsuranceDeduction'
+      ])
+    )
+    const worksheet = adjustments.selfEmployedHealthInsuranceWorksheet as
+      | Record<string, unknown>
+      | undefined
+    if (worksheet) {
+      const worksheetFields = [
+        'line1',
+        'line2',
+        'line3',
+        'line4',
+        'line5',
+        'line6',
+        'line7',
+        'line8',
+        'line9',
+        'line10',
+        'line11',
+        'line12',
+        'line13',
+        'line14'
+      ]
+      worksheetFields.forEach((field) => {
+        tagField(
+          worksheet,
+          field,
+          getSource(sources, [
+            'adjustments',
+            'selfEmployedHealthInsuranceWorksheet',
+            field
+          ])
+        )
+      })
+    }
   }
 
   const taxPayer = prefill.taxPayer as Record<string, unknown> | undefined
@@ -1305,6 +1456,11 @@ const applySourcesToPrefill = (
         primary,
         'dateOfBirth',
         getSource(sources, ['taxPayer', 'primaryPerson', 'dateOfBirth'])
+      )
+      tagField(
+        primary,
+        'occupation',
+        getSource(sources, ['taxPayer', 'primaryPerson', 'occupation'])
       )
       tagField(
         primary,
@@ -1415,6 +1571,11 @@ const applySourcesToPrefill = (
         spouse,
         'dateOfBirth',
         getSource(sources, ['taxPayer', 'spouse', 'dateOfBirth'])
+      )
+      tagField(
+        spouse,
+        'occupation',
+        getSource(sources, ['taxPayer', 'spouse', 'occupation'])
       )
       tagField(
         spouse,
@@ -1918,7 +2079,12 @@ export const buildReturnPayload = (
       ? {
           alimonyPaid: info.adjustments.alimonyPaid,
           alimonyRecipientSsn: info.adjustments.alimonyRecipientSsn,
-          alimonyDivorceDate: formatDate(info.adjustments.alimonyDivorceDate)
+          alimonyDivorceDate: formatDate(info.adjustments.alimonyDivorceDate),
+          educatorExpenses: info.adjustments.educatorExpenses,
+          selfEmployedHealthInsuranceDeduction:
+            info.adjustments.selfEmployedHealthInsuranceDeduction,
+          selfEmployedHealthInsuranceWorksheet:
+            info.adjustments.selfEmployedHealthInsuranceWorksheet
         }
       : undefined,
     sources: info.sources

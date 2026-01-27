@@ -13,6 +13,7 @@ const Urls = {
     w2s: '/income/w2jobinfo',
     f1099s: '/income/f1099s',
     realEstate: '/income/realestate',
+    businesses: '/income/businesses',
     otherInvestments: '/income/otherinvestments',
     stockOptions: '/income/stockoptions',
     partnershipIncome: '/income/partnershipincome'
@@ -28,7 +29,8 @@ const Urls = {
     f1098s: '/deductions/mortgageinterest',
     f1098es: '/deductions/studentloaninterest',
     itemized: '/deductions/itemized',
-    adjustments: '/deductions/adjustments'
+    adjustments: '/deductions/adjustments',
+    selfEmployedHealthInsuranceWorksheet: '/deductions/f7206'
   },
   credits: {
     main: '/credits',

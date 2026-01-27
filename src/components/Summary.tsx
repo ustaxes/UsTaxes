@@ -162,6 +162,7 @@ const Summary = ({ errors, irsForms }: SummaryProps): ReactElement => {
   const year: TaxYear = useSelector(
     (state: YearsTaxesState) => state.activeYear
   )
+  const formTags = irsForms.map((form) => form.tag)
 
   const summaryBody = (
     <>
@@ -179,10 +180,21 @@ const Summary = ({ errors, irsForms }: SummaryProps): ReactElement => {
           )
         } else {
           const summary = createSummary(year, irsForms)
-          if (summary === undefined) {
-            return undefined
-          }
-          return <F1040Summary summary={summary} />
+          return (
+            <>
+              {summary !== undefined ? (
+                <F1040Summary summary={summary} />
+              ) : undefined}
+              {irsForms.length > 0 ? (
+                <details>
+                  <summary>Included IRS forms</summary>
+                  <Typography variant="body2" color="textSecondary">
+                    {formTags.join(', ')}
+                  </Typography>
+                </details>
+              ) : undefined}
+            </>
+          )
         }
       })()}
     </>

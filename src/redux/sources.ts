@@ -159,6 +159,7 @@ export const setPrimaryPersonSources = (
   next = setSource(next, ['taxPayer', 'primaryPerson', 'role'], source)
   next = setSource(next, ['taxPayer', 'primaryPerson', 'isBlind'], source)
   next = setSource(next, ['taxPayer', 'primaryPerson', 'dateOfBirth'], source)
+  next = setSource(next, ['taxPayer', 'primaryPerson', 'occupation'], source)
   next = setSource(
     next,
     ['taxPayer', 'primaryPerson', 'isTaxpayerDependent'],
@@ -219,6 +220,7 @@ export const setSpouseSources = (
   next = setSource(next, ['taxPayer', 'spouse', 'role'], source)
   next = setSource(next, ['taxPayer', 'spouse', 'isBlind'], source)
   next = setSource(next, ['taxPayer', 'spouse', 'dateOfBirth'], source)
+  next = setSource(next, ['taxPayer', 'spouse', 'occupation'], source)
   next = setSource(next, ['taxPayer', 'spouse', 'isTaxpayerDependent'], source)
   return next
 }
@@ -307,5 +309,34 @@ export const setAdjustmentsSources = (
   next = setSource(next, ['adjustments', 'alimonyPaid'], source)
   next = setSource(next, ['adjustments', 'alimonyRecipientSsn'], source)
   next = setSource(next, ['adjustments', 'alimonyDivorceDate'], source)
+  next = setSource(next, ['adjustments', 'educatorExpenses'], source)
+  next = setSource(
+    next,
+    ['adjustments', 'selfEmployedHealthInsuranceDeduction'],
+    source
+  )
+  const worksheetFields = [
+    'line1',
+    'line2',
+    'line3',
+    'line4',
+    'line5',
+    'line6',
+    'line7',
+    'line8',
+    'line9',
+    'line10',
+    'line11',
+    'line12',
+    'line13',
+    'line14'
+  ]
+  worksheetFields.forEach((field) => {
+    next = setSource(
+      next,
+      ['adjustments', 'selfEmployedHealthInsuranceWorksheet', field],
+      source
+    )
+  })
   return next
 }

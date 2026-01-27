@@ -220,8 +220,22 @@ export default class F1040 extends F1040Base {
     this.validW2s().reduce((res, w2) => res + w2.medicareIncome, 0)
 
   occupation = (r: PersonRole): string | undefined =>
-    this.info.w2s.find((w2) => w2.personRole === r && w2.occupation !== '')
-      ?.occupation
+    (() => {
+      const person =
+        r === PersonRole.PRIMARY
+          ? this.info.taxPayer.primaryPerson
+          : this.info.taxPayer.spouse
+      const explicit = person?.occupation?.trim()
+      if (explicit) {
+        return explicit
+      }
+      return this.info.w2s.find(
+        (w2) =>
+          w2.personRole === r &&
+          w2.occupation.trim() !== '' &&
+          w2.occupation.toUpperCase() !== 'UNKNOWN'
+      )?.occupation
+    })()
 
   standardDeduction = (): number | undefined => {
     const filingStatus = this.info.taxPayer.filingStatus

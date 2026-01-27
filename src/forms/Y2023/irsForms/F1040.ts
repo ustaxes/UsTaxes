@@ -55,6 +55,7 @@ import F4137 from './F4137'
 import F8919 from './F8919'
 import F8853 from './F8853'
 import F8582 from './F8582'
+import F7206 from './F7206'
 import { Field } from 'ustaxes/core/pdfFiller'
 import F1040Base, { ValidatedInformation } from 'ustaxes/forms/F1040Base'
 import F1040Attachment from './F1040Attachment'
@@ -104,6 +105,7 @@ export default class F1040 extends F1040Base {
   f8960: F8960
   f8962?: F8962
   f8995?: F8995 | F8995A
+  f7206?: F7206
   qualifiedAndCapGainsWorksheet?: SDQualifiedAndCapGains
   studentLoanInterestWorksheet?: StudentLoanInterestWorksheet
   socialSecurityBenefitsWorksheet?: SocialSecurityBenefitsWorksheet
@@ -144,6 +146,19 @@ export default class F1040 extends F1040Base {
 
     this.f8959 = new F8959(this)
     this.f8960 = new F8960(this)
+
+    const worksheet =
+      this.info.adjustments?.selfEmployedHealthInsuranceWorksheet
+    const hasWorksheet =
+      worksheet !== undefined &&
+      Object.values(worksheet).some((value) => value !== undefined)
+    if (
+      this.info.adjustments?.selfEmployedHealthInsuranceDeduction !==
+        undefined ||
+      hasWorksheet
+    ) {
+      this.f7206 = new F7206(this)
+    }
 
     if (this.f1099ssas().length > 0) {
       const ssws = new SocialSecurityBenefitsWorksheet(this)
@@ -215,6 +230,7 @@ export default class F1040 extends F1040Base {
       this.f8949,
       this.f8959,
       this.f8960,
+      this.f7206,
       this.f8995,
       this.schedule1,
       this.schedule2,
@@ -257,8 +273,22 @@ export default class F1040 extends F1040Base {
     this.validW2s().reduce((res, w2) => res + w2.medicareIncome, 0)
 
   occupation = (r: PersonRole): string | undefined =>
-    this.info.w2s.find((w2) => w2.personRole === r && w2.occupation !== '')
-      ?.occupation
+    (() => {
+      const person =
+        r === PersonRole.PRIMARY
+          ? this.info.taxPayer.primaryPerson
+          : this.info.taxPayer.spouse
+      const explicit = person?.occupation?.trim()
+      if (explicit) {
+        return explicit
+      }
+      return this.info.w2s.find(
+        (w2) =>
+          w2.personRole === r &&
+          w2.occupation.trim() !== '' &&
+          w2.occupation.toUpperCase() !== 'UNKNOWN'
+      )?.occupation
+    })()
 
   standardDeduction = (): number | undefined => {
     const filingStatus = this.info.taxPayer.filingStatus
