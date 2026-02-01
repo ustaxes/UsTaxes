@@ -252,8 +252,12 @@ export default class ScheduleEIC extends F1040Attachment {
     }
 
     const formula = f[this.qualifyingDependents().length]
+    if (formula === undefined) {
+      return 0
+    }
+
     const minimumIncome = formula[1]?.lowerBound ?? 0
-    if (formula === undefined || income < minimumIncome) {
+    if (income < minimumIncome) {
       return 0
     }
 
