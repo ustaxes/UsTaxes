@@ -117,6 +117,9 @@ export default class F1040 extends F1040Base {
 
     this.scheduleA = new ScheduleA(this)
     this.scheduleB = new ScheduleB(this)
+    if ((this.info.businesses ?? []).length > 0) {
+      this.scheduleC = new ScheduleC(this)
+    }
     this.scheduleD = new ScheduleD(this)
     this.scheduleE = new ScheduleE(this)
     this.scheduleEIC = new ScheduleEIC(this)
@@ -188,6 +191,7 @@ export default class F1040 extends F1040Base {
     const res1: (F1040Attachment | undefined)[] = [
       this.scheduleA,
       this.scheduleB,
+      this.scheduleC,
       this.scheduleD,
       this.scheduleE,
       this.scheduleSE,
