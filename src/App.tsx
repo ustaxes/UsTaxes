@@ -24,10 +24,10 @@ const App = (): ReactElement => {
                 contrastText: '#ffffff'
               },
           primary: {
-            light: '#66ffa6',
-            main: '#00e676',
-            dark: '#00b248',
-            contrastText: '#000000'
+            light: '#2E7D32',
+            main: '#1B5E20',
+            dark: '#0B3D0B',
+            contrastText: '#F5F7F5'
           }
         }
       }),
