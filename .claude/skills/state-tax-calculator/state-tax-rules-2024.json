@@ -1,0 +1,1304 @@
+{
+  "taxYear": 2024,
+  "lastUpdated": "2024-11-27",
+  "states": {
+    "AL": {
+      "name": "Alabama",
+      "hasIncomeTax": true,
+      "taxStructure": "graduated",
+      "form": "40",
+      "brackets": {
+        "single": [
+          {"rate": 0.02, "min": 0, "max": 500},
+          {"rate": 0.04, "min": 501, "max": 3000},
+          {"rate": 0.05, "min": 3001, "max": null}
+        ],
+        "married": [
+          {"rate": 0.02, "min": 0, "max": 1000},
+          {"rate": 0.04, "min": 1001, "max": 6000},
+          {"rate": 0.05, "min": 6001, "max": null}
+        ]
+      },
+      "standardDeduction": {
+        "single": 2500,
+        "married": 7500,
+        "hoh": 4700
+      },
+      "personalExemption": {
+        "single": 1500,
+        "married": 3000,
+        "dependent": 500
+      },
+      "startsWith": "federalAGI",
+      "additions": [],
+      "subtractions": ["socialSecurity"],
+      "credits": [],
+      "notes": "Low rates, simple structure"
+    },
+    "AK": {
+      "name": "Alaska",
+      "hasIncomeTax": false,
+      "notes": "No state income tax, permanent fund dividend available"
+    },
+    "AZ": {
+      "name": "Arizona",
+      "hasIncomeTax": true,
+      "taxStructure": "graduated",
+      "form": "140",
+      "brackets": {
+        "all": [
+          {"rate": 0.025, "min": 0, "max": 28653},
+          {"rate": 0.0334, "min": 28654, "max": 57305},
+          {"rate": 0.0417, "min": 57306, "max": 171015},
+          {"rate": 0.045, "min": 171016, "max": null}
+        ]
+      },
+      "standardDeduction": "federal",
+      "personalExemption": null,
+      "startsWith": "federalAGI",
+      "additions": [],
+      "subtractions": ["socialSecurity", "militaryPay"],
+      "credits": ["EITC", "familyTaxCredit", "charitableCredit"],
+      "notes": "Simplified structure, uses federal standard deduction"
+    },
+    "AR": {
+      "name": "Arkansas",
+      "hasIncomeTax": true,
+      "taxStructure": "graduated",
+      "form": "AR1000",
+      "brackets": {
+        "all": [
+          {"rate": 0.02, "min": 0, "max": 5099},
+          {"rate": 0.03, "min": 5100, "max": 10299},
+          {"rate": 0.034, "min": 10300, "max": 14699},
+          {"rate": 0.037, "min": 14700, "max": 24299},
+          {"rate": 0.039, "min": 24300, "max": null}
+        ]
+      },
+      "standardDeduction": {
+        "single": 2340,
+        "married": 4680,
+        "hoh": 2340
+      },
+      "personalExemption": {
+        "single": 29,
+        "married": 58,
+        "dependent": 29
+      },
+      "startsWith": "federalAGI",
+      "additions": [],
+      "subtractions": ["militaryPay", "socialSecurity"],
+      "credits": [],
+      "notes": "Moderate rates"
+    },
+    "CA": {
+      "name": "California",
+      "hasIncomeTax": true,
+      "taxStructure": "graduated",
+      "form": "540",
+      "brackets": {
+        "single": [
+          {"rate": 0.01, "min": 0, "max": 10412},
+          {"rate": 0.02, "min": 10413, "max": 24684},
+          {"rate": 0.04, "min": 24685, "max": 38959},
+          {"rate": 0.06, "min": 38960, "max": 54081},
+          {"rate": 0.08, "min": 54082, "max": 68350},
+          {"rate": 0.093, "min": 68351, "max": 349137},
+          {"rate": 0.103, "min": 349138, "max": 418961},
+          {"rate": 0.113, "min": 418962, "max": 698271},
+          {"rate": 0.123, "min": 698272, "max": 1000000},
+          {"rate": 0.133, "min": 1000001, "max": null}
+        ],
+        "married": [
+          {"rate": 0.01, "min": 0, "max": 20824},
+          {"rate": 0.02, "min": 20825, "max": 49368},
+          {"rate": 0.04, "min": 49369, "max": 77918},
+          {"rate": 0.06, "min": 77919, "max": 108162},
+          {"rate": 0.08, "min": 108163, "max": 136700},
+          {"rate": 0.093, "min": 136701, "max": 698274},
+          {"rate": 0.103, "min": 698275, "max": 837922},
+          {"rate": 0.113, "min": 837923, "max": 1000000},
+          {"rate": 0.123, "min": 1000001, "max": 1396542},
+          {"rate": 0.133, "min": 1396543, "max": null}
+        ]
+      },
+      "standardDeduction": {
+        "single": 5363,
+        "married": 10726,
+        "hoh": 10726
+      },
+      "personalExemption": {
+        "single": 134,
+        "married": 268,
+        "dependent": 434
+      },
+      "startsWith": "federalAGI",
+      "additions": ["otherStateMuniBonds", "stateTaxRefund"],
+      "subtractions": ["socialSecurity", "caMuniBonds", "SDI"],
+      "credits": ["EITC", "youngChildCredit", "fosterYouthCredit", "renterCredit"],
+      "mentalHealthTax": {
+        "rate": 0.01,
+        "threshold": 1000000,
+        "description": "1% surtax on income over $1M"
+      },
+      "notes": "Highest marginal rate in nation (13.3%), Mental Health Services Tax on $1M+"
+    },
+    "CO": {
+      "name": "Colorado",
+      "hasIncomeTax": true,
+      "taxStructure": "flat",
+      "form": "104",
+      "flatRate": 0.044,
+      "standardDeduction": "federal",
+      "personalExemption": null,
+      "startsWith": "federalTaxableIncome",
+      "additions": ["stateTaxRefund"],
+      "subtractions": ["socialSecurity", "pensionSubtraction"],
+      "credits": ["EITC", "childCareCredit", "childTaxCredit"],
+      "notes": "Flat 4.4% rate, TABOR refunds in some years"
+    },
+    "CT": {
+      "name": "Connecticut",
+      "hasIncomeTax": true,
+      "taxStructure": "graduated",
+      "form": "CT-1040",
+      "brackets": {
+        "single": [
+          {"rate": 0.03, "min": 0, "max": 10000},
+          {"rate": 0.05, "min": 10001, "max": 50000},
+          {"rate": 0.055, "min": 50001, "max": 100000},
+          {"rate": 0.06, "min": 100001, "max": 200000},
+          {"rate": 0.065, "min": 200001, "max": 250000},
+          {"rate": 0.069, "min": 250001, "max": 500000},
+          {"rate": 0.0699, "min": 500001, "max": null}
+        ],
+        "married": [
+          {"rate": 0.03, "min": 0, "max": 20000},
+          {"rate": 0.05, "min": 20001, "max": 100000},
+          {"rate": 0.055, "min": 100001, "max": 200000},
+          {"rate": 0.06, "min": 200001, "max": 400000},
+          {"rate": 0.065, "min": 400001, "max": 500000},
+          {"rate": 0.069, "min": 500001, "max": 1000000},
+          {"rate": 0.0699, "min": 1000001, "max": null}
+        ]
+      },
+      "standardDeduction": null,
+      "personalExemption": {
+        "single": 15000,
+        "married": 24000,
+        "dependent": 0,
+        "phaseOut": true
+      },
+      "startsWith": "federalAGI",
+      "additions": ["stateTaxRefund"],
+      "subtractions": ["socialSecurity", "pensionIncome"],
+      "credits": ["EITC", "propertyTaxCredit"],
+      "notes": "Phase-out of personal exemption at higher incomes"
+    },
+    "DE": {
+      "name": "Delaware",
+      "hasIncomeTax": true,
+      "taxStructure": "graduated",
+      "form": "200-01",
+      "brackets": {
+        "all": [
+          {"rate": 0, "min": 0, "max": 2000},
+          {"rate": 0.022, "min": 2001, "max": 5000},
+          {"rate": 0.039, "min": 5001, "max": 10000},
+          {"rate": 0.048, "min": 10001, "max": 20000},
+          {"rate": 0.052, "min": 20001, "max": 25000},
+          {"rate": 0.0555, "min": 25001, "max": 60000},
+          {"rate": 0.066, "min": 60001, "max": null}
+        ]
+      },
+      "standardDeduction": {
+        "single": 3250,
+        "married": 6500,
+        "hoh": 3250
+      },
+      "personalExemption": {
+        "single": 110,
+        "married": 220,
+        "dependent": 110
+      },
+      "startsWith": "federalAGI",
+      "additions": [],
+      "subtractions": ["socialSecurity", "pensionIncome"],
+      "credits": ["EITC"],
+      "notes": "Zero bracket up to $2,000"
+    },
+    "FL": {
+      "name": "Florida",
+      "hasIncomeTax": false,
+      "notes": "No state income tax"
+    },
+    "GA": {
+      "name": "Georgia",
+      "hasIncomeTax": true,
+      "taxStructure": "graduated",
+      "form": "500",
+      "brackets": {
+        "single": [
+          {"rate": 0.01, "min": 0, "max": 750},
+          {"rate": 0.02, "min": 751, "max": 2250},
+          {"rate": 0.03, "min": 2251, "max": 3750},
+          {"rate": 0.04, "min": 3751, "max": 5250},
+          {"rate": 0.05, "min": 5251, "max": 7000},
+          {"rate": 0.0575, "min": 7001, "max": null}
+        ],
+        "married": [
+          {"rate": 0.01, "min": 0, "max": 1000},
+          {"rate": 0.02, "min": 1001, "max": 3000},
+          {"rate": 0.03, "min": 3001, "max": 5000},
+          {"rate": 0.04, "min": 5001, "max": 7000},
+          {"rate": 0.05, "min": 7001, "max": 10000},
+          {"rate": 0.0575, "min": 10001, "max": null}
+        ]
+      },
+      "standardDeduction": {
+        "single": 12000,
+        "married": 24000,
+        "hoh": 18000
+      },
+      "personalExemption": {
+        "single": 7400,
+        "married": 14800,
+        "dependent": 4000
+      },
+      "startsWith": "federalAGI",
+      "additions": [],
+      "subtractions": ["socialSecurity", "retirementIncome"],
+      "credits": [],
+      "notes": "Moderate rates, retirement income exclusion"
+    },
+    "HI": {
+      "name": "Hawaii",
+      "hasIncomeTax": true,
+      "taxStructure": "graduated",
+      "form": "N-11",
+      "brackets": {
+        "single": [
+          {"rate": 0.014, "min": 0, "max": 2400},
+          {"rate": 0.032, "min": 2401, "max": 4800},
+          {"rate": 0.055, "min": 4801, "max": 9600},
+          {"rate": 0.064, "min": 9601, "max": 14400},
+          {"rate": 0.068, "min": 14401, "max": 19200},
+          {"rate": 0.072, "min": 19201, "max": 24000},
+          {"rate": 0.076, "min": 24001, "max": 36000},
+          {"rate": 0.079, "min": 36001, "max": 48000},
+          {"rate": 0.0825, "min": 48001, "max": 150000},
+          {"rate": 0.09, "min": 150001, "max": 175000},
+          {"rate": 0.10, "min": 175001, "max": 200000},
+          {"rate": 0.11, "min": 200001, "max": null}
+        ],
+        "married": [
+          {"rate": 0.014, "min": 0, "max": 4800},
+          {"rate": 0.032, "min": 4801, "max": 9600},
+          {"rate": 0.055, "min": 9601, "max": 19200},
+          {"rate": 0.064, "min": 19201, "max": 28800},
+          {"rate": 0.068, "min": 28801, "max": 38400},
+          {"rate": 0.072, "min": 38401, "max": 48000},
+          {"rate": 0.076, "min": 48001, "max": 72000},
+          {"rate": 0.079, "min": 72001, "max": 96000},
+          {"rate": 0.0825, "min": 96001, "max": 300000},
+          {"rate": 0.09, "min": 300001, "max": 350000},
+          {"rate": 0.10, "min": 350001, "max": 400000},
+          {"rate": 0.11, "min": 400001, "max": null}
+        ]
+      },
+      "standardDeduction": {
+        "single": 2200,
+        "married": 4400,
+        "hoh": 3212
+      },
+      "personalExemption": {
+        "single": 1144,
+        "married": 2288,
+        "dependent": 1144
+      },
+      "startsWith": "federalAGI",
+      "additions": [],
+      "subtractions": [],
+      "credits": ["EITC", "childTaxCredit"],
+      "notes": "Many brackets, second-highest top rate (11%)"
+    },
+    "ID": {
+      "name": "Idaho",
+      "hasIncomeTax": true,
+      "taxStructure": "graduated",
+      "form": "40",
+      "brackets": {
+        "all": [
+          {"rate": 0.01, "min": 0, "max": 1802},
+          {"rate": 0.03, "min": 1803, "max": 3604},
+          {"rate": 0.045, "min": 3605, "max": 5407},
+          {"rate": 0.058, "min": 5408, "max": null}
+        ]
+      },
+      "standardDeduction": "federal",
+      "personalExemption": null,
+      "startsWith": "federalTaxableIncome",
+      "additions": [],
+      "subtractions": [],
+      "credits": ["groceryCredit", "EITC"],
+      "notes": "Uses federal taxable income as starting point"
+    },
+    "IL": {
+      "name": "Illinois",
+      "hasIncomeTax": true,
+      "taxStructure": "flat",
+      "form": "IL-1040",
+      "flatRate": 0.0495,
+      "standardDeduction": null,
+      "personalExemption": {
+        "single": 2425,
+        "married": 4850,
+        "dependent": 2425
+      },
+      "startsWith": "federalAGI",
+      "additions": ["stateTaxRefund", "municipalBondInterest"],
+      "subtractions": ["retirementIncome", "socialSecurity"],
+      "credits": ["EITC", "propertyTaxCredit", "educationExpenseCredit"],
+      "notes": "Flat 4.95%, retirement income fully excluded"
+    },
+    "IN": {
+      "name": "Indiana",
+      "hasIncomeTax": true,
+      "taxStructure": "flat",
+      "form": "IT-40",
+      "flatRate": 0.0305,
+      "countyTax": {
+        "min": 0.005,
+        "max": 0.03,
+        "description": "Additional county income tax varies by county"
+      },
+      "standardDeduction": null,
+      "personalExemption": {
+        "single": 1500,
+        "married": 3000,
+        "dependent": 1500,
+        "additional65": 1500
+      },
+      "startsWith": "federalAGI",
+      "additions": [],
+      "subtractions": ["socialSecurity", "militaryPay"],
+      "credits": ["EITC", "uniformedServiceCredit"],
+      "notes": "Flat 3.05% + county tax (varies)"
+    },
+    "IA": {
+      "name": "Iowa",
+      "hasIncomeTax": true,
+      "taxStructure": "flat",
+      "form": "IA1040",
+      "flatRate": 0.0444,
+      "standardDeduction": {
+        "single": 2130,
+        "married": 5240,
+        "hoh": 5240
+      },
+      "personalExemption": {
+        "single": 40,
+        "married": 80,
+        "dependent": 40
+      },
+      "startsWith": "federalAGI",
+      "additions": [],
+      "subtractions": ["retirementIncome", "socialSecurity"],
+      "credits": ["EITC", "childCareCredit"],
+      "notes": "Transitioned to flat tax in 2023, retirement income excluded"
+    },
+    "KS": {
+      "name": "Kansas",
+      "hasIncomeTax": true,
+      "taxStructure": "graduated",
+      "form": "K-40",
+      "brackets": {
+        "single": [
+          {"rate": 0.031, "min": 0, "max": 15000},
+          {"rate": 0.0525, "min": 15001, "max": 30000},
+          {"rate": 0.057, "min": 30001, "max": null}
+        ],
+        "married": [
+          {"rate": 0.031, "min": 0, "max": 30000},
+          {"rate": 0.0525, "min": 30001, "max": 60000},
+          {"rate": 0.057, "min": 60001, "max": null}
+        ]
+      },
+      "standardDeduction": {
+        "single": 3500,
+        "married": 8000,
+        "hoh": 5500
+      },
+      "personalExemption": {
+        "single": 2250,
+        "married": 4500,
+        "dependent": 2250
+      },
+      "startsWith": "federalAGI",
+      "additions": [],
+      "subtractions": ["socialSecurity"],
+      "credits": [],
+      "notes": "Moderate rates"
+    },
+    "KY": {
+      "name": "Kentucky",
+      "hasIncomeTax": true,
+      "taxStructure": "flat",
+      "form": "740",
+      "flatRate": 0.045,
+      "standardDeduction": {
+        "single": 3160,
+        "married": 6320,
+        "hoh": 3160
+      },
+      "personalExemption": null,
+      "startsWith": "federalAGI",
+      "additions": [],
+      "subtractions": [],
+      "credits": [],
+      "notes": "Flat 4.5% rate as of 2024"
+    },
+    "LA": {
+      "name": "Louisiana",
+      "hasIncomeTax": true,
+      "taxStructure": "graduated",
+      "form": "IT-540",
+      "brackets": {
+        "all": [
+          {"rate": 0.0185, "min": 0, "max": 12500},
+          {"rate": 0.035, "min": 12501, "max": 50000},
+          {"rate": 0.0425, "min": 50001, "max": null}
+        ]
+      },
+      "standardDeduction": "federal",
+      "personalExemption": {
+        "single": 4500,
+        "married": 9000,
+        "dependent": 1000
+      },
+      "startsWith": "federalAGI",
+      "additions": [],
+      "subtractions": ["retirementIncome"],
+      "credits": ["EITC", "schoolReadinessTaxCredit"],
+      "notes": "Moderate rates"
+    },
+    "ME": {
+      "name": "Maine",
+      "hasIncomeTax": true,
+      "taxStructure": "graduated",
+      "form": "1040ME",
+      "brackets": {
+        "all": [
+          {"rate": 0.058, "min": 0, "max": 24500},
+          {"rate": 0.0675, "min": 24501, "max": 57850},
+          {"rate": 0.0715, "min": 57851, "max": null}
+        ]
+      },
+      "standardDeduction": {
+        "single": 14600,
+        "married": 29200,
+        "hoh": 21900
+      },
+      "personalExemption": {
+        "single": 5000,
+        "married": 10000,
+        "dependent": 5000
+      },
+      "startsWith": "federalAGI",
+      "additions": [],
+      "subtractions": ["socialSecurity", "pensionIncome"],
+      "credits": ["EITC", "propertyTaxFairnessCredit"],
+      "notes": "Standard deduction matches federal"
+    },
+    "MD": {
+      "name": "Maryland",
+      "hasIncomeTax": true,
+      "taxStructure": "graduated",
+      "form": "502",
+      "brackets": {
+        "all": [
+          {"rate": 0.02, "min": 0, "max": 1000},
+          {"rate": 0.03, "min": 1001, "max": 2000},
+          {"rate": 0.04, "min": 2001, "max": 3000},
+          {"rate": 0.0475, "min": 3001, "max": 100000},
+          {"rate": 0.05, "min": 100001, "max": 125000},
+          {"rate": 0.0525, "min": 125001, "max": 150000},
+          {"rate": 0.055, "min": 150001, "max": 250000},
+          {"rate": 0.0575, "min": 250001, "max": null}
+        ]
+      },
+      "countyTax": {
+        "min": 0.0225,
+        "max": 0.032,
+        "description": "Additional county tax varies by county (2.25% - 3.2%)"
+      },
+      "standardDeduction": {
+        "single": 2550,
+        "married": 5100,
+        "hoh": 5100
+      },
+      "personalExemption": {
+        "single": 3200,
+        "married": 6400,
+        "dependent": 3200
+      },
+      "startsWith": "federalAGI",
+      "additions": [],
+      "subtractions": ["socialSecurity", "retirementIncome"],
+      "credits": ["EITC", "povertyLevelCredit"],
+      "notes": "State + county tax, county rates vary"
+    },
+    "MA": {
+      "name": "Massachusetts",
+      "hasIncomeTax": true,
+      "taxStructure": "flat",
+      "form": "Form 1",
+      "flatRate": 0.05,
+      "surtax": {
+        "rate": 0.04,
+        "threshold": 1000000,
+        "description": "4% surtax on income over $1M (Fair Share Amendment)"
+      },
+      "standardDeduction": null,
+      "personalExemption": {
+        "single": 4400,
+        "married": 8800,
+        "dependent": 1000,
+        "additional65": 700,
+        "additionalBlind": 2200
+      },
+      "startsWith": "federalAGI",
+      "additions": [],
+      "subtractions": ["socialSecurity"],
+      "credits": ["EITC", "seniorCircuitBreaker", "dependentCareCredit"],
+      "notes": "Flat 5% + 4% surtax on $1M+, Part A (earned) and Part B (unearned) income"
+    },
+    "MI": {
+      "name": "Michigan",
+      "hasIncomeTax": true,
+      "taxStructure": "flat",
+      "form": "MI-1040",
+      "flatRate": 0.0425,
+      "standardDeduction": null,
+      "personalExemption": {
+        "single": 5000,
+        "married": 10000,
+        "dependent": 5000
+      },
+      "startsWith": "federalAGI",
+      "additions": [],
+      "subtractions": ["retirementIncome", "socialSecurity"],
+      "credits": ["EITC", "homeheatCredit"],
+      "notes": "Flat 4.25%, retirement income partially excluded"
+    },
+    "MN": {
+      "name": "Minnesota",
+      "hasIncomeTax": true,
+      "taxStructure": "graduated",
+      "form": "M1",
+      "brackets": {
+        "single": [
+          {"rate": 0.0535, "min": 0, "max": 30070},
+          {"rate": 0.068, "min": 30071, "max": 98760},
+          {"rate": 0.0785, "min": 98761, "max": 183340},
+          {"rate": 0.0985, "min": 183341, "max": null}
+        ],
+        "married": [
+          {"rate": 0.0535, "min": 0, "max": 44950},
+          {"rate": 0.068, "min": 44951, "max": 178340},
+          {"rate": 0.0785, "min": 178341, "max": 304970},
+          {"rate": 0.0985, "min": 304971, "max": null}
+        ]
+      },
+      "standardDeduction": {
+        "single": 14600,
+        "married": 29200,
+        "hoh": 21900
+      },
+      "personalExemption": null,
+      "startsWith": "federalAGI",
+      "additions": [],
+      "subtractions": ["socialSecurity"],
+      "credits": ["EITC", "childCareCredit", "K12EducationCredit"],
+      "notes": "Top rate 9.85%, standard deduction matches federal"
+    },
+    "MS": {
+      "name": "Mississippi",
+      "hasIncomeTax": true,
+      "taxStructure": "graduated",
+      "form": "80-105",
+      "brackets": {
+        "all": [
+          {"rate": 0.03, "min": 0, "max": 4000},
+          {"rate": 0.04, "min": 4001, "max": 10000},
+          {"rate": 0.05, "min": 10001, "max": null}
+        ]
+      },
+      "standardDeduction": {
+        "single": 2300,
+        "married": 4600,
+        "hoh": 3400
+      },
+      "personalExemption": {
+        "single": 6000,
+        "married": 12000,
+        "dependent": 1500
+      },
+      "startsWith": "federalAGI",
+      "additions": [],
+      "subtractions": ["retirementIncome", "socialSecurity"],
+      "credits": [],
+      "notes": "Low rates, retirement income fully excluded"
+    },
+    "MO": {
+      "name": "Missouri",
+      "hasIncomeTax": true,
+      "taxStructure": "graduated",
+      "form": "MO-1040",
+      "brackets": {
+        "all": [
+          {"rate": 0, "min": 0, "max": 1207},
+          {"rate": 0.015, "min": 1208, "max": 2414},
+          {"rate": 0.02, "min": 2415, "max": 3621},
+          {"rate": 0.025, "min": 3622, "max": 4828},
+          {"rate": 0.03, "min": 4829, "max": 6035},
+          {"rate": 0.035, "min": 6036, "max": 7242},
+          {"rate": 0.04, "min": 7243, "max": 8085},
+          {"rate": 0.045, "min": 8086, "max": null}
+        ]
+      },
+      "standardDeduction": {
+        "single": 14600,
+        "married": 29200,
+        "hoh": 21900
+      },
+      "personalExemption": null,
+      "startsWith": "federalAGI",
+      "additions": [],
+      "subtractions": ["socialSecurity", "retirementIncome"],
+      "credits": ["EITC", "propertyTaxCredit"],
+      "notes": "Moderate rates, standard deduction matches federal"
+    },
+    "MT": {
+      "name": "Montana",
+      "hasIncomeTax": true,
+      "taxStructure": "graduated",
+      "form": "2",
+      "brackets": {
+        "all": [
+          {"rate": 0.0475, "min": 0, "max": 20500},
+          {"rate": 0.0585, "min": 20501, "max": null}
+        ]
+      },
+      "standardDeduction": {
+        "single": 5240,
+        "married": 10480,
+        "hoh": 7870
+      },
+      "personalExemption": {
+        "single": 2960,
+        "married": 5920,
+        "dependent": 2960
+      },
+      "startsWith": "federalAGI",
+      "additions": [],
+      "subtractions": [],
+      "credits": ["EITC", "elderlyCareCredit"],
+      "notes": "Two-bracket system"
+    },
+    "NE": {
+      "name": "Nebraska",
+      "hasIncomeTax": true,
+      "taxStructure": "graduated",
+      "form": "1040N",
+      "brackets": {
+        "all": [
+          {"rate": 0.0246, "min": 0, "max": 3700},
+          {"rate": 0.0351, "min": 3701, "max": 22170},
+          {"rate": 0.0501, "min": 22171, "max": 35730},
+          {"rate": 0.0584, "min": 35731, "max": null}
+        ]
+      },
+      "standardDeduction": {
+        "single": 8100,
+        "married": 16200,
+        "hoh": 12150
+      },
+      "personalExemption": {
+        "single": 158,
+        "married": 316,
+        "dependent": 158
+      },
+      "startsWith": "federalAGI",
+      "additions": [],
+      "subtractions": ["socialSecurity", "militaryRetirement"],
+      "credits": ["EITC"],
+      "notes": "Top rate 5.84%"
+    },
+    "NV": {
+      "name": "Nevada",
+      "hasIncomeTax": false,
+      "notes": "No state income tax"
+    },
+    "NH": {
+      "name": "New Hampshire",
+      "hasIncomeTax": false,
+      "interestAndDividendsTax": {
+        "rate": 0.04,
+        "endDate": "2024",
+        "description": "4% tax on interest and dividends (being phased out, eliminated in 2025)"
+      },
+      "notes": "No tax on wages, dividends/interest tax eliminated in 2025"
+    },
+    "NJ": {
+      "name": "New Jersey",
+      "hasIncomeTax": true,
+      "taxStructure": "graduated",
+      "form": "NJ-1040",
+      "brackets": {
+        "single": [
+          {"rate": 0.014, "min": 0, "max": 20000},
+          {"rate": 0.0175, "min": 20001, "max": 35000},
+          {"rate": 0.035, "min": 35001, "max": 40000},
+          {"rate": 0.05525, "min": 40001, "max": 75000},
+          {"rate": 0.0637, "min": 75001, "max": 500000},
+          {"rate": 0.0897, "min": 500001, "max": 1000000},
+          {"rate": 0.1075, "min": 1000001, "max": null}
+        ],
+        "married": [
+          {"rate": 0.014, "min": 0, "max": 20000},
+          {"rate": 0.0175, "min": 20001, "max": 50000},
+          {"rate": 0.0245, "min": 50001, "max": 70000},
+          {"rate": 0.035, "min": 70001, "max": 80000},
+          {"rate": 0.05525, "min": 80001, "max": 150000},
+          {"rate": 0.0637, "min": 150001, "max": 500000},
+          {"rate": 0.0897, "min": 500001, "max": 1000000},
+          {"rate": 0.1075, "min": 1000001, "max": null}
+        ]
+      },
+      "standardDeduction": null,
+      "personalExemption": {
+        "single": 1000,
+        "married": 2000,
+        "dependent": 1500,
+        "additional65": 1000
+      },
+      "startsWith": "federalAGI",
+      "additions": [],
+      "subtractions": ["retirementIncome", "socialSecurity"],
+      "credits": ["EITC", "propertyTaxCredit", "childTaxCredit"],
+      "notes": "High rates, retirement income exclusion up to $100,000"
+    },
+    "NM": {
+      "name": "New Mexico",
+      "hasIncomeTax": true,
+      "taxStructure": "graduated",
+      "form": "PIT-1",
+      "brackets": {
+        "all": [
+          {"rate": 0.017, "min": 0, "max": 5500},
+          {"rate": 0.032, "min": 5501, "max": 11000},
+          {"rate": 0.047, "min": 11001, "max": 16000},
+          {"rate": 0.049, "min": 16001, "max": 210000},
+          {"rate": 0.059, "min": 210001, "max": null}
+        ]
+      },
+      "standardDeduction": {
+        "single": 14600,
+        "married": 29200,
+        "hoh": 21900
+      },
+      "personalExemption": null,
+      "startsWith": "federalAGI",
+      "additions": [],
+      "subtractions": ["socialSecurity"],
+      "credits": ["EITC", "childCareCredit"],
+      "notes": "Standard deduction matches federal"
+    },
+    "NY": {
+      "name": "New York",
+      "hasIncomeTax": true,
+      "taxStructure": "graduated",
+      "form": "IT-201",
+      "brackets": {
+        "single": [
+          {"rate": 0.04, "min": 0, "max": 8500},
+          {"rate": 0.045, "min": 8501, "max": 11700},
+          {"rate": 0.0525, "min": 11701, "max": 13900},
+          {"rate": 0.055, "min": 13901, "max": 80650},
+          {"rate": 0.06, "min": 80651, "max": 215400},
+          {"rate": 0.0685, "min": 215401, "max": 1077550},
+          {"rate": 0.0965, "min": 1077551, "max": 5000000},
+          {"rate": 0.103, "min": 5000001, "max": 25000000},
+          {"rate": 0.109, "min": 25000001, "max": null}
+        ],
+        "married": [
+          {"rate": 0.04, "min": 0, "max": 17150},
+          {"rate": 0.045, "min": 17151, "max": 23600},
+          {"rate": 0.0525, "min": 23601, "max": 27900},
+          {"rate": 0.055, "min": 27901, "max": 161550},
+          {"rate": 0.06, "min": 161551, "max": 323200},
+          {"rate": 0.0685, "min": 323201, "max": 2155350},
+          {"rate": 0.0965, "min": 2155351, "max": 5000000},
+          {"rate": 0.103, "min": 5000001, "max": 25000000},
+          {"rate": 0.109, "min": 25000001, "max": null}
+        ]
+      },
+      "standardDeduction": {
+        "single": 8000,
+        "married": 16050,
+        "hoh": 11200
+      },
+      "personalExemption": {
+        "single": 0,
+        "married": 0,
+        "dependent": 1000
+      },
+      "NYCTax": {
+        "single": [
+          {"rate": 0.03078, "min": 0, "max": 12000},
+          {"rate": 0.03762, "min": 12001, "max": 25000},
+          {"rate": 0.03819, "min": 25001, "max": 50000},
+          {"rate": 0.03876, "min": 50001, "max": null}
+        ],
+        "married": [
+          {"rate": 0.03078, "min": 0, "max": 21600},
+          {"rate": 0.03762, "min": 21601, "max": 45000},
+          {"rate": 0.03819, "min": 45001, "max": 90000},
+          {"rate": 0.03876, "min": 90001, "max": null}
+        ],
+        "description": "Additional tax for NYC residents"
+      },
+      "YonkersTax": {
+        "rate": 0.16775,
+        "description": "16.775% of state tax (NOT separate brackets)"
+      },
+      "startsWith": "federalAGI",
+      "additions": [],
+      "subtractions": ["socialSecurity"],
+      "credits": ["EITC", "empirelStateChildCredit", "collegeTuitionCredit"],
+      "notes": "High rates, NYC residents pay additional tax, Yonkers residents pay 16.775% of state tax"
+    },
+    "NC": {
+      "name": "North Carolina",
+      "hasIncomeTax": true,
+      "taxStructure": "flat",
+      "form": "D-400",
+      "flatRate": 0.045,
+      "standardDeduction": {
+        "single": 12750,
+        "married": 25500,
+        "hoh": 19125
+      },
+      "personalExemption": null,
+      "startsWith": "federalAGI",
+      "additions": [],
+      "subtractions": [],
+      "credits": ["childDeductionCredit"],
+      "notes": "Flat 4.5% rate as of 2024"
+    },
+    "ND": {
+      "name": "North Dakota",
+      "hasIncomeTax": true,
+      "taxStructure": "graduated",
+      "form": "ND-1",
+      "brackets": {
+        "all": [
+          {"rate": 0.0105, "min": 0, "max": 44725},
+          {"rate": 0.0224, "min": 44726, "max": 108175},
+          {"rate": 0.0264, "min": 108176, "max": 225975},
+          {"rate": 0.029, "min": 225976, "max": null}
+        ]
+      },
+      "standardDeduction": "federal",
+      "personalExemption": null,
+      "startsWith": "federalTaxableIncome",
+      "additions": [],
+      "subtractions": [],
+      "credits": [],
+      "notes": "Top rate 2.9%, uses federal taxable income"
+    },
+    "OH": {
+      "name": "Ohio",
+      "hasIncomeTax": true,
+      "taxStructure": "graduated",
+      "form": "IT 1040",
+      "brackets": {
+        "all": [
+          {"rate": 0, "min": 0, "max": 26050},
+          {"rate": 0.0275, "min": 26051, "max": 46100},
+          {"rate": 0.03, "min": 46101, "max": 92150},
+          {"rate": 0.0325, "min": 92151, "max": 115300},
+          {"rate": 0.0375, "min": 115301, "max": null}
+        ]
+      },
+      "localTax": {
+        "min": 0,
+        "max": 0.03,
+        "description": "Local income tax varies by municipality (0-3%)"
+      },
+      "standardDeduction": null,
+      "personalExemption": {
+        "single": 2400,
+        "married": 4800,
+        "dependent": 2400
+      },
+      "startsWith": "federalAGI",
+      "additions": [],
+      "subtractions": ["retirementIncome"],
+      "credits": ["EITC", "jointFilingCredit"],
+      "notes": "State + local tax, zero bracket up to $26,050, local rates vary"
+    },
+    "OK": {
+      "name": "Oklahoma",
+      "hasIncomeTax": true,
+      "taxStructure": "graduated",
+      "form": "511",
+      "brackets": {
+        "all": [
+          {"rate": 0.0025, "min": 0, "max": 1000},
+          {"rate": 0.0075, "min": 1001, "max": 2500},
+          {"rate": 0.0175, "min": 2501, "max": 3750},
+          {"rate": 0.0275, "min": 3751, "max": 4900},
+          {"rate": 0.0375, "min": 4901, "max": 7200},
+          {"rate": 0.0475, "min": 7201, "max": null}
+        ]
+      },
+      "standardDeduction": {
+        "single": 6350,
+        "married": 12700,
+        "hoh": 9350
+      },
+      "personalExemption": {
+        "single": 1000,
+        "married": 2000,
+        "dependent": 1000
+      },
+      "startsWith": "federalAGI",
+      "additions": [],
+      "subtractions": ["socialSecurity", "retirementIncome"],
+      "credits": ["EITC", "childTaxCredit"],
+      "notes": "Top rate 4.75%"
+    },
+    "OR": {
+      "name": "Oregon",
+      "hasIncomeTax": true,
+      "taxStructure": "graduated",
+      "form": "OR-40",
+      "brackets": {
+        "single": [
+          {"rate": 0.0475, "min": 0, "max": 4050},
+          {"rate": 0.0675, "min": 4051, "max": 10200},
+          {"rate": 0.0875, "min": 10201, "max": 125000},
+          {"rate": 0.099, "min": 125001, "max": null}
+        ],
+        "married": [
+          {"rate": 0.0475, "min": 0, "max": 8100},
+          {"rate": 0.0675, "min": 8101, "max": 20400},
+          {"rate": 0.0875, "min": 20401, "max": 250000},
+          {"rate": 0.099, "min": 250001, "max": null}
+        ]
+      },
+      "standardDeduction": {
+        "single": 2605,
+        "married": 5210,
+        "hoh": 4750
+      },
+      "personalExemption": {
+        "single": 213,
+        "married": 426,
+        "dependent": 213
+      },
+      "startsWith": "federalAGI",
+      "additions": ["stateTaxRefund"],
+      "subtractions": ["socialSecurity", "federalTaxPaid"],
+      "credits": ["EITC", "childCareCredit"],
+      "notes": "Top rate 9.9%, can deduct federal taxes paid on state return"
+    },
+    "PA": {
+      "name": "Pennsylvania",
+      "hasIncomeTax": true,
+      "taxStructure": "flat",
+      "form": "PA-40",
+      "flatRate": 0.0307,
+      "localTax": {
+        "min": 0,
+        "max": 0.039,
+        "description": "Local earned income tax varies by municipality"
+      },
+      "standardDeduction": null,
+      "personalExemption": null,
+      "incomeClasses": {
+        "compensation": 0.0307,
+        "interest": 0,
+        "dividends": 0,
+        "netProfits": 0.0307,
+        "netGains": 0.0307,
+        "rents": 0.0307,
+        "estates": 0.0307,
+        "gambling": 0.0307,
+        "description": "Eight classes of income, each taxed differently"
+      },
+      "startsWith": "eightClasses",
+      "additions": [],
+      "subtractions": ["retirementIncome"],
+      "credits": [],
+      "notes": "Flat 3.07% on earned income, retirement income excluded, interest and dividends tax-free, local tax varies"
+    },
+    "RI": {
+      "name": "Rhode Island",
+      "hasIncomeTax": true,
+      "taxStructure": "graduated",
+      "form": "RI-1040",
+      "brackets": {
+        "all": [
+          {"rate": 0.0375, "min": 0, "max": 73450},
+          {"rate": 0.0475, "min": 73451, "max": 166950},
+          {"rate": 0.0599, "min": 166951, "max": null}
+        ]
+      },
+      "standardDeduction": {
+        "single": 10400,
+        "married": 20800,
+        "hoh": 15600
+      },
+      "personalExemption": {
+        "single": 4700,
+        "married": 9400,
+        "dependent": 4700
+      },
+      "startsWith": "federalAGI",
+      "additions": [],
+      "subtractions": ["socialSecurity"],
+      "credits": ["EITC", "childCareCredit"],
+      "notes": "Top rate 5.99%"
+    },
+    "SC": {
+      "name": "South Carolina",
+      "hasIncomeTax": true,
+      "taxStructure": "graduated",
+      "form": "SC1040",
+      "brackets": {
+        "all": [
+          {"rate": 0, "min": 0, "max": 3460},
+          {"rate": 0.03, "min": 3461, "max": 17330},
+          {"rate": 0.064, "min": 17331, "max": null}
+        ]
+      },
+      "standardDeduction": {
+        "single": 14600,
+        "married": 29200,
+        "hoh": 21900
+      },
+      "personalExemption": null,
+      "startsWith": "federalTaxableIncome",
+      "additions": [],
+      "subtractions": [],
+      "credits": ["twoEarnerCredit"],
+      "notes": "Zero bracket up to $3,460, standard deduction matches federal"
+    },
+    "SD": {
+      "name": "South Dakota",
+      "hasIncomeTax": false,
+      "notes": "No state income tax"
+    },
+    "TN": {
+      "name": "Tennessee",
+      "hasIncomeTax": false,
+      "notes": "No state income tax (eliminated in 2021)"
+    },
+    "TX": {
+      "name": "Texas",
+      "hasIncomeTax": false,
+      "notes": "No state income tax, franchise tax on businesses"
+    },
+    "UT": {
+      "name": "Utah",
+      "hasIncomeTax": true,
+      "taxStructure": "flat",
+      "form": "TC-40",
+      "flatRate": 0.0455,
+      "standardDeduction": null,
+      "personalExemption": {
+        "single": 0,
+        "married": 0,
+        "dependent": 0,
+        "nonrefundableCredit": {
+          "single": 667,
+          "married": 1334,
+          "dependent": 667,
+          "description": "Nonrefundable tax credit instead of exemption"
+        }
+      },
+      "startsWith": "federalTaxableIncome",
+      "additions": [],
+      "subtractions": ["socialSecurity"],
+      "credits": ["EITC", "agedCredit"],
+      "notes": "Flat 4.55%, credit instead of exemption"
+    },
+    "VT": {
+      "name": "Vermont",
+      "hasIncomeTax": true,
+      "taxStructure": "graduated",
+      "form": "IN-111",
+      "brackets": {
+        "all": [
+          {"rate": 0.0335, "min": 0, "max": 45400},
+          {"rate": 0.066, "min": 45401, "max": 110050},
+          {"rate": 0.076, "min": 110051, "max": 229550},
+          {"rate": 0.0875, "min": 229551, "max": null}
+        ]
+      },
+      "standardDeduction": {
+        "single": 7100,
+        "married": 14200,
+        "hoh": 10650
+      },
+      "personalExemption": {
+        "single": 4800,
+        "married": 9600,
+        "dependent": 4800
+      },
+      "startsWith": "federalAGI",
+      "additions": [],
+      "subtractions": ["socialSecurity"],
+      "credits": ["EITC", "childCareCredit"],
+      "notes": "Top rate 8.75%"
+    },
+    "VA": {
+      "name": "Virginia",
+      "hasIncomeTax": true,
+      "taxStructure": "graduated",
+      "form": "760",
+      "brackets": {
+        "all": [
+          {"rate": 0.02, "min": 0, "max": 3000},
+          {"rate": 0.03, "min": 3001, "max": 5000},
+          {"rate": 0.05, "min": 5001, "max": 17000},
+          {"rate": 0.0575, "min": 17001, "max": null}
+        ]
+      },
+      "standardDeduction": {
+        "single": 8000,
+        "married": 16000,
+        "hoh": 8000
+      },
+      "personalExemption": {
+        "single": 930,
+        "married": 1860,
+        "dependent": 930,
+        "additional65": 800
+      },
+      "startsWith": "federalAGI",
+      "additions": [],
+      "subtractions": ["socialSecurity"],
+      "credits": ["EITC"],
+      "notes": "Top rate 5.75%"
+    },
+    "WA": {
+      "name": "Washington",
+      "hasIncomeTax": false,
+      "capitalGainsTax": {
+        "rate": 0.07,
+        "threshold": 250000,
+        "exemptions": ["realEstate", "retirementAccounts"],
+        "description": "7% tax on capital gains over $250,000 per year"
+      },
+      "notes": "No income tax on wages, 7% capital gains tax on high earners"
+    },
+    "WV": {
+      "name": "West Virginia",
+      "hasIncomeTax": true,
+      "taxStructure": "graduated",
+      "form": "IT-140",
+      "brackets": {
+        "all": [
+          {"rate": 0.0236, "min": 0, "max": 10000},
+          {"rate": 0.0315, "min": 10001, "max": 25000},
+          {"rate": 0.0354, "min": 25001, "max": 40000},
+          {"rate": 0.0472, "min": 40001, "max": 60000},
+          {"rate": 0.0512, "min": 60001, "max": null}
+        ]
+      },
+      "standardDeduction": "federal",
+      "personalExemption": {
+        "single": 2000,
+        "married": 4000,
+        "dependent": 2000
+      },
+      "startsWith": "federalAGI",
+      "additions": [],
+      "subtractions": ["socialSecurity"],
+      "credits": ["EITC", "seniorCitizenCredit"],
+      "notes": "Top rate 5.12%"
+    },
+    "WI": {
+      "name": "Wisconsin",
+      "hasIncomeTax": true,
+      "taxStructure": "graduated",
+      "form": "Form 1",
+      "brackets": {
+        "single": [
+          {"rate": 0.035, "min": 0, "max": 13810},
+          {"rate": 0.044, "min": 13811, "max": 27630},
+          {"rate": 0.053, "min": 27631, "max": 304170},
+          {"rate": 0.0765, "min": 304171, "max": null}
+        ],
+        "married": [
+          {"rate": 0.035, "min": 0, "max": 18420},
+          {"rate": 0.044, "min": 18421, "max": 36840},
+          {"rate": 0.053, "min": 36841, "max": 405550},
+          {"rate": 0.0765, "min": 405551, "max": null}
+        ]
+      },
+      "standardDeduction": {
+        "single": 12760,
+        "married": 23620,
+        "hoh": 18800
+      },
+      "personalExemption": null,
+      "startsWith": "federalAGI",
+      "additions": [],
+      "subtractions": ["socialSecurity"],
+      "credits": ["EITC", "homeschoolCredit", "childCareCredit"],
+      "notes": "Top rate 7.65%"
+    },
+    "WY": {
+      "name": "Wyoming",
+      "hasIncomeTax": false,
+      "notes": "No state income tax"
+    },
+    "DC": {
+      "name": "District of Columbia",
+      "hasIncomeTax": true,
+      "taxStructure": "graduated",
+      "form": "D-40",
+      "brackets": {
+        "all": [
+          {"rate": 0.04, "min": 0, "max": 10000},
+          {"rate": 0.06, "min": 10001, "max": 40000},
+          {"rate": 0.065, "min": 40001, "max": 60000},
+          {"rate": 0.085, "min": 60001, "max": 250000},
+          {"rate": 0.0925, "min": 250001, "max": 500000},
+          {"rate": 0.0975, "min": 500001, "max": 1000000},
+          {"rate": 0.1075, "min": 1000001, "max": null}
+        ]
+      },
+      "standardDeduction": {
+        "single": 14600,
+        "married": 29200,
+        "hoh": 21900
+      },
+      "personalExemption": {
+        "single": 1925,
+        "married": 3850,
+        "dependent": 1925
+      },
+      "startsWith": "federalAGI",
+      "additions": [],
+      "subtractions": [],
+      "credits": ["EITC", "childCareCredit"],
+      "notes": "Top rate 10.75%, standard deduction matches federal"
+    }
+  }
+}

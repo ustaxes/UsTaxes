@@ -1,0 +1,25 @@
+{
+  "documentType": "1099-DIV",
+  "taxYear": 2024,
+  "description": "Sample 1099-DIV for dividend and capital gains",
+  "extractedData": {
+    "form": "DIV",
+    "form1099Div": {
+      "payer": "Vanguard Brokerage",
+      "dividends": 3250.00,
+      "qualifiedDividends": 2800.00,
+      "capitalGain": 1500.00
+    },
+    "personRole": "PRIMARY"
+  },
+  "confidence": {
+    "payer": 100,
+    "dividends": 100,
+    "qualifiedDividends": 100,
+    "capitalGain": 100,
+    "overall": 100
+  },
+  "ambiguities": [],
+  "validationErrors": [],
+  "readyForDispatch": true
+}

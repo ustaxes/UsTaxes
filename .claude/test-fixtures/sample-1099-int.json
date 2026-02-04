@@ -1,0 +1,18 @@
+{
+  "form": "1099-INT",
+  "payer": "XYZ Financial",
+  "payerTIN": "98-7654321",
+  "income": 1250.50,
+  "interest": 1250.50,
+  "taxExemptInterest": 0,
+  "foreignTaxPaid": 0,
+  "foreignCountry": null,
+  "investmentExpenses": 0,
+  "federalIncomeTaxWithheld": 0,
+  "specifiedPrivateActivityBondInterest": 0,
+  "marketDiscount": 0,
+  "bondPremium": 0,
+  "bondPremiumOnTreasuryObligations": 0,
+  "taxExemptBondPremium": 0,
+  "cusipNumber": ""
+}
