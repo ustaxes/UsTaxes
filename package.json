@@ -14,7 +14,7 @@
     "axios": "^1.7.9",
     "date-fns": "^2.30.0",
     "lodash": "^4.17.23",
-    "loglevel": "^1.9.1",
+    "loglevel": "^1.9.2",
     "papaparse": "^5.4.1",
     "pdf-lib": "^1.17.1",
     "react": "^17.0.2",
