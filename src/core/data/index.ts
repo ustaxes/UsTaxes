@@ -408,10 +408,56 @@ export interface Property {
   personalUseDays: number
   rentReceived: number
   propertyType: PropertyTypeName
+  isPassive?: boolean
   otherPropertyType?: string
   qualifiedJointVenture: boolean
   expenses: Partial<{ [K in PropertyExpenseTypeName]: number }>
   otherExpenseType?: string
+}
+
+export interface BusinessIncome {
+  grossReceipts: number
+  returnsAndAllowances: number
+  otherIncome?: number
+}
+
+export interface BusinessExpenses {
+  advertising?: number
+  carAndTruck?: number
+  commissions?: number
+  contractLabor?: number
+  depletion?: number
+  depreciation?: number
+  employeeBenefit?: number
+  insurance?: number
+  interestMortgage?: number
+  interestOther?: number
+  legalAndProfessional?: number
+  office?: number
+  pensionProfitSharing?: number
+  rentVehicles?: number
+  rentOther?: number
+  repairs?: number
+  supplies?: number
+  taxesAndLicenses?: number
+  travel?: number
+  meals?: number
+  utilities?: number
+  wages?: number
+  other?: number
+}
+
+export interface Business {
+  name: string
+  principalBusinessOrProfession?: string
+  businessCode?: string
+  ein?: string
+  address?: Address
+  income: BusinessIncome
+  expenses: BusinessExpenses
+  otherExpenseType?: string
+  otherExpenseAmount?: number
+  homeOfficeDeduction?: number
 }
 
 export interface F1098e {
@@ -563,6 +609,7 @@ export interface Information<D = Date> {
   f1099s: Supported1099[]
   w2s: IncomeW2[]
   realEstate: Property[]
+  businesses?: Business[]
   estimatedTaxes: EstimatedTaxPayments[]
   f1098es: F1098e[]
   f3921s: F3921[]

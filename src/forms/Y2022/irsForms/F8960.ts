@@ -53,7 +53,31 @@ export default class F8960 extends F1040Attachment {
       representing the amount that you would properly include on Schedule 1 (Form 1040), line 5, 
       if you were filing Form 1040 or 1040‐SR and including income and loss only for your period of U.S. residency.
   */
-  l4a = (): number | undefined => this.f1040.schedule1.l5()
+  passiveRentalNet = (): number => {
+    const scheduleE = this.f1040.scheduleE
+    return this.f1040.info.realEstate
+      .filter((p) => p.isPassive)
+      .reduce((sum, p) => {
+        if (!scheduleE.propertyUseTest(p)) {
+          return sum
+        }
+        const expenseTotal =
+          scheduleE.expenses.reduce(
+            (t, expType) => t + (p.expenses[expType] ?? 0),
+            0
+          ) + (p.expenses.other ?? 0)
+        return sum + p.rentReceived - expenseTotal
+      }, 0)
+  }
+
+  passiveK1Net = (): number =>
+    this.f1040.info.scheduleK1Form1065s.reduce(
+      (sum, k1) => sum + (k1.isPassive ? k1.ordinaryBusinessIncome : 0),
+      0
+    )
+
+  l4a = (): number | undefined =>
+    sumFields([this.passiveRentalNet(), this.passiveK1Net()])
 
   l4b = (): number | undefined => undefined
 
