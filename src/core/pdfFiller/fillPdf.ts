@@ -1,4 +1,10 @@
-import { PDFDocument, PDFCheckBox, PDFTextField, PDFName } from 'pdf-lib'
+import {
+  PDFDocument,
+  PDFCheckBox,
+  PDFTextField,
+  PDFName,
+  PDFRadioGroup
+} from 'pdf-lib'
 import { Field } from '.'
 import { displayRound } from '../irsForms/util'
 import _ from 'lodash'
@@ -66,6 +72,15 @@ export function fillPDF(
         pdfField.setText(showValue)
       } catch (err) {
         throw error('text field')
+      }
+    } else if (pdfField instanceof PDFRadioGroup) {
+      // debug:
+      //console.log('radio group options ' + pdfField.getOptions())
+      //pdfField.select('Choice1')
+      try {
+        pdfField.select(value?.toString() || '')
+      } catch (err) {
+        throw error('radio group')
       }
     } else if (value !== undefined) {
       throw error('unknown')

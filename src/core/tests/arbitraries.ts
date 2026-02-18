@@ -1,7 +1,14 @@
 import * as fc from 'fast-check'
 import { Arbitrary } from 'fast-check'
 import locationPostalCodes from '../data/locationPostalCodes'
-import { QuestionTagName, questionTagNames, Responses } from '../data'
+import {
+  QuestionTagName,
+  questionTagNames,
+  Responses,
+  StateQuestionTagName,
+  stateQuestionTagNames,
+  StateResponses
+} from '../data'
 import * as types from '../data'
 import * as util from '../util'
 import _ from 'lodash'
@@ -430,6 +437,50 @@ export const questions: Arbitrary<Responses> = fc
       .map((kvs) => Object.fromEntries(kvs) as Responses)
   )
 
+const stateQuestionTag: Arbitrary<StateQuestionTagName> = fc.constantFrom(
+  ...stateQuestionTagNames
+)
+
+// make sure that the question tag maps to values of correct type.
+const stateQuestionTagArbs = {
+  // oregon state questions
+  // page 2
+  OR_6A_TAXPAYER_SEVERELY_DISABLED: fc.boolean(),
+  OR_6B_SPOUSE_SEVERELY_DISABLED: fc.boolean(),
+  // page 4
+  OR_21_INTEREST_ON_INSTALLMENT_SALES: words,
+  OR_24_POLITICAL_CONTRIBUTION_CREDIT: words,
+  OR_25_TOTAL_STANDARD_CREDITS_FROM_OR_ASC: words,
+  OR_28_TOTAL_CARRYFORWARD_CREDITS_FROM_OR_ASC: words,
+  OR_30_TOTAL_CREDIT_RECAPTURES_FROM_OR_ASC: words,
+  // page 5
+  OR_32_OREGON_INCOME_TAX_WITHHELD: words,
+  OR_33_AMOUNT_APPLIED_FROM_PRIOR_YEAR_REFUND: words,
+  OR_34_ESTIMATED_TAX_PAYMENTS: words,
+  OR_36_53_KICKER_OREGON_SURPLUS_CREDIT: words,
+  OR_37_TOTAL_REFUNDABLE_CREDITS_FROM_OR_ASC: words,
+  OR_41_PENALTY_FOR_FILING_LATE: words,
+  OR_42_INTEREST_ON_UNDERPAYMENT_OF_EST_TAX: words,
+  OR_42a_EXCEPTION_NUMBER: words,
+  OR_42b_ANNUALIZED: fc.boolean(),
+  // page 6
+  OR_46_ESTIMATED_TAX: words,
+  OR_47_CHARITABLE_CHECKOFF_DONATIONS: words,
+  OR_48_POLITICAL_PARTY_3DOLLAR_CHECKOFF: words,
+  OR_48a_TAXPAYER_POLITICAL_PARTY_CODE: words,
+  OR_48b_SPOUSE_POLITICAL_PARTY_CODE: words,
+  OR_49_529_COLLEGE_SAVINGS_PLAN_DEPOSITS: words,
+  OR_53_DONATE_TO_STATE_SCHOOL_FUND: fc.boolean()
+}
+
+export const stateQuestions: Arbitrary<StateResponses> = fc
+  .uniqueArray(stateQuestionTag, { comparator: 'IsStrictlyEqual' })
+  .chain((tags) =>
+    fc
+      .tuple(...tags.map((t) => stateQuestionTagArbs[t].map((v) => [t, v])))
+      .map((kvs) => Object.fromEntries(kvs) as StateResponses)
+  )
+
 // const iraPlan: Arbitrary<IraPlanName> = fc.constantFrom(...iraPlanNames)
 
 export class Arbitraries {
@@ -669,6 +720,7 @@ export class Arbitraries {
         questions,
         state,
         fc.array(this.healthSavingsAccount()),
+        stateQuestions,
         fc.array(this.credit(), { maxLength: 2 }),
         fc.array(this.ira())
       )
@@ -687,6 +739,7 @@ export class Arbitraries {
           questions,
           state,
           healthSavingsAccounts,
+          stateQuestions,
           credits,
           individualRetirementArrangements
         ]) => ({
@@ -703,6 +756,7 @@ export class Arbitraries {
           questions,
           stateResidencies: [{ state }],
           healthSavingsAccounts,
+          stateQuestions,
           credits,
           individualRetirementArrangements
         })
