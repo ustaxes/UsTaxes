@@ -6,6 +6,8 @@ import { FormTag } from 'ustaxes/core/irsForms/Form'
 /**
  * Credit percentage table for Form 2441 line 8 (unchanged from prior years,
  * not indexed for inflation). AGI thresholds are the lower bounds of each bracket.
+ * 
+ * TODO: Move to federal, maybe? even if mostly unchaged?
  */
 const CREDIT_RATE_TABLE: [number, number][] = [
   [0, 0.35],

@@ -44,12 +44,6 @@ export default class ScheduleA extends F1040Attachment {
     return false
   }
 
-  deductions(): number {
-    return (
-      this.l4() + this.l7() + this.l10() + this.l14() + this.l15() + this.l16()
-    )
-  }
-
   l1 = (): number => Number(this.itemizedDeductions.medicalAndDental)
 
   l2 = (): number => this.f1040.l11()
@@ -124,6 +118,12 @@ export default class ScheduleA extends F1040Attachment {
   l16Other2 = (): string | undefined => undefined
   l16Other3 = (): string | undefined => undefined
   l16 = (): number => 0
+
+  deductions(): number {
+    return (
+      this.l4() + this.l7() + this.l10() + this.l14() + this.l15() + this.l16()
+    )
+  }
 
   l17 = (): number => this.deductions()
 

@@ -1,8 +1,6 @@
 import { commonTests } from '.'
 import * as fc from 'fast-check'
 
-jest.setTimeout(30000)
-
 describe('ScheduleA', () => {
   it('should make deduction > standard deduction if Schedule A is attached', async () => {
     await commonTests.withValid1040((f1040) => {

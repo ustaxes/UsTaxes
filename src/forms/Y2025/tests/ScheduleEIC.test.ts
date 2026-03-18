@@ -3,8 +3,6 @@
 import * as federal from '../data/federal'
 import { testKit, commonTests } from '.'
 
-jest.setTimeout(30000)
-
 beforeAll(() => jest.spyOn(console, 'warn').mockImplementation(() => {}))
 
 describe('ScheduleEIC', () => {

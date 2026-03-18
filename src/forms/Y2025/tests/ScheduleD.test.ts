@@ -1,8 +1,6 @@
 import * as fc from 'fast-check'
 import { testKit, commonTests } from '.'
 
-jest.setTimeout(30000)
-
 describe('ScheduleD', () => {
   it('should never pass through more than allowed losses', async () => {
     await fc.assert(
@@ -14,8 +12,7 @@ describe('ScheduleD', () => {
           )
         }
         return Promise.resolve()
-      }),
-      { numRuns: 10 }
+      })
     )
   })
 })

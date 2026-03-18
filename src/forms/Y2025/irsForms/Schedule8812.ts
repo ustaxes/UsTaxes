@@ -89,10 +89,6 @@ export default class Schedule8812 extends F1040Attachment {
 
   l14 = (): number => (this.l12no() ? 0 : Math.min(this.l12(), this.l13()))
 
-  // Check this box if you do not want to file the additional tax credit
-  // TODO: Assuming that people do right now
-  l15 = (): boolean => true
-
   creditLimitWorksheetB = (): number | undefined => undefined
 
   creditLimitWorksheetA = (): number => {
@@ -177,6 +173,7 @@ export default class Schedule8812 extends F1040Attachment {
     const l16a = Math.max(0, this.l12() - this.l14())
     const l16bdeps = this.l4()
 
+    // TODO: Should this be in federal.ts to better update each year?
     const l16b = l16bdeps * 1700
 
     const l17 = Math.min(l16a, l16b)
