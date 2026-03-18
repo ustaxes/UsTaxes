@@ -188,6 +188,9 @@ const federalBrackets: FederalBrackets = {
   }
 }
 
+// max tax and income based on https://www.ssa.gov/oact/cola/cbb.html
+// calc the maxIncomeSSTaxApplies with maxSSTax * rate
+// rate is this year 6.2
 export const fica = {
   maxSSTax: 10918.2,
   maxIncomeSSTaxApplies: 176100,
@@ -210,6 +213,7 @@ export const fica = {
 }
 
 // Net Investment Income Tax calculated on form 8960
+// https://www.irs.gov/instructions/i8960
 export const netInvestmentIncomeTax = {
   taxRate: 0.038, // 3.8%
   taxThreshold: (filingStatus: FilingStatus): number => {
@@ -464,6 +468,7 @@ const toPieceWise = (points: Point[]): Piecewise =>
 
 // These points are taken directly from IRS Rev. Proc. 2024-40 (tax year 2025)
 // https://www.irs.gov/pub/irs-drop/rp-24-40.pdf
+// tax year 2026: https://www.irs.gov/pub/irs-drop/rp-25-32.pdf
 const unmarriedFormulas: Piecewise[] = (() => {
   const points: Point[][] = [
     [
@@ -563,7 +568,9 @@ interface SocialSecurityBenefitsDef {
   caps: { [k in FilingStatus]: { l8: number; l10: number } }
 }
 
-/** IRS social security benefits worksheet base amounts ($25k/$32k and $9k/$12k); not annual CPI adjustments. */
+/** IRS social security benefits worksheet base amounts ($25k/$32k and $9k/$12k); not annual CPI adjustments. 
+ *  This claims line 8 and line 10, but I don't see where on the SSB worksheet that is the case ever...
+*/
 export const SSBenefits: SocialSecurityBenefitsDef = {
   caps: {
     [FilingStatus.S]: { l8: 25000, l10: 9000 },

@@ -116,7 +116,7 @@ export default class SocialSecurityBenefitsWorksheet extends Worksheet {
   /*
   Enter: $12,000 if married filing jointly; 
   $9,000 if single, head of household, qualifying widow(er), or married filing separately 
-  and you lived apart from your spouse for all of 2020
+  and you lived apart from your spouse for all of 2025
   */
   l10 = (): number => SSBenefits.caps[this.f1040.info.taxPayer.filingStatus].l10
 
