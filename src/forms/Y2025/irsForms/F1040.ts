@@ -72,7 +72,7 @@ export default class F1040 extends F1040Base {
   assets: Asset<Date>[]
 
   schedule1: Schedule1
-  schedule1a: Schedule1A
+  schedule1A: Schedule1A
   schedule2: Schedule2
   schedule3: Schedule3
   scheduleA: ScheduleA
@@ -134,7 +134,7 @@ export default class F1040 extends F1040Base {
     this.scheduleSE = new ScheduleSE(this)
 
     this.schedule1 = new Schedule1(this)
-    this.schedule1a = new Schedule1A(this)
+    this.schedule1A = new Schedule1A(this)
     this.schedule2 = new Schedule2(this)
     this.schedule3 = new Schedule3(this)
     this.f4547 = new F4547(this)
@@ -258,7 +258,7 @@ export default class F1040 extends F1040Base {
       this.f8960,
       this.f8995,
       this.schedule1,
-      this.schedule1a,
+      this.schedule1A,
       this.schedule2,
       this.schedule3,
       this.f4547
@@ -431,7 +431,8 @@ export default class F1040 extends F1040Base {
 
   l10 = (): number | undefined => this.schedule1.to1040Line10()
 
-  l11 = (): number => Math.max(0, this.l9() - (this.l10() ?? 0))
+  l11a = (): number => Math.max(0, this.l9() - (this.l10() ?? 0))
+  l11b = (): number => this.l11a()
 
   l12 = (): number => {
     if (this.scheduleA.isNeeded()) {
@@ -440,10 +441,13 @@ export default class F1040 extends F1040Base {
     return this.standardDeduction() ?? 0
   }
 
-  l13 = (): number | undefined => this.f8995?.deductions()
-  l13b = (): number | undefined =>
-    this.schedule1a.isNeeded() ? this.schedule1a.total() : undefined
-  l14 = (): number => sumFields([this.l12(), this.l13(), this.l13b()])
+  l13a = (): number | undefined => this.f8995?.deductions()
+  // Line 13b: Additional deductions from Schedule 1-A (2025)
+  l13b = (): number | undefined => {
+    const amt = this.schedule1A.l38()
+    return this.schedule1A.isNeeded() && amt > 0 ? amt : undefined
+  }
+  l14 = (): number => sumFields([this.l12(), this.l13a(), this.l13b()])
 
   l15 = (): number => Math.max(0, this.l11() - this.l14())
 
@@ -990,13 +994,13 @@ export default class F1040 extends F1040Base {
       checkbox('topmostSubform[0].Page1[0].c1_44[0]', undefined),
       // Lines 10-11a: adjustments and AGI (123-124)
       text('topmostSubform[0].Page1[0].f1_71[0]', this.l10()),
-      text('topmostSubform[0].Page1[0].f1_72[0]', this.l11()),
+      text('topmostSubform[0].Page1[0].f1_72[0]', this.l11a()),
       // New OBBB fields at end of page 1 (125-127)
       text('topmostSubform[0].Page1[0].f1_73[0]', undefined),
       text('topmostSubform[0].Page1[0].f1_74[0]', undefined),
       text('topmostSubform[0].Page1[0].f1_75[0]', undefined),
       // Page 2 — line 11b: AGI repeated from page 1 (128)
-      text('topmostSubform[0].Page2[0].f2_01[0]', this.l11()),
+      text('topmostSubform[0].Page2[0].f2_01[0]', this.l11b()),
       // Standard deduction section — moved to page 2 in Y2025 (129-136)
       checkbox(
         'topmostSubform[0].Page2[0].c2_1[0]',
@@ -1014,7 +1018,7 @@ export default class F1040 extends F1040Base {
       checkbox('topmostSubform[0].Page2[0].c2_8[0]', undefined),
       // Deduction amounts: lines 12e, 13a, 13b, 14, 15 (137-141)
       text('topmostSubform[0].Page2[0].f2_02[0]', this.l12()),
-      text('topmostSubform[0].Page2[0].f2_03[0]', this.l13()),
+      text('topmostSubform[0].Page2[0].f2_03[0]', this.l13a()),
       text('topmostSubform[0].Page2[0].f2_04[0]', this.l13b()),
       text('topmostSubform[0].Page2[0].f2_05[0]', this.l14()),
       text('topmostSubform[0].Page2[0].f2_06[0]', this.l15()),

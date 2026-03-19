@@ -83,13 +83,18 @@ export default class F6251 extends F1040Attachment {
 
     return false
   }
-
-  l1 = (): number | undefined => {
-    const l15 = this.f1040.l15()
-    if (l15 !== 0) {
-      return l15
+  
+  l1a = (): number => {
+    // find the difference between line 14 of 1040,
+    // and line 37 of your Schedule 1-A (Form 1040).
+    // not line 38, so not including other deductions from that schedule
+    const obbba_ded = () => {
+      if (this.f1040.schedule1A.isNeeded()) {
+        return this.f1040.schedule1A.l37()
+      }
+      return 0
     }
-    return this.f1040.l11() - this.f1040.l14()
+    return this.f1040.l14() - obbba_ded()
   }
 
   /**
@@ -99,8 +104,14 @@ export default class F6251 extends F1040Attachment {
    * incorporates this deduction via F1040.l15().
    */
   l1b = (): number | undefined => {
-    const sa = this.f1040.schedule1a
+    const sa = this.f1040.schedule1A
     return sa.isNeeded() && sa.l35() > 0 ? -sa.l35() : undefined
+  }
+
+  // If I am understanding this correctly, this is just
+  // line 15 from the 1040 minus the l37 from Schedule A
+  l1b = (): number => {
+    return this.f1040.l11b() - this.l1a()
   }
 
   l2a = (): number | undefined => {
@@ -189,7 +200,7 @@ export default class F6251 extends F1040Attachment {
 
   l4 = (additionalAmount = 0): number | undefined =>
     additionalAmount +
-    (this.l1() ?? 0) +
+    (this.l1b() ?? 0) +
     (this.l2a() ?? 0) -
     (this.l2b() ?? 0) +
     (this.l2c() ?? 0) +
@@ -476,7 +487,7 @@ export default class F6251 extends F1040Attachment {
       this.f1040.namesString(),
       this.f1040.info.taxPayer.primaryPerson.ssid,
       // Part I
-      this.l1(),
+      this.l1a(),
       this.l1b(),
       this.l2a(),
       this.l2b(),
@@ -551,7 +562,7 @@ export default class F6251 extends F1040Attachment {
         'topmostSubform[0].Page1[0].f1_2[0]',
         this.f1040.info.taxPayer.primaryPerson.ssid
       ),
-      text('topmostSubform[0].Page1[0].f1_3[0]', this.l1()),
+      text('topmostSubform[0].Page1[0].f1_3[0]', this.l1a()),
       text('topmostSubform[0].Page1[0].f1_4[0]', this.l2a()),
       text('topmostSubform[0].Page1[0].f1_5[0]', this.l2b()),
       text('topmostSubform[0].Page1[0].f1_6[0]', this.l2c()),
