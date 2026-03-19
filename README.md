@@ -13,12 +13,13 @@ UsTaxes is a free, open-source tax filing application that can be used to file t
 
 ## Supported Income data
 
-Most income and deduction information from the following forms are supported for tax years 2023, 2022, 2021 and 2020.
+Most income and deduction information from the following forms are supported for tax years 2025, 2024, 2023, 2022, 2021 and 2020.
 
 - W2
 - 1099-INT
 - 1099-DIV
 - 1099-B
+- 1099-DA
 - 1098-E
 - 1099-R: support for normal distributions from IRA and pension accounts.
 - SSA-1099
@@ -29,6 +30,7 @@ So far, this project can attach the following schedules to form 1040:
 - Schedule 2
 - Schedule 3 (as to excess FICA tax only)
 - Schedule 8812
+- Schedule 1A - new deductions for tips, being old, car loans, etc. from OBBBA
 - Schedule B
 - Schedule D
 - Schedule E
