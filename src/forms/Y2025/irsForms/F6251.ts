@@ -97,17 +97,6 @@ export default class F6251 extends F1040Attachment {
     return this.f1040.l14() - obbba_ded()
   }
 
-  /**
-   * 2025 addition: senior deduction from Schedule 1-A line 35, treated as a
-   * personal exemption adjustment to AMT income under §56(b)(5)(D).
-   * Shown separately on Form 6251 line 1b for display; the net of l1 already
-   * incorporates this deduction via F1040.l15().
-   */
-  l1b = (): number | undefined => {
-    const sa = this.f1040.schedule1A
-    return sa.isNeeded() && sa.l35() > 0 ? -sa.l35() : undefined
-  }
-
   // If I am understanding this correctly, this is just
   // line 15 from the 1040 minus the l37 from Schedule A
   l1b = (): number => {
@@ -200,7 +189,7 @@ export default class F6251 extends F1040Attachment {
 
   l4 = (additionalAmount = 0): number | undefined =>
     additionalAmount +
-    (this.l1b() ?? 0) +
+    this.l1b() +
     (this.l2a() ?? 0) -
     (this.l2b() ?? 0) +
     (this.l2c() ?? 0) +

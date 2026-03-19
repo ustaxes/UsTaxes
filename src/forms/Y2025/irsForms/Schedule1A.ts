@@ -29,7 +29,7 @@ export default class Schedule1A extends F1040Attachment {
   // ─── Part I: Modified Adjusted Gross Income (MAGI) Amount ───────────────────
 
   // Line 1: AGI from Form 1040 line 11
-  l1 = (): number => this.f1040.l11()
+  l1 = (): number => this.f1040.l11b()
 
   // Line 2a: Income from Puerto Rico excluded (not supported)
   l2a = (): number | undefined => undefined

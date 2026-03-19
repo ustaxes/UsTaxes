@@ -20,12 +20,14 @@ import FilteredAssetsTable from './assets/FilteredAssetsTable'
 import { DatePicker } from '../input/DatePicker'
 import { intentionallyFloat } from 'ustaxes/core/util'
 
-const showAssetType = (p: AssetType) => {
+const showAssetType = (p: AssetType): string => {
   switch (p) {
     case 'Security':
       return 'Security (Stock, bond, option, mutual fund, etc.)'
     case 'Real Estate':
       return 'Real Estate'
+    case 'Digital Asset':
+      return 'Digital Asset (Cryptocurrency, NFT, etc.)'
   }
 }
 
@@ -113,7 +115,7 @@ export const OtherInvestments = (): ReactElement => {
         <GenericLabeledDropdown<AssetType, AssetUserInput>
           label="Asset Type"
           name="positionType"
-          dropDownData={['Security', 'Real Estate']}
+          dropDownData={['Security', 'Real Estate', 'Digital Asset']}
           keyMapping={(x) => x}
           textMapping={showAssetType}
           valueMapping={(x) => x}

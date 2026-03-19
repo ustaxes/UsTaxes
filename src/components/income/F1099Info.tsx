@@ -73,6 +73,17 @@ const showIncome = (a: Supported1099): ReactElement => {
         </span>
       )
     }
+    case Income1099Type.DA: {
+      const ltg = a.form.longTermProceeds - a.form.longTermCostBasis
+      const stg = a.form.shortTermProceeds - a.form.shortTermCostBasis
+      return (
+        <span>
+          Long term: <Currency value={ltg} />
+          <br />
+          Short term: <Currency value={stg} />
+        </span>
+      )
+    }
   }
 }
 
@@ -151,6 +162,9 @@ const toUserInput = (f: Supported1099): F1099UserInput => ({
       case Income1099Type.SSA: {
         return f.form
       }
+      case Income1099Type.DA: {
+        return f.form
+      }
     }
   })()
 })
@@ -217,6 +231,19 @@ const toF1099 = (input: F1099UserInput): Supported1099 | undefined => {
           // benefitsRepaid: Number(input.benefitsRepaid),
           netBenefits: Number(input.netBenefits),
           federalIncomeTaxWithheld: Number(input.federalIncomeTaxWithheld)
+        }
+      }
+    }
+    case Income1099Type.DA: {
+      return {
+        payer: input.payer,
+        personRole: input.personRole ?? PersonRole.PRIMARY,
+        type: input.formType,
+        form: {
+          shortTermCostBasis: Number(input.shortTermCostBasis),
+          shortTermProceeds: Number(input.shortTermProceeds),
+          longTermCostBasis: Number(input.longTermCostBasis),
+          longTermProceeds: Number(input.longTermProceeds)
         }
       }
     }
@@ -399,7 +426,8 @@ export default function F1099Info(): ReactElement {
     [Income1099Type.B]: bFields,
     [Income1099Type.DIV]: divFields,
     [Income1099Type.R]: rFields,
-    [Income1099Type.SSA]: ssaFields
+    [Income1099Type.SSA]: ssaFields,
+    [Income1099Type.DA]: bFields
   }
 
   const titles = {
@@ -407,7 +435,8 @@ export default function F1099Info(): ReactElement {
     [Income1099Type.B]: '1099-B',
     [Income1099Type.DIV]: '1099-DIV',
     [Income1099Type.R]: '1099-R',
-    [Income1099Type.SSA]: 'SSA-1099'
+    [Income1099Type.SSA]: 'SSA-1099',
+    [Income1099Type.DA]: '1099-DA'
   }
 
   const form: ReactElement | undefined = (

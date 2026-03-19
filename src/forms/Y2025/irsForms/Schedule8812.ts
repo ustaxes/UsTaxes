@@ -42,7 +42,7 @@ export default class Schedule8812 extends F1040Attachment {
         this.f1040.qualifyingDependents.qualifiesOther(dep)
     )
 
-  l1 = (): number => this.f1040.l11()
+  l1 = (): number => this.f1040.l11b()
 
   // TODO: Puerto Rico income
   l2a = (): number => 0

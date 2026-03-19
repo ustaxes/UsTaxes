@@ -110,6 +110,7 @@ export default class F1040 extends F1040Base {
   f4547: F4547
   f8936?: F8936
   f8949: F8949
+  f8949Digital: F8949
   _f8949s?: F8949[]
   f8959: F8959
   f8960: F8960
@@ -146,6 +147,7 @@ export default class F1040 extends F1040Base {
     this.f8962 = new F8962(this)
     this.f6251 = new F6251(this)
     this.f8949 = new F8949(this)
+    this.f8949Digital = new F8949(this, 'digital')
     this.f8889 = new F8889(this, this.info.taxPayer.primaryPerson)
 
     // add in separate form 8889 for the spouse
@@ -173,7 +175,7 @@ export default class F1040 extends F1040Base {
       const formAMinAmount = getF8995PhaseOutIncome(
         this.info.taxPayer.filingStatus
       )
-      if (this.l11() - this.l12() >= formAMinAmount) {
+      if (this.l11a() - this.l12() >= formAMinAmount) {
         this.f8995 = new F8995A(this)
       } else {
         this.f8995 = new F8995(this)
@@ -207,7 +209,12 @@ export default class F1040 extends F1040Base {
 
   get f8949s(): F8949[] {
     if (this._f8949s === undefined) {
-      this._f8949s = [this.f8949, ...this.f8949.copies()]
+      this._f8949s = [
+        this.f8949,
+        ...this.f8949.copies(),
+        this.f8949Digital,
+        ...this.f8949Digital.copies()
+      ]
     }
     return this._f8949s
   }
@@ -254,6 +261,7 @@ export default class F1040 extends F1040Base {
       this.f8910,
       this.f8936,
       this.f8949,
+      this.f8949Digital,
       this.f8959,
       this.f8960,
       this.f8995,
@@ -449,7 +457,7 @@ export default class F1040 extends F1040Base {
   }
   l14 = (): number => sumFields([this.l12(), this.l13a(), this.l13b()])
 
-  l15 = (): number => Math.max(0, this.l11() - this.l14())
+  l15 = (): number => Math.max(0, this.l11b() - this.l14())
 
   f8814Box = (): boolean | undefined => this.f8814 !== undefined
   f4972Box = (): boolean | undefined => this.f4972 !== undefined
