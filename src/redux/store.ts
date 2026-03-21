@@ -160,7 +160,11 @@ export const createStoreUnpersisted = (information: Information): InfoStore =>
   })
 
 export const createStore = (): PersistedStore =>
-  reduxCreateStore(persistedReducer, applyMiddleware(logger))
+  // `redux-logger`'s middleware types can be incompatible with our
+  // redux typings in some TypeScript setups. Cast to `any` to avoid
+  // a build-time type error while keeping runtime behavior.
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument,@typescript-eslint/no-explicit-any
+  reduxCreateStore(persistedReducer, applyMiddleware(logger as any))
 
 export const store = createStore()
 
