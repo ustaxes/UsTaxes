@@ -15,9 +15,8 @@ global.localStorage = localStorageMock
 global.console = {
   log: jest.fn(),
   error: jest.fn(),
-
-  // Keep native behaviour for other methods, use those to print out things in your own tests
-  warn: console.warn,
+  // Keep native behaviour for other methods. Silence warn logs in tests.
+  warn: jest.fn(),
   info: console.info,
   debug: console.debug
 }
