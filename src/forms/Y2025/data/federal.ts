@@ -444,6 +444,13 @@ export const amt = {
       return 119550
     }
     return 239100
+  },
+
+  capAdjustment: (filingStatus: FilingStatus): number => {
+    if (filingStatus === FilingStatus.MFS) {
+      return 2391
+    }
+    return 4782
   }
 }
 

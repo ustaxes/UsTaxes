@@ -7,7 +7,7 @@ import {
 } from 'ustaxes/core/data'
 import { FormTag } from 'ustaxes/core/irsForms/Form'
 import { Field, FillInstructions, text } from 'ustaxes/core/pdfFiller'
-import { amt } from '../data/federal'
+import federalBrackets, { amt } from '../data/federal'
 
 type Part3 = Partial<{
   l12: number
@@ -260,10 +260,7 @@ export default class F6251 extends F1040Attachment {
     if (l6 <= cap) {
       return l6 * 0.26
     }
-    return (
-      l6 * 0.28 -
-      (this.f1040.info.taxPayer.filingStatus === FilingStatus.MFS ? 2391 : 4782)
-    )
+    return l6 * 0.28 - amt.capAdjustment(this.f1040.info.taxPayer.filingStatus)
   }
 
   l8 = (): number | undefined =>
@@ -309,29 +306,6 @@ export default class F6251 extends F1040Attachment {
     const schDWksht = this.f1040.scheduleD.taxWorksheet
     const usingTaxWorksheet = schDWksht.isNeeded()
 
-    const l18Consts: [number, number] = (() => {
-      if (this.f1040.info.taxPayer.filingStatus === FilingStatus.MFS) {
-        return [119550, 2391]
-      }
-      return [239100, 4782]
-    })()
-
-    const l19Value: { [k in FilingStatus]: number } = {
-      [FilingStatus.MFJ]: 96700,
-      [FilingStatus.W]: 96700,
-      [FilingStatus.S]: 48350,
-      [FilingStatus.MFS]: 48350,
-      [FilingStatus.HOH]: 64750
-    }
-
-    const l25Value: { [k in FilingStatus]: number } = {
-      [FilingStatus.MFJ]: 600050,
-      [FilingStatus.W]: 600050,
-      [FilingStatus.S]: 533400,
-      [FilingStatus.MFS]: 300000,
-      [FilingStatus.HOH]: 566700
-    }
-
     const l12 = this.l6()
 
     // TODO - for F2555, see the instructions for amount
@@ -357,15 +331,16 @@ export default class F6251 extends F1040Attachment {
     const l17 = l12 - l16
 
     const l18 = (() => {
-      const [c1, c2] = l18Consts
+      const cap = amt.cap(this.f1040.info.taxPayer.filingStatus)
+      const capAdjust = amt.capAdjustment(this.f1040.info.taxPayer.filingStatus)
 
-      if (l17 <= c1) {
+      if (l17 <= cap) {
         return l17 * 0.26
       }
-      return l17 * 0.28 - c2
+      return l17 * 0.28 - capAdjust
     })()
 
-    const l19 = l19Value[fs]
+    const l19 = federalBrackets.longTermCapGains.status[fs].brackets[1]
 
     const l20 = (() => {
       if (usingTaxWorksheet) {
@@ -387,7 +362,7 @@ export default class F6251 extends F1040Attachment {
 
     const l24 = Math.max(0, l22 - l23)
 
-    const l25 = l25Value[fs]
+    const l25 = federalBrackets.longTermCapGains.status[fs].brackets[2]
 
     const l26 = l21
 
@@ -428,11 +403,13 @@ export default class F6251 extends F1040Attachment {
 
     const l39 = (() => {
       // numbers referenced here are the same as l18.
-      const [c1, c2] = l18Consts
-      if (l12 <= c1) {
+      const cap = amt.cap(this.f1040.info.taxPayer.filingStatus)
+      const capAdjust = amt.capAdjustment(this.f1040.info.taxPayer.filingStatus)
+
+      if (l12 <= cap) {
         return l12 * 0.26
       }
-      return l12 * 0.28 - c2
+      return l12 * 0.28 - capAdjust
     })()
 
     const l40 = Math.min(l38, l39)

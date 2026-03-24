@@ -74,7 +74,7 @@ describe('AMT', () => {
     const f1040 = new F1040(information, [])
     const f6251 = new F6251(f1040)
     expect(f6251.isNeeded()).toEqual(true)
-    expect(Math.round(f6251.l1() ?? 0)).toEqual(
+    expect(Math.round(f6251.l1b())).toEqual(
       income -
         federalBrackets.ordinary.status[FilingStatus.S].deductions[0].amount
     )
