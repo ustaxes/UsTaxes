@@ -107,7 +107,7 @@ export default class F6251 extends F1040Attachment {
     if (this.f1040.scheduleA.isNeeded()) {
       return this.f1040.scheduleA.l7()
     }
-    return this.f1040.l12()
+    return this.f1040.l12e()
   }
 
   l2b = (): number | undefined => {
@@ -229,7 +229,7 @@ export default class F6251 extends F1040Attachment {
     // or you had a gain on both lines 15 and 16 of Schedule D (Form 1040) (as refigured for the AMT, if necessary),
     // complete Part III on the back and enter the amount from line 40 here.
     return (
-      this.f1040.l7() !== undefined ||
+      this.f1040.l7a() !== undefined ||
       this.f1040.l3a() !== undefined ||
       (this.f1040.scheduleD.l15() > 0 && this.f1040.scheduleD.l16() > 0)
     )

@@ -59,7 +59,7 @@ export default class ScheduleEIC extends F1040Attachment {
         incomeLimits[
           Math.min(this.qualifyingDependents().length, incomeLimits.length - 1)
         ]
-      return this.f1040.l11() < limit
+      return this.f1040.l11b() < limit
     }
     return false
   }
@@ -91,7 +91,7 @@ export default class ScheduleEIC extends F1040Attachment {
       this.f1040.l2a(),
       this.f1040.l2b(),
       this.f1040.l3b(),
-      Math.max(this.f1040.l7() ?? 0, 0)
+      Math.max(this.f1040.l7a() ?? 0, 0)
     ])
 
   passInvestmentIncomeLimit = (): boolean =>
@@ -274,7 +274,7 @@ export default class ScheduleEIC extends F1040Attachment {
   credit = (): number =>
     Math.min(
       this.calculateEICForIncome(this.earnedIncome()),
-      this.calculateEICForIncome(this.f1040.l11())
+      this.calculateEICForIncome(this.f1040.l11b())
     )
 
   allowed = (): boolean => {

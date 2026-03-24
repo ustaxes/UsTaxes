@@ -18,7 +18,7 @@ export default class Pub596Worksheet1 {
     return this.f1040.schedule1.l8f()
   }
 
-  l5 = (): number => ((this.f1040.l7() ?? 0) < 0 ? 0 : this.f1040.l7() ?? 0)
+  l5 = (): number => ((this.f1040.l7a() ?? 0) < 0 ? 0 : this.f1040.l7a() ?? 0)
   l6 = (): number => {
     const l7 = this.f1040.f4797?.l7()
     const l9 = this.f1040.f4797?.l9()

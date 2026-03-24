@@ -38,7 +38,7 @@ export default class QualDivAndCGWorksheet extends Worksheet {
         Math.max(this.f1040.scheduleD.l16(), 0)
       )
     }
-    return this.f1040.l7() ?? 0
+    return this.f1040.l7a() ?? 0
   }
   // 4. Add lines 2 and 3: LTCG + QDIV
   l4 = (): number => this.l2() + this.l3()

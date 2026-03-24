@@ -46,7 +46,7 @@ export default class ScheduleA extends F1040Attachment {
 
   l1 = (): number => Number(this.itemizedDeductions.medicalAndDental)
 
-  l2 = (): number => this.f1040.l11()
+  l2 = (): number => this.f1040.l11b()
 
   l3 = (): number => this.l2() * 0.075
 

@@ -113,7 +113,7 @@ export default class F8995A extends F8995 {
   l19c = (): number | undefined =>
     ifNumber(this.l17c(), (num) => num - (this.l18c() ?? 0))
 
-  l20 = (): number => this.f1040.l11() - this.f1040.l12()
+  l20 = (): number => this.f1040.l11b() - this.f1040.l12e()
   l21 = (): number =>
     getF8995PhaseOutIncome(this.f1040.info.taxPayer.filingStatus)
   l22 = (): number => this.l20() - this.l21()

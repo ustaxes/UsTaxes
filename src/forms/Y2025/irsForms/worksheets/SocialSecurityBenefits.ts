@@ -29,7 +29,7 @@ export default class SocialSecurityBenefitsWorksheet extends Worksheet {
       this.f1040.l3b(),
       this.f1040.l4b(),
       this.f1040.l5b(),
-      this.f1040.l7(),
+      this.f1040.l7a(),
       this.f1040.l8()
     ])
   // Enter the amount, if any, from Form 1040 or 1040-SR, line 2a

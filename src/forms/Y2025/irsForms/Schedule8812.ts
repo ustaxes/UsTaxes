@@ -239,7 +239,7 @@ export default class Schedule8812 extends F1040Attachment {
 
     const l23 = sumFields([l21, l22])
 
-    const l24 = sumFields([this.f1040.l27(), this.f1040.schedule3.l11()])
+    const l24 = sumFields([this.f1040.l27a(), this.f1040.schedule3.l11()])
 
     const l25 = Math.max(0, l23 - l24)
 

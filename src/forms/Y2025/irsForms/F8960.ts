@@ -11,7 +11,7 @@ export default class F8960 extends F1040Attachment {
 
   isNeeded = (): boolean => {
     const filingStatus = this.f1040.info.taxPayer.filingStatus
-    const magi = this.f1040.l11()
+    const magi = this.f1040.l11b()
     return netInvestmentIncomeTax.taxThreshold(filingStatus) < magi
   }
 
@@ -65,7 +65,7 @@ export default class F8960 extends F1040Attachment {
   l4c = (): number => sumFields([this.l4a(), this.l4b()])
 
   // Line 5a-5d: Gains and Losses on the Disassets of Property
-  l5a = (): number => sumFields([this.f1040.l7(), this.f1040.schedule1.l4()])
+  l5a = (): number => sumFields([this.f1040.l7a(), this.f1040.schedule1.l4()])
   // TODO: implement line 5b and 5c from worksheet.
   l5b = (): number | undefined => undefined
   l5c = (): number | undefined => undefined
@@ -98,7 +98,7 @@ export default class F8960 extends F1040Attachment {
         return 0
       }
       const deductibleStateTaxes = this.f1040.scheduleA.l5e()
-      const f1040L11 = this.f1040.l11()
+      const f1040L11 = this.f1040.l11b()
       if (f1040L11 === 0) {
         return 0
       }
@@ -115,7 +115,7 @@ export default class F8960 extends F1040Attachment {
   l12 = (): number => Math.max(0, this.l8() - this.l11())
 
   // TODO: This should also take into account values on form 2555 and adjustments for Certain CFCs and Certain PFICs
-  l13 = (): number => this.f1040.l11()
+  l13 = (): number => this.f1040.l11b()
 
   l14 = (): number =>
     netInvestmentIncomeTax.taxThreshold(this.f1040.info.taxPayer.filingStatus)

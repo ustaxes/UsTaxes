@@ -68,6 +68,7 @@ import F4547 from './F4547'
 export default class F1040 extends F1040Base {
   tag: FormTag = 'f1040'
   sequenceIndex = 0
+  l1hOtherIncomeStrings: Set<string>
 
   assets: Asset<Date>[]
 
@@ -124,6 +125,7 @@ export default class F1040 extends F1040Base {
 
   constructor(info: ValidatedInformation, assets: Asset<Date>[]) {
     super(info)
+    this.l1hOtherIncomeStrings = new Set<string>()
     this.assets = assets
     this.qualifyingDependents = new QualifyingDependents(this)
 
@@ -175,7 +177,7 @@ export default class F1040 extends F1040Base {
       const formAMinAmount = getF8995PhaseOutIncome(
         this.info.taxPayer.filingStatus
       )
-      if (this.l11a() - this.l12() >= formAMinAmount) {
+      if (this.l11b() - this.l12e() >= formAMinAmount) {
         this.f8995 = new F8995A(this)
       } else {
         this.f8995 = new F8995(this)
@@ -406,24 +408,49 @@ export default class F1040 extends F1040Base {
   l2b = (): number | undefined => this.scheduleB.to1040l2b()
   l3a = (): number | undefined => this.totalQualifiedDividends()
   l3b = (): number | undefined => this.scheduleB.to1040l3b()
+  l3c1 = (): boolean => false
+  l3c2 = (): boolean => false
   // This is the value of box 1 in 1099-R forms coming from IRAs
   l4a = (): number | undefined => this.totalGrossDistributionsFromIra()
   // This should be the value of box 2a in 1099-R coming from IRAs
   l4b = (): number | undefined => this.totalTaxableFromIra()
+  l4c1 = (): boolean => false
+  l4c2 = (): boolean => false
+  // TODO: other IRA distributions?
+  l4c3Box = (): boolean => false
+  l4c3Name = (): string | undefined => undefined
   // This is the value of box 1 in 1099-R forms coming from pensions/annuities
   l5a = (): number | undefined =>
     this.totalGrossDistributionsFrom1099R(PlanType1099.Pension)
   // this is the value of box 2a in 1099-R forms coming from pensions/annuities
   l5b = (): number | undefined =>
     this.totalTaxableFrom1099R(PlanType1099.Pension)
+  l5c1 = (): boolean => false
+  l5c2 = (): boolean => false
+  // TODO: other pension distributions?
+  l5c3Box = (): boolean => false
+  l5c3Name = (): string | undefined => undefined
   // The sum of box 5 from SSA-1099
   l6a = (): number | undefined => this.socialSecurityBenefitsWorksheet?.l1()
   // calculation of the taxable amount of line 6a based on other income
   l6b = (): number | undefined =>
     this.socialSecurityBenefitsWorksheet?.taxableAmount()
-  l6c = (): boolean => this.info.taxPayer.filingStatus === FilingStatus.W
-  l7Box = (): boolean => !this.scheduleD.isNeeded()
-  l7 = (): number | undefined => this.scheduleD.to1040()
+  // TODO: change this so that it is not hard coded
+  l6c = (): boolean =>  false
+  //
+  l6d = (): boolean => {
+    if (this.info.taxPayer.filingStatus !== FilingStatus.MFS) {
+      return false
+    }
+    // TODO Really this should be based on if the spouse lived
+    // apart from the taxPayer for the last 6 months of 2025
+    return true
+  }
+  l7a = (): number | undefined => this.scheduleD.to1040()
+  l7bBox1 = (): boolean => !this.scheduleD.isNeeded()
+  // TODO: Don't hard code child cap gains and losses
+  l7bChildCapIncluded = (): boolean => false
+  l7bChildCapAmount = (): number => 0
   l8 = (): number | undefined => this.schedule1.l10()
   l9 = (): number =>
     sumFields([
@@ -433,7 +460,7 @@ export default class F1040 extends F1040Base {
       this.l4b(),
       this.l5b(),
       this.l6b(),
-      this.l7(),
+      this.l7a(),
       this.l8()
     ])
 
@@ -442,7 +469,17 @@ export default class F1040 extends F1040Base {
   l11a = (): number => Math.max(0, this.l9() - (this.l10() ?? 0))
   l11b = (): number => this.l11a()
 
-  l12 = (): number => {
+  l12aSelfDependent = (): boolean =>
+    this.info.taxPayer.primaryPerson.isTaxpayerDependent
+  l12aSpouseDependent = (): boolean =>
+    this.info.taxPayer.spouse?.isTaxpayerDependent ?? false
+  l12b = (): boolean => false
+  l12c = (): boolean => false
+  l12dSelfOld = (): boolean => this.bornBeforeDate()
+  l12dSelfBlind = (): boolean => this.blind()
+  l12dSpouseOld = (): boolean => this.spouseBeforeDate()
+  l12dSpouseBlind = (): boolean => this.spouseBlind()
+  l12e = (): number => {
     if (this.scheduleA.isNeeded()) {
       return this.scheduleA.deductions()
     }
@@ -450,12 +487,13 @@ export default class F1040 extends F1040Base {
   }
 
   l13a = (): number | undefined => this.f8995?.deductions()
+
   // Line 13b: Additional deductions from Schedule 1-A (2025)
   l13b = (): number | undefined => {
     const amt = this.schedule1A.l38()
     return this.schedule1A.isNeeded() && amt > 0 ? amt : undefined
   }
-  l14 = (): number => sumFields([this.l12(), this.l13a(), this.l13b()])
+  l14 = (): number => sumFields([this.l12e(), this.l13a(), this.l13b()])
 
   l15 = (): number => Math.max(0, this.l11b() - this.l14())
 
@@ -517,8 +555,16 @@ export default class F1040 extends F1040Base {
   l26 = (): number =>
     this.info.estimatedTaxes.reduce((res, et) => res + et.payment, 0)
 
-  l27 = (): number =>
+  formerSpouseSSN = (): string | undefined => this.info.taxPayer.spouse?.ssid
+
+  l27a = (): number =>
     this.scheduleEIC.isNeeded() ? this.scheduleEIC.credit() : 0
+
+  // TODO handle clergy stuff
+  l27b = (): boolean => false
+
+  // TODO: handle taxpayer denying eic
+  l27c = (): boolean => false
 
   // TODO: handle taxpayers between 1998 and 2004 that
   // can claim themselves for eic.
@@ -530,18 +576,21 @@ export default class F1040 extends F1040Base {
   // TODO: prior year earned income
   //l27c = (): number | undefined => undefined
 
+  // TODO: handle taxpayer denying ACTC
+  l28Box = (): boolean => false
   l28 = (): number | undefined => this.schedule8812.to1040Line28()
 
   l29 = (): number | undefined => this.f8863?.l8()
 
   // Recovery Rebate Credit does not apply for TY2025 (no new stimulus payments).
+  // TODO: handle adoption credit now?
   l30 = (): number | undefined => undefined
 
   l31 = (): number | undefined =>
     this.schedule3.isNeeded() ? this.schedule3.l15() : undefined
 
   l32 = (): number =>
-    sumFields([this.l27(), this.l28(), this.l29(), this.l30(), this.l31()])
+    sumFields([this.l27a(), this.l28(), this.l29(), this.l30(), this.l31()])
 
   l33 = (): number => sumFields([this.l25d(), this.l26(), this.l32()])
 
@@ -561,16 +610,17 @@ export default class F1040 extends F1040Base {
     const deps: Dependent[] = this.info.taxPayer.dependents
 
     // Based on the PDF row we are on, select correct dependent
-    const depIdx = Math.floor(idx / 5)
-    const depFieldIdx = idx % 5
+    const depIdx = idx % 4
+    const depFieldIdx = Math.floor(idx / 4)
 
-    let fieldArr = ['', '', '', false, false]
+    let fieldArr = ['', '', '', '', false, false]
 
     if (depIdx < deps.length) {
       const dep = deps[depIdx]
       // Based on the PDF column, select the correct field
       fieldArr = [
-        `${dep.firstName} ${dep.lastName}`,
+        dep.firstName,
+        dep.lastName,
         dep.ssid,
         dep.relationship,
         this.qualifyingDependents.qualifiesChild(dep),
@@ -581,10 +631,38 @@ export default class F1040 extends F1040Base {
     return fieldArr[depFieldIdx]
   }
 
+  _otherDepField = (idx: number): string | boolean => {
+    const deps: Dependent[] = this.info.taxPayer.dependents
+
+    // 8-column, 2-row table: 4 dependents × 2 columns each, row-major
+    const depIdx = Math.floor((idx % 8) / 2)
+    const depFieldIdx = Math.floor(idx / 8) * 2 + (idx % 2)
+
+    let fieldArr = [false, false, false, false]
+
+    if (depIdx < deps.length) {
+      const dep = deps[depIdx]
+      // Based on the PDF column, select the correct field
+      fieldArr = [
+        dep.qualifyingInfo?.isStudent ?? false,
+        false, // TODO: handle qualifying permenant disablility
+        this.qualifyingDependents.qualifiesChild(dep),
+        this.qualifyingDependents.qualifiesOther(dep)
+      ]
+    }
+
+    return fieldArr[depFieldIdx]
+  }
+
   // 1040 allows 4 dependents listed without a supplemental schedule,
-  // so create field mappings for 4x5 grid of fields
+  // so create field mappings for 6x4 grid of fields
   _depFieldMappings = (): Array<string | boolean> =>
-    Array.from(Array(20)).map((u, n: number) => this._depField(n))
+    Array.from(Array(24)).map((u, n: number) => this._depField(n))
+
+  // maps the other fields that weren't as clean cut (2 box per line per dep)
+  // is a 2x8 grid
+  _otherDepFieldMappings = (): Array<string | boolean> =>
+    Array.from(Array(16)).map((u, n: number) => this._otherDepField(n))
 
   /**
    * Positional values must match PDF field order (same sequence as fillInstructions).
@@ -986,11 +1064,11 @@ export default class F1040 extends F1040Base {
       text('topmostSubform[0].Page1[0].f1_66[0]', this.l6a()),
       // Line 6c lump-sum election, line 7 box, new checkbox (112-114)
       checkbox('topmostSubform[0].Page1[0].c1_38[0]', this.l6c()),
-      checkbox('topmostSubform[0].Page1[0].c1_39[0]', this.l7Box()),
+      checkbox('topmostSubform[0].Page1[0].c1_39[0]', this.l7bBox1()),
       checkbox('topmostSubform[0].Page1[0].c1_40[0]', undefined),
       // Lines 6b, 7, 8: SS taxable, capital gain, other income (115-117)
       text('topmostSubform[0].Page1[0].f1_67[0]', this.l6b()),
-      text('topmostSubform[0].Page1[0].f1_68[0]', this.l7()),
+      text('topmostSubform[0].Page1[0].f1_68[0]', this.l7a()),
       text('topmostSubform[0].Page1[0].f1_69[0]', this.l8()),
       // New checkboxes (118-119)
       checkbox('topmostSubform[0].Page1[0].c1_41[0]', undefined),
@@ -1025,7 +1103,7 @@ export default class F1040 extends F1040Base {
       checkbox('topmostSubform[0].Page2[0].c2_7[0]', this.spouseBlind()),
       checkbox('topmostSubform[0].Page2[0].c2_8[0]', undefined),
       // Deduction amounts: lines 12e, 13a, 13b, 14, 15 (137-141)
-      text('topmostSubform[0].Page2[0].f2_02[0]', this.l12()),
+      text('topmostSubform[0].Page2[0].f2_02[0]', this.l12e()),
       text('topmostSubform[0].Page2[0].f2_03[0]', this.l13a()),
       text('topmostSubform[0].Page2[0].f2_04[0]', this.l13b()),
       text('topmostSubform[0].Page2[0].f2_05[0]', this.l14()),
@@ -1053,7 +1131,7 @@ export default class F1040 extends F1040Base {
       // New SSN field near EIC section (160)
       text('topmostSubform[0].Page2[0].SSN_ReadOrder[0].f2_22[0]', undefined),
       // Line 27a: EIC (161)
-      text('topmostSubform[0].Page2[0].f2_23[0]', this.l27()),
+      text('topmostSubform[0].Page2[0].f2_23[0]', this.l27a()),
       // New checkboxes near EIC/line 28 (162-164)
       checkbox('topmostSubform[0].Page2[0].c2_12[0]', undefined),
       checkbox('topmostSubform[0].Page2[0].c2_13[0]', undefined),
