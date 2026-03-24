@@ -188,6 +188,20 @@ const federalBrackets: FederalBrackets = {
   }
 }
 
+export const qualifiedBuisinessIncomeDeduction = {
+  // Essentially returns the tax bracket threshold at level 4 (is level the right term???)
+  threshold: (filingStatus: FilingStatus): number => {
+    switch (filingStatus) {
+      case FilingStatus.MFJ: {
+        return 394600
+      }
+      default: {
+        return 197300
+      }
+    }
+  }
+}
+
 // max tax and income based on https://www.ssa.gov/oact/cola/cbb.html
 // calc the maxIncomeSSTaxApplies with maxSSTax * rate
 // rate is this year 6.2

@@ -2,13 +2,10 @@ import F1040Attachment from './F1040Attachment'
 import { FormTag } from 'ustaxes/core/irsForms/Form'
 import { FilingStatus } from 'ustaxes/core/data'
 import { Field, FillInstructions, text } from 'ustaxes/core/pdfFiller'
+import { qualifiedBuisinessIncomeDeduction } from '../data/federal'
 
 export function getF8995PhaseOutIncome(filingStatus: FilingStatus): number {
-  let formAMinAmount = 197300
-  if (filingStatus === FilingStatus.MFJ) {
-    formAMinAmount = 394600
-  }
-  return formAMinAmount
+  return qualifiedBuisinessIncomeDeduction.threshold(filingStatus)
 }
 
 function ifNumber(

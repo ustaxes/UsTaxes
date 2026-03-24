@@ -27,6 +27,7 @@ export default class Schedule2 extends F1040Attachment {
   l1fiii = (): boolean | undefined => undefined
   l1fiv = (): boolean | undefined => undefined
   l1f = (): number | undefined => undefined
+  l1yDesc = (): string | undefined => undefined
   l1y = (): number | undefined => undefined
   l1z = (): number =>
     sumFields([
@@ -42,6 +43,10 @@ export default class Schedule2 extends F1040Attachment {
   l3 = (): number => sumFields([this.l1z(), this.l2()])
 
   // Part II: Other Tax
+  l4Box1 = (): boolean => false
+  l4Box2 = (): boolean => false
+  l4Box3 = (): boolean => false
+  l4Box3Amount = (): number | undefined => undefined
   l4 = (): number | undefined => this.f1040.scheduleSE.l12() // self-employment tax (schedule SE)
   l5 = (): number | undefined => this.f1040.f4137?.totalFicaTax()
   l6 = (): number | undefined => undefined
@@ -49,7 +54,7 @@ export default class Schedule2 extends F1040Attachment {
   l8box = (): boolean => false // TODO: implement this after l8 is implemented.
   l8 = (): number | undefined => this.f1040.f5329.toSchedule2l8()
   l9 = (): number | undefined => undefined // TODO: household employment taxes, schedule H
-  l10 = (): number | undefined => undefined // repayment of firsttime homebuyer credit, form 5405
+  l10 = (): number | undefined => undefined // reserved for future use
   l11 = (): number | undefined => this.f1040.f8959.toSchedule2l11()
   l12 = (): number | undefined => this.f1040.f8960.toSchedule2l12()
   /** Uncollected SS/Medicare on tips (box 12 codes A, B) and GTLI for former employees (M, N). */
@@ -148,14 +153,14 @@ export default class Schedule2 extends F1040Attachment {
       this.l7(),
       this.l8(),
       this.l9(),
-      this.l10(),
       this.l11(),
       this.l12(),
       this.l13(),
       this.l14(),
       this.l15(),
       this.l16(),
-      this.l18()
+      this.l18(),
+      this.l19()
     ])
 
   to1040l23 = (): number => this.l21()
@@ -179,11 +184,17 @@ export default class Schedule2 extends F1040Attachment {
     this.l1fiii(),
     this.l1fiv(),
     this.l1f(),
+    this.l1yDesc(),
     this.l1y(),
     this.l1z(),
     this.l2(),
     this.l3(),
 
+    // Part 2
+    this.l4Box1(),
+    this.l4Box2(),
+    this.l4Box3(),
+    this.l4Box3Amount(),
     this.l4(),
     this.l5(),
     this.l6(),
@@ -191,7 +202,7 @@ export default class Schedule2 extends F1040Attachment {
     this.l8box(),
     this.l8(),
     this.l9(),
-    this.l10(),
+    this.l10(), // reserved for future use
     this.l11(),
     this.l12(),
     this.l13(),
@@ -217,7 +228,6 @@ export default class Schedule2 extends F1040Attachment {
     this.l17p(),
     this.l17q(),
     this.l17zDesc(),
-    undefined,
     this.l17z(),
     this.l18(),
     undefined, //this.l19(),
@@ -247,51 +257,49 @@ export default class Schedule2 extends F1040Attachment {
     checkbox('form1[0].Page1[0].Line1f_ReadOrder[0].c1_2[2]', this.l1fiii()),
     checkbox('form1[0].Page1[0].Line1f_ReadOrder[0].c1_2[3]', this.l1fiv()),
     text('form1[0].Page1[0].f1_08[0]', this.l1f()),
-    text('form1[0].Page1[0].f1_09[0]', this.l1y()),
-    text('form1[0].Page1[0].f1_10[0]', this.l1z()),
-    text('form1[0].Page1[0].f1_11[0]', this.l2()),
-    text('form1[0].Page1[0].f1_12[0]', this.l3()),
-    text('form1[0].Page1[0].f1_13[0]', this.l4()),
-    checkbox('form1[0].Page1[0].Line4_ReadOrder[0].c1_3[0]', undefined),
-    checkbox('form1[0].Page1[0].Line4_ReadOrder[0].c1_4[0]', undefined),
-    checkbox('form1[0].Page1[0].Line4_ReadOrder[0].c1_5[0]', undefined),
-    text('form1[0].Page1[0].Line4_ReadOrder[0].f1_14[0]', this.l5()),
-    text('form1[0].Page1[0].f1_15[0]', this.l6()),
-    text('form1[0].Page1[0].f1_16[0]', this.l7()),
-    text('form1[0].Page1[0].f1_17[0]', this.l8()),
-    text('form1[0].Page1[0].f1_18[0]', this.l9()),
+    text('form1[0].Page1[0].f1_09[0]', this.l1yDesc()),
+    text('form1[0].Page1[0].f1_10[0]', this.l1y()),
+    text('form1[0].Page1[0].f1_11[0]', this.l1z()),
+    text('form1[0].Page1[0].f1_12[0]', this.l2()),
+    text('form1[0].Page1[0].f1_13[0]', this.l3()),
+
+    checkbox('form1[0].Page1[0].Line4_ReadOrder[0].c1_3[0]', this.l4Box1()),
+    checkbox('form1[0].Page1[0].Line4_ReadOrder[0].c1_4[0]', this.l4Box2()),
+    checkbox('form1[0].Page1[0].Line4_ReadOrder[0].c1_5[0]', this.l4Box3()),
+    text('form1[0].Page1[0].Line4_ReadOrder[0].f1_14[0]', this.l4Box3Amount()),
+    text('form1[0].Page1[0].f1_15[0]', this.l4()),
+    text('form1[0].Page1[0].f1_16[0]', this.l5()),
+    text('form1[0].Page1[0].f1_17[0]', this.l6()),
+    text('form1[0].Page1[0].f1_18[0]', this.l7()),
     checkbox('form1[0].Page1[0].Line8_ReadOrder[0].c1_6[0]', this.l8box()),
-    text('form1[0].Page1[0].f1_19[0]', this.l10()),
-    text('form1[0].Page1[0].f1_20[0]', this.l11()),
-    text('form1[0].Page1[0].f1_21[0]', this.l12()),
-    text('form1[0].Page1[0].f1_22[0]', this.l13()),
-    text('form1[0].Page1[0].f1_23[0]', this.l14()),
-    text('form1[0].Page1[0].f1_24[0]', this.l15()),
-    text('form1[0].Page1[0].f1_25[0]', this.l16()),
-    text('form1[0].Page1[0].f1_26[0]', this.l17aDesc()),
-    text('form1[0].Page1[0].f1_27[0]', undefined),
-    text(
-      'form1[0].Page2[0].Line17a_ReadOrder[0].Line17_ReadOrder[0].f2_01[0]',
-      this.l17a()
-    ),
-    text('form1[0].Page2[0].Line17a_ReadOrder[0].f2_02[0]', this.l17b()),
-    text('form1[0].Page2[0].f2_03[0]', this.l17c()),
-    text('form1[0].Page2[0].f2_04[0]', this.l17d()),
-    text('form1[0].Page2[0].f2_05[0]', this.l17e()),
-    text('form1[0].Page2[0].f2_06[0]', this.l17f()),
-    text('form1[0].Page2[0].f2_07[0]', this.l17g()),
-    text('form1[0].Page2[0].f2_08[0]', this.l17h()),
-    text('form1[0].Page2[0].f2_09[0]', this.l17i()),
-    text('form1[0].Page2[0].f2_10[0]', this.l17j()),
-    text('form1[0].Page2[0].f2_11[0]', this.l17k()),
-    text('form1[0].Page2[0].f2_12[0]', this.l17l()),
-    text('form1[0].Page2[0].f2_13[0]', this.l17m()),
-    text('form1[0].Page2[0].f2_14[0]', this.l17n()),
-    text('form1[0].Page2[0].f2_15[0]', this.l17o()),
-    text('form1[0].Page2[0].f2_16[0]', this.l17p()),
-    text('form1[0].Page2[0].f2_17[0]', this.l17q()),
-    text('form1[0].Page2[0].f2_18[0]', this.l17zDesc()),
-    text('form1[0].Page2[0].Line17z_ReadOrder[0].f2_19[0]', undefined),
+    text('form1[0].Page1[0].f1_19[0]', this.l8()),
+    text('form1[0].Page1[0].f1_20[0]', this.l9()),
+    text('form1[0].Page1[0].f1_21[0]', this.l10()),
+    text('form1[0].Page1[0].f1_22[0]', this.l11()),
+    text('form1[0].Page1[0].f1_23[0]', this.l12()),
+    text('form1[0].Page1[0].f1_24[0]', this.l13()),
+    text('form1[0].Page1[0].f1_25[0]', this.l14()),
+    text('form1[0].Page1[0].f1_26[0]', this.l15()),
+    text('form1[0].Page1[0].f1_27[0]', this.l16()),
+    text('form1[0].Page2[0].Line17a_ReadOrder[0].Line17_ReadOrder[0].f2_01[0]', this.l17aDesc()),
+    text('form1[0].Page2[0].Line17a_ReadOrder[0].f2_02[0]', this.l17a()),
+    text('form1[0].Page2[0].f2_03[0]', this.l17b()),
+    text('form1[0].Page2[0].f2_04[0]', this.l17c()),
+    text('form1[0].Page2[0].f2_05[0]', this.l17d()),
+    text('form1[0].Page2[0].f2_06[0]', this.l17e()),
+    text('form1[0].Page2[0].f2_07[0]', this.l17f()),
+    text('form1[0].Page2[0].f2_08[0]', this.l17g()),
+    text('form1[0].Page2[0].f2_09[0]', this.l17h()),
+    text('form1[0].Page2[0].f2_10[0]', this.l17i()),
+    text('form1[0].Page2[0].f2_11[0]', this.l17j()),
+    text('form1[0].Page2[0].f2_12[0]', this.l17k()),
+    text('form1[0].Page2[0].f2_13[0]', this.l17l()),
+    text('form1[0].Page2[0].f2_14[0]', this.l17m()),
+    text('form1[0].Page2[0].f2_15[0]', this.l17n()),
+    text('form1[0].Page2[0].f2_16[0]', this.l17o()),
+    text('form1[0].Page2[0].f2_17[0]', this.l17p()),
+    text('form1[0].Page2[0].f2_18[0]', this.l17q()),
+    text('form1[0].Page2[0].Line17z_ReadOrder[0].f2_19[0]', this.l17zDesc()),
     text('form1[0].Page2[0].f2_20[0]', this.l17z()),
     text('form1[0].Page2[0].f2_21[0]', this.l18()),
     text('form1[0].Page2[0].f2_22[0]', undefined),
