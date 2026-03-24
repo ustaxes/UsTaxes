@@ -160,12 +160,16 @@ export default class F8960 extends F1040Attachment {
     this.l6(),
     this.l7(),
     this.l8(),
+
+    // Part 2
     this.l9a(),
     this.l9b(),
     this.l9c(),
     this.l9d(),
     this.l10(),
     this.l11(),
+
+    // Part 3
     this.l12(),
     this.l13(),
     this.l14(),

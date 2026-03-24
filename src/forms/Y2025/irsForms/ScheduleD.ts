@@ -277,6 +277,8 @@ export default class ScheduleD extends F1040Attachment {
     this.f1040.info.taxPayer.primaryPerson.ssid,
     false,
     false,
+
+    // Part 1
     this.l1ad(),
     this.l1ae(),
     this.l1ag(),
@@ -297,6 +299,8 @@ export default class ScheduleD extends F1040Attachment {
     this.l5(),
     this.l6(),
     this.l7(),
+
+    // Part 2
     this.l8ad(),
     this.l8ae(),
     this.l8ag(),
@@ -318,6 +322,8 @@ export default class ScheduleD extends F1040Attachment {
     this.l13(),
     this.l14(),
     this.l15(),
+
+    // Part 3
     this.l16(),
     this.l17(),
     !this.l17(),

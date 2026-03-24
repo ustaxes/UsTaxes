@@ -377,13 +377,13 @@ export default class ScheduleEIC extends F1040Attachment {
   fields = (): Field[] => [
     this.f1040.namesString(),
     this.f1040.info.taxPayer.primaryPerson.ssid,
-    ...this.nameFields(), // 6
+    ...this.nameFields(), // 3 "firstName lastName"
     ...this.ssnFields(), // 3
     ...this.birthYearFields(), // 12
     ...this.ageFields(), // 6
     ...this.disabledFields(), // 6
-    ...this.relationships(),
-    ...this.numberMonths()
+    ...this.relationships(), // 3
+    ...this.numberMonths() // 3
   ]
 
   fillInstructions = (): FillInstructions => {
