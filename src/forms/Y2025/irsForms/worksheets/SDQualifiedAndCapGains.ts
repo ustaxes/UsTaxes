@@ -1,21 +1,11 @@
 // Reference implementation for ltcg and cap gains worksheet
 import { WorksheetData } from 'ustaxes/components/SummaryData'
-import { FilingStatus } from 'ustaxes/core/data'
 import federalBrackets from '../../data/federal'
 import { computeOrdinaryTax } from '../../irsForms/TaxTable'
 import { Worksheet } from '../F1040Attachment'
 
-type Bracket = [number, number]
-type Cutoffs = { [key in FilingStatus]: Bracket }
-const cutoffAmounts: Cutoffs = {
-  [FilingStatus.S]: [48350, 533400],
-  [FilingStatus.MFJ]: [96700, 600050],
-  [FilingStatus.MFS]: [48350, 300000],
-  [FilingStatus.W]: [96700, 600050],
-  [FilingStatus.HOH]: [64750, 566700]
-}
-
 export default class QualDivAndCGWorksheet extends Worksheet {
+  fs = this.f1040.info.taxPayer.filingStatus
   // 1. Enter the amount from Form 1040 or 1040-SR, line 15.
   // However, if you are filing Form 2555(relating to foreign earned income),
   // enter the amount from line 3 of the Foreign Earned Income Tax Worksheet
@@ -45,9 +35,10 @@ export default class QualDivAndCGWorksheet extends Worksheet {
   // 5. Subtract line 4 from line 1. If zero or less, enter -0-
   l5 = (): number => Math.max(this.l1() - this.l4(), 0)
   // 6. Enter:
-  // $40,400 if single or married filing separately,
-  // $80,800 if married filing jointly or qualifying widow(er), $54,100 if head of household.
-  l6 = (): number => cutoffAmounts[this.f1040.info.taxPayer.filingStatus][0]
+  // $48,350 if single or married filing separately,
+  // $96,700 if married filing jointly or qualifying widow(er), $64,750 if head of household.
+  l6 = (): number =>
+    federalBrackets.longTermCapGains.status[this.fs].brackets[0]
   // 7. Enter the smaller of line 1 or line 6
   l7 = (): number => Math.min(this.l1(), this.l6())
   // 8. Enter the smaller of line 5 or line 7
@@ -61,9 +52,10 @@ export default class QualDivAndCGWorksheet extends Worksheet {
   // 12. Subtract line 11 from line 10
   l12 = (): number => this.l10() - this.l11()
   // 13. Enter:
-  // $445,850 if single, $250,800 if married filing separately, $501,600 if married filing jointly or qualifying widow(er), $473,750 if head of household.
+  // $533,400 if single, $300,000 if married filing separately, $600,050 if married filing jointly or qualifying widow(er), $566,700 if head of household.
   //
-  l13 = (): number => cutoffAmounts[this.f1040.info.taxPayer.filingStatus][1]
+  l13 = (): number =>
+    federalBrackets.longTermCapGains.status[this.fs].brackets[1]
   // 14. Enter the smaller of line 1 or line 13
   l14 = (): number => Math.min(this.l1(), this.l13())
   // 15. Add lines 5 and 9

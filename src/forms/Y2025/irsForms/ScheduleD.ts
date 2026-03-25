@@ -269,6 +269,9 @@ export default class ScheduleD extends F1040Attachment {
 
   to1040 = (): number => this.l21() ?? this.l16()
 
+  computeTaxOnDTaxWorksheet = (): boolean =>
+    ((this.l18() ?? 0) > 0 || (this.l19() ?? 0) > 0) && this.l17() == true
+
   computeTaxOnQDWorksheet = (): boolean =>
     (this.l20() ?? false) || (this.l22() ?? false)
 
