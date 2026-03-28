@@ -2,7 +2,7 @@ import F1040Attachment from './F1040Attachment'
 import { FormTag } from 'ustaxes/core/irsForms/Form'
 import { sumFields } from 'ustaxes/core/irsForms/util'
 import F1040 from './F1040'
-import { Field } from 'ustaxes/core/pdfFiller'
+import { Field, FillInstructions, text } from 'ustaxes/core/pdfFiller'
 
 export default class Schedule1 extends F1040Attachment {
   tag: FormTag = 'f1040s1'
@@ -242,5 +242,85 @@ export default class Schedule1 extends F1040Attachment {
     this.l24z(),
     this.l25(),
     this.l26()
+  ]
+
+  // Generated from Y2024 PDF schema + fields() via scripts/migrateToNativeInstructions.ts
+  // 67 TS expressions, 69 PDF fields
+  fillInstructions = (): FillInstructions => [
+    text('form1[0].Page1[0].f1_01[0]', this.f1040.namesString()),
+    text(
+      'form1[0].Page1[0].f1_02[0]',
+      this.f1040.info.taxPayer.primaryPerson.ssid
+    ),
+    text('form1[0].Page1[0].f1_03[0]', this.l1()),
+    text('form1[0].Page1[0].f1_04[0]', this.l2a()),
+    text('form1[0].Page1[0].f1_05[0]', this.l2b()),
+    text('form1[0].Page1[0].f1_06[0]', this.l3()),
+    text('form1[0].Page1[0].f1_07[0]', this.l4()),
+    text('form1[0].Page1[0].f1_08[0]', this.l5()),
+    text('form1[0].Page1[0].f1_09[0]', this.l6()),
+    text('form1[0].Page1[0].f1_10[0]', this.l7()),
+    text('form1[0].Page1[0].f1_11[0]', this.l8a()),
+    text('form1[0].Page1[0].Line8a_ReadOrder[0].f1_12[0]', this.l8b()),
+    text('form1[0].Page1[0].f1_13[0]', this.l8c()),
+    text('form1[0].Page1[0].f1_14[0]', this.l8d()),
+    text('form1[0].Page1[0].f1_15[0]', this.l8e()),
+    text('form1[0].Page1[0].f1_16[0]', this.l8f()),
+    text('form1[0].Page1[0].f1_17[0]', this.l8g()),
+    text('form1[0].Page1[0].f1_18[0]', this.l8h()),
+    text('form1[0].Page1[0].f1_19[0]', this.l8i()),
+    text('form1[0].Page1[0].f1_20[0]', this.l8j()),
+    text('form1[0].Page1[0].f1_21[0]', this.l8k()),
+    text('form1[0].Page1[0].f1_22[0]', this.l8l()),
+    text('form1[0].Page1[0].f1_23[0]', this.l8m()),
+    text('form1[0].Page1[0].f1_24[0]', this.l8n()),
+    text('form1[0].Page1[0].f1_25[0]', this.l8o()),
+    text('form1[0].Page1[0].f1_26[0]', this.l8p()),
+    text('form1[0].Page1[0].f1_27[0]', this.l8q()),
+    text('form1[0].Page1[0].f1_28[0]', this.l8r()),
+    text('form1[0].Page1[0].f1_29[0]', this.l8s()),
+    text('form1[0].Page1[0].f1_30[0]', this.l8t()),
+    text('form1[0].Page1[0].f1_31[0]', this.l8u()),
+    text('form1[0].Page1[0].f1_32[0]', this.l8v()),
+    text(
+      'form1[0].Page1[0].f1_33[0]',
+      Array.from(this.otherIncomeStrings).join(' ')
+    ),
+    text('form1[0].Page1[0].Line8z_ReadOrder[0].f1_34[0]', undefined),
+    text('form1[0].Page1[0].Line8z_ReadOrder[0].f1_35[0]', this.l8z()),
+    text('form1[0].Page1[0].f1_36[0]', this.l9()),
+    text('form1[0].Page1[0].f1_37[0]', this.l10()),
+    text('form1[0].Page1[0].f1_38[0]', this.l11()),
+    text('form1[0].Page2[0].f2_01[0]', this.l12()),
+    text('form1[0].Page2[0].f2_02[0]', this.l13()),
+    text('form1[0].Page2[0].f2_03[0]', this.l14()),
+    text('form1[0].Page2[0].f2_04[0]', this.l15()),
+    text('form1[0].Page2[0].f2_05[0]', this.l16()),
+    text('form1[0].Page2[0].f2_06[0]', this.l17()),
+    text('form1[0].Page2[0].f2_07[0]', this.l18()),
+    text('form1[0].Page2[0].f2_08[0]', this.l19a()),
+    text('form1[0].Page2[0].f2_09[0]', this.l19b()),
+    text('form1[0].Page2[0].Line19b_CombField[0].f2_10[0]', this.l19c()),
+    text('form1[0].Page2[0].f2_11[0]', this.l20()),
+    text('form1[0].Page2[0].f2_12[0]', this.l21()),
+    text('form1[0].Page2[0].f2_13[0]', this.l23()),
+    text('form1[0].Page2[0].f2_14[0]', this.l24a()),
+    text('form1[0].Page2[0].f2_15[0]', this.l24b()),
+    text('form1[0].Page2[0].Line24a_ReadOrder[0].f2_16[0]', this.l24c()),
+    text('form1[0].Page2[0].f2_17[0]', this.l24d()),
+    text('form1[0].Page2[0].f2_18[0]', this.l24e()),
+    text('form1[0].Page2[0].f2_19[0]', this.l24f()),
+    text('form1[0].Page2[0].f2_20[0]', this.l24g()),
+    text('form1[0].Page2[0].f2_21[0]', this.l24h()),
+    text('form1[0].Page2[0].f2_22[0]', this.l24i()),
+    text('form1[0].Page2[0].f2_23[0]', this.l24j()),
+    text('form1[0].Page2[0].f2_24[0]', this.l24k()),
+    text('form1[0].Page2[0].f2_25[0]', this.l24zDesc()),
+    text('form1[0].Page2[0].f2_26[0]', this.l24zDesc2()),
+    text('form1[0].Page2[0].Line24z_ReadOrder[0].f2_27[0]', this.l24z()),
+    text('form1[0].Page2[0].Line24z_ReadOrder[0].f2_28[0]', this.l25()),
+    text('form1[0].Page2[0].f2_29[0]', this.l26()),
+    text('form1[0].Page2[0].f2_30[0]', undefined),
+    text('form1[0].Page2[0].f2_31[0]', undefined)
   ]
 }

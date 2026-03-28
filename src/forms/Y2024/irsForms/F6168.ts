@@ -1,4 +1,4 @@
-import { Field } from 'ustaxes/core/pdfFiller'
+import { Field, FillInstructions } from 'ustaxes/core/pdfFiller'
 import F1040Attachment from './F1040Attachment'
 
 /**
@@ -10,4 +10,5 @@ export default class F6168 extends F1040Attachment {
   tag = 'f6168'
 
   fields = (): Field[] => []
+  fillInstructions = (): FillInstructions => []
 }

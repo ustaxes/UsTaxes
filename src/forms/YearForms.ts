@@ -22,7 +22,7 @@ import { createStateReturn as createStateReturn2022 } from 'ustaxes/forms/Y2022/
 import { createStateReturn as createStateReturn2023 } from 'ustaxes/forms/Y2023/stateForms'
 import { createStateReturn as createStateReturn2024 } from 'ustaxes/forms/Y2024/stateForms'
 import { PDFDocument } from 'pdf-lib'
-import { fillPDF } from 'ustaxes/core/pdfFiller/fillPdf'
+import { fillPdfFromFill } from 'ustaxes/core/pdfFiller/fillPdf'
 import {
   combinePdfs,
   downloadPDF,
@@ -76,13 +76,19 @@ export class YearCreateForm {
   f1040Pdfs = async (): Promise<Either<string[], PDFDocument[]>> => {
     const r1 = await run(this.f1040()).mapAsync((forms) =>
       Promise.all(
-        forms.map(async (form) =>
-          fillPDF(
-            await this.config.getPDF(form),
-            form.renderedFields(),
-            form.tag
+        forms.map(async (form) => {
+          const pdf = await this.config.getPDF(form)
+          const { warnings } = fillPdfFromFill(
+            pdf,
+            form.tag,
+            form,
+            form.renderedFields()
           )
-        )
+          if (warnings.length > 0) {
+            console.warn(`Form ${form.tag} warnings:`, warnings)
+          }
+          return pdf
+        })
       )
     )
     return r1.value()
@@ -119,13 +125,19 @@ export class YearCreateForm {
     const r1 = run(this.makeStateReturn())
     const r2 = await r1.mapAsync((forms) =>
       Promise.all(
-        forms.map(async (form) =>
-          fillPDF(
-            await this.config.getStatePDF(form),
-            form.renderedFields(),
-            form.formName
+        forms.map(async (form) => {
+          const pdf = await this.config.getStatePDF(form)
+          const { warnings } = fillPdfFromFill(
+            pdf,
+            form.formName,
+            form,
+            form.renderedFields()
           )
-        )
+          if (warnings.length > 0) {
+            console.warn(`State form ${form.formName} warnings:`, warnings)
+          }
+          return pdf
+        })
       )
     )
     return r2.value()

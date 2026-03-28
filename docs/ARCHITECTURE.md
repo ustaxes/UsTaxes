@@ -37,22 +37,11 @@ export interface Information {
 
 ### PDF Export
 
-Supported federal and state forms are included in the source control of this repository.
+Supported federal and state forms are included in the source control of this repository. Blank PDFs live under [public/forms/](../public/forms/) (per tax year). TypeScript for each form extends [`Fill`](../src/core/pdfFiller/Fill.ts) in [src/core/pdfFiller/](../src/core/pdfFiller/): every implementation provides `fields()` (positional values). **Y2024+** federal IRS forms also implement optional `fillInstructions()` with explicit AcroForm field names and kinds; export uses [`fillPdfFromFill`](../src/core/pdfFiller/fillPdf.ts), which prefers those instructions and otherwise derives them from the PDF field order (legacy bridge for **Y2020–Y2023**). JSON schemas under `schemas/<year>/` describe PDF fields for contract tests and CI.
 
-- [src/irsForms/](../src/irsForms/) includes ts models for all federal forms that can be filled by this project. The PDFs are also included in this project at [pubilc/forms](../public/forms). Each of these form definitions implements this interface:
+For the full pipeline (types, diagram, tooling, tests), see [pdf-form-filling.md](pdf-form-filling.md).
 
-```ts
-type Field = string | number | boolean | undefined
-export default interface Fill {
-  fields: () => Field[]
-}
-```
-
-This array of `fields` must line up exactly with the fields expected by the PDF that the data will be filled into. Getting this data to line up exactly is error prone and tedious. The only type checking we can do between the PDF and our data is to verify if a field expects a boolean value (checkbox), or a text + numeric value.
-
-In order to help this error prone process, there's also a script that should be used to add a new form. See the guide for contributing a new form below.
-
-- [src/stateForms](../src/stateForms) includes ts models for all state forms that can be filled. They also implement the same interface.
+Federal form logic for a given year lives under [`src/forms/<year>/irsForms/`](../src/forms/Y2024/irsForms/). State forms for that year live under [`src/forms/<year>/stateForms/`](../src/forms/Y2024/stateForms/). Shared PDF utilities and the `Fill` base class are in [`src/core/pdfFiller/`](../src/core/pdfFiller/).
 
 ## Guide for contributing a new form implementation
 
@@ -62,14 +51,14 @@ In order to help this error prone process, there's also a script that should be 
 - A UI form can push new data into the state using Redux actions. Define your new action in [src/redux/actions.ts](../src/redux/actions.ts), and add your state updates to [src/redux/reducer.ts](../src/redux/reducer.ts)
 - If there is a new attachment to the 1040:
 
-  - The blank form goes in `public/forms/`. The locations of all supported attachments and logic about what attachments are required, is in [fillPdf.ts](../src/pdfFiller/fillPdf.ts).
-  - The data model for the PDF goes in [irsForms](../src/irsForms), and implements the `Form` interface as above. There is a script we use to generate a base implementation of the form. To generate this base implementation, run
+  - The blank form goes in `public/forms/<year>/irs/`. Attachment selection and fill orchestration are in [fillPdf.ts](../src/core/pdfFiller/fillPdf.ts).
+  - The TypeScript for the PDF goes under `src/forms/<year>/irsForms/` (see [pdf-form-filling.md](pdf-form-filling.md) and [adding_year.md](adding_year.md)). Generate a skeleton with:
 
   ```
-  npm run formgen ./public/forms/<name-of-form>.pdf > ./src/irsForms/<name-of-form>.ts
+  npm run formgen ./public/forms/<year>/irs/<tag>.pdf > ./src/forms/<year>/irsForms/FXXXX.ts
   ```
 
-  This will provide a function for each field in the PDF. At this point you should have a compilable file that needs the implementations for all those functions filled in.
+  Then implement the form’s calculations and wire `fillInstructions()` as needed. For adding a whole new tax year, follow [adding_year.md](adding_year.md).
 
 [npm-install]: https://www.npmjs.com/get-npm
 [tauri-root]: https://tauri.studio/

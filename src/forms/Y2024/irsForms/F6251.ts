@@ -1,7 +1,7 @@
 import F1040Attachment from './F1040Attachment'
 import { FilingStatus, PersonRole } from 'ustaxes/core/data'
 import { FormTag } from 'ustaxes/core/irsForms/Form'
-import { Field } from 'ustaxes/core/pdfFiller'
+import { Field, FillInstructions, text } from 'ustaxes/core/pdfFiller'
 import { amt } from '../data/federal'
 
 type Part3 = Partial<{
@@ -503,6 +503,78 @@ export default class F6251 extends F1040Attachment {
       p3.l38,
       p3.l39,
       p3.l40
+    ]
+  }
+
+  // Generated from Y2024 PDF schema + fields() via scripts/migrateToNativeInstructions.ts
+  // 61 TS expressions, 61 PDF fields
+  fillInstructions = (): FillInstructions => {
+    const p3 = this.part3()
+    return [
+      text('topmostSubform[0].Page1[0].f1_1[0]', this.f1040.namesString()),
+      text(
+        'topmostSubform[0].Page1[0].f1_2[0]',
+        this.f1040.info.taxPayer.primaryPerson.ssid
+      ),
+      text('topmostSubform[0].Page1[0].f1_3[0]', this.l1()),
+      text('topmostSubform[0].Page1[0].f1_4[0]', this.l2a()),
+      text('topmostSubform[0].Page1[0].f1_5[0]', this.l2b()),
+      text('topmostSubform[0].Page1[0].f1_6[0]', this.l2c()),
+      text('topmostSubform[0].Page1[0].f1_7[0]', this.l2d()),
+      text('topmostSubform[0].Page1[0].f1_8[0]', this.l2e()),
+      text('topmostSubform[0].Page1[0].f1_9[0]', this.l2f()),
+      text('topmostSubform[0].Page1[0].f1_10[0]', this.l2g()),
+      text('topmostSubform[0].Page1[0].f1_11[0]', this.l2h()),
+      text('topmostSubform[0].Page1[0].f1_12[0]', this.l2i()),
+      text('topmostSubform[0].Page1[0].f1_13[0]', this.l2j()),
+      text('topmostSubform[0].Page1[0].f1_14[0]', this.l2k()),
+      text('topmostSubform[0].Page1[0].f1_15[0]', this.l2l()),
+      text('topmostSubform[0].Page1[0].f1_16[0]', this.l2m()),
+      text('topmostSubform[0].Page1[0].f1_17[0]', this.l2n()),
+      text('topmostSubform[0].Page1[0].f1_18[0]', this.l2o()),
+      text('topmostSubform[0].Page1[0].f1_19[0]', this.l2p()),
+      text('topmostSubform[0].Page1[0].f1_20[0]', this.l2q()),
+      text('topmostSubform[0].Page1[0].f1_21[0]', this.l2r()),
+      text('topmostSubform[0].Page1[0].f1_22[0]', this.l2s()),
+      text('topmostSubform[0].Page1[0].f1_23[0]', this.l2t()),
+      text('topmostSubform[0].Page1[0].f1_24[0]', this.l3()),
+      text('topmostSubform[0].Page1[0].f1_25[0]', this.l4()),
+      text('topmostSubform[0].Page1[0].f1_26[0]', this.l5()),
+      text('topmostSubform[0].Page1[0].f1_27[0]', this.l6()),
+      text('topmostSubform[0].Page1[0].f1_28[0]', this.l7()),
+      text('topmostSubform[0].Page1[0].f1_29[0]', this.l8()),
+      text('topmostSubform[0].Page1[0].f1_30[0]', this.l9()),
+      text('topmostSubform[0].Page1[0].f1_31[0]', this.l10()),
+      text('topmostSubform[0].Page1[0].f1_32[0]', this.l11()),
+      text('topmostSubform[0].Page2[0].f2_1[0]', p3.l12),
+      text('topmostSubform[0].Page2[0].f2_2[0]', p3.l13),
+      text('topmostSubform[0].Page2[0].f2_3[0]', p3.l14),
+      text('topmostSubform[0].Page2[0].f2_4[0]', p3.l15),
+      text('topmostSubform[0].Page2[0].f2_5[0]', p3.l16),
+      text('topmostSubform[0].Page2[0].f2_6[0]', p3.l17),
+      text('topmostSubform[0].Page2[0].f2_7[0]', p3.l18),
+      text('topmostSubform[0].Page2[0].f2_8[0]', p3.l19),
+      text('topmostSubform[0].Page2[0].f2_9[0]', p3.l20),
+      text('topmostSubform[0].Page2[0].f2_10[0]', p3.l21),
+      text('topmostSubform[0].Page2[0].f2_11[0]', p3.l22),
+      text('topmostSubform[0].Page2[0].f2_12[0]', p3.l23),
+      text('topmostSubform[0].Page2[0].f2_13[0]', p3.l24),
+      text('topmostSubform[0].Page2[0].f2_14[0]', p3.l25),
+      text('topmostSubform[0].Page2[0].f2_15[0]', p3.l26),
+      text('topmostSubform[0].Page2[0].f2_16[0]', p3.l27),
+      text('topmostSubform[0].Page2[0].f2_17[0]', p3.l28),
+      text('topmostSubform[0].Page2[0].f2_18[0]', p3.l29),
+      text('topmostSubform[0].Page2[0].f2_19[0]', p3.l30),
+      text('topmostSubform[0].Page2[0].f2_20[0]', p3.l31),
+      text('topmostSubform[0].Page2[0].f2_21[0]', p3.l32),
+      text('topmostSubform[0].Page2[0].f2_22[0]', p3.l33),
+      text('topmostSubform[0].Page2[0].f2_23[0]', p3.l34),
+      text('topmostSubform[0].Page2[0].f2_24[0]', p3.l35),
+      text('topmostSubform[0].Page2[0].f2_25[0]', p3.l36),
+      text('topmostSubform[0].Page2[0].f2_26[0]', p3.l37),
+      text('topmostSubform[0].Page2[0].f2_27[0]', p3.l38),
+      text('topmostSubform[0].Page2[0].f2_28[0]', p3.l39),
+      text('topmostSubform[0].Page2[0].f2_29[0]', p3.l40)
     ]
   }
 }

@@ -2,7 +2,7 @@ import F1040Attachment from './F1040Attachment'
 import { sumFields } from 'ustaxes/core/irsForms/util'
 import { FormTag } from 'ustaxes/core/irsForms/Form'
 import { netInvestmentIncomeTax } from '../data/federal'
-import { Field } from 'ustaxes/core/pdfFiller'
+import { Field, FillInstructions, text, checkbox } from 'ustaxes/core/pdfFiller'
 
 export default class F8960 extends F1040Attachment {
   tag: FormTag = 'f8960'
@@ -172,5 +172,51 @@ export default class F8960 extends F1040Attachment {
     this.l19c(),
     this.l20(),
     this.l21()
+  ]
+
+  // Generated from Y2024 PDF schema + fields() via scripts/migrateToNativeInstructions.ts
+  // 38 TS expressions, 38 PDF fields
+  fillInstructions = (): FillInstructions => [
+    text('topmostSubform[0].Page1[0].f1_1[0]', this.f1040.namesString()),
+    text(
+      'topmostSubform[0].Page1[0].f1_2[0]',
+      this.f1040.info.taxPayer.primaryPerson.ssid
+    ),
+    checkbox('topmostSubform[0].Page1[0].PartI[0].c1_1[0]', undefined),
+    checkbox('topmostSubform[0].Page1[0].PartI[0].c1_2[0]', undefined),
+    checkbox('topmostSubform[0].Page1[0].PartI[0].c1_3[0]', undefined),
+    text('topmostSubform[0].Page1[0].f1_3[0]', this.l1()),
+    text('topmostSubform[0].Page1[0].f1_4[0]', this.l2()),
+    text('topmostSubform[0].Page1[0].f1_5[0]', this.l3()),
+    text('topmostSubform[0].Page1[0].f1_6[0]', this.l4a()),
+    text('topmostSubform[0].Page1[0].f1_7[0]', this.l4b()),
+    text('topmostSubform[0].Page1[0].f1_8[0]', this.l4c()),
+    text('topmostSubform[0].Page1[0].f1_9[0]', this.l5a()),
+    text('topmostSubform[0].Page1[0].f1_10[0]', this.l5b()),
+    text('topmostSubform[0].Page1[0].f1_11[0]', this.l5c()),
+    text('topmostSubform[0].Page1[0].f1_12[0]', this.l5d()),
+    text('topmostSubform[0].Page1[0].f1_13[0]', this.l6()),
+    text('topmostSubform[0].Page1[0].f1_14[0]', this.l7()),
+    text('topmostSubform[0].Page1[0].f1_15[0]', this.l8()),
+    text('topmostSubform[0].Page1[0].f1_16[0]', this.l9a()),
+    text('topmostSubform[0].Page1[0].f1_17[0]', this.l9b()),
+    text('topmostSubform[0].Page1[0].f1_18[0]', this.l9c()),
+    text('topmostSubform[0].Page1[0].f1_19[0]', this.l9d()),
+    text('topmostSubform[0].Page1[0].f1_20[0]', this.l10()),
+    text('topmostSubform[0].Page1[0].f1_21[0]', this.l11()),
+    text('topmostSubform[0].Page1[0].f1_22[0]', this.l12()),
+    text('topmostSubform[0].Page1[0].f1_23[0]', this.l13()),
+    text('topmostSubform[0].Page1[0].f1_24[0]', this.l14()),
+    text('topmostSubform[0].Page1[0].f1_25[0]', this.l15()),
+    text('topmostSubform[0].Page1[0].f1_26[0]', this.l16()),
+    text('topmostSubform[0].Page1[0].f1_27[0]', this.l17()),
+    text('topmostSubform[0].Page1[0].f1_28[0]', this.l18a()),
+    text('topmostSubform[0].Page1[0].f1_29[0]', this.l18b()),
+    text('topmostSubform[0].Page1[0].f1_30[0]', this.l18c()),
+    text('topmostSubform[0].Page1[0].f1_31[0]', this.l19a()),
+    text('topmostSubform[0].Page1[0].f1_32[0]', this.l19b()),
+    text('topmostSubform[0].Page1[0].f1_33[0]', this.l19c()),
+    text('topmostSubform[0].Page1[0].f1_34[0]', this.l20()),
+    text('topmostSubform[0].Page1[0].f1_35[0]', this.l21())
   ]
 }

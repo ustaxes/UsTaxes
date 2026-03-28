@@ -439,6 +439,18 @@ export class Arbitraries {
     this.currentYear = currentYear
   }
 
+  /** Valid min/max dates for fc.date — guards NaN/Invalid Date when currentYear is bad. */
+  private hsaDateBounds = (): { min: Date; max: Date } => {
+    const y =
+      typeof this.currentYear === 'number' &&
+      Number.isFinite(this.currentYear) &&
+      this.currentYear >= 1900 &&
+      this.currentYear <= 2100
+        ? this.currentYear
+        : new Date().getFullYear()
+    return { min: new Date(y, 0, 1), max: new Date(y, 11, 31) }
+  }
+
   daysInYear = (): Arbitrary<number> =>
     fc.nat({
       max: util.daysInYear(this.currentYear)
@@ -540,8 +552,9 @@ export class Arbitraries {
           .map((fs) => ({ ...tp, filingStatus: fs }))
       )
 
-  healthSavingsAccount = (): Arbitrary<types.HealthSavingsAccount> =>
-    fc
+  healthSavingsAccount = (): Arbitrary<types.HealthSavingsAccount> => {
+    const { min, max } = this.hsaDateBounds()
+    return fc
       .tuple(
         words,
         fc.constantFrom<'self-only' | 'family'>('self-only', 'family'),
@@ -550,14 +563,8 @@ export class Arbitraries {
           types.PersonRole.PRIMARY,
           types.PersonRole.SPOUSE
         ),
-        fc.date({
-          min: new Date(this.currentYear, 0, 1),
-          max: new Date(this.currentYear, 11, 31)
-        }),
-        fc.date({
-          min: new Date(this.currentYear, 0, 1),
-          max: new Date(this.currentYear, 11, 31)
-        }),
+        fc.date({ min, max }),
+        fc.date({ min, max }),
         fc.nat({ max: 100000 }),
         fc.nat({ max: 100000 })
       )
@@ -582,6 +589,7 @@ export class Arbitraries {
           qualifiedDistributions
         })
       )
+  }
 
   ira = (): Arbitrary<types.Ira> =>
     fc

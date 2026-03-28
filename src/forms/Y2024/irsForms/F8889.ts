@@ -5,7 +5,7 @@ import F8853 from './F8853'
 import { CURRENT_YEAR, healthSavingsAccounts } from '../data/federal'
 import F1040Attachment from './F1040Attachment'
 import F1040 from './F1040'
-import { Field } from 'ustaxes/core/pdfFiller'
+import { Field, FillInstructions, text, checkbox } from 'ustaxes/core/pdfFiller'
 
 type ContributionType = 'self-only' | 'family'
 type PerMonthContributionType = {
@@ -285,5 +285,46 @@ export default class F8889 extends F1040Attachment {
     this.l19(),
     this.l20(),
     this.l21()
+  ]
+
+  // Generated from Y2024 PDF schema + fields() via scripts/migrateToNativeInstructions.ts
+  // 27 TS expressions, 27 PDF fields
+  fillInstructions = (): FillInstructions => [
+    text(
+      'topmostSubform[0].Page1[0].f1_1[0]',
+      `${this.person.firstName} ${this.person.lastName}`
+    ),
+    text('topmostSubform[0].Page1[0].f1_2[0]', this.person.ssid),
+    checkbox(
+      'topmostSubform[0].Page1[0].c1_1[0]',
+      this.calculatedCoverageType === 'self-only'
+    ),
+    checkbox(
+      'topmostSubform[0].Page1[0].c1_1[1]',
+      this.calculatedCoverageType === 'family'
+    ),
+    text('topmostSubform[0].Page1[0].f1_3[0]', this.l2()),
+    text('topmostSubform[0].Page1[0].f1_4[0]', this.l3()),
+    text('topmostSubform[0].Page1[0].f1_5[0]', this.l4()),
+    text('topmostSubform[0].Page1[0].f1_6[0]', this.l5()),
+    text('topmostSubform[0].Page1[0].f1_7[0]', this.l6()),
+    text('topmostSubform[0].Page1[0].f1_8[0]', this.l7()),
+    text('topmostSubform[0].Page1[0].f1_9[0]', this.l8()),
+    text('topmostSubform[0].Page1[0].f1_10[0]', this.l9()),
+    text('topmostSubform[0].Page1[0].f1_11[0]', this.l10()),
+    text('topmostSubform[0].Page1[0].f1_12[0]', this.l11()),
+    text('topmostSubform[0].Page1[0].f1_13[0]', this.l12()),
+    text('topmostSubform[0].Page1[0].f1_14[0]', this.l13()),
+    text('topmostSubform[0].Page1[0].f1_15[0]', this.l14a()),
+    text('topmostSubform[0].Page1[0].f1_16[0]', this.l14b()),
+    text('topmostSubform[0].Page1[0].f1_17[0]', this.l14c()),
+    text('topmostSubform[0].Page1[0].f1_18[0]', this.l15()),
+    text('topmostSubform[0].Page1[0].f1_19[0]', this.l16()),
+    checkbox('topmostSubform[0].Page1[0].c1_2[0]', this.l17a()),
+    text('topmostSubform[0].Page1[0].f1_20[0]', this.l17b()),
+    text('topmostSubform[0].Page1[0].f1_21[0]', this.l18()),
+    text('topmostSubform[0].Page1[0].f1_22[0]', this.l19()),
+    text('topmostSubform[0].Page1[0].f1_23[0]', this.l20()),
+    text('topmostSubform[0].Page1[0].f1_24[0]', this.l21())
   ]
 }

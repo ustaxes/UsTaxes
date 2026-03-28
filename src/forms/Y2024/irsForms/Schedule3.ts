@@ -3,7 +3,7 @@ import { PersonRole } from 'ustaxes/core/data'
 import { sumFields } from 'ustaxes/core/irsForms/util'
 import { FormTag } from 'ustaxes/core/irsForms/Form'
 import { fica } from '../data/federal'
-import { Field } from 'ustaxes/core/pdfFiller'
+import { Field, FillInstructions, text } from 'ustaxes/core/pdfFiller'
 
 export default class Schedule3 extends F1040Attachment {
   tag: FormTag = 'f1040s3'
@@ -201,5 +201,61 @@ export default class Schedule3 extends F1040Attachment {
     this.l13z(),
     this.l14(),
     this.l15()
+  ]
+
+  // Generated from Y2024 PDF schema + fields() via scripts/migrateToNativeInstructions.ts
+  // 38 TS expressions, 39 PDF fields
+  fillInstructions = (): FillInstructions => [
+    text('topmostSubform[0].Page1[0].f1_01[0]', this.f1040.namesString()),
+    text(
+      'topmostSubform[0].Page1[0].f1_02[0]',
+      this.f1040.info.taxPayer.primaryPerson.ssid
+    ),
+    text('topmostSubform[0].Page1[0].f1_03[0]', this.l1()),
+    text('topmostSubform[0].Page1[0].f1_04[0]', this.l2()),
+    text('topmostSubform[0].Page1[0].f1_05[0]', this.l3()),
+    text('topmostSubform[0].Page1[0].f1_06[0]', this.l4()),
+    text('topmostSubform[0].Page1[0].f1_07[0]', this.l5()),
+    text('topmostSubform[0].Page1[0].f1_08[0]', this.l6a()),
+    text('topmostSubform[0].Page1[0].Line6a_ReadOrder[0].f1_09[0]', this.l6b()),
+    text('topmostSubform[0].Page1[0].f1_10[0]', this.l6c()),
+    text('topmostSubform[0].Page1[0].f1_11[0]', this.l6d()),
+    text('topmostSubform[0].Page1[0].f1_12[0]', this.l6e()),
+    text('topmostSubform[0].Page1[0].f1_13[0]', this.l6f()),
+    text('topmostSubform[0].Page1[0].f1_14[0]', this.l6g()),
+    text('topmostSubform[0].Page1[0].f1_15[0]', this.l6h()),
+    text('topmostSubform[0].Page1[0].f1_16[0]', this.l6i()),
+    text('topmostSubform[0].Page1[0].f1_17[0]', this.l6j()),
+    text('topmostSubform[0].Page1[0].f1_18[0]', this.l6k()),
+    text('topmostSubform[0].Page1[0].f1_19[0]', this.l6l()),
+    text('topmostSubform[0].Page1[0].f1_20[0]', this.l6zDesc1()),
+    text('topmostSubform[0].Page1[0].f1_21[0]', this.l6zDesc2()),
+    text('topmostSubform[0].Page1[0].Line6z_ReadOrder[0].f1_22[0]', this.l6z()),
+    text('topmostSubform[0].Page1[0].Line6z_ReadOrder[0].f2_23[0]', this.l7()),
+    text('topmostSubform[0].Page1[0].f1_24[0]', this.l8()),
+    text('topmostSubform[0].Page1[0].f1_25[0]', this.l9()),
+    text('topmostSubform[0].Page1[0].f1_26[0]', this.l10()),
+    text('topmostSubform[0].Page1[0].f1_27[0]', this.l11()),
+    text('topmostSubform[0].Page1[0].f1_28[0]', this.l12()),
+    text('topmostSubform[0].Page1[0].f1_29[0]', this.l13a()),
+    text('topmostSubform[0].Page1[0].f1_30[0]', this.l13b()),
+    text(
+      'topmostSubform[0].Page1[0].Line13_ReadOrder[0].f1_31[0]',
+      this.l13d()
+    ),
+    text('topmostSubform[0].Page1[0].f1_32[0]', this.l13f()),
+    text('topmostSubform[0].Page1[0].f1_33[0]', this.l13h()),
+    text('topmostSubform[0].Page1[0].f1_34[0]', this.l13zDesc1()),
+    text(
+      'topmostSubform[0].Page1[0].Line13z_ReadOrder[0].f1_35[0]',
+      this.l13zDesc2()
+    ),
+    text(
+      'topmostSubform[0].Page1[0].Line13z_ReadOrder[0].f1_36[0]',
+      this.l13z()
+    ),
+    text('topmostSubform[0].Page1[0].f1_37[0]', this.l14()),
+    text('topmostSubform[0].Page1[0].f1_38[0]', this.l15()),
+    text('topmostSubform[0].Page1[0].f1_39[0]', undefined)
   ]
 }

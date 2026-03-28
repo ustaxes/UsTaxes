@@ -1,0 +1,277 @@
+{
+  "formName": "f1040sse",
+  "fields": [
+    {
+      "name": "topmostSubform[0].Page1[0].f1_1[0]",
+      "fullyQualifiedName": "topmostSubform[0].Page1[0].f1_1[0]",
+      "type": "text",
+      "index": 0,
+      "flags": {
+        "readOnly": false,
+        "required": false
+      }
+    },
+    {
+      "name": "topmostSubform[0].Page1[0].f1_2[0]",
+      "fullyQualifiedName": "topmostSubform[0].Page1[0].f1_2[0]",
+      "type": "text",
+      "index": 1,
+      "maxLength": 11,
+      "flags": {
+        "readOnly": false,
+        "required": false
+      }
+    },
+    {
+      "name": "topmostSubform[0].Page1[0].c1_1[0]",
+      "fullyQualifiedName": "topmostSubform[0].Page1[0].c1_1[0]",
+      "type": "checkbox",
+      "index": 2,
+      "flags": {
+        "readOnly": false,
+        "required": false
+      }
+    },
+    {
+      "name": "topmostSubform[0].Page1[0].f1_3[0]",
+      "fullyQualifiedName": "topmostSubform[0].Page1[0].f1_3[0]",
+      "type": "text",
+      "index": 3,
+      "flags": {
+        "readOnly": false,
+        "required": false
+      }
+    },
+    {
+      "name": "topmostSubform[0].Page1[0].f1_4[0]",
+      "fullyQualifiedName": "topmostSubform[0].Page1[0].f1_4[0]",
+      "type": "text",
+      "index": 4,
+      "flags": {
+        "readOnly": false,
+        "required": false
+      }
+    },
+    {
+      "name": "topmostSubform[0].Page1[0].f1_5[0]",
+      "fullyQualifiedName": "topmostSubform[0].Page1[0].f1_5[0]",
+      "type": "text",
+      "index": 5,
+      "flags": {
+        "readOnly": false,
+        "required": false
+      }
+    },
+    {
+      "name": "topmostSubform[0].Page1[0].f1_6[0]",
+      "fullyQualifiedName": "topmostSubform[0].Page1[0].f1_6[0]",
+      "type": "text",
+      "index": 6,
+      "flags": {
+        "readOnly": false,
+        "required": false
+      }
+    },
+    {
+      "name": "topmostSubform[0].Page1[0].f1_7[0]",
+      "fullyQualifiedName": "topmostSubform[0].Page1[0].f1_7[0]",
+      "type": "text",
+      "index": 7,
+      "flags": {
+        "readOnly": false,
+        "required": false
+      }
+    },
+    {
+      "name": "topmostSubform[0].Page1[0].f1_8[0]",
+      "fullyQualifiedName": "topmostSubform[0].Page1[0].f1_8[0]",
+      "type": "text",
+      "index": 8,
+      "flags": {
+        "readOnly": false,
+        "required": false
+      }
+    },
+    {
+      "name": "topmostSubform[0].Page1[0].f1_9[0]",
+      "fullyQualifiedName": "topmostSubform[0].Page1[0].f1_9[0]",
+      "type": "text",
+      "index": 9,
+      "flags": {
+        "readOnly": false,
+        "required": false
+      }
+    },
+    {
+      "name": "topmostSubform[0].Page1[0].Line5a_ReadOrder[0].f1_10[0]",
+      "fullyQualifiedName": "topmostSubform[0].Page1[0].Line5a_ReadOrder[0].f1_10[0]",
+      "type": "text",
+      "index": 10,
+      "flags": {
+        "readOnly": false,
+        "required": false
+      }
+    },
+    {
+      "name": "topmostSubform[0].Page1[0].f1_11[0]",
+      "fullyQualifiedName": "topmostSubform[0].Page1[0].f1_11[0]",
+      "type": "text",
+      "index": 11,
+      "flags": {
+        "readOnly": false,
+        "required": false
+      }
+    },
+    {
+      "name": "topmostSubform[0].Page1[0].f1_12[0]",
+      "fullyQualifiedName": "topmostSubform[0].Page1[0].f1_12[0]",
+      "type": "text",
+      "index": 12,
+      "flags": {
+        "readOnly": false,
+        "required": false
+      }
+    },
+    {
+      "name": "topmostSubform[0].Page1[0].f1_13[0]",
+      "fullyQualifiedName": "topmostSubform[0].Page1[0].f1_13[0]",
+      "type": "text",
+      "index": 13,
+      "flags": {
+        "readOnly": true,
+        "required": false
+      }
+    },
+    {
+      "name": "topmostSubform[0].Page1[0].Line8a_ReadOrder[0].f1_14[0]",
+      "fullyQualifiedName": "topmostSubform[0].Page1[0].Line8a_ReadOrder[0].f1_14[0]",
+      "type": "text",
+      "index": 14,
+      "flags": {
+        "readOnly": false,
+        "required": false
+      }
+    },
+    {
+      "name": "topmostSubform[0].Page1[0].f1_15[0]",
+      "fullyQualifiedName": "topmostSubform[0].Page1[0].f1_15[0]",
+      "type": "text",
+      "index": 15,
+      "flags": {
+        "readOnly": false,
+        "required": false
+      }
+    },
+    {
+      "name": "topmostSubform[0].Page1[0].f1_16[0]",
+      "fullyQualifiedName": "topmostSubform[0].Page1[0].f1_16[0]",
+      "type": "text",
+      "index": 16,
+      "flags": {
+        "readOnly": false,
+        "required": false
+      }
+    },
+    {
+      "name": "topmostSubform[0].Page1[0].f1_17[0]",
+      "fullyQualifiedName": "topmostSubform[0].Page1[0].f1_17[0]",
+      "type": "text",
+      "index": 17,
+      "flags": {
+        "readOnly": false,
+        "required": false
+      }
+    },
+    {
+      "name": "topmostSubform[0].Page1[0].f1_18[0]",
+      "fullyQualifiedName": "topmostSubform[0].Page1[0].f1_18[0]",
+      "type": "text",
+      "index": 18,
+      "flags": {
+        "readOnly": false,
+        "required": false
+      }
+    },
+    {
+      "name": "topmostSubform[0].Page1[0].f1_19[0]",
+      "fullyQualifiedName": "topmostSubform[0].Page1[0].f1_19[0]",
+      "type": "text",
+      "index": 19,
+      "flags": {
+        "readOnly": false,
+        "required": false
+      }
+    },
+    {
+      "name": "topmostSubform[0].Page1[0].f1_20[0]",
+      "fullyQualifiedName": "topmostSubform[0].Page1[0].f1_20[0]",
+      "type": "text",
+      "index": 20,
+      "flags": {
+        "readOnly": false,
+        "required": false
+      }
+    },
+    {
+      "name": "topmostSubform[0].Page1[0].f1_21[0]",
+      "fullyQualifiedName": "topmostSubform[0].Page1[0].f1_21[0]",
+      "type": "text",
+      "index": 21,
+      "flags": {
+        "readOnly": false,
+        "required": false
+      }
+    },
+    {
+      "name": "topmostSubform[0].Page1[0].f1_22[0]",
+      "fullyQualifiedName": "topmostSubform[0].Page1[0].f1_22[0]",
+      "type": "text",
+      "index": 22,
+      "flags": {
+        "readOnly": false,
+        "required": false
+      }
+    },
+    {
+      "name": "topmostSubform[0].Page2[0].f2_1[0]",
+      "fullyQualifiedName": "topmostSubform[0].Page2[0].f2_1[0]",
+      "type": "text",
+      "index": 23,
+      "flags": {
+        "readOnly": true,
+        "required": false
+      }
+    },
+    {
+      "name": "topmostSubform[0].Page2[0].f2_2[0]",
+      "fullyQualifiedName": "topmostSubform[0].Page2[0].f2_2[0]",
+      "type": "text",
+      "index": 24,
+      "flags": {
+        "readOnly": false,
+        "required": false
+      }
+    },
+    {
+      "name": "topmostSubform[0].Page2[0].f2_3[0]",
+      "fullyQualifiedName": "topmostSubform[0].Page2[0].f2_3[0]",
+      "type": "text",
+      "index": 25,
+      "flags": {
+        "readOnly": false,
+        "required": false
+      }
+    },
+    {
+      "name": "topmostSubform[0].Page2[0].f2_4[0]",
+      "fullyQualifiedName": "topmostSubform[0].Page2[0].f2_4[0]",
+      "type": "text",
+      "index": 26,
+      "flags": {
+        "readOnly": false,
+        "required": false
+      }
+    }
+  ],
+  "totalFields": 27
+}

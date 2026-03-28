@@ -1,7 +1,6 @@
-import { PDFDocument, PDFField, PDFCheckBox } from 'pdf-lib'
+import { PDFDocument, PDFField, PDFCheckBox, PDFRadioGroup } from 'pdf-lib'
 import { readFile } from 'fs/promises'
 import * as path from 'path'
-import _ from 'lodash'
 
 const loadFile = async (path: string): Promise<PDFDocument> => {
   const file = await readFile(path)
@@ -12,10 +11,28 @@ const loadFile = async (path: string): Promise<PDFDocument> => {
 const normalizeName = (name: string): string =>
   name.replace(/[^a-zA-Z0-9]/g, '')
 
-const fieldFunction = (field: PDFField, index: number): [string, string] => {
-  const name = normalizeName(field.getName())
+interface FieldInfo {
+  code: string
+  functionName: string
+  pdfFieldName: string
+  fullyQualifiedName: string
+  kind: 'text' | 'checkbox' | 'radio'
+}
+
+const fieldFunction = (field: PDFField, index: number): FieldInfo => {
+  const pdfFieldName = field.getName()
+  // Note: getFullyQualifiedName() is not available in this version of pdf-lib
+  // In future versions, use field.getFullyQualifiedName() for hierarchical names
+  const fullyQualifiedName = pdfFieldName
+  const name = normalizeName(pdfFieldName)
   const isNumeric = name.match(/^[0-9]+[a-z]*$/)
   const functionName = isNumeric ? `l${name}` : `f${index}`
+
+  const kind: 'text' | 'checkbox' | 'radio' = (() => {
+    if (field instanceof PDFCheckBox) return 'checkbox'
+    if (field instanceof PDFRadioGroup) return 'radio'
+    return 'text'
+  })()
 
   const returnType = (() => {
     if (isNumeric) return 'number'
@@ -44,7 +61,8 @@ const fieldFunction = (field: PDFField, index: number): [string, string] => {
   // const spouseSocialNumber = () => ...
   // and an alias with the pdf index field number.
   const namedImplementation = `  /**
-   * Index ${index}: ${field.getName()}
+   * Index ${index}: ${pdfFieldName}
+   * FQN: ${fullyQualifiedName}
    */
   const ${isNumeric ? functionName : name} = (): ${fullReturnType} => {
     return ${defaultValue}
@@ -60,17 +78,28 @@ const fieldFunction = (field: PDFField, index: number): [string, string] => {
     .filter((x) => x !== undefined)
     .join('\n')
 
-  return [code, functionName]
+  return { code, functionName, pdfFieldName, fullyQualifiedName, kind }
 }
 
 const buildSource = (doc: PDFDocument, formName: string): string => {
-  const functions = doc.getForm().getFields().map(fieldFunction)
-  const [impls, functionNames] = _.unzip(functions)
+  const fieldInfos = doc.getForm().getFields().map(fieldFunction)
   const className = normalizeName(formName)
+
+  const impls = fieldInfos.map((f) => f.code)
+  const functionNames = fieldInfos.map((f) => f.functionName)
+
+  // Generate fillInstructions entries
+  const fillInstructionsEntries = fieldInfos.map((info) => {
+    const { functionName, pdfFieldName, kind } = info
+    const helperName = kind // 'text', 'checkbox', or 'radio'
+    const valueExpr = `this.${functionName}()`
+
+    return `    ${helperName}('${pdfFieldName}', ${valueExpr})`
+  })
 
   return `import Form from '../Form'
 import F1040 from '../../irsForms/F1040'
-import { Field } from '../../pdfFiller'
+import { Field, FillInstructions, text, checkbox, radio } from '../../pdfFiller'
 import { displayNumber, sumFields } from '../../irsForms/util'
 import { AccountType, FilingStatus, State } from '../../redux/data'
 import { ValidatedInformation } from 'ustaxes/forms/F1040Base'
@@ -90,7 +119,7 @@ export class ${className} extends Form {
 
 ${impls.join('\n')}
 
-  const fields = (): Field[] => ([
+  fields = (): Field[] => ([
 ${functionNames
   .map((name) =>
     name.startsWith('l')
@@ -99,6 +128,10 @@ ${functionNames
   )
   .join(',\n')}
   ])
+
+  fillInstructions = (): FillInstructions => [
+${fillInstructionsEntries.join(',\n')}
+  ]
 }
 
 const make${className} = (f1040: F1040): ${className} =>
@@ -108,37 +141,63 @@ export default make${className}
 `
 }
 
-const generate = async (
-  inFile: string,
-  outFile: string | undefined = undefined
-): Promise<void> => {
+/**
+ * Generate only the fillInstructions() method body — useful when adding to an existing form class.
+ */
+const buildFillInstructionsOnly = (
+  doc: PDFDocument,
+  formName: string
+): string => {
+  const fieldInfos = doc.getForm().getFields().map(fieldFunction)
+  const entries = fieldInfos.map((info) => {
+    const { functionName, pdfFieldName, kind } = info
+    return `    ${kind}('${pdfFieldName}', this.${functionName}())`
+  })
+  return `  // Generated from ${formName} PDF via scripts/formgen.ts
+  fillInstructions = (): FillInstructions => [
+${entries.join(',\n')}
+  ]`
+}
+
+const generate = async (inFile: string, fillOnly = false): Promise<void> => {
   const pdf = await loadFile(inFile)
   const name = path.parse(inFile).name
-  const code = buildSource(pdf, name)
-  if (outFile === undefined) {
-    console.log(code)
-  }
+  const code = fillOnly
+    ? buildFillInstructionsOnly(pdf, name)
+    : buildSource(pdf, name)
+  console.log(code)
 }
 
 const help = () => {
   console.log(`
     Usage:
-    npm run formgen <form-file>.pdf
+      npm run formgen <form-file>.pdf
+      npm run formgen -- --fill-instructions-only <form-file>.pdf
+
+    Options:
+      --fill-instructions-only   Output only the fillInstructions() method (for inserting into an existing class)
   `)
 }
 
-const main = () => {
+const main = async () => {
   const args = process.argv.slice(2)
-  process.argv.forEach((a) => console.log(a))
 
   if (args.length < 1) {
     help()
     process.exit()
   }
 
-  generate(args[0])
+  const fillOnly = args.includes('--fill-instructions-only')
+  const files = args.filter((a) => !a.startsWith('-'))
+
+  if (files.length < 1) {
+    help()
+    process.exit()
+  }
+
+  await generate(files[0], fillOnly)
 }
 
 if (require.main === module) {
-  main()
+  void main()
 }

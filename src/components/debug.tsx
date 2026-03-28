@@ -29,7 +29,16 @@ export const StateLoader = (): ReactElement => {
 
   const gen = new fc.Random(prand.mersenne(new Date().getMilliseconds()))
 
-  const information = arbitraries.forYear(TaxYears[year]).information()
+  const calendarYear = (() => {
+    if (Object.prototype.hasOwnProperty.call(TaxYears, year)) {
+      const v = TaxYears[year]
+      if (typeof v === 'number' && Number.isFinite(v)) return v
+    }
+    if (typeof year === 'number' && Number.isFinite(year)) return year
+    return TaxYears.Y2020
+  })()
+
+  const information = arbitraries.forYear(calendarYear).information()
 
   const generator = (): Information =>
     information.noShrink().generate(gen).value

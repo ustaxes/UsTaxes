@@ -6,7 +6,7 @@ import SDUnrecaptured1250 from './worksheets/SDUnrecaptured1250'
 import F8949 from './F8949'
 import F1040Attachment from './F1040Attachment'
 import F1040 from './F1040'
-import { Field } from 'ustaxes/core/pdfFiller'
+import { Field, FillInstructions, text, checkbox } from 'ustaxes/core/pdfFiller'
 import SDTaxWorksheet from './worksheets/SDTaxWorksheet'
 import QualDivAndCGWorksheet from './worksheets/SDQualifiedAndCapGains'
 export default class ScheduleD extends F1040Attachment {
@@ -310,5 +310,167 @@ export default class ScheduleD extends F1040Attachment {
     this.l21(),
     this.l22() === true,
     this.l22() === false
+  ]
+
+  // Generated from Y2024 PDF schema + fields() via scripts/migrateToNativeInstructions.ts
+  // 55 TS expressions, 55 PDF fields
+  fillInstructions = (): FillInstructions => [
+    text('topmostSubform[0].Page1[0].f1_01[0]', this.f1040.namesString()),
+    text(
+      'topmostSubform[0].Page1[0].f1_02[0]',
+      this.f1040.info.taxPayer.primaryPerson.ssid
+    ),
+    checkbox('topmostSubform[0].Page1[0].c1_1[0]', false),
+    checkbox('topmostSubform[0].Page1[0].c1_1[1]', false),
+    text(
+      'topmostSubform[0].Page1[0].Table_PartI[0].Row1a[0].f1_03[0]',
+      this.l1ad()
+    ),
+    text(
+      'topmostSubform[0].Page1[0].Table_PartI[0].Row1a[0].f1_04[0]',
+      this.l1ae()
+    ),
+    text(
+      'topmostSubform[0].Page1[0].Table_PartI[0].Row1a[0].f1_05_RO[0]',
+      this.l1ag()
+    ),
+    text(
+      'topmostSubform[0].Page1[0].Table_PartI[0].Row1a[0].f1_06[0]',
+      this.l1ah()
+    ),
+    text(
+      'topmostSubform[0].Page1[0].Table_PartI[0].Row1b[0].f1_07[0]',
+      this.l1bd()
+    ),
+    text(
+      'topmostSubform[0].Page1[0].Table_PartI[0].Row1b[0].f1_08[0]',
+      this.l1be()
+    ),
+    text(
+      'topmostSubform[0].Page1[0].Table_PartI[0].Row1b[0].f1_09[0]',
+      this.l1bg()
+    ),
+    text(
+      'topmostSubform[0].Page1[0].Table_PartI[0].Row1b[0].f1_10[0]',
+      this.l1bh()
+    ),
+    text(
+      'topmostSubform[0].Page1[0].Table_PartI[0].Row2[0].f1_11[0]',
+      this.l2d()
+    ),
+    text(
+      'topmostSubform[0].Page1[0].Table_PartI[0].Row2[0].f1_12[0]',
+      this.l2e()
+    ),
+    text(
+      'topmostSubform[0].Page1[0].Table_PartI[0].Row2[0].f1_13[0]',
+      this.l2g()
+    ),
+    text(
+      'topmostSubform[0].Page1[0].Table_PartI[0].Row2[0].f1_14[0]',
+      this.l2h()
+    ),
+    text(
+      'topmostSubform[0].Page1[0].Table_PartI[0].Row3[0].f1_15[0]',
+      this.l3d()
+    ),
+    text(
+      'topmostSubform[0].Page1[0].Table_PartI[0].Row3[0].f1_16[0]',
+      this.l3e()
+    ),
+    text(
+      'topmostSubform[0].Page1[0].Table_PartI[0].Row3[0].f1_17[0]',
+      this.l3g()
+    ),
+    text(
+      'topmostSubform[0].Page1[0].Table_PartI[0].Row3[0].f1_18[0]',
+      this.l3h()
+    ),
+    text('topmostSubform[0].Page1[0].f1_19[0]', this.l4()),
+    text('topmostSubform[0].Page1[0].f1_20[0]', this.l5()),
+    text('topmostSubform[0].Page1[0].f1_21[0]', this.l6()),
+    text('topmostSubform[0].Page1[0].f1_22[0]', this.l7()),
+    text(
+      'topmostSubform[0].Page1[0].Table_PartII[0].Row8a[0].f1_23[0]',
+      this.l8ad()
+    ),
+    text(
+      'topmostSubform[0].Page1[0].Table_PartII[0].Row8a[0].f1_24[0]',
+      this.l8ae()
+    ),
+    text(
+      'topmostSubform[0].Page1[0].Table_PartII[0].Row8a[0].f1_25_RO[0]',
+      this.l8ag()
+    ),
+    text(
+      'topmostSubform[0].Page1[0].Table_PartII[0].Row8a[0].f1_26[0]',
+      this.l8ah()
+    ),
+    text(
+      'topmostSubform[0].Page1[0].Table_PartII[0].Row8b[0].f1_27[0]',
+      this.l8bd()
+    ),
+    text(
+      'topmostSubform[0].Page1[0].Table_PartII[0].Row8b[0].f1_28[0]',
+      this.l8be()
+    ),
+    text(
+      'topmostSubform[0].Page1[0].Table_PartII[0].Row8b[0].f1_29[0]',
+      this.l8bg()
+    ),
+    text(
+      'topmostSubform[0].Page1[0].Table_PartII[0].Row8b[0].f1_30[0]',
+      this.l8bh()
+    ),
+    text(
+      'topmostSubform[0].Page1[0].Table_PartII[0].Row9[0].f1_31[0]',
+      this.l9d()
+    ),
+    text(
+      'topmostSubform[0].Page1[0].Table_PartII[0].Row9[0].f1_32[0]',
+      this.l9e()
+    ),
+    text(
+      'topmostSubform[0].Page1[0].Table_PartII[0].Row9[0].f1_33[0]',
+      this.l9g()
+    ),
+    text(
+      'topmostSubform[0].Page1[0].Table_PartII[0].Row9[0].f1_34[0]',
+      this.l9h()
+    ),
+    text(
+      'topmostSubform[0].Page1[0].Table_PartII[0].Row10[0].f1_35[0]',
+      this.l10d()
+    ),
+    text(
+      'topmostSubform[0].Page1[0].Table_PartII[0].Row10[0].f1_36[0]',
+      this.l10e()
+    ),
+    text(
+      'topmostSubform[0].Page1[0].Table_PartII[0].Row10[0].f1_37[0]',
+      this.l10g()
+    ),
+    text(
+      'topmostSubform[0].Page1[0].Table_PartII[0].Row10[0].f1_38[0]',
+      this.l10h()
+    ),
+    text('topmostSubform[0].Page1[0].f1_39[0]', this.l11()),
+    text('topmostSubform[0].Page1[0].f1_40[0]', this.l12()),
+    text('topmostSubform[0].Page1[0].f1_41[0]', this.l13()),
+    text('topmostSubform[0].Page1[0].f1_42[0]', this.l14()),
+    text('topmostSubform[0].Page1[0].f1_43[0]', this.l15()),
+    text('topmostSubform[0].Page2[0].f2_01[0]', this.l16()),
+    checkbox('topmostSubform[0].Page2[0].c2_1[0]', this.l17()),
+    checkbox('topmostSubform[0].Page2[0].c2_1[1]', !this.l17()),
+    text('topmostSubform[0].Page2[0].f2_02[0]', this.l18()),
+    text('topmostSubform[0].Page2[0].f2_03[0]', this.l19()),
+    checkbox('topmostSubform[0].Page2[0].c2_2[0]', this.l20() === true),
+    checkbox('topmostSubform[0].Page2[0].c2_2[1]', this.l20() === false),
+    text(
+      'topmostSubform[0].Page2[0].TagCorrectingSubform[0].f2_04[0]',
+      this.l21()
+    ),
+    checkbox('topmostSubform[0].Page2[0].c2_3[0]', this.l22() === true),
+    checkbox('topmostSubform[0].Page2[0].c2_3[1]', this.l22() === false)
   ]
 }
