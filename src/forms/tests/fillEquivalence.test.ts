@@ -1,5 +1,5 @@
 import { PDFDocument, PDFCheckBox, PDFTextField, PDFRadioGroup } from 'pdf-lib'
-import { testKit } from 'ustaxes/forms/Y2024/tests'
+import { testKit } from 'ustaxes/forms/Y2025/tests'
 import {
   deriveFillInstructionsFromPdf,
   fillPDFByName
@@ -9,7 +9,7 @@ import { FillInstructions, RadioSelect } from 'ustaxes/core/pdfFiller'
 jest.setTimeout(360000)
 
 /**
- * Sorted PDF field names we could read back (text + checkbox only).
+ * Sorted PDF field names we could read back (text, checkbox, and radio).
  * Snapshot names only — not values — so tests stay stable with randomized testKit data.
  */
 function sortedExtractableFieldNames(
@@ -61,7 +61,7 @@ function assertInstructionKindsMatchPdf(
 }
 
 describe('PDF fill via fillPDFByName (derive bridge)', () => {
-  it('fills each Y2024 IRS form: instruction count, strict fill, extractable field names snapshot', async () => {
+  it('fills each Y2025 IRS form: instruction count, strict fill, extractable field names snapshot', async () => {
     const extractableNamesByTag: Record<string, string[]> = {}
     await testKit.with1040Assert(async (forms) => {
       for (const form of forms) {
@@ -90,7 +90,7 @@ describe('PDF fill via fillPDFByName (derive bridge)', () => {
         )
       }
     })
-    // Canonical extractable field names after migration to name-based filling (text + checkbox only).
+    // Canonical extractable field names after migration to name-based filling (text, checkbox, and radio).
     // Update snapshots only when PDFs or which fields are readable change — not for randomized test data values.
     expect(extractableNamesByTag).toMatchSnapshot()
   })

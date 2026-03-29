@@ -5,7 +5,7 @@ import { YearsTaxesState } from '.'
 import { ActionName, Actions } from './actions'
 import { stringToDateInfo } from './data'
 
-const DEFAULT_TAX_YEAR: TaxYear = 'Y2024'
+const DEFAULT_TAX_YEAR: TaxYear = 'Y2025'
 
 export const blankState: Information = {
   f1099s: [],
@@ -487,6 +487,7 @@ const rootReducer: Reducer<
   Y2022: guardByYear('Y2022'),
   Y2023: guardByYear('Y2023'),
   Y2024: guardByYear('Y2024'),
+  Y2025: guardByYear('Y2025'),
   activeYear
 }) as Reducer<CombinedState<YearsTaxesState>, Actions>
 

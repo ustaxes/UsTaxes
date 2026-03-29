@@ -21,7 +21,8 @@ export const blankYearTaxesState: YearsTaxesState = {
   Y2022: blankState,
   Y2023: blankState,
   Y2024: blankState,
-  activeYear: 'Y2020'
+  Y2025: blankState,
+  activeYear: 'Y2025'
 }
 
 export const dateToStringPerson = <P extends Person<Date>>(

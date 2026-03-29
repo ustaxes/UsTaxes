@@ -1,13 +1,13 @@
 import { readFile } from 'fs/promises'
 import * as path from 'path'
 import { existsSync } from 'fs'
-import { testKit } from 'ustaxes/forms/Y2024/tests'
+import { testKit } from 'ustaxes/forms/Y2025/tests'
 import {
   PdfFormSchema,
   PdfFieldSchema
 } from '../../../scripts/extractPdfSchema'
 
-jest.setTimeout(60000)
+jest.setTimeout(120000)
 
 /**
  * Load a PDF schema from a JSON file.
@@ -38,16 +38,15 @@ function mapKindToType(kind: 'text' | 'checkbox' | 'radio'): string {
  * here (with a comment) rather than silently failing CI.
  */
 const ALLOWLIST: Partial<Record<string, string[]>> = {
-  f1040: []
   // Example for a hypothetical barcode field added in a future IRS PDF revision:
   // f1040: ['topmostSubform[0].Page1[0].Barcode[0]'],
 }
 
 describe('Contract Tests: PDF Schema vs TypeScript Forms', () => {
-  describe('Parameterized: all Y2024 forms with fillInstructions() + schema', () => {
+  describe('Parameterized: all Y2025 forms with fillInstructions() + schema', () => {
     it('TS<->PDF contract: field names exist, types match, coverage complete', async () => {
       await testKit.with1040Assert(async (forms) => {
-        const schemasDir = path.resolve(__dirname, '../../../schemas/Y2024')
+        const schemasDir = path.resolve(__dirname, '../../../schemas/Y2025')
         const failures: string[] = []
 
         for (const form of forms) {
@@ -60,7 +59,7 @@ describe('Contract Tests: PDF Schema vs TypeScript Forms', () => {
             // Strict: non-empty fillInstructions with no schema is a contract violation
             if (instructions.length > 0) {
               failures.push(
-                `[${form.tag}] has non-empty fillInstructions() but no schema file — run: npm run extract-schema <pdf> schemas/Y2024`
+                `[${form.tag}] has non-empty fillInstructions() but no schema file — run: npm run extract-schema <pdf> schemas/Y2025`
               )
             }
             continue
@@ -115,13 +114,14 @@ describe('Contract Tests: PDF Schema vs TypeScript Forms', () => {
     })
   })
 
-  describe('Schema files: all Y2024 schemas should be loadable', () => {
-    it('should load all extracted Y2024 schemas', async () => {
-      const schemasDir = path.resolve(__dirname, '../../../schemas/Y2024')
+  describe('Schema files: all Y2025 schemas should be loadable', () => {
+    it('should load all extracted Y2025 schemas', async () => {
+      const schemasDir = path.resolve(__dirname, '../../../schemas/Y2025')
       const expectedForms = [
         'f1040',
         'f1040v',
         'f1040s1',
+        'f1040s1a',
         'f1040s2',
         'f1040s3',
         'f1040sa',
@@ -131,13 +131,26 @@ describe('Contract Tests: PDF Schema vs TypeScript Forms', () => {
         'f1040sei',
         'f1040sse',
         'f1040s8',
+        'f4547',
+        'f4797',
+        'f4952',
+        'f4972',
+        'f5695',
         'f6251',
+        'f8814',
+        'f8888',
         'f8889',
+        'f8910',
+        'f8936',
         'f8949',
         'f8959',
         'f8960',
         'f8995',
-        'f8995a'
+        'f8995a',
+        'f1040sr',
+        'f5329',
+        'f8839',
+        'f8880'
       ]
 
       const missingSchemas: string[] = []
@@ -154,7 +167,7 @@ describe('Contract Tests: PDF Schema vs TypeScript Forms', () => {
       if (missingSchemas.length > 0) {
         throw new Error(
           `Missing schema files for: ${missingSchemas.join(', ')}\n` +
-            `Run: npm run extract-schema <pdf> schemas/Y2024 for each missing form.`
+            `Run: npm run extract-schema <pdf> schemas/Y2025 for each missing form.`
         )
       }
     })

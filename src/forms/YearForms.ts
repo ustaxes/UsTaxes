@@ -6,12 +6,14 @@ import { create1040 as create1040For2021 } from 'ustaxes/forms/Y2021/irsForms/Ma
 import { create1040 as create1040For2022 } from 'ustaxes/forms/Y2022/irsForms/Main'
 import { create1040 as create1040For2023 } from 'ustaxes/forms/Y2023/irsForms/Main'
 import { create1040 as create1040For2024 } from 'ustaxes/forms/Y2024/irsForms/Main'
+import { create1040 as create1040For2025 } from 'ustaxes/forms/Y2025/irsForms/Main'
 
 import F1040For2020 from 'ustaxes/forms/Y2020/irsForms/F1040'
 import F1040For2021 from 'ustaxes/forms/Y2021/irsForms/F1040'
 import F1040For2022 from 'ustaxes/forms/Y2022/irsForms/F1040'
 import F1040For2023 from 'ustaxes/forms/Y2023/irsForms/F1040'
 import F1040For2024 from 'ustaxes/forms/Y2024/irsForms/F1040'
+import F1040For2025 from 'ustaxes/forms/Y2025/irsForms/F1040'
 
 import Form from 'ustaxes/core/irsForms/Form'
 import StateForm from 'ustaxes/core/stateForms/Form'
@@ -21,6 +23,7 @@ import { createStateReturn as createStateReturn2021 } from 'ustaxes/forms/Y2021/
 import { createStateReturn as createStateReturn2022 } from 'ustaxes/forms/Y2022/stateForms'
 import { createStateReturn as createStateReturn2023 } from 'ustaxes/forms/Y2023/stateForms'
 import { createStateReturn as createStateReturn2024 } from 'ustaxes/forms/Y2024/stateForms'
+import { createStateReturn as createStateReturn2025 } from 'ustaxes/forms/Y2025/stateForms'
 import { PDFDocument } from 'pdf-lib'
 import { fillPdfFromFill } from 'ustaxes/core/pdfFiller/fillPdf'
 import {
@@ -222,6 +225,11 @@ export class CreateForms {
         ...baseConfig,
         createF1040: takeSecond(create1040For2024),
         createStateReturn: (f: Form) => createStateReturn2024(f as F1040For2024)
+      },
+      Y2025: {
+        ...baseConfig,
+        createF1040: takeSecond(create1040For2025),
+        createStateReturn: (f: Form) => createStateReturn2025(f as F1040For2025)
       }
     }
 

@@ -1,0 +1,214 @@
+{
+  "formName": "f8888",
+  "fields": [
+    {
+      "name": "topmostSubform[0].Page1[0].PgHeader[0].CalendarYear[0].f1_1[0]",
+      "fullyQualifiedName": "topmostSubform[0].Page1[0].PgHeader[0].CalendarYear[0].f1_1[0]",
+      "type": "text",
+      "index": 0,
+      "maxLength": 2,
+      "flags": {
+        "readOnly": false,
+        "required": false
+      }
+    },
+    {
+      "name": "topmostSubform[0].Page1[0].f1_2[0]",
+      "fullyQualifiedName": "topmostSubform[0].Page1[0].f1_2[0]",
+      "type": "text",
+      "index": 1,
+      "flags": {
+        "readOnly": false,
+        "required": false
+      }
+    },
+    {
+      "name": "topmostSubform[0].Page1[0].f1_3[0]",
+      "fullyQualifiedName": "topmostSubform[0].Page1[0].f1_3[0]",
+      "type": "text",
+      "index": 2,
+      "maxLength": 11,
+      "flags": {
+        "readOnly": false,
+        "required": false
+      }
+    },
+    {
+      "name": "topmostSubform[0].Page1[0].f1_4[0]",
+      "fullyQualifiedName": "topmostSubform[0].Page1[0].f1_4[0]",
+      "type": "text",
+      "index": 3,
+      "flags": {
+        "readOnly": false,
+        "required": false
+      }
+    },
+    {
+      "name": "topmostSubform[0].Page1[0].Line1bCombfield[0].f1_5[0]",
+      "fullyQualifiedName": "topmostSubform[0].Page1[0].Line1bCombfield[0].f1_5[0]",
+      "type": "text",
+      "index": 4,
+      "maxLength": 9,
+      "flags": {
+        "readOnly": false,
+        "required": false
+      }
+    },
+    {
+      "name": "topmostSubform[0].Page1[0].c1_1[0]",
+      "fullyQualifiedName": "topmostSubform[0].Page1[0].c1_1[0]",
+      "type": "checkbox",
+      "index": 5,
+      "flags": {
+        "readOnly": false,
+        "required": false
+      }
+    },
+    {
+      "name": "topmostSubform[0].Page1[0].c1_1[1]",
+      "fullyQualifiedName": "topmostSubform[0].Page1[0].c1_1[1]",
+      "type": "checkbox",
+      "index": 6,
+      "flags": {
+        "readOnly": false,
+        "required": false
+      }
+    },
+    {
+      "name": "topmostSubform[0].Page1[0].Line1dCombfield[0].f1_6[0]",
+      "fullyQualifiedName": "topmostSubform[0].Page1[0].Line1dCombfield[0].f1_6[0]",
+      "type": "text",
+      "index": 7,
+      "maxLength": 17,
+      "flags": {
+        "readOnly": false,
+        "required": false
+      }
+    },
+    {
+      "name": "topmostSubform[0].Page1[0].f1_7[0]",
+      "fullyQualifiedName": "topmostSubform[0].Page1[0].f1_7[0]",
+      "type": "text",
+      "index": 8,
+      "flags": {
+        "readOnly": false,
+        "required": false
+      }
+    },
+    {
+      "name": "topmostSubform[0].Page1[0].Line2bCombfield[0].f1_8[0]",
+      "fullyQualifiedName": "topmostSubform[0].Page1[0].Line2bCombfield[0].f1_8[0]",
+      "type": "text",
+      "index": 9,
+      "maxLength": 9,
+      "flags": {
+        "readOnly": false,
+        "required": false
+      }
+    },
+    {
+      "name": "topmostSubform[0].Page1[0].c1_2[0]",
+      "fullyQualifiedName": "topmostSubform[0].Page1[0].c1_2[0]",
+      "type": "checkbox",
+      "index": 10,
+      "flags": {
+        "readOnly": false,
+        "required": false
+      }
+    },
+    {
+      "name": "topmostSubform[0].Page1[0].c1_2[1]",
+      "fullyQualifiedName": "topmostSubform[0].Page1[0].c1_2[1]",
+      "type": "checkbox",
+      "index": 11,
+      "flags": {
+        "readOnly": false,
+        "required": false
+      }
+    },
+    {
+      "name": "topmostSubform[0].Page1[0].Line2dCombfield[0].f1_9[0]",
+      "fullyQualifiedName": "topmostSubform[0].Page1[0].Line2dCombfield[0].f1_9[0]",
+      "type": "text",
+      "index": 12,
+      "maxLength": 17,
+      "flags": {
+        "readOnly": false,
+        "required": false
+      }
+    },
+    {
+      "name": "topmostSubform[0].Page1[0].f1_10[0]",
+      "fullyQualifiedName": "topmostSubform[0].Page1[0].f1_10[0]",
+      "type": "text",
+      "index": 13,
+      "flags": {
+        "readOnly": false,
+        "required": false
+      }
+    },
+    {
+      "name": "topmostSubform[0].Page1[0].Line3bCombfield[0].f1_11[0]",
+      "fullyQualifiedName": "topmostSubform[0].Page1[0].Line3bCombfield[0].f1_11[0]",
+      "type": "text",
+      "index": 14,
+      "maxLength": 9,
+      "flags": {
+        "readOnly": false,
+        "required": false
+      }
+    },
+    {
+      "name": "topmostSubform[0].Page1[0].c1_3[0]",
+      "fullyQualifiedName": "topmostSubform[0].Page1[0].c1_3[0]",
+      "type": "checkbox",
+      "index": 15,
+      "flags": {
+        "readOnly": false,
+        "required": false
+      }
+    },
+    {
+      "name": "topmostSubform[0].Page1[0].c1_3[1]",
+      "fullyQualifiedName": "topmostSubform[0].Page1[0].c1_3[1]",
+      "type": "checkbox",
+      "index": 16,
+      "flags": {
+        "readOnly": false,
+        "required": false
+      }
+    },
+    {
+      "name": "topmostSubform[0].Page1[0].Line3dCombfield[0].f1_12[0]",
+      "fullyQualifiedName": "topmostSubform[0].Page1[0].Line3dCombfield[0].f1_12[0]",
+      "type": "text",
+      "index": 17,
+      "maxLength": 17,
+      "flags": {
+        "readOnly": false,
+        "required": false
+      }
+    },
+    {
+      "name": "topmostSubform[0].Page1[0].f1_13[0]",
+      "fullyQualifiedName": "topmostSubform[0].Page1[0].f1_13[0]",
+      "type": "text",
+      "index": 18,
+      "flags": {
+        "readOnly": true,
+        "required": false
+      }
+    },
+    {
+      "name": "topmostSubform[0].Page1[0].f1_14[0]",
+      "fullyQualifiedName": "topmostSubform[0].Page1[0].f1_14[0]",
+      "type": "text",
+      "index": 19,
+      "flags": {
+        "readOnly": false,
+        "required": false
+      }
+    }
+  ],
+  "totalFields": 20
+}

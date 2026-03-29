@@ -1,0 +1,405 @@
+{
+  "formName": "f1040sei",
+  "fields": [
+    {
+      "name": "topmostSubform[0].Page1[0].f1_01[0]",
+      "fullyQualifiedName": "topmostSubform[0].Page1[0].f1_01[0]",
+      "type": "text",
+      "index": 0,
+      "flags": {
+        "readOnly": false,
+        "required": false
+      }
+    },
+    {
+      "name": "topmostSubform[0].Page1[0].f1_02[0]",
+      "fullyQualifiedName": "topmostSubform[0].Page1[0].f1_02[0]",
+      "type": "text",
+      "index": 1,
+      "maxLength": 11,
+      "flags": {
+        "readOnly": false,
+        "required": false
+      }
+    },
+    {
+      "name": "topmostSubform[0].Page1[0].f1_03[0]",
+      "fullyQualifiedName": "topmostSubform[0].Page1[0].f1_03[0]",
+      "type": "text",
+      "index": 2,
+      "flags": {
+        "readOnly": false,
+        "required": false
+      }
+    },
+    {
+      "name": "topmostSubform[0].Page1[0].f1_04[0]",
+      "fullyQualifiedName": "topmostSubform[0].Page1[0].f1_04[0]",
+      "type": "text",
+      "index": 3,
+      "flags": {
+        "readOnly": false,
+        "required": false
+      }
+    },
+    {
+      "name": "topmostSubform[0].Page1[0].f1_05[0]",
+      "fullyQualifiedName": "topmostSubform[0].Page1[0].f1_05[0]",
+      "type": "text",
+      "index": 4,
+      "flags": {
+        "readOnly": false,
+        "required": false
+      }
+    },
+    {
+      "name": "topmostSubform[0].Page1[0].f1_06[0]",
+      "fullyQualifiedName": "topmostSubform[0].Page1[0].f1_06[0]",
+      "type": "text",
+      "index": 5,
+      "maxLength": 11,
+      "flags": {
+        "readOnly": false,
+        "required": false
+      }
+    },
+    {
+      "name": "topmostSubform[0].Page1[0].f1_07[0]",
+      "fullyQualifiedName": "topmostSubform[0].Page1[0].f1_07[0]",
+      "type": "text",
+      "index": 6,
+      "maxLength": 11,
+      "flags": {
+        "readOnly": false,
+        "required": false
+      }
+    },
+    {
+      "name": "topmostSubform[0].Page1[0].f1_08[0]",
+      "fullyQualifiedName": "topmostSubform[0].Page1[0].f1_08[0]",
+      "type": "text",
+      "index": 7,
+      "maxLength": 11,
+      "flags": {
+        "readOnly": false,
+        "required": false
+      }
+    },
+    {
+      "name": "topmostSubform[0].Page1[0].Year1_ReadOrder[0].f1_09[0]",
+      "fullyQualifiedName": "topmostSubform[0].Page1[0].Year1_ReadOrder[0].f1_09[0]",
+      "type": "text",
+      "index": 8,
+      "maxLength": 1,
+      "flags": {
+        "readOnly": false,
+        "required": false
+      }
+    },
+    {
+      "name": "topmostSubform[0].Page1[0].Year1_ReadOrder[0].f1_10[0]",
+      "fullyQualifiedName": "topmostSubform[0].Page1[0].Year1_ReadOrder[0].f1_10[0]",
+      "type": "text",
+      "index": 9,
+      "maxLength": 1,
+      "flags": {
+        "readOnly": false,
+        "required": false
+      }
+    },
+    {
+      "name": "topmostSubform[0].Page1[0].Year1_ReadOrder[0].f1_11[0]",
+      "fullyQualifiedName": "topmostSubform[0].Page1[0].Year1_ReadOrder[0].f1_11[0]",
+      "type": "text",
+      "index": 10,
+      "maxLength": 1,
+      "flags": {
+        "readOnly": false,
+        "required": false
+      }
+    },
+    {
+      "name": "topmostSubform[0].Page1[0].Year1_ReadOrder[0].f1_12[0]",
+      "fullyQualifiedName": "topmostSubform[0].Page1[0].Year1_ReadOrder[0].f1_12[0]",
+      "type": "text",
+      "index": 11,
+      "maxLength": 1,
+      "flags": {
+        "readOnly": false,
+        "required": false
+      }
+    },
+    {
+      "name": "topmostSubform[0].Page1[0].Year2_ReadOrder[0].f1_13[0]",
+      "fullyQualifiedName": "topmostSubform[0].Page1[0].Year2_ReadOrder[0].f1_13[0]",
+      "type": "text",
+      "index": 12,
+      "maxLength": 1,
+      "flags": {
+        "readOnly": false,
+        "required": false
+      }
+    },
+    {
+      "name": "topmostSubform[0].Page1[0].Year2_ReadOrder[0].f1_14[0]",
+      "fullyQualifiedName": "topmostSubform[0].Page1[0].Year2_ReadOrder[0].f1_14[0]",
+      "type": "text",
+      "index": 13,
+      "maxLength": 1,
+      "flags": {
+        "readOnly": false,
+        "required": false
+      }
+    },
+    {
+      "name": "topmostSubform[0].Page1[0].Year2_ReadOrder[0].f1_15[0]",
+      "fullyQualifiedName": "topmostSubform[0].Page1[0].Year2_ReadOrder[0].f1_15[0]",
+      "type": "text",
+      "index": 14,
+      "maxLength": 1,
+      "flags": {
+        "readOnly": false,
+        "required": false
+      }
+    },
+    {
+      "name": "topmostSubform[0].Page1[0].Year2_ReadOrder[0].f1_16[0]",
+      "fullyQualifiedName": "topmostSubform[0].Page1[0].Year2_ReadOrder[0].f1_16[0]",
+      "type": "text",
+      "index": 15,
+      "maxLength": 1,
+      "flags": {
+        "readOnly": false,
+        "required": false
+      }
+    },
+    {
+      "name": "topmostSubform[0].Page1[0].f1_17[0]",
+      "fullyQualifiedName": "topmostSubform[0].Page1[0].f1_17[0]",
+      "type": "text",
+      "index": 16,
+      "maxLength": 1,
+      "flags": {
+        "readOnly": false,
+        "required": false
+      }
+    },
+    {
+      "name": "topmostSubform[0].Page1[0].f1_18[0]",
+      "fullyQualifiedName": "topmostSubform[0].Page1[0].f1_18[0]",
+      "type": "text",
+      "index": 17,
+      "maxLength": 1,
+      "flags": {
+        "readOnly": false,
+        "required": false
+      }
+    },
+    {
+      "name": "topmostSubform[0].Page1[0].f1_19[0]",
+      "fullyQualifiedName": "topmostSubform[0].Page1[0].f1_19[0]",
+      "type": "text",
+      "index": 18,
+      "maxLength": 1,
+      "flags": {
+        "readOnly": false,
+        "required": false
+      }
+    },
+    {
+      "name": "topmostSubform[0].Page1[0].f1_20[0]",
+      "fullyQualifiedName": "topmostSubform[0].Page1[0].f1_20[0]",
+      "type": "text",
+      "index": 19,
+      "maxLength": 1,
+      "flags": {
+        "readOnly": false,
+        "required": false
+      }
+    },
+    {
+      "name": "topmostSubform[0].Page1[0].Line4a_Child1_ReadOrder[0].Yes_ReadOrder[0].c1_1[0]",
+      "fullyQualifiedName": "topmostSubform[0].Page1[0].Line4a_Child1_ReadOrder[0].Yes_ReadOrder[0].c1_1[0]",
+      "type": "checkbox",
+      "index": 20,
+      "flags": {
+        "readOnly": false,
+        "required": false
+      }
+    },
+    {
+      "name": "topmostSubform[0].Page1[0].Line4a_Child1_ReadOrder[0].c1_1[0]",
+      "fullyQualifiedName": "topmostSubform[0].Page1[0].Line4a_Child1_ReadOrder[0].c1_1[0]",
+      "type": "checkbox",
+      "index": 21,
+      "flags": {
+        "readOnly": false,
+        "required": false
+      }
+    },
+    {
+      "name": "topmostSubform[0].Page1[0].Line4a_Child2_ReadOrder[0].Yes_ReadOrder[0].c1_2[0]",
+      "fullyQualifiedName": "topmostSubform[0].Page1[0].Line4a_Child2_ReadOrder[0].Yes_ReadOrder[0].c1_2[0]",
+      "type": "checkbox",
+      "index": 22,
+      "flags": {
+        "readOnly": false,
+        "required": false
+      }
+    },
+    {
+      "name": "topmostSubform[0].Page1[0].Line4a_Child2_ReadOrder[0].c1_2[0]",
+      "fullyQualifiedName": "topmostSubform[0].Page1[0].Line4a_Child2_ReadOrder[0].c1_2[0]",
+      "type": "checkbox",
+      "index": 23,
+      "flags": {
+        "readOnly": false,
+        "required": false
+      }
+    },
+    {
+      "name": "topmostSubform[0].Page1[0].Line4a_Child3_Yes_ReadOrder[0].c1_3[0]",
+      "fullyQualifiedName": "topmostSubform[0].Page1[0].Line4a_Child3_Yes_ReadOrder[0].c1_3[0]",
+      "type": "checkbox",
+      "index": 24,
+      "flags": {
+        "readOnly": false,
+        "required": false
+      }
+    },
+    {
+      "name": "topmostSubform[0].Page1[0].c1_3[0]",
+      "fullyQualifiedName": "topmostSubform[0].Page1[0].c1_3[0]",
+      "type": "checkbox",
+      "index": 25,
+      "flags": {
+        "readOnly": false,
+        "required": false
+      }
+    },
+    {
+      "name": "topmostSubform[0].Page1[0].Line4b_Child1_ReadOrder[0].Yes_ReadOrder[0].c1_4[0]",
+      "fullyQualifiedName": "topmostSubform[0].Page1[0].Line4b_Child1_ReadOrder[0].Yes_ReadOrder[0].c1_4[0]",
+      "type": "checkbox",
+      "index": 26,
+      "flags": {
+        "readOnly": false,
+        "required": false
+      }
+    },
+    {
+      "name": "topmostSubform[0].Page1[0].Line4b_Child1_ReadOrder[0].c1_4[0]",
+      "fullyQualifiedName": "topmostSubform[0].Page1[0].Line4b_Child1_ReadOrder[0].c1_4[0]",
+      "type": "checkbox",
+      "index": 27,
+      "flags": {
+        "readOnly": false,
+        "required": false
+      }
+    },
+    {
+      "name": "topmostSubform[0].Page1[0].Line4b_Child2_ReadOrder[0].Yes_ReadOrder[0].c1_5[0]",
+      "fullyQualifiedName": "topmostSubform[0].Page1[0].Line4b_Child2_ReadOrder[0].Yes_ReadOrder[0].c1_5[0]",
+      "type": "checkbox",
+      "index": 28,
+      "flags": {
+        "readOnly": false,
+        "required": false
+      }
+    },
+    {
+      "name": "topmostSubform[0].Page1[0].Line4b_Child2_ReadOrder[0].c1_5[0]",
+      "fullyQualifiedName": "topmostSubform[0].Page1[0].Line4b_Child2_ReadOrder[0].c1_5[0]",
+      "type": "checkbox",
+      "index": 29,
+      "flags": {
+        "readOnly": false,
+        "required": false
+      }
+    },
+    {
+      "name": "topmostSubform[0].Page1[0].Line4b_Child3_Yes_ReadOrder[0].c1_6[0]",
+      "fullyQualifiedName": "topmostSubform[0].Page1[0].Line4b_Child3_Yes_ReadOrder[0].c1_6[0]",
+      "type": "checkbox",
+      "index": 30,
+      "flags": {
+        "readOnly": false,
+        "required": false
+      }
+    },
+    {
+      "name": "topmostSubform[0].Page1[0].c1_6[0]",
+      "fullyQualifiedName": "topmostSubform[0].Page1[0].c1_6[0]",
+      "type": "checkbox",
+      "index": 31,
+      "flags": {
+        "readOnly": false,
+        "required": false
+      }
+    },
+    {
+      "name": "topmostSubform[0].Page1[0].f1_21[0]",
+      "fullyQualifiedName": "topmostSubform[0].Page1[0].f1_21[0]",
+      "type": "text",
+      "index": 32,
+      "flags": {
+        "readOnly": false,
+        "required": false
+      }
+    },
+    {
+      "name": "topmostSubform[0].Page1[0].f1_22[0]",
+      "fullyQualifiedName": "topmostSubform[0].Page1[0].f1_22[0]",
+      "type": "text",
+      "index": 33,
+      "flags": {
+        "readOnly": false,
+        "required": false
+      }
+    },
+    {
+      "name": "topmostSubform[0].Page1[0].f1_23[0]",
+      "fullyQualifiedName": "topmostSubform[0].Page1[0].f1_23[0]",
+      "type": "text",
+      "index": 34,
+      "flags": {
+        "readOnly": false,
+        "required": false
+      }
+    },
+    {
+      "name": "topmostSubform[0].Page1[0].Line6_Child1_ReadOrder[0].f1_24[0]",
+      "fullyQualifiedName": "topmostSubform[0].Page1[0].Line6_Child1_ReadOrder[0].f1_24[0]",
+      "type": "text",
+      "index": 35,
+      "maxLength": 2,
+      "flags": {
+        "readOnly": false,
+        "required": false
+      }
+    },
+    {
+      "name": "topmostSubform[0].Page1[0].Line6_Child2_ReadOrder[0].f1_25[0]",
+      "fullyQualifiedName": "topmostSubform[0].Page1[0].Line6_Child2_ReadOrder[0].f1_25[0]",
+      "type": "text",
+      "index": 36,
+      "maxLength": 2,
+      "flags": {
+        "readOnly": false,
+        "required": false
+      }
+    },
+    {
+      "name": "topmostSubform[0].Page1[0].f1_26[0]",
+      "fullyQualifiedName": "topmostSubform[0].Page1[0].f1_26[0]",
+      "type": "text",
+      "index": 37,
+      "maxLength": 2,
+      "flags": {
+        "readOnly": false,
+        "required": false
+      }
+    }
+  ],
+  "totalFields": 38
+}
