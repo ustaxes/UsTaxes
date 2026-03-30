@@ -51,6 +51,7 @@
     "prettier": "prettier --write .",
     "formgen": "ts-node ./scripts/formgen.ts",
     "extract-schema": "ts-node ./scripts/extractPdfSchema.ts",
+    "generate-tax-table": "ts-node -r tsconfig-paths/register ./scripts/generateTaxTable.ts",
     "prepare": "ts-node ./scripts/env.ts && husky"
   },
   "eslintConfig": {
