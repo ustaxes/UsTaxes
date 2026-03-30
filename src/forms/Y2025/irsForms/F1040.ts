@@ -392,6 +392,7 @@ export default class F1040 extends F1040Base {
   l1f = (): number | undefined =>
     this.info.otherEarnedIncome?.employerAdoptionBenefits
   l1g = (): number | undefined => this.f8919.l6()
+  l1hType = (): string | undefined => undefined
   l1h = (): number | undefined => this.info.otherEarnedIncome?.otherEarnedIncome
   /** Nontaxable combat pay election (W-2 box 12 code Q) for EIC/ACTC purposes. */
   l1i = (): number | undefined => this.nonTaxableCombatPay()
@@ -663,6 +664,11 @@ export default class F1040 extends F1040Base {
     return fieldArr[depFieldIdx]
   }
 
+  /*
+   * Following three props are now unused, but might would be useful later on??
+   *
+  */ 
+
   // 1040 allows 4 dependents listed without a supplemental schedule,
   // so create field mappings for 6x4 grid of fields
   _depFieldMappings = (): Array<string | boolean> =>
@@ -672,6 +678,18 @@ export default class F1040 extends F1040Base {
   // is a 2x8 grid
   _otherDepFieldMappings = (): Array<string | boolean> =>
     Array.from(Array(16)).map((u, n: number) => this._otherDepField(n))
+
+  // TODO: Capture the death dates and actually fill it correctly
+  _deathMapping = ['', '', '']
+  // _deathMapping = (person: Spouse | PrimaryPerson | undefined): Array<string> => {
+  //   if (person === undefined)
+  //     return ['', '', '']
+  //   else
+  //     return [person.dateOfDeath.getMonth(),
+  //       person.dateOfDeath.getDate(),
+  //       person.dateOfDeath.getFullYear()
+  //     ].map((v) => v.toString())
+  // }
 
   /**
    * Positional values must match PDF field order (same sequence as fillInstructions).
@@ -691,100 +709,52 @@ export default class F1040 extends F1040Base {
 
   // Generated from Y2025 PDF schema (schemas/Y2025/f1040.json) — 199 fields total
   fillInstructions = (): FillInstructions => {
-    const depFields = this._depFieldMappings()
+    const deps = this.info.taxPayer.dependents
 
     return [
       // Page 1 — header placeholders (0-2)
       text('topmostSubform[0].Page1[0].f1_01[0]', ''),
       text('topmostSubform[0].Page1[0].f1_02[0]', ''),
       text('topmostSubform[0].Page1[0].f1_03[0]', ''),
-      // Campaign contribution checkboxes moved to top in Y2025 (3-4)
-      checkbox('topmostSubform[0].Page1[0].c1_1[0]', false),
-      checkbox('topmostSubform[0].Page1[0].c1_2[0]', false),
-      // Primary first name (5)
-      text(
-        'topmostSubform[0].Page1[0].f1_04[0]',
-        this.info.taxPayer.primaryPerson.firstName
-      ),
-      // OBBB senior bonus checkbox — primary taxpayer 65+ (6)
-      checkbox('topmostSubform[0].Page1[0].c1_3[0]', this.bornBeforeDate()),
-      // Primary date of birth month / day / year (7-9)
-      text(
-        'topmostSubform[0].Page1[0].f1_05[0]',
-        String(
-          this.info.taxPayer.primaryPerson.dateOfBirth.getMonth() + 1
-        ).padStart(2, '0')
-      ),
-      text(
-        'topmostSubform[0].Page1[0].f1_06[0]',
-        String(this.info.taxPayer.primaryPerson.dateOfBirth.getDate()).padStart(
-          2,
-          '0'
-        )
-      ),
-      text(
-        'topmostSubform[0].Page1[0].f1_07[0]',
-        String(this.info.taxPayer.primaryPerson.dateOfBirth.getFullYear())
-      ),
-      // Spouse date of birth month / day / year (10-12)
-      text(
-        'topmostSubform[0].Page1[0].f1_08[0]',
-        this.info.taxPayer.spouse
-          ? String(
-              this.info.taxPayer.spouse.dateOfBirth.getMonth() + 1
-            ).padStart(2, '0')
-          : undefined
-      ),
-      text(
-        'topmostSubform[0].Page1[0].f1_09[0]',
-        this.info.taxPayer.spouse
-          ? String(this.info.taxPayer.spouse.dateOfBirth.getDate()).padStart(
-              2,
-              '0'
-            )
-          : undefined
-      ),
-      text(
-        'topmostSubform[0].Page1[0].f1_10[0]',
-        this.info.taxPayer.spouse
-          ? String(this.info.taxPayer.spouse.dateOfBirth.getFullYear())
-          : undefined
-      ),
-      // OBBB senior bonus checkbox — spouse 65+ (13)
-      checkbox('topmostSubform[0].Page1[0].c1_4[0]', this.spouseBeforeDate()),
-      // Primary last name, spouse first/last name (14-16)
-      text(
-        'topmostSubform[0].Page1[0].f1_11[0]',
-        this.info.taxPayer.primaryPerson.lastName
-      ),
-      text(
-        'topmostSubform[0].Page1[0].f1_12[0]',
-        this.info.taxPayer.filingStatus === FilingStatus.MFJ
-          ? this.info.taxPayer.spouse?.firstName
-          : ''
-      ),
-      text(
-        'topmostSubform[0].Page1[0].f1_13[0]',
-        this.info.taxPayer.filingStatus === FilingStatus.MFJ
-          ? this.info.taxPayer.spouse?.lastName ?? ''
-          : ''
-      ),
-      // New fields (17-18)
-      text('topmostSubform[0].Page1[0].f1_14[0]', undefined),
-      text('topmostSubform[0].Page1[0].f1_15[0]', undefined),
+      checkbox('topmostSubform[0].Page1[0].c1_1[0]', false), // TODO: Filed pursuant to section 301.9100-2
+      checkbox('topmostSubform[0].Page1[0].c1_2[0]', false), // TODO: Combat zone
+      // Combat Zone info
+      text('topmostSubform[0].Page1[0].f1_04[0]', ''),
+      // TODO Whether the primary is deseased or not
+      checkbox('topmostSubform[0].Page1[0].c1_3[0]', false),
+      // Primary date of death month / day / year (7-9)
+      text('topmostSubform[0].Page1[0].f1_05[0]', ''),
+      text('topmostSubform[0].Page1[0].f1_06[0]', ''),
+      text('topmostSubform[0].Page1[0].f1_07[0]', ''),
+      // Spouse date of death month / day / year (10-12)
+      text('topmostSubform[0].Page1[0].f1_08[0]', this.info.taxPayer.spouse ? '' : undefined),
+      text('topmostSubform[0].Page1[0].f1_09[0]', this.info.taxPayer.spouse ? '' : undefined),
+      text('topmostSubform[0].Page1[0].f1_10[0]', this.info.taxPayer.spouse ? '' : undefined),
+      // TODO: Whatever this check and three fields are for... Like, it isn't clear in the instructions.
+      checkbox('topmostSubform[0].Page1[0].c1_4[0]', undefined),
+      text('topmostSubform[0].Page1[0].f1_11[0]', undefined),
+      text('topmostSubform[0].Page1[0].f1_12[0]', undefined),
+      text('topmostSubform[0].Page1[0].f1_13[0]', undefined),
+      // Primary first name and last name (17-18)
+      text('topmostSubform[0].Page1[0].f1_14[0]', this.info.taxPayer.primaryPerson.firstName),
+      text('topmostSubform[0].Page1[0].f1_15[0]', this.info.taxPayer.primaryPerson.lastName),
       // Primary SSN (maxLength 9) (19)
-      text(
-        'topmostSubform[0].Page1[0].f1_16[0]',
-        this.info.taxPayer.primaryPerson.ssid
-      ),
+      text('topmostSubform[0].Page1[0].f1_16[0]', this.info.taxPayer.primaryPerson.ssid),
       // New fields (20-21)
-      text('topmostSubform[0].Page1[0].f1_17[0]', undefined),
-      text('topmostSubform[0].Page1[0].f1_18[0]', undefined),
-      // Spouse SSN (maxLength 9) (22)
       text(
-        'topmostSubform[0].Page1[0].f1_19[0]',
-        this.info.taxPayer.spouse?.ssid
+        'topmostSubform[0].Page1[0].f1_17[0]',
+        this.info.taxPayer.filingStatus === FilingStatus.MFJ
+        ? this.info.taxPayer.spouse?.firstName
+        : ''
       ),
+      text(
+        'topmostSubform[0].Page1[0].f1_18[0]',
+        this.info.taxPayer.filingStatus === FilingStatus.MFJ
+        ? this.info.taxPayer.spouse?.lastName
+        : ''
+      ),
+      // Spouse SSN (maxLength 9) (22)
+      text('topmostSubform[0].Page1[0].f1_19[0]', this.info.taxPayer.spouse?.ssid),
       // Address fields — renamed f1_20–f1_27 in Y2025 (23-30)
       text(
         'topmostSubform[0].Page1[0].Address_ReadOrder[0].f1_20[0]',
@@ -793,6 +763,12 @@ export default class F1040 extends F1040Base {
       text(
         'topmostSubform[0].Page1[0].Address_ReadOrder[0].f1_21[0]',
         this.info.taxPayer.primaryPerson.address.aptNo
+      ),
+      // Spouse and payer main home in US 
+      // TODO: capture this?
+      checkbox(
+        'topmostSubform[0].Page1[0].c1_5[0]',
+        true
       ),
       text(
         'topmostSubform[0].Page1[0].Address_ReadOrder[0].f1_22[0]',
@@ -818,30 +794,30 @@ export default class F1040 extends F1040Base {
         'topmostSubform[0].Page1[0].Address_ReadOrder[0].f1_27[0]',
         this.info.taxPayer.primaryPerson.address.postalCode
       ),
+      // Campaign contribution checkboxes moved to top in Y2025 (3-4)
+      checkbox('topmostSubform[0].Page1[0].c1_6[0]', false),
+      checkbox('topmostSubform[0].Page1[0].c1_7[0]', false),
+
       // Filing status — standalone checkboxes in Y2025 (31-36)
       checkbox(
-        'topmostSubform[0].Page1[0].c1_5[0]',
+        'topmostSubform[0].Page1[0].Checkbox_ReadOrder[0].c1_8[0]',
         this.info.taxPayer.filingStatus === FilingStatus.S
       ),
       checkbox(
-        'topmostSubform[0].Page1[0].c1_6[0]',
-        this.info.taxPayer.filingStatus === FilingStatus.MFJ
-      ),
-      checkbox(
-        'topmostSubform[0].Page1[0].c1_7[0]',
-        this.info.taxPayer.filingStatus === FilingStatus.MFS
-      ),
-      checkbox(
-        'topmostSubform[0].Page1[0].Checkbox_ReadOrder[0].c1_8[0]',
+        'topmostSubform[0].Page1[0].c1_8[0]',
         this.info.taxPayer.filingStatus === FilingStatus.HOH
       ),
       checkbox(
         'topmostSubform[0].Page1[0].Checkbox_ReadOrder[0].c1_8[1]',
+        this.info.taxPayer.filingStatus === FilingStatus.MFJ
+      ),
+      checkbox(
+        'topmostSubform[0].Page1[0].c1_8[1]',
         this.info.taxPayer.filingStatus === FilingStatus.W
       ),
       checkbox(
         'topmostSubform[0].Page1[0].Checkbox_ReadOrder[0].c1_8[2]',
-        undefined
+        this.info.taxPayer.filingStatus === FilingStatus.MFS
       ),
       // MFS spouse name (text in Checkbox_ReadOrder) (37)
       text(
@@ -850,132 +826,134 @@ export default class F1040 extends F1040Base {
           ? this.spouseFullName()
           : ''
       ),
+      text('topmostSubform[0].Page1[0].f1_29[0]', undefined), // TODO: implement non dependent child for HOH and QW
+      checkbox('topmostSubform[0].Page1[0].c1_9[0]', false),  // treating non-resident alien
+      text('topmostSubform[0].Page1[0].f1_30[0]', undefined),
       // Digital assets question YES/NO (38-39)
       checkbox(
-        'topmostSubform[0].Page1[0].c1_8[0]',
+        'topmostSubform[0].Page1[0].c1_10[0]',
         this.info.questions.CRYPTO ?? false
       ),
       checkbox(
-        'topmostSubform[0].Page1[0].c1_8[1]',
+        'topmostSubform[0].Page1[0].c1_10[1]',
         !(this.info.questions.CRYPTO ?? false)
       ),
-      // New fields — HOH qualifying person name or other OBBB fields (40-44)
-      text('topmostSubform[0].Page1[0].f1_29[0]', undefined),
-      checkbox('topmostSubform[0].Page1[0].c1_9[0]', undefined),
-      text('topmostSubform[0].Page1[0].f1_30[0]', undefined),
-      checkbox('topmostSubform[0].Page1[0].c1_10[0]', undefined),
-      checkbox('topmostSubform[0].Page1[0].c1_10[1]', undefined),
+      // Dependent table — Y2025 transposed layout: each column = one dependent
+      // Row 1: first names for all 4 dependents (46-49)
+      text(
+        'topmostSubform[0].Page1[0].Table_Dependents[0].Row1[0].f1_31[0]',
+        // depFields[0] as string
+        deps[0].firstName
+      ),
+      text(
+        'topmostSubform[0].Page1[0].Table_Dependents[0].Row1[0].f1_32[0]',
+        deps[1].firstName
+      ),
+      text(
+        'topmostSubform[0].Page1[0].Table_Dependents[0].Row1[0].f1_33[0]',
+        deps[2].firstName
+      ),
+      text(
+        'topmostSubform[0].Page1[0].Table_Dependents[0].Row1[0].f1_34[0]',
+        deps[3].firstName
+      ),
+      // Row 2: last names per dependent (50-53)
+      text(
+        'topmostSubform[0].Page1[0].Table_Dependents[0].Row2[0].f1_35[0]',
+        deps[0].lastName
+      ),
+      text(
+        'topmostSubform[0].Page1[0].Table_Dependents[0].Row2[0].f1_36[0]',
+        deps[1].lastName
+      ),
+      text(
+        'topmostSubform[0].Page1[0].Table_Dependents[0].Row2[0].f1_37[0]',
+        deps[2].lastName
+      ),
+      text(
+        'topmostSubform[0].Page1[0].Table_Dependents[0].Row2[0].f1_38[0]',
+        deps[3].lastName
+      ),
+      // Row 3: SSNs for all 4 dependents (maxLength 9 confirmed) (54-57)
+      text(
+        'topmostSubform[0].Page1[0].Table_Dependents[0].Row3[0].f1_39[0]',
+        deps[0].ssid
+      ),
+      text(
+        'topmostSubform[0].Page1[0].Table_Dependents[0].Row3[0].f1_40[0]',
+        deps[1].ssid
+      ),
+      text(
+        'topmostSubform[0].Page1[0].Table_Dependents[0].Row3[0].f1_41[0]',
+        deps[2].ssid
+      ),
+      text(
+        'topmostSubform[0].Page1[0].Table_Dependents[0].Row3[0].f1_42[0]',
+        deps[3].ssid
+      ),
+      // Row 4: relationships for all 4 dependents (58-61)
+      text(
+        'topmostSubform[0].Page1[0].Table_Dependents[0].Row4[0].f1_43[0]',
+        deps[0].relationship
+      ),
+      text(
+        'topmostSubform[0].Page1[0].Table_Dependents[0].Row4[0].f1_44[0]',
+        deps[1].relationship
+      ),
+      text(
+        'topmostSubform[0].Page1[0].Table_Dependents[0].Row4[0].f1_45[0]',
+        deps[2].relationship
+      ),
+      text(
+        'topmostSubform[0].Page1[0].Table_Dependents[0].Row4[0].f1_46[0]',
+        deps[3].relationship
+      ),
+      // Row 5: (a) lived with more than half of year, and (b) in the U.S. (62-69)
+      checkbox(
+        'topmostSubform[0].Page1[0].Table_Dependents[0].Row5[0].Dependent1[0].c1_12[0]',
+        (deps[0].qualifyingInfo?.numberOfMonths ?? 0) > 6
+      ),
+      checkbox(
+        'topmostSubform[0].Page1[0].Table_Dependents[0].Row5[0].Dependent1[0].c1_14[0]',
+        (deps[0].qualifyingInfo?.numberOfMonths ?? 0) > 6
+      ),
+      checkbox(
+        'topmostSubform[0].Page1[0].Table_Dependents[0].Row5[0].Dependent2[0].c1_16[0]',
+        (deps[0].qualifyingInfo?.numberOfMonths ?? 0) > 6
+      ),
+      checkbox(
+        'topmostSubform[0].Page1[0].Table_Dependents[0].Row5[0].Dependent2[0].c1_18[0]',
+        (deps[0].qualifyingInfo?.numberOfMonths ?? 0) > 6
+      ),
+
       // More than 4 dependents (45)
       checkbox(
         'topmostSubform[0].Page1[0].Dependents_ReadOrder[0].c1_11[0]',
         this.info.taxPayer.dependents.length > 4
       ),
-      // Dependent table — Y2025 transposed layout: each column = one dependent
-      // Row 1: names for all 4 dependents (46-49)
-      text(
-        'topmostSubform[0].Page1[0].Table_Dependents[0].Row1[0].f1_31[0]',
-        depFields[0] as string
-      ),
-      text(
-        'topmostSubform[0].Page1[0].Table_Dependents[0].Row1[0].f1_32[0]',
-        depFields[5] as string
-      ),
-      text(
-        'topmostSubform[0].Page1[0].Table_Dependents[0].Row1[0].f1_33[0]',
-        depFields[10] as string
-      ),
-      text(
-        'topmostSubform[0].Page1[0].Table_Dependents[0].Row1[0].f1_34[0]',
-        depFields[15] as string
-      ),
-      // Row 2: new field per dependent (unknown — possibly DOB) (50-53)
-      text(
-        'topmostSubform[0].Page1[0].Table_Dependents[0].Row2[0].f1_35[0]',
-        undefined
-      ),
-      text(
-        'topmostSubform[0].Page1[0].Table_Dependents[0].Row2[0].f1_36[0]',
-        undefined
-      ),
-      text(
-        'topmostSubform[0].Page1[0].Table_Dependents[0].Row2[0].f1_37[0]',
-        undefined
-      ),
-      text(
-        'topmostSubform[0].Page1[0].Table_Dependents[0].Row2[0].f1_38[0]',
-        undefined
-      ),
-      // Row 3: SSNs for all 4 dependents (maxLength 9 confirmed) (54-57)
-      text(
-        'topmostSubform[0].Page1[0].Table_Dependents[0].Row3[0].f1_39[0]',
-        depFields[1] as string
-      ),
-      text(
-        'topmostSubform[0].Page1[0].Table_Dependents[0].Row3[0].f1_40[0]',
-        depFields[6] as string
-      ),
-      text(
-        'topmostSubform[0].Page1[0].Table_Dependents[0].Row3[0].f1_41[0]',
-        depFields[11] as string
-      ),
-      text(
-        'topmostSubform[0].Page1[0].Table_Dependents[0].Row3[0].f1_42[0]',
-        depFields[16] as string
-      ),
-      // Row 4: relationships for all 4 dependents (58-61)
-      text(
-        'topmostSubform[0].Page1[0].Table_Dependents[0].Row4[0].f1_43[0]',
-        depFields[2] as string
-      ),
-      text(
-        'topmostSubform[0].Page1[0].Table_Dependents[0].Row4[0].f1_44[0]',
-        depFields[7] as string
-      ),
-      text(
-        'topmostSubform[0].Page1[0].Table_Dependents[0].Row4[0].f1_45[0]',
-        depFields[12] as string
-      ),
-      text(
-        'topmostSubform[0].Page1[0].Table_Dependents[0].Row4[0].f1_46[0]',
-        depFields[17] as string
-      ),
-      // Row 5: qualifying child + qualifying other checkboxes per dependent (62-69)
+      // Row 5: (a) ... and (b) in the U.S. (62-69)
+      // TODO: capture Place lived together?
       checkbox(
-        'topmostSubform[0].Page1[0].Table_Dependents[0].Row5[0].Dependent1[0].c1_12[0]',
-        depFields[3] as boolean
+        'topmostSubform[0].Page1[0].Table_Dependents[0].Row5[0].Dependent3[0].c1_13[0]',
+        true
       ),
       checkbox(
-        'topmostSubform[0].Page1[0].Table_Dependents[0].Row5[0].Dependent1[0].c1_13[0]',
-        depFields[4] as boolean
+        'topmostSubform[0].Page1[0].Table_Dependents[0].Row5[0].Dependent3[0].c1_15[0]',
+        true
       ),
       checkbox(
-        'topmostSubform[0].Page1[0].Table_Dependents[0].Row5[0].Dependent2[0].c1_14[0]',
-        depFields[8] as boolean
-      ),
-      checkbox(
-        'topmostSubform[0].Page1[0].Table_Dependents[0].Row5[0].Dependent2[0].c1_15[0]',
-        depFields[9] as boolean
-      ),
-      checkbox(
-        'topmostSubform[0].Page1[0].Table_Dependents[0].Row5[0].Dependent3[0].c1_16[0]',
-        depFields[13] as boolean
-      ),
-      checkbox(
-        'topmostSubform[0].Page1[0].Table_Dependents[0].Row5[0].Dependent3[0].c1_17[0]',
-        depFields[14] as boolean
-      ),
-      checkbox(
-        'topmostSubform[0].Page1[0].Table_Dependents[0].Row5[0].Dependent4[0].c1_18[0]',
-        depFields[18] as boolean
+        'topmostSubform[0].Page1[0].Table_Dependents[0].Row5[0].Dependent4[0].c1_17[0]',
+        true
       ),
       checkbox(
         'topmostSubform[0].Page1[0].Table_Dependents[0].Row5[0].Dependent4[0].c1_19[0]',
-        depFields[19] as boolean
+        true
       ),
       // Row 6: new OBBB dependent checkboxes (undefined) (70-77)
+      // even is student, odd is unhandled disability
       checkbox(
         'topmostSubform[0].Page1[0].Table_Dependents[0].Row6[0].Dependent1[0].c1_20[0]',
-        undefined
+        (deps[0].qualifyingInfo?.isStudent ?? false)
       ),
       checkbox(
         'topmostSubform[0].Page1[0].Table_Dependents[0].Row6[0].Dependent1[0].c1_21[0]',
@@ -983,7 +961,7 @@ export default class F1040 extends F1040Base {
       ),
       checkbox(
         'topmostSubform[0].Page1[0].Table_Dependents[0].Row6[0].Dependent2[0].c1_22[0]',
-        undefined
+        (deps[1].qualifyingInfo?.isStudent ?? false)
       ),
       checkbox(
         'topmostSubform[0].Page1[0].Table_Dependents[0].Row6[0].Dependent2[0].c1_23[0]',
@@ -991,7 +969,7 @@ export default class F1040 extends F1040Base {
       ),
       checkbox(
         'topmostSubform[0].Page1[0].Table_Dependents[0].Row6[0].Dependent3[0].c1_24[0]',
-        undefined
+        (deps[2].qualifyingInfo?.isStudent ?? false)
       ),
       checkbox(
         'topmostSubform[0].Page1[0].Table_Dependents[0].Row6[0].Dependent3[0].c1_25[0]',
@@ -999,44 +977,45 @@ export default class F1040 extends F1040Base {
       ),
       checkbox(
         'topmostSubform[0].Page1[0].Table_Dependents[0].Row6[0].Dependent4[0].c1_26[0]',
-        undefined
+        (deps[3].qualifyingInfo?.isStudent ?? false)
       ),
       checkbox(
         'topmostSubform[0].Page1[0].Table_Dependents[0].Row6[0].Dependent4[0].c1_27[0]',
         undefined
       ),
-      // Row 7: new OBBB dependent checkboxes (undefined) (78-85)
+      // Row 7: new OBBB dependent checkboxes (78-85)
+      // [0] is qualifying child, [1] is qualifying other
       checkbox(
         'topmostSubform[0].Page1[0].Table_Dependents[0].Row7[0].Dependent1[0].c1_28[0]',
-        undefined
+        this.qualifyingDependents.qualifiesChild(deps[0])
       ),
       checkbox(
         'topmostSubform[0].Page1[0].Table_Dependents[0].Row7[0].Dependent1[0].c1_28[1]',
-        undefined
+        this.qualifyingDependents.qualifiesOther(deps[0])
       ),
       checkbox(
         'topmostSubform[0].Page1[0].Table_Dependents[0].Row7[0].Dependent2[0].c1_29[0]',
-        undefined
+        this.qualifyingDependents.qualifiesChild(deps[1])
       ),
       checkbox(
         'topmostSubform[0].Page1[0].Table_Dependents[0].Row7[0].Dependent2[0].c1_29[1]',
-        undefined
+        this.qualifyingDependents.qualifiesOther(deps[1])
       ),
       checkbox(
         'topmostSubform[0].Page1[0].Table_Dependents[0].Row7[0].Dependent3[0].c1_30[0]',
-        undefined
+        this.qualifyingDependents.qualifiesChild(deps[2])
       ),
       checkbox(
         'topmostSubform[0].Page1[0].Table_Dependents[0].Row7[0].Dependent3[0].c1_30[1]',
-        undefined
+        this.qualifyingDependents.qualifiesOther(deps[2])
       ),
       checkbox(
         'topmostSubform[0].Page1[0].Table_Dependents[0].Row7[0].Dependent4[0].c1_31[0]',
-        undefined
+        this.qualifyingDependents.qualifiesChild(deps[3])
       ),
       checkbox(
         'topmostSubform[0].Page1[0].Table_Dependents[0].Row7[0].Dependent4[0].c1_31[1]',
-        undefined
+        this.qualifyingDependents.qualifiesOther(deps[3])
       ),
       // New checkbox before income section (86)
       checkbox('topmostSubform[0].Page1[0].c1_32[0]', undefined),
@@ -1048,69 +1027,62 @@ export default class F1040 extends F1040Base {
       text('topmostSubform[0].Page1[0].f1_51[0]', this.l1e()),
       text('topmostSubform[0].Page1[0].f1_52[0]', this.l1f()),
       text('topmostSubform[0].Page1[0].f1_53[0]', this.l1g()),
-      text('topmostSubform[0].Page1[0].f1_54[0]', this.l1h()),
-      text('topmostSubform[0].Page1[0].f1_55[0]', this.l1i()),
-      text('topmostSubform[0].Page1[0].f1_56[0]', undefined),
+      text('topmostSubform[0].Page1[0].f1_54[0]', this.l1hType()),
+      text('topmostSubform[0].Page1[0].f1_55[0]', this.l1h()),
+      text('topmostSubform[0].Page1[0].f1_56[0]', this.l1i()),
       text('topmostSubform[0].Page1[0].f1_57[0]', this.l1z()),
+
       // Lines 2-3: interest and dividends (98-101)
       text('topmostSubform[0].Page1[0].f1_58[0]', this.l2a()),
       text('topmostSubform[0].Page1[0].f1_59[0]', this.l2b()),
       text('topmostSubform[0].Page1[0].f1_60[0]', this.l3a()),
       text('topmostSubform[0].Page1[0].f1_61[0]', this.l3b()),
       // New checkboxes (102-103)
-      checkbox('topmostSubform[0].Page1[0].c1_33[0]', undefined),
-      checkbox('topmostSubform[0].Page1[0].c1_34[0]', undefined),
+      checkbox('topmostSubform[0].Page1[0].c1_33[0]', this.l3c1()),
+      checkbox('topmostSubform[0].Page1[0].c1_34[0]', this.l3c2()),
       // Lines 4a-4b: IRA distributions (104-105)
       text('topmostSubform[0].Page1[0].f1_62[0]', this.l4a()),
       text('topmostSubform[0].Page1[0].f1_63[0]', this.l4b()),
       // New checkboxes (106-108)
-      checkbox('topmostSubform[0].Page1[0].c1_35[0]', undefined),
-      checkbox('topmostSubform[0].Page1[0].c1_36[0]', undefined),
-      checkbox('topmostSubform[0].Page1[0].c1_37[0]', undefined),
+      checkbox('topmostSubform[0].Page1[0].c1_35[0]', this.l4c1()),
+      checkbox('topmostSubform[0].Page1[0].c1_36[0]', this.l4c2()),
+      checkbox('topmostSubform[0].Page1[0].c1_37[0]', this.l4c3Box()),
+      text('topmostSubform[0].Page1[0].f1_64[0]', this.l4c3Name()),
       // Lines 5a-6a: pensions and social security (109-111)
-      text('topmostSubform[0].Page1[0].f1_64[0]', this.l5a()),
-      text('topmostSubform[0].Page1[0].f1_65[0]', this.l5b()),
-      text('topmostSubform[0].Page1[0].f1_66[0]', this.l6a()),
+      text('topmostSubform[0].Page1[0].f1_65[0]', this.l5a()),
+      text('topmostSubform[0].Page1[0].f1_66[0]', this.l5b()),
+      checkbox('topmostSubform[0].Page1[0].c1_38[0]', this.l5c1()),
+      checkbox('topmostSubform[0].Page1[0].c1_39[0]', this.l5c2()),
+      checkbox('topmostSubform[0].Page1[0].c1_40[0]', this.l5c3Box()),
+      text('topmostSubform[0].Page1[0].f1_67[0]', this.l5c3Name()),
+
+      text('topmostSubform[0].Page1[0].f1_68[0]', this.l6a()),
+      text('topmostSubform[0].Page1[0].f1_69[0]', this.l6b()),
       // Line 6c lump-sum election, line 7 box, new checkbox (112-114)
-      checkbox('topmostSubform[0].Page1[0].c1_38[0]', this.l6c()),
-      checkbox('topmostSubform[0].Page1[0].c1_39[0]', this.l7bBox1()),
-      checkbox('topmostSubform[0].Page1[0].c1_40[0]', undefined),
+      checkbox('topmostSubform[0].Page1[0].c1_41[0]', this.l6c()),
+      checkbox('topmostSubform[0].Page1[0].c1_42[0]', this.l6d()),
       // Lines 6b, 7, 8: SS taxable, capital gain, other income (115-117)
-      text('topmostSubform[0].Page1[0].f1_67[0]', this.l6b()),
-      text('topmostSubform[0].Page1[0].f1_68[0]', this.l7a()),
-      text('topmostSubform[0].Page1[0].f1_69[0]', this.l8()),
-      // New checkboxes (118-119)
-      checkbox('topmostSubform[0].Page1[0].c1_41[0]', undefined),
-      checkbox('topmostSubform[0].Page1[0].c1_42[0]', undefined),
-      // Line 9: total income (120)
-      text('topmostSubform[0].Page1[0].f1_70[0]', this.l9()),
-      // New checkboxes (121-122)
-      checkbox('topmostSubform[0].Page1[0].c1_43[0]', undefined),
-      checkbox('topmostSubform[0].Page1[0].c1_44[0]', undefined),
-      // Lines 10-11a: adjustments and AGI (123-124)
-      text('topmostSubform[0].Page1[0].f1_71[0]', this.l10()),
-      text('topmostSubform[0].Page1[0].f1_72[0]', this.l11a()),
+      text('topmostSubform[0].Page1[0].f1_70[0]', this.l7a()),
+      checkbox('topmostSubform[0].Page1[0].c1_43[0]', this.l7bBox1()),
+      checkbox('topmostSubform[0].Page1[0].c1_44[0]', this.l7bChildCapIncluded()),
+      text('topmostSubform[0].Page1[0].f1_71[0]', this.l7bChildCapAmount()),
+      text('topmostSubform[0].Page1[0].f1_72[0]', this.l8()),
       // New OBBB fields at end of page 1 (125-127)
-      text('topmostSubform[0].Page1[0].f1_73[0]', undefined),
-      text('topmostSubform[0].Page1[0].f1_74[0]', undefined),
-      text('topmostSubform[0].Page1[0].f1_75[0]', undefined),
+      text('topmostSubform[0].Page1[0].f1_73[0]', this.l9()),
+      text('topmostSubform[0].Page1[0].f1_74[0]', this.l10()),
+      text('topmostSubform[0].Page1[0].f1_75[0]', this.l11a()),
+
       // Page 2 — line 11b: AGI repeated from page 1 (128)
       text('topmostSubform[0].Page2[0].f2_01[0]', this.l11b()),
       // Standard deduction section — moved to page 2 in Y2025 (129-136)
-      checkbox(
-        'topmostSubform[0].Page2[0].c2_1[0]',
-        this.info.taxPayer.primaryPerson.isTaxpayerDependent
-      ),
-      checkbox(
-        'topmostSubform[0].Page2[0].c2_2[0]',
-        this.info.taxPayer.spouse?.isTaxpayerDependent ?? false
-      ),
-      checkbox('topmostSubform[0].Page2[0].c2_3[0]', false),
-      checkbox('topmostSubform[0].Page2[0].c2_4[0]', this.bornBeforeDate()),
-      checkbox('topmostSubform[0].Page2[0].c2_5[0]', this.blind()),
-      checkbox('topmostSubform[0].Page2[0].c2_6[0]', this.spouseBeforeDate()),
-      checkbox('topmostSubform[0].Page2[0].c2_7[0]', this.spouseBlind()),
-      checkbox('topmostSubform[0].Page2[0].c2_8[0]', undefined),
+      checkbox('topmostSubform[0].Page2[0].c2_1[0]', this.l12aSelfDependent()),
+      checkbox('topmostSubform[0].Page2[0].c2_2[0]', this.l12aSpouseDependent()),
+      checkbox('topmostSubform[0].Page2[0].c2_3[0]', this.l12b()), // TODO: spouse itemizes separately
+      checkbox('topmostSubform[0].Page2[0].c2_4[0]', this.l12c()), // TODO: alien status,
+      checkbox('topmostSubform[0].Page2[0].c2_5[0]', this.l12dSelfOld()),
+      checkbox('topmostSubform[0].Page2[0].c2_6[0]', this.l12dSelfBlind()),
+      checkbox('topmostSubform[0].Page2[0].c2_7[0]', this.l12dSpouseOld()),
+      checkbox('topmostSubform[0].Page2[0].c2_8[0]', this.l12dSpouseBlind()),
       // Deduction amounts: lines 12e, 13a, 13b, 14, 15 (137-141)
       text('topmostSubform[0].Page2[0].f2_02[0]', this.l12e()),
       text('topmostSubform[0].Page2[0].f2_03[0]', this.l13a()),
@@ -1138,23 +1110,24 @@ export default class F1040 extends F1040Base {
       text('topmostSubform[0].Page2[0].f2_20[0]', this.l25d()),
       text('topmostSubform[0].Page2[0].f2_21[0]', this.l26()),
       // New SSN field near EIC section (160)
-      text('topmostSubform[0].Page2[0].SSN_ReadOrder[0].f2_22[0]', undefined),
+      text('topmostSubform[0].Page2[0].SSN_ReadOrder[0].f2_22[0]', this.formerSpouseSSN()),
       // Line 27a: EIC (161)
       text('topmostSubform[0].Page2[0].f2_23[0]', this.l27a()),
       // New checkboxes near EIC/line 28 (162-164)
-      checkbox('topmostSubform[0].Page2[0].c2_12[0]', undefined),
-      checkbox('topmostSubform[0].Page2[0].c2_13[0]', undefined),
+      checkbox('topmostSubform[0].Page2[0].c2_12[0]', this.l27b()),
+      checkbox('topmostSubform[0].Page2[0].c2_13[0]', this.l27c()),
       checkbox(
         'topmostSubform[0].Page2[0].Line28_ReadOrder[0].c2_14[0]',
-        undefined
+        this.l28Box()
       ),
       // Credits and payments: lines 28-34 (165-171)
       text('topmostSubform[0].Page2[0].f2_24[0]', this.l28()),
       text('topmostSubform[0].Page2[0].f2_25[0]', this.l29()),
-      text('topmostSubform[0].Page2[0].f2_26[0]', undefined),
+      text('topmostSubform[0].Page2[0].f2_26[0]', this.l30()),
       text('topmostSubform[0].Page2[0].f2_27[0]', this.l31()),
       text('topmostSubform[0].Page2[0].f2_28[0]', this.l32()),
       text('topmostSubform[0].Page2[0].f2_29[0]', this.l33()),
+      // Overpaid total
       text('topmostSubform[0].Page2[0].f2_30[0]', this.l34()),
       // Form 8888 direct deposit checkbox (172)
       checkbox('topmostSubform[0].Page2[0].c2_15[0]', this.f8888 !== undefined),
@@ -1215,4 +1188,178 @@ export default class F1040 extends F1040Base {
       text('topmostSubform[0].Page2[0].f2_51[0]', '')
     ]
   }
+  
+  // This is the original location based field set. here for education or something, I guess.
+  og_fields = (): Field[] =>
+    [
+      '',
+      '',
+      '',
+      false, // TODO: Filed pursuant to section 301.9100-2
+      false, // TODO: Combat zone
+      '',
+      false, // TODO: Deceased
+      '', // TODO: death dates
+      ...this._deathMapping,
+      ...this._deathMapping,
+      false, // TODO: Whatever this check and three fields are for..
+      '', //       Like, it isn't clear in the instructions.
+      '',
+      '',
+      this.info.taxPayer.primaryPerson.firstName,
+      this.info.taxPayer.primaryPerson.lastName,
+      this.info.taxPayer.primaryPerson.ssid,
+      this.info.taxPayer.filingStatus === FilingStatus.MFJ
+        ? this.info.taxPayer.spouse?.firstName
+        : '',
+      this.info.taxPayer.filingStatus === FilingStatus.MFJ
+        ? this.info.taxPayer.spouse?.lastName ?? ''
+        : '',
+      this.info.taxPayer.spouse?.ssid,
+      this.info.taxPayer.primaryPerson.address.address,
+      this.info.taxPayer.primaryPerson.address.aptNo,
+      this.info.taxPayer.primaryPerson.address.city,
+      this.info.taxPayer.primaryPerson.address.state,
+      this.info.taxPayer.primaryPerson.address.zip,
+      this.info.taxPayer.primaryPerson.address.foreignCountry,
+      this.info.taxPayer.primaryPerson.address.province,
+      this.info.taxPayer.primaryPerson.address.postalCode,
+      false, // spouse and payer main home in US
+      false, // election campaign boxes
+      false,
+
+      // Filing status area
+      this.info.taxPayer.filingStatus === FilingStatus.S,
+      this.info.taxPayer.filingStatus === FilingStatus.MFJ, // TODO: should be spouse full name, with spouse SSN above
+      this.info.taxPayer.filingStatus === FilingStatus.MFS,
+      this.info.taxPayer.filingStatus === 'MFS' ? this.spouseFullName() : '',
+
+      this.info.taxPayer.filingStatus === FilingStatus.HOH,
+      this.info.taxPayer.filingStatus === FilingStatus.W,
+      // TODO: implement non dependent child for HOH and QW
+      this.info.taxPayer.filingStatus === 'MFS' ? this.spouseFullName() : '',
+      false, // teating non-resident alien
+      '',
+      this.info.questions.CRYPTO ?? false,
+      !(this.info.questions.CRYPTO ?? false),
+      this.info.taxPayer.dependents.length > 4,
+      ...this._depFieldMappings(),
+      ...this._otherDepFieldMappings(),
+      false, // TODO: lived separately last 6 months of 2025
+      this.l1a(),
+      this.l1b(),
+      this.l1c(),
+      this.l1d(),
+      this.l1e(),
+      this.l1f(),
+      this.l1g(),
+      this.l1hType(),
+      this.l1h(),
+      this.l1i(),
+      this.l1z(),
+      this.l2a(),
+      this.l2b(),
+      this.l3a(),
+      this.l3b(),
+      this.l3c1(),
+      this.l3c2(),
+      this.l4a(),
+      this.l4b(),
+      this.l4c1(),
+      this.l4c2(),
+      this.l4c3Box(),
+      this.l4c3Name(),
+      this.l5a(),
+      this.l5b(),
+      this.l5c1(),
+      this.l5c2(),
+      this.l5c3Box(),
+      this.l5c3Name(),
+      this.l6a(),
+      this.l6b(),
+      this.l6c(),
+      this.l6d(),
+      this.l7a(),
+      this.l7bBox1(),
+      this.l7bChildCapIncluded(),
+      this.l7bChildCapAmount(),
+      this.l8(),
+      this.l9(),
+      this.l10(),
+      this.l11a(),
+      this.l11b(),
+      this.l12aSelfDependent(),
+      this.l12aSpouseDependent(),
+      this.l12b(), // TODO: spouse itemizes separately,
+      this.l12c(), // TODO: alien status,
+      this.l12dSelfOld(),
+      this.l12dSelfBlind(),
+      this.l12dSpouseOld(),
+      this.l12dSpouseBlind(),
+      this.l12e(),
+      this.l13a(),
+      this.l13b(),
+      this.l14(),
+      this.l15(),
+      this.f8814Box(),
+      this.f4972Box(),
+      this.otherFormBox(),
+      this.otherFormName(),
+      this.l16(),
+      this.l17(),
+      this.l18(),
+      this.l19(),
+      this.l20(),
+      this.l21(),
+      this.l22(),
+      this.l23(),
+      this.l24(),
+      this.l25a(),
+      this.l25b(),
+      this.l25c(),
+      this.l25d(),
+      this.l26(),
+      this.formerSpouseSSN(),
+      this.l27a(),
+      this.l27b(),
+      this.l27c(),
+      this.l28Box(),
+      this.l28(),
+      this.l29(),
+      undefined, //this.l30(),
+      this.l31(),
+      this.l32(),
+      this.l33(),
+      this.l34(),
+      this.f8888 !== undefined,
+      this.l35a(),
+      this.info.refund?.routingNumber,
+      this.info.refund?.accountType === AccountType.checking,
+      this.info.refund?.accountType === AccountType.savings,
+      this.info.refund?.accountNumber,
+      this.l36(),
+      this.l37(),
+      this.l38(),
+      // TODO: 3rd party
+      false,
+      false,
+      '',
+      '',
+      '',
+      this.occupation(PersonRole.PRIMARY),
+      // TODO: pin numbers
+      '',
+      this.occupation(PersonRole.SPOUSE),
+      '',
+      this.info.taxPayer.contactPhoneNumber,
+      this.info.taxPayer.contactEmail,
+      // Paid preparer fields:
+      '',
+      '',
+      false,
+      '',
+      '',
+      '',
+      ''
+    ].map((x) => (x === undefined ? '' : x))
 }

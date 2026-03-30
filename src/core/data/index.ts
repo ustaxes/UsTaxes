@@ -35,6 +35,7 @@ export interface Person<D = Date> {
   role: PersonRole
   isBlind: boolean
   dateOfBirth: D
+  // dateOfDeath: D // TODO: capture this.
 }
 
 // Concrete type for our AJV schema generator.
