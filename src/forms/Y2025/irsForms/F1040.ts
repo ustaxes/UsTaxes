@@ -1199,10 +1199,9 @@ export default class F1040 extends F1040Base {
       false, // TODO: Combat zone
       '',
       false, // TODO: Deceased
-      '', // TODO: death dates
+      ...this._deathMapping, // TODO: death dates
       ...this._deathMapping,
-      ...this._deathMapping,
-      false, // TODO: Whatever this check and three fields are for..
+      false, // TODO: Whatever this check and three fields are for...
       '', //       Like, it isn't clear in the instructions.
       '',
       '',
