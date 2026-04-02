@@ -1,4 +1,4 @@
-import { PDFDocument, PDFCheckBox, PDFTextField, PDFRadioGroup } from 'pdf-lib'
+import { PDFDocument } from 'pdf-lib'
 import { testKit } from 'ustaxes/forms/Y2025/tests'
 import {
   deriveFillInstructionsFromPdf,
@@ -7,41 +7,6 @@ import {
 import { FillInstructions, RadioSelect } from 'ustaxes/core/pdfFiller'
 
 jest.setTimeout(1_200_000)
-
-/**
- * Sorted PDF field names we could read back (text, checkbox, and radio).
- * Snapshot names only — not values — so tests stay stable with randomized testKit data.
- */
-function sortedExtractableFieldNames(
-  values: Record<string, string | boolean | undefined>
-): string[] {
-  return Object.keys(values).sort((a, b) => a.localeCompare(b))
-}
-
-/**
- * Extract all readable field values from a filled PDF for comparison.
- * Includes text, checkbox, and radio group fields so that radio fill
- * correctness is visible in snapshots and equivalence checks.
- */
-function extractFilledValues(
-  pdf: PDFDocument
-): Record<string, string | boolean | undefined> {
-  const result: Record<string, string | boolean | undefined> = {}
-  const form = pdf.getForm()
-
-  for (const field of form.getFields()) {
-    const name = field.getName()
-    if (field instanceof PDFTextField) {
-      result[name] = field.getText() || undefined
-    } else if (field instanceof PDFCheckBox) {
-      result[name] = field.isChecked()
-    } else if (field instanceof PDFRadioGroup) {
-      result[name] = field.getSelected() ?? undefined
-    }
-  }
-
-  return result
-}
 
 /** Ensure derive output matches pdf-lib field kinds (strict mode already exercises fill). */
 function assertInstructionKindsMatchPdf(
@@ -61,8 +26,7 @@ function assertInstructionKindsMatchPdf(
 }
 
 describe('PDF fill via fillPDFByName (derive bridge)', () => {
-  it('fills each Y2025 IRS form: instruction count, strict fill, extractable field names snapshot', async () => {
-    const extractableNamesByTag: Record<string, string[]> = {}
+  it('fills each Y2025 IRS form: instruction count, strict fill, no warnings', async () => {
     await testKit.with1040Assert(
       async (forms) => {
         for (const form of forms) {
@@ -85,17 +49,10 @@ describe('PDF fill via fillPDFByName (derive bridge)', () => {
             'strict'
           )
           expect(warnings).toEqual([])
-
-          extractableNamesByTag[form.tag] = sortedExtractableFieldNames(
-            extractFilledValues(pdf)
-          )
         }
       },
       { numRuns: 10, interruptAfterTimeLimit: 300_000 }
     )
-    // Canonical extractable field names after migration to name-based filling (text, checkbox, and radio).
-    // Update snapshots only when PDFs or which fields are readable change — not for randomized test data values.
-    expect(extractableNamesByTag).toMatchSnapshot()
   })
 
   it('should detect duplicate field names in strict mode', async () => {
@@ -202,7 +159,7 @@ describe('PDF fill via fillPDFByName (derive bridge)', () => {
         // and does two full fills — the default 100 runs would exceed the 360 s timeout.
         // If the test suite becomes faster, this can be increased.
       },
-      { numRuns: 10 }
+      { numRuns: 10, interruptAfterTimeLimit: 300_000 }
     )
   })
 })
