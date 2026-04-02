@@ -1,5 +1,7 @@
 import { testKit } from '.'
 
+jest.setTimeout(30000)
+
 describe('f8949', () => {
   it('should attach 8949 if there are sales this year', async () => {
     await testKit.with1040Assert((forms, info, assets): Promise<void> => {

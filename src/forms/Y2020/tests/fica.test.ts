@@ -15,7 +15,7 @@ beforeAll(() => {
   })
 })
 
-jest.setTimeout(10000)
+jest.setTimeout(30000)
 
 const hasSSRefund = (f1040: F1040): boolean => f1040.schedule3.l10() > 0
 

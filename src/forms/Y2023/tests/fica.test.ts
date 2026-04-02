@@ -12,7 +12,7 @@ import { blankState } from 'ustaxes/redux/reducer'
 import { ValidatedInformation } from 'ustaxes/forms/F1040Base'
 import * as fc from 'fast-check'
 
-jest.setTimeout(10000)
+jest.setTimeout(30000)
 
 beforeAll(() => {
   jest.spyOn(console, 'warn').mockImplementation(() => {

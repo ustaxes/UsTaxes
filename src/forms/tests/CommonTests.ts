@@ -57,7 +57,7 @@ export default class CommonTests<F1040 extends F1040Base> {
 
         await Promise.resolve(f(f1040, fs))
       },
-      {},
+      undefined,
       filter
     )
 

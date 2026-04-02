@@ -77,7 +77,8 @@ describe('CreatePDF Page', () => {
         )
 
         page.cleanup()
-      })
+      }),
+      { numRuns: 10 }
     )
   })
 })

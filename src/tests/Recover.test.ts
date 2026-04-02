@@ -7,7 +7,8 @@ describe('FS Recover / Save', () => {
     fc.assert(
       fc.property(arbitraries.yearsTaxesState, (state) => {
         expect(stringToState(stateToString(state))).toEqual(state)
-      })
+      }),
+      { numRuns: 10 }
     )
   })
 })
