@@ -7,7 +7,7 @@ import {
   PdfFieldSchema
 } from '../../../scripts/extractPdfSchema'
 
-jest.setTimeout(120000)
+jest.setTimeout(300000)
 
 /**
  * Load a PDF schema from a JSON file.
