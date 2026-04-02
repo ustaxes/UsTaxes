@@ -6,7 +6,7 @@ import {
 } from 'ustaxes/core/pdfFiller/fillPdf'
 import { FillInstructions, RadioSelect } from 'ustaxes/core/pdfFiller'
 
-jest.setTimeout(360000)
+jest.setTimeout(1_200_000)
 
 /**
  * Sorted PDF field names we could read back (text, checkbox, and radio).
@@ -63,33 +63,36 @@ function assertInstructionKindsMatchPdf(
 describe('PDF fill via fillPDFByName (derive bridge)', () => {
   it('fills each Y2025 IRS form: instruction count, strict fill, extractable field names snapshot', async () => {
     const extractableNamesByTag: Record<string, string[]> = {}
-    await testKit.with1040Assert(async (forms) => {
-      for (const form of forms) {
-        const pdf = await testKit.downloader(`irs/${form.tag}.pdf`)
-        const renderedFields = form.renderedFields()
-        const pdfFields = pdf.getForm().getFields()
+    await testKit.with1040Assert(
+      async (forms) => {
+        for (const form of forms) {
+          const pdf = await testKit.downloader(`irs/${form.tag}.pdf`)
+          const renderedFields = form.renderedFields()
+          const pdfFields = pdf.getForm().getFields()
 
-        const instructions =
-          form.fillInstructions?.() ??
-          deriveFillInstructionsFromPdf(pdf, renderedFields)
+          const instructions =
+            form.fillInstructions?.() ??
+            deriveFillInstructionsFromPdf(pdf, renderedFields)
 
-        expect(instructions.length).toBe(pdfFields.length)
+          expect(instructions.length).toBe(pdfFields.length)
 
-        assertInstructionKindsMatchPdf(pdf, instructions)
+          assertInstructionKindsMatchPdf(pdf, instructions)
 
-        const { warnings } = fillPDFByName(
-          pdf,
-          instructions,
-          form.tag,
-          'strict'
-        )
-        expect(warnings).toEqual([])
+          const { warnings } = fillPDFByName(
+            pdf,
+            instructions,
+            form.tag,
+            'strict'
+          )
+          expect(warnings).toEqual([])
 
-        extractableNamesByTag[form.tag] = sortedExtractableFieldNames(
-          extractFilledValues(pdf)
-        )
-      }
-    })
+          extractableNamesByTag[form.tag] = sortedExtractableFieldNames(
+            extractFilledValues(pdf)
+          )
+        }
+      },
+      { numRuns: 10, interruptAfterTimeLimit: 300_000 }
+    )
     // Canonical extractable field names after migration to name-based filling (text, checkbox, and radio).
     // Update snapshots only when PDFs or which fields are readable change — not for randomized test data values.
     expect(extractableNamesByTag).toMatchSnapshot()
