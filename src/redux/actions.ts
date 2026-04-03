@@ -14,6 +14,7 @@ import {
   Information,
   EstimatedTaxPayments,
   Responses,
+  StateResponses,
   Ira,
   Asset,
   ItemizedDeductions,
@@ -85,6 +86,7 @@ export enum ActionName {
   ADD_ASSETS = 'ASSETS/ADD_MANY',
   EDIT_ASSET = 'ASSETS/EDIT',
   REMOVE_ASSET = 'ASSETS/REMOVE',
+  ANSWER_STATE_QUESTION = 'ANSWER_STATE_QUESTION',
   REMOVE_ASSETS = 'ASSETS/REMOVE_MANY',
   ADD_F3921 = 'F3921/ADD',
   EDIT_F3921 = 'F3921/EDIT',
@@ -160,6 +162,10 @@ type AddAsset = Save<typeof ActionName.ADD_ASSET, Asset<Date>>
 type AddAssets = Save<typeof ActionName.ADD_ASSETS, Asset<Date>[]>
 type EditAsset = Save<typeof ActionName.EDIT_ASSET, EditAssetAction>
 type RemoveAsset = Save<typeof ActionName.REMOVE_ASSET, number>
+type AnswerStateQuestion = Save<
+  typeof ActionName.ANSWER_STATE_QUESTION,
+  StateResponses
+>
 type RemoveAssets = Save<typeof ActionName.REMOVE_ASSETS, number[]>
 type AddF3921 = Save<typeof ActionName.ADD_F3921, F3921>
 type EditF3921 = Save<typeof ActionName.EDIT_F3921, EditF3921Action>
@@ -220,6 +226,7 @@ export type Actions =
   | AddAssets
   | EditAsset
   | RemoveAsset
+  | AnswerStateQuestion
   | RemoveAssets
   | AddF3921
   | EditF3921
@@ -482,6 +489,9 @@ export const removeAsset: ActionCreator<number> = makeActionCreator(
   ActionName.REMOVE_ASSET,
   indexValidator
 )
+
+export const answerStateQuestion: ActionCreator<StateResponses> =
+  makeActionCreator(ActionName.ANSWER_STATE_QUESTION)
 
 export const removeAssets: ActionCreator<number[]> = makeActionCreator(
   ActionName.REMOVE_ASSETS
