@@ -11,7 +11,7 @@ interface Catalogs {
   }
 }
 
-const taxYear = 'Y2024'
+const taxYear = 'Y2025'
 const catalogsPath: string = path.join(__dirname, '../public', 'catalogs.json')
 const outputDir: string = path.join(
   __dirname,

@@ -6,12 +6,14 @@ import { create1040 as create1040For2021 } from 'ustaxes/forms/Y2021/irsForms/Ma
 import { create1040 as create1040For2022 } from 'ustaxes/forms/Y2022/irsForms/Main'
 import { create1040 as create1040For2023 } from 'ustaxes/forms/Y2023/irsForms/Main'
 import { create1040 as create1040For2024 } from 'ustaxes/forms/Y2024/irsForms/Main'
+import { create1040 as create1040For2025 } from 'ustaxes/forms/Y2025/irsForms/Main'
 
 import F1040For2020 from 'ustaxes/forms/Y2020/irsForms/F1040'
 import F1040For2021 from 'ustaxes/forms/Y2021/irsForms/F1040'
 import F1040For2022 from 'ustaxes/forms/Y2022/irsForms/F1040'
 import F1040For2023 from 'ustaxes/forms/Y2023/irsForms/F1040'
 import F1040For2024 from 'ustaxes/forms/Y2024/irsForms/F1040'
+import F1040For2025 from 'ustaxes/forms/Y2025/irsForms/F1040'
 
 import Form from 'ustaxes/core/irsForms/Form'
 import StateForm from 'ustaxes/core/stateForms/Form'
@@ -21,8 +23,9 @@ import { createStateReturn as createStateReturn2021 } from 'ustaxes/forms/Y2021/
 import { createStateReturn as createStateReturn2022 } from 'ustaxes/forms/Y2022/stateForms'
 import { createStateReturn as createStateReturn2023 } from 'ustaxes/forms/Y2023/stateForms'
 import { createStateReturn as createStateReturn2024 } from 'ustaxes/forms/Y2024/stateForms'
+import { createStateReturn as createStateReturn2025 } from 'ustaxes/forms/Y2025/stateForms'
 import { PDFDocument } from 'pdf-lib'
-import { fillPDF } from 'ustaxes/core/pdfFiller/fillPdf'
+import { fillPdfFromFill } from 'ustaxes/core/pdfFiller/fillPdf'
 import {
   combinePdfs,
   downloadPDF,
@@ -76,13 +79,19 @@ export class YearCreateForm {
   f1040Pdfs = async (): Promise<Either<string[], PDFDocument[]>> => {
     const r1 = await run(this.f1040()).mapAsync((forms) =>
       Promise.all(
-        forms.map(async (form) =>
-          fillPDF(
-            await this.config.getPDF(form),
-            form.renderedFields(),
-            form.tag
+        forms.map(async (form) => {
+          const pdf = await this.config.getPDF(form)
+          const { warnings } = fillPdfFromFill(
+            pdf,
+            form.tag,
+            form,
+            form.renderedFields()
           )
-        )
+          if (warnings.length > 0) {
+            console.warn(`Form ${form.tag} warnings:`, warnings)
+          }
+          return pdf
+        })
       )
     )
     return r1.value()
@@ -119,13 +128,19 @@ export class YearCreateForm {
     const r1 = run(this.makeStateReturn())
     const r2 = await r1.mapAsync((forms) =>
       Promise.all(
-        forms.map(async (form) =>
-          fillPDF(
-            await this.config.getStatePDF(form),
-            form.renderedFields(),
-            form.formName
+        forms.map(async (form) => {
+          const pdf = await this.config.getStatePDF(form)
+          const { warnings } = fillPdfFromFill(
+            pdf,
+            form.formName,
+            form,
+            form.renderedFields()
           )
-        )
+          if (warnings.length > 0) {
+            console.warn(`State form ${form.formName} warnings:`, warnings)
+          }
+          return pdf
+        })
       )
     )
     return r2.value()
@@ -210,6 +225,11 @@ export class CreateForms {
         ...baseConfig,
         createF1040: takeSecond(create1040For2024),
         createStateReturn: (f: Form) => createStateReturn2024(f as F1040For2024)
+      },
+      Y2025: {
+        ...baseConfig,
+        createF1040: takeSecond(create1040For2025),
+        createStateReturn: (f: Form) => createStateReturn2025(f as F1040For2025)
       }
     }
 

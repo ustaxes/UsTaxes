@@ -1,7 +1,7 @@
 import F1040Attachment from './F1040Attachment'
 import { FormTag } from 'ustaxes/core/irsForms/Form'
 import { sumFields } from 'ustaxes/core/irsForms/util'
-import { Field } from 'ustaxes/core/pdfFiller'
+import { Field, FillInstructions, text, checkbox } from 'ustaxes/core/pdfFiller'
 
 export default class Schedule2 extends F1040Attachment {
   tag: FormTag = 'f1040s2'
@@ -214,5 +214,76 @@ export default class Schedule2 extends F1040Attachment {
     undefined, //this.l19(),
     this.l20(),
     this.l21()
+  ]
+
+  // Generated from Y2024 PDF schema + fields() via scripts/migrateToNativeInstructions.ts
+  // 59 TS expressions, 60 PDF fields
+  fillInstructions = (): FillInstructions => [
+    text('form1[0].Page1[0].f1_01[0]', this.f1040.namesString()),
+    text(
+      'form1[0].Page1[0].f1_02[0]',
+      this.f1040.info.taxPayer.primaryPerson.ssid
+    ),
+    text('form1[0].Page1[0].Line1a_ReadOrder[0].f1_03[0]', this.l1a()),
+    text('form1[0].Page1[0].f1_04[0]', this.l1b()),
+    text('form1[0].Page1[0].f1_05[0]', this.l1c()),
+    text('form1[0].Page1[0].f1_06[0]', this.l1d()),
+    checkbox('form1[0].Page1[0].Line1e_ReadOrder[0].c1_1[0]', this.l1ei()),
+    checkbox('form1[0].Page1[0].Line1e_ReadOrder[0].c1_1[1]', this.l1eii()),
+    checkbox('form1[0].Page1[0].Line1e_ReadOrder[0].c1_1[2]', this.l1eiii()),
+    checkbox('form1[0].Page1[0].Line1e_ReadOrder[0].c1_1[3]', this.l1eiv()),
+    text('form1[0].Page1[0].f1_07[0]', this.l1e()),
+    checkbox('form1[0].Page1[0].Line1f_ReadOrder[0].c1_2[0]', this.l1fi()),
+    checkbox('form1[0].Page1[0].Line1f_ReadOrder[0].c1_2[1]', this.l1fii()),
+    checkbox('form1[0].Page1[0].Line1f_ReadOrder[0].c1_2[2]', this.l1fiii()),
+    checkbox('form1[0].Page1[0].Line1f_ReadOrder[0].c1_2[3]', this.l1fiv()),
+    text('form1[0].Page1[0].f1_08[0]', this.l1f()),
+    text('form1[0].Page1[0].f1_09[0]', this.l1y()),
+    text('form1[0].Page1[0].f1_10[0]', this.l1z()),
+    text('form1[0].Page1[0].f1_11[0]', this.l2()),
+    text('form1[0].Page1[0].f1_12[0]', this.l3()),
+    text('form1[0].Page1[0].f1_13[0]', this.l4()),
+    text('form1[0].Page1[0].f1_14[0]', this.l5()),
+    text('form1[0].Page1[0].Line5_ReadOrder[0].f1_15[0]', this.l6()),
+    text('form1[0].Page1[0].f1_16[0]', this.l7()),
+    text('form1[0].Page1[0].f1_17[0]', this.l8()),
+    checkbox('form1[0].Page1[0].Line8_ReadOrder[0].c1_3[0]', this.l8box()),
+    text('form1[0].Page1[0].f1_18[0]', this.l9()),
+    text('form1[0].Page1[0].f1_19[0]', this.l10()),
+    text('form1[0].Page1[0].f1_20[0]', this.l11()),
+    text('form1[0].Page1[0].f1_21[0]', this.l12()),
+    text('form1[0].Page1[0].f1_22[0]', this.l13()),
+    text('form1[0].Page1[0].f1_23[0]', this.l14()),
+    text('form1[0].Page1[0].f1_24[0]', this.l15()),
+    text('form1[0].Page1[0].f1_25[0]', this.l16()),
+    text('form1[0].Page1[0].f1_26[0]', this.l17aDesc()),
+    text(
+      'form1[0].Page2[0].Line17a_ReadOrder[0].Line17_ReadOrder[0].f2_01[0]',
+      this.l17a()
+    ),
+    text('form1[0].Page2[0].Line17a_ReadOrder[0].f2_02[0]', this.l17b()),
+    text('form1[0].Page2[0].f2_03[0]', this.l17c()),
+    text('form1[0].Page2[0].f2_04[0]', this.l17d()),
+    text('form1[0].Page2[0].f2_05[0]', this.l17e()),
+    text('form1[0].Page2[0].f2_06[0]', this.l17f()),
+    text('form1[0].Page2[0].f2_07[0]', this.l17g()),
+    text('form1[0].Page2[0].f2_08[0]', this.l17h()),
+    text('form1[0].Page2[0].f2_09[0]', this.l17i()),
+    text('form1[0].Page2[0].f2_10[0]', this.l17j()),
+    text('form1[0].Page2[0].f2_11[0]', this.l17k()),
+    text('form1[0].Page2[0].f2_12[0]', this.l17l()),
+    text('form1[0].Page2[0].f2_13[0]', this.l17m()),
+    text('form1[0].Page2[0].f2_14[0]', this.l17n()),
+    text('form1[0].Page2[0].f2_15[0]', this.l17o()),
+    text('form1[0].Page2[0].f2_16[0]', this.l17p()),
+    text('form1[0].Page2[0].f2_17[0]', this.l17q()),
+    text('form1[0].Page2[0].f2_18[0]', this.l17zDesc()),
+    text('form1[0].Page2[0].Line17z_ReadOrder[0].f2_19[0]', undefined),
+    text('form1[0].Page2[0].Line17z_ReadOrder[0].f2_20[0]', this.l17z()),
+    text('form1[0].Page2[0].f2_21[0]', this.l18()),
+    text('form1[0].Page2[0].f2_22[0]', undefined),
+    text('form1[0].Page2[0].f2_23[0]', this.l20()),
+    text('form1[0].Page2[0].Line20_ReadOrder[0].f2_24[0]', this.l21()),
+    text('form1[0].Page2[0].f2_25[0]', undefined)
   ]
 }

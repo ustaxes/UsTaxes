@@ -2,7 +2,7 @@ import F1040Attachment from './F1040Attachment'
 import { CreditType, Dependent, FilingStatus } from 'ustaxes/core/data'
 import { sumFields } from 'ustaxes/core/irsForms/util'
 import { FormTag } from 'ustaxes/core/irsForms/Form'
-import { Field } from 'ustaxes/core/pdfFiller'
+import { Field, FillInstructions, text, checkbox } from 'ustaxes/core/pdfFiller'
 import { nextMultipleOf1000 } from 'ustaxes/core/util'
 
 type Part2a = { allowed: boolean } & Partial<{
@@ -311,6 +311,59 @@ export default class Schedule8812 extends F1040Attachment {
       part2b.l25,
       part2b.l26,
       this.l27()
+    ]
+  }
+
+  // Generated from Y2024 PDF schema + fields() via scripts/migrateToNativeInstructions.ts
+  // 41 TS expressions, 41 PDF fields
+  fillInstructions = (): FillInstructions => {
+    const part2a = this.part2a()
+    const part2b = this.part2b()
+    return [
+      text('topmostSubform[0].Page1[0].f1_1[0]', this.f1040.namesString()),
+      text(
+        'topmostSubform[0].Page1[0].f1_2[0]',
+        this.f1040.info.taxPayer.primaryPerson.ssid
+      ),
+      text('topmostSubform[0].Page1[0].f1_3[0]', this.l1()),
+      text('topmostSubform[0].Page1[0].f1_4[0]', this.l2a()),
+      text('topmostSubform[0].Page1[0].f1_5[0]', this.l2b()),
+      text('topmostSubform[0].Page1[0].f1_6[0]', this.l2c()),
+      text('topmostSubform[0].Page1[0].f1_7[0]', this.l2d()),
+      text('topmostSubform[0].Page1[0].f1_8[0]', this.l3()),
+      text('topmostSubform[0].Page1[0].f1_9[0]', this.l4()),
+      text('topmostSubform[0].Page1[0].f1_10[0]', this.l5()),
+      text('topmostSubform[0].Page1[0].Line6ReadOrder[0].f1_11[0]', this.l6()),
+      text('topmostSubform[0].Page1[0].f1_12[0]', this.l7()),
+      text('topmostSubform[0].Page1[0].f1_13[0]', this.l8()),
+      text('topmostSubform[0].Page1[0].f1_14[0]', this.l9()),
+      text('topmostSubform[0].Page1[0].f1_15[0]', this.l10()),
+      text('topmostSubform[0].Page1[0].f1_16[0]', this.l11()),
+      text('topmostSubform[0].Page1[0].f1_17[0]', this.l12()),
+      checkbox('topmostSubform[0].Page1[0].c1_1[0]', this.l12no()),
+      checkbox('topmostSubform[0].Page1[0].c1_1[1]', this.l12yes()),
+      text('topmostSubform[0].Page1[0].f1_18[0]', this.l13()),
+      text('topmostSubform[0].Page1[0].f1_19[0]', this.l14()),
+      checkbox('topmostSubform[0].Page2[0].c2_1[0]', this.l15()),
+      text('topmostSubform[0].Page2[0].f2_1[0]', part2a.l16a),
+      text('topmostSubform[0].Page2[0].f2_2[0]', part2a.l16bdeps),
+      text('topmostSubform[0].Page2[0].f2_3[0]', part2a.l16b),
+      text('topmostSubform[0].Page2[0].f2_4[0]', part2a.l17),
+      text('topmostSubform[0].Page2[0].f2_5[0]', part2a.l18a),
+      text('topmostSubform[0].Page2[0].f2_6[0]', part2a.l18b),
+      checkbox('topmostSubform[0].Page2[0].c2_2[0]', part2a.l19No),
+      checkbox('topmostSubform[0].Page2[0].c2_2[1]', part2a.l19Yes),
+      text('topmostSubform[0].Page2[0].f2_7[0]', part2a.l19),
+      text('topmostSubform[0].Page2[0].f2_8[0]', part2a.l20),
+      checkbox('topmostSubform[0].Page2[0].c2_3[0]', part2a.l20No),
+      checkbox('topmostSubform[0].Page2[0].c2_3[1]', part2a.l20Yes),
+      text('topmostSubform[0].Page2[0].f2_9[0]', part2b.l21),
+      text('topmostSubform[0].Page2[0].f2_10[0]', part2b.l22),
+      text('topmostSubform[0].Page2[0].f2_11[0]', part2b.l23),
+      text('topmostSubform[0].Page2[0].f2_12[0]', part2b.l24),
+      text('topmostSubform[0].Page2[0].f2_13[0]', part2b.l25),
+      text('topmostSubform[0].Page2[0].f2_14[0]', part2b.l26),
+      text('topmostSubform[0].Page2[0].f2_15[0]', this.l27())
     ]
   }
 }

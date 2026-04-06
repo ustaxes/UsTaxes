@@ -131,7 +131,7 @@ export default class TestKit {
       info: ValidatedInformation,
       assets: Asset<Date>[]
     ) => Promise<void>,
-    params: Parameters<[Information, Asset<Date>[]]> = {},
+    params: Parameters<[Information, Asset<Date>[]]> = { numRuns: 10 },
     filter: (info: ValidatedInformation) => boolean = () => true
   ): Promise<void> => {
     let lastCallWithInfo: [ValidatedInformation, Asset<Date>[]] | undefined

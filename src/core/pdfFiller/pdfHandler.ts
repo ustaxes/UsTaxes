@@ -1,6 +1,6 @@
 import { PDFDocument } from 'pdf-lib'
-import Fill from './Fill'
-import { fillPDF } from './fillPdf'
+import Form from '../irsForms/Form'
+import { fillPdfFromFill } from './fillPdf'
 
 export interface FileDownloader<T> {
   (url: string): Promise<T>
@@ -10,6 +10,11 @@ export type PDFDownloader = FileDownloader<PDFDocument>
 
 export const downloadPDF: PDFDownloader = async (url) => {
   const download = await fetch(url)
+  if (!download.ok) {
+    throw new Error(
+      `Failed to download PDF from "${url}": ${download.status} ${download.statusText}`
+    )
+  }
   const buffer = await download.arrayBuffer()
   return await PDFDocument.load(buffer)
 }
@@ -32,12 +37,16 @@ export const combinePdfs = async (
 }
 
 export const getPdfs = async (
-  formData: Array<[Fill, PDFDocument]>
+  formData: Array<[Form, PDFDocument]>
 ): Promise<PDFDocument[]> => {
   // Insert the values from each field into the PDF
   const pdfFiles: Array<Promise<PDFDocument>> = formData.map(
     async ([data, f]) => {
-      fillPDF(f, data.renderedFields(), 'Not Set')
+      const values = data.fillInstructions ? [] : data.renderedFields()
+      const { warnings } = fillPdfFromFill(f, data.tag, data, values)
+      if (warnings.length > 0) {
+        console.warn('PDF fill warnings:', warnings)
+      }
       const pageBytes = await f.save()
       return await PDFDocument.load(pageBytes)
     }

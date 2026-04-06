@@ -156,7 +156,7 @@ export const createWholeStoreUnpersisted = (
 export const createStoreUnpersisted = (information: Information): InfoStore =>
   createWholeStoreUnpersisted({
     ...blankYearTaxesState,
-    Y2020: information
+    [blankYearTaxesState.activeYear]: information
   })
 
 export const createStore = (): PersistedStore =>

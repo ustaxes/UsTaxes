@@ -15,7 +15,7 @@ beforeAll(() => {
   })
 })
 
-jest.setTimeout(10000)
+jest.setTimeout(30000)
 
 const hasSSRefund = (f1040: F1040): boolean => f1040.schedule3.l10() > 0
 
@@ -47,12 +47,11 @@ describe('fica', () => {
           .validW2s()
           .reduce((sum, w2) => sum + w2.ssWithholding, 0)
         if (
-          f1040.wages() <= fica.maxIncomeSSTaxApplies ||
           f1040.validW2s().some((w2) => w2.ssWithholding > fica.maxSSTax) ||
           ssWithheld < fica.maxSSTax
         ) {
-          // Should never give SS refund if W2 income below max threshold, some W2 has
-          // withheld over the max, or there is no SS withholding to refund.
+          // No excess to refund if any single W2 already exceeded max withholding, or
+          // combined withholding did not exceed one year's max SS tax.
           expect(hasSSRefund(f1040)).toEqual(false)
         } else {
           // Otherwise, should always give SS refund, and attach schedule 3

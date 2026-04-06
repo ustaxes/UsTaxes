@@ -1,5 +1,5 @@
 import F1040Attachment from './F1040Attachment'
-import { Field } from 'ustaxes/core/pdfFiller'
+import { Field, FillInstructions } from 'ustaxes/core/pdfFiller'
 import { FormTag } from 'ustaxes/core/irsForms/Form'
 
 /**
@@ -13,4 +13,5 @@ export default class F8962 extends F1040Attachment {
   credit = (): number | undefined => undefined
 
   fields = (): Field[] => []
+  fillInstructions = (): FillInstructions => []
 }

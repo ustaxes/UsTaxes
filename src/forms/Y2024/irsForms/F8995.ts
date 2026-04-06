@@ -1,7 +1,7 @@
 import F1040Attachment from './F1040Attachment'
 import { FormTag } from 'ustaxes/core/irsForms/Form'
 import { FilingStatus } from 'ustaxes/core/data'
-import { Field } from 'ustaxes/core/pdfFiller'
+import { Field, FillInstructions, text } from 'ustaxes/core/pdfFiller'
 
 export function getF8995PhaseOutIncome(filingStatus: FilingStatus): number {
   let formAMinAmount = 170050
@@ -100,4 +100,96 @@ export default class F8995 extends F1040Attachment {
     this.l16(),
     this.l17()
   ]
+
+  // Generated from Y2024 PDF schema + fields() via scripts/migrateToNativeInstructions.ts
+  // 33 TS expressions, 33 PDF fields
+  fillInstructions = (): FillInstructions => {
+    const k1s = this.applicableK1s()
+    return [
+      text('topmostSubform[0].Page1[0].f1_1[0]', this.f1040.namesString()),
+      text(
+        'topmostSubform[0].Page1[0].f1_2[0]',
+        this.f1040.info.taxPayer.primaryPerson.ssid
+      ),
+      text(
+        'topmostSubform[0].Page1[0].Table[0].Ln1A_Row1[0].f1_3[0]',
+        k1s[0]?.partnershipName
+      ),
+      text(
+        'topmostSubform[0].Page1[0].Table[0].Ln1A_Row1[0].f1_4[0]',
+        k1s[0]?.partnershipEin
+      ),
+      text(
+        'topmostSubform[0].Page1[0].Table[0].Ln1A_Row1[0].f1_5[0]',
+        k1s[0]?.section199AQBI
+      ),
+      text(
+        'topmostSubform[0].Page1[0].Table[0].Ln1B_Row2[0].f1_6[0]',
+        k1s[1]?.partnershipName
+      ),
+      text(
+        'topmostSubform[0].Page1[0].Table[0].Ln1B_Row2[0].f1_7[0]',
+        k1s[1]?.partnershipEin
+      ),
+      text(
+        'topmostSubform[0].Page1[0].Table[0].Ln1B_Row2[0].f1_8[0]',
+        k1s[1]?.section199AQBI
+      ),
+      text(
+        'topmostSubform[0].Page1[0].Table[0].Ln1C_Row3[0].f1_9[0]',
+        k1s[2]?.partnershipName
+      ),
+      text(
+        'topmostSubform[0].Page1[0].Table[0].Ln1C_Row3[0].f1_10[0]',
+        k1s[2]?.partnershipEin
+      ),
+      text(
+        'topmostSubform[0].Page1[0].Table[0].Ln1C_Row3[0].f1_11[0]',
+        k1s[2]?.section199AQBI
+      ),
+      text(
+        'topmostSubform[0].Page1[0].Table[0].Ln1D_Row4[0].f1_12[0]',
+        k1s[3]?.partnershipName
+      ),
+      text(
+        'topmostSubform[0].Page1[0].Table[0].Ln1D_Row4[0].f1_13[0]',
+        k1s[3]?.partnershipEin
+      ),
+      text(
+        'topmostSubform[0].Page1[0].Table[0].Ln1D_Row4[0].f1_14[0]',
+        k1s[3]?.section199AQBI
+      ),
+      text(
+        'topmostSubform[0].Page1[0].Table[0].Ln1E_Row5[0].f1_15[0]',
+        k1s[4]?.partnershipName
+      ),
+      text(
+        'topmostSubform[0].Page1[0].Table[0].Ln1E_Row5[0].f1_16[0]',
+        k1s[4]?.partnershipEin
+      ),
+      text(
+        'topmostSubform[0].Page1[0].Table[0].Ln1E_Row5[0].f1_17[0]',
+        k1s[4]?.section199AQBI
+      ),
+      text(
+        'topmostSubform[0].Page1[0].ReadOrderSubForm[0].f1_18[0]',
+        this.l2()
+      ),
+      text('topmostSubform[0].Page1[0].f1_19[0]', this.l3()),
+      text('topmostSubform[0].Page1[0].f1_20[0]', this.l4()),
+      text('topmostSubform[0].Page1[0].f1_21[0]', this.l5()),
+      text('topmostSubform[0].Page1[0].Line6_ReadOrder[0].f1_22[0]', this.l6()),
+      text('topmostSubform[0].Page1[0].f1_23[0]', this.l7()),
+      text('topmostSubform[0].Page1[0].f1_24[0]', this.l8()),
+      text('topmostSubform[0].Page1[0].f1_25[0]', this.l9()),
+      text('topmostSubform[0].Page1[0].f1_26[0]', this.l10()),
+      text('topmostSubform[0].Page1[0].f1_27[0]', this.l11()),
+      text('topmostSubform[0].Page1[0].f1_28[0]', this.l12()),
+      text('topmostSubform[0].Page1[0].f1_29[0]', this.l13()),
+      text('topmostSubform[0].Page1[0].f1_30[0]', this.l14()),
+      text('topmostSubform[0].Page1[0].f1_31[0]', this.l15()),
+      text('topmostSubform[0].Page1[0].f1_32[0]', this.l16()),
+      text('topmostSubform[0].Page1[0].f1_33[0]', this.l17())
+    ]
+  }
 }

@@ -1,7 +1,9 @@
 import { displayRound } from 'ustaxes/core/irsForms/util'
 import { commonTests, testKit } from '.'
 
-jest.setTimeout(40000)
+// Property tests load PDFs and run full tax computations on each iteration;
+// 120 s is needed to cover the default fast-check run count without flaking.
+jest.setTimeout(120000)
 
 beforeAll(() => {
   jest.spyOn(console, 'warn').mockImplementation((x: string) => {

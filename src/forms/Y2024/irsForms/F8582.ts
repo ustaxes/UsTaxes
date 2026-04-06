@@ -1,13 +1,13 @@
 import { MatrixRow } from './ScheduleE'
 import F1040Attachment from './F1040Attachment'
-import { Field } from 'ustaxes/core/pdfFiller'
+import { Field, FillInstructions } from 'ustaxes/core/pdfFiller'
 
 /**
  * Referenced from line 22 of Schedule E
  * TODO: Not implemented
  */
 export default class F8582 extends F1040Attachment {
-  tag = 'f8562'
+  tag = 'f8582'
   sequenceIndex = 999
 
   // TODO: 'Deducible rental estate loss after limitation, assuming all allowed'
@@ -20,4 +20,5 @@ export default class F8582 extends F1040Attachment {
     }) as MatrixRow
 
   fields = (): Field[] => []
+  fillInstructions = (): FillInstructions => []
 }

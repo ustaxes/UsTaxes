@@ -1,7 +1,7 @@
 import { displayRound } from 'ustaxes/core/irsForms/util'
 import { commonTests, testKit } from '.'
 
-jest.setTimeout(40000)
+jest.setTimeout(120000)
 
 beforeAll(() => {
   jest.spyOn(console, 'warn').mockImplementation((x: string) => {

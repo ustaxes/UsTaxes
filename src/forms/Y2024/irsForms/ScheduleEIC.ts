@@ -10,7 +10,7 @@ import Pub596Worksheet1 from './worksheets/Pub596Worksheet1'
 import { FormTag } from 'ustaxes/core/irsForms/Form'
 import { evaluatePiecewise, Piecewise } from 'ustaxes/core/util'
 import _ from 'lodash'
-import { Field } from 'ustaxes/core/pdfFiller'
+import { Field, FillInstructions, text, checkbox } from 'ustaxes/core/pdfFiller'
 
 type PrecludesEIC<F> = (f: F) => boolean
 
@@ -385,4 +385,106 @@ export default class ScheduleEIC extends F1040Attachment {
     ...this.relationships(),
     ...this.numberMonths()
   ]
+
+  fillInstructions = (): FillInstructions => {
+    const nameF = this.nameFields()
+    const ssnF = this.ssnFields()
+    const birthY = this.birthYearFields()
+    const ageF = this.ageFields()
+    const disabledF = this.disabledFields()
+    const rels = this.relationships()
+    const months = this.numberMonths()
+
+    return [
+      // Header
+      text('topmostSubform[0].Page1[0].f1_1[0]', this.f1040.namesString()),
+      text(
+        'topmostSubform[0].Page1[0].f1_2[0]',
+        this.f1040.info.taxPayer.primaryPerson.ssid
+      ),
+      // c1_1 exists in the PDF schema but has no corresponding field in fields() — leave unset
+      checkbox('topmostSubform[0].Page1[0].c1_1[0]', undefined),
+      // Line 1: Child names (3 children)
+      text('topmostSubform[0].Page1[0].f1_3[0]', nameF[0]),
+      text('topmostSubform[0].Page1[0].f1_4[0]', nameF[1]),
+      text('topmostSubform[0].Page1[0].f1_5[0]', nameF[2]),
+      // Line 2: Child SSNs (3 children)
+      text('topmostSubform[0].Page1[0].f1_6[0]', ssnF[0]),
+      text('topmostSubform[0].Page1[0].f1_7[0]', ssnF[1]),
+      text('topmostSubform[0].Page1[0].f1_8[0]', ssnF[2]),
+      // Line 3: Birth year digits — child 1 (4 individual digit fields)
+      text('topmostSubform[0].Page1[0].Year1_ReadOrder[0].f1_9[0]', birthY[0]),
+      text('topmostSubform[0].Page1[0].Year1_ReadOrder[0].f1_10[0]', birthY[1]),
+      text('topmostSubform[0].Page1[0].Year1_ReadOrder[0].f1_11[0]', birthY[2]),
+      text('topmostSubform[0].Page1[0].Year1_ReadOrder[0].f1_12[0]', birthY[3]),
+      // Line 3: Birth year digits — child 2
+      text('topmostSubform[0].Page1[0].Year2_ReadOrder[0].f1_13[0]', birthY[4]),
+      text('topmostSubform[0].Page1[0].Year2_ReadOrder[0].f1_14[0]', birthY[5]),
+      text('topmostSubform[0].Page1[0].Year2_ReadOrder[0].f1_15[0]', birthY[6]),
+      text('topmostSubform[0].Page1[0].Year2_ReadOrder[0].f1_16[0]', birthY[7]),
+      // Line 3: Birth year digits — child 3
+      text('topmostSubform[0].Page1[0].f1_17[0]', birthY[8]),
+      text('topmostSubform[0].Page1[0].f1_18[0]', birthY[9]),
+      text('topmostSubform[0].Page1[0].f1_19[0]', birthY[10]),
+      text('topmostSubform[0].Page1[0].f1_20[0]', birthY[11]),
+      // Line 4a: Age qualifies (yes/no per child)
+      checkbox(
+        'topmostSubform[0].Page1[0].Line4a_Child1_ReadOrder[0].Yes_ReadOrder[0].c1_2[0]',
+        ageF[0]
+      ),
+      checkbox(
+        'topmostSubform[0].Page1[0].Line4a_Child1_ReadOrder[0].c1_2[0]',
+        ageF[1]
+      ),
+      checkbox(
+        'topmostSubform[0].Page1[0].Line4a_Child2_ReadOrder[0].Yes_ReadOrder[0].c1_3[0]',
+        ageF[2]
+      ),
+      checkbox(
+        'topmostSubform[0].Page1[0].Line4a_Child2_ReadOrder[0].c1_3[0]',
+        ageF[3]
+      ),
+      checkbox(
+        'topmostSubform[0].Page1[0].Line4a_Child3_Yes_ReadOrder[0].c1_4[0]',
+        ageF[4]
+      ),
+      checkbox('topmostSubform[0].Page1[0].c1_4[0]', ageF[5]),
+      // Line 4b: Permanently disabled (yes/no per child)
+      checkbox(
+        'topmostSubform[0].Page1[0].Line4b_Child1_ReadOrder[0].Yes_ReadOrder[0].c1_5[0]',
+        disabledF[0]
+      ),
+      checkbox(
+        'topmostSubform[0].Page1[0].Line4b_Child1_ReadOrder[0].c1_5[0]',
+        disabledF[1]
+      ),
+      checkbox(
+        'topmostSubform[0].Page1[0].Line4b_Child2_ReadOrder[0].Yes_ReadOrder[0].c1_6[0]',
+        disabledF[2]
+      ),
+      checkbox(
+        'topmostSubform[0].Page1[0].Line4b_Child2_ReadOrder[0].c1_6[0]',
+        disabledF[3]
+      ),
+      checkbox(
+        'topmostSubform[0].Page1[0].Line4b_Child3_Yes_ReadOrder[0].c1_7[0]',
+        disabledF[4]
+      ),
+      checkbox('topmostSubform[0].Page1[0].c1_7[0]', disabledF[5]),
+      // Line 5: Relationship to taxpayer (3 children)
+      text('topmostSubform[0].Page1[0].f1_21[0]', rels[0]),
+      text('topmostSubform[0].Page1[0].f1_22[0]', rels[1]),
+      text('topmostSubform[0].Page1[0].f1_23[0]', rels[2]),
+      // Line 6: Months lived in home (3 children)
+      text(
+        'topmostSubform[0].Page1[0].Line6_Child1_ReadOrder[0].f1_24[0]',
+        months[0]
+      ),
+      text(
+        'topmostSubform[0].Page1[0].Line6_Child2_ReadOrder[0].f1_25[0]',
+        months[1]
+      ),
+      text('topmostSubform[0].Page1[0].f1_26[0]', months[2])
+    ]
+  }
 }

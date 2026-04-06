@@ -31,6 +31,16 @@ jobs:
       run: npm run lint
     - name: Ensure project builds
       run: npm run build
+      # extract PDF schemas for contract tests (all Y2024 and Y2025 IRS forms)
+    - name: Extract PDF schemas
+      run: |
+        mkdir -p schemas/Y2024 schemas/Y2025
+        for pdf in public/forms/Y2024/irs/*.pdf; do
+          npm run extract-schema "$pdf" schemas/Y2024
+        done
+        for pdf in public/forms/Y2025/irs/*.pdf; do
+          npm run extract-schema "$pdf" schemas/Y2025
+        done
       # run tests
     - name: Run jest unit tests
       run: npm run test:report
