@@ -83,7 +83,7 @@ export default class F6251 extends F1040Attachment {
 
     return false
   }
-  
+
   l1a = (): number => {
     // find the difference between line 14 of 1040,
     // and line 37 of your Schedule 1-A (Form 1040).

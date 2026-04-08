@@ -324,10 +324,16 @@ export default class Schedule1 extends F1040Attachment {
     text('topmostSubform[0].Page1[0].f1_08[0]', this.l4()),
     text('topmostSubform[0].Page1[0].f1_09[0]', this.l5()),
     text('topmostSubform[0].Page1[0].f1_10[0]', this.l6()),
-    checkbox('topmostSubform[0].Page1[0].Line7_ReadOrder[0].c1_3[0]', this.l7Box()),
-    text('topmostSubform[0].Page1[0].Line7_ReadOrder[0].f1_11[0]', this.l7RepaidAmount()),
+    checkbox(
+      'topmostSubform[0].Page1[0].Line7_ReadOrder[0].c1_3[0]',
+      this.l7Box()
+    ),
+    text(
+      'topmostSubform[0].Page1[0].Line7_ReadOrder[0].f1_11[0]',
+      this.l7RepaidAmount()
+    ),
     text('topmostSubform[0].Page1[0].f1_12[0]', this.l7()),
-    text('topmostSubform[0].Page1[0].f1_13[0]', this.l8a()),
+    text('topmostSubform[0].Page1[0].Line8a_ReadOrder[0].f1_13[0]', this.l8a()),
     text('topmostSubform[0].Page1[0].f1_14[0]', this.l8b()),
     text('topmostSubform[0].Page1[0].f1_15[0]', this.l8c()),
     text('topmostSubform[0].Page1[0].f1_16[0]', this.l8d()),
@@ -367,7 +373,10 @@ export default class Schedule1 extends F1040Attachment {
     text('topmostSubform[0].Page2[0].f2_07[0]', this.l17()),
     text('topmostSubform[0].Page2[0].f2_08[0]', this.l18()),
     text('topmostSubform[0].Page2[0].f2_09[0]', this.l19a()),
-    text('topmostSubform[0].Page2[0].Line19b_CombField[0].f2_10[0]', this.l19b()),
+    text(
+      'topmostSubform[0].Page2[0].Line19b_CombField[0].f2_10[0]',
+      this.l19b()
+    ),
     text('topmostSubform[0].Page2[0].f2_11[0]', this.l19c()),
     checkbox('topmostSubform[0].Page2[0].c2_2[0]', this.l20Box()),
 
@@ -375,7 +384,10 @@ export default class Schedule1 extends F1040Attachment {
     text('topmostSubform[0].Page2[0].f2_13[0]', this.l21()),
     text('topmostSubform[0].Page2[0].f2_14[0]', undefined),
     text('topmostSubform[0].Page2[0].f2_15[0]', this.l23()),
-    text('topmostSubform[0].Page2[0].Line24a_ReadOrder[0].f2_16[0]', this.l24a()),
+    text(
+      'topmostSubform[0].Page2[0].Line24a_ReadOrder[0].f2_16[0]',
+      this.l24a()
+    ),
     text('topmostSubform[0].Page2[0].f2_17[0]', this.l24b()),
     text('topmostSubform[0].Page2[0].f2_18[0]', this.l24c()),
     text('topmostSubform[0].Page2[0].f2_19[0]', this.l24d()),
@@ -386,7 +398,10 @@ export default class Schedule1 extends F1040Attachment {
     text('topmostSubform[0].Page2[0].f2_24[0]', this.l24i()),
     text('topmostSubform[0].Page2[0].f2_25[0]', this.l24j()),
     text('topmostSubform[0].Page2[0].f2_26[0]', this.l24k()),
-    text('topmostSubform[0].Page2[0].Line24z_ReadOrder[0].f2_27[0]', this.l24zDesc()),
+    text(
+      'topmostSubform[0].Page2[0].Line24z_ReadOrder[0].f2_27[0]',
+      this.l24zDesc()
+    ),
     text('topmostSubform[0].Page2[0].f2_28[0]', this.l24z()),
     text('topmostSubform[0].Page2[0].f2_29[0]', this.l25()),
     text('topmostSubform[0].Page2[0].f2_30[0]', this.l26())

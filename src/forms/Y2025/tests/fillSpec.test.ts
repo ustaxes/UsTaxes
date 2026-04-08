@@ -155,15 +155,15 @@ describe('TY2025 Fill Spec — Islam return', () => {
     it('line 2b: taxable interest', () => near(f1040.l2b(), 35.01))
     it('line 3a: qualified dividends', () => near(f1040.l3a(), 2.3))
     it('line 3b: ordinary dividends', () => near(f1040.l3b(), 2.3))
-    it('line 7: capital gain', () => near(f1040.l7(), 7274.97))
+    it('line 7: capital gain', () => near(f1040.l7a(), 7274.97))
     it('line 8: other income = 0', () => near(f1040.l8(), 0))
     it('line 9: total income', () => near(f1040.l9(), 63737.29))
     it('line 10: adjustments = 0', () => near(f1040.l10(), 0))
-    it('line 11: AGI', () => near(f1040.l11(), 63737.29))
+    it('line 11: AGI', () => near(f1040.l11a(), 63737.29))
   })
 
   describe('Form 1040 Page 2 — Tax, Credits, Payments', () => {
-    it('line 12: standard deduction', () => expect(f1040.l12()).toBe(15750))
+    it('line 12e: standard deduction', () => expect(f1040.l12e()).toBe(15750))
     it('line 14: total deductions', () => expect(f1040.l14()).toBe(15750))
     it('line 15: taxable income', () => near(f1040.l15(), 47987.29))
     it('line 16: tax ≈ 5518.50', () => {
@@ -224,11 +224,11 @@ describe('TY2025 Fill Spec — Islam return', () => {
         f1040.l1z() +
         (f1040.l2b() ?? 0) +
         (f1040.l3b() ?? 0) +
-        (f1040.l7() ?? 0)
+        (f1040.l7a() ?? 0)
       near(f1040.l9(), expected)
     })
     it('line 15 = 11 - 14', () => {
-      near(f1040.l15(), f1040.l11() - f1040.l14())
+      near(f1040.l15(), f1040.l11a() - f1040.l14())
     })
     it('line 34 = 33 - 24', () => {
       near(f1040.l34(), f1040.l33() - f1040.l24())

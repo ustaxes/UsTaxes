@@ -281,7 +281,10 @@ export default class Schedule2 extends F1040Attachment {
     text('form1[0].Page1[0].f1_25[0]', this.l14()),
     text('form1[0].Page1[0].f1_26[0]', this.l15()),
     text('form1[0].Page1[0].f1_27[0]', this.l16()),
-    text('form1[0].Page2[0].Line17a_ReadOrder[0].Line17_ReadOrder[0].f2_01[0]', this.l17aDesc()),
+    text(
+      'form1[0].Page2[0].Line17a_ReadOrder[0].Line17_ReadOrder[0].f2_01[0]',
+      this.l17aDesc()
+    ),
     text('form1[0].Page2[0].Line17a_ReadOrder[0].f2_02[0]', this.l17a()),
     text('form1[0].Page2[0].f2_03[0]', this.l17b()),
     text('form1[0].Page2[0].f2_04[0]', this.l17c()),

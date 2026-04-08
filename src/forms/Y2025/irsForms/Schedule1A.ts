@@ -63,30 +63,22 @@ export default class Schedule1A extends F1040Attachment {
   l4b = (): number | undefined => this.f1040.f4137?.l6()
 
   // Line 4c: Larger of lines 4a or 4b (single employer case); see instructions
-  l4c = (): number | undefined => {
-    const a = this.l4a()
-    const b = this.l4b()
-    if (a === undefined && b === undefined) return undefined
-    return Math.max(a ?? 0, b ?? 0)
+  l4c = (): number => {
+    return Math.max(this.l4a(), this.l4b() ?? 0)
   }
-  
+
   // Line 5: Qualified tips from a trade or business (1099-NEC, 1099-MISC, 1099-K)
   // TODO: requires self-employment tip data not yet in the data model
   l5 = (): number | undefined => undefined
 
   // Line 6: Add lines 4c and 5
-  l6 = (): number | undefined => {
-    const c = this.l4c()
-    const five = this.l5()
-    if (c === undefined && five === undefined) return undefined
-    return (c ?? 0) + (five ?? 0)
+  l6 = (): number => {
+    return this.l4c() + (this.l5() ?? 0)
   }
 
   // Line 7: Smaller of line 6 or $25,000
-  l7 = (): number | undefined => {
-    const six = this.l6()
-    if (six === undefined) return undefined
-    return Math.min(six, obbbDeductionLimits.tips.cap)
+  l7 = (): number => {
+    return Math.min(this.l6(), obbbDeductionLimits.tips.cap)
   }
 
   // Line 8: Amount from line 3 (MAGI)
@@ -106,11 +98,9 @@ export default class Schedule1A extends F1040Attachment {
 
   // Line 13: Qualified tips deduction — subtract line 12 from line 7; if ≤ 0 enter 0
   l13 = (): number => {
-    const seven = this.l7()
-    if (seven === undefined) return 0
     // If MAGI ≤ phase-out threshold (l10 = 0), no phase-out applies
-    if (this.l10() === 0) return seven
-    return Math.max(0, seven - this.l12())
+    if (this.l10() === 0) return this.l7()
+    return Math.max(0, this.l7() - this.l12())
   }
 
   // ─── Part III: No Tax on Overtime ────────────────────────────────────────────
@@ -125,18 +115,11 @@ export default class Schedule1A extends F1040Attachment {
   l14b = (): number | undefined => undefined
 
   // Line 14c: Add lines 14a and 14b
-  l14c = (): number | undefined => {
-    const a = this.l14a()
-    const b = this.l14b()
-    if (a === undefined && b === undefined) return undefined
-    return (a ?? 0) + (b ?? 0)
-  }
+  l14c = (): number => this.l14a() + (this.l14b() ?? 0)
 
   // Line 15: Smaller of line 14c or $12,500 ($25,000 if MFJ)
-  l15 = (): number | undefined => {
-    const c = this.l14c()
-    if (c === undefined) return undefined
-    return Math.min(c, obbbDeductionLimits.overtime.cap(this.fs))
+  l15 = (): number => {
+    return Math.min(this.l14c(), obbbDeductionLimits.overtime.cap(this.fs))
   }
 
   // Line 16: Amount from line 3 (MAGI)
@@ -156,10 +139,7 @@ export default class Schedule1A extends F1040Attachment {
 
   // Line 21: Qualified overtime compensation deduction — subtract line 20 from line 15; if ≤ 0 enter 0
   l21 = (): number => {
-    const fifteen = this.l15()
-    if (fifteen === undefined) return 0
-    if (this.l18() === 0) return fifteen
-    return Math.max(0, fifteen - this.l20())
+    return Math.max(0, this.l15() - this.l20())
   }
 
   // ─── Part IV: No Tax on Car Loan Interest ────────────────────────────────────
@@ -242,7 +222,8 @@ export default class Schedule1A extends F1040Attachment {
   l34 = (): number => this.l33() * 0.06
 
   // Line 35: Subtract line 34 from $6,000; if ≤ 0 enter 0
-  l35 = (): number => Math.max(0, obbbDeductionLimits.senior.perPerson - this.l34())
+  l35 = (): number =>
+    Math.max(0, obbbDeductionLimits.senior.perPerson - this.l34())
 
   // Line 36a: Primary filer born before January 2, 1961 (age 65+)
   l36a = (): number => (this.f1040.bornBeforeDate() ? this.l35() : 0)
@@ -403,9 +384,9 @@ export default class Schedule1A extends F1040Attachment {
     text('form1[0].Page2[0].f2_18[0]', this.l34()),
     text('form1[0].Page2[0].f2_19[0]', this.l35()),
     text('form1[0].Page2[0].f2_20[0]', this.l36a()),
-    text('form1[0].Page2[0].f2_15[0]', this.l36b()),
+    text('form1[0].Page2[0].f2_21[0]', this.l36b()),
     text('form1[0].Page2[0].f2_22[0]', this.l37()),
     // Total (Line 38) flowing to F1040 Line 13b
-    text('form1[0].Page1[0].f1_23[0]', this.l38())
+    text('form1[0].Page1[0].f2_23[0]', this.l38())
   ]
 }

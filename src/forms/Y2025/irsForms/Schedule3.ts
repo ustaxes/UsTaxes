@@ -77,8 +77,10 @@ export default class Schedule3 extends F1040Attachment {
   l6m = (): number | undefined => undefined // TODO: other credits
 
   // only one desc text are now
-  l6zDesc = (): string | undefined => this.f1040.info.otherIncome?.otherNonrefundableCreditDescription
-  l6z = (): number | undefined => this.f1040.info.otherIncome?.otherNonrefundableCredit
+  l6zDesc = (): string | undefined =>
+    this.f1040.info.otherIncome?.otherNonrefundableCreditDescription
+  l6z = (): number | undefined =>
+    this.f1040.info.otherIncome?.otherNonrefundableCredit
 
   l7 = (): number =>
     sumFields([
@@ -145,7 +147,8 @@ export default class Schedule3 extends F1040Attachment {
   // l13h = (): number | undefined => undefined
 
   // only one desc text are now
-  l13zDesc = (): string | undefined => this.f1040.info.otherIncome?.otherPaymentDescription
+  l13zDesc = (): string | undefined =>
+    this.f1040.info.otherIncome?.otherPaymentDescription
   l13z = (): number | undefined => this.f1040.info.otherIncome?.otherPayment
 
   l14 = (): number =>
@@ -226,7 +229,10 @@ export default class Schedule3 extends F1040Attachment {
     text('topmostSubform[0].Page1[0].f1_19[0]', this.l6k()),
     text('topmostSubform[0].Page1[0].f1_20[0]', this.l6l()),
     text('topmostSubform[0].Page1[0].f1_21[0]', this.l6m()),
-    text('topmostSubform[0].Page1[0].Line6z_ReadOrder[0].f2_22[0]', this.l6zDesc()),
+    text(
+      'topmostSubform[0].Page1[0].Line6z_ReadOrder[0].f2_22[0]',
+      this.l6zDesc()
+    ),
     text('topmostSubform[0].Page1[0].f1_23[0]', this.l6z()),
     text('topmostSubform[0].Page1[0].f1_24[0]', this.l7()),
     text('topmostSubform[0].Page1[0].f1_25[0]', this.l8()),
@@ -235,11 +241,17 @@ export default class Schedule3 extends F1040Attachment {
     text('topmostSubform[0].Page1[0].f1_28[0]', this.l11()),
     text('topmostSubform[0].Page1[0].f1_29[0]', this.l12()),
 
-    text('topmostSubform[0].Page1[0].Line13_ReadOrder[0].f1_30[0]', this.l13a()),
+    text(
+      'topmostSubform[0].Page1[0].Line13_ReadOrder[0].f1_30[0]',
+      this.l13a()
+    ),
     text('topmostSubform[0].Page1[0].f1_31[0]', this.l13b()),
     text('topmostSubform[0].Page1[0].f1_32[0]', this.l13c()),
     text('topmostSubform[0].Page1[0].f1_33[0]', this.l13d()),
-    text('topmostSubform[0].Page1[0].Line13z_ReadOrder[0].f1_34[0]',this.l13zDesc()),
+    text(
+      'topmostSubform[0].Page1[0].Line13z_ReadOrder[0].f1_34[0]',
+      this.l13zDesc()
+    ),
     text('topmostSubform[0].Page1[0].f1_35[0]', this.l13z()),
     text('topmostSubform[0].Page1[0].f1_36[0]', this.l14()),
     text('topmostSubform[0].Page1[0].f1_37[0]', this.l15())

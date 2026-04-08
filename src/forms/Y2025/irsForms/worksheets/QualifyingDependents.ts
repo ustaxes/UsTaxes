@@ -16,10 +16,15 @@ export default class QualifyingDependents {
   }
 
   qualifiesChild = (d: Dependent): boolean =>
-    this.year - d.dateOfBirth.getFullYear() <
-    federal.QualifyingDependents.childMaxAge
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    d === undefined
+      ? false
+      : this.year - d.dateOfBirth.getFullYear() <
+        federal.QualifyingDependents.childMaxAge
 
   qualifiesOther = (d: Dependent): boolean =>
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    d !== undefined &&
     d.qualifyingInfo !== undefined &&
     !this.qualifiesChild(d) &&
     this.year - d.dateOfBirth.getFullYear() <

@@ -204,8 +204,8 @@ export default class ScheduleA extends F1040Attachment {
     text('form1[0].Page1[0].f1_26[0]', this.l14()),
     text('form1[0].Page1[0].f1_27[0]', this.l15()),
     text('form1[0].Page1[0].f1_28[0]', this.l16Other()),
-    
-    text('form1[0].Page1[0].f1_30[0]', this.l16()),
+
+    text('form1[0].Page1[0].f1_29[0]', this.l16()),
     text('form1[0].Page1[0].f1_30[0]', this.l17()),
     checkbox('form1[0].Page1[0].Line18_ReadOrder[0].c1_3[0]', this.l18())
   ]

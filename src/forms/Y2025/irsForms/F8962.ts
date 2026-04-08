@@ -74,7 +74,7 @@ export default class F8962 extends F1040Attachment {
    * This is what the taxpayer is expected to pay toward benchmark coverage.
    */
   contributionAmount = (): number =>
-    Math.round(this.f1040.l11() * this.applicableContributionRate())
+    Math.round(this.f1040.l11b() * this.applicableContributionRate())
 
   /**
    * Allowable premium tax credit before comparing to advance payments.

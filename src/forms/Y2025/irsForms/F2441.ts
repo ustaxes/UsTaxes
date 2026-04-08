@@ -6,7 +6,7 @@ import { FormTag } from 'ustaxes/core/irsForms/Form'
 /**
  * Credit percentage table for Form 2441 line 8 (unchanged from prior years,
  * not indexed for inflation). AGI thresholds are the lower bounds of each bracket.
- * 
+ *
  * TODO: Move to federal, maybe? even if mostly unchaged?
  */
 const CREDIT_RATE_TABLE: [number, number][] = [
@@ -141,7 +141,7 @@ export default class F2441 extends F1040Attachment {
     const qualifyingExpenses = Math.min(cappedExpenses, earnedIncomeLimit)
     if (qualifyingExpenses <= 0) return undefined
 
-    const agi = this.f1040.l11()
+    const agi = this.f1040.l11b()
     const rate =
       CREDIT_RATE_TABLE.slice()
         .reverse()

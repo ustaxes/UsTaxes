@@ -589,9 +589,9 @@ interface SocialSecurityBenefitsDef {
   caps: { [k in FilingStatus]: { l8: number; l10: number } }
 }
 
-/** IRS social security benefits worksheet base amounts ($25k/$32k and $9k/$12k); not annual CPI adjustments. 
+/** IRS social security benefits worksheet base amounts ($25k/$32k and $9k/$12k); not annual CPI adjustments.
  *  This claims line 8 and line 10, but I don't see where on the SSB worksheet that is the case ever...
-*/
+ */
 export const SSBenefits: SocialSecurityBenefitsDef = {
   caps: {
     [FilingStatus.S]: { l8: 25000, l10: 9000 },
