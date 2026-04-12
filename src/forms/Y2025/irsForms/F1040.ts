@@ -681,15 +681,6 @@ export default class F1040 extends F1040Base {
 
   // TODO: Capture the death dates and actually fill it correctly
   _deathMapping = ['', '', '']
-  // _deathMapping = (person: Spouse | PrimaryPerson | undefined): Array<string> => {
-  //   if (person === undefined)
-  //     return ['', '', '']
-  //   else
-  //     return [person.dateOfDeath.getMonth(),
-  //       person.dateOfDeath.getDate(),
-  //       person.dateOfDeath.getFullYear()
-  //     ].map((v) => v.toString())
-  // }
 
   /**
    * Positional values must match PDF field order (same sequence as fillInstructions).
