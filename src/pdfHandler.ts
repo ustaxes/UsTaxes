@@ -1,5 +1,5 @@
-import { save } from '@tauri-apps/api/dialog'
-import { writeBinaryFile } from '@tauri-apps/api/fs'
+import { save } from '@tauri-apps/plugin-dialog'
+import { writeFile } from '@tauri-apps/plugin-fs'
 
 export async function savePDF(
   contents: Uint8Array,
@@ -9,7 +9,9 @@ export async function savePDF(
   if ((window as any).__TAURI__ === undefined) {
     // To set the download file name, we create a temporary link element,
     // use download property of an anchor tag, supported for most people
-    const blob = new Blob([contents], { type: 'application/pdf' })
+    const blob = new Blob([contents as Uint8Array & { buffer: ArrayBuffer }], {
+      type: 'application/pdf'
+    })
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
@@ -31,7 +33,7 @@ export async function savePDF(
     })
 
     if (path !== null) {
-      return await writeBinaryFile({ contents, path }, {})
+      return await writeFile(path, contents)
     }
 
     // user canceled save.
