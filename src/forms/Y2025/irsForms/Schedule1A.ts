@@ -387,6 +387,6 @@ export default class Schedule1A extends F1040Attachment {
     text('form1[0].Page2[0].f2_21[0]', this.l36b()),
     text('form1[0].Page2[0].f2_22[0]', this.l37()),
     // Total (Line 38) flowing to F1040 Line 13b
-    text('form1[0].Page1[0].f2_23[0]', this.l38())
+    text('form1[0].Page2[0].f2_23[0]', this.l38())
   ]
 }
