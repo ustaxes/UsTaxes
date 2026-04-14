@@ -2,8 +2,6 @@ import { commonTests } from '.'
 import Schedule8812 from '../irsForms/Schedule8812'
 import F1040 from '../irsForms/F1040'
 
-jest.setTimeout(30000)
-
 const withSchedule8812 = async (
   f: (f1040: F1040, s8812: Schedule8812) => void
 ): Promise<void> =>

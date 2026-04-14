@@ -4,6 +4,8 @@ import { computeOrdinaryTax } from '../TaxTable'
 
 /**
  * 0%, 15%, 20% capital gains rate bracket thresholds for 2025.
+ *
+ * TODO - migrate to using numbers in federal.ts
  */
 const CUTOFFS: { [key in FilingStatus]: [number, number, number] } = {
   [FilingStatus.S]: [48350, 533400, Infinity],

@@ -97,20 +97,24 @@ export default class F8959 extends F1040Attachment {
     this.l6(),
     this.l7(),
 
+    // Part 2
     this.l8(),
     this.l9(),
     this.l10(),
     this.l11(),
     this.l12(),
     this.l13(),
-    this.l14(),
 
+    // Part 3
+    this.l14(),
     this.l15(),
     this.l16(),
     this.l17(),
 
+    // Part 4
     this.l18(),
 
+    // Part 5
     this.l19(),
     this.l20(),
     this.l21(),

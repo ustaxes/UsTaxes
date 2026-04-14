@@ -26,7 +26,8 @@ export const positionDate: fc.Arbitrary<Asset<Date>> = fc
     orUndefined(taxYearDate),
     fc.oneof(
       fc.constant<AssetType>('Security'),
-      fc.constant<AssetType>('Real Estate')
+      fc.constant<AssetType>('Real Estate'),
+      fc.constant<AssetType>('Digital Asset')
     )
   )
   .chain(([openDate, closeDate, positionType]) =>

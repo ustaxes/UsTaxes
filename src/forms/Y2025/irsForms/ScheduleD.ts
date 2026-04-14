@@ -1,4 +1,4 @@
-import { F1099BData, FilingStatus } from 'ustaxes/core/data'
+import { F1099BData, F1099DAData, FilingStatus } from 'ustaxes/core/data'
 import { FormTag } from 'ustaxes/core/irsForms/Form'
 import { sumFields } from 'ustaxes/core/irsForms/util'
 import SDRateGainWorksheet from './worksheets/SDRateGainWorksheet'
@@ -33,13 +33,17 @@ export default class ScheduleD extends F1040Attachment {
 
   get aggregated(): F1099BData {
     if (this._aggregated === undefined) {
+      // 1099-B and 1099-DA both aggregate directly to Schedule D line 1a/8a
+      // per form instructions (both may bypass F8949 when basis is reported)
       const bs: F1099BData[] = this.f1040.f1099Bs().map((f) => f.form)
+      const das: F1099DAData[] = this.f1040.f1099DAs().map((f) => f.form)
+      const all = [...bs, ...das]
 
       this._aggregated = {
-        shortTermProceeds: bs.reduce((l, r) => l + r.shortTermProceeds, 0),
-        shortTermCostBasis: bs.reduce((l, r) => l + r.shortTermCostBasis, 0),
-        longTermProceeds: bs.reduce((l, r) => l + r.longTermProceeds, 0),
-        longTermCostBasis: bs.reduce((l, r) => l + r.longTermCostBasis, 0)
+        shortTermProceeds: all.reduce((l, r) => l + r.shortTermProceeds, 0),
+        shortTermCostBasis: all.reduce((l, r) => l + r.shortTermCostBasis, 0),
+        longTermProceeds: all.reduce((l, r) => l + r.longTermProceeds, 0),
+        longTermCostBasis: all.reduce((l, r) => l + r.longTermCostBasis, 0)
       }
     }
 
@@ -48,7 +52,9 @@ export default class ScheduleD extends F1040Attachment {
 
   isNeeded = (): boolean =>
     this.f1040.f1099Bs().length > 0 ||
+    this.f1040.f1099DAs().length > 0 ||
     this.f1040.f8949.isNeeded() ||
+    this.f1040.f8949Digital.isNeeded() ||
     this.f1040.info.priorYearCapitalLossCarryover?.shortTerm !== undefined ||
     this.f1040.info.priorYearCapitalLossCarryover?.longTerm !== undefined
 
@@ -91,7 +97,9 @@ export default class ScheduleD extends F1040Attachment {
   l2h = (): number =>
     sumFields(this.l2f8949s().map((f) => f.shortTermTotalGain()))
 
-  l3f8949s = (): F8949[] => this.f1040.f8949s.filter((f) => f.part1BoxC())
+  // Box C (non-digital unreported) and Box I (digital unreported) both roll up to line 3
+  l3f8949s = (): F8949[] =>
+    this.f1040.f8949s.filter((f) => f.part1BoxC() || f.part1BoxI())
 
   l3d = (): number =>
     sumFields(this.l3f8949s().map((f) => f.shortTermTotalProceeds()))
@@ -160,7 +168,9 @@ export default class ScheduleD extends F1040Attachment {
   l9h = (): number =>
     sumFields(this.l9f8949s().map((f) => f.longTermTotalGain()))
 
-  l10f8949s = (): F8949[] => this.f1040.f8949s.filter((f) => f.part2BoxF())
+  // Box F (non-digital unreported) and Box L (digital unreported) both roll up to line 10
+  l10f8949s = (): F8949[] =>
+    this.f1040.f8949s.filter((f) => f.part2BoxF() || f.part2BoxL())
 
   l10d = (): number =>
     sumFields(this.l10f8949s().map((f) => f.longTermTotalProceeds()))
@@ -259,6 +269,9 @@ export default class ScheduleD extends F1040Attachment {
 
   to1040 = (): number => this.l21() ?? this.l16()
 
+  computeTaxOnDTaxWorksheet = (): boolean =>
+    ((this.l18() ?? 0) > 0 || (this.l19() ?? 0) > 0) && this.l17() == true
+
   computeTaxOnQDWorksheet = (): boolean =>
     (this.l20() ?? false) || (this.l22() ?? false)
 
@@ -267,6 +280,8 @@ export default class ScheduleD extends F1040Attachment {
     this.f1040.info.taxPayer.primaryPerson.ssid,
     false,
     false,
+
+    // Part 1
     this.l1ad(),
     this.l1ae(),
     this.l1ag(),
@@ -287,6 +302,8 @@ export default class ScheduleD extends F1040Attachment {
     this.l5(),
     this.l6(),
     this.l7(),
+
+    // Part 2
     this.l8ad(),
     this.l8ae(),
     this.l8ag(),
@@ -308,6 +325,8 @@ export default class ScheduleD extends F1040Attachment {
     this.l13(),
     this.l14(),
     this.l15(),
+
+    // Part 3
     this.l16(),
     this.l17(),
     !this.l17(),

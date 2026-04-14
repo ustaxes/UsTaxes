@@ -84,7 +84,7 @@ export default class F8880 extends F1040Attachment {
 
   /** Credit rate based on AGI (line 11 from F1040). */
   creditRate = (): number => {
-    const agi = this.f1040.l11()
+    const agi = this.f1040.l11b()
     const fs = this.f1040.info.taxPayer.filingStatus
     const thresholds = saversCreditThresholds[fs]
 
@@ -146,7 +146,7 @@ export default class F8880 extends F1040Attachment {
     // Line 7: Total eligible contributions
     this.l3(),
     // Line 8: AGI
-    this.f1040.l11(),
+    this.f1040.l11b(),
     // Line 9: Credit rate (as percentage e.g. 50, 20, 10)
     this.creditRate() * 100,
     // Line 10: Credit before limit (line 7 × rate)
@@ -245,7 +245,7 @@ export default class F8880 extends F1040Attachment {
     // Line 7 — Total eligible contributions (smaller of line 5 or 6 for each, combined)
     text('topmostSubform[0].Page1[0].f1_15[0]', this.l3()),
     // Line 8 — AGI
-    text('topmostSubform[0].Page1[0].f1_16[0]', this.f1040.l11()),
+    text('topmostSubform[0].Page1[0].f1_16[0]', this.f1040.l11b()),
     // Line 9 — Credit rate (as percentage integer: 50, 20, or 10)
     text('topmostSubform[0].Page1[0].f1_17[0]', this.creditRate() * 100),
     // Line 10 — Credit amount before credit limit (line 7 × line 9)

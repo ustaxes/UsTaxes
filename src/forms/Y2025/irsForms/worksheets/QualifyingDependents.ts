@@ -9,17 +9,22 @@ import * as federal from '../../data/federal'
  */
 export default class QualifyingDependents {
   f1040: F1040
-  year = 2023
+  year = federal.CURRENT_YEAR
 
   constructor(f1040: F1040) {
     this.f1040 = f1040
   }
 
   qualifiesChild = (d: Dependent): boolean =>
-    this.year - d.dateOfBirth.getFullYear() <
-    federal.QualifyingDependents.childMaxAge
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    d === undefined
+      ? false
+      : this.year - d.dateOfBirth.getFullYear() <
+        federal.QualifyingDependents.childMaxAge
 
   qualifiesOther = (d: Dependent): boolean =>
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    d !== undefined &&
     d.qualifyingInfo !== undefined &&
     !this.qualifiesChild(d) &&
     this.year - d.dateOfBirth.getFullYear() <

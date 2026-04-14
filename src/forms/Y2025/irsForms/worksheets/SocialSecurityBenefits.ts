@@ -29,7 +29,7 @@ export default class SocialSecurityBenefitsWorksheet extends Worksheet {
       this.f1040.l3b(),
       this.f1040.l4b(),
       this.f1040.l5b(),
-      this.f1040.l7(),
+      this.f1040.l7a(),
       this.f1040.l8()
     ])
   // Enter the amount, if any, from Form 1040 or 1040-SR, line 2a
@@ -116,7 +116,7 @@ export default class SocialSecurityBenefitsWorksheet extends Worksheet {
   /*
   Enter: $12,000 if married filing jointly; 
   $9,000 if single, head of household, qualifying widow(er), or married filing separately 
-  and you lived apart from your spouse for all of 2020
+  and you lived apart from your spouse for all of 2025
   */
   l10 = (): number => SSBenefits.caps[this.f1040.info.taxPayer.filingStatus].l10
 

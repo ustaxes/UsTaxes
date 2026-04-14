@@ -28,7 +28,7 @@ export default class F8863 extends F1040Attachment {
    * Modified AGI for education credit phase-out purposes.
    * For most taxpayers, MAGI equals line 11 (AGI) of Form 1040.
    */
-  magi = (): number => this.f1040.l11()
+  magi = (): number => this.f1040.l11b()
 
   /** Phase-out fraction [0,1] to apply to the education credits. */
   private phaseOutFraction = (

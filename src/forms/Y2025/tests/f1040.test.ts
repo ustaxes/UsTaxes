@@ -21,7 +21,7 @@ describe('f1040', () => {
       const f1040 = commonTests.findF1040(forms)
       expect(f1040).not.toBeUndefined()
       if (f1040 !== undefined) {
-        expect(displayRound(f1040.l11()) ?? 0).toBeLessThanOrEqual(
+        expect(displayRound(f1040.l11a()) ?? 0).toBeLessThanOrEqual(
           // It is possible for losses to create negative income.
           displayRound(Math.max(0, f1040.l9())) ?? 0
         )

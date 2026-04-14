@@ -35,6 +35,7 @@ export interface Person<D = Date> {
   role: PersonRole
   isBlind: boolean
   dateOfBirth: D
+  // dateOfDeath: D // TODO: capture this.
 }
 
 // Concrete type for our AJV schema generator.
@@ -131,10 +132,18 @@ export enum Income1099Type {
   INT = 'INT',
   DIV = 'DIV',
   R = 'R',
-  SSA = 'SSA'
+  SSA = 'SSA',
+  DA = 'DA'
 }
 
 export interface F1099BData {
+  shortTermProceeds: number
+  shortTermCostBasis: number
+  longTermProceeds: number
+  longTermCostBasis: number
+}
+
+export interface F1099DAData {
   shortTermProceeds: number
   shortTermCostBasis: number
   longTermProceeds: number
@@ -432,6 +441,7 @@ export type Income1099B = Income1099<Income1099Type.B, F1099BData>
 export type Income1099Div = Income1099<Income1099Type.DIV, F1099DivData>
 export type Income1099R = Income1099<Income1099Type.R, F1099RData>
 export type Income1099SSA = Income1099<Income1099Type.SSA, F1099SSAData>
+export type Income1099DA = Income1099<Income1099Type.DA, F1099DAData>
 
 export type Supported1099 =
   | Income1099Int
@@ -439,6 +449,7 @@ export type Supported1099 =
   | Income1099Div
   | Income1099R
   | Income1099SSA
+  | Income1099DA
 
 export enum PropertyType {
   singleFamily,
@@ -1157,7 +1168,7 @@ export type InformationDateString = Information<string>
  * "Closing an asset" can result in a long-term or short-term capital
  * gain. An asset is closed when it gets a closeDate.
  */
-export type AssetType = 'Security' | 'Real Estate'
+export type AssetType = 'Security' | 'Real Estate' | 'Digital Asset'
 export interface Asset<D = Date> {
   name: string
   positionType: AssetType
@@ -1181,8 +1192,6 @@ export interface Asset<D = Date> {
    * corrections, etc.
    */
   adjustmentAmount?: number
-  /** True if this is a digital asset (crypto, NFT, etc.) — uses Form 8949 boxes G-L. */
-  isDigitalAsset?: boolean
 }
 
 export type SoldAsset<D> = Asset<D> & {

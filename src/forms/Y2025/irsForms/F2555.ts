@@ -29,7 +29,7 @@ export default class F2555 extends F1040Attachment {
   // TODO - required from 6251
   l42 = (): number => 0
 
-  // TODO - required from 8812
+  // TODO - required from 6251 & 8812
   l45 = (): number => 0
 
   // TODO - required from 6251 & 8812

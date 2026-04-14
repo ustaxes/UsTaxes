@@ -51,6 +51,7 @@
     "prettier": "prettier --write .",
     "formgen": "ts-node ./scripts/formgen.ts",
     "extract-schema": "ts-node ./scripts/extractPdfSchema.ts",
+    "generate-tax-table": "ts-node -r tsconfig-paths/register ./scripts/generateTaxTable.ts",
     "prepare": "ts-node ./scripts/env.ts && husky"
   },
   "eslintConfig": {
@@ -82,7 +83,7 @@
     "@types/react-helmet": "^6.1.11",
     "@types/react-redux": "^7.1.33",
     "@types/react-router-dom": "^5.3.3",
-    "@types/redux-logger": "^3.0.13",
+    "@types/redux-logger": "^3.0.12",
     "@typescript-eslint/eslint-plugin": "^5.62.0",
     "@typescript-eslint/parser": "^5.62.0",
     "concurrently": "^9.1.2",

@@ -26,7 +26,7 @@ export default class F8582 extends F1040Attachment {
    * Simplified: MAGI ≈ AGI (F1040 line 11) ignoring the rare
    * IRA deduction and student loan interest add-back adjustments.
    */
-  private magi = (): number => this.f1040.l11()
+  private magi = (): number => this.f1040.l11b()
 
   /**
    * Maximum rental real estate loss allowed under the $25,000 special allowance.

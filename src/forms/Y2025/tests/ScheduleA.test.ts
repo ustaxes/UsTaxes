@@ -1,8 +1,6 @@
 import { commonTests } from '.'
 import * as fc from 'fast-check'
 
-jest.setTimeout(30000)
-
 describe('ScheduleA', () => {
   it('should make deduction > standard deduction if Schedule A is attached', async () => {
     await commonTests.withValid1040((f1040) => {
@@ -10,7 +8,7 @@ describe('ScheduleA', () => {
       // Cancel test if Schedule A is not attached
       fc.pre(f1040.scheduleA.isNeeded())
 
-      expect(f1040.l12()).toBeGreaterThan(f1040.standardDeduction() ?? 0)
+      expect(f1040.l12e()).toBeGreaterThan(f1040.standardDeduction() ?? 0)
     })
   })
 
@@ -20,7 +18,7 @@ describe('ScheduleA', () => {
 
       // If the deduction is more than standard, we must have a schedule A
       // Note dependents of other taxpayers may still itemize.
-      if (f1040.l12() > standardDeduction) {
+      if (f1040.l12e() > standardDeduction) {
         expect(f1040.scheduleA).not.toBe(undefined)
       }
     })

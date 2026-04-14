@@ -65,6 +65,7 @@ export default class F4797 extends F1040Attachment {
     if (!this.isNeeded()) return undefined
     return this.netGainLoss()
   }
+  l10 = (): number | undefined => undefined
 
   fields = (): Field[] => []
   fillInstructions = (): FillInstructions => []

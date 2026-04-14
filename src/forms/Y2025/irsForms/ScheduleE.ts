@@ -311,7 +311,7 @@ export default class ScheduleE extends F1040Attachment {
       this.l30(),
       this.l31(),
       this.l32(), // l32
-      ...Array<undefined>(2 * 6).fill(undefined), // l33
+      ...Array<undefined>(2 * 6).fill(undefined), // l33 ; The grid is not exactly that, but it is 12 boxes across two tables... so yeah.
       undefined,
       this.l34ad(),
       undefined,

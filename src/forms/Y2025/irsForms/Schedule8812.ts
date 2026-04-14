@@ -42,7 +42,7 @@ export default class Schedule8812 extends F1040Attachment {
         this.f1040.qualifyingDependents.qualifiesOther(dep)
     )
 
-  l1 = (): number => this.f1040.l11()
+  l1 = (): number => this.f1040.l11b()
 
   // TODO: Puerto Rico income
   l2a = (): number => 0
@@ -89,9 +89,8 @@ export default class Schedule8812 extends F1040Attachment {
 
   l14 = (): number => (this.l12no() ? 0 : Math.min(this.l12(), this.l13()))
 
-  // Check this box if you do not want to file the additional tax credit
-  // TODO: Assuming that people do right now
-  l15 = (): boolean => true
+  // removed and made reserved
+  l15 = (): number | undefined => undefined
 
   creditLimitWorksheetB = (): number | undefined => undefined
 
@@ -103,7 +102,11 @@ export default class Schedule8812 extends F1040Attachment {
           this.f1040.schedule3.l2(),
           this.f1040.schedule3.l3(),
           this.f1040.schedule3.l4(),
-          this.f1040.schedule3.l6l()
+          this.f1040.schedule3.l5b(),
+          this.f1040.schedule3.l6d(),
+          this.f1040.schedule3.l6f(),
+          // this.f1040.schedule3.l6(),  // This field does not exist, so idk what the IRS is on about.
+          this.f1040.schedule3.l6m()
         ]
       : []
 
@@ -114,9 +117,9 @@ export default class Schedule8812 extends F1040Attachment {
       this.f1040.f8936?.l23(),
       this.f1040.scheduleR?.l22()
     ])
-    const wsl3 = Math.max(0, wsl1 - wsl2)
+    const wsl3 = wsl1 - wsl2
     const wsl4 = this.creditLimitWorksheetB() ?? 0
-    const wsl5 = Math.max(0, wsl3 - wsl4)
+    const wsl5 = wsl3 - wsl4
     return wsl5
   }
 
@@ -150,23 +153,14 @@ export default class Schedule8812 extends F1040Attachment {
 
     const allowed = l3 > 0
 
-    // TODO: Scholarship or grant not reported on w-2
-    const l4a = !allowed ? undefined : 0
-
-    // TODO: Penal income
-    const l4b = !allowed ? undefined : 0
-
-    // TODO: nonqualified deferred comp plan or 457 plan
-    const l4c = !allowed ? undefined : 0
-
     // TODO: Amount included on 1040 that is a medicaid
     // waiver payment excluded from income, schedule 1, line 8z
     // or choose to include in earned income, then enter 0.
-    const l4d = !allowed ? undefined : 0
+    const l4 = !allowed ? undefined : 0
 
     const l5 = this.f1040.schedule1.l15() ?? 0
 
-    const l6 = sumFields([l4a, l4b, l4c, l4d, l5])
+    const l6 = sumFields([l4, l5])
 
     const l7 = Math.max(0, l3 - l6)
 
@@ -177,6 +171,7 @@ export default class Schedule8812 extends F1040Attachment {
     const l16a = Math.max(0, this.l12() - this.l14())
     const l16bdeps = this.l4()
 
+    // TODO: Should this be in federal.ts to better update each year?
     const l16b = l16bdeps * 1700
 
     const l17 = Math.min(l16a, l16b)
@@ -242,7 +237,7 @@ export default class Schedule8812 extends F1040Attachment {
 
     const l23 = sumFields([l21, l22])
 
-    const l24 = sumFields([this.f1040.l27(), this.f1040.schedule3.l11()])
+    const l24 = sumFields([this.f1040.l27a(), this.f1040.schedule3.l11()])
 
     const l25 = Math.max(0, l23 - l24)
 
@@ -291,7 +286,7 @@ export default class Schedule8812 extends F1040Attachment {
       this.l12yes(),
       this.l13(),
       this.l14(),
-      undefined, // f2_7: placeholder field in Y2025 PDF
+      this.l15(), // Reserved
       part2a.l16a,
       part2a.l16bdeps,
       part2a.l16b,
@@ -344,13 +339,13 @@ export default class Schedule8812 extends F1040Attachment {
       checkbox('topmostSubform[0].Page1[0].c1_1[1]', this.l12yes()),
       text('topmostSubform[0].Page1[0].f1_18[0]', this.l13()),
       text('topmostSubform[0].Page1[0].f1_19[0]', this.l14()),
-      text('topmostSubform[0].Page2[0].f2_1[0]', part2a.l16a),
-      text('topmostSubform[0].Page2[0].f2_2[0]', part2a.l16bdeps),
-      text('topmostSubform[0].Page2[0].f2_3[0]', part2a.l16b),
-      text('topmostSubform[0].Page2[0].f2_4[0]', part2a.l17),
-      text('topmostSubform[0].Page2[0].f2_5[0]', part2a.l18a),
-      text('topmostSubform[0].Page2[0].f2_6[0]', part2a.l18b),
-      text('topmostSubform[0].Page2[0].f2_7[0]', undefined),
+      text('topmostSubform[0].Page2[0].f2_1[0]', this.l15()), // removed and made reserved
+      text('topmostSubform[0].Page2[0].f2_2[0]', part2a.l16a),
+      text('topmostSubform[0].Page2[0].f2_3[0]', part2a.l16bdeps),
+      text('topmostSubform[0].Page2[0].f2_4[0]', part2a.l16b),
+      text('topmostSubform[0].Page2[0].f2_5[0]', part2a.l17),
+      text('topmostSubform[0].Page2[0].f2_6[0]', part2a.l18a),
+      text('topmostSubform[0].Page2[0].f2_7[0]', part2a.l18b),
       checkbox('topmostSubform[0].Page2[0].c2_1[0]', part2a.l19No),
       checkbox('topmostSubform[0].Page2[0].c2_1[1]', part2a.l19Yes),
       text('topmostSubform[0].Page2[0].f2_8[0]', part2a.l19),

@@ -39,9 +39,11 @@ export default class ScheduleEIC extends F1040Attachment {
   tag: FormTag = 'f1040sei'
   sequenceIndex = 43
   pub596Worksheet1: Pub596Worksheet1
-  qualifyingStudentCutoffYear = 2002
-  qualifyingCutoffYear = 2007
-  investmentIncomeLimit = 11950
+  qualifyingStudentCutoffYear =
+    federal.CURRENT_YEAR - federal.QualifyingDependents.qualifyingStudentMaxAge
+  qualifyingCutoffYear =
+    federal.CURRENT_YEAR - federal.QualifyingDependents.childMaxAge
+  investmentIncomeLimit = federal.EIC.maxInvestmentIncome
 
   constructor(f1040: F1040) {
     super(f1040)
@@ -59,7 +61,7 @@ export default class ScheduleEIC extends F1040Attachment {
         incomeLimits[
           Math.min(this.qualifyingDependents().length, incomeLimits.length - 1)
         ]
-      return this.f1040.l11() < limit
+      return this.f1040.l11b() < limit
     }
     return false
   }
@@ -91,7 +93,7 @@ export default class ScheduleEIC extends F1040Attachment {
       this.f1040.l2a(),
       this.f1040.l2b(),
       this.f1040.l3b(),
-      Math.max(this.f1040.l7() ?? 0, 0)
+      Math.max(this.f1040.l7a() ?? 0, 0)
     ])
 
   passInvestmentIncomeLimit = (): boolean =>
@@ -274,7 +276,7 @@ export default class ScheduleEIC extends F1040Attachment {
   credit = (): number =>
     Math.min(
       this.calculateEICForIncome(this.earnedIncome()),
-      this.calculateEICForIncome(this.f1040.l11())
+      this.calculateEICForIncome(this.f1040.l11b())
     )
 
   allowed = (): boolean => {
@@ -377,13 +379,13 @@ export default class ScheduleEIC extends F1040Attachment {
   fields = (): Field[] => [
     this.f1040.namesString(),
     this.f1040.info.taxPayer.primaryPerson.ssid,
-    ...this.nameFields(), // 6
+    ...this.nameFields(), // 3 "firstName lastName"
     ...this.ssnFields(), // 3
     ...this.birthYearFields(), // 12
     ...this.ageFields(), // 6
     ...this.disabledFields(), // 6
-    ...this.relationships(),
-    ...this.numberMonths()
+    ...this.relationships(), // 3
+    ...this.numberMonths() // 3
   ]
 
   fillInstructions = (): FillInstructions => {

@@ -44,15 +44,9 @@ export default class ScheduleA extends F1040Attachment {
     return false
   }
 
-  deductions(): number {
-    return (
-      this.l4() + this.l7() + this.l10() + this.l14() + this.l15() + this.l16()
-    )
-  }
-
   l1 = (): number => Number(this.itemizedDeductions.medicalAndDental)
 
-  l2 = (): number => this.f1040.l11()
+  l2 = (): number => this.f1040.l11b()
 
   l3 = (): number => this.l2() * 0.075
 
@@ -67,7 +61,7 @@ export default class ScheduleA extends F1040Attachment {
   l5d = (): number => this.l5a() + this.l5b() + this.l5c()
   l5e = (): number => {
     const fs = this.f1040.info.taxPayer.filingStatus
-    const magi = this.f1040.l11()
+    const magi = this.f1040.l11b()
     const base = saltCap.base(fs)
     const floor = saltCap.floor(fs)
     const threshold = saltCap.phaseOutThreshold(fs)
@@ -77,8 +71,7 @@ export default class ScheduleA extends F1040Attachment {
   }
 
   // TODO
-  l6OtherTaxesTypeAndAmount1 = (): string | undefined => undefined
-  l6OtherTaxesTypeAndAmount2 = (): string | undefined => undefined
+  l6OtherTaxesTypeAndAmount = (): string | undefined => undefined
 
   // TODO
   l6 = (): number | undefined => undefined
@@ -90,9 +83,7 @@ export default class ScheduleA extends F1040Attachment {
   l8a = (): number => Number(this.itemizedDeductions.interest8a)
 
   // TODO
-  l8bUnreportedInterest1 = (): string | undefined => undefined
-  // TODO
-  l8bUnreportedInterest2 = (): string | undefined => undefined
+  l8bUnreportedInterest = (): string | undefined => undefined
   l8b = (): number => Number(this.itemizedDeductions.interest8b)
   l8c = (): number => Number(this.itemizedDeductions.interest8c)
   l8d = (): number | undefined => undefined // Reserved for future use
@@ -120,10 +111,14 @@ export default class ScheduleA extends F1040Attachment {
   l15 = (): number => 0
 
   // TODO
-  l16Other1 = (): string | undefined => undefined
-  l16Other2 = (): string | undefined => undefined
-  l16Other3 = (): string | undefined => undefined
+  l16Other = (): string | undefined => undefined
   l16 = (): number => 0
+
+  deductions(): number {
+    return (
+      this.l4() + this.l7() + this.l10() + this.l14() + this.l15() + this.l16()
+    )
+  }
 
   l17 = (): number => this.deductions()
 
@@ -142,13 +137,12 @@ export default class ScheduleA extends F1040Attachment {
     this.l5c(),
     this.l5d(),
     this.l5e(),
-    this.l6OtherTaxesTypeAndAmount1(),
-    this.l6OtherTaxesTypeAndAmount2(),
+    this.l6OtherTaxesTypeAndAmount(),
     this.l6(),
+    this.l7(),
     this.l8AllMortgageLoan(),
     this.l8a(),
-    this.l8bUnreportedInterest1(),
-    this.l8bUnreportedInterest2(),
+    this.l8bUnreportedInterest(),
     this.l8b(),
     this.l8c(),
     this.l8d(), // Reserved for future use
@@ -160,8 +154,9 @@ export default class ScheduleA extends F1040Attachment {
     this.l13(),
     this.l14(),
     this.l15(),
-    this.l16Other1(),
-    this.l16Other2(),
+    this.l16Other(),
+    this.l16(),
+    this.l17(),
     this.l18()
   ]
 
@@ -183,9 +178,9 @@ export default class ScheduleA extends F1040Attachment {
     text('form1[0].Page1[0].f1_9[0]', this.l5c()),
     text('form1[0].Page1[0].f1_10[0]', this.l5d()),
     text('form1[0].Page1[0].f1_11[0]', this.l5e()),
-    text('form1[0].Page1[0].f1_12[0]', this.l6OtherTaxesTypeAndAmount1()),
-    text('form1[0].Page1[0].f1_13[0]', this.l6OtherTaxesTypeAndAmount2()),
-    text('form1[0].Page1[0].f1_14[0]', this.l6()),
+    text('form1[0].Page1[0].f1_12[0]', this.l6OtherTaxesTypeAndAmount()),
+    text('form1[0].Page1[0].f1_13[0]', this.l6()),
+    text('form1[0].Page1[0].f1_14[0]', this.l7()),
     checkbox(
       'form1[0].Page1[0].Line8_ReadOrder[0].c1_2[0]',
       this.l8AllMortgageLoan()
@@ -193,22 +188,25 @@ export default class ScheduleA extends F1040Attachment {
     text('form1[0].Page1[0].f1_15[0]', this.l8a()),
     text(
       'form1[0].Page1[0].Line8b_ReadOrder[0].f1_16[0]',
-      this.l8bUnreportedInterest1()
+      this.l8bUnreportedInterest()
     ),
-    text('form1[0].Page1[0].f1_17[0]', this.l8bUnreportedInterest2()),
-    text('form1[0].Page1[0].f1_18[0]', this.l8b()),
-    text('form1[0].Page1[0].f1_19[0]', this.l8c()),
-    text('form1[0].Page1[0].f1_20[0]', this.l8d()),
-    text('form1[0].Page1[0].f1_21[0]', this.l8e()),
-    text('form1[0].Page1[0].f1_22[0]', this.l9()),
-    text('form1[0].Page1[0].f1_23[0]', this.l10()),
-    text('form1[0].Page1[0].f1_24[0]', this.l11()),
-    text('form1[0].Page1[0].f1_25[0]', this.l12()),
-    text('form1[0].Page1[0].f1_26[0]', this.l13()),
-    text('form1[0].Page1[0].f1_27[0]', this.l14()),
-    text('form1[0].Page1[0].f1_28[0]', this.l15()),
-    text('form1[0].Page1[0].f1_29[0]', this.l16Other1()),
-    text('form1[0].Page1[0].f1_30[0]', this.l16Other2()),
+    text('form1[0].Page1[0].f1_17[0]', this.l8b()),
+
+    text('form1[0].Page1[0].f1_18[0]', this.l8c()),
+    text('form1[0].Page1[0].f1_19[0]', this.l8d()),
+    text('form1[0].Page1[0].f1_20[0]', this.l8e()),
+
+    text('form1[0].Page1[0].f1_21[0]', this.l9()),
+    text('form1[0].Page1[0].f1_22[0]', this.l10()),
+    text('form1[0].Page1[0].f1_23[0]', this.l11()),
+    text('form1[0].Page1[0].f1_24[0]', this.l12()),
+    text('form1[0].Page1[0].f1_25[0]', this.l13()),
+    text('form1[0].Page1[0].f1_26[0]', this.l14()),
+    text('form1[0].Page1[0].f1_27[0]', this.l15()),
+    text('form1[0].Page1[0].f1_28[0]', this.l16Other()),
+
+    text('form1[0].Page1[0].f1_29[0]', this.l16()),
+    text('form1[0].Page1[0].f1_30[0]', this.l17()),
     checkbox('form1[0].Page1[0].Line18_ReadOrder[0].c1_3[0]', this.l18())
   ]
 }

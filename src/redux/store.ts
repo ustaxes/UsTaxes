@@ -1,5 +1,5 @@
 import {
-  createStore as reduxCreateStore,
+  legacy_createStore as reduxCreateStore,
   applyMiddleware,
   Store,
   CombinedState

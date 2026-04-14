@@ -83,6 +83,7 @@ export default class ScheduleSE extends F1040Attachment {
     this.postL4Field((): number => sumFields([this.l4c(), this.l5b()]))
 
   l7 = (): number => fica.maxIncomeSSTaxApplies
+  l7FormFill = (): number | undefined => undefined
 
   l8a = (): number | undefined =>
     this.postL4Field((): number =>
@@ -131,7 +132,7 @@ export default class ScheduleSE extends F1040Attachment {
     this.l5a(),
     this.l5b(),
     this.l6(),
-    this.l7(),
+    this.l7FormFill(), // fillable section is secretly right after the printed amount and not actually fillable
     this.l8a(),
     this.l8b(),
     this.l8c(),
