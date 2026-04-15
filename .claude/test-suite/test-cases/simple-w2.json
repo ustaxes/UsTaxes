@@ -1,0 +1,70 @@
+{
+  "name": "Simple W-2 Return - Single Filer",
+  "description": "Basic return with single W-2, standard deduction, no dependents",
+  "category": "simple",
+  "taxYear": 2024,
+  "documents": [
+    {
+      "type": "W2",
+      "path": "~/files/taxes/2024/w2-primary.pdf",
+      "source": "real",
+      "notes": "Primary taxpayer W-2 from employer"
+    }
+  ],
+  "userResponses": {
+    "filingStatus": "S",
+    "primaryPerson": {
+      "firstName": "John",
+      "lastName": "Doe",
+      "dateOfBirth": "1985-06-15",
+      "isBlind": false,
+      "isTaxpayerDependent": false
+    },
+    "dependents": [],
+    "otherIncome": {
+      "selfEmployment": false,
+      "rental": false,
+      "unemployment": false,
+      "socialSecurity": false,
+      "retirement": false
+    },
+    "deductionChoice": "standard",
+    "questions": {
+      "hasVirtualCurrency": false,
+      "hasForeignAccounts": false
+    }
+  },
+  "expectedState": {
+    "filingStatus": "S",
+    "w2Count": 1,
+    "f1099Count": 0,
+    "dependentCount": 0,
+    "totalIncome": 75000,
+    "agi": 75000,
+    "deductionType": "standard",
+    "deductionAmount": 14600,
+    "taxableIncome": 60400,
+    "totalTax": 9617,
+    "federalWithholding": 12000,
+    "refund": 2383,
+    "amountOwed": 0
+  },
+  "expectedForms": ["F1040"],
+  "validations": {
+    "mathCorrect": true,
+    "compliancePass": true,
+    "auditRisk": "low",
+    "criticalIssues": 0,
+    "warnings": 0,
+    "recommendations": ["Consider IRA contribution for additional tax savings"]
+  },
+  "performance": {
+    "maxExecutionTime": 60,
+    "expectedTime": 30
+  },
+  "notes": [
+    "This is a straightforward return with no complications",
+    "Should generate only Form 1040",
+    "Refund due to over-withholding"
+  ]
+}
