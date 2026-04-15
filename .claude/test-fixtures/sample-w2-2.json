@@ -1,0 +1,38 @@
+{
+  "documentType": "W2",
+  "taxYear": 2024,
+  "description": "Sample W-2 for spouse with lower income",
+  "extractedData": {
+    "occupation": "Teacher",
+    "income": 55000,
+    "medicareIncome": 55000,
+    "fedWithholding": 6500,
+    "ssWages": 55000,
+    "ssWithholding": 3410,
+    "medicareWithholding": 798,
+    "employer": {
+      "EIN": "98-7654321",
+      "employerName": "Public School District",
+      "address": {
+        "address": "456 Education Blvd",
+        "city": "Sacramento",
+        "state": "CA",
+        "zip": "95814"
+      }
+    },
+    "personRole": "SPOUSE",
+    "state": "CA",
+    "stateWages": 55000,
+    "stateWithholding": 2750
+  },
+  "confidence": {
+    "income": 100,
+    "fedWithholding": 100,
+    "ssWages": 100,
+    "employer": 100,
+    "overall": 100
+  },
+  "ambiguities": [],
+  "validationErrors": [],
+  "readyForDispatch": true
+}

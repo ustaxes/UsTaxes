@@ -1,0 +1,53 @@
+{
+  "name": "wasm-feature-detect",
+  "version": "1.8.0",
+  "description": "A small library to detect which features of WebAssembly are supported in your current browser.",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/esm/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/cjs/index.cjs"
+      },
+      "browser": "./dist/esm/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "main": "./dist/cjs/index.cjs",
+  "module": "./dist/esm/index.js",
+  "types": "dist/index.d.ts",
+  "type": "module",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build:library": "rollup -c",
+    "build:readme": "node --experimental-modules ./render-readme.mjs",
+    "build:dts": "node --experimental-modules ./render-dts.mjs",
+    "build": "npm run build:library && npm run build:readme && npm run build:dts && npm run fmt",
+    "build:website": "npm run build && node genwebsite.cjs",
+    "prepublishOnly": "npm run build",
+    "fmt": "prettier --write --no-error-on-unmatched-pattern ./{src,test,rollup-plugins}/*.{mjs,cjs,js,md} *.{mjs,cjs,js,md}",
+    "fmt_test": "prettier --check --no-error-on-unmatched-pattern --write ./{src,test,rollup-plugins}/*.{mjs,cjs,js,md} *.{mjs,cjs,js,md}",
+    "test": "npm run fmt_test && npm run build && node --no-warnings test/index.cjs"
+  },
+  "repository": "GoogleChromeLabs/wasm-feature-detect",
+  "keywords": [],
+  "author": "Surma <surma@surma.link>",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^26.0.1",
+    "@rollup/plugin-terser": "^0.4.4",
+    "binaryen": "^119.0.0",
+    "ejs": "^3.1.10",
+    "highlight.js": "^11.10.0",
+    "magic-string": "^0.30.11",
+    "markdown-it": "^14.1.0",
+    "prettier": "^3.3.3",
+    "rollup": "^4.21.3",
+    "wabt": "^1.0.36"
+  }
+}
