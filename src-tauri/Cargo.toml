@@ -9,12 +9,14 @@ edition = "2018"
 build = "src/build.rs"
 
 [build-dependencies]
-tauri-build = { version = "2.0.0-alpha.1", features = [] }
+tauri-build = { version = "2", features = [] }
 
 [dependencies]
 serde_json = "1.0.149"
 serde = { version = "1.0.223", features = [ "derive" ] }
-tauri = { version = "1.0.9", features = ["api-all"] }
+tauri = { version = "2", features = [] }
+tauri-plugin-dialog = "2"
+tauri-plugin-fs = "2"
 
 [features]
 custom-protocol = [ "tauri/custom-protocol" ]
@@ -23,3 +25,10 @@ default = [ "custom-protocol" ]
 [[bin]]
 name = "us-taxes"
 path = "src/main.rs"
+
+[lib]
+name = "us_taxes"
+crate-type = ["staticlib", "cdylib", "rlib", "lib"]
+
+[target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
+tauri-plugin-global-shortcut = "2"
