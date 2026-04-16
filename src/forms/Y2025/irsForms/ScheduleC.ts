@@ -1,7 +1,7 @@
 import F1040Attachment from './F1040Attachment'
 import { Field, FillInstructions } from 'ustaxes/core/pdfFiller'
 import { FormTag } from 'ustaxes/core/irsForms/Form'
-import { PersonRole } from 'ustaxes/core/data'
+import { PersonRole, SelfEmployedIncome } from 'ustaxes/core/data'
 
 /**
  * Schedule C — Profit or Loss From Business (Sole Proprietorship).
@@ -14,7 +14,17 @@ export default class ScheduleC extends F1040Attachment {
   tag: FormTag = 'f1040sc'
   sequenceIndex = 9
 
-  private allSelfEmployed = () => this.f1040.info.selfEmployedIncome ?? []
+  private allSelfEmployed = (): SelfEmployedIncome[] => {
+    const explicit = this.f1040.info.selfEmployedIncome ?? []
+    const necDerived = this.f1040.f1099necs().map<SelfEmployedIncome>((f) => ({
+      businessName: f.payer,
+      personRole: f.personRole,
+      grossReceipts: f.form.nonemployeeCompensation,
+      expenses: 0
+    }))
+
+    return [...explicit, ...necDerived]
+  }
 
   private forRole = (role: PersonRole.PRIMARY | PersonRole.SPOUSE) =>
     this.allSelfEmployed().filter((s) => s.personRole === role)

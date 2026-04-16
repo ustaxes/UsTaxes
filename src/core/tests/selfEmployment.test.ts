@@ -1,4 +1,9 @@
-import { FilingStatus, Information, PersonRole } from 'ustaxes/core/data'
+import {
+  FilingStatus,
+  Income1099Type,
+  Information,
+  PersonRole
+} from 'ustaxes/core/data'
 import { estimateScheduleCNetProfit } from 'ustaxes/core/selfEmployment'
 import { blankState } from 'ustaxes/redux/reducer'
 
@@ -56,5 +61,51 @@ describe('estimateScheduleCNetProfit', () => {
         ]
       })
     ).toBe(10250)
+  })
+
+  it('uses 1099-NEC income when no business entries exist', () => {
+    expect(
+      estimateScheduleCNetProfit({
+        ...baseInformation,
+        businesses: [],
+        f1099s: [
+          {
+            payer: 'Client Co',
+            personRole: PersonRole.PRIMARY,
+            type: Income1099Type.NEC,
+            form: {
+              nonemployeeCompensation: 6400
+            }
+          }
+        ]
+      })
+    ).toBe(6400)
+  })
+
+  it('adds 1099-NEC income on top of saved Y2025 self-employed entries', () => {
+    expect(
+      estimateScheduleCNetProfit({
+        ...baseInformation,
+        businesses: [],
+        selfEmployedIncome: [
+          {
+            businessName: 'Side Gig',
+            personRole: PersonRole.PRIMARY,
+            grossReceipts: 11750,
+            expenses: 1625
+          }
+        ],
+        f1099s: [
+          {
+            payer: 'Client Co',
+            personRole: PersonRole.PRIMARY,
+            type: Income1099Type.NEC,
+            form: {
+              nonemployeeCompensation: 6400
+            }
+          }
+        ]
+      })
+    ).toBe(16525)
   })
 })

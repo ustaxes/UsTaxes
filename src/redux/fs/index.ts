@@ -2,7 +2,8 @@
 
 import { deserializeTransform, serializeTransform, USTState } from '../store'
 import { blankYearTaxesState, YearsTaxesState } from '../data'
-import { TaxYear, Information } from 'ustaxes/core/data'
+import { TaxYear, TaxYears, Information } from 'ustaxes/core/data'
+import { enumKeys } from 'ustaxes/core/util'
 import Load from './Load'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types
@@ -18,18 +19,18 @@ type ReturnBundle = {
   returns: Record<string, ReturnPayload>
 }
 
+const supportedTaxYears = enumKeys(TaxYears)
+
 const buildReturnBundle = (state: YearsTaxesState): ReturnBundle => ({
   version: '1.0.0',
   activeYear: state.activeYear,
   assets: state.assets,
-  returns: {
-    Y2019: { taxYear: 'Y2019', information: state.Y2019 },
-    Y2020: { taxYear: 'Y2020', information: state.Y2020 },
-    Y2021: { taxYear: 'Y2021', information: state.Y2021 },
-    Y2022: { taxYear: 'Y2022', information: state.Y2022 },
-    Y2023: { taxYear: 'Y2023', information: state.Y2023 },
-    Y2024: { taxYear: 'Y2024', information: state.Y2024 }
-  }
+  returns: Object.fromEntries(
+    supportedTaxYears.map((year) => [
+      year,
+      { taxYear: year, information: state[year] }
+    ])
+  )
 })
 
 export const stateToString = (state: YearsTaxesState): string =>
@@ -40,13 +41,7 @@ export const stateToString = (state: YearsTaxesState): string =>
  * to reload state from a file
  */
 const isTaxYear = (value: unknown): value is TaxYear =>
-  typeof value === 'string' &&
-  (value === 'Y2019' ||
-    value === 'Y2020' ||
-    value === 'Y2021' ||
-    value === 'Y2022' ||
-    value === 'Y2023' ||
-    value === 'Y2024')
+  typeof value === 'string' && supportedTaxYears.includes(value as TaxYear)
 
 const isReturnPayload = (value: unknown): value is ReturnPayload => {
   if (value === null || typeof value !== 'object') {
@@ -78,16 +73,14 @@ export const stringToImportState = (str: string): USTState => {
       const returns = parsed.returns as Partial<Record<TaxYear, ReturnPayload>>
       const byYear = (year: TaxYear): Information =>
         returns[year]?.information ?? blankYearTaxesState[year]
+      const restoredYears = Object.fromEntries(
+        supportedTaxYears.map((year) => [year, byYear(year)])
+      ) as Pick<YearsTaxesState, TaxYear>
       return {
         ...blankYearTaxesState,
         activeYear: parsed.activeYear ?? blankYearTaxesState.activeYear,
         assets: (parsed.assets ?? []) as any[],
-        Y2019: byYear('Y2019'),
-        Y2020: byYear('Y2020'),
-        Y2021: byYear('Y2021'),
-        Y2022: byYear('Y2022'),
-        Y2023: byYear('Y2023'),
-        Y2024: byYear('Y2024')
+        ...restoredYears
       }
     }
     return parsed

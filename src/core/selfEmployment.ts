@@ -73,10 +73,6 @@ export const estimateScheduleCNetProfit = (
     0
   )
 
-  if (selfEmployedIncomeWithNetProfitInputs.length > 0) {
-    return selfEmployedNetProfit !== 0 ? selfEmployedNetProfit : undefined
-  }
-
   const businessNetProfit = (info.businesses ?? []).reduce(
     (sum, business) =>
       sum + businessNetReceipts(business) - businessTotalExpenses(business),
@@ -90,7 +86,12 @@ export const estimateScheduleCNetProfit = (
     return sum + (toFiniteNumber(form.form.nonemployeeCompensation) ?? 0)
   }, 0)
 
-  const total = businessNetProfit + necIncome
+  const baseNetProfit =
+    selfEmployedIncomeWithNetProfitInputs.length > 0
+      ? selfEmployedNetProfit
+      : businessNetProfit
+
+  const total = baseNetProfit + necIncome
   return total !== 0 ? total : undefined
 }
 

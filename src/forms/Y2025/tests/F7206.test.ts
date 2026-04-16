@@ -1,5 +1,10 @@
 import F1040 from '../irsForms/F1040'
-import { FilingStatus, Information, PersonRole } from 'ustaxes/core/data'
+import {
+  FilingStatus,
+  Income1099Type,
+  Information,
+  PersonRole
+} from 'ustaxes/core/data'
 import { validate } from 'ustaxes/forms/F1040Base'
 import { run } from 'ustaxes/core/util'
 import { blankState } from 'ustaxes/redux/reducer'
@@ -91,5 +96,33 @@ describe('F7206 (2025)', () => {
     expect(f1040.f7206?.l4()).toBe(6400)
     expect(f1040.schedule1.l17()).toBe(775)
     expect(f1040.schedules().map((form) => form.tag)).toContain('f7206')
+  })
+
+  it('creates Schedule C from 1099-NEC income and uses it for line 4', () => {
+    const f1040 = makeF1040({
+      ...baseInformation,
+      selfEmployedIncome: [],
+      f1099s: [
+        {
+          payer: 'Client Co',
+          personRole: PersonRole.PRIMARY,
+          type: Income1099Type.NEC,
+          form: {
+            nonemployeeCompensation: 6400
+          }
+        }
+      ],
+      adjustments: {
+        selfEmployedHealthInsuranceWorksheet: {
+          line1: 1000,
+          line14: 1000
+        },
+        selfEmployedHealthInsuranceDeduction: 1000
+      }
+    })
+
+    expect(f1040.scheduleC?.l31()).toBe(6400)
+    expect(f1040.f7206?.l4()).toBe(6400)
+    expect(f1040.scheduleSE.l2()).toBe(6400)
   })
 })
