@@ -22,13 +22,13 @@ self-employment data across tax years 2020 through 2025.
 - 1099-DIV
 - 1099-B
 - 1099-DA
-- 1099-NEC (flows to Schedule C where supported)
+- 1099-NEC (flows to Schedule C/self-employment calculations where supported, including tax year 2025)
 - 1098 (mortgage interest, points, and mortgage insurance premiums)
 - 1098-E
 - 1099-R (normal distributions from IRA and pension accounts)
 - SSA-1099
 - Rental real estate income and expenses (Schedule E)
-- Schedule C business income and expenses (tax years 2021-2024)
+- Schedule C business income and expenses (tax years 2021-2025; 2025 currently focuses on calculation support for Schedule SE/Form 7206 and limited PDF filling)
 
 Depending on tax year and entered data, UsTaxes can generate the following
 federal schedules and attachments for Form 1040:
@@ -39,7 +39,7 @@ federal schedules and attachments for Form 1040:
 - Schedule 3
 - Schedule A
 - Schedule B
-- Schedule C (2021-2024)
+- Schedule C (2021-2025, with 2025 currently focused on calculation support and limited PDF filling)
 - Schedule D
 - Schedule E
 - Schedule SE
@@ -106,6 +106,11 @@ Return JSON prefill currently supports importing and exporting:
 - rental properties
 - supported adjustment data
 - field-level source metadata
+
+The full **Save data to file** backup in Settings preserves all supported years and
+settings, including Y2025 self-employment entries and Form 7206 worksheet data.
+The portable **return JSON** export remains a narrower subset intended for
+prefill/import workflows.
 
 Imported fields can show a source badge so users can tell where a value came
 from:
