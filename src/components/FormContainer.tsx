@@ -1,4 +1,4 @@
-import { PropsWithChildren, ReactElement, useState } from 'react'
+import { PropsWithChildren, ReactElement, useEffect, useState } from 'react'
 import {
   createStyles,
   makeStyles,
@@ -141,6 +141,8 @@ interface FormListContainerProps<A extends FieldValues> {
   onSubmitAdd: SubmitHandler<A>
   onSubmitEdit: (index: number) => SubmitHandler<A>
   onCancel?: () => void
+  onOpenStateChange?: (isOpen: boolean) => void
+  onEditingStateChange?: (editing: number | undefined) => void
 
   // same default values passed to useForm
   defaultValues: DefaultValues<A>
@@ -266,6 +268,14 @@ const FormListContainer = <A extends FieldValues>(
   } = props
   const [isOpen, setOpen] = useState(false)
   const [editing, setEditing] = useState<number | undefined>(undefined)
+
+  useEffect(() => {
+    props.onOpenStateChange?.(isOpen)
+  }, [isOpen, props.onOpenStateChange])
+
+  useEffect(() => {
+    props.onEditingStateChange?.(editing)
+  }, [editing, props.onEditingStateChange])
 
   const allowAdd = max === undefined || items.length < max
 

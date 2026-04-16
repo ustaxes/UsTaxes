@@ -1,7 +1,8 @@
-import { ReactElement } from 'react'
+import { ReactElement, useState } from 'react'
 import { Helmet } from 'react-helmet-async'
 import { FormProvider, useForm } from 'react-hook-form'
 import { Grid } from '@material-ui/core'
+import _ from 'lodash'
 import { useDispatch, useSelector, TaxesState } from 'ustaxes/redux'
 import { useYearSelector } from 'ustaxes/redux/yearDispatch'
 import {
@@ -338,6 +339,10 @@ export default function BusinessInfo(): ReactElement {
     defaultValues: blankBusinessForm
   })
   const { handleSubmit } = methods
+  const [isBusinessFormOpen, setBusinessFormOpen] = useState(false)
+  const [editingBusinessIndex, setEditingBusinessIndex] = useState<
+    number | undefined
+  >(undefined)
 
   const onAddBusiness = (formData: BusinessForm): void => {
     const nextBusiness = toBusiness(formData)
@@ -369,11 +374,25 @@ export default function BusinessInfo(): ReactElement {
       )
     }
 
+  const onSubmit = (formData: BusinessForm): void => {
+    if (isBusinessFormOpen) {
+      if (editingBusinessIndex !== undefined) {
+        onEditBusiness(editingBusinessIndex)(formData)
+      } else if (!_.isEqual(formData, blankBusinessForm)) {
+        onAddBusiness(formData)
+      }
+    }
+
+    onAdvance()
+  }
+
   const form = (
     <FormListContainer
       defaultValues={blankBusinessForm}
       onSubmitAdd={onAddBusiness}
       onSubmitEdit={onEditBusiness}
+      onOpenStateChange={setBusinessFormOpen}
+      onEditingStateChange={setEditingBusinessIndex}
       items={effectiveBusinesses.map((b, index) =>
         toUserInput(b, effectiveSelfEmployedIncome[index]?.personRole)
       )}
@@ -487,10 +506,7 @@ export default function BusinessInfo(): ReactElement {
 
   return (
     <FormProvider {...methods}>
-      <form
-        tabIndex={-1}
-        onSubmit={intentionallyFloat(handleSubmit(onAdvance))}
-      >
+      <form tabIndex={-1} onSubmit={intentionallyFloat(handleSubmit(onSubmit))}>
         <Helmet>
           <title>Schedule C / Business Income | Income | UsTaxes.org</title>
         </Helmet>

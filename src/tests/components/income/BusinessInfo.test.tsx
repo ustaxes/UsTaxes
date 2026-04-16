@@ -126,4 +126,70 @@ describe('BusinessInfo', () => {
       })
     })
   })
+
+  it('saves an in-progress business draft when Save and Continue is clicked', async () => {
+    const onAdvance = jest.fn()
+    const store = createStoreUnpersisted(blankState)
+    const navButtons = <PagerButtons submitText="Save and Continue" />
+    const user = setupUserEvent()
+
+    renderWithProviders(
+      <Provider store={store}>
+        <PagerContext.Provider value={{ onAdvance, navButtons }}>
+          <BusinessInfo />
+        </PagerContext.Provider>
+      </Provider>
+    )
+
+    await user.click(screen.getByText('Add'))
+
+    act(() => {
+      fireEvent.change(screen.getByLabelText(labelMatcher('Business name')), {
+        target: { value: 'Draft Gig' }
+      })
+      fireEvent.change(screen.getByLabelText(labelMatcher('Address')), {
+        target: { value: '123 Main St' }
+      })
+      fireEvent.change(screen.getByLabelText(labelMatcher('City')), {
+        target: { value: 'Austin' }
+      })
+      fireEvent.change(screen.getAllByLabelText(labelMatcher('State'))[0], {
+        target: { value: 'TX' }
+      })
+      fireEvent.change(screen.getByLabelText(labelMatcher('Zip')), {
+        target: { value: '78701' }
+      })
+      fireEvent.change(
+        screen.getByLabelText(labelMatcher('Gross receipts or sales (line 1)')),
+        {
+          target: { value: '9000' }
+        }
+      )
+      fireEvent.change(
+        screen.getByLabelText(labelMatcher('Office expense (line 18)')),
+        {
+          target: { value: '500' }
+        }
+      )
+    })
+
+    await user.click(screen.getByRole('button', { name: 'Save and Continue' }))
+
+    await waitFor(() => {
+      const state = store.getState()
+      expect(state[state.activeYear].businesses?.at(-1)).toMatchObject({
+        name: 'Draft Gig',
+        income: {
+          grossReceipts: 9000,
+          returnsAndAllowances: 0,
+          otherIncome: undefined
+        },
+        expenses: {
+          office: 500
+        }
+      })
+    })
+
+    expect(onAdvance).toHaveBeenCalledTimes(1)
+  })
 })
