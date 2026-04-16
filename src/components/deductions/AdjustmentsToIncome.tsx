@@ -125,27 +125,32 @@ export default function AdjustmentsToIncome(): ReactElement {
           label="Educator expenses (line 11)"
           name="educatorExpenses"
           patternConfig={Patterns.currency}
+          required={false}
         />
         <LabeledInput
           label="Alimony paid (line 19a)"
           name="alimonyPaid"
           patternConfig={Patterns.currency}
+          required={false}
         />
         <LabeledInput
           label="Recipient SSN (line 19b)"
           name="alimonyRecipientSsn"
           patternConfig={Patterns.ssn}
+          required={false}
         />
         <DatePicker
           label="Date of original divorce or separation agreement (line 19c)"
           name="alimonyDivorceDate"
           minDate={new Date(1900, 0, 1)}
           maxDate={new Date(TaxYears[activeYear], 11, 31)}
+          required={false}
         />
         <LabeledInput
           label="Self-employed health insurance deduction (line 17)"
           name="selfEmployedHealthInsuranceDeduction"
           patternConfig={Patterns.currency}
+          required={false}
         />
       </Grid>
       <p>
