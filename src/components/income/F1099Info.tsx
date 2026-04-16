@@ -1,5 +1,5 @@
 import { ReactElement } from 'react'
-import { Helmet } from 'react-helmet'
+import { Helmet } from 'react-helmet-async'
 import { Link } from 'react-router-dom'
 import Alert from '@material-ui/lab/Alert'
 import { useForm, FormProvider } from 'react-hook-form'

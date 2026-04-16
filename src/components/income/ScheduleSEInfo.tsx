@@ -1,5 +1,5 @@
-import { ReactElement } from 'react'
-import { Helmet } from 'react-helmet'
+import { FormEvent, ReactElement } from 'react'
+import { Helmet } from 'react-helmet-async'
 import { Alert } from '@material-ui/lab'
 import { List, ListItem, ListItemText } from '@material-ui/core'
 import { Link } from 'react-router-dom'
@@ -14,15 +14,20 @@ import {
 
 export default function ScheduleSEInfo(): ReactElement {
   const info = useSelector((state: TaxesState) => state.information)
-  const { navButtons } = usePager()
+  const { navButtons, onAdvance } = usePager()
 
   const scheduleCNetProfit = estimateScheduleCNetProfit(info)
   const k1SelfEmploymentEarnings = estimateK1SelfEmploymentEarnings(info)
   const combinedAmount =
     (scheduleCNetProfit ?? 0) + (k1SelfEmploymentEarnings ?? 0)
 
+  const onSubmit = (event: FormEvent<HTMLFormElement>): void => {
+    event.preventDefault()
+    onAdvance()
+  }
+
   return (
-    <div>
+    <form tabIndex={-1} onSubmit={onSubmit}>
       <Helmet>
         <title>Schedule SE | Income | UsTaxes.org</title>
       </Helmet>
@@ -101,6 +106,6 @@ export default function ScheduleSEInfo(): ReactElement {
         <Link to={Urls.createPdf}>Review and Print</Link> when it is included.
       </p>
       {navButtons}
-    </div>
+    </form>
   )
 }

@@ -1,5 +1,5 @@
 import { ReactElement } from 'react'
-import { Helmet } from 'react-helmet'
+import { Helmet } from 'react-helmet-async'
 import { FormProvider, useForm } from 'react-hook-form'
 import HomeIcon from '@material-ui/icons/Home'
 import { useDispatch, useSelector, TaxesState } from 'ustaxes/redux'

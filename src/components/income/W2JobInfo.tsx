@@ -1,7 +1,7 @@
 import { Fragment, ReactElement, ReactNode, useState } from 'react'
 import _ from 'lodash'
 import { useDispatch, useSelector, TaxesState } from 'ustaxes/redux'
-import { Helmet } from 'react-helmet'
+import { Helmet } from 'react-helmet-async'
 import { FormProvider, useForm, useFormContext } from 'react-hook-form'
 import { usePager } from 'ustaxes/components/pager'
 import {

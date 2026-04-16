@@ -1,5 +1,5 @@
 import { ReactElement, useEffect } from 'react'
-import { Helmet } from 'react-helmet'
+import { Helmet } from 'react-helmet-async'
 import { FormProvider, useForm } from 'react-hook-form'
 import { Grid } from '@material-ui/core'
 import { useDispatch, useSelector, TaxesState } from 'ustaxes/redux'

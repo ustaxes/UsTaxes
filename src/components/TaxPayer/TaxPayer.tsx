@@ -1,5 +1,5 @@
 import { ReactElement, useEffect } from 'react'
-import { Helmet } from 'react-helmet'
+import { Helmet } from 'react-helmet-async'
 import { FormProvider, useForm } from 'react-hook-form'
 import _ from 'lodash'
 import { useDispatch, useSelector, TaxesState } from 'ustaxes/redux'
