@@ -16,7 +16,7 @@ import { FormContainerProvider } from 'ustaxes/components/FormContainer/Context'
 import { getSource } from 'ustaxes/core/data/sources'
 import { YearsTaxesState } from 'ustaxes/redux'
 import { useSelector as useReduxSelector } from 'react-redux'
-import { intentionallyFloat } from 'ustaxes/core/util'
+import { intentionallyFloat, toFiniteNumber } from 'ustaxes/core/util'
 import _ from 'lodash'
 import { Link } from 'react-router-dom'
 import Urls from 'ustaxes/data/urls'
@@ -37,27 +37,58 @@ const blankForm: AdjustmentsForm = {
   selfEmployedHealthInsuranceDeduction: ''
 }
 
+const worksheetLineKeys = [
+  'line1',
+  'line2',
+  'line3',
+  'line4',
+  'line5',
+  'line6',
+  'line7',
+  'line8',
+  'line9',
+  'line10',
+  'line11',
+  'line12',
+  'line13',
+  'line14'
+] as const
+
+const normalizeWorksheet = (
+  worksheet?: AdjustmentsToIncomeData['selfEmployedHealthInsuranceWorksheet']
+): AdjustmentsToIncomeData['selfEmployedHealthInsuranceWorksheet'] => {
+  if (worksheet === undefined) {
+    return undefined
+  }
+
+  const normalized = Object.fromEntries(
+    worksheetLineKeys.map((line) => [line, toFiniteNumber(worksheet[line])])
+  ) as NonNullable<
+    AdjustmentsToIncomeData['selfEmployedHealthInsuranceWorksheet']
+  >
+
+  return Object.values(normalized).some((value) => value !== undefined)
+    ? normalized
+    : undefined
+}
+
 const toFormValues = (
   adjustments?: AdjustmentsToIncomeData
 ): AdjustmentsForm => ({
   ...blankForm,
-  educatorExpenses: adjustments?.educatorExpenses ?? '',
-  alimonyPaid: adjustments?.alimonyPaid ?? '',
+  educatorExpenses: toFiniteNumber(adjustments?.educatorExpenses) ?? '',
+  alimonyPaid: toFiniteNumber(adjustments?.alimonyPaid) ?? '',
   alimonyRecipientSsn: adjustments?.alimonyRecipientSsn ?? '',
   alimonyDivorceDate: adjustments?.alimonyDivorceDate ?? null,
   selfEmployedHealthInsuranceDeduction:
-    adjustments?.selfEmployedHealthInsuranceDeduction ?? ''
+    toFiniteNumber(adjustments?.selfEmployedHealthInsuranceDeduction) ?? ''
 })
 
 const toAdjustments = (
   formData: AdjustmentsForm
 ): AdjustmentsToIncomeDateString => ({
-  educatorExpenses:
-    formData.educatorExpenses === ''
-      ? undefined
-      : Number(formData.educatorExpenses),
-  alimonyPaid:
-    formData.alimonyPaid === '' ? undefined : Number(formData.alimonyPaid),
+  educatorExpenses: toFiniteNumber(formData.educatorExpenses),
+  alimonyPaid: toFiniteNumber(formData.alimonyPaid),
   alimonyRecipientSsn:
     formData.alimonyRecipientSsn.trim() === ''
       ? undefined
@@ -66,10 +97,9 @@ const toAdjustments = (
     formData.alimonyDivorceDate instanceof Date
       ? formData.alimonyDivorceDate.toISOString().split('T')[0]
       : undefined,
-  selfEmployedHealthInsuranceDeduction:
-    formData.selfEmployedHealthInsuranceDeduction === ''
-      ? undefined
-      : Number(formData.selfEmployedHealthInsuranceDeduction)
+  selfEmployedHealthInsuranceDeduction: toFiniteNumber(
+    formData.selfEmployedHealthInsuranceDeduction
+  )
 })
 
 export default function AdjustmentsToIncome(): ReactElement {
@@ -96,8 +126,9 @@ export default function AdjustmentsToIncome(): ReactElement {
     dispatch(
       saveAdjustments({
         ...toAdjustments(formData),
-        selfEmployedHealthInsuranceWorksheet:
+        selfEmployedHealthInsuranceWorksheet: normalizeWorksheet(
           adjustments?.selfEmployedHealthInsuranceWorksheet
+        )
       })
     )
     onAdvance()

@@ -8,7 +8,7 @@ import {
   TaxYears
 } from 'ustaxes/core/data'
 import _ from 'lodash'
-import { enumKeys } from 'ustaxes/core/util'
+import { enumKeys, toFiniteNumber } from 'ustaxes/core/util'
 import { useDispatch } from 'ustaxes/redux'
 import { setInfo } from 'ustaxes/redux/actions'
 import { Button } from '@material-ui/core'
@@ -60,7 +60,9 @@ const DataPropagator = (): ReactElement => {
     worksheet?: SelfEmployedHealthInsuranceWorksheet
   ): boolean =>
     worksheet !== undefined &&
-    Object.values(worksheet).some((value) => value !== undefined)
+    Object.values(worksheet).some(
+      (value) => toFiniteNumber(value) !== undefined
+    )
 
   const hasAdjustments = (info: Information): boolean => {
     const adjustments = info.adjustments

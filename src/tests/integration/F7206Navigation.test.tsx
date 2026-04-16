@@ -196,8 +196,77 @@ describe('F7206 navigation flow', () => {
     })
   })
 
+  it('retains formatted persisted worksheet values when clicking through a prefilled return', async () => {
+    renderApp({
+      ...baseInformation,
+      adjustments: {
+        selfEmployedHealthInsuranceWorksheet: {
+          line1: '$900' as unknown as number,
+          line4: '10,000' as unknown as number,
+          line14: '$775' as unknown as number
+        },
+        selfEmployedHealthInsuranceDeduction: '$775' as unknown as number
+      }
+    })
+
+    await advanceFromStartToF7206()
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole('heading', { name: /form 7206 worksheet/i })
+      ).toBeInTheDocument()
+      expect(screen.getByDisplayValue('900')).toBeInTheDocument()
+      expect(screen.getByDisplayValue('10,000')).toBeInTheDocument()
+      expect(screen.getByDisplayValue('775')).toBeInTheDocument()
+    })
+  })
+
   it('prefills derived line 4 when clicking through a prefilled return with NEC income and no worksheet yet', async () => {
     renderApp(baseInformation)
+
+    await advanceFromStartToF7206()
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole('heading', { name: /form 7206 worksheet/i })
+      ).toBeInTheDocument()
+      expect(screen.getByDisplayValue('10,000')).toBeInTheDocument()
+      expect(
+        screen.getByText(/current schedule c net profit estimate/i)
+      ).toBeInTheDocument()
+    })
+  })
+
+  it('prefills derived line 4 when saved NEC income is restored as formatted strings', async () => {
+    renderApp({
+      ...baseInformation,
+      f1099s: [
+        {
+          payer: 'Client A',
+          personRole: PersonRole.PRIMARY,
+          type: Income1099Type.NEC,
+          form: {
+            nonemployeeCompensation: '6,400' as unknown as number
+          }
+        },
+        {
+          payer: 'Client B',
+          personRole: PersonRole.PRIMARY,
+          type: Income1099Type.NEC,
+          form: {
+            nonemployeeCompensation: '2,500' as unknown as number
+          }
+        },
+        {
+          payer: 'Client C',
+          personRole: PersonRole.PRIMARY,
+          type: Income1099Type.NEC,
+          form: {
+            nonemployeeCompensation: '1,100' as unknown as number
+          }
+        }
+      ]
+    })
 
     await advanceFromStartToF7206()
 

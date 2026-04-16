@@ -57,7 +57,9 @@ const blankForm: WorksheetForm = {
 
 const toFormValues = (
   worksheet?: SelfEmployedHealthInsuranceWorksheet,
-  derivedLine4?: number
+  derivedLine1?: number,
+  derivedLine4?: number,
+  derivedLine14?: number
 ): WorksheetForm => {
   const worksheetLine = (
     line: keyof SelfEmployedHealthInsuranceWorksheet
@@ -65,7 +67,7 @@ const toFormValues = (
 
   return {
     ...blankForm,
-    line1: worksheetLine('line1') ?? '',
+    line1: worksheetLine('line1') ?? derivedLine1 ?? '',
     line2: worksheetLine('line2') ?? '',
     line3: worksheetLine('line3') ?? '',
     line4: worksheetLine('line4') ?? derivedLine4 ?? '',
@@ -78,8 +80,19 @@ const toFormValues = (
     line11: worksheetLine('line11') ?? '',
     line12: worksheetLine('line12') ?? '',
     line13: worksheetLine('line13') ?? '',
-    line14: worksheetLine('line14') ?? ''
+    line14: worksheetLine('line14') ?? derivedLine14 ?? ''
   }
+}
+
+const estimateHealthInsurancePremiums = (
+  info: TaxesState['information']
+): number | undefined => {
+  const total = (info.selfEmployedIncome ?? []).reduce((sum, income) => {
+    const premiums = toFiniteNumber(income.healthInsurancePremiums)
+    return sum + (premiums ?? 0)
+  }, 0)
+
+  return total > 0 ? total : undefined
 }
 
 const parseLine = (value: string | number): number | undefined =>
@@ -138,10 +151,19 @@ export default function SelfEmployedHealthInsuranceWorksheetInfo(): ReactElement
   )
 
   const worksheet = adjustments?.selfEmployedHealthInsuranceWorksheet
+  const derivedLine1 = estimateHealthInsurancePremiums(info)
   const derivedLine4 = estimateScheduleCNetProfit(info)
+  const derivedLine14 = toFiniteNumber(
+    adjustments?.selfEmployedHealthInsuranceDeduction
+  )
 
   const methods = useForm<WorksheetForm>({
-    defaultValues: toFormValues(worksheet, derivedLine4)
+    defaultValues: toFormValues(
+      worksheet,
+      derivedLine1,
+      derivedLine4,
+      derivedLine14
+    )
   })
   const {
     handleSubmit,
@@ -163,11 +185,24 @@ export default function SelfEmployedHealthInsuranceWorksheetInfo(): ReactElement
   }
 
   useEffect(() => {
-    const nextValues = toFormValues(worksheet, derivedLine4)
+    const nextValues = toFormValues(
+      worksheet,
+      derivedLine1,
+      derivedLine4,
+      derivedLine14
+    )
     if (!isDirty && !_.isEqual(methods.getValues(), nextValues)) {
       reset(nextValues)
     }
-  }, [worksheet, derivedLine4, isDirty, reset, methods])
+  }, [
+    worksheet,
+    derivedLine1,
+    derivedLine4,
+    derivedLine14,
+    isDirty,
+    reset,
+    methods
+  ])
 
   const sourceLookup = (fieldName: string) =>
     getSource(sources, [

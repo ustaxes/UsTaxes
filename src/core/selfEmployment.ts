@@ -11,20 +11,21 @@ import { toFiniteNumber } from 'ustaxes/core/util'
 export const sumBusinessExpenses = (
   expenses: BusinessExpenses | undefined
 ): number => {
-  const values = Object.values(expenses ?? {}) as Array<number | undefined>
+  const values = Object.values(expenses ?? {}) as Array<unknown>
   return values.reduce<number>((sum, value) => {
-    const amount: number = value ?? 0
+    const amount = toFiniteNumber(value) ?? 0
     return sum + amount
   }, 0)
 }
 
 export const businessNetReceipts = (business: Business): number =>
-  business.income.grossReceipts -
-  business.income.returnsAndAllowances +
-  (business.income.otherIncome ?? 0)
+  (toFiniteNumber(business.income.grossReceipts) ?? 0) -
+  (toFiniteNumber(business.income.returnsAndAllowances) ?? 0) +
+  (toFiniteNumber(business.income.otherIncome) ?? 0)
 
 export const businessTotalExpenses = (business: Business): number =>
-  sumBusinessExpenses(business.expenses) + (business.homeOfficeDeduction ?? 0)
+  sumBusinessExpenses(business.expenses) +
+  (toFiniteNumber(business.homeOfficeDeduction) ?? 0)
 
 export const toSelfEmployedIncome = (
   business: Business,

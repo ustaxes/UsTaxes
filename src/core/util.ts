@@ -180,7 +180,13 @@ export const toFiniteNumber = (value: unknown): number | undefined => {
       return undefined
     }
 
-    const parsed = Number(trimmed)
+    const normalized = trimmed.replace(/[,$\s]/g, '')
+    const signed =
+      normalized.startsWith('(') && normalized.endsWith(')')
+        ? `-${normalized.slice(1, -1)}`
+        : normalized
+
+    const parsed = Number(signed)
     return Number.isFinite(parsed) ? parsed : undefined
   }
 

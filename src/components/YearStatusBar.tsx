@@ -4,6 +4,7 @@ import { useSelector } from 'react-redux'
 import { YearsTaxesState } from 'ustaxes/redux'
 import { TaxYears } from 'ustaxes/core/data'
 import { enumKeys } from 'ustaxes/core/util'
+import { toFiniteNumber } from 'ustaxes/core/util'
 import { Information } from 'ustaxes/core/data'
 import {
   Business,
@@ -89,7 +90,9 @@ const YearStatusBar = (): ReactElement => {
     worksheet?: SelfEmployedHealthInsuranceWorksheet
   ): boolean =>
     worksheet !== undefined &&
-    Object.values(worksheet).some((value) => value !== undefined)
+    Object.values(worksheet).some(
+      (value) => toFiniteNumber(value) !== undefined
+    )
 
   const hasAdjustments = (info: Information): boolean => {
     const adjustments = info.adjustments
