@@ -249,7 +249,7 @@ export default function W2JobInfo(): ReactElement {
         />
         <LabeledInput
           label={boxLabel('b', "Employer's Identification Number")}
-          patternConfig={Patterns.ein}
+          patternConfig={Patterns.w2Ein}
           name="employer.EIN"
           sizes={{ xs: 12 }}
         />

@@ -105,6 +105,10 @@ export const Patterns = {
     undefined,
     '##-#######'
   ),
+  w2Ein: text(
+    /^(?:\d{9}|\d{2}-\d{7}|X{5}\d{4}|XX-XXX\d{4})$/,
+    'Input should be 9 digits or truncated as XXXXX1234, optionally formatted as ##-####### or XX-XXX####'
+  ),
   currency: numeric(
     /[0-9]+(\.[0-9]{1,2})?/,
     'Input should be a numeric value',

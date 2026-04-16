@@ -100,7 +100,9 @@ const errors = {
   inputWordFormat: () =>
     screen.queryAllByText('Input should only include letters and spaces'),
   einFormat: () =>
-    screen.queryAllByText('Input should be filled with 9 digits'),
+    screen.queryAllByText(
+      'Input should be 9 digits or truncated as XXXXX1234, optionally formatted as ##-####### or XX-XXX####'
+    ),
   all: () => {
     // just a moment
   }
@@ -192,14 +194,34 @@ describe('W2JobInfo', () => {
       await waitFor(() => expect(errors.inputWordFormat()).toHaveLength(0))
     })
 
-    it('Employers Identification Number', async () => {
+    it('rejects invalid Employer Identification Number characters', async () => {
       const { changeByLabelText, clickButton } = setup()
 
       await clickButton('Add')
-      changeByLabelText(/Employer's Identification Number/, '123')
+      changeByLabelText(/Employer's Identification Number/, 'ABC')
       await clickButton('Save')
 
       await waitFor(() => expect(errors.einFormat()).toHaveLength(1))
+    })
+
+    it('rejects partial Employer Identification Numbers', async () => {
+      const { changeByLabelText, clickButton } = setup()
+
+      await clickButton('Add')
+      changeByLabelText(/Employer's Identification Number/, 'XXXXX')
+      await clickButton('Save')
+
+      await waitFor(() => expect(errors.einFormat()).toHaveLength(1))
+    })
+
+    it('allows a truncated Employer Identification Number', async () => {
+      const { changeByLabelText, clickButton } = setup()
+
+      await clickButton('Add')
+      changeByLabelText(/Employer's Identification Number/, 'XXXXX1234')
+      await clickButton('Save')
+
+      await waitFor(() => expect(errors.einFormat()).toHaveLength(0))
     })
 
     it('Occupation', async () => {
@@ -248,6 +270,37 @@ describe('W2JobInfo', () => {
     })
   })
 
+  it('saves information with a masked employer EIN', async () => {
+    const { changeByLabelText, selectOption, clickButton, store } =
+      setup(testInfo)
+
+    await clickButton('Add')
+
+    changeByLabelText('Employer name', 'masked employer')
+    changeByLabelText(/Employer's Identification Number/, 'XXXXX1234')
+    changeByLabelText('Occupation', 'test occupation')
+    changeByLabelText(/Wages, tips, other compensation/, '123456')
+    changeByLabelText(/Federal income tax withheld/, '3333')
+    changeByLabelText(/Social security wages/, '12345')
+    changeByLabelText(/Social security tax withheld/, '4444')
+    changeByLabelText(/Medicare Income/, '5555')
+    changeByLabelText(/Medicare tax withheld/, '6666')
+    changeByLabelText(/State wages, tips, etc/, '7777')
+    changeByLabelText(/State income tax/, '8888')
+    selectOption('Employee', 'PRIMARY')
+    selectOption(/State/, 'AL')
+
+    await clickButton('Save')
+
+    await waitFor(() => {
+      const state = store.getState()
+      expect(screen.getByText('masked employer')).toBeInTheDocument()
+      expect(state[state.activeYear].w2s.at(-1)?.employer?.EIN).toBe(
+        'XXXXX1234'
+      )
+    })
+  })
+
   it('removes item of list', async () => {
     if (testW2sSpouse.employer?.employerName) {
       const { user } = setup(testInfo)
@@ -274,11 +327,7 @@ describe('W2JobInfo', () => {
     )
     expect(
       screen.getByLabelText(labelMatcher(/Employer's Identification Number/))
-    ).toHaveValue(
-      (testW2sSpouse.employer?.EIN?.slice(0, 2) ?? '') +
-        '-' +
-        (testW2sSpouse.employer?.EIN?.slice(2) ?? '')
-    )
+    ).toHaveValue(testW2sSpouse.employer?.EIN)
     expect(screen.getByLabelText(labelMatcher('Occupation'))).toHaveValue(
       testW2sSpouse.occupation
     )
