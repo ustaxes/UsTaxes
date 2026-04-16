@@ -42,6 +42,7 @@ export interface LabeledInputProps<TFormValues extends FieldValues> {
   sizes?: SizeList
   patternConfig?: PatternConfig
   label: string | ReactElement
+  tooltip?: string
   required?: boolean
   name: Path<TFormValues>
   defaultValue?: string

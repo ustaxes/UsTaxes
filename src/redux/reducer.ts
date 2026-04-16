@@ -14,6 +14,7 @@ import {
   setContactInfoSource,
   setDependentSources,
   setFilingStatusSource,
+  setOtherIncomeSources,
   setAdjustmentsSources,
   setPrimaryPersonSources,
   setSpouseSources,
@@ -525,6 +526,19 @@ const formReducer = (
       return {
         ...newState,
         adjustments: hasAdjustments ? adjustments : undefined,
+        sources
+      }
+    }
+    case ActionName.SAVE_OTHER_INCOME: {
+      const hasOtherIncome =
+        action.formData.foreignEarnedIncomeExclusion !== undefined
+      const sources = hasOtherIncome
+        ? setOtherIncomeSources(newState.sources, 'user')
+        : newState.sources
+
+      return {
+        ...newState,
+        otherIncome: hasOtherIncome ? action.formData : undefined,
         sources
       }
     }

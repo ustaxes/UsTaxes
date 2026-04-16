@@ -125,4 +125,82 @@ describe('F7206 (2025)', () => {
     expect(f1040.f7206?.l4()).toBe(6400)
     expect(f1040.scheduleSE.l2()).toBe(6400)
   })
+
+  it('derives line 5 and preserves line 6 ratio precision in fill instructions', () => {
+    const f1040 = makeF1040({
+      ...baseInformation,
+      selfEmployedIncome: [
+        {
+          businessName: 'Covered Business',
+          personRole: PersonRole.PRIMARY,
+          grossReceipts: 6400,
+          expenses: 0,
+          healthInsurancePremiums: 900
+        },
+        {
+          businessName: 'Other Business',
+          personRole: PersonRole.PRIMARY,
+          grossReceipts: 3600,
+          expenses: 0
+        }
+      ],
+      adjustments: {
+        selfEmployedHealthInsuranceWorksheet: {
+          line1: 900,
+          line4: 6400
+        },
+        selfEmployedHealthInsuranceDeduction: 900
+      }
+    })
+
+    expect(f1040.f7206?.l5()).toBe(10000)
+
+    expect(f1040.f7206?.fillInstructions()).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          name: 'topmostSubform[0].Page1[0].f1_8[0]',
+          kind: 'text',
+          value: '0.64'
+        })
+      ])
+    )
+  })
+
+  it('ignores line 11 when line 4 applies, even if line 11 is entered as zero', () => {
+    const f1040 = makeF1040({
+      ...baseInformation,
+      adjustments: {
+        selfEmployedHealthInsuranceWorksheet: {
+          line1: 900,
+          line4: 6400,
+          line11: 0,
+          line12: 0
+        },
+        selfEmployedHealthInsuranceDeduction: 900
+      }
+    })
+
+    expect(f1040.f7206?.l13()).toBeGreaterThan(0)
+    expect(f1040.f7206?.l14()).toBe(900)
+  })
+
+  it('creates Form 2555 when FEIE is present and uses line 45 for Form 7206 line 12', () => {
+    const f1040 = makeF1040({
+      ...baseInformation,
+      otherIncome: {
+        foreignEarnedIncomeExclusion: 1234
+      },
+      adjustments: {
+        selfEmployedHealthInsuranceWorksheet: {
+          line1: 900,
+          line4: 6400
+        },
+        selfEmployedHealthInsuranceDeduction: 900
+      }
+    })
+
+    expect(f1040.f2555?.isNeeded()).toBe(true)
+    expect(f1040.f2555?.l45()).toBe(1234)
+    expect(f1040.f7206?.l12()).toBe(1234)
+  })
 })

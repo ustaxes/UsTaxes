@@ -55,8 +55,48 @@ interface F1040SummaryProps {
   summary: SummaryData
 }
 
+const FederalHeadline = ({ summary }: F1040SummaryProps): ReactElement => {
+  if (summary.amountOwed !== undefined && summary.amountOwed > 0) {
+    return (
+      <Box marginBottom={2}>
+        <Typography variant="overline" color="textSecondary">
+          Estimated federal amount owed
+        </Typography>
+        <Typography variant="h4" color="textPrimary">
+          <Currency value={-summary.amountOwed} />
+        </Typography>
+      </Box>
+    )
+  }
+
+  if (summary.refundAmount !== undefined && summary.refundAmount > 0) {
+    return (
+      <Box marginBottom={2}>
+        <Typography variant="overline" color="textSecondary">
+          Expected federal refund
+        </Typography>
+        <Typography variant="h4" color="textPrimary">
+          <Currency value={summary.refundAmount} />
+        </Typography>
+      </Box>
+    )
+  }
+
+  return (
+    <Box marginBottom={2}>
+      <Typography variant="overline" color="textSecondary">
+        Estimated federal balance
+      </Typography>
+      <Typography variant="h4" color="textPrimary">
+        <Currency value={0} />
+      </Typography>
+    </Box>
+  )
+}
+
 const F1040Summary = ({ summary }: F1040SummaryProps): ReactElement => (
   <>
+    <FederalHeadline summary={summary} />
     {(() => {
       if (summary.amountOwed !== undefined && summary.amountOwed > 0) {
         return (

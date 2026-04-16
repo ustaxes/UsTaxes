@@ -27,7 +27,8 @@ import {
   EditCreditAction,
   AdjustmentsToIncomeDateString,
   Business,
-  EditBusinessAction
+  EditBusinessAction,
+  OtherIncome
 } from 'ustaxes/core/data'
 
 import {
@@ -84,6 +85,7 @@ export enum ActionName {
   REMOVE_1098e = 'REMOVE_1098e',
   SET_ITEMIZED_DEDUCTIONS = 'SET_ITEMIZED_DEDUCTIONS',
   SAVE_ADJUSTMENTS = 'SAVE_ADJUSTMENTS',
+  SAVE_OTHER_INCOME = 'SAVE_OTHER_INCOME',
   ADD_HSA = 'ADD_HSA',
   EDIT_HSA = 'EDIT_HSA',
   REMOVE_HSA = 'REMOVE_HSA',
@@ -173,6 +175,7 @@ type SaveAdjustments = Save<
   typeof ActionName.SAVE_ADJUSTMENTS,
   AdjustmentsToIncomeDateString
 >
+type SaveOtherIncome = Save<typeof ActionName.SAVE_OTHER_INCOME, OtherIncome>
 type SetInfo = Save<typeof ActionName.SET_INFO, InformationDateString>
 type SetActiveYear = Save<typeof ActionName.SET_ACTIVE_YEAR, TaxYear>
 type AddIRA = Save<typeof ActionName.ADD_IRA, Ira>
@@ -237,6 +240,7 @@ export type Actions =
   | Remove1098e
   | SetItemizedDeductions
   | SaveAdjustments
+  | SaveOtherIncome
   | AddHSA
   | EditHSA
   | RemoveHSA
@@ -496,6 +500,10 @@ export const setItemizedDeductions: ActionCreator<ItemizedDeductions> =
 
 export const saveAdjustments: ActionCreator<AdjustmentsToIncomeDateString> =
   makeActionCreator(ActionName.SAVE_ADJUSTMENTS, validators.adjustments)
+
+export const saveOtherIncome: ActionCreator<OtherIncome> = makeActionCreator(
+  ActionName.SAVE_OTHER_INCOME
+)
 
 // debugging purposes only, leaving unchecked.
 export const setInfo = makePreprocessActionCreator<

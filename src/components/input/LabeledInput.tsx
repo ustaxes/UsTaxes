@@ -1,6 +1,7 @@
 import { useEffect, useRef, KeyboardEvent, ReactElement } from 'react'
 import { useForkRef } from 'rooks'
-import { InputAdornment, Grid, TextField } from '@material-ui/core'
+import { InputAdornment, Grid, TextField, Tooltip } from '@material-ui/core'
+import { HelpOutlineRounded } from '@material-ui/icons'
 import { LabeledInputProps } from './types'
 import NumberFormat from 'react-number-format'
 import {
@@ -22,6 +23,7 @@ export function LabeledInput<TFormValues extends FieldValues>(
   const { onSubmit, getSource } = useFormContainer()
   const {
     label,
+    tooltip,
     patternConfig: patternConfigDefined,
     name,
     rules = {},
@@ -74,6 +76,30 @@ export function LabeledInput<TFormValues extends FieldValues>(
   })()
 
   const resolvedSource = source ?? getSource?.(name as string)
+  const resolvedLabel =
+    tooltip === undefined ? (
+      labelWithSource(label, resolvedSource)
+    ) : (
+      <span style={{ display: 'inline-flex', alignItems: 'center' }}>
+        {labelWithSource(label, resolvedSource)}
+        <Tooltip title={tooltip} placement="top" arrow>
+          <span
+            aria-label={`More information about ${
+              typeof label === 'string' ? label : String(name)
+            }`}
+            tabIndex={0}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              marginLeft: 6,
+              cursor: 'help'
+            }}
+          >
+            <HelpOutlineRounded fontSize="small" />
+          </span>
+        </Tooltip>
+      </span>
+    )
 
   const input: ReactElement = (() => {
     if (isNumeric(patternConfig)) {
@@ -88,9 +114,10 @@ export function LabeledInput<TFormValues extends FieldValues>(
               id={name}
               name={name}
               className={classes.root}
-              label={labelWithSource(label, resolvedSource)}
+              label={resolvedLabel}
               mask={patternConfig.mask}
               thousandSeparator={patternConfig.thousandSeparator}
+              decimalScale={patternConfig.decimalScale}
               // prefix={patternConfig.prefix}
               allowEmptyFormatting={true}
               format={patternConfig.format}
@@ -103,7 +130,8 @@ export function LabeledInput<TFormValues extends FieldValues>(
               helperText={errorMessage}
               variant="filled"
               InputLabelProps={{
-                shrink: true
+                shrink: true,
+                style: tooltip ? { pointerEvents: 'auto' } : undefined
               }}
               InputProps={{
                 startAdornment: patternConfig.prefix ? (
@@ -160,7 +188,7 @@ export function LabeledInput<TFormValues extends FieldValues>(
             id={name}
             name={name}
             className={classes.root}
-            label={labelWithSource(label, resolvedSource)}
+            label={resolvedLabel}
             value={value}
             onChange={onChange}
             disabled={disabled}
@@ -177,7 +205,8 @@ export function LabeledInput<TFormValues extends FieldValues>(
             error={error !== undefined}
             variant="filled"
             InputLabelProps={{
-              shrink: true
+              shrink: true,
+              style: tooltip ? { pointerEvents: 'auto' } : undefined
             }}
           />
         )}

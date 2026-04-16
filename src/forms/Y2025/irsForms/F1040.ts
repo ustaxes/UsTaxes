@@ -162,6 +162,10 @@ export default class F1040 extends F1040Base {
     this.f8949Digital = new F8949(this, 'digital')
     this.f8889 = new F8889(this, this.info.taxPayer.primaryPerson)
 
+    if (this.info.otherIncome?.foreignEarnedIncomeExclusion !== undefined) {
+      this.f2555 = new F2555(this)
+    }
+
     // add in separate form 8889 for the spouse
     if (this.info.taxPayer.spouse) {
       this.f8889Spouse = new F8889(this, this.info.taxPayer.spouse)
@@ -275,6 +279,7 @@ export default class F1040 extends F1040Base {
       this.f4797,
       this.f4952,
       this.f4972,
+      this.f2555,
       this.f8839,
       this.f5329,
       this.f5695,

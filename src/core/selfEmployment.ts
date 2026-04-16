@@ -96,6 +96,70 @@ export const estimateScheduleCNetProfit = (
   return total !== 0 ? total : undefined
 }
 
+export const estimateHealthInsurancePremiums = (
+  info: Pick<Information, 'selfEmployedIncome'>
+): number | undefined => {
+  const total = (info.selfEmployedIncome ?? []).reduce((sum, income) => {
+    const premiums = toFiniteNumber(income.healthInsurancePremiums)
+    return sum + (premiums ?? 0)
+  }, 0)
+
+  return total > 0 ? total : undefined
+}
+
+export const estimateProfitableSelfEmploymentIncome = (
+  info: Pick<
+    Information,
+    'businesses' | 'f1099s' | 'selfEmployedIncome' | 'scheduleK1Form1065s'
+  >
+): number | undefined => {
+  const selfEmployedIncomeWithNetProfitInputs = (
+    info.selfEmployedIncome ?? []
+  ).filter(
+    (business) =>
+      toFiniteNumber(
+        (business as { grossReceipts?: unknown }).grossReceipts
+      ) !== undefined ||
+      toFiniteNumber((business as { expenses?: unknown }).expenses) !==
+        undefined
+  )
+
+  const explicitScheduleCProfits = selfEmployedIncomeWithNetProfitInputs.reduce(
+    (sum, business) => {
+      const profit =
+        (toFiniteNumber(business.grossReceipts) ?? 0) -
+        (toFiniteNumber(business.expenses) ?? 0)
+      return sum + Math.max(profit, 0)
+    },
+    0
+  )
+
+  const businessProfits = (info.businesses ?? []).reduce((sum, business) => {
+    const profit =
+      businessNetReceipts(business) - businessTotalExpenses(business)
+    return sum + Math.max(profit, 0)
+  }, 0)
+
+  const necIncome = info.f1099s.reduce((sum, form) => {
+    if (form.type !== Income1099Type.NEC) {
+      return sum
+    }
+    return (
+      sum + Math.max(toFiniteNumber(form.form.nonemployeeCompensation) ?? 0, 0)
+    )
+  }, 0)
+
+  const k1Income = Math.max(estimateK1SelfEmploymentEarnings(info) ?? 0, 0)
+
+  const scheduleCIncome =
+    selfEmployedIncomeWithNetProfitInputs.length > 0
+      ? explicitScheduleCProfits
+      : businessProfits
+
+  const total = scheduleCIncome + necIncome + k1Income
+  return total > 0 ? total : undefined
+}
+
 export const estimateK1SelfEmploymentEarnings = (
   info: Pick<Information, 'scheduleK1Form1065s'>
 ): number | undefined => {

@@ -155,7 +155,7 @@ const advanceFromStartToF7206 = async () => {
         name: /form 7206 worksheet/i
       })
     ) {
-      return user
+      return { user, visitedHeadings }
     }
 
     await user.click(
@@ -171,7 +171,7 @@ const advanceFromStartToF7206 = async () => {
 }
 
 describe('F7206 navigation flow', () => {
-  it('retains existing worksheet values when clicking through a prefilled return', async () => {
+  it('recomputes derived worksheet values when clicking through a prefilled return', async () => {
     renderApp({
       ...baseInformation,
       adjustments: {
@@ -184,19 +184,34 @@ describe('F7206 navigation flow', () => {
       }
     })
 
-    await advanceFromStartToF7206()
+    const { visitedHeadings } = await advanceFromStartToF7206()
 
     await waitFor(() => {
       expect(
         screen.getByRole('heading', { name: /form 7206 worksheet/i })
       ).toBeInTheDocument()
-      expect(screen.getByDisplayValue('900')).toBeInTheDocument()
-      expect(screen.getByDisplayValue('10,000')).toBeInTheDocument()
-      expect(screen.getByDisplayValue('775')).toBeInTheDocument()
+      expect(
+        screen.getByRole('textbox', {
+          name: /line 1 - health insurance premiums/i
+        })
+      ).toHaveValue('900')
+      expect(
+        screen.getByRole('textbox', {
+          name: /line 4 - net profit or earned income for this business/i
+        })
+      ).toHaveValue('10,000')
+      expect(
+        screen.getByRole('textbox', {
+          name: /line 14 - self-employed health insurance deduction/i
+        })
+      ).toHaveValue('900')
     })
+    expect(visitedHeadings).toContain(
+      'Form 2555 / Foreign Earned Income Exclusion'
+    )
   })
 
-  it('retains formatted persisted worksheet values when clicking through a prefilled return', async () => {
+  it('recomputes derived values from formatted worksheet inputs when clicking through a prefilled return', async () => {
     renderApp({
       ...baseInformation,
       adjustments: {
@@ -215,9 +230,21 @@ describe('F7206 navigation flow', () => {
       expect(
         screen.getByRole('heading', { name: /form 7206 worksheet/i })
       ).toBeInTheDocument()
-      expect(screen.getByDisplayValue('900')).toBeInTheDocument()
-      expect(screen.getByDisplayValue('10,000')).toBeInTheDocument()
-      expect(screen.getByDisplayValue('775')).toBeInTheDocument()
+      expect(
+        screen.getByRole('textbox', {
+          name: /line 1 - health insurance premiums/i
+        })
+      ).toHaveValue('900')
+      expect(
+        screen.getByRole('textbox', {
+          name: /line 4 - net profit or earned income for this business/i
+        })
+      ).toHaveValue('10,000')
+      expect(
+        screen.getByRole('textbox', {
+          name: /line 14 - self-employed health insurance deduction/i
+        })
+      ).toHaveValue('900')
     })
   })
 
@@ -230,7 +257,11 @@ describe('F7206 navigation flow', () => {
       expect(
         screen.getByRole('heading', { name: /form 7206 worksheet/i })
       ).toBeInTheDocument()
-      expect(screen.getByDisplayValue('10,000')).toBeInTheDocument()
+      expect(
+        screen.getByRole('textbox', {
+          name: /line 4 - net profit or earned income for this business/i
+        })
+      ).toHaveValue('10,000')
       expect(
         screen.getByText(/current schedule c net profit estimate/i)
       ).toBeInTheDocument()
@@ -274,7 +305,11 @@ describe('F7206 navigation flow', () => {
       expect(
         screen.getByRole('heading', { name: /form 7206 worksheet/i })
       ).toBeInTheDocument()
-      expect(screen.getByDisplayValue('10,000')).toBeInTheDocument()
+      expect(
+        screen.getByRole('textbox', {
+          name: /line 4 - net profit or earned income for this business/i
+        })
+      ).toHaveValue('10,000')
       expect(
         screen.getByText(/current schedule c net profit estimate/i)
       ).toBeInTheDocument()

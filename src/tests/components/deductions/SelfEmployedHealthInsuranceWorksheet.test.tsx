@@ -14,6 +14,10 @@ import { renderWithProviders } from 'ustaxes/testUtil'
 import { setupUserEvent } from 'ustaxes/tests/userEventSetup'
 
 describe('SelfEmployedHealthInsuranceWorksheet', () => {
+  const expectInputValue = (label: RegExp, value: string): void => {
+    expect(screen.getByRole('textbox', { name: label })).toHaveValue(value)
+  }
+
   afterEach(() => {
     jest.resetAllMocks()
   })
@@ -58,7 +62,14 @@ describe('SelfEmployedHealthInsuranceWorksheet', () => {
     )
 
     await waitFor(() => {
-      expect(screen.getByDisplayValue('10,250')).toBeInTheDocument()
+      expectInputValue(
+        /line 4 - net profit or earned income for this business/i,
+        '10,250'
+      )
+      expectInputValue(
+        /line 5 - total profitable self-employment income/i,
+        '10,250'
+      )
     })
 
     await user.click(screen.getByRole('button', { name: 'Save and Continue' }))
@@ -115,7 +126,10 @@ describe('SelfEmployedHealthInsuranceWorksheet', () => {
     )
 
     await waitFor(() => {
-      expect(screen.getByDisplayValue('10,250')).toBeInTheDocument()
+      expectInputValue(
+        /line 4 - net profit or earned income for this business/i,
+        '10,250'
+      )
       expect(
         screen.getByText(/Current Schedule C net profit estimate/i)
       ).toBeInTheDocument()
@@ -171,7 +185,10 @@ describe('SelfEmployedHealthInsuranceWorksheet', () => {
     )
 
     await waitFor(() => {
-      expect(screen.getByDisplayValue('6,400')).toBeInTheDocument()
+      expectInputValue(
+        /line 4 - net profit or earned income for this business/i,
+        '6,400'
+      )
       expect(
         screen.getByText(/Current Schedule C net profit estimate/i)
       ).toBeInTheDocument()
@@ -285,7 +302,10 @@ describe('SelfEmployedHealthInsuranceWorksheet', () => {
     )
 
     await waitFor(() => {
-      expect(screen.getByDisplayValue('10,000')).toBeInTheDocument()
+      expectInputValue(
+        /line 4 - net profit or earned income for this business/i,
+        '10,000'
+      )
       expect(
         screen.getByText(/Current Schedule C net profit estimate/i)
       ).toBeInTheDocument()
@@ -369,12 +389,19 @@ describe('SelfEmployedHealthInsuranceWorksheet', () => {
     )
 
     await waitFor(() => {
-      expect(screen.getAllByDisplayValue('775')).toHaveLength(2)
-      expect(screen.getByDisplayValue('10,000')).toBeInTheDocument()
+      expectInputValue(/line 1 - health insurance premiums/i, '775')
+      expectInputValue(
+        /line 14 - self-employed health insurance deduction/i,
+        '775'
+      )
+      expectInputValue(
+        /line 4 - net profit or earned income for this business/i,
+        '10,000'
+      )
     })
   })
 
-  it('accepts formatted persisted worksheet and deduction values', async () => {
+  it('recomputes derived values from formatted persisted worksheet inputs', async () => {
     const info: Information = {
       ...blankState,
       adjustments: {
@@ -402,9 +429,143 @@ describe('SelfEmployedHealthInsuranceWorksheet', () => {
     )
 
     await waitFor(() => {
-      expect(screen.getByDisplayValue('900')).toBeInTheDocument()
-      expect(screen.getByDisplayValue('10,000')).toBeInTheDocument()
-      expect(screen.getByDisplayValue('775')).toBeInTheDocument()
+      expectInputValue(/line 1 - health insurance premiums/i, '900')
+      expectInputValue(
+        /line 4 - net profit or earned income for this business/i,
+        '10,000'
+      )
+      expectInputValue(
+        /line 14 - self-employed health insurance deduction/i,
+        '900'
+      )
+    })
+  })
+
+  it('shows instructional tooltip text for Form 7206 lines', () => {
+    const store = createStoreUnpersisted(blankState)
+
+    renderWithProviders(
+      <Provider store={store}>
+        <PagerContext.Provider
+          value={{
+            onAdvance: jest.fn(),
+            navButtons: <PagerButtons submitText="Save and Continue" />
+          }}
+        >
+          <SelfEmployedHealthInsuranceWorksheetInfo />
+        </PagerContext.Provider>
+      </Provider>
+    )
+
+    expect(
+      screen.getByLabelText(
+        /more information about line 1 - health insurance premiums/i
+      )
+    ).toHaveAttribute(
+      'title',
+      expect.stringContaining('employer-subsidized plan')
+    )
+    expect(
+      screen.getByLabelText(
+        /more information about line 14 - self-employed health insurance deduction/i
+      )
+    ).toHaveAttribute(
+      'title',
+      expect.stringContaining('flows to Schedule 1 line 17')
+    )
+    expect(
+      screen.getByText(/line 1 - health insurance premiums/i).closest('label')
+    ).toHaveStyle({ pointerEvents: 'auto' })
+  })
+
+  it('keeps line 14 on the line 10 branch when line 11 is entered as zero', async () => {
+    const info: Information = {
+      ...blankState,
+      selfEmployedIncome: [
+        {
+          businessName: 'Side Gig',
+          personRole: PersonRole.PRIMARY,
+          grossReceipts: 6400,
+          expenses: 0,
+          healthInsurancePremiums: 900
+        }
+      ],
+      adjustments: {
+        selfEmployedHealthInsuranceWorksheet: {
+          line1: 900,
+          line4: 6400,
+          line11: 0,
+          line12: 0
+        }
+      }
+    }
+    const store = createStoreUnpersisted(info)
+
+    renderWithProviders(
+      <Provider store={store}>
+        <PagerContext.Provider
+          value={{
+            onAdvance: jest.fn(),
+            navButtons: <PagerButtons submitText="Save and Continue" />
+          }}
+        >
+          <SelfEmployedHealthInsuranceWorksheetInfo />
+        </PagerContext.Provider>
+      </Provider>
+    )
+
+    await waitFor(() => {
+      expectInputValue(
+        /line 14 - self-employed health insurance deduction/i,
+        '900'
+      )
+    })
+  })
+
+  it('recomputes line 14 when a saved worksheet still has a stale zero', async () => {
+    const info: Information = {
+      ...blankState,
+      adjustments: {
+        selfEmployedHealthInsuranceDeduction: 0,
+        selfEmployedHealthInsuranceWorksheet: {
+          line1: 17820,
+          line2: 0,
+          line3: 17820,
+          line4: 10000,
+          line5: 10000,
+          line6: 1,
+          line7: 0,
+          line8: 10000,
+          line9: 0,
+          line10: 10000,
+          line12: 2043.82,
+          line13: 7956.18,
+          line14: 0
+        }
+      }
+    }
+    const store = createStoreUnpersisted(info)
+
+    renderWithProviders(
+      <Provider store={store}>
+        <PagerContext.Provider
+          value={{
+            onAdvance: jest.fn(),
+            navButtons: <PagerButtons submitText="Save and Continue" />
+          }}
+        >
+          <SelfEmployedHealthInsuranceWorksheetInfo />
+        </PagerContext.Provider>
+      </Provider>
+    )
+
+    await waitFor(() => {
+      expectInputValue(/line 3 - total premiums/i, '17,820')
+      expectInputValue(/line 13 - income limit after form 2555/i, '7,956.18')
+      expectInputValue(
+        /line 14 - self-employed health insurance deduction/i,
+        '7,956.18'
+      )
     })
   })
 })

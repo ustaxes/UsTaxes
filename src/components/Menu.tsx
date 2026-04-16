@@ -47,6 +47,7 @@ import IRA from './savingsAccounts/IRA'
 import OtherInvestments from './income/OtherInvestments'
 import { StockOptions } from './income/StockOptions'
 import { PartnershipIncome } from './income/PartnershipIncome'
+import F2555Info from './income/F2555Info'
 import { TaxYear } from 'ustaxes/core/data'
 import { AdvanceChildTaxCredit } from './Y2021/AdvanceChildTaxCredit'
 import { YearsTaxesState } from 'ustaxes/redux'
@@ -168,6 +169,11 @@ export const drawerSections: Section[] = [
         'Adjustments to Income',
         Urls.deductions.adjustments,
         <AdjustmentsToIncome />
+      ),
+      item(
+        'Form 2555 / Foreign Earned Income Exclusion',
+        Urls.income.form2555,
+        <F2555Info />
       ),
       item(
         'Form 7206 / Self-employed health insurance',

@@ -131,6 +131,8 @@ describe('Contract Tests: PDF Schema vs TypeScript Forms', () => {
         'f1040sei',
         'f1040sse',
         'f1040s8',
+        'f2555',
+        'f7206',
         'f4547',
         'f4797',
         'f4952',

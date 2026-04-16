@@ -28,6 +28,29 @@ describe('Menu', () => {
       expect(
         screen.getByText('Form 7206 / Self-employed health insurance')
       ).toBeInTheDocument()
+      expect(
+        screen.getByText('Form 2555 / Foreign Earned Income Exclusion')
+      ).toBeInTheDocument()
+
+      const deductions = drawerSections.find(
+        (section) => section.title === 'Deductions'
+      )
+      expect(deductions?.items.map((item) => item.title)).toEqual(
+        expect.arrayContaining([
+          'Adjustments to Income',
+          'Form 2555 / Foreign Earned Income Exclusion',
+          'Form 7206 / Self-employed health insurance'
+        ])
+      )
+      expect(
+        deductions?.items.findIndex(
+          (item) => item.title === 'Form 2555 / Foreign Earned Income Exclusion'
+        )
+      ).toBeLessThan(
+        deductions?.items.findIndex(
+          (item) => item.title === 'Form 7206 / Self-employed health insurance'
+        ) ?? -1
+      )
     })
   })
 })

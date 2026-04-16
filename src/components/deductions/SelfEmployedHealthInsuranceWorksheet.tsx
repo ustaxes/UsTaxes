@@ -1,6 +1,6 @@
 import { ReactElement, useEffect } from 'react'
 import { Helmet } from 'react-helmet-async'
-import { FormProvider, useForm } from 'react-hook-form'
+import { FormProvider, useForm, useWatch } from 'react-hook-form'
 import { Grid } from '@material-ui/core'
 import { useDispatch, useSelector, TaxesState } from 'ustaxes/redux'
 import { usePager } from 'ustaxes/components/pager'
@@ -19,7 +19,19 @@ import { YearsTaxesState } from 'ustaxes/redux'
 import { useSelector as useReduxSelector } from 'react-redux'
 import _ from 'lodash'
 import { Currency } from 'ustaxes/components/input'
-import { estimateScheduleCNetProfit } from 'ustaxes/core/selfEmployment'
+import { PatternConfig } from 'ustaxes/components/Patterns'
+import {
+  estimateHealthInsurancePremiums,
+  estimateProfitableSelfEmploymentIncome,
+  estimateScheduleCNetProfit
+} from 'ustaxes/core/selfEmployment'
+import {
+  computeForm7206DerivedLines,
+  formatForm7206Ratio
+} from 'ustaxes/core/form7206'
+import { fica as fica2023 } from 'ustaxes/forms/Y2023/data/federal'
+import { fica as fica2024 } from 'ustaxes/forms/Y2024/data/federal'
+import { fica as fica2025 } from 'ustaxes/forms/Y2025/data/federal'
 
 interface WorksheetForm {
   line1: string | number
@@ -55,10 +67,201 @@ const blankForm: WorksheetForm = {
   line14: ''
 }
 
+type WorksheetFieldName = keyof WorksheetForm
+
+interface WorksheetFieldConfig {
+  name: WorksheetFieldName
+  label: string
+  tooltip: string
+  disabled?: boolean
+  patternConfig?: PatternConfig
+}
+
+const ratioPattern = {
+  ...Patterns.currency,
+  regexp: /-?[0-9]+(\.[0-9]{1,6})?/,
+  description: 'Input should be a numeric ratio such as 0.625',
+  prefix: '',
+  thousandSeparator: false,
+  decimalScale: 6
+}
+
+const socialSecurityWageBaseByYear: Partial<
+  Record<YearsTaxesState['activeYear'], number>
+> = {
+  Y2023: fica2023.maxIncomeSSTaxApplies,
+  Y2024: fica2024.maxIncomeSSTaxApplies,
+  Y2025: fica2025.maxIncomeSSTaxApplies
+}
+
+const sumRetirementContributions = (
+  info: TaxesState['information']
+): number | undefined => {
+  const total = (info.selfEmployedIncome ?? []).reduce(
+    (sum, income) =>
+      sum +
+      (toFiniteNumber(income.sepContributions) ?? 0) +
+      (toFiniteNumber(income.simpleContributions) ?? 0),
+    0
+  )
+
+  return total > 0 ? total : undefined
+}
+
+const estimateDeductibleSelfEmploymentTax = (
+  info: TaxesState['information'],
+  activeYear: YearsTaxesState['activeYear']
+): number | undefined => {
+  const scheduleCNetProfit = estimateScheduleCNetProfit(info) ?? 0
+  const k1Income = info.scheduleK1Form1065s.reduce(
+    (sum, k1) => sum + (toFiniteNumber(k1.selfEmploymentEarningsA) ?? 0),
+    0
+  )
+  const netEarnings = scheduleCNetProfit + k1Income
+  const taxableSelfEmploymentIncome =
+    netEarnings > 0 ? netEarnings * 0.9235 : netEarnings
+
+  if (taxableSelfEmploymentIncome < 400) {
+    return undefined
+  }
+
+  const ssWages = info.w2s.reduce(
+    (sum, w2) => sum + (toFiniteNumber(w2.ssWages) ?? 0),
+    0
+  )
+  const wageBase = socialSecurityWageBaseByYear[activeYear]
+  if (wageBase === undefined) {
+    return undefined
+  }
+  const remainingSsBase = Math.max(0, wageBase - ssWages)
+  const socialSecurityTax =
+    Math.min(taxableSelfEmploymentIncome, remainingSsBase) * 0.124
+  const medicareTax = taxableSelfEmploymentIncome * 0.029
+  const totalTax = socialSecurityTax + medicareTax
+  const deductibleTax = totalTax * 0.5
+
+  return deductibleTax > 0 ? deductibleTax : undefined
+}
+
+const line2CapTextByYear: Partial<
+  Record<YearsTaxesState['activeYear'], string>
+> = {
+  Y2023:
+    '$480 if age 40 or younger, $890 if age 41 to 50, $1,790 if age 51 to 60, $4,770 if age 61 to 70, and $5,960 if age 71 or older',
+  Y2024:
+    '$470 if age 40 or younger, $880 if age 41 to 50, $1,760 if age 51 to 60, $4,710 if age 61 to 70, and $5,880 if age 71 or older',
+  Y2025:
+    '$480 if age 40 or younger, $900 if age 41 to 50, $1,800 if age 51 to 60, $4,810 if age 61 to 70, and $6,020 if age 71 or older'
+}
+
+const worksheetFieldsForYear = (
+  activeYear: YearsTaxesState['activeYear']
+): WorksheetFieldConfig[] => {
+  const taxYear = activeYear.replace(/^Y/, '')
+  const line2Caps =
+    line2CapTextByYear[activeYear] ??
+    line2CapTextByYear.Y2025 ??
+    'the applicable annual IRS long-term care premium limits'
+
+  return [
+    {
+      name: 'line1',
+      label: 'Line 1 - Health insurance premiums',
+      tooltip: `Enter the ${taxYear} health insurance premiums established under this business for you, your spouse, and dependents. Exclude months covered by an employer-subsidized plan, retired public safety officer amounts excluded from income, and qualified long-term care premiums.`
+    },
+    {
+      name: 'line2',
+      label: 'Line 2 - Qualified long-term care premiums',
+      tooltip: `Enter the allowable long-term care premiums. For ${taxYear}, the per-person cap is ${line2Caps}.`
+    },
+    {
+      name: 'line3',
+      label: 'Line 3 - Total premiums',
+      tooltip: 'Automatically calculated as line 1 plus line 2.',
+      disabled: true
+    },
+    {
+      name: 'line4',
+      label: 'Line 4 - Net profit or earned income for this business',
+      tooltip:
+        'Enter the net profit and any other earned income from the trade or business under which the insurance plan is established. If the plan is under an S corporation, leave this blank and use line 11 instead.'
+    },
+    {
+      name: 'line5',
+      label: 'Line 5 - Total profitable self-employment income',
+      tooltip:
+        'Enter the total of all profitable Schedule C, Schedule F, and partnership self-employment income allocable to profitable businesses. Do not include net losses. UsTaxes suggests a default when it can.'
+    },
+    {
+      name: 'line6',
+      label: 'Line 6 - Allocation ratio',
+      tooltip: 'Automatically calculated as line 4 divided by line 5.',
+      disabled: true,
+      patternConfig: ratioPattern
+    },
+    {
+      name: 'line7',
+      label: 'Line 7 - Deductible part of self-employment tax',
+      tooltip:
+        'Automatically calculated as Schedule 1 line 15 multiplied by the line 6 allocation ratio.',
+      disabled: true
+    },
+    {
+      name: 'line8',
+      label: 'Line 8 - Net earnings after self-employment tax',
+      tooltip: 'Automatically calculated as line 4 minus line 7.',
+      disabled: true
+    },
+    {
+      name: 'line9',
+      label: 'Line 9 - SEP, SIMPLE, and qualified plan deductions',
+      tooltip:
+        'Enter the amount from Schedule 1 line 16 that is attributable to the same trade or business. UsTaxes suggests a default total from your self-employed retirement contributions.'
+    },
+    {
+      name: 'line10',
+      label: 'Line 10 - Remaining earned income',
+      tooltip: 'Automatically calculated as line 8 minus line 9.',
+      disabled: true
+    },
+    {
+      name: 'line11',
+      label: 'Line 11 - S corporation Medicare wages',
+      tooltip:
+        'If the insurance plan is established under an S corporation where you are a more-than-2% shareholder, enter your Medicare wages from Form W-2 box 5 here.'
+    },
+    {
+      name: 'line12',
+      label: 'Line 12 - Form 2555 line 45 amount',
+      tooltip:
+        'Enter the amount from Form 2555 line 45 attributable to the income on line 4 or line 11. UsTaxes suggests your saved foreign earned income exclusion amount when present.'
+    },
+    {
+      name: 'line13',
+      label: 'Line 13 - Income limit after Form 2555',
+      tooltip:
+        'Automatically calculated as line 10 minus line 12, or line 11 minus line 12 when line 11 applies.',
+      disabled: true
+    },
+    {
+      name: 'line14',
+      label: 'Line 14 - Self-employed health insurance deduction',
+      tooltip:
+        'Automatically calculated as the smaller of line 3 or line 13. This amount flows to Schedule 1 line 17.',
+      disabled: true
+    }
+  ]
+}
+
+const toFieldValue = (value: number | undefined): string | number => value ?? ''
+
 const toFormValues = (
   worksheet?: SelfEmployedHealthInsuranceWorksheet,
   derivedLine1?: number,
   derivedLine4?: number,
+  derivedLine5?: number,
+  derivedLine9?: number,
+  derivedLine12?: number,
   derivedLine14?: number
 ): WorksheetForm => {
   const worksheetLine = (
@@ -71,28 +274,17 @@ const toFormValues = (
     line2: worksheetLine('line2') ?? '',
     line3: worksheetLine('line3') ?? '',
     line4: worksheetLine('line4') ?? derivedLine4 ?? '',
-    line5: worksheetLine('line5') ?? '',
+    line5: worksheetLine('line5') ?? derivedLine5 ?? '',
     line6: worksheetLine('line6') ?? '',
     line7: worksheetLine('line7') ?? '',
     line8: worksheetLine('line8') ?? '',
-    line9: worksheetLine('line9') ?? '',
+    line9: worksheetLine('line9') ?? derivedLine9 ?? '',
     line10: worksheetLine('line10') ?? '',
     line11: worksheetLine('line11') ?? '',
-    line12: worksheetLine('line12') ?? '',
+    line12: worksheetLine('line12') ?? derivedLine12 ?? '',
     line13: worksheetLine('line13') ?? '',
     line14: worksheetLine('line14') ?? derivedLine14 ?? ''
   }
-}
-
-const estimateHealthInsurancePremiums = (
-  info: TaxesState['information']
-): number | undefined => {
-  const total = (info.selfEmployedIncome ?? []).reduce((sum, income) => {
-    const premiums = toFiniteNumber(income.healthInsurancePremiums)
-    return sum + (premiums ?? 0)
-  }, 0)
-
-  return total > 0 ? total : undefined
 }
 
 const parseLine = (value: string | number): number | undefined =>
@@ -153,25 +345,63 @@ export default function SelfEmployedHealthInsuranceWorksheetInfo(): ReactElement
   const worksheet = adjustments?.selfEmployedHealthInsuranceWorksheet
   const derivedLine1 = estimateHealthInsurancePremiums(info)
   const derivedLine4 = estimateScheduleCNetProfit(info)
+  const derivedLine5 = estimateProfitableSelfEmploymentIncome(info)
+  const derivedLine9 = sumRetirementContributions(info)
+  const derivedLine12 = toFiniteNumber(
+    info.otherIncome?.foreignEarnedIncomeExclusion
+  )
   const derivedLine14 = toFiniteNumber(
     adjustments?.selfEmployedHealthInsuranceDeduction
   )
+  const deductibleSelfEmploymentTax = estimateDeductibleSelfEmploymentTax(
+    info,
+    activeYear
+  )
+  const worksheetFields = worksheetFieldsForYear(activeYear)
 
   const methods = useForm<WorksheetForm>({
     defaultValues: toFormValues(
       worksheet,
       derivedLine1,
       derivedLine4,
+      derivedLine5,
+      derivedLine9,
+      derivedLine12,
       derivedLine14
     )
   })
   const {
     handleSubmit,
     reset,
-    formState: { isDirty }
+    setValue,
+    control,
+    formState: { dirtyFields }
   } = methods
   const { navButtons, onAdvance } = usePager()
   const dispatch = useDispatch()
+  const [line1, line2, line4, line5, line9, line11, line12] = useWatch({
+    control,
+    name: ['line1', 'line2', 'line4', 'line5', 'line9', 'line11', 'line12']
+  })
+
+  const derivedLines = computeForm7206DerivedLines({
+    line1,
+    line2,
+    line4,
+    line5,
+    line9,
+    line11,
+    line12,
+    deductibleSelfEmploymentTax
+  })
+  const hasManualEdits =
+    dirtyFields.line1 === true ||
+    dirtyFields.line2 === true ||
+    dirtyFields.line4 === true ||
+    dirtyFields.line5 === true ||
+    dirtyFields.line9 === true ||
+    dirtyFields.line11 === true ||
+    dirtyFields.line12 === true
 
   const onSubmit = (formData: WorksheetForm): void => {
     const nextWorksheet = toWorksheet(formData)
@@ -189,19 +419,67 @@ export default function SelfEmployedHealthInsuranceWorksheetInfo(): ReactElement
       worksheet,
       derivedLine1,
       derivedLine4,
+      derivedLine5,
+      derivedLine9,
+      derivedLine12,
       derivedLine14
     )
-    if (!isDirty && !_.isEqual(methods.getValues(), nextValues)) {
+    if (!hasManualEdits && !_.isEqual(methods.getValues(), nextValues)) {
       reset(nextValues)
     }
   }, [
     worksheet,
     derivedLine1,
     derivedLine4,
+    derivedLine5,
+    derivedLine9,
+    derivedLine12,
     derivedLine14,
-    isDirty,
+    hasManualEdits,
     reset,
     methods
+  ])
+
+  useEffect(() => {
+    setValue('line3', toFieldValue(derivedLines.line3), {
+      shouldDirty: false,
+      shouldValidate: false
+    })
+    setValue('line6', formatForm7206Ratio(derivedLines.line6) ?? '', {
+      shouldDirty: false,
+      shouldValidate: false
+    })
+    setValue('line7', toFieldValue(derivedLines.line7), {
+      shouldDirty: false,
+      shouldValidate: false
+    })
+    setValue('line8', toFieldValue(derivedLines.line8), {
+      shouldDirty: false,
+      shouldValidate: false
+    })
+    setValue('line10', toFieldValue(derivedLines.line10), {
+      shouldDirty: false,
+      shouldValidate: false
+    })
+    setValue('line13', toFieldValue(derivedLines.line13), {
+      shouldDirty: false,
+      shouldValidate: false
+    })
+    setValue('line14', toFieldValue(derivedLines.line14 ?? derivedLine14), {
+      shouldDirty: false,
+      shouldValidate: false
+    })
+  }, [
+    derivedLines.line3,
+    derivedLines.line6,
+    derivedLines.line7,
+    derivedLines.line8,
+    derivedLines.line10,
+    derivedLines.line13,
+    derivedLines.line14,
+    derivedLine14,
+    setValue,
+    worksheet
   ])
 
   const sourceLookup = (fieldName: string) =>
@@ -227,8 +505,9 @@ export default function SelfEmployedHealthInsuranceWorksheetInfo(): ReactElement
         </p>
       ) : undefined}
       <p>
-        Enter or review the worksheet lines as needed. Line 14 is used for
-        Schedule 1, line 17.
+        UsTaxes suggests defaults for lines 1, 4, 5, 9, and 12 when it can, and
+        calculates lines 3, 6, 7, 8, 10, 13, and 14 automatically. Line 14 flows
+        to Schedule 1, line 17.
       </p>
       {derivedLine4 !== undefined ? (
         <p>
@@ -244,90 +523,17 @@ export default function SelfEmployedHealthInsuranceWorksheetInfo(): ReactElement
         </p>
       )}
       <Grid container spacing={2}>
-        <LabeledInput
-          label="Line 1"
-          name="line1"
-          patternConfig={Patterns.currency}
-          required={false}
-        />
-        <LabeledInput
-          label="Line 2"
-          name="line2"
-          patternConfig={Patterns.currency}
-          required={false}
-        />
-        <LabeledInput
-          label="Line 3"
-          name="line3"
-          patternConfig={Patterns.currency}
-          required={false}
-        />
-        <LabeledInput
-          label="Line 4"
-          name="line4"
-          patternConfig={Patterns.currency}
-          required={false}
-        />
-        <LabeledInput
-          label="Line 5"
-          name="line5"
-          patternConfig={Patterns.currency}
-          required={false}
-        />
-        <LabeledInput
-          label="Line 6"
-          name="line6"
-          patternConfig={Patterns.currency}
-          required={false}
-        />
-        <LabeledInput
-          label="Line 7"
-          name="line7"
-          patternConfig={Patterns.currency}
-          required={false}
-        />
-        <LabeledInput
-          label="Line 8"
-          name="line8"
-          patternConfig={Patterns.currency}
-          required={false}
-        />
-        <LabeledInput
-          label="Line 9"
-          name="line9"
-          patternConfig={Patterns.currency}
-          required={false}
-        />
-        <LabeledInput
-          label="Line 10"
-          name="line10"
-          patternConfig={Patterns.currency}
-          required={false}
-        />
-        <LabeledInput
-          label="Line 11"
-          name="line11"
-          patternConfig={Patterns.currency}
-          required={false}
-        />
-        <LabeledInput
-          label="Line 12"
-          name="line12"
-          patternConfig={Patterns.currency}
-          required={false}
-        />
-        <LabeledInput
-          label="Line 13"
-          name="line13"
-          patternConfig={Patterns.currency}
-          required={false}
-        />
-        <LabeledInput
-          label="Line 14 (Schedule 1 line 17)"
-          name="line14"
-          patternConfig={Patterns.currency}
-          required={false}
-        />
+        {worksheetFields.map((field) => (
+          <LabeledInput
+            key={field.name}
+            label={field.label}
+            tooltip={field.tooltip}
+            name={field.name}
+            patternConfig={field.patternConfig ?? Patterns.currency}
+            required={false}
+            disabled={field.disabled}
+          />
+        ))}
       </Grid>
       {navButtons}
     </form>

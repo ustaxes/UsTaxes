@@ -340,3 +340,16 @@ export const setAdjustmentsSources = (
   })
   return next
 }
+
+export const setOtherIncomeSources = (
+  sources: InformationSources | undefined,
+  source: DataSource
+): InformationSources => {
+  let next = sources ?? {}
+  next = setSource(
+    next,
+    ['otherIncome', 'foreignEarnedIncomeExclusion'],
+    source
+  )
+  return next
+}
