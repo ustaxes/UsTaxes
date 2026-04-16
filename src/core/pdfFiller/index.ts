@@ -8,6 +8,7 @@ export type RenderedField = string | boolean | RadioSelect | undefined
 export type FillInstruction =
   | { name: string; kind: 'text'; value: string | number | undefined }
   | { name: string; kind: 'checkbox'; value: boolean | undefined }
+  | { name: string; kind: 'select'; value: string | number | undefined }
   | { name: string; kind: 'radio'; value: RadioSelect | undefined }
 
 export type FillInstructions = FillInstruction[]
@@ -22,6 +23,11 @@ export const checkbox = (
   name: string,
   value: boolean | undefined
 ): FillInstruction => ({ name, kind: 'checkbox', value })
+
+export const select = (
+  name: string,
+  value: string | number | undefined
+): FillInstruction => ({ name, kind: 'select', value })
 
 export const radio = (
   name: string,

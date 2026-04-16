@@ -159,7 +159,7 @@ export default class ScheduleEIC extends F1040Attachment {
   // 4.5 covered above
   // 4.6 dependent of another
   dependentOfAnother = (): boolean =>
-    this.f1040.info.taxPayer.primaryPerson.isTaxpayerDependent ||
+    (this.f1040.info.taxPayer.primaryPerson.isTaxpayerDependent ?? false) ||
     (this.f1040.info.taxPayer.spouse?.isTaxpayerDependent ?? false)
 
   //
@@ -259,13 +259,21 @@ export default class ScheduleEIC extends F1040Attachment {
       return 0
     }
 
-    return Math.max(
-      0,
-      evaluatePiecewise(
-        f[this.qualifyingDependents().length],
-        this.roundIncome(income)
-      )
-    )
+    const index = this.qualifyingDependents().length
+    if (index >= f.length) {
+      return 0
+    }
+    const formula = f[index] as Piecewise | undefined
+    if (formula === undefined) {
+      return 0
+    }
+
+    const minimumIncome = formula[1]?.lowerBound ?? 0
+    if (income < minimumIncome) {
+      return 0
+    }
+
+    return Math.max(0, evaluatePiecewise(formula, this.roundIncome(income)))
   }
 
   //
@@ -316,16 +324,24 @@ export default class ScheduleEIC extends F1040Attachment {
     )
   }
 
-  qualifyingDependents = (): Dependent[] =>
-    this.f1040.info.taxPayer.dependents
-      .filter(
-        (d) =>
-          d.dateOfBirth.getFullYear() >= this.qualifyingCutoffYear ||
+  qualifyingDependents = (): Dependent[] => {
+    const withDob = this.f1040.info.taxPayer.dependents.filter(
+      (d): d is Dependent & { dateOfBirth: Date } =>
+        d.dateOfBirth instanceof Date
+    )
+
+    return withDob
+      .filter((d) => {
+        const year = d.dateOfBirth.getFullYear()
+        return (
+          year >= this.qualifyingCutoffYear ||
           ((d.qualifyingInfo?.isStudent ?? false) &&
-            d.dateOfBirth.getFullYear() >= this.qualifyingStudentCutoffYear)
-      )
-      .sort((d) => d.dateOfBirth.getFullYear())
+            year >= this.qualifyingStudentCutoffYear)
+        )
+      })
+      .sort((a, b) => a.dateOfBirth.getFullYear() - b.dateOfBirth.getFullYear())
       .slice(0, 3)
+  }
 
   qualifyingDependentsFilled = (): Array<Dependent | undefined> => {
     const res = this.qualifyingDependents()
@@ -343,7 +359,9 @@ export default class ScheduleEIC extends F1040Attachment {
     this.qualifyingDependentsFilled().map((d) => d?.ssid)
 
   years = (): Array<number | undefined> =>
-    this.qualifyingDependentsFilled().map((d) => d?.dateOfBirth.getFullYear())
+    this.qualifyingDependentsFilled().map((d) =>
+      d?.dateOfBirth ? d.dateOfBirth.getFullYear() : undefined
+    )
 
   // EIC line 3
   birthYearFields = (): Array<string | undefined> =>

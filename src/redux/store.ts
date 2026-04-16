@@ -56,7 +56,13 @@ const serializeDeserialize =
       const ob = s as { [k: string]: any }
       return Object.keys(ob).reduce((acc, k) => {
         const newValue = (() => {
+          if (k === 'sources') {
+            return ob[k]
+          }
           if (dateKey.exec(k) !== null) {
+            if (ob[k] === null || ob[k] === undefined) {
+              return ob[k]
+            }
             return f(ob[k] as Date | string)
           }
           return recur(ob[k])

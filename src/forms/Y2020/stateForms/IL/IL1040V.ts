@@ -107,14 +107,15 @@ export default class IL1040V extends Form {
    * Index 10: Address
    */
   Address = (): string | undefined =>
-    this.info.taxPayer.primaryPerson.address.address
+    this.info.taxPayer.primaryPerson.address?.address
 
   f10 = (): string | undefined => this.Address()
 
   /**
    * Index 11: City
    */
-  City = (): string | undefined => this.info.taxPayer.primaryPerson.address.city
+  City = (): string | undefined =>
+    this.info.taxPayer.primaryPerson.address?.city
 
   f11 = (): string | undefined => this.City()
 
@@ -122,14 +123,14 @@ export default class IL1040V extends Form {
    * Index 12: State
    */
   State = (): string | undefined =>
-    this.info.taxPayer.primaryPerson.address.state
+    this.info.taxPayer.primaryPerson.address?.state
 
   f12 = (): string | undefined => this.State()
 
   /**
    * Index 13: ZIP
    */
-  ZIP = (): string | undefined => this.info.taxPayer.primaryPerson.address.zip
+  ZIP = (): string | undefined => this.info.taxPayer.primaryPerson.address?.zip
 
   f13 = (): string | undefined => this.ZIP()
 

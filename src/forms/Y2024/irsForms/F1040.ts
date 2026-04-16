@@ -49,6 +49,7 @@ import F4136 from './F4136'
 import F2439 from './F2439'
 import F2441 from './F2441'
 import ScheduleC from './ScheduleC'
+import F7206 from './F7206'
 import F8949 from './F8949'
 import F6251 from './F6251'
 import F4137 from './F4137'
@@ -95,6 +96,7 @@ export default class F1040 extends F1040Base {
   f8888?: F8888
   f8889: F8889
   f8889Spouse?: F8889
+  f7206?: F7206
   f8910?: F8910
   f8919?: F8919
   f8936?: F8936
@@ -117,6 +119,12 @@ export default class F1040 extends F1040Base {
 
     this.scheduleA = new ScheduleA(this)
     this.scheduleB = new ScheduleB(this)
+    if (
+      (this.info.businesses ?? []).length > 0 ||
+      this.f1099necs().length > 0
+    ) {
+      this.scheduleC = new ScheduleC(this)
+    }
     this.scheduleD = new ScheduleD(this)
     this.scheduleE = new ScheduleE(this)
     this.scheduleEIC = new ScheduleEIC(this)
@@ -134,6 +142,19 @@ export default class F1040 extends F1040Base {
     // add in separate form 8889 for the spouse
     if (this.info.taxPayer.spouse) {
       this.f8889Spouse = new F8889(this, this.info.taxPayer.spouse)
+    }
+
+    const worksheet =
+      this.info.adjustments?.selfEmployedHealthInsuranceWorksheet
+    const hasWorksheet =
+      worksheet !== undefined &&
+      Object.values(worksheet).some((value) => value !== undefined)
+    if (
+      this.info.adjustments?.selfEmployedHealthInsuranceDeduction !==
+        undefined ||
+      hasWorksheet
+    ) {
+      this.f7206 = new F7206(this)
     }
 
     this.f8959 = new F8959(this)
@@ -188,6 +209,7 @@ export default class F1040 extends F1040Base {
     const res1: (F1040Attachment | undefined)[] = [
       this.scheduleA,
       this.scheduleB,
+      this.scheduleC,
       this.scheduleD,
       this.scheduleE,
       this.scheduleSE,
@@ -203,6 +225,7 @@ export default class F1040 extends F1040Base {
       this.f8888,
       this.f8889,
       this.f8889Spouse,
+      this.f7206,
       this.f8910,
       this.f8936,
       this.f8949,
@@ -227,7 +250,7 @@ export default class F1040 extends F1040Base {
 
   // born before 1959/01/02
   bornBeforeDate = (): boolean =>
-    this.info.taxPayer.primaryPerson.dateOfBirth <
+    (this.info.taxPayer.primaryPerson.dateOfBirth ?? new Date()) <
     new Date(CURRENT_YEAR - 64, 0, 2)
 
   blind = (): boolean => this.info.taxPayer.primaryPerson.isBlind
@@ -250,8 +273,22 @@ export default class F1040 extends F1040Base {
     this.validW2s().reduce((res, w2) => res + w2.medicareIncome, 0)
 
   occupation = (r: PersonRole): string | undefined =>
-    this.info.w2s.find((w2) => w2.personRole === r && w2.occupation !== '')
-      ?.occupation
+    (() => {
+      const person =
+        r === PersonRole.PRIMARY
+          ? this.info.taxPayer.primaryPerson
+          : this.info.taxPayer.spouse
+      const explicit = person?.occupation?.trim()
+      if (explicit) {
+        return explicit
+      }
+      return this.info.w2s.find(
+        (w2) =>
+          w2.personRole === r &&
+          w2.occupation.trim() !== '' &&
+          w2.occupation.toUpperCase() !== 'UNKNOWN'
+      )?.occupation
+    })()
 
   standardDeduction = (): number | undefined => {
     const filingStatus = this.info.taxPayer.filingStatus
@@ -264,7 +301,7 @@ export default class F1040 extends F1040Base {
     ].reduce((res, e) => res + +!!e, 0)
 
     if (
-      this.info.taxPayer.primaryPerson.isTaxpayerDependent ||
+      (this.info.taxPayer.primaryPerson.isTaxpayerDependent ?? false) ||
       (this.info.taxPayer.spouse?.isTaxpayerDependent ?? false)
     ) {
       const l4a = Math.min(
@@ -501,7 +538,7 @@ export default class F1040 extends F1040Base {
       fieldArr = [
         `${dep.firstName} ${dep.lastName}`,
         dep.ssid,
-        dep.relationship,
+        dep.relationship ?? '',
         this.qualifyingDependents.qualifiesChild(dep),
         this.qualifyingDependents.qualifiesOther(dep)
       ]
@@ -515,8 +552,9 @@ export default class F1040 extends F1040Base {
   _depFieldMappings = (): Array<string | boolean> =>
     Array.from(Array(20)).map((u, n: number) => this._depField(n))
 
-  fields = (): Field[] =>
-    [
+  fields = (): Field[] => {
+    const address = this.info.taxPayer.primaryPerson.address
+    return [
       '',
       '',
       '',
@@ -530,14 +568,14 @@ export default class F1040 extends F1040Base {
         ? this.info.taxPayer.spouse?.lastName ?? ''
         : '',
       this.info.taxPayer.spouse?.ssid,
-      this.info.taxPayer.primaryPerson.address.address,
-      this.info.taxPayer.primaryPerson.address.aptNo,
-      this.info.taxPayer.primaryPerson.address.city,
-      this.info.taxPayer.primaryPerson.address.state,
-      this.info.taxPayer.primaryPerson.address.zip,
-      this.info.taxPayer.primaryPerson.address.foreignCountry,
-      this.info.taxPayer.primaryPerson.address.province,
-      this.info.taxPayer.primaryPerson.address.postalCode,
+      address?.address,
+      address?.aptNo,
+      address?.city,
+      address?.state,
+      address?.zip,
+      address?.foreignCountry,
+      address?.province,
+      address?.postalCode,
       false, // election campaign boxes
       false,
       this.info.taxPayer.filingStatus === FilingStatus.S,
@@ -551,7 +589,7 @@ export default class F1040 extends F1040Base {
       '',
       this.info.questions.CRYPTO ?? false,
       !(this.info.questions.CRYPTO ?? false),
-      this.info.taxPayer.primaryPerson.isTaxpayerDependent,
+      this.info.taxPayer.primaryPerson.isTaxpayerDependent ?? false,
       this.info.taxPayer.spouse?.isTaxpayerDependent ?? false,
       false, // TODO: spouse itemizes separately,
       this.bornBeforeDate(),
@@ -648,10 +686,12 @@ export default class F1040 extends F1040Base {
       '',
       ''
     ].map((x) => (x === undefined ? '' : x))
+  }
 
   // Generated from Y2024 PDF schema (schemas/Y2024/f1040.json) cross-referenced with fields()
   fillInstructions = (): FillInstructions => {
     const depFields = this._depFieldMappings()
+    const address = this.info.taxPayer.primaryPerson.address
 
     return [
       // Page 1 — header placeholders (0-2)
@@ -690,35 +730,35 @@ export default class F1040 extends F1040Base {
       // Address (9-16)
       text(
         'topmostSubform[0].Page1[0].Address_ReadOrder[0].f1_10[0]',
-        this.info.taxPayer.primaryPerson.address.address
+        address?.address
       ),
       text(
         'topmostSubform[0].Page1[0].Address_ReadOrder[0].f1_11[0]',
-        this.info.taxPayer.primaryPerson.address.aptNo
+        address?.aptNo
       ),
       text(
         'topmostSubform[0].Page1[0].Address_ReadOrder[0].f1_12[0]',
-        this.info.taxPayer.primaryPerson.address.city
+        address?.city
       ),
       text(
         'topmostSubform[0].Page1[0].Address_ReadOrder[0].f1_13[0]',
-        this.info.taxPayer.primaryPerson.address.state
+        address?.state
       ),
       text(
         'topmostSubform[0].Page1[0].Address_ReadOrder[0].f1_14[0]',
-        this.info.taxPayer.primaryPerson.address.zip
+        address?.zip
       ),
       text(
         'topmostSubform[0].Page1[0].Address_ReadOrder[0].f1_15[0]',
-        this.info.taxPayer.primaryPerson.address.foreignCountry
+        address?.foreignCountry
       ),
       text(
         'topmostSubform[0].Page1[0].Address_ReadOrder[0].f1_16[0]',
-        this.info.taxPayer.primaryPerson.address.province
+        address?.province
       ),
       text(
         'topmostSubform[0].Page1[0].Address_ReadOrder[0].f1_17[0]',
-        this.info.taxPayer.primaryPerson.address.postalCode
+        address?.postalCode
       ),
       // Campaign contribution checkboxes (17-18)
       checkbox('topmostSubform[0].Page1[0].c1_1[0]', false),
@@ -764,7 +804,7 @@ export default class F1040 extends F1040Base {
       // Standard deduction / dependent / age-blind checkboxes (29-35)
       checkbox(
         'topmostSubform[0].Page1[0].c1_6[0]',
-        this.info.taxPayer.primaryPerson.isTaxpayerDependent
+        this.info.taxPayer.primaryPerson.isTaxpayerDependent ?? false
       ),
       checkbox(
         'topmostSubform[0].Page1[0].c1_7[0]',

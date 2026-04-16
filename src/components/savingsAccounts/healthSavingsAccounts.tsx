@@ -1,5 +1,5 @@
 import { ReactElement } from 'react'
-import { Helmet } from 'react-helmet'
+import { Helmet } from 'react-helmet-async'
 import { useSelector } from 'react-redux'
 import { useYearSelector, useYearDispatch } from 'ustaxes/redux/yearDispatch'
 import { FormProvider, useForm } from 'react-hook-form'

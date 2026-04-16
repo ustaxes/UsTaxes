@@ -1,5 +1,5 @@
 import { ReactElement } from 'react'
-import { Helmet } from 'react-helmet'
+import { Helmet } from 'react-helmet-async'
 import { Link, useMediaQuery } from '@material-ui/core'
 import { StartButtons, SingleButtons } from './pager'
 import { isWeb } from 'ustaxes/core/util'
@@ -53,6 +53,8 @@ export default function GettingStarted(): ReactElement {
         <li>1099-INT</li>
         <li>1099-DIV</li>
         <li>1099-B</li>
+        <li>1099-NEC</li>
+        <li>1098 (Mortgage Interest)</li>
         <li>1098-E</li>
         <li>
           1099-R: support for normal distributions from IRA and pension

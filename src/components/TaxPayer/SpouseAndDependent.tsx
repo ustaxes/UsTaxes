@@ -1,5 +1,5 @@
-import { ReactElement, useEffect, useState } from 'react'
-import { Helmet } from 'react-helmet'
+import { ReactElement, useEffect, useRef, useState } from 'react'
+import { Helmet } from 'react-helmet-async'
 import { useForm, FormProvider } from 'react-hook-form'
 import { useDispatch, useSelector, TaxesState } from 'ustaxes/redux'
 import { Patterns } from 'ustaxes/components/Patterns'
@@ -33,6 +33,7 @@ import { Box, Grid } from '@material-ui/core'
 import { Person } from '@material-ui/icons'
 import { Alert } from '@material-ui/lab'
 import { intentionallyFloat } from 'ustaxes/core/util'
+import { getSource } from 'ustaxes/core/data/sources'
 
 interface UserPersonForm {
   firstName: string
@@ -85,19 +86,34 @@ const toDependentForm = (dependent: Dependent): UserDependentForm => {
 
   return {
     ...rest,
+    relationship: dependent.relationship ?? '',
     numberOfMonths: qualifyingInfo?.numberOfMonths.toString() ?? '',
     isStudent: qualifyingInfo?.isStudent ?? false,
-    dateOfBirth
+    dateOfBirth: dateOfBirth ? new Date(dateOfBirth) : undefined
   }
 }
 
 interface UserSpouseForm extends UserPersonForm {
   isTaxpayerDependent: boolean
+  isNonResidentAlien: boolean
+  occupation?: string
 }
 
 const blankUserSpouseForm = {
   ...blankUserPersonForm,
-  isTaxpayerDependent: false
+  isTaxpayerDependent: false,
+  isNonResidentAlien: false,
+  occupation: ''
+}
+
+const isNraSsid = (ssid: string): boolean => ssid.trim().toUpperCase() === 'NRA'
+
+const normalizeSsidInput = (ssid: string): string => {
+  const trimmed = ssid.trim()
+  if (isNraSsid(trimmed)) {
+    return 'NRA'
+  }
+  return trimmed.replace(/-/g, '')
 }
 
 const toSpouse = (formData: UserSpouseForm): Spouse<string> => {
@@ -105,22 +121,32 @@ const toSpouse = (formData: UserSpouseForm): Spouse<string> => {
     throw new Error('Called with undefined date of birth')
   }
 
+  const { isNonResidentAlien, ...rest } = formData
+  const ssid = isNonResidentAlien ? 'NRA' : normalizeSsidInput(formData.ssid)
+
   return {
-    ...formData,
+    ...rest,
+    ssid,
     role: PersonRole.SPOUSE,
-    dateOfBirth: formData.dateOfBirth.toISOString()
+    dateOfBirth: formData.dateOfBirth.toISOString(),
+    occupation:
+      formData.occupation?.trim() === '' ? undefined : formData.occupation
   }
 }
 
 const toSpouseForm = (spouse: Spouse): UserSpouseForm => ({
   ...spouse,
-  dateOfBirth: new Date(spouse.dateOfBirth)
+  isNonResidentAlien: isNraSsid(spouse.ssid),
+  dateOfBirth: spouse.dateOfBirth ? new Date(spouse.dateOfBirth) : undefined,
+  isTaxpayerDependent: spouse.isTaxpayerDependent ?? false,
+  occupation: spouse.occupation ?? ''
 })
 
 export const AddDependentForm = (): ReactElement => {
   const dependents = useSelector(
     (state: TaxesState) => state.information.taxPayer.dependents
   )
+  const sources = useSelector((state: TaxesState) => state.information.sources)
 
   const defaultValues = blankUserDependentForm
 
@@ -155,6 +181,9 @@ export const AddDependentForm = (): ReactElement => {
       secondary={(a) => formatSSID(a.ssid)}
       icon={() => <Person />}
       removeItem={(i) => dispatch(removeDependent(i))}
+      sources={sources}
+      sourcePath={['taxPayer', 'dependents']}
+      sourceForNew="user"
     >
       <Grid container spacing={2}>
         <PersonFields />
@@ -184,12 +213,31 @@ export const SpouseInfo = (): ReactElement => {
   const methods = useForm<UserSpouseForm>({
     defaultValues
   })
-  const { getValues } = methods
+  const { getValues, setValue, watch } = methods
   const dispatch = useDispatch()
 
   const spouse: Spouse | undefined = useSelector((state: TaxesState) => {
     return state.information.taxPayer.spouse
   })
+  const sources = useSelector((state: TaxesState) => state.information.sources)
+
+  const ssidValue = watch('ssid')
+  const isNonResidentAlien = watch('isNonResidentAlien')
+  const prevIsNonResidentAlien = useRef(isNonResidentAlien)
+
+  useEffect(() => {
+    if (isNonResidentAlien && !isNraSsid(ssidValue)) {
+      setValue('ssid', 'NRA', { shouldValidate: true })
+    }
+    if (
+      !isNonResidentAlien &&
+      prevIsNonResidentAlien.current &&
+      isNraSsid(ssidValue)
+    ) {
+      setValue('ssid', '', { shouldValidate: true })
+    }
+    prevIsNonResidentAlien.current = isNonResidentAlien
+  }, [isNonResidentAlien, ssidValue, setValue])
 
   const onSubmit = (): void => {
     dispatch(addSpouse(toSpouse(getValues())))
@@ -208,9 +256,22 @@ export const SpouseInfo = (): ReactElement => {
       onSubmitEdit={onSubmitEdit}
       max={1}
       removeItem={() => dispatch(removeSpouse)}
+      sources={sources}
+      sourcePath={['taxPayer', 'spouse']}
+      sourceHasIndex={false}
+      sourceForNew="user"
     >
       <Grid container spacing={2}>
-        <PersonFields autofocus={true}>
+        <PersonFields
+          autofocus={true}
+          ssidLabel="SSN / TIN (or NRA)"
+          ssidPatternConfig={Patterns.ssnOrNra}
+        >
+          <LabeledInput label="Spouse occupation" name="occupation" />
+          <LabeledCheckbox
+            label="Spouse is a nonresident alien (NRA)"
+            name="isNonResidentAlien"
+          />
           <LabeledCheckbox
             label="Check if your spouse is a dependent"
             name="isTaxpayerDependent"
@@ -235,6 +296,7 @@ export const FilingStatusDropdown = (): ReactElement => {
   const taxPayer: TaxPayer | undefined = useSelector((state: TaxesState) => {
     return state.information.taxPayer
   })
+  const sources = useSelector((state: TaxesState) => state.information.sources)
 
   const allowedFilingStatuses = filingStatuses(taxPayer)
 
@@ -307,6 +369,7 @@ export const FilingStatusDropdown = (): ReactElement => {
             keyMapping={(x, i) => i}
             textMapping={(status) => FilingStatusTexts[status]}
             name="filingStatus"
+            source={getSource(sources, ['taxPayer', 'filingStatus'])}
           />
         </Box>
         {error}

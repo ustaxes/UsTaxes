@@ -28,9 +28,14 @@ import SpouseAndDependent from './TaxPayer/SpouseAndDependent'
 import F1099Info from './income/F1099Info'
 import EstimatedTaxes from './payments/EstimatedTaxes'
 import RealEstate from './income/RealEstate'
+import BusinessInfo from './income/BusinessInfo'
+import ScheduleSEInfo from './income/ScheduleSEInfo'
 import GettingStarted from './GettingStarted'
+import F1098Info from './deductions/F1098Info'
 import F1098eInfo from './deductions/F1098eInfo'
 import ItemizedDeductions from './deductions/ItemizedDeductions'
+import AdjustmentsToIncome from './deductions/AdjustmentsToIncome'
+import SelfEmployedHealthInsuranceWorksheetInfo from './deductions/SelfEmployedHealthInsuranceWorksheet'
 import Questions from './Questions'
 import HelpAndFeedback from './HelpAndFeedback'
 import UserSettings from './UserSettings'
@@ -42,6 +47,7 @@ import IRA from './savingsAccounts/IRA'
 import OtherInvestments from './income/OtherInvestments'
 import { StockOptions } from './income/StockOptions'
 import { PartnershipIncome } from './income/PartnershipIncome'
+import F2555Info from './income/F2555Info'
 import { TaxYear } from 'ustaxes/core/data'
 import { AdvanceChildTaxCredit } from './Y2021/AdvanceChildTaxCredit'
 import { YearsTaxesState } from 'ustaxes/redux'
@@ -126,6 +132,16 @@ export const drawerSections: Section[] = [
       item('Income (1099)', Urls.income.f1099s, <F1099Info />),
       item('Rental income', Urls.income.realEstate, <RealEstate />),
       item(
+        'Business income (Schedule C)',
+        Urls.income.businesses,
+        <BusinessInfo />
+      ),
+      item(
+        'Self-employment tax (Schedule SE)',
+        Urls.income.scheduleSE,
+        <ScheduleSEInfo />
+      ),
+      item(
         'Other investments',
         Urls.income.otherInvestments,
         <OtherInvestments />
@@ -147,7 +163,23 @@ export const drawerSections: Section[] = [
   {
     title: 'Deductions',
     items: [
+      item('Mortgage Interest (1098)', Urls.deductions.f1098s, <F1098Info />),
       item('Student Loan Interest', Urls.deductions.f1098es, <F1098eInfo />),
+      item(
+        'Adjustments to Income',
+        Urls.deductions.adjustments,
+        <AdjustmentsToIncome />
+      ),
+      item(
+        'Form 2555 / Foreign Earned Income Exclusion',
+        Urls.income.form2555,
+        <F2555Info />
+      ),
+      item(
+        'Form 7206 / Self-employed health insurance',
+        Urls.deductions.selfEmployedHealthInsuranceWorksheet,
+        <SelfEmployedHealthInsuranceWorksheetInfo />
+      ),
       item(
         'Itemized Deductions',
         Urls.deductions.itemized,
