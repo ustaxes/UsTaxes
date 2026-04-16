@@ -24,11 +24,6 @@ const sum1098Interest = (f1040: F1040): number =>
     .map((f) => f.interest + (f.points ?? 0))
     .reduce((l, r) => l + r, 0)
 
-const sum1098MortgageInsurance = (f1040: F1040): number =>
-  f1040.info.f1098s
-    .map((f) => f.mortgageInsurancePremiums ?? 0)
-    .reduce((l, r) => l + r, 0)
-
 export default class ScheduleA extends F1040Attachment {
   tag: FormTag = 'f1040sa'
   itemizedDeductions: ItemizedDeductions
@@ -40,11 +35,6 @@ export default class ScheduleA extends F1040Attachment {
       ...blankItemizedDeductions,
       ...(f1040.info.itemizedDeductions ?? {})
     }
-    this.itemizedDeductions.interest8a =
-      Number(this.itemizedDeductions.interest8a) + sum1098Interest(f1040)
-    this.itemizedDeductions.interest8d =
-      Number(this.itemizedDeductions.interest8d) +
-      sum1098MortgageInsurance(f1040)
   }
 
   isNeeded = (): boolean => {
@@ -99,7 +89,8 @@ export default class ScheduleA extends F1040Attachment {
 
   // TODO
   l8AllMortgageLoan = (): boolean => false
-  l8a = (): number => Number(this.itemizedDeductions.interest8a)
+  l8a = (): number =>
+    Number(this.itemizedDeductions.interest8a) + sum1098Interest(this.f1040)
 
   // TODO
   l8bUnreportedInterest1 = (): string | undefined => undefined

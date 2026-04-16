@@ -40,11 +40,6 @@ export default class ScheduleA extends F1040Attachment {
       ...blankItemizedDeductions,
       ...(f1040.info.itemizedDeductions ?? {})
     }
-    this.itemizedDeductions.interest8a =
-      Number(this.itemizedDeductions.interest8a) + sum1098Interest(f1040)
-    this.itemizedDeductions.interest8d =
-      Number(this.itemizedDeductions.interest8d) +
-      sum1098MortgageInsurance(f1040)
   }
 
   isNeeded = (): boolean => {
@@ -99,7 +94,8 @@ export default class ScheduleA extends F1040Attachment {
 
   // TODO
   l8AllMortgageLoan = (): boolean => false
-  l8a = (): number => Number(this.itemizedDeductions.interest8a)
+  l8a = (): number =>
+    Number(this.itemizedDeductions.interest8a) + sum1098Interest(this.f1040)
 
   // TODO
   l8bUnreportedInterest1 = (): string | undefined => undefined
@@ -107,7 +103,9 @@ export default class ScheduleA extends F1040Attachment {
   l8bUnreportedInterest2 = (): string | undefined => undefined
   l8b = (): number => Number(this.itemizedDeductions.interest8b)
   l8c = (): number => Number(this.itemizedDeductions.interest8c)
-  l8d = (): number => Number(this.itemizedDeductions.interest8d)
+  l8d = (): number =>
+    Number(this.itemizedDeductions.interest8d) +
+    sum1098MortgageInsurance(this.f1040)
   l8e = (): number => this.l8a() + this.l8b() + this.l8c() + this.l8d()
 
   // Used in Form 8960

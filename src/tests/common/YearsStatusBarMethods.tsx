@@ -1,10 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
-import {
-  waitFor,
-  waitForElementToBeRemoved,
-  within
-} from '@testing-library/react'
+import { waitFor, within } from '@testing-library/react'
 import { enumKeys } from 'ustaxes/core/util'
 import { TaxYear, TaxYears } from 'ustaxes/core/data'
 import DomMethods from './DomMethods'
@@ -57,6 +53,8 @@ export default class YearStatusBarMethods extends DomMethods {
     await this.user.selectOptions(this.yearSelect(), [y])
     await this.user.click(this.yearSelectConfirm()!)
 
-    await waitForElementToBeRemoved(() => this.yearSelectConfirm())
+    await waitFor(() => {
+      expect(this.yearSelectConfirm()).not.toBeInTheDocument()
+    })
   }
 }

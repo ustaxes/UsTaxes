@@ -132,6 +132,22 @@ describe('years', () => {
     })
   })
 
+  it('renders the earliest supported year without debug output', async () => {
+    const earliestYear = 'Y2019'
+    const form = new TestForm({
+      ...blankYearTaxesState,
+      [earliestYear]: blankState,
+      activeYear: earliestYear
+    })
+
+    await waitFor(() => {
+      expect(form.yearStatus.yearValue()).toEqual(earliestYear)
+      expect(form.rendered().queryByText(/active=/i)).not.toBeInTheDocument()
+    })
+
+    form.cleanup()
+  })
+
   it('should set active year in model', async () => {
     await fc
       .assert(

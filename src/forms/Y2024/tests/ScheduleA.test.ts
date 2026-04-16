@@ -72,4 +72,23 @@ describe('ScheduleA', () => {
     expect(f1040.scheduleA.l8d()).toBeUndefined()
     expect(f1040.scheduleA.l8e()).toEqual(1100)
   })
+
+  it('adds 1098 mortgage interest without double-counting persisted itemized values', () => {
+    const info: ValidatedInformation = {
+      ...baseInfo,
+      f1098s: [sample1098],
+      itemizedDeductions: {
+        interest8a: 50,
+        interest8d: 25
+      }
+    }
+
+    const f1040 = run(testKit.builder.build(info, []).f1040())
+      .map(commonTests.findF1040OrFail)
+      .orThrow()
+
+    expect(f1040.scheduleA.l8a()).toEqual(1150)
+    expect(f1040.scheduleA.l8d()).toBeUndefined()
+    expect(f1040.scheduleA.l8e()).toEqual(1150)
+  })
 })
