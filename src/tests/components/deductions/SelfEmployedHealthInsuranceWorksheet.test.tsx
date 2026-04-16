@@ -129,4 +129,118 @@ describe('SelfEmployedHealthInsuranceWorksheet', () => {
       ).toBeInTheDocument()
     })
   })
+
+  it('prefills line 4 for Y2025 when multiple 1099-NECs exist and the business page only has identifying details', async () => {
+    const info: Information = {
+      ...blankState,
+      taxPayer: {
+        filingStatus: FilingStatus.S,
+        primaryPerson: {
+          firstName: 'Taylor',
+          lastName: 'Taxpayer',
+          ssid: '123456789',
+          role: PersonRole.PRIMARY,
+          isBlind: false,
+          dateOfBirth: new Date(1990, 0, 1),
+          isTaxpayerDependent: false,
+          address: {
+            address: '123 Maple St',
+            city: 'Austin',
+            state: 'TX',
+            zip: '78701'
+          }
+        },
+        dependents: []
+      },
+      w2s: [
+        {
+          employer: { EIN: '111111111', employerName: 'Day Job Inc' },
+          personRole: PersonRole.PRIMARY,
+          occupation: 'Engineer',
+          state: 'TX',
+          income: 50000,
+          medicareIncome: 50000,
+          fedWithholding: 4500,
+          ssWages: 50000,
+          ssWithholding: 3100,
+          medicareWithholding: 725,
+          stateWages: 50000,
+          stateWithholding: 0
+        }
+      ],
+      businesses: [
+        {
+          name: 'Side Gig',
+          principalBusinessOrProfession: 'Consulting',
+          address: {
+            address: '456 Oak Ave',
+            city: 'Austin',
+            state: 'TX',
+            zip: '78702'
+          },
+          income: {
+            grossReceipts: 0,
+            returnsAndAllowances: 0,
+            otherIncome: undefined
+          },
+          expenses: {}
+        }
+      ],
+      selfEmployedIncome: [
+        {
+          businessName: 'Side Gig',
+          personRole: PersonRole.PRIMARY,
+          grossReceipts: 0,
+          expenses: 0
+        }
+      ],
+      f1099s: [
+        {
+          payer: 'Client A',
+          personRole: PersonRole.PRIMARY,
+          type: Income1099Type.NEC,
+          form: {
+            nonemployeeCompensation: 6400
+          }
+        },
+        {
+          payer: 'Client B',
+          personRole: PersonRole.PRIMARY,
+          type: Income1099Type.NEC,
+          form: {
+            nonemployeeCompensation: 2500
+          }
+        },
+        {
+          payer: 'Client C',
+          personRole: PersonRole.PRIMARY,
+          type: Income1099Type.NEC,
+          form: {
+            nonemployeeCompensation: 1100
+          }
+        }
+      ]
+    }
+    const store = createStoreUnpersisted(info)
+
+    renderWithProviders(
+      <Provider store={store}>
+        <PagerContext.Provider
+          value={{
+            onAdvance: jest.fn(),
+            navButtons: <PagerButtons submitText="Save and Continue" />
+          }}
+        >
+          <SelfEmployedHealthInsuranceWorksheetInfo />
+        </PagerContext.Provider>
+      </Provider>
+    )
+
+    await waitFor(() => {
+      expect(screen.getByDisplayValue('10,000')).toBeInTheDocument()
+      expect(
+        screen.getByText(/Current Schedule C net profit estimate/i)
+      ).toBeInTheDocument()
+    })
+  })
 })

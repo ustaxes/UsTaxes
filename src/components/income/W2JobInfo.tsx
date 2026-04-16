@@ -34,6 +34,7 @@ import { addW2, editW2, removeW2 } from 'ustaxes/redux/actions'
 import { Alert } from '@material-ui/lab'
 import {
   enumKeys,
+  intentionallyFloat,
   parseFormNumber,
   parseFormNumberOrThrow
 } from 'ustaxes/core/util'
@@ -178,6 +179,11 @@ export default function W2JobInfo(): ReactElement {
   const methods = useForm<IncomeW2UserInput>({
     defaultValues
   })
+  const { handleSubmit } = methods
+  const [isW2FormOpen, setW2FormOpen] = useState(false)
+  const [editingW2Index, setEditingW2Index] = useState<number | undefined>(
+    undefined
+  )
 
   const { navButtons, onAdvance } = usePager()
 
@@ -211,12 +217,26 @@ export default function W2JobInfo(): ReactElement {
       dispatch(editW2({ index, value: toIncomeW2(formData) }))
     }
 
+  const onSubmit = (formData: IncomeW2UserInput): void => {
+    if (isW2FormOpen) {
+      if (editingW2Index !== undefined) {
+        onSubmitEdit(editingW2Index)(formData)
+      } else if (!_.isEqual(formData, blankW2UserInput)) {
+        onSubmitAdd(formData)
+      }
+    }
+
+    onAdvance()
+  }
+
   const w2sBlock = (
     <FormListContainer<IncomeW2UserInput>
       defaultValues={defaultValues}
       items={w2s.map((a) => toIncomeW2UserInput(a))}
       onSubmitAdd={onSubmitAdd}
       onSubmitEdit={onSubmitEdit}
+      onOpenStateChange={setW2FormOpen}
+      onEditingStateChange={setEditingW2Index}
       removeItem={(i) => dispatch(removeW2(i))}
       icon={() => <Work />}
       primary={(w2: IncomeW2UserInput) =>
@@ -359,7 +379,7 @@ export default function W2JobInfo(): ReactElement {
 
   return (
     <FormProvider {...methods}>
-      <form tabIndex={-1} onSubmit={onAdvance}>
+      <form tabIndex={-1} onSubmit={intentionallyFloat(handleSubmit(onSubmit))}>
         <Helmet>
           <title>Job Information | Income | UsTaxes.org</title>
         </Helmet>

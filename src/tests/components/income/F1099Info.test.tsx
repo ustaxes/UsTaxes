@@ -223,5 +223,72 @@ describe('F1099Info', () => {
         expect(screen.getByText('1099-B')).toBeInTheDocument()
       })
     })
+
+    it('saves an in-progress 1099-NEC draft when Save and Continue is clicked', async () => {
+      const onAdvance = jest.fn()
+      const store = createStoreUnpersisted(testInformationState)
+      const navButtons = <PagerButtons submitText="Save and Continue" />
+      const user = setupUserEvent()
+
+      renderWithProviders(
+        <Provider store={store}>
+          <PagerContext.Provider value={{ onAdvance, navButtons }}>
+            <F1099Info />
+          </PagerContext.Provider>
+        </Provider>
+      )
+
+      await user.click(screen.getByText('Add'))
+
+      act(() => {
+        fireEvent.change(screen.getByLabelText(labelMatcher('Form Type')), {
+          target: { value: Income1099Type.NEC }
+        })
+      })
+
+      await waitFor(() => {
+        expect(
+          screen.getByLabelText(labelMatcher(/Nonemployee compensation/i))
+        ).toBeInTheDocument()
+      })
+
+      act(() => {
+        fireEvent.change(
+          screen.getByLabelText(
+            labelMatcher('Enter name of bank, broker firm, or other payer')
+          ),
+          {
+            target: { value: 'Gig Client' }
+          }
+        )
+        fireEvent.change(screen.getByLabelText(labelMatcher(/Recipient/)), {
+          target: { value: PersonRole.PRIMARY }
+        })
+        fireEvent.change(
+          screen.getByLabelText(labelMatcher(/Nonemployee compensation/i)),
+          {
+            target: { value: '6400' }
+          }
+        )
+      })
+
+      await user.click(
+        screen.getByRole('button', { name: 'Save and Continue' })
+      )
+
+      await waitFor(() => {
+        const state = store.getState()
+        expect(state[state.activeYear].f1099s.at(-1)).toMatchObject({
+          payer: 'Gig Client',
+          type: Income1099Type.NEC,
+          personRole: PersonRole.PRIMARY,
+          form: {
+            nonemployeeCompensation: 6400
+          }
+        })
+      })
+
+      expect(onAdvance).toHaveBeenCalledTimes(1)
+    })
   })
 })

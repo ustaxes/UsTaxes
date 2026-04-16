@@ -1,9 +1,10 @@
-import { ReactElement } from 'react'
+import { ReactElement, useState } from 'react'
 import { Helmet } from 'react-helmet-async'
 import { Link } from 'react-router-dom'
 import Alert from '@material-ui/lab/Alert'
 import { useForm, FormProvider } from 'react-hook-form'
 import { Icon, Grid } from '@material-ui/core'
+import _ from 'lodash'
 import { useDispatch, useSelector, TaxesState } from 'ustaxes/redux'
 import { add1099, edit1099, remove1099 } from 'ustaxes/redux/actions'
 import { usePager } from 'ustaxes/components/pager'
@@ -277,6 +278,10 @@ export default function F1099Info(): ReactElement {
   const methods = useForm<F1099UserInput>({ defaultValues })
   const { handleSubmit, watch } = methods
   const selectedType: Income1099Type | undefined = watch('formType')
+  const [is1099FormOpen, set1099FormOpen] = useState(false)
+  const [editing1099Index, setEditing1099Index] = useState<number | undefined>(
+    undefined
+  )
 
   const dispatch = useDispatch()
 
@@ -297,6 +302,18 @@ export default function F1099Info(): ReactElement {
         dispatch(edit1099({ value: payload, index }))
       }
     }
+
+  const onSubmit = (formData: F1099UserInput): void => {
+    if (is1099FormOpen) {
+      if (editing1099Index !== undefined) {
+        onSubmitEdit(editing1099Index)(formData)
+      } else if (!_.isEqual(formData, blankUserInput)) {
+        onSubmitAdd(formData)
+      }
+    }
+
+    onAdvance()
+  }
 
   const people: Person[] = useSelector((state: TaxesState) => [
     state.information.taxPayer.primaryPerson,
@@ -479,6 +496,8 @@ export default function F1099Info(): ReactElement {
       defaultValues={defaultValues}
       onSubmitAdd={onSubmitAdd}
       onSubmitEdit={onSubmitEdit}
+      onOpenStateChange={set1099FormOpen}
+      onEditingStateChange={setEditing1099Index}
       items={f1099s.map((a) => toUserInput(a))}
       removeItem={(i) => dispatch(remove1099(i))}
       primary={(f) => f.payer}
@@ -539,10 +558,7 @@ export default function F1099Info(): ReactElement {
 
   return (
     <FormProvider {...methods}>
-      <form
-        tabIndex={-1}
-        onSubmit={intentionallyFloat(handleSubmit(onAdvance))}
-      >
+      <form tabIndex={-1} onSubmit={intentionallyFloat(handleSubmit(onSubmit))}>
         <Helmet>
           <title>1099 Information | Income | UsTaxes.org</title>
         </Helmet>

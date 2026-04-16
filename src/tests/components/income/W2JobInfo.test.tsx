@@ -383,4 +383,112 @@ describe('W2JobInfo', () => {
       expect(screen.getByText('$8,888')).toBeInTheDocument()
     })
   })
+
+  it('saves an in-progress W-2 draft when Save and Continue is clicked', async () => {
+    const onAdvance = jest.fn()
+    const store = createStoreUnpersisted(testInfo)
+    const navButtons = <PagerButtons submitText="Save and Continue" />
+    const user = setupUserEvent()
+
+    render(
+      <Provider store={store}>
+        <PagerContext.Provider value={{ onAdvance, navButtons }}>
+          <W2JobInfo />
+        </PagerContext.Provider>
+      </Provider>
+    )
+
+    await user.click(screen.getByText('Add'))
+
+    act(() => {
+      fireEvent.change(screen.getByLabelText(labelMatcher('Employer name')), {
+        target: { value: 'Draft Employer' }
+      })
+      fireEvent.change(
+        screen.getByLabelText(labelMatcher(/Employer's Identification Number/)),
+        {
+          target: { value: '111111111' }
+        }
+      )
+      fireEvent.change(screen.getByLabelText(labelMatcher('Occupation')), {
+        target: { value: 'Engineer' }
+      })
+      fireEvent.change(
+        screen.getByLabelText(labelMatcher(/Wages, tips, other compensation/)),
+        {
+          target: { value: '45000' }
+        }
+      )
+      fireEvent.change(
+        screen.getByLabelText(labelMatcher(/Federal income tax withheld/)),
+        {
+          target: { value: '5000' }
+        }
+      )
+      fireEvent.change(
+        screen.getByLabelText(labelMatcher(/Social security wages/)),
+        {
+          target: { value: '45000' }
+        }
+      )
+      fireEvent.change(
+        screen.getByLabelText(labelMatcher(/Social security tax withheld/)),
+        {
+          target: { value: '2790' }
+        }
+      )
+      fireEvent.change(screen.getByLabelText(labelMatcher(/Medicare Income/)), {
+        target: { value: '45000' }
+      })
+      fireEvent.change(
+        screen.getByLabelText(labelMatcher(/Medicare tax withheld/)),
+        {
+          target: { value: '652.5' }
+        }
+      )
+      fireEvent.change(screen.getAllByLabelText(/State/)[0], {
+        target: { value: 'AL' }
+      })
+      fireEvent.change(
+        screen.getByLabelText(labelMatcher(/State wages, tips, etc/)),
+        {
+          target: { value: '45000' }
+        }
+      )
+      fireEvent.change(
+        screen.getByLabelText(labelMatcher(/State income tax/)),
+        {
+          target: { value: '1500' }
+        }
+      )
+      fireEvent.change(screen.getByLabelText(labelMatcher('Employee')), {
+        target: { value: PersonRole.PRIMARY }
+      })
+    })
+
+    await user.click(screen.getByRole('button', { name: 'Save and Continue' }))
+
+    await waitFor(() => {
+      const state = store.getState()
+      expect(state[state.activeYear].w2s.at(-1)).toMatchObject({
+        employer: {
+          employerName: 'Draft Employer',
+          EIN: '111111111'
+        },
+        occupation: 'Engineer',
+        personRole: PersonRole.PRIMARY,
+        state: 'AL',
+        income: 45000,
+        fedWithholding: 5000,
+        ssWages: 45000,
+        ssWithholding: 2790,
+        medicareIncome: 45000,
+        medicareWithholding: 652.5,
+        stateWages: 45000,
+        stateWithholding: 1500
+      })
+    })
+
+    expect(onAdvance).toHaveBeenCalledTimes(1)
+  })
 })
