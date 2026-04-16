@@ -20,7 +20,8 @@ export default class F7206 extends F1040Attachment {
   l1 = (): number | undefined => this.worksheet()?.line1
   l2 = (): number | undefined => this.worksheet()?.line2
   l3 = (): number | undefined => this.worksheet()?.line3
-  l4 = (): number | undefined => this.worksheet()?.line4
+  l4 = (): number | undefined =>
+    this.worksheet()?.line4 ?? this.f1040.scheduleC?.l31()
   l5 = (): number | undefined => this.worksheet()?.line5
   l6 = (): number | undefined => this.worksheet()?.line6
   l7 = (): number | undefined => this.worksheet()?.line7

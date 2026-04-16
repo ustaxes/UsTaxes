@@ -29,6 +29,7 @@ import F1099Info from './income/F1099Info'
 import EstimatedTaxes from './payments/EstimatedTaxes'
 import RealEstate from './income/RealEstate'
 import BusinessInfo from './income/BusinessInfo'
+import ScheduleSEInfo from './income/ScheduleSEInfo'
 import GettingStarted from './GettingStarted'
 import F1098Info from './deductions/F1098Info'
 import F1098eInfo from './deductions/F1098eInfo'
@@ -129,7 +130,16 @@ export const drawerSections: Section[] = [
       item('Wages (W2)', Urls.income.w2s, <W2JobInfo />),
       item('Income (1099)', Urls.income.f1099s, <F1099Info />),
       item('Rental income', Urls.income.realEstate, <RealEstate />),
-      item('Business details', Urls.income.businesses, <BusinessInfo />),
+      item(
+        'Business income (Schedule C)',
+        Urls.income.businesses,
+        <BusinessInfo />
+      ),
+      item(
+        'Self-employment tax (Schedule SE)',
+        Urls.income.scheduleSE,
+        <ScheduleSEInfo />
+      ),
       item(
         'Other investments',
         Urls.income.otherInvestments,
@@ -160,7 +170,7 @@ export const drawerSections: Section[] = [
         <AdjustmentsToIncome />
       ),
       item(
-        'Form 7206 Worksheet',
+        'Form 7206 / Self-employed health insurance',
         Urls.deductions.selfEmployedHealthInsuranceWorksheet,
         <SelfEmployedHealthInsuranceWorksheetInfo />
       ),

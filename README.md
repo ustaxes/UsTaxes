@@ -45,7 +45,7 @@ federal schedules and attachments for Form 1040:
 - Schedule SE
 - Schedule 8812
 - Form 1040-V
-- Form 7206 (2023-2024)
+- Form 7206 (2023-2025)
 - Form 8949 (including digital asset support)
 - Form 8889 (Health Savings Accounts)
 - Form 8959 (Additional Medicare Tax)

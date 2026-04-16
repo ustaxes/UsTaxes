@@ -19,6 +19,15 @@ describe('Menu', () => {
     it('renders', () => {
       renderWithProviders(component)
       expect(screen.getByText(heading)).toBeInTheDocument()
+      expect(
+        screen.getByText('Business income (Schedule C)')
+      ).toBeInTheDocument()
+      expect(
+        screen.getByText('Self-employment tax (Schedule SE)')
+      ).toBeInTheDocument()
+      expect(
+        screen.getByText('Form 7206 / Self-employed health insurance')
+      ).toBeInTheDocument()
     })
   })
 })

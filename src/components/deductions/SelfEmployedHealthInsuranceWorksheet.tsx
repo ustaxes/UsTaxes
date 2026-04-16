@@ -18,6 +18,8 @@ import { intentionallyFloat } from 'ustaxes/core/util'
 import { YearsTaxesState } from 'ustaxes/redux'
 import { useSelector as useReduxSelector } from 'react-redux'
 import _ from 'lodash'
+import { Currency } from 'ustaxes/components/input'
+import { estimateScheduleCNetProfit } from 'ustaxes/core/selfEmployment'
 
 interface WorksheetForm {
   line1: string | number
@@ -54,13 +56,14 @@ const blankForm: WorksheetForm = {
 }
 
 const toFormValues = (
-  worksheet?: SelfEmployedHealthInsuranceWorksheet
+  worksheet?: SelfEmployedHealthInsuranceWorksheet,
+  derivedLine4?: number
 ): WorksheetForm => ({
   ...blankForm,
   line1: worksheet?.line1 ?? '',
   line2: worksheet?.line2 ?? '',
   line3: worksheet?.line3 ?? '',
-  line4: worksheet?.line4 ?? '',
+  line4: worksheet?.line4 ?? derivedLine4 ?? '',
   line5: worksheet?.line5 ?? '',
   line6: worksheet?.line6 ?? '',
   line7: worksheet?.line7 ?? '',
@@ -118,6 +121,7 @@ const mergeAdjustments = (
 })
 
 export default function SelfEmployedHealthInsuranceWorksheetInfo(): ReactElement {
+  const info = useSelector((state: TaxesState) => state.information)
   const adjustments = useSelector(
     (state: TaxesState) => state.information.adjustments
   )
@@ -127,9 +131,10 @@ export default function SelfEmployedHealthInsuranceWorksheetInfo(): ReactElement
   )
 
   const worksheet = adjustments?.selfEmployedHealthInsuranceWorksheet
+  const derivedLine4 = estimateScheduleCNetProfit(info)
 
   const methods = useForm<WorksheetForm>({
-    defaultValues: toFormValues(worksheet)
+    defaultValues: toFormValues(worksheet, derivedLine4)
   })
   const {
     handleSubmit,
@@ -151,11 +156,11 @@ export default function SelfEmployedHealthInsuranceWorksheetInfo(): ReactElement
   }
 
   useEffect(() => {
-    const nextValues = toFormValues(worksheet)
+    const nextValues = toFormValues(worksheet, derivedLine4)
     if (!isDirty && !_.isEqual(methods.getValues(), nextValues)) {
       reset(nextValues)
     }
-  }, [worksheet, isDirty, reset, methods])
+  }, [worksheet, derivedLine4, isDirty, reset, methods])
 
   const sourceLookup = (fieldName: string) =>
     getSource(sources, [
@@ -170,16 +175,32 @@ export default function SelfEmployedHealthInsuranceWorksheetInfo(): ReactElement
         <title>Form 7206 Worksheet | Deductions | UsTaxes.org</title>
       </Helmet>
       <h2>Form 7206 Worksheet</h2>
-      {activeYear === 'Y2022' ? (
+      {activeYear !== 'Y2023' &&
+      activeYear !== 'Y2024' &&
+      activeYear !== 'Y2025' ? (
         <p>
-          For tax year 2022 this worksheet is available for your calculations,
-          but Form 7206 is not attached to the return.
+          This worksheet is available for your calculations, but the Form 7206
+          PDF attachment is currently wired only for tax years 2023, 2024, and
+          2025.
         </p>
       ) : undefined}
       <p>
-        Enter the worksheet lines as needed. Line 14 is used for Schedule 1,
-        line 17.
+        Enter or review the worksheet lines as needed. Line 14 is used for
+        Schedule 1, line 17.
       </p>
+      {derivedLine4 !== undefined ? (
+        <p>
+          Current Schedule C net profit estimate:{' '}
+          <Currency value={derivedLine4} />. This amount is used as the default
+          for line 4 unless you enter a more specific value.
+        </p>
+      ) : (
+        <p>
+          Enter line 4 from the business under which your health insurance plan
+          is established, or fill out your Schedule C business page first to
+          have UsTaxes suggest a default amount.
+        </p>
+      )}
       <Grid container spacing={2}>
         <LabeledInput
           label="Line 1"

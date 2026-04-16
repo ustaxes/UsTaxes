@@ -149,12 +149,14 @@ export default function AdjustmentsToIncome(): ReactElement {
         />
       </Grid>
       <p>
-        For tax years 2023+, line 17 is derived from Form 7206. You can enter
-        the worksheet directly on the{' '}
+        For tax years 2023 through 2025, line 17 is derived from Form 7206. You
+        can enter the worksheet directly on the{' '}
         <Link to={Urls.deductions.selfEmployedHealthInsuranceWorksheet}>
           Form 7206 worksheet page
         </Link>
-        .
+        . If you are looking for Schedule SE, visit the{' '}
+        <Link to={Urls.income.scheduleSE}>Schedule SE page</Link> to see which
+        inputs feed it.
       </p>
       {navButtons}
     </form>
