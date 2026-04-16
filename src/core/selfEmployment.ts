@@ -6,6 +6,7 @@ import {
   PersonRole,
   ScheduleK1Form1065
 } from 'ustaxes/core/data'
+import { toFiniteNumber } from 'ustaxes/core/util'
 
 export const sumBusinessExpenses = (
   expenses: BusinessExpenses | undefined
@@ -53,11 +54,26 @@ export const toBusinessFromSelfEmployedIncome = (
 export const estimateScheduleCNetProfit = (
   info: Pick<Information, 'businesses' | 'f1099s' | 'selfEmployedIncome'>
 ): number | undefined => {
-  const selfEmployedNetProfit = (info.selfEmployedIncome ?? []).reduce(
-    (sum, business) => sum + business.grossReceipts - business.expenses,
+  const selfEmployedIncomeWithNetProfitInputs = (
+    info.selfEmployedIncome ?? []
+  ).filter(
+    (business) =>
+      toFiniteNumber(
+        (business as { grossReceipts?: unknown }).grossReceipts
+      ) !== undefined ||
+      toFiniteNumber((business as { expenses?: unknown }).expenses) !==
+        undefined
+  )
+
+  const selfEmployedNetProfit = selfEmployedIncomeWithNetProfitInputs.reduce(
+    (sum, business) =>
+      sum +
+      (toFiniteNumber(business.grossReceipts) ?? 0) -
+      (toFiniteNumber(business.expenses) ?? 0),
     0
   )
-  if ((info.selfEmployedIncome?.length ?? 0) > 0) {
+
+  if (selfEmployedIncomeWithNetProfitInputs.length > 0) {
     return selfEmployedNetProfit !== 0 ? selfEmployedNetProfit : undefined
   }
 
@@ -71,7 +87,7 @@ export const estimateScheduleCNetProfit = (
     if (form.type !== Income1099Type.NEC) {
       return sum
     }
-    return sum + form.form.nonemployeeCompensation
+    return sum + (toFiniteNumber(form.form.nonemployeeCompensation) ?? 0)
   }, 0)
 
   const total = businessNetProfit + necIncome

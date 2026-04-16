@@ -14,7 +14,7 @@ import type {
   AdjustmentsToIncomeDateString,
   SelfEmployedHealthInsuranceWorksheet
 } from 'ustaxes/core/data'
-import { intentionallyFloat } from 'ustaxes/core/util'
+import { intentionallyFloat, toFiniteNumber } from 'ustaxes/core/util'
 import { YearsTaxesState } from 'ustaxes/redux'
 import { useSelector as useReduxSelector } from 'react-redux'
 import _ from 'lodash'
@@ -58,26 +58,32 @@ const blankForm: WorksheetForm = {
 const toFormValues = (
   worksheet?: SelfEmployedHealthInsuranceWorksheet,
   derivedLine4?: number
-): WorksheetForm => ({
-  ...blankForm,
-  line1: worksheet?.line1 ?? '',
-  line2: worksheet?.line2 ?? '',
-  line3: worksheet?.line3 ?? '',
-  line4: worksheet?.line4 ?? derivedLine4 ?? '',
-  line5: worksheet?.line5 ?? '',
-  line6: worksheet?.line6 ?? '',
-  line7: worksheet?.line7 ?? '',
-  line8: worksheet?.line8 ?? '',
-  line9: worksheet?.line9 ?? '',
-  line10: worksheet?.line10 ?? '',
-  line11: worksheet?.line11 ?? '',
-  line12: worksheet?.line12 ?? '',
-  line13: worksheet?.line13 ?? '',
-  line14: worksheet?.line14 ?? ''
-})
+): WorksheetForm => {
+  const worksheetLine = (
+    line: keyof SelfEmployedHealthInsuranceWorksheet
+  ): number | undefined => toFiniteNumber(worksheet?.[line] as unknown)
+
+  return {
+    ...blankForm,
+    line1: worksheetLine('line1') ?? '',
+    line2: worksheetLine('line2') ?? '',
+    line3: worksheetLine('line3') ?? '',
+    line4: worksheetLine('line4') ?? derivedLine4 ?? '',
+    line5: worksheetLine('line5') ?? '',
+    line6: worksheetLine('line6') ?? '',
+    line7: worksheetLine('line7') ?? '',
+    line8: worksheetLine('line8') ?? '',
+    line9: worksheetLine('line9') ?? '',
+    line10: worksheetLine('line10') ?? '',
+    line11: worksheetLine('line11') ?? '',
+    line12: worksheetLine('line12') ?? '',
+    line13: worksheetLine('line13') ?? '',
+    line14: worksheetLine('line14') ?? ''
+  }
+}
 
 const parseLine = (value: string | number): number | undefined =>
-  value === '' ? undefined : Number(value)
+  toFiniteNumber(value)
 
 const toWorksheet = (
   formData: WorksheetForm
@@ -100,7 +106,8 @@ const toWorksheet = (
 
 const hasWorksheetValues = (
   worksheet: SelfEmployedHealthInsuranceWorksheet
-): boolean => Object.values(worksheet).some((value) => value !== undefined)
+): boolean =>
+  Object.values(worksheet).some((value) => toFiniteNumber(value) !== undefined)
 
 const toDateString = (value: Date | null | undefined): string | undefined =>
   value ? value.toISOString().split('T')[0] : undefined

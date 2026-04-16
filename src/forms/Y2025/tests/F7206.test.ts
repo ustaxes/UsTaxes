@@ -59,6 +59,22 @@ describe('F7206 (2025)', () => {
     expect(f1040.f7206?.l4()).toBe(10250)
   })
 
+  it('ignores legacy blank worksheet line 4 values and still derives Schedule C net profit', () => {
+    const f1040 = makeF1040({
+      ...baseInformation,
+      adjustments: {
+        selfEmployedHealthInsuranceWorksheet: {
+          ...baseInformation.adjustments?.selfEmployedHealthInsuranceWorksheet,
+          line4: '' as unknown as number
+        },
+        selfEmployedHealthInsuranceDeduction: 1000
+      }
+    })
+
+    expect(f1040.scheduleC?.l31()).toBe(10250)
+    expect(f1040.f7206?.l4()).toBe(10250)
+  })
+
   it('uses Form 7206 line 14 on Schedule 1 line 17 and includes the attachment', () => {
     const f1040 = makeF1040({
       ...baseInformation,
