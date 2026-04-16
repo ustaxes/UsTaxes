@@ -45,35 +45,14 @@ export default class F1040V extends F1040Attachment {
       text('topmostSubform[0].Page1[0].f1_6[0]', tp.primaryPerson.lastName),
       text('topmostSubform[0].Page1[0].f1_7[0]', tp.spouse?.firstName),
       text('topmostSubform[0].Page1[0].f1_8[0]', tp.spouse?.lastName),
-      text(
-        'topmostSubform[0].Page1[0].f1_9[0]',
-        address?.address
-      ),
-      text(
-        'topmostSubform[0].Page1[0].f1_10[0]',
-        address?.aptNo
-      ),
-      text(
-        'topmostSubform[0].Page1[0].f1_11[0]',
-        address?.city
-      ),
-      text(
-        'topmostSubform[0].Page1[0].f1_12[0]',
-        address?.state
-      ),
+      text('topmostSubform[0].Page1[0].f1_9[0]', address?.address),
+      text('topmostSubform[0].Page1[0].f1_10[0]', address?.aptNo),
+      text('topmostSubform[0].Page1[0].f1_11[0]', address?.city),
+      text('topmostSubform[0].Page1[0].f1_12[0]', address?.state),
       text('topmostSubform[0].Page1[0].f1_13[0]', address?.zip),
-      text(
-        'topmostSubform[0].Page1[0].f1_14[0]',
-        address?.foreignCountry
-      ),
-      text(
-        'topmostSubform[0].Page1[0].f1_15[0]',
-        address?.province
-      ),
-      text(
-        'topmostSubform[0].Page1[0].f1_16[0]',
-        address?.postalCode
-      )
+      text('topmostSubform[0].Page1[0].f1_14[0]', address?.foreignCountry),
+      text('topmostSubform[0].Page1[0].f1_15[0]', address?.province),
+      text('topmostSubform[0].Page1[0].f1_16[0]', address?.postalCode)
     ]
   }
 }

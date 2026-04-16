@@ -22,18 +22,20 @@ export default class F4547 extends F1040Attachment {
 
   /** Dependents born within the pilot program window who are under 18. */
   eligibleChildren = (): EligibleDependent[] =>
-    this.f1040.info.taxPayer.dependents.filter((dep): dep is EligibleDependent => {
-      if (!(dep.dateOfBirth instanceof Date)) {
-        return false
+    this.f1040.info.taxPayer.dependents.filter(
+      (dep): dep is EligibleDependent => {
+        if (!(dep.dateOfBirth instanceof Date)) {
+          return false
+        }
+        const birthYear = dep.dateOfBirth.getFullYear()
+        const age = CURRENT_YEAR - birthYear
+        return (
+          birthYear >= TRUMP_ACCOUNT_BIRTH_YEAR_MIN &&
+          birthYear <= TRUMP_ACCOUNT_BIRTH_YEAR_MAX &&
+          age < 18
+        )
       }
-      const birthYear = dep.dateOfBirth.getFullYear()
-      const age = CURRENT_YEAR - birthYear
-      return (
-        birthYear >= TRUMP_ACCOUNT_BIRTH_YEAR_MIN &&
-        birthYear <= TRUMP_ACCOUNT_BIRTH_YEAR_MAX &&
-        age < 18
-      )
-    })
+    )
 
   private electing = (): boolean =>
     (this.f1040.info.obbbDeductions?.electTrumpAccountContribution ?? false) &&
@@ -51,7 +53,8 @@ export default class F4547 extends F1040Attachment {
     this.eligibleChildren()[i]
 
   /** Keep legacy positional values aligned with native fillInstructions(). */
-  fields = (): Field[] => this.fillInstructions().map((instruction) => instruction.value)
+  fields = (): Field[] =>
+    this.fillInstructions().map((instruction) => instruction.value)
 
   fillInstructions = (): FillInstructions => {
     const tp = this.f1040.info.taxPayer
@@ -79,31 +82,13 @@ export default class F4547 extends F1040Attachment {
       text('form1[0].Page1[0].f1_01[0]', this.f1040.namesString()),
       text('form1[0].Page1[0].f1_02[0]', undefined),
       text('form1[0].Page1[0].f1_03[0]', undefined),
-      text(
-        'form1[0].Page1[0].f1_04[0]',
-        tp.primaryPerson.ssid
-      ),
+      text('form1[0].Page1[0].f1_04[0]', tp.primaryPerson.ssid),
       // Address block
-      text(
-        'form1[0].Page1[0].Address_ReadOrder[0].f1_05[0]',
-        address?.address
-      ),
-      text(
-        'form1[0].Page1[0].Address_ReadOrder[0].f1_06[0]',
-        address?.aptNo
-      ),
-      text(
-        'form1[0].Page1[0].Address_ReadOrder[0].f1_07[0]',
-        address?.city
-      ),
-      text(
-        'form1[0].Page1[0].Address_ReadOrder[0].f1_08[0]',
-        address?.state
-      ),
-      text(
-        'form1[0].Page1[0].Address_ReadOrder[0].f1_09[0]',
-        address?.zip
-      ),
+      text('form1[0].Page1[0].Address_ReadOrder[0].f1_05[0]', address?.address),
+      text('form1[0].Page1[0].Address_ReadOrder[0].f1_06[0]', address?.aptNo),
+      text('form1[0].Page1[0].Address_ReadOrder[0].f1_07[0]', address?.city),
+      text('form1[0].Page1[0].Address_ReadOrder[0].f1_08[0]', address?.state),
+      text('form1[0].Page1[0].Address_ReadOrder[0].f1_09[0]', address?.zip),
       text(
         'form1[0].Page1[0].Address_ReadOrder[0].f1_10[0]',
         address?.foreignCountry
@@ -116,7 +101,10 @@ export default class F4547 extends F1040Attachment {
         'form1[0].Page1[0].Address_ReadOrder[0].f1_12[0]',
         address?.postalCode
       ),
-      text('form1[0].Page1[0].Address_ReadOrder[0].f1_13[0]', tp.contactPhoneNumber),
+      text(
+        'form1[0].Page1[0].Address_ReadOrder[0].f1_13[0]',
+        tp.contactPhoneNumber
+      ),
       // Part II — child info header
       text(
         'form1[0].Page1[0].f1_14[0]',

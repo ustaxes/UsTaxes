@@ -21,7 +21,7 @@ export default class QualifyingDependents {
       ? false
       : d.dateOfBirth instanceof Date &&
         this.year - d.dateOfBirth.getFullYear() <
-        federal.QualifyingDependents.childMaxAge
+          federal.QualifyingDependents.childMaxAge
 
   qualifiesOther = (d: Dependent): boolean =>
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition

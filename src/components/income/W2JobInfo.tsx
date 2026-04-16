@@ -109,7 +109,7 @@ const toIncomeW2UserInput = (data: IncomeW2): IncomeW2UserInput => ({
   state: data.state,
   stateWages: data.stateWages?.toString() ?? '',
   stateWithholding: data.stateWithholding?.toString() ?? '',
-  box12: _.mapValues(data.box12, (v) => v.toString() ?? '')
+  box12: _.mapValues(data.box12, (v) => v.toString())
 })
 
 const Box12Data = (): ReactElement => {

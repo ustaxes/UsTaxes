@@ -804,7 +804,7 @@ export default class F1040 extends F1040Base {
       // Standard deduction / dependent / age-blind checkboxes (29-35)
       checkbox(
         'topmostSubform[0].Page1[0].c1_6[0]',
-          this.info.taxPayer.primaryPerson.isTaxpayerDependent ?? false
+        this.info.taxPayer.primaryPerson.isTaxpayerDependent ?? false
       ),
       checkbox(
         'topmostSubform[0].Page1[0].c1_7[0]',

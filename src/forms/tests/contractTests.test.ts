@@ -20,9 +20,7 @@ async function loadSchema(schemaPath: string): Promise<PdfFormSchema> {
 /**
  * Map FillInstruction kind to PDF field type for comparison.
  */
-function mapKindToType(
-  kind: 'text' | 'checkbox' | 'select' | 'radio'
-): string {
+function mapKindToType(kind: 'text' | 'checkbox' | 'select' | 'radio'): string {
   return kind // They happen to map 1:1
 }
 
