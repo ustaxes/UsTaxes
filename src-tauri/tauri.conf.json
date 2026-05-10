@@ -1,55 +1,87 @@
 {
   "build": {
-    "distDir": "../build",
-    "devPath": "http://localhost:3000",
+    "frontendDist": "../build",
+    "devUrl": "http://localhost:3000",
     "beforeDevCommand": "npm run start",
-    "beforeBuildCommand": "npm run build",
-    "withGlobalTauri": true
+    "beforeBuildCommand": "npm run build"
   },
-  "tauri": {
-    "bundle": {
-      "active": true,
-      "targets": "all",
-      "identifier": "ustaxes",
-      "icon": [
-        "./icons/favicon.ico"
-      ],
-      "resources": [],
-      "externalBin": [],
-      "copyright": "",
-      "category": "DeveloperTool",
-      "shortDescription": "",
-      "longDescription": "",
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "icon": [
+      "./icons/favicon.ico",
+      "./icons/Square30x30Logo.png",
+      "./icons/128x128.png",
+      "./icons/128x128@2x.png",
+      "./icons/logo512.png",
+      "./icons/icon.png"
+    ],
+    "resources": [],
+    "externalBin": [],
+    "copyright": "",
+    "category": "DeveloperTool",
+    "shortDescription": "",
+    "longDescription": "",
+    "linux": {
       "deb": {
         "depends": []
-      },
-      "macOS": {
-        "frameworks": [],
-        "exceptionDomain": "",
-        "signingIdentity": null,
-        "entitlements": null,
-        "minimumSystemVersion": ""
-      },
-      "windows": {
-        "certificateThumbprint": null,
-        "digestAlgorithm": "sha256",
-        "timestampUrl": ""
       }
     },
-    "allowlist": {
-      "all": true
+    "macOS": {
+      "frameworks": [],
+      "exceptionDomain": "",
+      "signingIdentity": null,
+      "entitlements": null,
+      "minimumSystemVersion": ""
     },
+    "windows": {
+      "certificateThumbprint": null,
+      "digestAlgorithm": "sha256",
+      "timestampUrl": ""
+    }
+  },
+  "identifier": "ustaxes",
+  "plugins": {},
+  "app": {
+    "withGlobalTauri": true,
     "windows": [
       {
         "title": "US Taxes",
         "width": 800,
         "height": 600,
         "resizable": true,
-        "fullscreen": false
+        "fullscreen": false,
+        "useHttpsScheme": true
       }
     ],
     "security": {
-      "csp": "default-src blob: data: filesystem: ws: http: https: 'unsafe-eval' 'unsafe-inline' 'self'"
+      "csp": "default-src blob: data: filesystem: ws: http: https: 'unsafe-eval' 'unsafe-inline' 'self'; connect-src ipc: http://ipc.localhost",
+      "capabilities": [
+        {
+          "identifier": "save-return-capability",
+          "description": "Allows writing the completed tax return to disk.",
+          "windows": [
+            "*"
+          ],
+          "permissions": [
+            "dialog:allow-save",
+            "fs:allow-write-file",
+            "core:path:allow-resolve-directory",
+            "core:path:default"
+          ]
+        },
+        {
+          "identifier": "open-inspector",
+          "description": "Allows opening the webview inspector for debug or just so the user can feel safe.",
+          "windows": [
+            "*"
+          ],
+          "permissions": [
+            "core:webview:allow-internal-toggle-devtools",
+            "core:webview:default"
+          ]
+        }
+      ]
     }
   }
 }

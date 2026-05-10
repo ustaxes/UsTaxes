@@ -4,8 +4,5 @@
 )]
 
 fn main() {
-  let result = tauri::Builder::default()
-    .run(tauri::generate_context!());
-
-  println!("{:?}", result)
+  us_taxes::run();
 }
