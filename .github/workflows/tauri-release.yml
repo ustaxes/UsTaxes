@@ -56,6 +56,58 @@ jobs:
       run: npm ci
     - name: build it
       run: npm run desktop-release
+    - name: Generate checksums (macOS/Linux)
+      if: runner.os != 'Windows'
+      shell: bash
+      run: |
+        # Find all bundle artifacts (dmg, msi, deb, AppImage, etc.)
+        BUNDLE_DIR="src-tauri/target/release/bundle"
+        if [[ "${{ runner.os }}" == "macOS" ]]; then
+          CHECKSUM_FILE="checksums-macos.txt"
+        else
+          CHECKSUM_FILE="checksums-linux.txt"
+        fi
+        
+        # Remove existing checksum file if present
+        rm -f "$CHECKSUM_FILE"
+        
+        # Generate SHA256 checksums for all bundle artifacts
+        if [[ "${{ runner.os }}" == "macOS" ]]; then
+          # macOS - find .dmg files
+          find "$BUNDLE_DIR" -type f \( -name "*.dmg" -o -name "*.app.tar.gz" -o -name "*.app" \) -exec sh -c 'sha256sum "{}" | sed "s|.*/||" >> "$CHECKSUM_FILE"' \;
+        else
+          # Linux - find .deb, .AppImage, .rpm files
+          find "$BUNDLE_DIR" -type f \( -name "*.deb" -o -name "*.AppImage" -o -name "*.rpm" \) -exec sh -c 'sha256sum "{}" | sed "s|.*/||" >> "$CHECKSUM_FILE"' \;
+        fi
+        
+        # Display checksums for verification
+        echo "Generated checksums:"
+        cat "$CHECKSUM_FILE" || echo "No checksums generated (no bundle artifacts found)"
+    - name: Generate checksums (Windows)
+      if: runner.os == 'Windows'
+      shell: pwsh
+      run: |
+        # Find all bundle artifacts
+        $BUNDLE_DIR = "src-tauri/target/release/bundle"
+        $CHECKSUM_FILE = "checksums-windows.txt"
+        
+        # Remove existing checksum file if present
+        if (Test-Path $CHECKSUM_FILE) { Remove-Item $CHECKSUM_FILE }
+        
+        # Generate SHA256 checksums for .msi and .exe files
+        Get-ChildItem -Path $BUNDLE_DIR -Recurse -Include *.msi,*.exe | ForEach-Object {
+          $hash = (Get-FileHash -Path $_.FullName -Algorithm SHA256).Hash.ToLower()
+          $name = $_.Name
+          "$hash  $name" | Out-File -Append -FilePath $CHECKSUM_FILE -Encoding utf8
+        }
+        
+        # Display checksums for verification
+        Write-Host "Generated checksums:"
+        if (Test-Path $CHECKSUM_FILE) {
+          Get-Content $CHECKSUM_FILE
+        } else {
+          Write-Host "No checksums generated (no bundle artifacts found)"
+        }
     - uses: tauri-apps/tauri-action@dev
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -65,3 +117,83 @@ jobs:
         releaseBody: "See the assets to download this version and install."
         releaseDraft: false
         prerelease: false
+    - name: Upload checksums to release
+      if: runner.os != 'Windows'
+      shell: bash
+      run: |
+        if [[ "${{ runner.os }}" == "macOS" ]]; then
+          CHECKSUM_FILE="checksums-macos.txt"
+        else
+          CHECKSUM_FILE="checksums-linux.txt"
+        fi
+        
+        if [ -f "$CHECKSUM_FILE" ]; then
+          TAG_NAME="app-v${{ steps.get_version.outputs.VERSION }}"
+          REPO="${{ github.repository }}"
+          
+          # Wait a bit for tauri-action to create the release
+          sleep 5
+          
+          # Get the release ID for the tag
+          RELEASE_ID=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+            "https://api.github.com/repos/$REPO/releases/tags/$TAG_NAME" | \
+            grep -m 1 '"id"' | sed -E 's/.*"id": ([0-9]+),.*/\1/')
+          
+          if [ -n "$RELEASE_ID" ] && [ "$RELEASE_ID" != "null" ]; then
+            # Upload checksums file to the release
+            curl -X POST \
+              -H "Authorization: token $GITHUB_TOKEN" \
+              -H "Content-Type: application/octet-stream" \
+              --data-binary @"$CHECKSUM_FILE" \
+              "https://uploads.github.com/repos/$REPO/releases/$RELEASE_ID/assets?name=$CHECKSUM_FILE" \
+              || echo "Warning: Failed to upload checksums file"
+          else
+            echo "Warning: Release not found for tag $TAG_NAME, skipping checksum upload"
+          fi
+        fi
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Upload checksums to release (Windows)
+      if: runner.os == 'Windows'
+      shell: pwsh
+      run: |
+        $CHECKSUM_FILE = "checksums-windows.txt"
+        
+        if (Test-Path $CHECKSUM_FILE) {
+          $TAG_NAME = "app-v${{ steps.get_version.outputs.VERSION }}"
+          $REPO = "${{ github.repository }}"
+          
+          # Wait a bit for tauri-action to create the release
+          Start-Sleep -Seconds 5
+          
+          # Get the release ID for the tag
+          $headers = @{
+            Authorization = "token $env:GITHUB_TOKEN"
+          }
+          
+          try {
+            $release = Invoke-RestMethod -Uri "https://api.github.com/repos/$REPO/releases/tags/$TAG_NAME" -Headers $headers
+            
+            if ($release.id) {
+              # Upload checksums file to the release
+              $fileBytes = [System.IO.File]::ReadAllBytes("$PWD/$CHECKSUM_FILE")
+              $uploadHeaders = @{
+                Authorization = "token $env:GITHUB_TOKEN"
+                "Content-Type" = "application/octet-stream"
+              }
+              
+              Invoke-RestMethod -Uri "https://uploads.github.com/repos/$REPO/releases/$($release.id)/assets?name=$CHECKSUM_FILE" `
+                -Method Post `
+                -Headers $uploadHeaders `
+                -Body $fileBytes `
+                -ErrorAction Stop
+              Write-Host "Checksums file uploaded successfully"
+            } else {
+              Write-Host "Warning: Release not found for tag $TAG_NAME, skipping checksum upload"
+            }
+          } catch {
+            Write-Host "Warning: Failed to upload checksums file: $_"
+          }
+        }
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
