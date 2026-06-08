@@ -9,6 +9,8 @@ import { State } from 'ustaxes/core/data'
 import useStyles from './styles'
 import { BaseDropdownProps, LabeledDropdownProps } from './types'
 import ConditionallyWrap from 'ustaxes/components/ConditionallyWrap'
+import { useFormContainer } from 'ustaxes/components/FormContainer/Context'
+import { labelWithSource } from './SourceBadge'
 
 export function GenericLabeledDropdown<A, TFormValues extends FieldValues>(
   props: LabeledDropdownProps<A, TFormValues>
@@ -29,8 +31,11 @@ export function GenericLabeledDropdown<A, TFormValues extends FieldValues>(
     required = true,
     name,
     useGrid = true,
-    sizes = { xs: 12 }
+    sizes = { xs: 12 },
+    source
   } = props
+  const { getSource } = useFormContainer()
+  const resolvedSource = source ?? getSource?.(name as string)
 
   const error: string | undefined = _.get(errors, name, undefined) as
     | string
@@ -59,7 +64,7 @@ export function GenericLabeledDropdown<A, TFormValues extends FieldValues>(
             id={name}
             name={name}
             className={classes.root}
-            label={label}
+            label={labelWithSource(label, resolvedSource)}
             select
             fullWidth
             variant="filled"

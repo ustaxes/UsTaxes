@@ -1,5 +1,37 @@
-import { commonTests } from '.'
+import { commonTests, testKit } from '.'
 import * as fc from 'fast-check'
+import { FilingStatus, F1098, PersonRole } from 'ustaxes/core/data'
+import { run } from 'ustaxes/core/util'
+import { ValidatedInformation } from 'ustaxes/forms/F1040Base'
+import { blankState } from 'ustaxes/redux/reducer'
+
+const baseInfo: ValidatedInformation = {
+  ...blankState,
+  taxPayer: {
+    dependents: [],
+    filingStatus: FilingStatus.S,
+    primaryPerson: {
+      address: {
+        address: '',
+        city: ''
+      },
+      firstName: '',
+      isTaxpayerDependent: false,
+      lastName: '',
+      role: PersonRole.PRIMARY,
+      ssid: '',
+      isBlind: false,
+      dateOfBirth: new Date('2000-01-01')
+    }
+  }
+}
+
+const sample1098: F1098 = {
+  lender: 'Sample Lender',
+  interest: 1000,
+  points: 100,
+  mortgageInsurancePremiums: 200
+}
 
 jest.setTimeout(30000)
 
@@ -24,5 +56,39 @@ describe('ScheduleA', () => {
         expect(f1040.scheduleA).not.toBe(undefined)
       }
     })
+  })
+
+  it('includes 1098 interest and points in line 8a', () => {
+    const info: ValidatedInformation = {
+      ...baseInfo,
+      f1098s: [sample1098]
+    }
+
+    const f1040 = run(testKit.builder.build(info, []).f1040())
+      .map(commonTests.findF1040OrFail)
+      .orThrow()
+
+    expect(f1040.scheduleA.l8a()).toEqual(1100)
+    expect(f1040.scheduleA.l8d()).toBeUndefined()
+    expect(f1040.scheduleA.l8e()).toEqual(1100)
+  })
+
+  it('adds 1098 mortgage interest without double-counting persisted itemized values', () => {
+    const info: ValidatedInformation = {
+      ...baseInfo,
+      f1098s: [sample1098],
+      itemizedDeductions: {
+        interest8a: 50,
+        interest8d: 25
+      }
+    }
+
+    const f1040 = run(testKit.builder.build(info, []).f1040())
+      .map(commonTests.findF1040OrFail)
+      .orThrow()
+
+    expect(f1040.scheduleA.l8a()).toEqual(1150)
+    expect(f1040.scheduleA.l8d()).toBeUndefined()
+    expect(f1040.scheduleA.l8e()).toEqual(1150)
   })
 })

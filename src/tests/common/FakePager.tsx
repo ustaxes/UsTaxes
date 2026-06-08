@@ -1,6 +1,5 @@
 import { Button } from '@material-ui/core'
 import { within } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
 import { PropsWithChildren, ReactElement } from 'react'
 import { PagerContext, PagerProps } from 'ustaxes/components/pager'
 import DomMethods from './DomMethods'
@@ -22,7 +21,9 @@ export class PagerMethods extends DomMethods {
       name: /Save/i
     })
 
-  save = (): void => userEvent.click(this.saveButton())
+  save = async (): Promise<void> => {
+    await this.user.click(this.saveButton())
+  }
 }
 
 export const FakePagerProvider = ({

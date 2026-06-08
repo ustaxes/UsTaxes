@@ -117,6 +117,12 @@ export default class F1040 extends F1040Base {
 
     this.scheduleA = new ScheduleA(this)
     this.scheduleB = new ScheduleB(this)
+    if (
+      (this.info.businesses ?? []).length > 0 ||
+      this.f1099necs().length > 0
+    ) {
+      this.scheduleC = new ScheduleC(this)
+    }
     this.scheduleD = new ScheduleD(this)
     this.scheduleE = new ScheduleE(this)
     this.scheduleEIC = new ScheduleEIC(this)
@@ -188,6 +194,7 @@ export default class F1040 extends F1040Base {
     const res1: (F1040Attachment | undefined)[] = [
       this.scheduleA,
       this.scheduleB,
+      this.scheduleC,
       this.scheduleD,
       this.scheduleE,
       this.scheduleSE,
@@ -227,7 +234,7 @@ export default class F1040 extends F1040Base {
 
   // born before 1957/01/02
   bornBeforeDate = (): boolean =>
-    this.info.taxPayer.primaryPerson.dateOfBirth <
+    (this.info.taxPayer.primaryPerson.dateOfBirth ?? new Date()) <
     new Date(CURRENT_YEAR - 64, 0, 2)
 
   blind = (): boolean => this.info.taxPayer.primaryPerson.isBlind
@@ -250,8 +257,22 @@ export default class F1040 extends F1040Base {
     this.validW2s().reduce((res, w2) => res + w2.medicareIncome, 0)
 
   occupation = (r: PersonRole): string | undefined =>
-    this.info.w2s.find((w2) => w2.personRole === r && w2.occupation !== '')
-      ?.occupation
+    (() => {
+      const person =
+        r === PersonRole.PRIMARY
+          ? this.info.taxPayer.primaryPerson
+          : this.info.taxPayer.spouse
+      const explicit = person?.occupation?.trim()
+      if (explicit) {
+        return explicit
+      }
+      return this.info.w2s.find(
+        (w2) =>
+          w2.personRole === r &&
+          w2.occupation.trim() !== '' &&
+          w2.occupation.toUpperCase() !== 'UNKNOWN'
+      )?.occupation
+    })()
 
   standardDeduction = (): number | undefined => {
     const filingStatus = this.info.taxPayer.filingStatus
@@ -264,7 +285,7 @@ export default class F1040 extends F1040Base {
     ].reduce((res, e) => res + +!!e, 0)
 
     if (
-      this.info.taxPayer.primaryPerson.isTaxpayerDependent ||
+      (this.info.taxPayer.primaryPerson.isTaxpayerDependent ?? false) ||
       (this.info.taxPayer.spouse?.isTaxpayerDependent ?? false)
     ) {
       const l4a = Math.min(
@@ -502,7 +523,7 @@ export default class F1040 extends F1040Base {
       fieldArr = [
         `${dep.firstName} ${dep.lastName}`,
         dep.ssid,
-        dep.relationship,
+        dep.relationship ?? '',
         this.qualifyingDependents.qualifiesChild(dep),
         this.qualifyingDependents.qualifiesOther(dep)
       ]
@@ -516,8 +537,9 @@ export default class F1040 extends F1040Base {
   _depFieldMappings = (): Array<string | boolean> =>
     Array.from(Array(20)).map((u, n: number) => this._depField(n))
 
-  fields = (): Field[] =>
-    [
+  fields = (): Field[] => {
+    const address = this.info.taxPayer.primaryPerson.address
+    return [
       this.info.taxPayer.filingStatus === FilingStatus.S,
       this.info.taxPayer.filingStatus === FilingStatus.MFJ,
       this.info.taxPayer.filingStatus === FilingStatus.MFS,
@@ -535,19 +557,19 @@ export default class F1040 extends F1040Base {
         ? this.info.taxPayer.spouse?.lastName ?? ''
         : '',
       this.info.taxPayer.spouse?.ssid,
-      this.info.taxPayer.primaryPerson.address.address,
-      this.info.taxPayer.primaryPerson.address.aptNo,
-      this.info.taxPayer.primaryPerson.address.city,
-      this.info.taxPayer.primaryPerson.address.state,
-      this.info.taxPayer.primaryPerson.address.zip,
-      this.info.taxPayer.primaryPerson.address.foreignCountry,
-      this.info.taxPayer.primaryPerson.address.province,
-      this.info.taxPayer.primaryPerson.address.postalCode,
+      address?.address,
+      address?.aptNo,
+      address?.city,
+      address?.state,
+      address?.zip,
+      address?.foreignCountry,
+      address?.province,
+      address?.postalCode,
       false, // election campaign boxes
       false,
       this.info.questions.CRYPTO ?? false,
       !(this.info.questions.CRYPTO ?? false),
-      this.info.taxPayer.primaryPerson.isTaxpayerDependent,
+      this.info.taxPayer.primaryPerson.isTaxpayerDependent ?? false,
       this.info.taxPayer.spouse?.isTaxpayerDependent ?? false,
       false, // TODO: spouse itemizes separately,
       this.bornBeforeDate(),
@@ -644,4 +666,5 @@ export default class F1040 extends F1040Base {
       '',
       ''
     ].map((x) => (x === undefined ? '' : x))
+  }
 }

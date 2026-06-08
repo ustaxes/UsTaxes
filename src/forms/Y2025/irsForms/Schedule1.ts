@@ -162,6 +162,10 @@ export default class Schedule1 extends F1040Attachment {
     return total > 0 ? total : undefined
   }
   l17 = (): number | undefined => {
+    const from7206 = this.f1040.f7206?.l14()
+    if (from7206 !== undefined) {
+      return from7206
+    }
     const selfEmployed = this.f1040.info.selfEmployedIncome ?? []
     const total = selfEmployed.reduce(
       (sum, se) => sum + (se.healthInsurancePremiums ?? 0),

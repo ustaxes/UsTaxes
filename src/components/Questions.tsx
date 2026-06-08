@@ -1,5 +1,5 @@
 import { ReactElement, useEffect } from 'react'
-import { Helmet } from 'react-helmet'
+import { Helmet } from 'react-helmet-async'
 import { Grid, List, ListItem } from '@material-ui/core'
 import { useDispatch, useSelector, TaxesState } from 'ustaxes/redux'
 import { QuestionTagName, Responses } from 'ustaxes/core/data'

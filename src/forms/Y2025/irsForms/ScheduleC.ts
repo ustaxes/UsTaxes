@@ -1,60 +1,291 @@
 import F1040Attachment from './F1040Attachment'
-import { Field, FillInstructions } from 'ustaxes/core/pdfFiller'
+import { Field, FillInstructions, checkbox, text } from 'ustaxes/core/pdfFiller'
 import { FormTag } from 'ustaxes/core/irsForms/Form'
-import { PersonRole } from 'ustaxes/core/data'
+import {
+  Address,
+  Business,
+  PersonRole,
+  SelfEmployedIncome
+} from 'ustaxes/core/data'
+import { sumFields } from 'ustaxes/core/irsForms/util'
+import { toBusinessFromSelfEmployedIncome } from 'ustaxes/core/selfEmployment'
 
-/**
- * Schedule C — Profit or Loss From Business (Sole Proprietorship).
- *
- * Inputs come from Information.selfEmployedIncome[].
- * Only the key lines needed by Schedule SE and earned income calculations
- * are implemented; full Schedule C PDF filling is not yet wired.
- */
+const FIELD_ORDER: string[] = [
+  'topmostSubform[0].Page1[0].f1_1[0]',
+  'topmostSubform[0].Page1[0].f1_2[0]',
+  'topmostSubform[0].Page1[0].f1_3[0]',
+  'topmostSubform[0].Page1[0].BComb[0].f1_4[0]',
+  'topmostSubform[0].Page1[0].f1_5[0]',
+  'topmostSubform[0].Page1[0].DComb[0].f1_6[0]',
+  'topmostSubform[0].Page1[0].f1_7[0]',
+  'topmostSubform[0].Page1[0].f1_8[0]',
+  'topmostSubform[0].Page1[0].c1_1[0]',
+  'topmostSubform[0].Page1[0].c1_1[1]',
+  'topmostSubform[0].Page1[0].c1_1[2]',
+  'topmostSubform[0].Page1[0].f1_9[0]',
+  'topmostSubform[0].Page1[0].c1_2[0]',
+  'topmostSubform[0].Page1[0].c1_2[1]',
+  'topmostSubform[0].Page1[0].c1_3[0]',
+  'topmostSubform[0].Page1[0].c1_4[0]',
+  'topmostSubform[0].Page1[0].c1_4[1]',
+  'topmostSubform[0].Page1[0].c1_5[0]',
+  'topmostSubform[0].Page1[0].c1_5[1]',
+  'topmostSubform[0].Page1[0].Line1_ReadOrder[0].c1_6[0]',
+  'topmostSubform[0].Page1[0].f1_10[0]',
+  'topmostSubform[0].Page1[0].f1_11[0]',
+  'topmostSubform[0].Page1[0].f1_12[0]',
+  'topmostSubform[0].Page1[0].f1_13[0]',
+  'topmostSubform[0].Page1[0].f1_14[0]',
+  'topmostSubform[0].Page1[0].f1_15[0]',
+  'topmostSubform[0].Page1[0].f1_16[0]',
+  'topmostSubform[0].Page1[0].Lines8-17[0].f1_17[0]',
+  'topmostSubform[0].Page1[0].Lines8-17[0].f1_18[0]',
+  'topmostSubform[0].Page1[0].Lines8-17[0].f1_19[0]',
+  'topmostSubform[0].Page1[0].Lines8-17[0].f1_20[0]',
+  'topmostSubform[0].Page1[0].Lines8-17[0].f1_21[0]',
+  'topmostSubform[0].Page1[0].Lines8-17[0].f1_22[0]',
+  'topmostSubform[0].Page1[0].Lines8-17[0].f1_23[0]',
+  'topmostSubform[0].Page1[0].Lines8-17[0].f1_24[0]',
+  'topmostSubform[0].Page1[0].Lines8-17[0].f1_25[0]',
+  'topmostSubform[0].Page1[0].Lines8-17[0].f1_26[0]',
+  'topmostSubform[0].Page1[0].Lines8-17[0].f1_27[0]',
+  'topmostSubform[0].Page1[0].Lines18-27[0].f1_28[0]',
+  'topmostSubform[0].Page1[0].Lines18-27[0].f1_29[0]',
+  'topmostSubform[0].Page1[0].Lines18-27[0].f1_30[0]',
+  'topmostSubform[0].Page1[0].Lines18-27[0].f1_31[0]',
+  'topmostSubform[0].Page1[0].Lines18-27[0].f1_32[0]',
+  'topmostSubform[0].Page1[0].Lines18-27[0].f1_33[0]',
+  'topmostSubform[0].Page1[0].Lines18-27[0].f1_34[0]',
+  'topmostSubform[0].Page1[0].Lines18-27[0].f1_35[0]',
+  'topmostSubform[0].Page1[0].Lines18-27[0].f1_36[0]',
+  'topmostSubform[0].Page1[0].Lines18-27[0].f1_37[0]',
+  'topmostSubform[0].Page1[0].Lines18-27[0].f1_38[0]',
+  'topmostSubform[0].Page1[0].Lines18-27[0].f1_39[0]',
+  'topmostSubform[0].Page1[0].Lines18-27[0].f1_40[0]',
+  'topmostSubform[0].Page1[0].f1_41[0]',
+  'topmostSubform[0].Page1[0].f1_42[0]',
+  'topmostSubform[0].Page1[0].Line30_ReadOrder[0].f1_43[0]',
+  'topmostSubform[0].Page1[0].Line30_ReadOrder[0].f1_44[0]',
+  'topmostSubform[0].Page1[0].f1_45[0]',
+  'topmostSubform[0].Page1[0].f1_46[0]',
+  'topmostSubform[0].Page1[0].c1_7[0]',
+  'topmostSubform[0].Page1[0].c1_7[1]',
+  'topmostSubform[0].Page2[0].c2_1[0]',
+  'topmostSubform[0].Page2[0].c2_2[0]',
+  'topmostSubform[0].Page2[0].c2_3[0]',
+  'topmostSubform[0].Page2[0].c2_4[0]',
+  'topmostSubform[0].Page2[0].c2_4[1]',
+  'topmostSubform[0].Page2[0].f2_1[0]',
+  'topmostSubform[0].Page2[0].f2_2[0]',
+  'topmostSubform[0].Page2[0].f2_3[0]',
+  'topmostSubform[0].Page2[0].f2_4[0]',
+  'topmostSubform[0].Page2[0].f2_5[0]',
+  'topmostSubform[0].Page2[0].f2_6[0]',
+  'topmostSubform[0].Page2[0].f2_7[0]',
+  'topmostSubform[0].Page2[0].f2_8[0]',
+  'topmostSubform[0].Page2[0].f2_9[0]',
+  'topmostSubform[0].Page2[0].f2_10[0]',
+  'topmostSubform[0].Page2[0].f2_11[0]',
+  'topmostSubform[0].Page2[0].f2_12[0]',
+  'topmostSubform[0].Page2[0].f2_13[0]',
+  'topmostSubform[0].Page2[0].f2_14[0]',
+  'topmostSubform[0].Page2[0].c2_5[0]',
+  'topmostSubform[0].Page2[0].c2_5[1]',
+  'topmostSubform[0].Page2[0].c2_6[0]',
+  'topmostSubform[0].Page2[0].c2_6[1]',
+  'topmostSubform[0].Page2[0].c2_7[0]',
+  'topmostSubform[0].Page2[0].c2_7[1]',
+  'topmostSubform[0].Page2[0].c2_8[0]',
+  'topmostSubform[0].Page2[0].c2_8[1]',
+  'topmostSubform[0].Page2[0].PartVTable[0].Item1[0].f2_15[0]',
+  'topmostSubform[0].Page2[0].PartVTable[0].Item1[0].f2_16[0]',
+  'topmostSubform[0].Page2[0].PartVTable[0].Item2[0].f2_17[0]',
+  'topmostSubform[0].Page2[0].PartVTable[0].Item2[0].f2_18[0]',
+  'topmostSubform[0].Page2[0].PartVTable[0].Item3[0].f2_19[0]',
+  'topmostSubform[0].Page2[0].PartVTable[0].Item3[0].f2_20[0]',
+  'topmostSubform[0].Page2[0].PartVTable[0].Item4[0].f2_21[0]',
+  'topmostSubform[0].Page2[0].PartVTable[0].Item4[0].f2_22[0]',
+  'topmostSubform[0].Page2[0].PartVTable[0].Item5[0].f2_23[0]',
+  'topmostSubform[0].Page2[0].PartVTable[0].Item5[0].f2_24[0]',
+  'topmostSubform[0].Page2[0].PartVTable[0].Item6[0].f2_25[0]',
+  'topmostSubform[0].Page2[0].PartVTable[0].Item6[0].f2_26[0]',
+  'topmostSubform[0].Page2[0].PartVTable[0].Item7[0].f2_27[0]',
+  'topmostSubform[0].Page2[0].PartVTable[0].Item7[0].f2_28[0]',
+  'topmostSubform[0].Page2[0].PartVTable[0].Item8[0].f2_29[0]',
+  'topmostSubform[0].Page2[0].PartVTable[0].Item8[0].f2_30[0]',
+  'topmostSubform[0].Page2[0].PartVTable[0].Item9[0].f2_31[0]',
+  'topmostSubform[0].Page2[0].PartVTable[0].Item9[0].f2_32[0]',
+  'topmostSubform[0].Page2[0].f2_33[0]'
+]
+
+const CHECKBOX_FIELDS = new Set(
+  FIELD_ORDER.filter((name) => name.includes('.c') || name.includes('].c'))
+)
+
+const formatAddressLine1 = (
+  address: Address | undefined
+): string | undefined => {
+  if (!address) return undefined
+  const parts = [address.address, address.aptNo].filter(
+    (p) => p && p.toString().trim().length > 0
+  )
+  return parts.join(' ')
+}
+
+const formatAddressLine2 = (
+  address: Address | undefined
+): string | undefined => {
+  if (!address) return undefined
+  const parts = [
+    address.city,
+    address.state ?? address.province ?? '',
+    address.zip ?? address.postalCode ?? ''
+  ].filter((p) => p && p.toString().trim().length > 0)
+  return parts.join(', ')
+}
+
 export default class ScheduleC extends F1040Attachment {
   tag: FormTag = 'f1040sc'
   sequenceIndex = 9
 
-  private allSelfEmployed = () => this.f1040.info.selfEmployedIncome ?? []
+  private explicitBusinesses = (): Business[] =>
+    this.f1040.info.businesses ?? []
+
+  private explicitSelfEmployed = (): SelfEmployedIncome[] =>
+    this.f1040.info.selfEmployedIncome ?? []
+
+  private necBusinesses = (): Business[] =>
+    this.f1040.f1099necs().map((f) => ({
+      name: f.payer,
+      income: {
+        grossReceipts: f.form.nonemployeeCompensation,
+        returnsAndAllowances: 0,
+        otherIncome: 0
+      },
+      expenses: {}
+    }))
+
+  private businessesForLines = (): Business[] => {
+    const explicitSelfEmployed = this.explicitSelfEmployed()
+    const explicitBusinesses = this.explicitBusinesses()
+    const baseBusinesses =
+      explicitBusinesses.length > 0
+        ? explicitBusinesses
+        : explicitSelfEmployed.map((income) =>
+            toBusinessFromSelfEmployedIncome(income)
+          )
+
+    return [...baseBusinesses, ...this.necBusinesses()]
+  }
+
+  private primaryBusiness = (): Business | undefined => {
+    const explicitBusiness = this.explicitBusinesses().at(0)
+    if (explicitBusiness !== undefined) {
+      return explicitBusiness
+    }
+
+    const selfEmployedBusiness = this.explicitSelfEmployed()
+      .map((income) => toBusinessFromSelfEmployedIncome(income))
+      .at(0)
+    if (selfEmployedBusiness !== undefined) {
+      return selfEmployedBusiness
+    }
+
+    return this.necBusinesses().at(0)
+  }
 
   private forRole = (role: PersonRole.PRIMARY | PersonRole.SPOUSE) =>
-    this.allSelfEmployed().filter((s) => s.personRole === role)
+    this.explicitSelfEmployed().filter((s) => s.personRole === role)
 
-  /**
-   * Gross receipts from statutory employee W-2s (Schedule C line 1).
-   * Sums only entries marked isStatutoryEmployee.
-   */
-  l1 = (): number | undefined => {
-    const total = this.allSelfEmployed()
-      .filter((s) => s.isStatutoryEmployee)
-      .reduce((sum, s) => sum + s.grossReceipts, 0)
-    return total > 0 ? total : undefined
+  isNeeded = (): boolean => this.businessesForLines().length > 0
+
+  private sumBusinesses = (f: (b: Business) => number | undefined): number =>
+    sumFields(this.businessesForLines().map((b) => f(b)))
+
+  private totalExpenses = (b: Business): number => {
+    const values = Object.values(b.expenses) as Array<number | undefined>
+    return sumFields(values)
   }
 
-  /** Total net profit or loss across all self-employed activities (Schedule C line 31). */
-  l31 = (): number | undefined => {
-    const total = this.allSelfEmployed().reduce(
-      (sum, s) => sum + s.grossReceipts - s.expenses,
-      0
-    )
-    return total !== 0 ? total : undefined
-  }
+  l1 = (): number | undefined =>
+    this.sumBusinesses((b) => b.income.grossReceipts)
 
-  /** Net profit for the primary filer — used by Schedule SE. */
+  l2 = (): number | undefined =>
+    this.sumBusinesses((b) => b.income.returnsAndAllowances)
+
+  l3 = (): number => (this.l1() ?? 0) - (this.l2() ?? 0)
+
+  l4 = (): number | undefined => undefined
+
+  l5 = (): number => this.l3() - (this.l4() ?? 0)
+
+  l6 = (): number | undefined =>
+    this.sumBusinesses((b) => b.income.otherIncome ?? 0)
+
+  l7 = (): number => this.l5() + (this.l6() ?? 0)
+
+  l28 = (): number => this.sumBusinesses((b) => this.totalExpenses(b))
+
+  l29 = (): number => this.l7() - this.l28()
+
+  l30 = (): number | undefined =>
+    this.sumBusinesses((b) => b.homeOfficeDeduction ?? 0)
+
+  l31 = (): number => this.l29() - (this.l30() ?? 0)
+
   l31Primary = (): number =>
     this.forRole(PersonRole.PRIMARY).reduce(
       (sum, s) => sum + s.grossReceipts - s.expenses,
       0
     )
 
-  /** Net profit for the spouse — used by Schedule SE. */
   l31Spouse = (): number =>
     this.forRole(PersonRole.SPOUSE).reduce(
       (sum, s) => sum + s.grossReceipts - s.expenses,
       0
     )
 
-  isNeeded = (): boolean => this.allSelfEmployed().length > 0
+  fillInstructions = (): FillInstructions => {
+    const business = this.primaryBusiness()
+    const values: Record<string, Field> = {
+      'topmostSubform[0].Page1[0].f1_1[0]': this.f1040.namesString(),
+      'topmostSubform[0].Page1[0].f1_2[0]':
+        this.f1040.info.taxPayer.primaryPerson.ssid,
+      'topmostSubform[0].Page1[0].f1_3[0]':
+        business?.principalBusinessOrProfession,
+      'topmostSubform[0].Page1[0].BComb[0].f1_4[0]': business?.businessCode,
+      'topmostSubform[0].Page1[0].f1_5[0]': business?.name,
+      'topmostSubform[0].Page1[0].DComb[0].f1_6[0]': business?.ein,
+      'topmostSubform[0].Page1[0].f1_7[0]': formatAddressLine1(
+        business?.address || this.f1040.info.taxPayer.primaryPerson.address
+      ),
+      'topmostSubform[0].Page1[0].f1_8[0]': formatAddressLine2(
+        business?.address || this.f1040.info.taxPayer.primaryPerson.address
+      ),
+      'topmostSubform[0].Page1[0].Line1_ReadOrder[0].c1_6[0]':
+        this.explicitSelfEmployed().some(
+          (income) => income.isStatutoryEmployee
+        ),
+      'topmostSubform[0].Page1[0].f1_10[0]': this.l1(),
+      'topmostSubform[0].Page1[0].f1_11[0]': this.l2(),
+      'topmostSubform[0].Page1[0].f1_12[0]': this.l3(),
+      'topmostSubform[0].Page1[0].f1_13[0]': this.l4(),
+      'topmostSubform[0].Page1[0].f1_14[0]': this.l5(),
+      'topmostSubform[0].Page1[0].f1_15[0]': this.l6(),
+      'topmostSubform[0].Page1[0].f1_16[0]': this.l7(),
+      'topmostSubform[0].Page1[0].f1_41[0]': this.l28(),
+      'topmostSubform[0].Page1[0].f1_42[0]': this.l29(),
+      'topmostSubform[0].Page1[0].f1_45[0]': this.l30(),
+      'topmostSubform[0].Page1[0].f1_46[0]': this.l31()
+    }
 
-  fields = (): Field[] => []
-  fillInstructions = (): FillInstructions => []
+    return FIELD_ORDER.map((name) =>
+      CHECKBOX_FIELDS.has(name)
+        ? checkbox(name, values[name] as boolean | undefined)
+        : text(name, values[name] as string | number | undefined)
+    )
+  }
+
+  fields = (): Field[] =>
+    this.fillInstructions().map((instruction) => instruction.value)
 }

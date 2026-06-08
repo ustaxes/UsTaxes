@@ -16,6 +16,7 @@ import {
 import { useDispatch } from 'ustaxes/redux'
 import { useSelector } from 'react-redux'
 import { useYearSelector } from 'ustaxes/redux/yearDispatch'
+import { intentionallyFloat } from 'ustaxes/core/util'
 
 interface EstimatedTaxesUserInput {
   label: string
@@ -60,6 +61,7 @@ export default function EstimatedTaxes(): ReactElement {
   const dispatch = useDispatch()
 
   const methods = useForm<EstimatedTaxesUserInput>({ defaultValues })
+  const { handleSubmit } = methods
 
   const { navButtons, onAdvance } = usePager()
 
@@ -109,8 +111,12 @@ export default function EstimatedTaxes(): ReactElement {
 
   const form: ReactElement = <>{w2sBlock}</>
 
+  const onSubmit = (): void => {
+    onAdvance()
+  }
+
   return (
-    <form tabIndex={-1} onSubmit={onAdvance}>
+    <form tabIndex={-1} onSubmit={intentionallyFloat(handleSubmit(onSubmit))}>
       <h2>Estimated Taxes</h2>
       <p>
         Did you already make payments towards your {activeYear} taxes this year

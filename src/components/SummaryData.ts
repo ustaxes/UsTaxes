@@ -30,6 +30,18 @@ interface SummaryCreator<A> {
   summary: (a: A) => SummaryData
 }
 
+interface ModernSummary1040 {
+  scheduleEIC: {
+    credit: () => number
+    allowed: () => boolean
+  }
+  qualifiedAndCapGainsWorksheet?: {
+    getSummaryData: () => WorksheetData
+  }
+  l35a: () => number
+  l37: () => number
+}
+
 const emptySummary = {
   credits: [],
   worksheets: []
@@ -56,22 +68,28 @@ export const SummaryCreatorFor2020: SummaryCreator<F1040For2020> = {
 }
 
 export const SummaryCreatorFor2021: SummaryCreator<F1040For2021> = {
-  summary: (f: F1040For2021): SummaryData => ({
-    credits: [
-      {
-        name: 'Earned income credit',
-        value: f.scheduleEIC.credit(),
-        allowed: f.scheduleEIC.allowed()
-      }
-    ],
-    worksheets: [
-      ...(f.qualifiedAndCapGainsWorksheet !== undefined
-        ? [f.qualifiedAndCapGainsWorksheet.getSummaryData()]
-        : [])
-    ],
-    refundAmount: f.l35a(),
-    amountOwed: f.l37()
-  })
+  summary: (f: F1040For2021): SummaryData => createModernSummary(f)
+}
+
+const createModernSummary = (f: ModernSummary1040): SummaryData => ({
+  credits: [
+    {
+      name: 'Earned income credit',
+      value: f.scheduleEIC.credit(),
+      allowed: f.scheduleEIC.allowed()
+    }
+  ],
+  worksheets: [
+    ...(f.qualifiedAndCapGainsWorksheet !== undefined
+      ? [f.qualifiedAndCapGainsWorksheet.getSummaryData()]
+      : [])
+  ],
+  refundAmount: f.l35a(),
+  amountOwed: f.l37()
+})
+
+export const SummaryCreatorForModernYears: SummaryCreator<ModernSummary1040> = {
+  summary: (f: ModernSummary1040): SummaryData => createModernSummary(f)
 }
 
 export const createSummary = (
@@ -92,6 +110,14 @@ export const createSummary = (
     }
     case 'Y2021': {
       return SummaryCreatorFor2021.summary(f1040 as F1040For2021)
+    }
+    case 'Y2022':
+    case 'Y2023':
+    case 'Y2024':
+    case 'Y2025': {
+      return SummaryCreatorForModernYears.summary(
+        f1040 as unknown as ModernSummary1040
+      )
     }
   }
 }

@@ -36,11 +36,25 @@ export default class Schedule2 extends F1040Attachment {
   // 2021, see instructions
   l17b = (): number | undefined => undefined
 
-  l17c = (): number | undefined =>
-    sumFields([this.f1040.f8889.l17b(), this.f1040.f8889Spouse?.l17b()])
+  l17c = (): number | undefined => {
+    const hsaNeeded =
+      this.f1040.f8889.isNeeded() ||
+      (this.f1040.f8889Spouse?.isNeeded() ?? false)
+    if (!hsaNeeded) {
+      return undefined
+    }
+    return sumFields([this.f1040.f8889.l17b(), this.f1040.f8889Spouse?.l17b()])
+  }
 
-  l17d = (): number | undefined =>
-    sumFields([this.f1040.f8889.l21(), this.f1040.f8889Spouse?.l21()])
+  l17d = (): number | undefined => {
+    const hsaNeeded =
+      this.f1040.f8889.isNeeded() ||
+      (this.f1040.f8889Spouse?.isNeeded() ?? false)
+    if (!hsaNeeded) {
+      return undefined
+    }
+    return sumFields([this.f1040.f8889.l21(), this.f1040.f8889Spouse?.l21()])
+  }
   // TODO: Additional tax on Archer MSA distributions. Attach Form 8853
   l17e = (): number | undefined => undefined
   // TODO: Additional tax on Medicare Advantage MSA distributions. Attach
@@ -102,7 +116,10 @@ export default class Schedule2 extends F1040Attachment {
     ])
 
   // 19 Additional tax from Schedule 8812
-  l19 = (): number | undefined => this.f1040.schedule8812.toSchedule2Line19()
+  l19 = (): number | undefined =>
+    this.f1040.schedule8812.isNeeded()
+      ? this.f1040.schedule8812.toSchedule2Line19()
+      : undefined
 
   // TODO: Section 965 net tax liability installment from Form 965-A. .
   l20 = (): number | undefined => undefined

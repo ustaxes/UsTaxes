@@ -133,21 +133,28 @@ const w2: Arbitrary<types.IncomeW2> = wages.chain((income) =>
         state,
         stateWages,
         stateWithholding
-      ]) => ({
-        occupation,
-        income,
-        medicareIncome,
-        fedWithholding,
-        employer,
-        personRole: types.PersonRole.PRIMARY,
-        ssWages,
-        ssWithholding,
-        medicareWithholding,
-        state,
-        stateWages,
-        stateWithholding,
-        box12
-      })
+      ]) => {
+        const cappedSsWithholding = Math.min(
+          ssWithholding,
+          Math.round(ssWages * 0.062)
+        )
+
+        return {
+          occupation,
+          income,
+          medicareIncome,
+          fedWithholding,
+          employer,
+          personRole: types.PersonRole.PRIMARY,
+          ssWages,
+          ssWithholding: cappedSsWithholding,
+          medicareWithholding,
+          state,
+          stateWages,
+          stateWithholding,
+          box12
+        }
+      }
     )
 )
 
@@ -182,6 +189,10 @@ export const f1099BData: Arbitrary<types.F1099BData> = fc
     })
   )
 
+export const f1099NECData: Arbitrary<types.F1099NECData> = fc
+  .nat()
+  .map((nonemployeeCompensation) => ({ nonemployeeCompensation }))
+
 export const f1099Int: Arbitrary<types.Income1099Int> = fc
   .tuple(payerName, f1099IntData)
   .map(([payer, form]) => ({
@@ -209,10 +220,20 @@ export const f1099Div: Arbitrary<types.Income1099Div> = fc
     personRole: types.PersonRole.PRIMARY
   }))
 
+export const f1099NEC: Arbitrary<types.Income1099NEC> = fc
+  .tuple(payerName, f1099NECData)
+  .map(([payer, form]) => ({
+    type: types.Income1099Type.NEC,
+    form,
+    payer,
+    personRole: types.PersonRole.PRIMARY
+  }))
+
 export const f1099: Arbitrary<types.Supported1099> = fc.oneof(
   f1099B,
   f1099Div,
-  f1099Int
+  f1099Int,
+  f1099NEC
 )
 
 const propExpenseTypeName: Arbitrary<types.PropertyExpenseTypeName> =
@@ -240,6 +261,15 @@ const f1098e: Arbitrary<types.F1098e> = fc
   .map(([lender, interest]) => ({
     lender,
     interest
+  }))
+
+const f1098: Arbitrary<types.F1098> = fc
+  .tuple(maxWords(2), interest, fc.option(interest), fc.option(interest))
+  .map(([lender, interest, points, mortgageInsurancePremiums]) => ({
+    lender,
+    interest,
+    points: points ?? undefined,
+    mortgageInsurancePremiums: mortgageInsurancePremiums ?? undefined
   }))
 
 const f3921: Arbitrary<types.F3921> = fc
@@ -668,6 +698,7 @@ export class Arbitraries {
         fc.array(w2),
         fc.array(this.property()),
         fc.array(estTax),
+        fc.array(f1098),
         fc.array(f1098e),
         fc.array(f3921),
         fc.array(scheduleK1Form1065),
@@ -686,6 +717,7 @@ export class Arbitraries {
           w2s,
           realEstate,
           estimatedTaxes,
+          f1098s,
           f1098es,
           f3921s,
           scheduleK1Form1065s,
@@ -702,6 +734,7 @@ export class Arbitraries {
           w2s,
           realEstate,
           estimatedTaxes,
+          f1098s,
           f1098es,
           f3921s,
           scheduleK1Form1065s,

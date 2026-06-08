@@ -4,6 +4,9 @@ import { sumFields } from 'ustaxes/core/irsForms/util'
 import F1040 from './F1040'
 import { Field } from 'ustaxes/core/pdfFiller'
 
+const formatAgreementDate = (value: Date | undefined): string | undefined =>
+  value ? value.toLocaleDateString('en-US') : undefined
+
 export default class Schedule1 extends F1040Attachment {
   tag: FormTag = 'f1040s1'
   sequenceIndex = 1
@@ -15,17 +18,21 @@ export default class Schedule1 extends F1040Attachment {
   }
 
   isNeeded = (): boolean =>
+    (this.f1040.scheduleC?.isNeeded() ?? false) ||
     this.f1040.scheduleE.isNeeded() ||
     (this.f1040.studentLoanInterestWorksheet !== undefined &&
       this.f1040.studentLoanInterestWorksheet.notMFS() &&
       this.f1040.studentLoanInterestWorksheet.isNotDependent()) ||
     this.f1040.f8889.isNeeded() ||
-    (this.f1040.f8889Spouse?.isNeeded() ?? false)
+    (this.f1040.f8889Spouse?.isNeeded() ?? false) ||
+    this.f1040.info.adjustments?.alimonyPaid !== undefined ||
+    this.f1040.info.adjustments?.alimonyRecipientSsn !== undefined ||
+    this.f1040.info.adjustments?.alimonyDivorceDate !== undefined
 
   l1 = (): number | undefined => undefined
   l2a = (): number | undefined => undefined
   l2b = (): number | undefined => undefined
-  l3 = (): number | undefined => undefined
+  l3 = (): number | undefined => this.f1040.scheduleC?.l31()
   l4 = (): number | undefined => undefined
   l5 = (): number | undefined => this.f1040.scheduleE.l41()
   l6 = (): number | undefined => undefined
@@ -97,18 +104,21 @@ export default class Schedule1 extends F1040Attachment {
 
   to1040Line8 = (): number => this.l10()
 
-  l11 = (): number | undefined => undefined
+  l11 = (): number | undefined => this.f1040.info.adjustments?.educatorExpenses
   l12 = (): number | undefined => undefined
   l13 = (): number | undefined =>
     sumFields([this.f1040.f8889.l13(), this.f1040.f8889Spouse?.l13()])
   l14 = (): number | undefined => undefined
   l15 = (): number | undefined => this.f1040.scheduleSE.l13()
   l16 = (): number | undefined => undefined
-  l17 = (): number | undefined => undefined
+  l17 = (): number | undefined =>
+    this.f1040.info.adjustments?.selfEmployedHealthInsuranceDeduction
   l18 = (): number | undefined => undefined
-  l19a = (): number | undefined => undefined
-  l19b = (): string | undefined => undefined
-  l19c = (): string | undefined => undefined
+  l19a = (): number | undefined => this.f1040.info.adjustments?.alimonyPaid
+  l19b = (): string | undefined =>
+    this.f1040.info.adjustments?.alimonyRecipientSsn
+  l19c = (): string | undefined =>
+    formatAgreementDate(this.f1040.info.adjustments?.alimonyDivorceDate)
   l20 = (): number | undefined => undefined
   l21 = (): number | undefined => this.f1040.studentLoanInterestWorksheet?.l9()
   // Reserved for future use
