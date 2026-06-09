@@ -1,0 +1,143 @@
+{
+  "name": "Married Filing Jointly with Dependent",
+  "description": "MFJ return with 2 W-2s, 1 child, child tax credit, itemized deductions",
+  "category": "itemized",
+  "taxYear": 2024,
+  "documents": [
+    {
+      "type": "W2",
+      "path": "~/files/taxes/2024/w2-primary.pdf",
+      "source": "real",
+      "notes": "Primary taxpayer W-2"
+    },
+    {
+      "type": "W2",
+      "path": "~/files/taxes/2024/w2-spouse.pdf",
+      "source": "real",
+      "notes": "Spouse W-2"
+    },
+    {
+      "type": "1099-INT",
+      "path": "~/files/taxes/2024/1099-int-bank.pdf",
+      "source": "real",
+      "notes": "Interest income from savings account"
+    },
+    {
+      "type": "1099-DIV",
+      "path": "~/files/taxes/2024/1099-div-brokerage.pdf",
+      "source": "real",
+      "notes": "Dividend income from investments"
+    },
+    {
+      "type": "1098",
+      "path": "~/files/taxes/2024/1098-mortgage.pdf",
+      "source": "real",
+      "notes": "Mortgage interest statement"
+    },
+    {
+      "type": "1098-E",
+      "path": "~/files/taxes/2024/1098-e-student-loan.pdf",
+      "source": "real",
+      "notes": "Student loan interest paid"
+    }
+  ],
+  "userResponses": {
+    "filingStatus": "MFJ",
+    "primaryPerson": {
+      "firstName": "John",
+      "lastName": "Doe",
+      "dateOfBirth": "1985-06-15",
+      "isBlind": false,
+      "isTaxpayerDependent": false
+    },
+    "spouse": {
+      "firstName": "Jane",
+      "lastName": "Doe",
+      "dateOfBirth": "1987-03-22",
+      "isBlind": false,
+      "isTaxpayerDependent": false
+    },
+    "dependents": [
+      {
+        "firstName": "Emily",
+        "lastName": "Doe",
+        "dateOfBirth": "2018-09-10",
+        "relationship": "daughter",
+        "qualifyingInfo": {
+          "numberOfMonths": 12,
+          "isStudent": false
+        }
+      }
+    ],
+    "otherIncome": {
+      "selfEmployment": false,
+      "rental": false,
+      "unemployment": false,
+      "socialSecurity": false,
+      "retirement": false
+    },
+    "deductions": {
+      "choice": "itemized",
+      "stateAndLocalTaxes": 10000,
+      "mortgageInterest": 15000,
+      "charitableDonations": 5000,
+      "medicalExpenses": 8000
+    },
+    "questions": {
+      "hasVirtualCurrency": false,
+      "hasForeignAccounts": false
+    }
+  },
+  "expectedState": {
+    "filingStatus": "MFJ",
+    "w2Count": 2,
+    "f1099Count": 2,
+    "dependentCount": 1,
+    "totalIncome": 178700,
+    "adjustments": 1200,
+    "agi": 177500,
+    "deductionType": "itemized",
+    "deductionAmount": 30000,
+    "taxableIncome": 147500,
+    "totalTaxBeforeCredits": 26450,
+    "childTaxCredit": 2000,
+    "totalTax": 24450,
+    "federalWithholding": 26000,
+    "refund": 1550,
+    "amountOwed": 0
+  },
+  "expectedForms": [
+    "F1040",
+    "Schedule 1",
+    "Schedule A",
+    "Schedule B",
+    "Schedule D",
+    "Form 8949",
+    "Form 8812"
+  ],
+  "validations": {
+    "mathCorrect": true,
+    "compliancePass": true,
+    "auditRisk": "low",
+    "criticalIssues": 0,
+    "warnings": 1,
+    "warningMessages": [
+      "Ensure you have receipts for charitable contributions over $250"
+    ],
+    "recommendations": [
+      "Consider IRA contribution ($7,000 available) for $1,540 tax savings",
+      "Consider HSA contribution ($6,300 additional available) for $1,386 tax savings",
+      "Donate appreciated stock instead of cash for charitable contributions"
+    ]
+  },
+  "performance": {
+    "maxExecutionTime": 90,
+    "expectedTime": 60
+  },
+  "notes": [
+    "Medical expenses ($8,000) below 7.5% AGI threshold ($13,312), so not deductible",
+    "SALT deduction capped at $10,000 (state income tax + property tax)",
+    "Itemized deductions ($30,000) exceed standard deduction ($29,200) by $800",
+    "Child tax credit of $2,000 fully available (no phase-out at this income level)"
+  ]
+}

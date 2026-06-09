@@ -1,0 +1,45 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "command": "bash .claude/hooks/validate-bash-safety.sh"
+      },
+      {
+        "matcher": "Read",
+        "command": "bash .claude/hooks/check-pii-access.sh"
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "*",
+        "command": "bash .claude/hooks/log-operation.sh"
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "command": "bash .claude/hooks/inject-tax-context.sh"
+      }
+    ],
+    "SessionStart": [
+      {
+        "command": "bash .claude/hooks/load-tax-session.sh"
+      }
+    ],
+    "SessionEnd": [
+      {
+        "command": "bash .claude/hooks/save-tax-session.sh"
+      }
+    ]
+  },
+  "mcp": {
+    "ustaxes": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "tsx",
+        "/mnt/nas/data/code/forks/UsTaxes/.claude/mcp-servers/ustaxes-server/src/index.ts"
+      ]
+    }
+  }
+}
