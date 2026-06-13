@@ -246,8 +246,8 @@ async function loadFromSchema(schemaPath: string): Promise<PdfField[]> {
         f.type === 'checkbox'
           ? ('checkbox' as const)
           : f.type === 'radio'
-          ? ('radio' as const)
-          : ('text' as const)
+            ? ('radio' as const)
+            : ('text' as const)
     }))
 }
 
@@ -348,9 +348,8 @@ async function runVerify(formTag: string, pdfPath: string): Promise<void> {
   // Dynamic import so the verification can load compiled form modules.
   // The testKit gives us a real, validated form instance with random data.
   const { testKit } = await import('../src/forms/Y2024/tests')
-  const { deriveFillInstructionsFromPdf, fillPDFByName } = await import(
-    '../src/core/pdfFiller/fillPdf'
-  )
+  const { deriveFillInstructionsFromPdf, fillPDFByName } =
+    await import('../src/core/pdfFiller/fillPdf')
 
   const pdfBytes = await readFile(pdfPath)
   let foundForm:

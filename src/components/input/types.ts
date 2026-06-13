@@ -21,8 +21,10 @@ interface SizeList {
   lg?: boolean | GridSize
 }
 
-export interface LabeledDropdownProps<A, TFormValues>
-  extends BaseDropdownProps<TFormValues> {
+export interface LabeledDropdownProps<
+  A,
+  TFormValues
+> extends BaseDropdownProps<TFormValues> {
   autofocus?: boolean
   useGrid?: boolean
   sizes?: SizeList
@@ -57,13 +59,15 @@ export interface LabeledFormProps<TFormValues> {
 
 export type LabeledCheckboxProps<TFormValues> = LabeledFormProps<TFormValues>
 
-export interface LabeledRadioProps<TFormValues>
-  extends LabeledFormProps<TFormValues> {
+export interface LabeledRadioProps<
+  TFormValues
+> extends LabeledFormProps<TFormValues> {
   values: Array<[string, string]>
 }
 
-export interface DatePickerProps<TFormValues>
-  extends LabeledFormProps<TFormValues> {
+export interface DatePickerProps<
+  TFormValues
+> extends LabeledFormProps<TFormValues> {
   required?: boolean
   minDate?: Date
   maxDate: Date

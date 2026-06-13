@@ -22,7 +22,6 @@ Before contributing please make sure to take a moment to read through the [Code 
 ## Pull Request Guidelines
 
 - For code security, we require signed commits. If you haven't set up signed commits yet, please do the following:
-
   - Follow [this Github tutorial](https://docs.github.com/en/github/authenticating-to-github/managing-commit-signature-verification)
 
   - To ensure all your commits are signed going forward, `git config --global commit.gpgsign true`,
@@ -34,12 +33,10 @@ Before contributing please make sure to take a moment to read through the [Code 
 - If adding new feature, provide some clear reason to add this feature.
 
 - If fixing a bug:
-
   - If you are resolving a special issue, add `Fixes: #xxx` (#xxx is the issue id) in your PR body. When your PR is merged, the maintainer will move this information into the final commit message for our release log.
   - Provide detailed description of the bug in the PR, or link to an issue that does.
 
 - These are just some formatting suggestions, we won't call you out for not following them:
-
   - Start commits with a capital letter and imperative mood, no period at the end.
   - Each commit first line should be max 50 characters, followed by a blank line.
   - Wrap following lines at 80 characters.

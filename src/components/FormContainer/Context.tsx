@@ -14,9 +14,8 @@ const getProps = (): FormContainerProps => ({
   onSubmit: () => null
 })
 
-export const formContainerContext: Context<FormContainerProps> = createContext(
-  getProps()
-)
+export const formContainerContext: Context<FormContainerProps> =
+  createContext(getProps())
 
 export const FormContainerProvider = ({
   onSubmit,

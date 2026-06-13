@@ -169,8 +169,8 @@ const FilteredAssetsTable = (): ReactElement => {
     closeYear === 'all'
       ? ['all time']
       : closeYear === 'none'
-      ? ['current holdings']
-      : [`sales in ${TaxYears[closeYear as TaxYear]}`]
+        ? ['current holdings']
+        : [`sales in ${TaxYears[closeYear as TaxYear]}`]
   ]
     .flat()
     .join(' ')
