@@ -63,7 +63,7 @@ export const PortfolioTable = ({
     },
     {
       name: 'Close Fee',
-      selector: (p) => (p.closeDate === undefined ? '' : p.closeFee ?? 0)
+      selector: (p) => (p.closeDate === undefined ? '' : (p.closeFee ?? 0))
     },
     {
       name: 'Proceeds',

@@ -50,7 +50,6 @@ Federal form logic for a given year lives under [`src/forms/<year>/irsForms/`](.
 - For a new UI form that needs its own page, add to routes in [Main.tsx](../src/components/Main.tsx)
 - A UI form can push new data into the state using Redux actions. Define your new action in [src/redux/actions.ts](../src/redux/actions.ts), and add your state updates to [src/redux/reducer.ts](../src/redux/reducer.ts)
 - If there is a new attachment to the 1040:
-
   - The blank form goes in `public/forms/<year>/irs/`. Attachment selection and fill orchestration are in [fillPdf.ts](../src/core/pdfFiller/fillPdf.ts).
   - The TypeScript for the PDF goes under `src/forms/<year>/irsForms/` (see [pdf-form-filling.md](pdf-form-filling.md) and [adding_year.md](adding_year.md)). Generate a skeleton with:
 

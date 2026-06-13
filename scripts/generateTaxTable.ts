@@ -30,17 +30,17 @@ if (!year || !/^\d{4}$/.test(year)) {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const { computeOrdinaryTax } = require(path.resolve(
-  `src/forms/Y${year}/irsForms/TaxTable`
-)) as { computeOrdinaryTax: (s: FilingStatus, income: number) => number }
+const { computeOrdinaryTax } = require(
+  path.resolve(`src/forms/Y${year}/irsForms/TaxTable`)
+) as { computeOrdinaryTax: (s: FilingStatus, income: number) => number }
 
 interface FederalBrackets {
   ordinary: { status: { [k: string]: { brackets: number[] } } }
 }
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const { default: federalBrackets } = require(path.resolve(
-  `src/forms/Y${year}/data/federal`
-)) as { default: FederalBrackets }
+const { default: federalBrackets } = require(
+  path.resolve(`src/forms/Y${year}/data/federal`)
+) as { default: FederalBrackets }
 
 const tax = (s: FilingStatus, income: number) =>
   Math.round(computeOrdinaryTax(s, income))

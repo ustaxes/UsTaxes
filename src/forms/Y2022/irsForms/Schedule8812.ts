@@ -262,7 +262,7 @@ export default class Schedule8812 extends F1040Attachment {
   }
 
   l27 = (): number | undefined =>
-    this.l12no() ? 0 : this.part2a().toLine27 ?? this.part2b().toLine27
+    this.l12no() ? 0 : (this.part2a().toLine27 ?? this.part2b().toLine27)
 
   fields = (): Field[] => {
     const part2a = this.part2a()

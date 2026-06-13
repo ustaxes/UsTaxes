@@ -527,7 +527,7 @@ export default class F1040 extends F1040Base {
         ? this.info.taxPayer.spouse?.firstName
         : '',
       this.info.taxPayer.filingStatus === FilingStatus.MFJ
-        ? this.info.taxPayer.spouse?.lastName ?? ''
+        ? (this.info.taxPayer.spouse?.lastName ?? '')
         : '',
       this.info.taxPayer.spouse?.ssid,
       this.info.taxPayer.primaryPerson.address.address,
@@ -680,7 +680,7 @@ export default class F1040 extends F1040Base {
       text(
         'topmostSubform[0].Page1[0].f1_08[0]',
         this.info.taxPayer.filingStatus === FilingStatus.MFJ
-          ? this.info.taxPayer.spouse?.lastName ?? ''
+          ? (this.info.taxPayer.spouse?.lastName ?? '')
           : ''
       ),
       text(

@@ -135,10 +135,13 @@ Examples:
     console.log(`Total fields: ${schema.totalFields}`)
     console.log(
       `Field types: ${Object.entries(
-        schema.fields.reduce((acc, f) => {
-          acc[f.type] = (acc[f.type] || 0) + 1
-          return acc
-        }, {} as Record<string, number>)
+        schema.fields.reduce(
+          (acc, f) => {
+            acc[f.type] = (acc[f.type] || 0) + 1
+            return acc
+          },
+          {} as Record<string, number>
+        )
       )
         .map(([type, count]) => `${type}=${count}`)
         .join(', ')}`
