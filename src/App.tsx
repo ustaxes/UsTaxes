@@ -13,7 +13,7 @@ const App = (): ReactElement => {
           type: prefersDarkMode ? 'dark' : 'light',
           background: {
             default: prefersDarkMode ? '#303030' : '#fafafa',
-            paper: prefersDarkMode ? '#37474f' : '#ffffff'
+            paper: prefersDarkMode ? '#303030' : '#ffffff'
           },
           text: {
             primary: prefersDarkMode ? '#ffffff' : '#000000',
