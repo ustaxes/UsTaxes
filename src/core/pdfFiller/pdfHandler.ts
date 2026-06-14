@@ -22,18 +22,14 @@ export const downloadPDF: PDFDownloader = async (url) => {
 export const combinePdfs = async (
   pdfFiles: PDFDocument[]
 ): Promise<PDFDocument> => {
-  const [head, ...rest] = await Promise.all(
-    pdfFiles.map(async (pdf) => PDFDocument.load(await pdf.save()))
-  )
+  const mergedPdf = await PDFDocument.create()
 
-  // Make sure we combine the documents from left to right and preserve order
-  return rest.reduce(async (l, r) => {
-    const doc = await PDFDocument.load(await (await l).save())
-    return await doc.copyPages(r, r.getPageIndices()).then((pgs) => {
-      pgs.forEach((p) => doc.addPage(p))
-      return doc
-    })
-  }, Promise.resolve(head))
+  for (const pdf of pdfFiles) {
+    const copiedPages = await mergedPdf.copyPages(pdf, pdf.getPageIndices())
+    copiedPages.forEach((page) => mergedPdf.addPage(page))
+  }
+
+  return mergedPdf
 }
 
 export const getPdfs = async (
