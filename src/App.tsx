@@ -10,11 +10,22 @@ const App = (): ReactElement => {
     () =>
       createTheme({
         palette: {
+          type: prefersDarkMode ? 'dark' : 'light',
+          background: {
+            default: prefersDarkMode ? '#303030' : '#fafafa',
+            paper: prefersDarkMode ? '#37474f' : '#ffffff'
+          },
+          text: {
+            primary: prefersDarkMode ? '#ffffff' : '#000000',
+            secondary: prefersDarkMode
+              ? 'rgba(255, 255, 255, 0.75)'
+              : 'rgba(0, 0, 0, 0.7)'
+          },
           secondary: prefersDarkMode
             ? {
                 light: '#4f5b62',
-                main: '#d5d5d5',
-                dark: '#000a12',
+                main: '#cfd8dc',
+                dark: '#455a64',
                 contrastText: '#ffffff'
               }
             : {
