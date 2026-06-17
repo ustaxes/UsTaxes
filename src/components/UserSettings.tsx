@@ -1,4 +1,5 @@
 import { Check } from '@material-ui/icons'
+import { Switch, useMediaQuery } from '@material-ui/core'
 import { ReactElement, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { fsRecover } from 'ustaxes/redux/fs/Actions'
@@ -6,9 +7,32 @@ import { LoadRaw } from 'ustaxes/redux/fs/Load'
 import SaveToFile from './SaveToFile'
 import ClearLocalStorage from './ClearLocalStorage'
 
+const getInitialTheme = () => {
+  const savedTheme = localStorage.getItem('theme')
+  if (savedTheme) return savedTheme === 'dark' ? true : false
+
+  const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)')
+  return prefersDarkMode
+}
+
+const setTheme = (isDarkMode: boolean) => {
+  localStorage.setItem('theme', isDarkMode ? 'dark' : 'light')
+}
+
 const UserSettings = (): ReactElement => {
   const dispatch = useDispatch()
   const [done, setDone] = useState(false)
+
+  const [checked, setChecked] = useState(getInitialTheme())
+  const label = {
+    checked: checked,
+    onChange: () => {
+      {
+        ;(setChecked(!checked), setTheme(!checked))
+      }
+    },
+    name: 'checkedA'
+  }
 
   return (
     <>
@@ -41,6 +65,8 @@ const UserSettings = (): ReactElement => {
       <ClearLocalStorage variant="contained" color="primary">
         Clear Local Storage
       </ClearLocalStorage>
+
+      <Switch {...label} defaultChecked />
     </>
   )
 }

@@ -4,7 +4,7 @@ import './App.css'
 import { createTheme, ThemeProvider, useMediaQuery } from '@material-ui/core'
 
 const App = (): ReactElement => {
-  const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)')
+  const prefersDarkMode = getInitialTheme()
 
   const theme = useMemo(
     () =>
@@ -55,3 +55,11 @@ const App = (): ReactElement => {
 }
 
 export default App
+function getInitialTheme() {
+  const savedTheme = localStorage.getItem('theme')
+  if (savedTheme) return savedTheme === 'dark' ? true : false
+
+  const userMedia = useMediaQuery('(prefers-color-scheme: dark)')
+  console.log('userMedia.matches:', userMedia)
+  return userMedia
+}
