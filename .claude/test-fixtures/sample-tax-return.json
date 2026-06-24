@@ -1,0 +1,53 @@
+{
+  "filingStatus": "single",
+  "taxYear": 2024,
+  "taxPayer": {
+    "firstName": "John",
+    "lastName": "Doe",
+    "ssn": "123-45-6789",
+    "dateOfBirth": "1985-05-15",
+    "address": {
+      "address": "456 Oak Ave",
+      "city": "Los Angeles",
+      "state": "CA",
+      "zip": "90001"
+    }
+  },
+  "w2s": [
+    {
+      "occupation": "Software Engineer",
+      "income": 75000,
+      "medicareIncome": 75000,
+      "fedWithholding": 12000,
+      "ssWages": 75000,
+      "ssWithholding": 4650,
+      "medicareWithholding": 1087.50,
+      "stateWages": 75000,
+      "stateWithholding": 3750,
+      "ein": "12-3456789",
+      "employerName": "ABC Company",
+      "state": "CA"
+    }
+  ],
+  "f1099s": [
+    {
+      "form": "1099-INT",
+      "payer": "XYZ Financial",
+      "income": 1250,
+      "interest": 1250
+    }
+  ],
+  "f1098es": [],
+  "deductions": {
+    "type": "standard",
+    "amount": 14600
+  },
+  "grossIncome": 76250,
+  "adjustedGrossIncome": 76250,
+  "taxableIncome": 61650,
+  "federalTax": 8936,
+  "effectiveRate": 0.1172,
+  "marginalRate": 0.22,
+  "refund": 3064,
+  "credits": []
+}
