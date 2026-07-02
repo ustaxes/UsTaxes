@@ -22,10 +22,12 @@ import parameters from './Parameters'
  * - Social security benefits are not taxed (line 6b col B).
  * - Unemployment compensation is not taxed (Section B line 7 col B).
  * - State tax refunds are not income (Section B line 1 col B).
+ * - US government obligation interest is not taxed (line 2 col B, from
+ *   caStateInfo.usGovObligationInterest).
  *
- * Not captured (data not collected by the app): US Treasury interest,
- * non-California municipal bond interest, HSA account earnings, CA
- * lottery winnings, mortgage interest differences.
+ * Not captured (data not collected by the app): non-California municipal
+ * bond interest, HSA account earnings, CA lottery winnings, mortgage
+ * interest differences.
  */
 export default class ScheduleCA540 extends Form {
   info: ValidatedInformation
@@ -77,7 +79,12 @@ export default class ScheduleCA540 extends Form {
 
   a2a = (): number | undefined => this.f1040.l2a()
   a2bA = (): number | undefined => this.f1040.l2b()
-  a2bB = (): number | undefined => undefined
+  /** US government obligation interest is not taxable in California */
+  a2bB = (): number | undefined => {
+    const usGov = this.info.caStateInfo?.usGovObligationInterest
+    if (usGov === undefined || usGov <= 0) return undefined
+    return Math.min(usGov, this.f1040.l2b() ?? 0)
+  }
   a2bC = (): number | undefined => undefined
 
   a3a = (): number | undefined => this.f1040.l3a()
@@ -143,7 +150,7 @@ export default class ScheduleCA540 extends Form {
   /** Line 10 totals: Section A line 1z-7a plus Section B lines 1-7, 9a */
   l10A = (): number => this.f1040.l9()
   l10B = (): number =>
-    sumFields([this.a6bB(), this.b1B(), this.b7B(), this.b9aB()])
+    sumFields([this.a2bB(), this.a6bB(), this.b1B(), this.b7B(), this.b9aB()])
   l10C = (): number => sumFields([this.a1zC()])
 
   // ---------------------------------------------------------------

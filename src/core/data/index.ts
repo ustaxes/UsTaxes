@@ -1115,6 +1115,14 @@ export interface CaliforniaStateInfo {
    * any prior year overpayment applied (Form 540 line 72).
    */
   estimatedTaxPayments?: number
+  /**
+   * Interest and fund dividends attributable to US government obligations
+   * (US Treasury bills/notes, government money market funds). Taxable
+   * federally but exempt in California: Schedule CA Part I line 2 col B.
+   * Find on the brokerage year-end summary as "% US government
+   * obligations" applied to the fund's income.
+   */
+  usGovObligationInterest?: number
 }
 
 export interface Information<D = Date> {
