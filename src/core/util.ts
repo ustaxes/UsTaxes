@@ -152,11 +152,12 @@ export const fix10 = fixDecimals(10)
 
 export const parseFormNumber = (x: string | undefined): number | undefined => {
   if (x !== undefined && x.length > 0) {
-    try {
-      return parseFloat(x)
-    } catch (e) {
-      return undefined
-    }
+    const parsed = parseFloat(x)
+    // parseFloat never throws; it returns NaN for non-numeric input such as
+    // "abc" or "  ". Returning NaN violates the number | undefined contract and
+    // silently poisons downstream tax math (and defeats parseFormNumberOrThrow,
+    // which only throws on undefined), so normalize NaN to undefined.
+    return isNaN(parsed) ? undefined : parsed
   }
   return undefined
 }
