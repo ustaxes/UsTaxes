@@ -26,7 +26,7 @@ const dependent: fc.Arbitrary<Dependent<string>> = arbitraries
   .dependent()
   .map((p) => ({
     ...p,
-    dateOfBirth: p.dateOfBirth.toISOString()
+    dateOfBirth: p.dateOfBirth ? p.dateOfBirth.toISOString() : null
   }))
 
 describe('validation', () => {

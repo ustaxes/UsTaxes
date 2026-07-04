@@ -7,7 +7,9 @@ export default class ScheduleSE extends F1040Attachment {
   tag: FormTag = 'f1040sse'
   sequenceIndex = 14
 
-  isNeeded = (): boolean =>
+  scheduleCNetProfit = (): number => this.f1040.scheduleC?.l31() ?? 0
+
+  k1NetProfit = (): number =>
     this.f1040.info.scheduleK1Form1065s
       .map(
         (k1) =>
@@ -15,7 +17,10 @@ export default class ScheduleSE extends F1040Attachment {
           k1.selfEmploymentEarningsB +
           k1.selfEmploymentEarningsC
       )
-      .reduce((a, b) => a + b, 0) > 0
+      .reduce((a, b) => a + b, 0)
+
+  isNeeded = (): boolean =>
+    this.scheduleCNetProfit() + this.k1NetProfit() >= 400
 
   postL4Field = (f: () => number | undefined): number | undefined => {
     if (this.l4c() < 400) {
@@ -47,7 +52,7 @@ export default class ScheduleSE extends F1040Attachment {
       (c, k1) => c + k1.selfEmploymentEarningsA,
       0
     )
-    return schFL34 + k1B14
+    return schFL34 + k1B14 + this.scheduleCNetProfit()
   }
 
   l3 = (): number => sumFields([this.l1a(), this.l1b(), this.l2()])

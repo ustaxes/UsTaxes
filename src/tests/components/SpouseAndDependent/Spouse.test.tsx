@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain */
 
 import { waitFor } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
+import { setupUserEvent, type UserEvent } from 'ustaxes/tests/userEventSetup'
 import { store } from 'ustaxes/redux/store'
 import log from 'ustaxes/core/log'
 import { SpouseTestPage } from './Pages'
@@ -14,6 +14,12 @@ afterEach(async () => {
 
 beforeEach(() => {
   log.setLevel(log.levels.TRACE)
+})
+
+let user: UserEvent
+
+beforeEach(() => {
+  user = setupUserEvent()
 })
 
 jest.setTimeout(30000)
@@ -48,7 +54,7 @@ describe('SpouseInfo', () => {
   it('renders form elements when `Add` button is clicked', async () => {
     const spousePage = new SpouseTestPage(store.getState())
     const spouseTest = spousePage.spouse
-    userEvent.click(spouseTest.addButton()!)
+    await user.click(spouseTest.addButton()!)
 
     // forms and labels appear after clicking the add button
     await waitFor(() => {
@@ -68,22 +74,22 @@ describe('SpouseInfo', () => {
 
     await waitFor(() => expect(spouse.addButton()).toBeInTheDocument())
 
-    userEvent.click(spouse.addButton()!)
+    await user.click(spouse.addButton()!)
 
     // add values for each input
-    userEvent.type(spouse.firstNameField()!, 'Sally K')
-    userEvent.type(spouse.lastNameField()!, 'Ride')
+    await user.type(spouse.firstNameField()!, 'Sally K')
+    await user.type(spouse.lastNameField()!, 'Ride')
 
     await waitFor(() => expect(spouse.dateOfBirthField()).toBeInTheDocument())
 
-    userEvent.clear(spouse.dateOfBirthField()!)
-    userEvent.type(spouse.dateOfBirthField()!, '12311988')
+    await user.clear(spouse.dateOfBirthField()!)
+    await user.type(spouse.dateOfBirthField()!, '12311988')
 
-    userEvent.clear(spouse.ssnField()!)
-    userEvent.type(spouse.ssnField()!, '123456789')
+    await user.clear(spouse.ssnField()!)
+    await user.type(spouse.ssnField()!, '123456789')
 
     // click the save button
-    userEvent.click(spouse.saveButton()!)
+    await user.click(spouse.saveButton()!)
 
     // expect first and last name to be concatenated
     expect(
@@ -92,7 +98,7 @@ describe('SpouseInfo', () => {
     // expect ssn to appear with hyphens
     expect(spousePage.rendered().getByText('123-45-6789')).toBeInTheDocument()
 
-    userEvent.click(spouse.editButton()!)
+    await user.click(spouse.editButton()!)
 
     // expect the edit button to no longer be in the document
     await waitFor(() => expect(spouse.editButton()).not.toBeInTheDocument())
@@ -100,16 +106,16 @@ describe('SpouseInfo', () => {
     // assert that the input values match what was entered
     expect(spouse.firstNameField()!.value).toBe('Sally K')
     expect(spouse.lastNameField()!.value).toBe('Ride')
-    expect(spouse.ssnField()!.value).toBe('123-45-6789')
+    expect(spouse.ssnField()!.value).toBe('123456789')
 
     // delete the old values and add new ones
-    userEvent.type(spouse.firstNameField()!, '{selectall}{del}Fella')
-    userEvent.type(spouse.lastNameField()!, '{selectall}{del}McGee')
-    userEvent.clear(spouse.ssnField()!)
-    userEvent.type(spouse.ssnField()!, '987-65-4321')
+    await user.type(spouse.firstNameField()!, '{selectall}{del}Fella')
+    await user.type(spouse.lastNameField()!, '{selectall}{del}McGee')
+    await user.clear(spouse.ssnField()!)
+    await user.type(spouse.ssnField()!, '987-65-4321')
 
     // click the save button to save the new values
-    userEvent.click(spouse.saveButton()!)
+    await user.click(spouse.saveButton()!)
 
     // expect the new names to be concatenated and new ssn to appear with hyphens
     expect(
@@ -118,7 +124,7 @@ describe('SpouseInfo', () => {
     expect(spousePage.rendered().getByText('987-65-4321')).toBeInTheDocument()
 
     // click the delete button
-    userEvent.click(spouse.deleteButtons()[0])
+    await user.click(spouse.deleteButtons()[0])
 
     // the add button is back
     expect(spouse.addButton()).toBeInTheDocument()
@@ -135,65 +141,65 @@ describe('SpouseInfo', () => {
 
     await waitFor(() => expect(spouse.addButton()).toBeInTheDocument())
 
-    userEvent.click(spouse.addButton()!)
+    await user.click(spouse.addButton()!)
 
     expect(spouse.saveButton()!).toBeInTheDocument()
     expect(spouse.closeButton()).toBeInTheDocument()
 
     // click the save button with empty inputs
-    userEvent.click(spouse.saveButton()!)
+    await user.click(spouse.saveButton()!)
 
     // expect four `Input is required` errors (including date input)
     await waitFor(() => expect(spouse.requiredErrors()).toHaveLength(4))
 
     // fill in the first name incorrectly
-    userEvent.type(spouse.firstNameField()!, 'F$LF(#)& ##3')
-    userEvent.click(spouse.saveButton()!)
+    await user.type(spouse.firstNameField()!, 'F$LF(#)& ##3')
+    await user.click(spouse.saveButton()!)
 
     await waitFor(() => expect(spouse.requiredErrors()).toHaveLength(3))
 
     // fill in the first name correctly
-    userEvent.type(spouse.firstNameField()!, '{selectall}{del}Sally K')
-    userEvent.click(spouse.saveButton()!)
+    await user.type(spouse.firstNameField()!, '{selectall}{del}Sally K')
+    await user.click(spouse.saveButton()!)
 
     await waitFor(() => expect(spouse.requiredErrors()).toHaveLength(3))
 
     // add a name with restricted characters
-    userEvent.type(spouse.lastNameField()!, 'R5$%84')
-    userEvent.click(spouse.saveButton()!)
+    await user.type(spouse.lastNameField()!, 'R5$%84')
+    await user.click(spouse.saveButton()!)
 
     await waitFor(() => expect(spouse.requiredErrors()).toHaveLength(2))
 
     // correctly enter a last name
-    userEvent.type(spouse.lastNameField()!, '{selectall}{del}Ride')
-    userEvent.click(spouse.saveButton()!)
+    await user.type(spouse.lastNameField()!, '{selectall}{del}Ride')
+    await user.click(spouse.saveButton()!)
 
     expect(spouse.requiredErrors()).toHaveLength(2)
 
-    userEvent.clear(spouse.dateOfBirthField()!)
-    userEvent.type(spouse.dateOfBirthField()!, '12/31/1989')
+    await user.clear(spouse.dateOfBirthField()!)
+    await user.type(spouse.dateOfBirthField()!, '12/31/1989')
 
     // only ssn error remains
     expect(spouse.requiredErrors()).toHaveLength(1)
 
     // incorrectly enter ssn
-    userEvent.clear(spouse.ssnField()!)
-    userEvent.type(spouse.ssnField()!, '123sc')
-    userEvent.click(spouse.saveButton()!)
+    await user.clear(spouse.ssnField()!)
+    await user.type(spouse.ssnField()!, '123sc')
+    await user.click(spouse.saveButton()!)
 
     expect(
       await spousePage
         .rendered()
-        .findByText('Input should be filled with 9 digits')
+        .findByText('Input should be 9 digits (###-##-####) or NRA')
     ).toBeInTheDocument()
 
     // clear ssn and add a valid value
-    userEvent.clear(spouse.ssnField()!)
-    userEvent.type(spouse.ssnField()!, '123456789')
-    userEvent.click(spouse.saveButton()!)
+    await user.clear(spouse.ssnField()!)
+    await user.type(spouse.ssnField()!, '123456789')
+    await user.click(spouse.saveButton()!)
 
-    userEvent.clear(spouse.dateOfBirthField()!)
-    userEvent.type(spouse.dateOfBirthField()!, '03011989')
+    await user.clear(spouse.dateOfBirthField()!)
+    await user.type(spouse.dateOfBirthField()!, '03011989')
 
     // expect saved values to be formatted correctly
     expect(await spousePage.rendered().findByText('Sally K Ride'))
@@ -201,11 +207,13 @@ describe('SpouseInfo', () => {
 
     // expect ssn error to be gone
     expect(
-      spousePage.rendered().queryByText('Input should be filled with 9 digits')
+      spousePage
+        .rendered()
+        .queryByText('Input should be 9 digits (###-##-####) or NRA')
     ).not.toBeInTheDocument()
 
     // delete the entry
-    userEvent.click(spouse.deleteButtons()[0])
+    await user.click(spouse.deleteButtons()[0])
 
     const inputsAfterDelete = spousePage.rendered().queryAllByRole('textbox')
 

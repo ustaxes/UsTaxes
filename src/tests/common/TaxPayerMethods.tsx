@@ -1,5 +1,4 @@
 import { within } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
 import { ReactElement } from 'react'
 import TaxPayer from 'ustaxes/components/TaxPayer'
 import DomMethods from './DomMethods'
@@ -12,6 +11,11 @@ export default class TaxPayerMethods extends DomMethods {
       within(this.dom()).getByLabelText('Do you have a foreign address?')
   }
 
-  setIsForeignCountry = (value: boolean): void =>
-    (value ? userEvent.click : userEvent.clear)(this.g.foreignCountryBox())
+  setIsForeignCountry = async (value: boolean): Promise<void> => {
+    if (value) {
+      await this.user.click(this.g.foreignCountryBox())
+    } else {
+      await this.user.clear(this.g.foreignCountryBox())
+    }
+  }
 }

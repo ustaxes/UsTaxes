@@ -1,6 +1,7 @@
 import F1040Attachment from './F1040Attachment'
 import { FormTag } from 'ustaxes/core/irsForms/Form'
 import { Field } from 'ustaxes/core/pdfFiller'
+import { FilingStatus } from 'ustaxes/core/data'
 
 export default class F1040V extends F1040Attachment {
   tag: FormTag = 'f1040v'
@@ -8,25 +9,27 @@ export default class F1040V extends F1040Attachment {
 
   fields = (): Field[] => {
     const tp = this.f1040.info.taxPayer
+    const address = tp.primaryPerson.address
+    const includeSpouse = tp.filingStatus === FilingStatus.MFJ
 
     const taxOwed = this.f1040.l37()
 
     const result = [
       tp.primaryPerson.ssid,
-      tp.spouse?.ssid,
+      includeSpouse ? tp.spouse?.ssid : undefined,
       taxOwed.toFixed(2), // dollars
       tp.primaryPerson.firstName,
       tp.primaryPerson.lastName,
-      tp.spouse?.firstName,
-      tp.spouse?.lastName,
-      tp.primaryPerson.address.address,
-      tp.primaryPerson.address.aptNo,
-      tp.primaryPerson.address.city,
-      tp.primaryPerson.address.state,
-      tp.primaryPerson.address.zip,
-      tp.primaryPerson.address.foreignCountry,
-      tp.primaryPerson.address.province,
-      tp.primaryPerson.address.postalCode
+      includeSpouse ? tp.spouse?.firstName : undefined,
+      includeSpouse ? tp.spouse?.lastName : undefined,
+      address?.address,
+      address?.aptNo,
+      address?.city,
+      address?.state,
+      address?.zip,
+      address?.foreignCountry,
+      address?.province,
+      address?.postalCode
     ]
 
     return result

@@ -236,6 +236,7 @@ export default class F8889 extends F1040Attachment {
   l7 = (): number | undefined => {
     if (!this.isNeeded()) return undefined
     const dob = this.person.dateOfBirth
+    if (!(dob instanceof Date)) return undefined
     const endOfYear = new Date(CURRENT_YEAR, 11, 31)
     const age55 = new Date(
       dob.getFullYear() + 55,

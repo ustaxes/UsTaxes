@@ -3,7 +3,7 @@ import { Message, useForm, useWatch, FormProvider } from 'react-hook-form'
 import { useDispatch } from 'ustaxes/redux'
 import { useYearSelector } from 'ustaxes/redux/yearDispatch'
 import { useSelector } from 'react-redux'
-import { Helmet } from 'react-helmet'
+import { Helmet } from 'react-helmet-async'
 
 import {
   addProperty,
