@@ -24,7 +24,7 @@ export class PersonMethods extends DomMethods {
   setLastName = (v: string): boolean => this.setIfAble(this.lastNameField(), v)
 
   ssnField = (): HTMLInputElement | null =>
-    within(this.dom()).queryByLabelText(personLabels.ssn)
+    within(this.dom()).queryByLabelText(/SSN\s*\/\s*TIN/i)
 
   dateOfBirthField = (): HTMLInputElement | null =>
     // not sure why querying by label is not working.

@@ -133,21 +133,28 @@ const w2: Arbitrary<types.IncomeW2> = wages.chain((income) =>
         state,
         stateWages,
         stateWithholding
-      ]) => ({
-        occupation,
-        income,
-        medicareIncome,
-        fedWithholding,
-        employer,
-        personRole: types.PersonRole.PRIMARY,
-        ssWages,
-        ssWithholding,
-        medicareWithholding,
-        state,
-        stateWages,
-        stateWithholding,
-        box12
-      })
+      ]) => {
+        const cappedSsWithholding = Math.min(
+          ssWithholding,
+          Math.round(ssWages * 0.062)
+        )
+
+        return {
+          occupation,
+          income,
+          medicareIncome,
+          fedWithholding,
+          employer,
+          personRole: types.PersonRole.PRIMARY,
+          ssWages,
+          ssWithholding: cappedSsWithholding,
+          medicareWithholding,
+          state,
+          stateWages,
+          stateWithholding,
+          box12
+        }
+      }
     )
 )
 
