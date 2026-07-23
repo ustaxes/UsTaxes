@@ -1094,6 +1094,37 @@ export interface ObbbDeductions {
   electTrumpAccountContribution?: boolean
 }
 
+/**
+ * California-specific data used to build the Form 540 state return.
+ */
+export interface CaliforniaStateInfo {
+  /**
+   * Taxpayer paid rent on a principal California residence for at least
+   * half the year and meets the Nonrefundable Renter's Credit
+   * qualifications (Form 540 line 46).
+   */
+  qualifiesForRentersCredit?: boolean
+  /**
+   * Number of months (0-12) during which the household did NOT have
+   * minimum essential health coverage. Applied to every member of the
+   * household for the same months. Drives FTB 3853 and Form 540 line 92.
+   */
+  monthsWithoutHealthCoverage?: number
+  /**
+   * Total 2025 California estimated tax payments (Form 540-ES), including
+   * any prior year overpayment applied (Form 540 line 72).
+   */
+  estimatedTaxPayments?: number
+  /**
+   * Interest and fund dividends attributable to US government obligations
+   * (US Treasury bills/notes, government money market funds). Taxable
+   * federally but exempt in California: Schedule CA Part I line 2 col B.
+   * Find on the brokerage year-end summary as "% US government
+   * obligations" applied to the fund's income.
+   */
+  usGovObligationInterest?: number
+}
+
 export interface Information<D = Date> {
   f1099s: Supported1099[]
   w2s: IncomeW2[]
@@ -1147,6 +1178,8 @@ export interface Information<D = Date> {
     /** Prior-year long-term capital loss carryover (Schedule D line 11). */
     longTerm?: number
   }
+  /** California-specific state return data (renter's credit, health coverage, 540-ES payments). */
+  caStateInfo?: CaliforniaStateInfo
 }
 
 export type InformationDateString = Information<string>
