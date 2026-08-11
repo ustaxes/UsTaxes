@@ -54,7 +54,7 @@ jobs:
   dependabot-auto-merge:
     needs: [test]
     runs-on: ubuntu-latest
-    if: ${{ github.actor == 'dependabot[bot]' }}
+    if: ${{ github.actor == 'dependabot[bot]' || github.actor == 'app/dependabot' }}
     steps:
       - name: Dependabot metadata
         id: metadata
