@@ -33,3 +33,5 @@ yarn-error.log*
 
 /logs/
 /src/core/data/validate-fns.js
+
+/tmp/

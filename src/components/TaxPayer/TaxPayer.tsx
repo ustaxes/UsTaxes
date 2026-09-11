@@ -1,5 +1,5 @@
 import { ReactElement, useEffect } from 'react'
-import { Helmet } from 'react-helmet'
+import { Helmet } from 'react-helmet-async'
 import { FormProvider, useForm } from 'react-hook-form'
 import _ from 'lodash'
 import { useDispatch, useSelector, TaxesState } from 'ustaxes/redux'
@@ -12,12 +12,14 @@ import {
 import {
   Address,
   ContactInfo,
+  DataSource,
   PersonRole,
   PrimaryPerson,
   State,
   StateResidency,
   TaxPayer
 } from 'ustaxes/core/data'
+import { getSource } from 'ustaxes/core/data/sources'
 import { PersonFields } from './PersonFields'
 import { usePager } from 'ustaxes/components/pager'
 import {
@@ -29,6 +31,7 @@ import AddressFields from './Address'
 import { Grid } from '@material-ui/core'
 import { Patterns } from 'ustaxes/components/Patterns'
 import { intentionallyFloat } from 'ustaxes/core/util'
+import { FormContainerProvider } from 'ustaxes/components/FormContainer/Context'
 
 interface TaxPayerUserForm {
   firstName: string
@@ -43,6 +46,7 @@ interface TaxPayerUserForm {
   stateResidency?: State
   isBlind: boolean
   dateOfBirth?: Date
+  occupation?: string
 }
 
 const defaultTaxpayerUserForm: TaxPayerUserForm = {
@@ -62,7 +66,8 @@ const defaultTaxpayerUserForm: TaxPayerUserForm = {
   },
   isTaxpayerDependent: false,
   isBlind: false,
-  dateOfBirth: undefined
+  dateOfBirth: undefined,
+  occupation: ''
 }
 
 const asPrimaryPerson = (formData: TaxPayerUserForm): PrimaryPerson<string> => {
@@ -77,7 +82,9 @@ const asPrimaryPerson = (formData: TaxPayerUserForm): PrimaryPerson<string> => {
     isTaxpayerDependent: formData.isTaxpayerDependent,
     role: PersonRole.PRIMARY,
     dateOfBirth: formData.dateOfBirth.toISOString(),
-    isBlind: formData.isBlind
+    isBlind: formData.isBlind,
+    occupation:
+      formData.occupation?.trim() === '' ? undefined : formData.occupation
   }
 }
 
@@ -88,9 +95,12 @@ const asContactInfo = (formData: TaxPayerUserForm): ContactInfo => ({
 
 const asTaxPayerUserForm = (person: PrimaryPerson): TaxPayerUserForm => ({
   ...person,
-  isForeignCountry: person.address.foreignCountry !== undefined,
+  address: person.address ?? defaultTaxpayerUserForm.address,
+  isForeignCountry: person.address?.foreignCountry !== undefined,
   role: PersonRole.PRIMARY,
-  dateOfBirth: new Date(person.dateOfBirth)
+  dateOfBirth: person.dateOfBirth ? new Date(person.dateOfBirth) : undefined,
+  isTaxpayerDependent: person.isTaxpayerDependent ?? false,
+  occupation: person.occupation ?? ''
 })
 
 export default function PrimaryTaxpayer(): ReactElement {
@@ -102,6 +112,8 @@ export default function PrimaryTaxpayer(): ReactElement {
   const taxPayer: TaxPayer | undefined = useSelector((state: TaxesState) => {
     return state.information.taxPayer
   })
+
+  const sources = useSelector((state: TaxesState) => state.information.sources)
 
   const stateResidency: StateResidency[] = useSelector(
     (state: TaxesState) => state.information.stateResidencies
@@ -115,7 +127,7 @@ export default function PrimaryTaxpayer(): ReactElement {
           contactPhoneNumber: taxPayer.contactPhoneNumber,
           contactEmail: taxPayer.contactEmail,
           stateResidency:
-            stateResidency[0]?.state ?? taxPayer.primaryPerson.address.state
+            stateResidency[0]?.state ?? taxPayer.primaryPerson.address?.state
         }
       : {})
   }
@@ -148,6 +160,23 @@ export default function PrimaryTaxpayer(): ReactElement {
     onAdvance()
   }
 
+  const sourceLookup = (fieldName: string): DataSource | undefined => {
+    if (fieldName === 'contactPhoneNumber') {
+      return getSource(sources, ['taxPayer', 'contactPhoneNumber'])
+    }
+    if (fieldName === 'contactEmail') {
+      return getSource(sources, ['taxPayer', 'contactEmail'])
+    }
+    if (fieldName === 'stateResidency') {
+      return getSource(sources, ['stateResidencies', 0, 'state'])
+    }
+    return getSource(sources, [
+      'taxPayer',
+      'primaryPerson',
+      ...fieldName.split('.')
+    ])
+  }
+
   const page = (
     <form tabIndex={-1} onSubmit={intentionallyFloat(handleSubmit(onSubmit))}>
       <Helmet>
@@ -156,6 +185,16 @@ export default function PrimaryTaxpayer(): ReactElement {
       <h2>Primary Taxpayer Information</h2>
       <Grid container spacing={2}>
         <PersonFields />
+        <LabeledInput label="Your occupation" name="occupation" />
+        <Grid item xs={12}>
+          <a
+            href="https://www.bls.gov/oes/2023/may/oes_stru.htm"
+            target="_blank"
+            rel="noreferrer"
+          >
+            View occupation list (BLS)
+          </a>
+        </Grid>
         <LabeledInput
           label="Contact phone number"
           patternConfig={Patterns.usPhoneNumber}
@@ -176,5 +215,11 @@ export default function PrimaryTaxpayer(): ReactElement {
       {navButtons}
     </form>
   )
-  return <FormProvider {...methods}>{page}</FormProvider>
+  return (
+    <FormProvider {...methods}>
+      <FormContainerProvider getSource={sourceLookup}>
+        {page}
+      </FormContainerProvider>
+    </FormProvider>
+  )
 }

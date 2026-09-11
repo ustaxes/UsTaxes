@@ -11,8 +11,16 @@ import {
   IncomeW2
 } from 'ustaxes/core/data'
 import { blankState } from 'ustaxes/redux/reducer'
-import userEvent from '@testing-library/user-event'
+import { setupUserEvent, type UserEvent } from 'ustaxes/tests/userEventSetup'
 import { renderWithProviders } from 'ustaxes/testUtil'
+
+const escapeRegExp = (value: string): string =>
+  value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+
+const labelMatcher = (labelText: string | RegExp): RegExp =>
+  typeof labelText === 'string'
+    ? new RegExp(escapeRegExp(labelText))
+    : labelText
 
 const testW2sSpouse: IncomeW2 = {
   employer: { EIN: '111111111', employerName: 'w2s employer name' },
@@ -72,6 +80,7 @@ const testInformationState: Information = {
     filingStatus: FilingStatus.MFS
   },
   questions: {},
+  f1098s: [],
   f1098es: [],
   stateResidencies: [{ state: 'AL' }],
   healthSavingsAccounts: []
@@ -89,10 +98,12 @@ describe('F1099Info', () => {
     store: InfoStore
     labelTextChange: (labelText: string | RegExp, input: string) => void
     selectOption: (labelText: string | RegExp, input: string) => void
-    buttonClick: (buttonText: string) => void
+    buttonClick: (buttonText: string) => Promise<void>
+    user: UserEvent
   } => {
     const store = createStoreUnpersisted(info)
     const navButtons = <PagerButtons submitText="Save and Continue" />
+    const user = setupUserEvent()
 
     renderWithProviders(
       <Provider store={store}>
@@ -104,7 +115,7 @@ describe('F1099Info', () => {
 
     const labelTextChange = (labelText: string | RegExp, input: string) => {
       act(() => {
-        fireEvent.change(screen.getByLabelText(labelText), {
+        fireEvent.change(screen.getByLabelText(labelMatcher(labelText)), {
           target: { value: input }
         })
       })
@@ -116,25 +127,28 @@ describe('F1099Info', () => {
       index = 0
     ) => {
       act(() => {
-        fireEvent.change(screen.getAllByLabelText(labelText)[index], {
-          target: { value: input }
-        })
+        fireEvent.change(
+          screen.getAllByLabelText(labelMatcher(labelText))[index],
+          {
+            target: { value: input }
+          }
+        )
       })
     }
 
-    const buttonClick = (buttonText: string, index = 0) => {
-      userEvent.click(screen.getAllByText(buttonText)[index])
+    const buttonClick = async (buttonText: string, index = 0) => {
+      await user.click(screen.getAllByText(buttonText)[index])
     }
 
-    return { store, labelTextChange, selectOption, buttonClick }
+    return { store, labelTextChange, selectOption, buttonClick, user }
   }
 
   describe('validations work', () => {
     it('shows empty error messages', async () => {
       const { buttonClick } = setup()
 
-      buttonClick('Add')
-      buttonClick('Save')
+      await buttonClick('Add')
+      await buttonClick('Save')
 
       await waitFor(() => {
         expect(screen.getAllByText('Make a selection')).toHaveLength(2)
@@ -145,36 +159,36 @@ describe('F1099Info', () => {
     it('Payer name', async () => {
       const { labelTextChange, buttonClick } = setup()
 
-      buttonClick('Add')
+      await buttonClick('Add')
       labelTextChange('Enter name of bank, broker firm, or other payer', '')
-      buttonClick('Save')
+      await buttonClick('Save')
 
       await waitFor(() =>
         expect(screen.getByText('Input is required')).toBeInTheDocument()
       )
     })
 
-    it('Form Type', () => {
+    it('Form Type', async () => {
       const { selectOption, buttonClick } = setup()
 
-      buttonClick('Add')
+      await buttonClick('Add')
       selectOption('Form Type', '1099-B')
-      buttonClick('Save')
+      await buttonClick('Save')
     })
 
-    it('Recipient', () => {
+    it('Recipient', async () => {
       const { selectOption, buttonClick } = setup()
 
-      buttonClick('Add')
+      await buttonClick('Add')
       selectOption('Recipient', 'John')
-      buttonClick('Save')
+      await buttonClick('Save')
     })
 
     it('saves information', async () => {
       const { labelTextChange, selectOption, buttonClick } =
         setup(testInformationState)
 
-      buttonClick('Add')
+      await buttonClick('Add')
 
       selectOption('Form Type', '1099-B')
       labelTextChange(
@@ -183,7 +197,7 @@ describe('F1099Info', () => {
       )
       selectOption(/Recipient/, 'John')
 
-      buttonClick('Save')
+      await buttonClick('Save')
 
       await waitFor(() => {
         expect(screen.getByText('1099-B')).toBeInTheDocument()
@@ -191,10 +205,10 @@ describe('F1099Info', () => {
     })
 
     it('updates information', async () => {
-      const { labelTextChange, selectOption, buttonClick } =
+      const { labelTextChange, selectOption, buttonClick, user } =
         setup(testInformationState)
 
-      userEvent.click(screen.getAllByRole('button')[0])
+      await user.click(screen.getAllByRole('button')[0])
 
       selectOption('Form Type', '1099-B')
       labelTextChange(
@@ -203,11 +217,78 @@ describe('F1099Info', () => {
       )
       selectOption(/Recipient/, 'John')
 
-      buttonClick('Save')
+      await buttonClick('Save')
 
       await waitFor(() => {
         expect(screen.getByText('1099-B')).toBeInTheDocument()
       })
+    })
+
+    it('saves an in-progress 1099-NEC draft when Save and Continue is clicked', async () => {
+      const onAdvance = jest.fn()
+      const store = createStoreUnpersisted(testInformationState)
+      const navButtons = <PagerButtons submitText="Save and Continue" />
+      const user = setupUserEvent()
+
+      renderWithProviders(
+        <Provider store={store}>
+          <PagerContext.Provider value={{ onAdvance, navButtons }}>
+            <F1099Info />
+          </PagerContext.Provider>
+        </Provider>
+      )
+
+      await user.click(screen.getByText('Add'))
+
+      act(() => {
+        fireEvent.change(screen.getByLabelText(labelMatcher('Form Type')), {
+          target: { value: Income1099Type.NEC }
+        })
+      })
+
+      await waitFor(() => {
+        expect(
+          screen.getByLabelText(labelMatcher(/Nonemployee compensation/i))
+        ).toBeInTheDocument()
+      })
+
+      act(() => {
+        fireEvent.change(
+          screen.getByLabelText(
+            labelMatcher('Enter name of bank, broker firm, or other payer')
+          ),
+          {
+            target: { value: 'Gig Client' }
+          }
+        )
+        fireEvent.change(screen.getByLabelText(labelMatcher(/Recipient/)), {
+          target: { value: PersonRole.PRIMARY }
+        })
+        fireEvent.change(
+          screen.getByLabelText(labelMatcher(/Nonemployee compensation/i)),
+          {
+            target: { value: '6400' }
+          }
+        )
+      })
+
+      await user.click(
+        screen.getByRole('button', { name: 'Save and Continue' })
+      )
+
+      await waitFor(() => {
+        const state = store.getState()
+        expect(state[state.activeYear].f1099s.at(-1)).toMatchObject({
+          payer: 'Gig Client',
+          type: Income1099Type.NEC,
+          personRole: PersonRole.PRIMARY,
+          form: {
+            nonemployeeCompensation: 6400
+          }
+        })
+      })
+
+      expect(onAdvance).toHaveBeenCalledTimes(1)
     })
   })
 })

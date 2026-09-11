@@ -104,10 +104,10 @@ export default class Schedule8812 extends F1040Attachment {
 
   // Number of qualifying children under age 6 at EOY
   l4b = (): number =>
-    this.creditDependents().filter(
-      (d) =>
-        d.qualifyingInfo !== undefined &&
-        d.dateOfBirth.getFullYear() > CURRENT_YEAR - 6
+    this.creditDependents().filter((d) =>
+      d.qualifyingInfo !== undefined && d.dateOfBirth
+        ? d.dateOfBirth.getFullYear() > CURRENT_YEAR - 6
+        : false
     ).length
 
   l4c = (): number => Math.max(0, this.l4a() - this.l4b())

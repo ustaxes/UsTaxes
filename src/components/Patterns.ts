@@ -94,12 +94,20 @@ export const Patterns = {
     undefined,
     '###-##-####'
   ),
+  ssnOrNra: text(
+    /^(?:NRA|[0-9]{9}|[0-9]{3}-[0-9]{2}-[0-9]{4})$/i,
+    'Input should be 9 digits (###-##-####) or NRA'
+  ),
   ein: numeric(
     /[0-9]{9}/,
     'Input should be filled with 9 digits',
     undefined,
     undefined,
     '##-#######'
+  ),
+  w2Ein: text(
+    /^(?:\d{9}|\d{2}-\d{7}|X{5}\d{4}|XX-XXX\d{4})$/,
+    'Input should be 9 digits or truncated as XXXXX1234, optionally formatted as ##-####### or XX-XXX####'
   ),
   currency: numeric(
     /[0-9]+(\.[0-9]{1,2})?/,

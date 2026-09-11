@@ -120,6 +120,7 @@ const info: Information = {
     FINCEN_114: false,
     FOREIGN_TRUST_RELATIONSHIP: false
   },
+  f1098s: [],
   f1098es: [],
   f3921s: [],
   scheduleK1Form1065s: [],

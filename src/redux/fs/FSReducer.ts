@@ -1,6 +1,6 @@
 import { AnyAction, Reducer } from 'redux'
 import { migrateEachYear, migrateAgeAndBlindness } from '../migration'
-import { download, stateToString, stringToState } from '.'
+import { download, stateToString, stringToImportState } from '.'
 import { USTState } from '../store'
 import { FSPersist, FSRecover } from './Actions'
 
@@ -30,7 +30,7 @@ export const fsReducer = <S extends USTState, A extends AnyAction>(
           ...migrateAgeAndBlindness(
             migrateEachYear(
               // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-              stringToState(action.data)
+              stringToImportState(action.data)
             )
           )
         } as S // migrations return any, must coerce.

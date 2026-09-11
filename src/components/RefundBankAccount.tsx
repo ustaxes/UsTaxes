@@ -1,5 +1,5 @@
 import { ReactElement, useEffect } from 'react'
-import { Helmet } from 'react-helmet'
+import { Helmet } from 'react-helmet-async'
 import { useForm, FormProvider } from 'react-hook-form'
 import { useDispatch, useSelector, TaxesState } from 'ustaxes/redux'
 import { LabeledInput, LabeledRadio } from './input'
