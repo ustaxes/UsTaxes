@@ -13,7 +13,7 @@ import {
   LabeledCheckbox,
   DatePicker
 } from 'ustaxes/components/input'
-import { Patterns } from 'ustaxes/components/Patterns'
+import { Patterns, PatternConfig } from 'ustaxes/components/Patterns'
 import { removeDependent } from 'ustaxes/redux/actions'
 import { Person } from 'ustaxes/core/data'
 import DeleteIcon from '@material-ui/icons/Delete'
@@ -30,8 +30,14 @@ export const labels = {
 
 export const PersonFields = ({
   children,
-  autofocus
-}: PropsWithChildren<{ autofocus?: boolean }>): ReactElement => {
+  autofocus,
+  ssidLabel = labels.ssn,
+  ssidPatternConfig = Patterns.ssn
+}: PropsWithChildren<{
+  autofocus?: boolean
+  ssidLabel?: string
+  ssidPatternConfig?: PatternConfig
+}>): ReactElement => {
   return (
     <>
       <LabeledInput
@@ -42,9 +48,9 @@ export const PersonFields = ({
       />
       <LabeledInput label={labels.lname} name="lastName" required={true} />
       <LabeledInput
-        label={labels.ssn}
+        label={ssidLabel}
         name="ssid"
-        patternConfig={Patterns.ssn}
+        patternConfig={ssidPatternConfig}
       />
       <LabeledCheckbox label="Is this person blind?" name="isBlind" />
       <DatePicker
