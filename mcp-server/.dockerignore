@@ -1,0 +1,14 @@
+node_modules
+npm-debug.log
+.git
+.gitignore
+README.md
+docs
+tests
+dist
+.eslintcache
+*.test.ts
+*.spec.ts
+coverage
+.env
+.env.local

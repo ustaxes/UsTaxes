@@ -1,0 +1,27 @@
+{
+  "extends": "../tsconfig.path.json",
+  "compilerOptions": {
+    "baseUrl": "..",
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "types": ["node", "jest"],
+    "allowImportingTsExtensions": true,
+    "noEmit": true,
+    "paths": {
+      "ustaxes/*": ["src/*"]
+    }
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", "tests"]
+}
