@@ -1,0 +1,11 @@
+{
+  "form": "1099-NEC",
+  "payer": "Contractor Services LLC",
+  "payerTIN": "45-6789123",
+  "income": 25000,
+  "nonemployeeCompensation": 25000,
+  "federalIncomeTaxWithheld": 0,
+  "stateTaxWithheld": 0,
+  "statePayerNumber": "",
+  "stateIncome": 25000
+}

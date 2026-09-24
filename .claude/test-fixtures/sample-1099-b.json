@@ -1,0 +1,28 @@
+{
+  "documentType": "1099-B",
+  "taxYear": 2024,
+  "description": "Sample 1099-B for stock transactions",
+  "extractedData": {
+    "form": "B",
+    "form1099B": {
+      "payer": "Charles Schwab",
+      "shortTermProceeds": 15000.00,
+      "shortTermCostBasis": 12000.00,
+      "longTermProceeds": 25000.00,
+      "longTermCostBasis": 18000.00
+    },
+    "personRole": "PRIMARY"
+  },
+  "confidence": {
+    "payer": 100,
+    "shortTermProceeds": 100,
+    "shortTermCostBasis": 100,
+    "longTermProceeds": 100,
+    "longTermCostBasis": 100,
+    "overall": 100
+  },
+  "ambiguities": [],
+  "validationErrors": [],
+  "readyForDispatch": true,
+  "notes": "Short-term gain: $3,000, Long-term gain: $7,000"
+}

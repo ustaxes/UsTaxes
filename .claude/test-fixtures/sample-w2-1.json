@@ -1,0 +1,38 @@
+{
+  "documentType": "W2",
+  "taxYear": 2024,
+  "description": "Sample W-2 for software engineer with single employer",
+  "extractedData": {
+    "occupation": "Software Engineer",
+    "income": 120000,
+    "medicareIncome": 120000,
+    "fedWithholding": 18000,
+    "ssWages": 120000,
+    "ssWithholding": 7440,
+    "medicareWithholding": 1740,
+    "employer": {
+      "EIN": "12-3456789",
+      "employerName": "Tech Company Inc",
+      "address": {
+        "address": "123 Main St",
+        "city": "San Francisco",
+        "state": "CA",
+        "zip": "94105"
+      }
+    },
+    "personRole": "PRIMARY",
+    "state": "CA",
+    "stateWages": 120000,
+    "stateWithholding": 6000
+  },
+  "confidence": {
+    "income": 100,
+    "fedWithholding": 100,
+    "ssWages": 100,
+    "employer": 100,
+    "overall": 100
+  },
+  "ambiguities": [],
+  "validationErrors": [],
+  "readyForDispatch": true
+}
