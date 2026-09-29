@@ -1,4 +1,10 @@
-import { Asset, Information, Person, TaxYear } from 'ustaxes/core/data'
+import {
+  AdjustmentsToIncome,
+  Asset,
+  Information,
+  Person,
+  TaxYear
+} from 'ustaxes/core/data'
 import { blankState } from './reducer'
 
 /**
@@ -27,22 +33,33 @@ export const blankYearTaxesState: YearsTaxesState = {
 
 export const dateToStringPerson = <P extends Person<Date>>(
   p: P
-): Omit<P, 'dateOfBirth'> & { dateOfBirth: string } => ({
+): Omit<P, 'dateOfBirth'> & { dateOfBirth?: string | null } => ({
   ...p,
-  dateOfBirth: p.dateOfBirth.toISOString()
+  dateOfBirth: p.dateOfBirth ? p.dateOfBirth.toISOString() : p.dateOfBirth
 })
 
 export const stringToDatePerson = <P extends Person<string>>(
   p: P
-): Omit<P, 'dateOfBirth'> & { dateOfBirth: Date } => ({
+): Omit<P, 'dateOfBirth'> & { dateOfBirth?: Date | null } => ({
   ...p,
-  dateOfBirth: new Date(p.dateOfBirth)
+  dateOfBirth:
+    p.dateOfBirth !== undefined && p.dateOfBirth !== null
+      ? new Date(p.dateOfBirth)
+      : p.dateOfBirth
 })
 
 export const stringToDateInfo = <I extends Information<string>>(
   info: I
 ): Information<Date> => ({
   ...info,
+  adjustments: info.adjustments
+    ? {
+        ...info.adjustments,
+        alimonyDivorceDate: info.adjustments.alimonyDivorceDate
+          ? new Date(info.adjustments.alimonyDivorceDate)
+          : undefined
+      }
+    : undefined,
   healthSavingsAccounts: info.healthSavingsAccounts.map((h) => ({
     ...h,
     startDate: new Date(h.startDate),
@@ -64,6 +81,14 @@ export const infoToStringInfo = <I extends Information<Date>>(
   info: I
 ): Information<string> => ({
   ...info,
+  adjustments: info.adjustments
+    ? ({
+        ...info.adjustments,
+        alimonyDivorceDate: info.adjustments.alimonyDivorceDate
+          ? info.adjustments.alimonyDivorceDate.toISOString().split('T')[0]
+          : info.adjustments.alimonyDivorceDate
+      } as AdjustmentsToIncome<string>)
+    : undefined,
   healthSavingsAccounts: info.healthSavingsAccounts.map((h) => ({
     ...h,
     startDate: h.startDate.toISOString(),

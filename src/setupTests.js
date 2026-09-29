@@ -5,6 +5,17 @@
 // learn more: https://github.com/testing-library/jest-dom
 import '@testing-library/jest-dom/extend-expect'
 
+jest.mock('react-helmet-async', () => {
+  const React = require('react')
+
+  return {
+    HelmetProvider: ({ children }) =>
+      React.createElement(React.Fragment, null, children),
+    Helmet: ({ children }) =>
+      React.createElement(React.Fragment, null, children)
+  }
+})
+
 const localStorageMock = {
   getItem: jest.fn(),
   setItem: jest.fn(),

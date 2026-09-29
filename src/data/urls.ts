@@ -13,6 +13,9 @@ const Urls = {
     w2s: '/income/w2jobinfo',
     f1099s: '/income/f1099s',
     realEstate: '/income/realestate',
+    businesses: '/income/businesses',
+    scheduleSE: '/income/schedulese',
+    form2555: '/income/f2555',
     otherInvestments: '/income/otherinvestments',
     stockOptions: '/income/stockoptions',
     partnershipIncome: '/income/partnershipincome'
@@ -25,8 +28,11 @@ const Urls = {
     ira: '/savingsaccounts/ira'
   },
   deductions: {
+    f1098s: '/deductions/mortgageinterest',
     f1098es: '/deductions/studentloaninterest',
-    itemized: '/deductions/itemized'
+    itemized: '/deductions/itemized',
+    adjustments: '/deductions/adjustments',
+    selfEmployedHealthInsuranceWorksheet: '/deductions/f7206'
   },
   credits: {
     main: '/credits',

@@ -1,6 +1,7 @@
 import { useEffect, useRef, KeyboardEvent, ReactElement } from 'react'
 import { useForkRef } from 'rooks'
-import { InputAdornment, Grid, TextField } from '@material-ui/core'
+import { InputAdornment, Grid, TextField, Tooltip } from '@material-ui/core'
+import { HelpOutlineRounded } from '@material-ui/icons'
 import { LabeledInputProps } from './types'
 import NumberFormat from 'react-number-format'
 import {
@@ -14,15 +15,24 @@ import { isNumeric, Patterns } from 'ustaxes/components/Patterns'
 import ConditionallyWrap from 'ustaxes/components/ConditionallyWrap'
 import useStyles from './styles'
 import { useFormContainer } from 'ustaxes/components/FormContainer/Context'
+import { labelWithSource } from './SourceBadge'
 
 export function LabeledInput<TFormValues extends FieldValues>(
   props: LabeledInputProps<TFormValues>
 ): ReactElement {
-  const { onSubmit } = useFormContainer()
-  const { label, patternConfig: patternConfigDefined, name, rules = {} } = props
+  const { onSubmit, getSource } = useFormContainer()
+  const {
+    label,
+    tooltip,
+    patternConfig: patternConfigDefined,
+    name,
+    rules = {},
+    source
+  } = props
   const { required = patternConfigDefined !== undefined } = props
   const {
     autofocus,
+    disabled = false,
     patternConfig = Patterns.plain,
     useGrid = true,
     sizes = { xs: 12 }
@@ -34,7 +44,7 @@ export function LabeledInput<TFormValues extends FieldValues>(
     if (autofocus && inputRef.current) {
       inputRef.current.focus()
     }
-  }, [inputRef.current])
+  }, [autofocus])
 
   const {
     control,
@@ -65,6 +75,32 @@ export function LabeledInput<TFormValues extends FieldValues>(
     }
   })()
 
+  const resolvedSource = source ?? getSource?.(name as string)
+  const resolvedLabel =
+    tooltip === undefined ? (
+      labelWithSource(label, resolvedSource)
+    ) : (
+      <span style={{ display: 'inline-flex', alignItems: 'center' }}>
+        {labelWithSource(label, resolvedSource)}
+        <Tooltip title={tooltip} placement="top" arrow>
+          <span
+            aria-label={`More information about ${
+              typeof label === 'string' ? label : String(name)
+            }`}
+            tabIndex={0}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              marginLeft: 6,
+              cursor: 'help'
+            }}
+          >
+            <HelpOutlineRounded fontSize="small" />
+          </span>
+        </Tooltip>
+      </span>
+    )
+
   const input: ReactElement = (() => {
     if (isNumeric(patternConfig)) {
       return (
@@ -78,9 +114,10 @@ export function LabeledInput<TFormValues extends FieldValues>(
               id={name}
               name={name}
               className={classes.root}
-              label={label}
+              label={resolvedLabel}
               mask={patternConfig.mask}
               thousandSeparator={patternConfig.thousandSeparator}
+              decimalScale={patternConfig.decimalScale}
               // prefix={patternConfig.prefix}
               allowEmptyFormatting={true}
               format={patternConfig.format}
@@ -88,11 +125,13 @@ export function LabeledInput<TFormValues extends FieldValues>(
               onValueChange={(v) => onChange(v.value)}
               value={value as number}
               error={error !== undefined}
+              disabled={disabled}
               fullWidth
               helperText={errorMessage}
               variant="filled"
               InputLabelProps={{
-                shrink: true
+                shrink: true,
+                style: tooltip ? { pointerEvents: 'auto' } : undefined
               }}
               InputProps={{
                 startAdornment: patternConfig.prefix ? (
@@ -149,9 +188,10 @@ export function LabeledInput<TFormValues extends FieldValues>(
             id={name}
             name={name}
             className={classes.root}
-            label={label}
+            label={resolvedLabel}
             value={value}
             onChange={onChange}
+            disabled={disabled}
             onKeyDown={(e) => {
               if (e.key === 'Enter') {
                 void handleSubmit(() => {
@@ -165,7 +205,8 @@ export function LabeledInput<TFormValues extends FieldValues>(
             error={error !== undefined}
             variant="filled"
             InputLabelProps={{
-              shrink: true
+              shrink: true,
+              style: tooltip ? { pointerEvents: 'auto' } : undefined
             }}
           />
         )}

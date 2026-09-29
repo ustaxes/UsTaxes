@@ -19,11 +19,11 @@ export default class StudentLoanInterestWorksheet {
   isNotDependentSpouse = (): boolean =>
     this.f1040.info.taxPayer.filingStatus !== FilingStatus.MFJ ||
     this.f1040.info.taxPayer.spouse === undefined ||
-    !this.f1040.info.taxPayer.spouse.isTaxpayerDependent
+    !(this.f1040.info.taxPayer.spouse.isTaxpayerDependent ?? false)
 
   // Can't take deduction if someone else claims you as a dependent
   isNotDependentSelf = (): boolean =>
-    !this.f1040.info.taxPayer.primaryPerson.isTaxpayerDependent
+    !(this.f1040.info.taxPayer.primaryPerson.isTaxpayerDependent ?? false)
 
   isNotDependent = (): boolean =>
     this.isNotDependentSpouse() && this.isNotDependentSelf()

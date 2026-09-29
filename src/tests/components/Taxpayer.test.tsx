@@ -35,9 +35,9 @@ class TaxPayerTestPage extends TestPage {
     super(state)
     const dom = () => this.rendered().getByTestId('taxpayer')
 
-    this.taxPayer = new TaxPayerMethods(dom)
-    this.person = new PersonMethods(dom)
-    this.pager = new PagerMethods(dom)
+    this.taxPayer = new TaxPayerMethods(dom, this.user)
+    this.person = new PersonMethods(dom, this.user)
+    this.pager = new PagerMethods(dom, this.user)
   }
 
   component = (
@@ -62,10 +62,10 @@ interface TaxPayer {
 
 export const tests = {
   incompleteData: async ({ person, pager }: Person & Pager): Promise<void> => {
-    person.setFirstName('Bob')
+    await person.setFirstName('Bob')
     await waitFor(() => expect(pager.saveButton()).toBeInTheDocument())
 
-    pager.save()
+    await pager.save()
 
     await waitFor(() => expect(person.requiredErrors()).not.toHaveLength(0))
   },
@@ -75,7 +75,7 @@ export const tests = {
     expect(page.allFieldNames()).not.toContain('address.province')
     expect(page.allFieldNames()).toContain('address.zip')
 
-    page.taxPayer.setIsForeignCountry(true)
+    await page.taxPayer.setIsForeignCountry(true)
     await waitFor(() => {
       expect(page.allFieldNames()).toContain('address.province')
       expect(page.allFieldNames()).not.toContain('address.zip')

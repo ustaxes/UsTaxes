@@ -11,7 +11,15 @@ import {
 } from 'ustaxes/core/data'
 import { blankState } from 'ustaxes/redux/reducer'
 import W2JobInfo from 'ustaxes/components/income/W2JobInfo'
-import userEvent from '@testing-library/user-event'
+import { setupUserEvent, type UserEvent } from 'ustaxes/tests/userEventSetup'
+
+const escapeRegExp = (value: string): string =>
+  value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+
+const labelMatcher = (labelText: string | RegExp): RegExp =>
+  typeof labelText === 'string'
+    ? new RegExp(escapeRegExp(labelText))
+    : labelText
 
 jest.mock('redux-persist', () => {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -92,7 +100,9 @@ const errors = {
   inputWordFormat: () =>
     screen.queryAllByText('Input should only include letters and spaces'),
   einFormat: () =>
-    screen.queryAllByText('Input should be filled with 9 digits'),
+    screen.queryAllByText(
+      'Input should be 9 digits or truncated as XXXXX1234, optionally formatted as ##-####### or XX-XXX####'
+    ),
   all: () => {
     // just a moment
   }
@@ -116,10 +126,12 @@ describe('W2JobInfo', () => {
     store: InfoStore
     changeByLabelText: (labelText: string | RegExp, input: string) => void
     selectOption: (labelText: string | RegExp, input: string) => void
-    clickButton: (buttonText: string) => void
+    clickButton: (buttonText: string) => Promise<void>
+    user: UserEvent
   } => {
     const store = createStoreUnpersisted(info)
     const navButtons = <PagerButtons submitText="Save and Continue" />
+    const user = setupUserEvent()
 
     render(
       <Provider store={store}>
@@ -131,7 +143,7 @@ describe('W2JobInfo', () => {
 
     const changeByLabelText = (labelText: string | RegExp, input: string) => {
       act(() => {
-        fireEvent.change(screen.getByLabelText(labelText), {
+        fireEvent.change(screen.getByLabelText(labelMatcher(labelText)), {
           target: { value: input }
         })
       })
@@ -143,25 +155,28 @@ describe('W2JobInfo', () => {
       index = 0
     ) => {
       act(() => {
-        fireEvent.change(screen.getAllByLabelText(labelText)[index], {
-          target: { value: input }
-        })
+        fireEvent.change(
+          screen.getAllByLabelText(labelMatcher(labelText))[index],
+          {
+            target: { value: input }
+          }
+        )
       })
     }
 
-    const clickButton = (buttonText: string, index = 0) => {
-      userEvent.click(screen.getAllByText(buttonText)[index])
+    const clickButton = async (buttonText: string, index = 0) => {
+      await user.click(screen.getAllByText(buttonText)[index])
     }
 
-    return { store, changeByLabelText, selectOption, clickButton }
+    return { store, changeByLabelText, selectOption, clickButton, user }
   }
 
   describe('validations work', () => {
     it('shows empty error messages', async () => {
       const { clickButton } = setup()
 
-      clickButton('Add')
-      clickButton('Save')
+      await clickButton('Add')
+      await clickButton('Save')
 
       await waitFor(() => {
         expect(errors.inputRequired()).toHaveLength(11)
@@ -172,29 +187,49 @@ describe('W2JobInfo', () => {
     it('Employer name can be any string', async () => {
       const { changeByLabelText, clickButton } = setup()
 
-      clickButton('Add')
+      await clickButton('Add')
       changeByLabelText('Employer name', '123')
-      clickButton('Save')
+      await clickButton('Save')
 
       await waitFor(() => expect(errors.inputWordFormat()).toHaveLength(0))
     })
 
-    it('Employers Identification Number', async () => {
+    it('rejects invalid Employer Identification Number characters', async () => {
       const { changeByLabelText, clickButton } = setup()
 
-      clickButton('Add')
-      changeByLabelText(/Employer's Identification Number/, '123')
-      clickButton('Save')
+      await clickButton('Add')
+      changeByLabelText(/Employer's Identification Number/, 'ABC')
+      await clickButton('Save')
 
       await waitFor(() => expect(errors.einFormat()).toHaveLength(1))
+    })
+
+    it('rejects partial Employer Identification Numbers', async () => {
+      const { changeByLabelText, clickButton } = setup()
+
+      await clickButton('Add')
+      changeByLabelText(/Employer's Identification Number/, 'XXXXX')
+      await clickButton('Save')
+
+      await waitFor(() => expect(errors.einFormat()).toHaveLength(1))
+    })
+
+    it('allows a truncated Employer Identification Number', async () => {
+      const { changeByLabelText, clickButton } = setup()
+
+      await clickButton('Add')
+      changeByLabelText(/Employer's Identification Number/, 'XXXXX1234')
+      await clickButton('Save')
+
+      await waitFor(() => expect(errors.einFormat()).toHaveLength(0))
     })
 
     it('Occupation', async () => {
       const { changeByLabelText, clickButton } = setup()
 
-      clickButton('Add')
+      await clickButton('Add')
       changeByLabelText('Occupation', '123')
-      clickButton('Save')
+      await clickButton('Save')
 
       await waitFor(() => expect(errors.inputWordFormat()).toHaveLength(1))
     })
@@ -211,7 +246,7 @@ describe('W2JobInfo', () => {
   it('saves information', async () => {
     const { changeByLabelText, selectOption, clickButton } = setup(testInfo)
 
-    clickButton('Add')
+    await clickButton('Add')
 
     changeByLabelText('Employer name', 'test employer')
     changeByLabelText(/Employer's Identification Number/, '111111111')
@@ -227,7 +262,7 @@ describe('W2JobInfo', () => {
     selectOption('Employee', 'PRIMARY')
     selectOption(/State/, 'AL')
 
-    clickButton('Save')
+    await clickButton('Save')
 
     await waitFor(() => {
       expect(screen.getByText('test employer')).toBeInTheDocument()
@@ -235,15 +270,46 @@ describe('W2JobInfo', () => {
     })
   })
 
+  it('saves information with a masked employer EIN', async () => {
+    const { changeByLabelText, selectOption, clickButton, store } =
+      setup(testInfo)
+
+    await clickButton('Add')
+
+    changeByLabelText('Employer name', 'masked employer')
+    changeByLabelText(/Employer's Identification Number/, 'XXXXX1234')
+    changeByLabelText('Occupation', 'test occupation')
+    changeByLabelText(/Wages, tips, other compensation/, '123456')
+    changeByLabelText(/Federal income tax withheld/, '3333')
+    changeByLabelText(/Social security wages/, '12345')
+    changeByLabelText(/Social security tax withheld/, '4444')
+    changeByLabelText(/Medicare Income/, '5555')
+    changeByLabelText(/Medicare tax withheld/, '6666')
+    changeByLabelText(/State wages, tips, etc/, '7777')
+    changeByLabelText(/State income tax/, '8888')
+    selectOption('Employee', 'PRIMARY')
+    selectOption(/State/, 'AL')
+
+    await clickButton('Save')
+
+    await waitFor(() => {
+      const state = store.getState()
+      expect(screen.getByText('masked employer')).toBeInTheDocument()
+      expect(state[state.activeYear].w2s.at(-1)?.employer?.EIN).toBe(
+        'XXXXX1234'
+      )
+    })
+  })
+
   it('removes item of list', async () => {
     if (testW2sSpouse.employer?.employerName) {
-      setup(testInfo)
+      const { user } = setup(testInfo)
 
       expect(
         screen.getByText(testW2sSpouse.employer.employerName)
       ).toBeInTheDocument()
 
-      userEvent.click(screen.getAllByRole('button')[1])
+      await user.click(screen.getAllByRole('button')[1])
 
       await waitFor(() =>
         expect(screen.queryByText('w2s employer name')).not.toBeInTheDocument()
@@ -251,54 +317,51 @@ describe('W2JobInfo', () => {
     }
   })
 
-  it('sets current information when editing', () => {
-    setup(testInfo)
+  it('sets current information when editing', async () => {
+    const { user } = setup(testInfo)
 
-    userEvent.click(screen.getAllByRole('button')[0])
+    await user.click(screen.getAllByRole('button')[0])
 
-    expect(screen.getByLabelText('Employer name')).toHaveValue(
+    expect(screen.getByLabelText(labelMatcher('Employer name'))).toHaveValue(
       testW2sSpouse.employer?.employerName
     )
     expect(
-      screen.getByLabelText(/Employer's Identification Number/)
-    ).toHaveValue(
-      (testW2sSpouse.employer?.EIN?.slice(0, 2) ?? '') +
-        '-' +
-        (testW2sSpouse.employer?.EIN?.slice(2) ?? '')
-    )
-    expect(screen.getByLabelText('Occupation')).toHaveValue(
+      screen.getByLabelText(labelMatcher(/Employer's Identification Number/))
+    ).toHaveValue(testW2sSpouse.employer?.EIN)
+    expect(screen.getByLabelText(labelMatcher('Occupation'))).toHaveValue(
       testW2sSpouse.occupation
     )
     expect(
-      screen.getByLabelText(/Wages, tips, other compensation/)
+      screen.getByLabelText(labelMatcher(/Wages, tips, other compensation/))
     ).toHaveValue(testW2sSpouse.income.toLocaleString('en-US'))
-    expect(screen.getByLabelText(/Social security tax withheld/)).toHaveValue(
-      testW2sSpouse.ssWithholding.toLocaleString('en-US')
-    )
-    expect(screen.getByLabelText(/Medicare Income/)).toHaveValue(
+    expect(
+      screen.getByLabelText(labelMatcher(/Social security tax withheld/))
+    ).toHaveValue(testW2sSpouse.ssWithholding.toLocaleString('en-US'))
+    expect(screen.getByLabelText(labelMatcher(/Medicare Income/))).toHaveValue(
       testW2sSpouse.medicareIncome.toLocaleString('en-US')
     )
-    expect(screen.getByLabelText(/Medicare tax withheld/)).toHaveValue(
-      testW2sSpouse.medicareWithholding.toLocaleString('en-US')
-    )
+    expect(
+      screen.getByLabelText(labelMatcher(/Medicare tax withheld/))
+    ).toHaveValue(testW2sSpouse.medicareWithholding.toLocaleString('en-US'))
     expect(screen.getAllByLabelText(/State/)[0]).toHaveValue(
       testW2sSpouse.state
     )
-    expect(screen.getByLabelText(/State wages, tips, etc/)).toHaveValue(
-      testW2sSpouse.stateWages?.toLocaleString('en-US')
-    )
-    expect(screen.getByLabelText(/State income tax/)).toHaveValue(
+    expect(
+      screen.getByLabelText(labelMatcher(/State wages, tips, etc/))
+    ).toHaveValue(testW2sSpouse.stateWages?.toLocaleString('en-US'))
+    expect(screen.getByLabelText(labelMatcher(/State income tax/))).toHaveValue(
       testW2sSpouse.stateWithholding?.toLocaleString('en-US')
     )
-    expect(screen.getByLabelText('Employee')).toHaveValue(
+    expect(screen.getByLabelText(labelMatcher('Employee'))).toHaveValue(
       testW2sSpouse.personRole
     )
   })
 
   it('updates information', async () => {
-    const { changeByLabelText, selectOption, clickButton } = setup(testInfo)
+    const { changeByLabelText, selectOption, clickButton, user } =
+      setup(testInfo)
 
-    userEvent.click(screen.getAllByRole('button')[0])
+    await user.click(screen.getAllByRole('button')[0])
 
     changeByLabelText('Employer name', 'updated employer name')
     changeByLabelText(/Employer's Identification Number/, '999999999')
@@ -313,11 +376,119 @@ describe('W2JobInfo', () => {
     selectOption('Employee', 'SPOUSE')
     selectOption(/State/, 'AR')
 
-    clickButton('Save')
+    await clickButton('Save')
 
     await waitFor(() => {
       expect(screen.getByText('updated employer name')).toBeInTheDocument()
       expect(screen.getByText('$8,888')).toBeInTheDocument()
     })
+  })
+
+  it('saves an in-progress W-2 draft when Save and Continue is clicked', async () => {
+    const onAdvance = jest.fn()
+    const store = createStoreUnpersisted(testInfo)
+    const navButtons = <PagerButtons submitText="Save and Continue" />
+    const user = setupUserEvent()
+
+    render(
+      <Provider store={store}>
+        <PagerContext.Provider value={{ onAdvance, navButtons }}>
+          <W2JobInfo />
+        </PagerContext.Provider>
+      </Provider>
+    )
+
+    await user.click(screen.getByText('Add'))
+
+    act(() => {
+      fireEvent.change(screen.getByLabelText(labelMatcher('Employer name')), {
+        target: { value: 'Draft Employer' }
+      })
+      fireEvent.change(
+        screen.getByLabelText(labelMatcher(/Employer's Identification Number/)),
+        {
+          target: { value: '111111111' }
+        }
+      )
+      fireEvent.change(screen.getByLabelText(labelMatcher('Occupation')), {
+        target: { value: 'Engineer' }
+      })
+      fireEvent.change(
+        screen.getByLabelText(labelMatcher(/Wages, tips, other compensation/)),
+        {
+          target: { value: '45000' }
+        }
+      )
+      fireEvent.change(
+        screen.getByLabelText(labelMatcher(/Federal income tax withheld/)),
+        {
+          target: { value: '5000' }
+        }
+      )
+      fireEvent.change(
+        screen.getByLabelText(labelMatcher(/Social security wages/)),
+        {
+          target: { value: '45000' }
+        }
+      )
+      fireEvent.change(
+        screen.getByLabelText(labelMatcher(/Social security tax withheld/)),
+        {
+          target: { value: '2790' }
+        }
+      )
+      fireEvent.change(screen.getByLabelText(labelMatcher(/Medicare Income/)), {
+        target: { value: '45000' }
+      })
+      fireEvent.change(
+        screen.getByLabelText(labelMatcher(/Medicare tax withheld/)),
+        {
+          target: { value: '652.5' }
+        }
+      )
+      fireEvent.change(screen.getAllByLabelText(/State/)[0], {
+        target: { value: 'AL' }
+      })
+      fireEvent.change(
+        screen.getByLabelText(labelMatcher(/State wages, tips, etc/)),
+        {
+          target: { value: '45000' }
+        }
+      )
+      fireEvent.change(
+        screen.getByLabelText(labelMatcher(/State income tax/)),
+        {
+          target: { value: '1500' }
+        }
+      )
+      fireEvent.change(screen.getByLabelText(labelMatcher('Employee')), {
+        target: { value: PersonRole.PRIMARY }
+      })
+    })
+
+    await user.click(screen.getByRole('button', { name: 'Save and Continue' }))
+
+    await waitFor(() => {
+      const state = store.getState()
+      expect(state[state.activeYear].w2s.at(-1)).toMatchObject({
+        employer: {
+          employerName: 'Draft Employer',
+          EIN: '111111111'
+        },
+        occupation: 'Engineer',
+        personRole: PersonRole.PRIMARY,
+        state: 'AL',
+        income: 45000,
+        fedWithholding: 5000,
+        ssWages: 45000,
+        ssWithholding: 2790,
+        medicareIncome: 45000,
+        medicareWithholding: 652.5,
+        stateWages: 45000,
+        stateWithholding: 1500
+      })
+    })
+
+    expect(onAdvance).toHaveBeenCalledTimes(1)
   })
 })

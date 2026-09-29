@@ -1,9 +1,10 @@
-import { ReactElement } from 'react'
-import { Helmet } from 'react-helmet'
+import { ReactElement, useState } from 'react'
+import { Helmet } from 'react-helmet-async'
 import { Link } from 'react-router-dom'
 import Alert from '@material-ui/lab/Alert'
 import { useForm, FormProvider } from 'react-hook-form'
 import { Icon, Grid } from '@material-ui/core'
+import _ from 'lodash'
 import { useDispatch, useSelector, TaxesState } from 'ustaxes/redux'
 import { add1099, edit1099, remove1099 } from 'ustaxes/redux/actions'
 import { usePager } from 'ustaxes/components/pager'
@@ -84,6 +85,9 @@ const showIncome = (a: Supported1099): ReactElement => {
         </span>
       )
     }
+    case Income1099Type.NEC: {
+      return <Currency value={a.form.nonemployeeCompensation} />
+    }
   }
 }
 
@@ -111,6 +115,8 @@ interface F1099UserInput {
   // benefitsPaid: string | number
   // benefitsRepaid: string | number
   netBenefits: string | number
+  // NEC fields
+  nonemployeeCompensation: string | number
 }
 
 const blankUserInput: F1099UserInput = {
@@ -134,7 +140,9 @@ const blankUserInput: F1099UserInput = {
   // SSA fields
   // benefitsPaid: '',
   // benefitsRepaid: '',
-  netBenefits: ''
+  netBenefits: '',
+  // NEC fields
+  nonemployeeCompensation: ''
 }
 
 const toUserInput = (f: Supported1099): F1099UserInput => ({
@@ -162,7 +170,8 @@ const toUserInput = (f: Supported1099): F1099UserInput => ({
       case Income1099Type.SSA: {
         return f.form
       }
-      case Income1099Type.DA: {
+      case Income1099Type.DA:
+      case Income1099Type.NEC: {
         return f.form
       }
     }
@@ -247,17 +256,32 @@ const toF1099 = (input: F1099UserInput): Supported1099 | undefined => {
         }
       }
     }
+    case Income1099Type.NEC: {
+      return {
+        payer: input.payer,
+        personRole: input.personRole ?? PersonRole.PRIMARY,
+        type: input.formType,
+        form: {
+          nonemployeeCompensation: Number(input.nonemployeeCompensation)
+        }
+      }
+    }
   }
 }
 
 export default function F1099Info(): ReactElement {
   const f1099s = useSelector((state: TaxesState) => state.information.f1099s)
+  const sources = useSelector((state: TaxesState) => state.information.sources)
 
   const defaultValues = blankUserInput
 
   const methods = useForm<F1099UserInput>({ defaultValues })
   const { handleSubmit, watch } = methods
   const selectedType: Income1099Type | undefined = watch('formType')
+  const [is1099FormOpen, set1099FormOpen] = useState(false)
+  const [editing1099Index, setEditing1099Index] = useState<number | undefined>(
+    undefined
+  )
 
   const dispatch = useDispatch()
 
@@ -278,6 +302,18 @@ export default function F1099Info(): ReactElement {
         dispatch(edit1099({ value: payload, index }))
       }
     }
+
+  const onSubmit = (formData: F1099UserInput): void => {
+    if (is1099FormOpen) {
+      if (editing1099Index !== undefined) {
+        onSubmitEdit(editing1099Index)(formData)
+      } else if (!_.isEqual(formData, blankUserInput)) {
+        onSubmitAdd(formData)
+      }
+    }
+
+    onAdvance()
+  }
 
   const people: Person[] = useSelector((state: TaxesState) => [
     state.information.taxPayer.primaryPerson,
@@ -421,13 +457,28 @@ export default function F1099Info(): ReactElement {
     </Grid>
   )
 
+  const necFields = (
+    <Grid container spacing={2}>
+      <LabeledInput
+        label={
+          <>
+            <strong>Box 1</strong> - Nonemployee compensation
+          </>
+        }
+        patternConfig={Patterns.currency}
+        name="nonemployeeCompensation"
+      />
+    </Grid>
+  )
+
   const specificFields = {
     [Income1099Type.INT]: intFields,
     [Income1099Type.B]: bFields,
     [Income1099Type.DIV]: divFields,
     [Income1099Type.R]: rFields,
     [Income1099Type.SSA]: ssaFields,
-    [Income1099Type.DA]: bFields
+    [Income1099Type.DA]: bFields,
+    [Income1099Type.NEC]: necFields
   }
 
   const titles = {
@@ -436,7 +487,8 @@ export default function F1099Info(): ReactElement {
     [Income1099Type.DIV]: '1099-DIV',
     [Income1099Type.R]: '1099-R',
     [Income1099Type.SSA]: 'SSA-1099',
-    [Income1099Type.DA]: '1099-DA'
+    [Income1099Type.DA]: '1099-DA',
+    [Income1099Type.NEC]: '1099-NEC'
   }
 
   const form: ReactElement | undefined = (
@@ -444,6 +496,8 @@ export default function F1099Info(): ReactElement {
       defaultValues={defaultValues}
       onSubmitAdd={onSubmitAdd}
       onSubmitEdit={onSubmitEdit}
+      onOpenStateChange={set1099FormOpen}
+      onEditingStateChange={setEditing1099Index}
       items={f1099s.map((a) => toUserInput(a))}
       removeItem={(i) => dispatch(remove1099(i))}
       primary={(f) => f.payer}
@@ -462,6 +516,9 @@ export default function F1099Info(): ReactElement {
           {f.formType}
         </Icon>
       )}
+      sources={sources}
+      sourcePath={['f1099s']}
+      sourceForNew="user"
     >
       <p>Input data from 1099</p>
       <Grid container spacing={2}>
@@ -501,10 +558,7 @@ export default function F1099Info(): ReactElement {
 
   return (
     <FormProvider {...methods}>
-      <form
-        tabIndex={-1}
-        onSubmit={intentionallyFloat(handleSubmit(onAdvance))}
-      >
+      <form tabIndex={-1} onSubmit={intentionallyFloat(handleSubmit(onSubmit))}>
         <Helmet>
           <title>1099 Information | Income | UsTaxes.org</title>
         </Helmet>

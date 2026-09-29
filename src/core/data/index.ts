@@ -19,6 +19,10 @@ export enum PersonRole {
   EMPLOYER = 'EMPLOYER'
 }
 
+export type DataSource = 'transcript' | 'return' | 'user'
+
+export type InformationSources = Record<string, unknown>
+
 /**
  * Types such as the following are generic with respect to the Date
  * type. AJV tests the typed serialization of these interfaces
@@ -34,7 +38,8 @@ export interface Person<D = Date> {
   ssid: string
   role: PersonRole
   isBlind: boolean
-  dateOfBirth: D
+  dateOfBirth?: D | null
+  occupation?: string
   // dateOfDeath: D // TODO: capture this.
 }
 
@@ -47,7 +52,7 @@ export interface QualifyingInformation {
 }
 
 export interface Dependent<D = Date> extends Person<D> {
-  relationship: string
+  relationship?: string
   qualifyingInfo?: QualifyingInformation
 }
 
@@ -65,13 +70,15 @@ export interface Address {
 }
 
 export interface PrimaryPerson<D = Date> extends Person<D> {
-  address: Address
-  isTaxpayerDependent: boolean
+  address?: Address
+  isTaxpayerDependent?: boolean
+  occupation?: string
 }
 export type PrimaryPersonDateString = PrimaryPerson<string>
 
 export interface Spouse<D = Date> extends Person<D> {
-  isTaxpayerDependent: boolean
+  isTaxpayerDependent?: boolean
+  occupation?: string
 }
 
 export type SpouseDateString = Spouse<string>
@@ -133,7 +140,8 @@ export enum Income1099Type {
   DIV = 'DIV',
   R = 'R',
   SSA = 'SSA',
-  DA = 'DA'
+  DA = 'DA',
+  NEC = 'NEC'
 }
 
 export interface F1099BData {
@@ -219,6 +227,10 @@ export interface F1099SSAData {
   federalIncomeTaxWithheld: number
 }
 
+export interface F1099NECData {
+  nonemployeeCompensation: number
+}
+
 export interface Income1099<T, D> {
   payer: string
   type: T
@@ -289,7 +301,7 @@ export const W2Box12CodeDescriptions: { [key in W2Box12Code]: string } = {
   HH: 'Aggregate deferrals under section 83(i) elections as of the close of the calendar year.'
 }
 
-export type W2Box12Info<A = number> = { [key in W2Box12Code]?: A }
+export type W2Box12Info<A = number> = Record<string, A>
 
 export interface HealthSavingsAccount<D = Date> {
   label: string
@@ -442,6 +454,7 @@ export type Income1099Div = Income1099<Income1099Type.DIV, F1099DivData>
 export type Income1099R = Income1099<Income1099Type.R, F1099RData>
 export type Income1099SSA = Income1099<Income1099Type.SSA, F1099SSAData>
 export type Income1099DA = Income1099<Income1099Type.DA, F1099DAData>
+export type Income1099NEC = Income1099<Income1099Type.NEC, F1099NECData>
 
 export type Supported1099 =
   | Income1099Int
@@ -450,6 +463,7 @@ export type Supported1099 =
   | Income1099R
   | Income1099SSA
   | Income1099DA
+  | Income1099NEC
 
 export enum PropertyType {
   singleFamily,
@@ -489,15 +503,68 @@ export interface Property {
   personalUseDays: number
   rentReceived: number
   propertyType: PropertyTypeName
+  isPassive?: boolean
   otherPropertyType?: string
   qualifiedJointVenture: boolean
   expenses: Partial<{ [K in PropertyExpenseTypeName]: number }>
   otherExpenseType?: string
 }
 
+export interface BusinessIncome {
+  grossReceipts: number
+  returnsAndAllowances: number
+  otherIncome?: number
+}
+
+export interface BusinessExpenses {
+  advertising?: number
+  carAndTruck?: number
+  commissions?: number
+  contractLabor?: number
+  depletion?: number
+  depreciation?: number
+  employeeBenefit?: number
+  insurance?: number
+  interestMortgage?: number
+  interestOther?: number
+  legalAndProfessional?: number
+  office?: number
+  pensionProfitSharing?: number
+  rentVehicles?: number
+  rentOther?: number
+  repairs?: number
+  supplies?: number
+  taxesAndLicenses?: number
+  travel?: number
+  meals?: number
+  utilities?: number
+  wages?: number
+  other?: number
+}
+
+export interface Business {
+  name: string
+  principalBusinessOrProfession?: string
+  businessCode?: string
+  ein?: string
+  address?: Address
+  income: BusinessIncome
+  expenses: BusinessExpenses
+  otherExpenseType?: string
+  otherExpenseAmount?: number
+  homeOfficeDeduction?: number
+}
+
 export interface F1098e {
   lender: string
   interest: number
+}
+
+export interface F1098 {
+  lender: string
+  interest: number
+  points?: number
+  mortgageInsurancePremiums?: number
 }
 
 export interface F3921 {
@@ -704,6 +771,34 @@ export enum CreditType {
    */
   UndistributedCapitalGains = 'CreditType/UndistributedCapitalGains',
   Other = 'CreditType/Other'
+}
+
+export interface AdjustmentsToIncome<D = Date> {
+  alimonyPaid?: number
+  alimonyRecipientSsn?: string
+  alimonyDivorceDate?: D
+  educatorExpenses?: number
+  selfEmployedHealthInsuranceDeduction?: number
+  selfEmployedHealthInsuranceWorksheet?: SelfEmployedHealthInsuranceWorksheet
+}
+
+export type AdjustmentsToIncomeDateString = AdjustmentsToIncome<string>
+
+export interface SelfEmployedHealthInsuranceWorksheet {
+  line1?: number
+  line2?: number
+  line3?: number
+  line4?: number
+  line5?: number
+  line6?: number
+  line7?: number
+  line8?: number
+  line9?: number
+  line10?: number
+  line11?: number
+  line12?: number
+  line13?: number
+  line14?: number
 }
 
 export interface Credit {
@@ -1098,7 +1193,9 @@ export interface Information<D = Date> {
   f1099s: Supported1099[]
   w2s: IncomeW2[]
   realEstate: Property[]
+  businesses?: Business[]
   estimatedTaxes: EstimatedTaxPayments[]
+  f1098s: F1098[]
   f1098es: F1098e[]
   f3921s: F3921[]
   scheduleK1Form1065s: ScheduleK1Form1065[]
@@ -1147,6 +1244,8 @@ export interface Information<D = Date> {
     /** Prior-year long-term capital loss carryover (Schedule D line 11). */
     longTerm?: number
   }
+  adjustments?: AdjustmentsToIncome<D>
+  sources?: InformationSources
 }
 
 export type InformationDateString = Information<string>
@@ -1217,7 +1316,9 @@ export type EditW2Action = ArrayItemEditAction<IncomeW2>
 export type EditEstimatedTaxesAction = ArrayItemEditAction<EstimatedTaxPayments>
 export type Edit1099Action = ArrayItemEditAction<Supported1099>
 export type EditPropertyAction = ArrayItemEditAction<Property>
+export type EditBusinessAction = ArrayItemEditAction<Business>
 export type Edit1098eAction = ArrayItemEditAction<F1098e>
+export type Edit1098Action = ArrayItemEditAction<F1098>
 export type EditHSAAction = ArrayItemEditAction<HealthSavingsAccountDateString>
 export type EditIraAction = ArrayItemEditAction<Ira>
 export type EditAssetAction = ArrayItemEditAction<Asset<Date>>
