@@ -1,6 +1,6 @@
 import { ReactElement } from 'react'
 import { Helmet } from 'react-helmet'
-import { Link, useMediaQuery } from '@material-ui/core'
+import { Link, useMediaQuery, Box } from '@material-ui/core'
 import { StartButtons, SingleButtons } from './pager'
 import { isWeb } from 'ustaxes/core/util'
 
@@ -36,6 +36,25 @@ export default function GettingStarted(): ReactElement {
         <title>Getting Started | UsTaxes.org</title>
       </Helmet>
       <h1>UsTaxes.org</h1>
+      <Box display="flex" alignItems="center" mb={2}>
+        <a
+          href={urls.repo}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ marginRight: '10px' }}
+        >
+          <img
+            alt="GitHub stars"
+            src={`https://img.shields.io/github/stars/ustaxes/UsTaxes?style=social`}
+          />
+        </a>
+        <a href={urls.repo} target="_blank" rel="noopener noreferrer">
+          <img
+            alt="GitHub forks"
+            src={`https://img.shields.io/github/forks/ustaxes/UsTaxes?style=social`}
+          />
+        </a>
+      </Box>
       <p>
         UsTaxes is an open source tax filing application that can be used to
         file the Form 1040 United States individual income tax return and some
