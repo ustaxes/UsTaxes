@@ -34,7 +34,7 @@ export function LabeledInput<TFormValues extends FieldValues>(
     if (autofocus && inputRef.current) {
       inputRef.current.focus()
     }
-  }, [inputRef.current])
+  }, [autofocus])
 
   const {
     control,

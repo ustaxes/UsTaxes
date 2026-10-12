@@ -100,7 +100,7 @@ describe('SpouseInfo', () => {
     // assert that the input values match what was entered
     expect(spouse.firstNameField()!.value).toBe('Sally K')
     expect(spouse.lastNameField()!.value).toBe('Ride')
-    expect(spouse.ssnField()!.value).toBe('123-45-6789')
+    expect(spouse.ssnField()!.value).toBe('123456789')
 
     // delete the old values and add new ones
     userEvent.type(spouse.firstNameField()!, '{selectall}{del}Fella')
@@ -184,7 +184,7 @@ describe('SpouseInfo', () => {
     expect(
       await spousePage
         .rendered()
-        .findByText('Input should be filled with 9 digits')
+        .findByText('Input should be 9 digits (###-##-####) or NRA')
     ).toBeInTheDocument()
 
     // clear ssn and add a valid value
@@ -201,7 +201,9 @@ describe('SpouseInfo', () => {
 
     // expect ssn error to be gone
     expect(
-      spousePage.rendered().queryByText('Input should be filled with 9 digits')
+      spousePage
+        .rendered()
+        .queryByText('Input should be 9 digits (###-##-####) or NRA')
     ).not.toBeInTheDocument()
 
     // delete the entry
