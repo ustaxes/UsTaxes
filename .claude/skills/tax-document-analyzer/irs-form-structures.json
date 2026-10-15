@@ -1,0 +1,576 @@
+{
+  "W2": {
+    "formName": "Form W-2 Wage and Tax Statement",
+    "taxYears": [2019, 2020, 2021, 2022, 2023, 2024],
+    "boxes": {
+      "a": {
+        "field": "employeeSSN",
+        "label": "Employee's social security number",
+        "type": "ssn",
+        "required": true,
+        "format": "XXX-XX-XXXX"
+      },
+      "b": {
+        "field": "employer.EIN",
+        "label": "Employer identification number (EIN)",
+        "type": "ein",
+        "required": true,
+        "format": "XX-XXXXXXX"
+      },
+      "c": {
+        "field": "employer.employerName",
+        "label": "Employer's name",
+        "type": "string",
+        "required": true
+      },
+      "c-address": {
+        "field": "employer.address",
+        "label": "Employer's address",
+        "type": "address",
+        "required": true
+      },
+      "1": {
+        "field": "income",
+        "label": "Wages, tips, other compensation",
+        "type": "currency",
+        "required": true,
+        "box": "1"
+      },
+      "2": {
+        "field": "fedWithholding",
+        "label": "Federal income tax withheld",
+        "type": "currency",
+        "required": true,
+        "box": "2"
+      },
+      "3": {
+        "field": "ssWages",
+        "label": "Social security wages",
+        "type": "currency",
+        "required": true,
+        "box": "3"
+      },
+      "4": {
+        "field": "ssWithholding",
+        "label": "Social security tax withheld",
+        "type": "currency",
+        "required": true,
+        "box": "4"
+      },
+      "5": {
+        "field": "medicareIncome",
+        "label": "Medicare wages and tips",
+        "type": "currency",
+        "required": true,
+        "box": "5"
+      },
+      "6": {
+        "field": "medicareWithholding",
+        "label": "Medicare tax withheld",
+        "type": "currency",
+        "required": true,
+        "box": "6"
+      },
+      "7": {
+        "field": "socialSecurityTips",
+        "label": "Social security tips",
+        "type": "currency",
+        "required": false,
+        "box": "7"
+      },
+      "8": {
+        "field": "allocatedTips",
+        "label": "Allocated tips",
+        "type": "currency",
+        "required": false,
+        "box": "8"
+      },
+      "10": {
+        "field": "dependentCareBenefits",
+        "label": "Dependent care benefits",
+        "type": "currency",
+        "required": false,
+        "box": "10"
+      },
+      "12": {
+        "field": "box12",
+        "label": "Various codes",
+        "type": "array",
+        "required": false,
+        "box": "12",
+        "codes": {
+          "A": "Uncollected social security or RRTA tax on tips",
+          "B": "Uncollected Medicare tax on tips",
+          "C": "Taxable cost of group-term life insurance over $50,000",
+          "D": "Elective deferrals to a 401(k), 403(b), or 457(b) plan",
+          "DD": "Cost of employer-sponsored health coverage",
+          "E": "Elective deferrals under a 403(b) salary reduction agreement",
+          "F": "Elective deferrals under a 408(k)(6) salary reduction SEP",
+          "G": "Elective deferrals and employer contributions to a 457(b) plan",
+          "H": "Elective deferrals to a 501(c)(18)(D) tax-exempt organization plan",
+          "W": "Employer contributions to HSA",
+          "Y": "Deferrals under a 409A nonqualified deferred compensation plan",
+          "Z": "Income under a 409A nonqualified deferred compensation plan"
+        }
+      },
+      "13": {
+        "field": "checkboxes",
+        "label": "Statutory employee, Retirement plan, Third-party sick pay",
+        "type": "checkboxes",
+        "required": false,
+        "box": "13"
+      },
+      "15": {
+        "field": "state",
+        "label": "State",
+        "type": "stateCode",
+        "required": false,
+        "box": "15"
+      },
+      "16": {
+        "field": "stateWages",
+        "label": "State wages, tips, etc.",
+        "type": "currency",
+        "required": false,
+        "box": "16"
+      },
+      "17": {
+        "field": "stateWithholding",
+        "label": "State income tax",
+        "type": "currency",
+        "required": false,
+        "box": "17"
+      }
+    },
+    "additionalFields": {
+      "occupation": {
+        "type": "string",
+        "required": false,
+        "description": "Job title or occupation (not on form, may need to ask)"
+      },
+      "personRole": {
+        "type": "enum",
+        "required": true,
+        "values": ["PRIMARY", "SPOUSE"],
+        "description": "Whether this W-2 is for primary taxpayer or spouse"
+      }
+    }
+  },
+  "1099-INT": {
+    "formName": "Form 1099-INT Interest Income",
+    "taxYears": [2019, 2020, 2021, 2022, 2023, 2024],
+    "boxes": {
+      "payer": {
+        "field": "payer",
+        "label": "Payer's name",
+        "type": "string",
+        "required": true
+      },
+      "1": {
+        "field": "income",
+        "label": "Interest income",
+        "type": "currency",
+        "required": true,
+        "box": "1"
+      },
+      "2": {
+        "field": "earlyWithdrawalPenalty",
+        "label": "Early withdrawal penalty",
+        "type": "currency",
+        "required": false,
+        "box": "2"
+      },
+      "3": {
+        "field": "usSavingsBondsInterest",
+        "label": "Interest on U.S. Savings Bonds and Treasury obligations",
+        "type": "currency",
+        "required": false,
+        "box": "3"
+      },
+      "4": {
+        "field": "federalWithholding",
+        "label": "Federal income tax withheld",
+        "type": "currency",
+        "required": false,
+        "box": "4"
+      },
+      "8": {
+        "field": "taxExemptInterest",
+        "label": "Tax-exempt interest",
+        "type": "currency",
+        "required": false,
+        "box": "8"
+      }
+    },
+    "additionalFields": {
+      "personRole": {
+        "type": "enum",
+        "required": true,
+        "values": ["PRIMARY", "SPOUSE"]
+      }
+    }
+  },
+  "1099-DIV": {
+    "formName": "Form 1099-DIV Dividends and Distributions",
+    "taxYears": [2019, 2020, 2021, 2022, 2023, 2024],
+    "boxes": {
+      "payer": {
+        "field": "payer",
+        "label": "Payer's name",
+        "type": "string",
+        "required": true
+      },
+      "1a": {
+        "field": "dividends",
+        "label": "Total ordinary dividends",
+        "type": "currency",
+        "required": true,
+        "box": "1a"
+      },
+      "1b": {
+        "field": "qualifiedDividends",
+        "label": "Qualified dividends",
+        "type": "currency",
+        "required": false,
+        "box": "1b"
+      },
+      "2a": {
+        "field": "capitalGain",
+        "label": "Total capital gain distributions",
+        "type": "currency",
+        "required": false,
+        "box": "2a"
+      },
+      "3": {
+        "field": "nondividendDistributions",
+        "label": "Nondividend distributions",
+        "type": "currency",
+        "required": false,
+        "box": "3"
+      },
+      "4": {
+        "field": "federalWithholding",
+        "label": "Federal income tax withheld",
+        "type": "currency",
+        "required": false,
+        "box": "4"
+      }
+    },
+    "additionalFields": {
+      "personRole": {
+        "type": "enum",
+        "required": true,
+        "values": ["PRIMARY", "SPOUSE"]
+      }
+    }
+  },
+  "1099-B": {
+    "formName": "Form 1099-B Proceeds from Broker and Barter Exchange Transactions",
+    "taxYears": [2019, 2020, 2021, 2022, 2023, 2024],
+    "boxes": {
+      "payer": {
+        "field": "payer",
+        "label": "Payer's name",
+        "type": "string",
+        "required": true
+      },
+      "shortTermProceeds": {
+        "field": "shortTermProceeds",
+        "label": "Short-term proceeds",
+        "type": "currency",
+        "required": false
+      },
+      "shortTermCostBasis": {
+        "field": "shortTermCostBasis",
+        "label": "Short-term cost basis",
+        "type": "currency",
+        "required": false
+      },
+      "longTermProceeds": {
+        "field": "longTermProceeds",
+        "label": "Long-term proceeds",
+        "type": "currency",
+        "required": false
+      },
+      "longTermCostBasis": {
+        "field": "longTermCostBasis",
+        "label": "Long-term cost basis",
+        "type": "currency",
+        "required": false
+      }
+    },
+    "additionalFields": {
+      "personRole": {
+        "type": "enum",
+        "required": true,
+        "values": ["PRIMARY", "SPOUSE"]
+      }
+    },
+    "notes": "Either short-term or long-term data must be present. Cost basis may be missing if not reported to IRS by broker."
+  },
+  "1099-R": {
+    "formName": "Form 1099-R Distributions From Pensions, Annuities, Retirement or Profit-Sharing Plans, IRAs, Insurance Contracts, etc.",
+    "taxYears": [2019, 2020, 2021, 2022, 2023, 2024],
+    "boxes": {
+      "payer": {
+        "field": "payer",
+        "label": "Payer's name",
+        "type": "string",
+        "required": true
+      },
+      "1": {
+        "field": "grossDistribution",
+        "label": "Gross distribution",
+        "type": "currency",
+        "required": true,
+        "box": "1"
+      },
+      "2a": {
+        "field": "taxableAmount",
+        "label": "Taxable amount",
+        "type": "currency",
+        "required": true,
+        "box": "2a"
+      },
+      "4": {
+        "field": "federalWithholding",
+        "label": "Federal income tax withheld",
+        "type": "currency",
+        "required": false,
+        "box": "4"
+      },
+      "7": {
+        "field": "distributionCode",
+        "label": "Distribution code(s)",
+        "type": "string",
+        "required": false,
+        "box": "7"
+      }
+    },
+    "additionalFields": {
+      "personRole": {
+        "type": "enum",
+        "required": true,
+        "values": ["PRIMARY", "SPOUSE"]
+      }
+    }
+  },
+  "1099-MISC": {
+    "formName": "Form 1099-MISC Miscellaneous Income",
+    "taxYears": [2019, 2020, 2021, 2022, 2023, 2024],
+    "boxes": {
+      "payer": {
+        "field": "payer",
+        "label": "Payer's name",
+        "type": "string",
+        "required": true
+      },
+      "1": {
+        "field": "rents",
+        "label": "Rents",
+        "type": "currency",
+        "required": false,
+        "box": "1"
+      },
+      "2": {
+        "field": "royalties",
+        "label": "Royalties",
+        "type": "currency",
+        "required": false,
+        "box": "2"
+      },
+      "3": {
+        "field": "otherIncome",
+        "label": "Other income",
+        "type": "currency",
+        "required": false,
+        "box": "3"
+      },
+      "4": {
+        "field": "federalWithholding",
+        "label": "Federal income tax withheld",
+        "type": "currency",
+        "required": false,
+        "box": "4"
+      }
+    },
+    "additionalFields": {
+      "personRole": {
+        "type": "enum",
+        "required": true,
+        "values": ["PRIMARY", "SPOUSE"]
+      }
+    }
+  },
+  "1099-NEC": {
+    "formName": "Form 1099-NEC Nonemployee Compensation",
+    "taxYears": [2020, 2021, 2022, 2023, 2024],
+    "boxes": {
+      "payer": {
+        "field": "payer",
+        "label": "Payer's name",
+        "type": "string",
+        "required": true
+      },
+      "1": {
+        "field": "nonemployeeCompensation",
+        "label": "Nonemployee compensation",
+        "type": "currency",
+        "required": true,
+        "box": "1"
+      },
+      "4": {
+        "field": "federalWithholding",
+        "label": "Federal income tax withheld",
+        "type": "currency",
+        "required": false,
+        "box": "4"
+      }
+    },
+    "additionalFields": {
+      "personRole": {
+        "type": "enum",
+        "required": true,
+        "values": ["PRIMARY", "SPOUSE"]
+      }
+    },
+    "notes": "Introduced in 2020. Previously nonemployee compensation was reported on 1099-MISC Box 7."
+  },
+  "1099-SSA": {
+    "formName": "Social Security Benefit Statement (SSA-1099)",
+    "taxYears": [2019, 2020, 2021, 2022, 2023, 2024],
+    "boxes": {
+      "5": {
+        "field": "netBenefits",
+        "label": "Net benefits for year",
+        "type": "currency",
+        "required": true,
+        "box": "5"
+      }
+    },
+    "additionalFields": {
+      "personRole": {
+        "type": "enum",
+        "required": true,
+        "values": ["PRIMARY", "SPOUSE"]
+      }
+    }
+  },
+  "1098-E": {
+    "formName": "Form 1098-E Student Loan Interest Statement",
+    "taxYears": [2019, 2020, 2021, 2022, 2023, 2024],
+    "boxes": {
+      "lender": {
+        "field": "lender",
+        "label": "Lender's name",
+        "type": "string",
+        "required": true
+      },
+      "1": {
+        "field": "interest",
+        "label": "Student loan interest received by lender",
+        "type": "currency",
+        "required": true,
+        "box": "1"
+      }
+    },
+    "additionalFields": {
+      "personRole": {
+        "type": "enum",
+        "required": true,
+        "values": ["PRIMARY", "SPOUSE"]
+      }
+    }
+  },
+  "RECEIPT": {
+    "formName": "Business Receipt",
+    "taxYears": [2019, 2020, 2021, 2022, 2023, 2024],
+    "fields": {
+      "date": {
+        "field": "date",
+        "label": "Date of expense",
+        "type": "date",
+        "required": true,
+        "format": "MM/DD/YYYY"
+      },
+      "vendor": {
+        "field": "vendor",
+        "label": "Vendor/merchant name",
+        "type": "string",
+        "required": true
+      },
+      "amount": {
+        "field": "amount",
+        "label": "Total amount",
+        "type": "currency",
+        "required": true
+      },
+      "category": {
+        "field": "category",
+        "label": "Expense category",
+        "type": "enum",
+        "required": true,
+        "values": [
+          "meals",
+          "travel",
+          "supplies",
+          "equipment",
+          "utilities",
+          "advertising",
+          "professional-services",
+          "rent",
+          "insurance",
+          "other"
+        ]
+      },
+      "description": {
+        "field": "description",
+        "label": "Business purpose",
+        "type": "string",
+        "required": false
+      },
+      "paymentMethod": {
+        "field": "paymentMethod",
+        "label": "Payment method",
+        "type": "enum",
+        "required": false,
+        "values": ["cash", "credit", "debit", "check", "other"]
+      }
+    }
+  },
+  "validationRules": {
+    "ssn": {
+      "pattern": "^\\d{3}-\\d{2}-\\d{4}$",
+      "length": 11,
+      "description": "Format: XXX-XX-XXXX"
+    },
+    "ein": {
+      "pattern": "^\\d{2}-\\d{7}$",
+      "length": 10,
+      "description": "Format: XX-XXXXXXX"
+    },
+    "stateCode": {
+      "pattern": "^[A-Z]{2}$",
+      "length": 2,
+      "validCodes": [
+        "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA",
+        "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD",
+        "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ",
+        "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC",
+        "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY", "DC"
+      ]
+    },
+    "zip": {
+      "pattern": "^\\d{5}(-\\d{4})?$",
+      "description": "Format: XXXXX or XXXXX-XXXX"
+    },
+    "currency": {
+      "pattern": "^-?\\d+(\\.\\d{1,2})?$",
+      "description": "Numeric value with up to 2 decimal places"
+    },
+    "date": {
+      "pattern": "^(0[1-9]|1[0-2])/(0[1-9]|[12]\\d|3[01])/(19|20)\\d{2}$",
+      "description": "Format: MM/DD/YYYY"
+    }
+  }
+}

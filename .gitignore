@@ -33,3 +33,8 @@ yarn-error.log*
 
 /logs/
 /src/core/data/validate-fns.js
+
+# Claude Code tax automation test suite (private data)
+/.claude/test-suite/
+/.claude/test-sessions/
+/tmp/tax-*.jsonl

@@ -1,0 +1,442 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Tax Carryover Tracking Schema",
+  "description": "Schema for tracking multi-year tax carryovers",
+  "type": "object",
+  "required": ["taxPayer", "taxYear", "carryovers"],
+  "properties": {
+    "taxPayer": {
+      "type": "object",
+      "required": ["ssn", "name"],
+      "properties": {
+        "ssn": {
+          "type": "string",
+          "pattern": "^\\d{3}-\\d{2}-\\d{4}$",
+          "description": "Social Security Number (XXX-XX-XXXX)"
+        },
+        "name": {
+          "type": "string",
+          "description": "Taxpayer full name"
+        },
+        "filingStatus": {
+          "type": "string",
+          "enum": ["single", "married_filing_jointly", "married_filing_separately", "head_of_household", "qualifying_widow"],
+          "description": "Filing status"
+        }
+      }
+    },
+    "taxYear": {
+      "type": "integer",
+      "minimum": 2000,
+      "maximum": 2100,
+      "description": "Tax year for this carryover report"
+    },
+    "carryovers": {
+      "type": "array",
+      "description": "Array of all tax carryovers",
+      "items": {
+        "type": "object",
+        "required": ["id", "type", "originYear", "originalAmount", "currentBalance"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier for this carryover"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "capitalLoss",
+              "passiveLoss",
+              "netOperatingLoss",
+              "charitableContribution",
+              "amtCredit",
+              "foreignTaxCredit",
+              "generalBusinessCredit",
+              "investmentInterest",
+              "mortgageInterestCredit",
+              "adoptionCredit",
+              "residentialEnergyCredit",
+              "excessBusinessLoss",
+              "stateNOL",
+              "stateCapitalLoss",
+              "stateCredit",
+              "other"
+            ],
+            "description": "Type of carryover"
+          },
+          "originYear": {
+            "type": "integer",
+            "description": "Year the carryover was created"
+          },
+          "originalAmount": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Original amount when created"
+          },
+          "currentBalance": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Current remaining balance"
+          },
+          "expirationYear": {
+            "type": ["integer", "null"],
+            "description": "Year the carryover expires (null if indefinite)"
+          },
+          "yearsRemaining": {
+            "type": ["integer", "null"],
+            "description": "Number of years remaining until expiration"
+          },
+          "character": {
+            "type": "string",
+            "enum": ["shortTerm", "longTerm", "ordinary", "passive", "active", "general", "cash", "property", "other"],
+            "description": "Character of the carryover (for capital losses, charitable, etc.)"
+          },
+          "activityName": {
+            "type": "string",
+            "description": "Name of activity (for passive losses)"
+          },
+          "activityId": {
+            "type": "string",
+            "description": "Unique ID for passive activity"
+          },
+          "stateName": {
+            "type": "string",
+            "description": "State name (for state-specific carryovers)"
+          },
+          "stateCode": {
+            "type": "string",
+            "pattern": "^[A-Z]{2}$",
+            "description": "Two-letter state code"
+          },
+          "limitationType": {
+            "type": "string",
+            "enum": ["AGI", "taxableIncome", "taxLiability", "passiveIncome", "eightypercent", "none"],
+            "description": "Type of limitation applied to usage"
+          },
+          "limitationPercentage": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 100,
+            "description": "Percentage limitation (e.g., 60 for 60% AGI limit)"
+          },
+          "history": {
+            "type": "array",
+            "description": "Year-by-year usage history",
+            "items": {
+              "type": "object",
+              "required": ["year", "used", "balance"],
+              "properties": {
+                "year": {
+                  "type": "integer",
+                  "description": "Tax year"
+                },
+                "used": {
+                  "type": "number",
+                  "minimum": 0,
+                  "description": "Amount used this year"
+                },
+                "balance": {
+                  "type": "number",
+                  "minimum": 0,
+                  "description": "Remaining balance after usage"
+                },
+                "limitation": {
+                  "type": "number",
+                  "description": "Applicable limitation for this year"
+                },
+                "notes": {
+                  "type": "string",
+                  "description": "Notes about usage this year"
+                }
+              }
+            }
+          },
+          "relatedForm": {
+            "type": "string",
+            "description": "IRS form where carryover is reported (e.g., Schedule D, Form 8582)"
+          },
+          "relatedLine": {
+            "type": "string",
+            "description": "Line number on form where carryover is reported"
+          },
+          "notes": {
+            "type": "string",
+            "description": "Additional notes or comments"
+          },
+          "disposition": {
+            "type": "object",
+            "description": "Information if carryover was released/disposed",
+            "properties": {
+              "disposed": {
+                "type": "boolean",
+                "description": "Whether carryover has been disposed/released"
+              },
+              "dispositionYear": {
+                "type": "integer",
+                "description": "Year of disposition"
+              },
+              "dispositionType": {
+                "type": "string",
+                "enum": ["fullUtilization", "expiration", "activityDisposition", "death", "gift", "other"],
+                "description": "How the carryover was disposed"
+              },
+              "dispositionNotes": {
+                "type": "string",
+                "description": "Notes about disposition"
+              }
+            }
+          },
+          "projectedUsage": {
+            "type": "array",
+            "description": "Projected future usage (for planning)",
+            "items": {
+              "type": "object",
+              "properties": {
+                "year": {
+                  "type": "integer"
+                },
+                "projectedUsage": {
+                  "type": "number"
+                },
+                "assumptions": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "description": "Summary statistics",
+      "properties": {
+        "totalCarryovers": {
+          "type": "integer",
+          "description": "Total number of active carryovers"
+        },
+        "totalValue": {
+          "type": "number",
+          "description": "Total dollar value of all carryovers"
+        },
+        "expiringWithin1Year": {
+          "type": "integer",
+          "description": "Number of carryovers expiring within 1 year"
+        },
+        "expiringValue": {
+          "type": "number",
+          "description": "Dollar value of carryovers expiring within 1 year"
+        },
+        "indefiniteCarryovers": {
+          "type": "integer",
+          "description": "Number of indefinite carryovers"
+        },
+        "byType": {
+          "type": "object",
+          "description": "Breakdown by carryover type",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "count": {
+                "type": "integer"
+              },
+              "totalValue": {
+                "type": "number"
+              }
+            }
+          }
+        }
+      }
+    },
+    "alerts": {
+      "type": "array",
+      "description": "Alerts and warnings",
+      "items": {
+        "type": "object",
+        "required": ["severity", "message"],
+        "properties": {
+          "severity": {
+            "type": "string",
+            "enum": ["info", "warning", "critical"],
+            "description": "Alert severity level"
+          },
+          "carryoverId": {
+            "type": "string",
+            "description": "ID of related carryover"
+          },
+          "message": {
+            "type": "string",
+            "description": "Alert message"
+          },
+          "action": {
+            "type": "string",
+            "description": "Recommended action"
+          }
+        }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Metadata about this carryover file",
+      "properties": {
+        "createdDate": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When this file was created"
+        },
+        "lastModified": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When this file was last modified"
+        },
+        "sourceReturn": {
+          "type": "string",
+          "description": "Source tax return file"
+        },
+        "preparer": {
+          "type": "string",
+          "description": "Who prepared this carryover file"
+        },
+        "version": {
+          "type": "string",
+          "description": "Schema version"
+        }
+      }
+    }
+  },
+  "examples": [
+    {
+      "taxPayer": {
+        "ssn": "123-45-6789",
+        "name": "John Doe",
+        "filingStatus": "married_filing_jointly"
+      },
+      "taxYear": 2024,
+      "carryovers": [
+        {
+          "id": "550e8400-e29b-41d4-a716-446655440000",
+          "type": "capitalLoss",
+          "character": "longTerm",
+          "originYear": 2023,
+          "originalAmount": 15000,
+          "currentBalance": 12000,
+          "expirationYear": null,
+          "yearsRemaining": null,
+          "limitationType": "taxableIncome",
+          "limitationPercentage": null,
+          "history": [
+            {
+              "year": 2023,
+              "used": 3000,
+              "balance": 12000,
+              "limitation": 3000,
+              "notes": "Maximum $3,000 annual deduction"
+            }
+          ],
+          "relatedForm": "Schedule D",
+          "relatedLine": "Line 14",
+          "notes": "Long-term capital loss from stock sale"
+        },
+        {
+          "id": "550e8400-e29b-41d4-a716-446655440001",
+          "type": "passiveLoss",
+          "character": "passive",
+          "activityName": "123 Main St Rental Property",
+          "activityId": "rental-001",
+          "originYear": 2022,
+          "originalAmount": 25000,
+          "currentBalance": 18000,
+          "expirationYear": null,
+          "yearsRemaining": null,
+          "limitationType": "passiveIncome",
+          "history": [
+            {
+              "year": 2022,
+              "used": 0,
+              "balance": 25000,
+              "limitation": 0,
+              "notes": "MAGI too high for special allowance"
+            },
+            {
+              "year": 2023,
+              "used": 7000,
+              "balance": 18000,
+              "limitation": 7000,
+              "notes": "Offset by rental income from other property"
+            }
+          ],
+          "relatedForm": "Form 8582",
+          "relatedLine": "Line 4",
+          "notes": "Will be released upon sale of property"
+        },
+        {
+          "id": "550e8400-e29b-41d4-a716-446655440002",
+          "type": "charitableContribution",
+          "character": "cash",
+          "originYear": 2023,
+          "originalAmount": 20000,
+          "currentBalance": 15000,
+          "expirationYear": 2028,
+          "yearsRemaining": 4,
+          "limitationType": "AGI",
+          "limitationPercentage": 60,
+          "history": [
+            {
+              "year": 2023,
+              "used": 5000,
+              "balance": 15000,
+              "limitation": 60000,
+              "notes": "AGI was $100,000, 60% limit = $60,000"
+            }
+          ],
+          "relatedForm": "Schedule A",
+          "relatedLine": "Line 12",
+          "notes": "Cash contribution to qualified charity"
+        }
+      ],
+      "summary": {
+        "totalCarryovers": 3,
+        "totalValue": 45000,
+        "expiringWithin1Year": 0,
+        "expiringValue": 0,
+        "indefiniteCarryovers": 2,
+        "byType": {
+          "capitalLoss": {
+            "count": 1,
+            "totalValue": 12000
+          },
+          "passiveLoss": {
+            "count": 1,
+            "totalValue": 18000
+          },
+          "charitableContribution": {
+            "count": 1,
+            "totalValue": 15000
+          }
+        }
+      },
+      "alerts": [
+        {
+          "severity": "warning",
+          "carryoverId": "550e8400-e29b-41d4-a716-446655440002",
+          "message": "Charitable contribution carryover expires in 4 years",
+          "action": "Plan to use before 2028 by itemizing deductions"
+        },
+        {
+          "severity": "info",
+          "carryoverId": "550e8400-e29b-41d4-a716-446655440000",
+          "message": "Capital loss carryover available to offset gains",
+          "action": "Consider harvesting capital gains to use loss"
+        }
+      ],
+      "metadata": {
+        "createdDate": "2024-04-15T10:30:00Z",
+        "lastModified": "2024-04-15T10:30:00Z",
+        "sourceReturn": "2023-federal-return.pdf",
+        "preparer": "Claude Code Automation",
+        "version": "1.0.0"
+      }
+    }
+  ]
+}

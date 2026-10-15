@@ -1,0 +1,22 @@
+{
+  "occupation": "Software Engineer",
+  "income": 75000,
+  "medicareIncome": 75000,
+  "fedWithholding": 12000,
+  "ssWages": 75000,
+  "ssWithholding": 4650,
+  "medicareWithholding": 1087.50,
+  "stateWages": 75000,
+  "stateWithholding": 3750,
+  "ein": "12-3456789",
+  "employerName": "ABC Company",
+  "employerAddress": {
+    "address": "123 Main St",
+    "city": "San Francisco",
+    "state": "CA",
+    "zip": "94102"
+  },
+  "state": "CA",
+  "localWages": 75000,
+  "localWithholding": 750
+}
