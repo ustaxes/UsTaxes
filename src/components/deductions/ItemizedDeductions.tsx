@@ -1,5 +1,5 @@
 import { ReactElement, ReactNode } from 'react'
-import { Helmet } from 'react-helmet'
+import { Helmet } from 'react-helmet-async'
 import { FormProvider, useForm } from 'react-hook-form'
 import { useDispatch, useSelector, TaxesState } from 'ustaxes/redux'
 import { setItemizedDeductions } from 'ustaxes/redux/actions'
@@ -82,10 +82,22 @@ export const ItemizedDeductionsInfo = (): ReactElement => {
       return state.information.itemizedDeductions
     }
   )
+  const f1098s = useSelector((state: TaxesState) => state.information.f1098s)
+  const f1098InterestTotal = f1098s
+    .map((f) => f.interest + (f.points ?? 0))
+    .reduce((l, r) => l + r, 0)
+  const f1098MortgageInsuranceTotal = f1098s
+    .map((f) => f.mortgageInsurancePremiums ?? 0)
+    .reduce((l, r) => l + r, 0)
+  const hasF1098s = f1098s.length > 0
 
   const defaultValues: ItemizedDeductionUserInput = {
     ...blankUserInput,
     ...(itemizedDeductions !== undefined ? toUserInput(itemizedDeductions) : {})
+  }
+  if (hasF1098s) {
+    defaultValues.interest8a = f1098InterestTotal
+    defaultValues.interest8d = f1098MortgageInsuranceTotal
   }
 
   const { onAdvance, navButtons } = usePager()
@@ -96,7 +108,14 @@ export const ItemizedDeductionsInfo = (): ReactElement => {
   const dispatch = useDispatch()
 
   const onSubmit = (form: ItemizedDeductionUserInput): void => {
-    dispatch(setItemizedDeductions(toItemizedDeductions(form)))
+    const submittedForm = hasF1098s
+      ? {
+          ...form,
+          interest8a: 0,
+          interest8d: 0
+        }
+      : form
+    dispatch(setItemizedDeductions(toItemizedDeductions(submittedForm)))
     onAdvance()
   }
 
@@ -174,6 +193,7 @@ export const ItemizedDeductionsInfo = (): ReactElement => {
           patternConfig={Patterns.currency}
           name="interest8a"
           required={false}
+          disabled={hasF1098s}
         />
         <LabeledInput
           label="Home mortgage interest not reported to you on Form 1098"
@@ -192,6 +212,7 @@ export const ItemizedDeductionsInfo = (): ReactElement => {
           patternConfig={Patterns.currency}
           name="interest8d"
           required={false}
+          disabled={hasF1098s}
         />
         <LabeledInput
           label="Investment interest"

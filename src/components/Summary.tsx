@@ -55,8 +55,48 @@ interface F1040SummaryProps {
   summary: SummaryData
 }
 
+const FederalHeadline = ({ summary }: F1040SummaryProps): ReactElement => {
+  if (summary.amountOwed !== undefined && summary.amountOwed > 0) {
+    return (
+      <Box marginBottom={2}>
+        <Typography variant="overline" color="textSecondary">
+          Estimated federal amount owed
+        </Typography>
+        <Typography variant="h4" color="textPrimary">
+          <Currency value={-summary.amountOwed} />
+        </Typography>
+      </Box>
+    )
+  }
+
+  if (summary.refundAmount !== undefined && summary.refundAmount > 0) {
+    return (
+      <Box marginBottom={2}>
+        <Typography variant="overline" color="textSecondary">
+          Expected federal refund
+        </Typography>
+        <Typography variant="h4" color="textPrimary">
+          <Currency value={summary.refundAmount} />
+        </Typography>
+      </Box>
+    )
+  }
+
+  return (
+    <Box marginBottom={2}>
+      <Typography variant="overline" color="textSecondary">
+        Estimated federal balance
+      </Typography>
+      <Typography variant="h4" color="textPrimary">
+        <Currency value={0} />
+      </Typography>
+    </Box>
+  )
+}
+
 const F1040Summary = ({ summary }: F1040SummaryProps): ReactElement => (
   <>
+    <FederalHeadline summary={summary} />
     {(() => {
       if (summary.amountOwed !== undefined && summary.amountOwed > 0) {
         return (
@@ -162,6 +202,7 @@ const Summary = ({ errors, irsForms }: SummaryProps): ReactElement => {
   const year: TaxYear = useSelector(
     (state: YearsTaxesState) => state.activeYear
   )
+  const formTags = irsForms.map((form) => form.tag)
 
   const summaryBody = (
     <>
@@ -179,10 +220,21 @@ const Summary = ({ errors, irsForms }: SummaryProps): ReactElement => {
           )
         } else {
           const summary = createSummary(year, irsForms)
-          if (summary === undefined) {
-            return undefined
-          }
-          return <F1040Summary summary={summary} />
+          return (
+            <>
+              {summary !== undefined ? (
+                <F1040Summary summary={summary} />
+              ) : undefined}
+              {irsForms.length > 0 ? (
+                <details>
+                  <summary>Included IRS forms</summary>
+                  <Typography variant="body2" color="textSecondary">
+                    {formTags.join(', ')}
+                  </Typography>
+                </details>
+              ) : undefined}
+            </>
+          )
         }
       })()}
     </>

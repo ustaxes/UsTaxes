@@ -60,6 +60,7 @@ const baseInformation: ValidatedInformation = {
     filingStatus: FilingStatus.S
   },
   questions: {},
+  f1098s: [],
   f1098es: [],
   stateResidencies: [{ state: 'AL' }],
   healthSavingsAccounts: [],

@@ -1,5 +1,5 @@
 import { ReactElement, ReactNode } from 'react'
-import { Helmet } from 'react-helmet'
+import { Helmet } from 'react-helmet-async'
 import { useForm, FormProvider } from 'react-hook-form'
 import { TaxesState, useSelector, useDispatch } from 'ustaxes/redux'
 import { addF3921, editF3921, removeF3921 } from 'ustaxes/redux/actions'

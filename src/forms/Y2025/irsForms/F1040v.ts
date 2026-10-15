@@ -8,6 +8,7 @@ export default class F1040V extends F1040Attachment {
 
   fields = (): Field[] => {
     const tp = this.f1040.info.taxPayer
+    const address = tp.primaryPerson.address
 
     const taxOwed = this.f1040.l37()
 
@@ -19,14 +20,14 @@ export default class F1040V extends F1040Attachment {
       tp.primaryPerson.lastName,
       tp.spouse?.firstName,
       tp.spouse?.lastName,
-      tp.primaryPerson.address.address,
-      tp.primaryPerson.address.aptNo,
-      tp.primaryPerson.address.city,
-      tp.primaryPerson.address.state,
-      tp.primaryPerson.address.zip,
-      tp.primaryPerson.address.foreignCountry,
-      tp.primaryPerson.address.province,
-      tp.primaryPerson.address.postalCode
+      address?.address,
+      address?.aptNo,
+      address?.city,
+      address?.state,
+      address?.zip,
+      address?.foreignCountry,
+      address?.province,
+      address?.postalCode
     ]
 
     return result
@@ -35,6 +36,7 @@ export default class F1040V extends F1040Attachment {
   // Generated from Y2025 PDF schema + fields() via scripts/migrateToNativeInstructions.ts
   fillInstructions = (): FillInstructions => {
     const tp = this.f1040.info.taxPayer
+    const address = tp.primaryPerson.address
     return [
       text('topmostSubform[0].Page1[0].f1_1[0]', tp.primaryPerson.ssid),
       text('topmostSubform[0].Page1[0].f1_2[0]', tp.spouse?.ssid),
@@ -43,35 +45,14 @@ export default class F1040V extends F1040Attachment {
       text('topmostSubform[0].Page1[0].f1_6[0]', tp.primaryPerson.lastName),
       text('topmostSubform[0].Page1[0].f1_7[0]', tp.spouse?.firstName),
       text('topmostSubform[0].Page1[0].f1_8[0]', tp.spouse?.lastName),
-      text(
-        'topmostSubform[0].Page1[0].f1_9[0]',
-        tp.primaryPerson.address.address
-      ),
-      text(
-        'topmostSubform[0].Page1[0].f1_10[0]',
-        tp.primaryPerson.address.aptNo
-      ),
-      text(
-        'topmostSubform[0].Page1[0].f1_11[0]',
-        tp.primaryPerson.address.city
-      ),
-      text(
-        'topmostSubform[0].Page1[0].f1_12[0]',
-        tp.primaryPerson.address.state
-      ),
-      text('topmostSubform[0].Page1[0].f1_13[0]', tp.primaryPerson.address.zip),
-      text(
-        'topmostSubform[0].Page1[0].f1_14[0]',
-        tp.primaryPerson.address.foreignCountry
-      ),
-      text(
-        'topmostSubform[0].Page1[0].f1_15[0]',
-        tp.primaryPerson.address.province
-      ),
-      text(
-        'topmostSubform[0].Page1[0].f1_16[0]',
-        tp.primaryPerson.address.postalCode
-      )
+      text('topmostSubform[0].Page1[0].f1_9[0]', address?.address),
+      text('topmostSubform[0].Page1[0].f1_10[0]', address?.aptNo),
+      text('topmostSubform[0].Page1[0].f1_11[0]', address?.city),
+      text('topmostSubform[0].Page1[0].f1_12[0]', address?.state),
+      text('topmostSubform[0].Page1[0].f1_13[0]', address?.zip),
+      text('topmostSubform[0].Page1[0].f1_14[0]', address?.foreignCountry),
+      text('topmostSubform[0].Page1[0].f1_15[0]', address?.province),
+      text('topmostSubform[0].Page1[0].f1_16[0]', address?.postalCode)
     ]
   }
 }

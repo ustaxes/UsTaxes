@@ -1,5 +1,5 @@
 import { FormEvent, ReactElement, ReactNode, useEffect, useState } from 'react'
-import { Helmet } from 'react-helmet'
+import { Helmet } from 'react-helmet-async'
 import { usePager } from './pager'
 import Alert from '@material-ui/lab/Alert'
 import { useSelector } from 'react-redux'

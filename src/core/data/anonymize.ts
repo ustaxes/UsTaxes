@@ -5,6 +5,7 @@ import {
   Supported1099,
   Dependent,
   Employer,
+  F1098,
   F1098e,
   Information,
   Person,
@@ -71,6 +72,11 @@ const anonymizeF1098e = (f: F1098e): F1098e => ({
   lender: 'lender'
 })
 
+const anonymizeF1098 = (f: F1098): F1098 => ({
+  ...f,
+  lender: 'lender'
+})
+
 const anonymizeF1099 = (f: Supported1099, idx: number): Supported1099 => ({
   ...f,
   payer: `payer ${idx}`
@@ -125,6 +131,7 @@ const anonymizeK1 = (
 
 export const anonymizeInformation = (info: Information): Information => ({
   ...info,
+  f1098s: info.f1098s.map(anonymizeF1098),
   f1098es: info.f1098es.map(anonymizeF1098e),
   f1099s: info.f1099s.map(anonymizeF1099),
   f3921s: info.f3921s.map(anonymizeF3921),

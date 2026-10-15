@@ -9,6 +9,8 @@ import {
 } from '@material-ui/pickers'
 import DateFnsUtils from '@date-io/date-fns'
 import { DatePickerProps } from './types'
+import { useFormContainer } from 'ustaxes/components/FormContainer/Context'
+import { labelWithSource } from './SourceBadge'
 
 export function DatePicker<TFormValues extends FieldValues>(
   props: DatePickerProps<TFormValues>
@@ -20,7 +22,8 @@ export function DatePicker<TFormValues extends FieldValues>(
     minDate = new Date(1900, 0, 1),
     maxDate,
     useGrid = true,
-    sizes = { xs: 12 }
+    sizes = { xs: 12 },
+    source
   } = props
 
   const classes = useStyles()
@@ -28,6 +31,8 @@ export function DatePicker<TFormValues extends FieldValues>(
     control,
     formState: { isSubmitted }
   } = useFormContext()
+  const { getSource } = useFormContainer()
+  const resolvedSource = source ?? getSource?.(name as string)
 
   return (
     <ConditionallyWrap
@@ -66,7 +71,7 @@ export function DatePicker<TFormValues extends FieldValues>(
                   <MuiDatePicker
                     {...forceErrorProps}
                     data-testid={name}
-                    label={label}
+                    label={labelWithSource(label, resolvedSource)}
                     InputLabelProps={{
                       shrink: true
                     }}

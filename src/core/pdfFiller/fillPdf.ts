@@ -1,4 +1,11 @@
-import { PDFDocument, PDFCheckBox, PDFRadioGroup, PDFName } from 'pdf-lib'
+import {
+  PDFDocument,
+  PDFCheckBox,
+  PDFRadioGroup,
+  PDFName,
+  PDFDropdown,
+  PDFOptionList
+} from 'pdf-lib'
 import { Field, FillInstructions, RadioSelect } from '.'
 import { displayRound } from '../irsForms/util'
 import Fill from './Fill'
@@ -29,7 +36,7 @@ export function deriveFillInstructionsFromPdf(
     .getFields()
     .map((pdfField, index) => {
       const name = pdfField.getName()
-      const value = values[index]
+      const value: Field = values[index]
 
       if (isRadioSelect(value)) {
         return { name, kind: 'radio' as const, value }
@@ -39,6 +46,16 @@ export function deriveFillInstructionsFromPdf(
           name,
           kind: 'checkbox' as const,
           value: value as boolean | undefined
+        }
+      }
+      if (
+        pdfField instanceof PDFDropdown ||
+        pdfField instanceof PDFOptionList
+      ) {
+        return {
+          name,
+          kind: 'select' as const,
+          value: value as string | number | undefined
         }
       }
       if (pdfField instanceof PDFRadioGroup) {
@@ -145,6 +162,16 @@ export function fillPDFByName(
           cb.check()
         }
         cb.enableReadOnly()
+      } else if (instr.kind === 'select') {
+        try {
+          const dd = form.getDropdown(instr.name)
+          dd.select(formatValue(instr.value))
+          dd.enableReadOnly()
+        } catch {
+          const ol = form.getOptionList(instr.name)
+          ol.select(formatValue(instr.value))
+          ol.enableReadOnly()
+        }
       } else {
         // Use low-level AcroForm dict manipulation instead of PDFRadioGroup.select()
         // because the high-level API rebuilds all widget appearance streams, which

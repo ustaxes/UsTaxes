@@ -11,34 +11,49 @@ UsTaxes is a free, open-source tax filing application that can be used to file t
 
 **Interested in contributing? [Get Started](#user-content-get-started)**
 
-## Supported Income data
+## Supported income, deduction, and business data
 
-Most income and deduction information from the following forms are supported for tax years 2025, 2024, 2023, 2022, 2021 and 2020.
+Support varies by tax year and form, but UsTaxes currently supports a broad set
+of wage, investment, retirement, mortgage-interest, rental, and
+self-employment data across tax years 2020 through 2025.
 
-- W2
+- W-2
 - 1099-INT
 - 1099-DIV
 - 1099-B
 - 1099-DA
+- 1099-NEC (flows to Schedule C/self-employment calculations where supported, including tax year 2025)
+- 1098 (mortgage interest, points, and mortgage insurance premiums)
 - 1098-E
-- 1099-R: support for normal distributions from IRA and pension accounts.
+- 1099-R (normal distributions from IRA and pension accounts)
 - SSA-1099
+- Rental real estate income and expenses (Schedule E)
+- Schedule C business income and expenses (tax years 2021-2025; 2025 currently focuses on calculation support for Schedule SE/Form 7206 and limited PDF filling)
 
-So far, this project can attach the following schedules to form 1040:
+Depending on tax year and entered data, UsTaxes can generate the following
+federal schedules and attachments for Form 1040:
 
-- Schedule 1 (as to Schedule E and 1098-E data only)
+- Schedule 1
+- Schedule 1A (2025 OBBBA deductions such as tips, senior deduction, and car-loan interest)
 - Schedule 2
-- Schedule 3 (as to excess FICA tax only)
-- Schedule 8812
-- Schedule 1A - new deductions for tips, being old, car loans, etc. from OBBBA
+- Schedule 3
+- Schedule A
 - Schedule B
+- Schedule C (2021-2025, with 2025 currently focused on calculation support and limited PDF filling)
 - Schedule D
 - Schedule E
-- F1040-V
-- F8949 (Uncovered Investment Transactions)
-- F8889 (Health Savings Accounts)
-- F8959 (Additional Medicare Tax)
-- F8960 (Net Investment Income Tax)
+- Schedule SE
+- Schedule 8812
+- Form 1040-V
+- Form 7206 (2023-2025)
+- Form 8949 (including digital asset support)
+- Form 8889 (Health Savings Accounts)
+- Form 8959 (Additional Medicare Tax)
+- Form 8960 (Net Investment Income Tax)
+
+Additional year-specific attachments are also supported where implemented
+(for example Form 4547, Form 6251, Form 4797, Form 4952, Form 5695,
+Form 8839, Form 8880, Form 8888, Form 8910, and Form 8936 in tax year 2025).
 
 ## Supported Credits
 
@@ -74,6 +89,173 @@ This project is built by a growing community. If you notice an error in the outp
 ## User Data
 
 The project is available strictly via client side. Data is persisted to the site's localstorage so _no personal information ever leaves the user's computer._ For those who want extra security, the codebase can also be built as a [desktop application](#desktop-application).
+
+## Prefill, import/export, and source tracking
+
+UsTaxes supports two JSON-based data flows from **User Settings**:
+
+- **Full backup import/export** for all years and settings
+- **Return JSON prefill** for selected tax-return data
+
+Return JSON prefill currently supports importing and exporting:
+
+- taxpayer/contact information
+- W-2s
+- 1099s (including 1099-NEC)
+- 1098 mortgage-interest data
+- rental properties
+- supported adjustment data
+- field-level source metadata
+
+The full **Save data to file** backup in Settings preserves all supported years and
+settings, including Y2025 self-employment entries and Form 7206 worksheet data.
+The portable **return JSON** export remains a narrower subset intended for
+prefill/import workflows.
+
+Imported fields can show a source badge so users can tell where a value came
+from:
+
+- `T` = transcript/imported transcript-style data
+- `R` = return JSON import
+- `U` = user-entered value
+
+## Return JSON Import/Export Coverage
+
+The OpenAPI spec describes a per-year return payload shape:
+`{ taxYear, information }`.
+All fields inside `information` are optional so different data sources can
+populate only the sections they know about. The app also supports multi-year
+bundles for export/import workflows; the UI currently exports bundles as
+`{ version, returns }` and can also import bundles that include `activeYear`.
+
+The table below shows each internal data point and whether it is represented by the OpenAPI spec for import/export.
+
+| Internal data path                                                | Import (prefill JSON) | Export (prefill JSON) | Notes                                                                                         |
+| ----------------------------------------------------------------- | --------------------- | --------------------- | --------------------------------------------------------------------------------------------- |
+| `information.taxPayer.filingStatus`                               | Yes                   | Yes                   |                                                                                               |
+| `information.taxPayer.primaryPerson.firstName`                    | Yes                   | Yes                   |                                                                                               |
+| `information.taxPayer.primaryPerson.lastName`                     | Yes                   | Yes                   |                                                                                               |
+| `information.taxPayer.primaryPerson.ssid`                         | Yes                   | Yes                   |                                                                                               |
+| `information.taxPayer.primaryPerson.role`                         | Yes                   | Yes                   |                                                                                               |
+| `information.taxPayer.primaryPerson.isBlind`                      | Yes                   | Yes                   |                                                                                               |
+| `information.taxPayer.primaryPerson.dateOfBirth`                  | Yes                   | Yes                   |                                                                                               |
+| `information.taxPayer.primaryPerson.isTaxpayerDependent`          | Yes                   | Yes                   |                                                                                               |
+| `information.taxPayer.primaryPerson.address.address`              | Yes                   | Yes                   |                                                                                               |
+| `information.taxPayer.primaryPerson.address.aptNo`                | Yes                   | Yes                   |                                                                                               |
+| `information.taxPayer.primaryPerson.address.city`                 | Yes                   | Yes                   |                                                                                               |
+| `information.taxPayer.primaryPerson.address.state`                | Yes                   | Yes                   |                                                                                               |
+| `information.taxPayer.primaryPerson.address.zip`                  | Yes                   | Yes                   |                                                                                               |
+| `information.taxPayer.primaryPerson.address.foreignCountry`       | Yes                   | Yes                   |                                                                                               |
+| `information.taxPayer.primaryPerson.address.province`             | Yes                   | Yes                   |                                                                                               |
+| `information.taxPayer.primaryPerson.address.postalCode`           | Yes                   | Yes                   |                                                                                               |
+| `information.taxPayer.spouse.firstName`                           | Yes                   | Yes                   |                                                                                               |
+| `information.taxPayer.spouse.lastName`                            | Yes                   | Yes                   |                                                                                               |
+| `information.taxPayer.spouse.ssid`                                | Yes                   | Yes                   |                                                                                               |
+| `information.taxPayer.spouse.role`                                | Yes                   | Yes                   |                                                                                               |
+| `information.taxPayer.spouse.isBlind`                             | Yes                   | Yes                   |                                                                                               |
+| `information.taxPayer.spouse.dateOfBirth`                         | Yes                   | Yes                   |                                                                                               |
+| `information.taxPayer.spouse.isTaxpayerDependent`                 | Yes                   | Yes                   |                                                                                               |
+| `information.taxPayer.dependents[].firstName`                     | Yes                   | Yes                   |                                                                                               |
+| `information.taxPayer.dependents[].lastName`                      | Yes                   | Yes                   |                                                                                               |
+| `information.taxPayer.dependents[].ssid`                          | Yes                   | Yes                   |                                                                                               |
+| `information.taxPayer.dependents[].role`                          | Yes                   | Yes                   |                                                                                               |
+| `information.taxPayer.dependents[].isBlind`                       | Yes                   | Yes                   |                                                                                               |
+| `information.taxPayer.dependents[].dateOfBirth`                   | Yes                   | Yes                   |                                                                                               |
+| `information.taxPayer.dependents[].relationship`                  | Yes                   | Yes                   |                                                                                               |
+| `information.taxPayer.dependents[].qualifyingInfo.numberOfMonths` | Yes                   | Yes                   |                                                                                               |
+| `information.taxPayer.dependents[].qualifyingInfo.isStudent`      | Yes                   | Yes                   |                                                                                               |
+| `information.taxPayer.contactEmail`                               | Yes                   | Yes                   |                                                                                               |
+| `information.taxPayer.contactPhoneNumber`                         | Yes                   | Yes                   |                                                                                               |
+| `information.w2s[].occupation`                                    | Yes                   | Yes                   |                                                                                               |
+| `information.w2s[].income`                                        | Yes                   | Yes                   |                                                                                               |
+| `information.w2s[].medicareIncome`                                | Yes                   | Yes                   |                                                                                               |
+| `information.w2s[].fedWithholding`                                | Yes                   | Yes                   |                                                                                               |
+| `information.w2s[].ssWages`                                       | Yes                   | Yes                   |                                                                                               |
+| `information.w2s[].ssWithholding`                                 | Yes                   | Yes                   |                                                                                               |
+| `information.w2s[].medicareWithholding`                           | Yes                   | Yes                   |                                                                                               |
+| `information.w2s[].employer.EIN`                                  | Yes                   | Yes                   |                                                                                               |
+| `information.w2s[].employer.employerName`                         | Yes                   | Yes                   |                                                                                               |
+| `information.w2s[].employer.address.address`                      | Yes                   | Yes                   |                                                                                               |
+| `information.w2s[].employer.address.aptNo`                        | Yes                   | Yes                   |                                                                                               |
+| `information.w2s[].employer.address.city`                         | Yes                   | Yes                   |                                                                                               |
+| `information.w2s[].employer.address.state`                        | Yes                   | Yes                   |                                                                                               |
+| `information.w2s[].employer.address.zip`                          | Yes                   | Yes                   |                                                                                               |
+| `information.w2s[].employer.address.foreignCountry`               | Yes                   | Yes                   |                                                                                               |
+| `information.w2s[].employer.address.province`                     | Yes                   | Yes                   |                                                                                               |
+| `information.w2s[].employer.address.postalCode`                   | Yes                   | Yes                   |                                                                                               |
+| `information.w2s[].personRole`                                    | Yes                   | Yes                   |                                                                                               |
+| `information.w2s[].state`                                         | Yes                   | Yes                   |                                                                                               |
+| `information.w2s[].stateWages`                                    | Yes                   | Yes                   |                                                                                               |
+| `information.w2s[].stateWithholding`                              | Yes                   | Yes                   |                                                                                               |
+| `information.w2s[].box12`                                         | Yes                   | Yes                   | Map of box-12 code to amount.                                                                 |
+| `information.f1099s[].type`                                       | Yes                   | Yes                   |                                                                                               |
+| `information.f1099s[].payer`                                      | Yes                   | Yes                   |                                                                                               |
+| `information.f1099s[].personRole`                                 | Yes                   | Yes                   |                                                                                               |
+| `information.f1099s[].form.income`                                | Yes                   | Yes                   | 1099-INT only.                                                                                |
+| `information.f1099s[].form.dividends`                             | Yes                   | Yes                   | 1099-DIV only.                                                                                |
+| `information.f1099s[].form.qualifiedDividends`                    | Yes                   | Yes                   | 1099-DIV only.                                                                                |
+| `information.f1099s[].form.totalCapitalGainsDistributions`        | Yes                   | Yes                   | 1099-DIV only.                                                                                |
+| `information.f1099s[].form.shortTermProceeds`                     | Yes                   | Yes                   | 1099-B and 1099-DA.                                                                           |
+| `information.f1099s[].form.shortTermCostBasis`                    | Yes                   | Yes                   | 1099-B and 1099-DA.                                                                           |
+| `information.f1099s[].form.longTermProceeds`                      | Yes                   | Yes                   | 1099-B and 1099-DA.                                                                           |
+| `information.f1099s[].form.longTermCostBasis`                     | Yes                   | Yes                   | 1099-B and 1099-DA.                                                                           |
+| `information.f1099s[].form.grossDistribution`                     | Yes                   | Yes                   | 1099-R only.                                                                                  |
+| `information.f1099s[].form.taxableAmount`                         | Yes                   | Yes                   | 1099-R only.                                                                                  |
+| `information.f1099s[].form.federalIncomeTaxWithheld`              | Yes                   | Yes                   | 1099-R and SSA-1099.                                                                          |
+| `information.f1099s[].form.planType`                              | Yes                   | Yes                   | 1099-R only.                                                                                  |
+| `information.f1099s[].form.netBenefits`                           | Yes                   | Yes                   | SSA-1099 only.                                                                                |
+| `information.f1099s[].form.nonemployeeCompensation`               | Yes                   | Yes                   | 1099-NEC only.                                                                                |
+| `information.f1098s[].lender`                                     | Yes                   | Yes                   |                                                                                               |
+| `information.f1098s[].interest`                                   | Yes                   | Yes                   |                                                                                               |
+| `information.f1098s[].points`                                     | Yes                   | Yes                   |                                                                                               |
+| `information.f1098s[].mortgageInsurancePremiums`                  | Yes                   | Yes                   |                                                                                               |
+| `information.realEstate[].address.address`                        | Yes                   | Yes                   | Exported as `rentalProperties`.                                                               |
+| `information.realEstate[].address.aptNo`                          | Yes                   | Yes                   |                                                                                               |
+| `information.realEstate[].address.city`                           | Yes                   | Yes                   |                                                                                               |
+| `information.realEstate[].address.state`                          | Yes                   | Yes                   |                                                                                               |
+| `information.realEstate[].address.zip`                            | Yes                   | Yes                   |                                                                                               |
+| `information.realEstate[].address.foreignCountry`                 | Yes                   | Yes                   |                                                                                               |
+| `information.realEstate[].address.province`                       | Yes                   | Yes                   |                                                                                               |
+| `information.realEstate[].address.postalCode`                     | Yes                   | Yes                   |                                                                                               |
+| `information.realEstate[].rentalDays`                             | Yes                   | Yes                   |                                                                                               |
+| `information.realEstate[].personalUseDays`                        | Yes                   | Yes                   |                                                                                               |
+| `information.realEstate[].rentReceived`                           | Yes                   | Yes                   |                                                                                               |
+| `information.realEstate[].propertyType`                           | Yes                   | Yes                   |                                                                                               |
+| `information.realEstate[].isPassive`                              | Yes                   | Yes                   |                                                                                               |
+| `information.realEstate[].otherPropertyType`                      | Yes                   | Yes                   |                                                                                               |
+| `information.realEstate[].qualifiedJointVenture`                  | Yes                   | Yes                   |                                                                                               |
+| `information.realEstate[].expenses.advertising`                   | Yes                   | Yes                   |                                                                                               |
+| `information.realEstate[].expenses.auto`                          | Yes                   | Yes                   |                                                                                               |
+| `information.realEstate[].expenses.cleaning`                      | Yes                   | Yes                   |                                                                                               |
+| `information.realEstate[].expenses.commissions`                   | Yes                   | Yes                   |                                                                                               |
+| `information.realEstate[].expenses.insurance`                     | Yes                   | Yes                   |                                                                                               |
+| `information.realEstate[].expenses.legal`                         | Yes                   | Yes                   |                                                                                               |
+| `information.realEstate[].expenses.management`                    | Yes                   | Yes                   |                                                                                               |
+| `information.realEstate[].expenses.mortgage`                      | Yes                   | Yes                   |                                                                                               |
+| `information.realEstate[].expenses.otherInterest`                 | Yes                   | Yes                   |                                                                                               |
+| `information.realEstate[].expenses.repairs`                       | Yes                   | Yes                   |                                                                                               |
+| `information.realEstate[].expenses.supplies`                      | Yes                   | Yes                   |                                                                                               |
+| `information.realEstate[].expenses.taxes`                         | Yes                   | Yes                   |                                                                                               |
+| `information.realEstate[].expenses.utilities`                     | Yes                   | Yes                   |                                                                                               |
+| `information.realEstate[].expenses.depreciation`                  | Yes                   | Yes                   |                                                                                               |
+| `information.realEstate[].expenses.other`                         | Yes                   | Yes                   |                                                                                               |
+| `information.realEstate[].otherExpenseType`                       | Yes                   | Yes                   |                                                                                               |
+| `information.adjustments.alimonyPaid`                             | Yes                   | Yes                   |                                                                                               |
+| `information.adjustments.alimonyRecipientSsn`                     | Yes                   | Yes                   |                                                                                               |
+| `information.adjustments.alimonyDivorceDate`                      | Yes                   | Yes                   |                                                                                               |
+| `information.sources`                                             | Yes                   | Yes                   | Stored as a parallel tree under `information.sources`.                                        |
+| `information.businesses[]`                                        | No                    | No                    | Schedule C data is supported in-app, but not yet represented in the return JSON prefill spec. |
+| `information.estimatedTaxes[]`                                    | No                    | No                    | Not represented in transcript prefill spec.                                                   |
+| `information.f1098es[]`                                           | No                    | No                    | Not represented in transcript prefill spec.                                                   |
+| `information.f3921s[]`                                            | No                    | No                    | Not represented in transcript prefill spec.                                                   |
+| `information.scheduleK1Form1065s[]`                               | No                    | No                    | Not represented in transcript prefill spec.                                                   |
+| `information.itemizedDeductions`                                  | No                    | No                    | Not represented in transcript prefill spec.                                                   |
+| `information.refund`                                              | No                    | No                    | Not represented in transcript prefill spec.                                                   |
+| `information.questions`                                           | No                    | No                    | Not represented in transcript prefill spec.                                                   |
+| `information.credits[]`                                           | No                    | No                    | Not represented in transcript prefill spec.                                                   |
+| `information.stateResidencies[]`                                  | No                    | No                    | Not represented in transcript prefill spec.                                                   |
+| `information.healthSavingsAccounts[]`                             | No                    | No                    | Not represented in transcript prefill spec.                                                   |
+| `information.individualRetirementArrangements[]`                  | No                    | No                    | Not represented in transcript prefill spec.                                                   |
 
 ## Contributing
 

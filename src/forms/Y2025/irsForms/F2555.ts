@@ -1,5 +1,5 @@
 import F1040Attachment from './F1040Attachment'
-import { Field, FillInstructions } from 'ustaxes/core/pdfFiller'
+import { Field } from 'ustaxes/core/pdfFiller'
 import { FormTag } from 'ustaxes/core/irsForms/Form'
 
 /**
@@ -8,6 +8,9 @@ import { FormTag } from 'ustaxes/core/irsForms/Form'
 export default class F2555 extends F1040Attachment {
   tag: FormTag = 'f2555'
   sequenceIndex = 34
+
+  isNeeded = (): boolean =>
+    this.f1040.info.otherIncome?.foreignEarnedIncomeExclusion !== undefined
 
   /**
    * Line 3: Amount from the Foreign Earned Income Tax Worksheet line 3.
@@ -30,11 +33,19 @@ export default class F2555 extends F1040Attachment {
   l42 = (): number => 0
 
   // TODO - required from 6251 & 8812
-  l45 = (): number => 0
+  l45 = (): number =>
+    this.f1040.info.otherIncome?.foreignEarnedIncomeExclusion ?? 0
 
   // TODO - required from 6251 & 8812
   l50 = (): number => 0
 
-  fields = (): Field[] => []
-  fillInstructions = (): FillInstructions => []
+  fields = (): Field[] => {
+    const fields: Field[] = Array.from({ length: 160 }, () => undefined)
+
+    fields[0] = this.f1040.namesString()
+    fields[1] = this.f1040.info.taxPayer.primaryPerson.ssid
+    fields[122] = this.l45()
+
+    return fields
+  }
 }

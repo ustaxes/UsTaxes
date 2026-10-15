@@ -7,6 +7,7 @@ import {
   PrimaryPersonDateString,
   ContactInfo,
   Supported1099,
+  F1098,
   F1098e,
   SpouseDateString,
   Property,
@@ -23,7 +24,11 @@ import {
   HealthSavingsAccountDateString,
   InformationDateString,
   Credit,
-  EditCreditAction
+  EditCreditAction,
+  AdjustmentsToIncomeDateString,
+  Business,
+  EditBusinessAction,
+  OtherIncome
 } from 'ustaxes/core/data'
 
 import {
@@ -32,6 +37,7 @@ import {
   Edit1099Action,
   EditW2Action,
   EditEstimatedTaxesAction,
+  Edit1098Action,
   Edit1098eAction,
   EditHSAAction,
   EditIraAction,
@@ -64,6 +70,12 @@ export enum ActionName {
   ADD_1099 = 'ADD_1099',
   EDIT_1099 = 'EDIT_1099',
   REMOVE_1099 = 'REMOVE_1099',
+  ADD_1098 = 'ADD_1098',
+  EDIT_1098 = 'EDIT_1098',
+  REMOVE_1098 = 'REMOVE_1098',
+  ADD_BUSINESS = 'ADD_BUSINESS',
+  EDIT_BUSINESS = 'EDIT_BUSINESS',
+  REMOVE_BUSINESS = 'REMOVE_BUSINESS',
   ADD_PROPERTY = 'ADD_PROPERTY',
   EDIT_PROPERTY = 'EDIT_PROPERTY',
   REMOVE_PROPERTY = 'REMOVE_PROPERTY',
@@ -72,6 +84,8 @@ export enum ActionName {
   EDIT_1098e = 'EDIT_1098e',
   REMOVE_1098e = 'REMOVE_1098e',
   SET_ITEMIZED_DEDUCTIONS = 'SET_ITEMIZED_DEDUCTIONS',
+  SAVE_ADJUSTMENTS = 'SAVE_ADJUSTMENTS',
+  SAVE_OTHER_INCOME = 'SAVE_OTHER_INCOME',
   ADD_HSA = 'ADD_HSA',
   EDIT_HSA = 'EDIT_HSA',
   REMOVE_HSA = 'REMOVE_HSA',
@@ -140,6 +154,12 @@ type RemoveHSA = Save<typeof ActionName.REMOVE_HSA, number>
 type Add1099 = Save<typeof ActionName.ADD_1099, Supported1099>
 type Edit1099 = Save<typeof ActionName.EDIT_1099, Edit1099Action>
 type Remove1099 = Save<typeof ActionName.REMOVE_1099, number>
+type Add1098 = Save<typeof ActionName.ADD_1098, F1098>
+type Edit1098 = Save<typeof ActionName.EDIT_1098, Edit1098Action>
+type Remove1098 = Save<typeof ActionName.REMOVE_1098, number>
+type AddBusiness = Save<typeof ActionName.ADD_BUSINESS, Business>
+type EditBusiness = Save<typeof ActionName.EDIT_BUSINESS, EditBusinessAction>
+type RemoveBusiness = Save<typeof ActionName.REMOVE_BUSINESS, number>
 type AddProperty = Save<typeof ActionName.ADD_PROPERTY, Property>
 type EditProperty = Save<typeof ActionName.EDIT_PROPERTY, EditPropertyAction>
 type RemoveProperty = Save<typeof ActionName.REMOVE_PROPERTY, number>
@@ -151,6 +171,11 @@ type SetItemizedDeductions = Save<
   typeof ActionName.SET_ITEMIZED_DEDUCTIONS,
   ItemizedDeductions
 >
+type SaveAdjustments = Save<
+  typeof ActionName.SAVE_ADJUSTMENTS,
+  AdjustmentsToIncomeDateString
+>
+type SaveOtherIncome = Save<typeof ActionName.SAVE_OTHER_INCOME, OtherIncome>
 type SetInfo = Save<typeof ActionName.SET_INFO, InformationDateString>
 type SetActiveYear = Save<typeof ActionName.SET_ACTIVE_YEAR, TaxYear>
 type AddIRA = Save<typeof ActionName.ADD_IRA, Ira>
@@ -200,6 +225,12 @@ export type Actions =
   | Add1099
   | Edit1099
   | Remove1099
+  | Add1098
+  | Edit1098
+  | Remove1098
+  | AddBusiness
+  | EditBusiness
+  | RemoveBusiness
   | AddProperty
   | EditProperty
   | RemoveProperty
@@ -208,6 +239,8 @@ export type Actions =
   | Edit1098e
   | Remove1098e
   | SetItemizedDeductions
+  | SaveAdjustments
+  | SaveOtherIncome
   | AddHSA
   | EditHSA
   | RemoveHSA
@@ -419,6 +452,32 @@ export const answerQuestion: ActionCreator<Responses> = makeActionCreator(
   validators.responses
 )
 
+export const add1098: ActionCreator<F1098> = makeActionCreator(
+  ActionName.ADD_1098,
+  validators.f1098
+)
+
+export const edit1098: ActionCreator<Edit1098Action> = makeActionCreator(
+  ActionName.EDIT_1098
+)
+
+export const remove1098: ActionCreator<number> = makeActionCreator(
+  ActionName.REMOVE_1098,
+  indexValidator
+)
+
+export const addBusiness: ActionCreator<Business> = makeActionCreator(
+  ActionName.ADD_BUSINESS
+)
+
+export const editBusiness: ActionCreator<EditBusinessAction> =
+  makeActionCreator(ActionName.EDIT_BUSINESS)
+
+export const removeBusiness: ActionCreator<number> = makeActionCreator(
+  ActionName.REMOVE_BUSINESS,
+  indexValidator
+)
+
 export const add1098e: ActionCreator<F1098e> = makeActionCreator(
   ActionName.ADD_1098e,
   validators.f1098e
@@ -438,6 +497,13 @@ export const setItemizedDeductions: ActionCreator<ItemizedDeductions> =
     ActionName.SET_ITEMIZED_DEDUCTIONS,
     validators.itemizedDeductions
   )
+
+export const saveAdjustments: ActionCreator<AdjustmentsToIncomeDateString> =
+  makeActionCreator(ActionName.SAVE_ADJUSTMENTS, validators.adjustments)
+
+export const saveOtherIncome: ActionCreator<OtherIncome> = makeActionCreator(
+  ActionName.SAVE_OTHER_INCOME
+)
 
 // debugging purposes only, leaving unchecked.
 export const setInfo = makePreprocessActionCreator<

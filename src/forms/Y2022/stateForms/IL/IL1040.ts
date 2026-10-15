@@ -135,7 +135,7 @@ export class IL1040 extends Form {
    * Index 10: address
    */
   address = (): string | undefined =>
-    this.f1040.info.taxPayer.primaryPerson.address.address
+    this.f1040.info.taxPayer.primaryPerson.address?.address
 
   f10 = (): string | undefined => this.address()
 
@@ -143,7 +143,7 @@ export class IL1040 extends Form {
    * Index 11: apt
    */
   apt = (): string | undefined =>
-    this.f1040.info.taxPayer.primaryPerson.address.aptNo
+    this.f1040.info.taxPayer.primaryPerson.address?.aptNo
 
   f11 = (): string | undefined => this.apt()
 
@@ -158,7 +158,7 @@ export class IL1040 extends Form {
    * Index 13: city
    */
   city = (): string | undefined =>
-    this.f1040.info.taxPayer.primaryPerson.address.city
+    this.f1040.info.taxPayer.primaryPerson.address?.city
 
   f13 = (): string | undefined => this.city()
 
@@ -166,8 +166,8 @@ export class IL1040 extends Form {
    * Index 14: st
    */
   st = (): string | undefined =>
-    this.f1040.info.taxPayer.primaryPerson.address.state ??
-    this.f1040.info.taxPayer.primaryPerson.address.province
+    this.f1040.info.taxPayer.primaryPerson.address?.state ??
+    this.f1040.info.taxPayer.primaryPerson.address?.province
 
   f14 = (): string | undefined => this.st()
 
@@ -175,7 +175,7 @@ export class IL1040 extends Form {
    * Index 15: zip
    */
   zip = (): string | undefined =>
-    this.f1040.info.taxPayer.primaryPerson.address.zip
+    this.f1040.info.taxPayer.primaryPerson.address?.zip
 
   f15 = (): string | undefined => this.zip()
 
@@ -183,7 +183,7 @@ export class IL1040 extends Form {
    * Index 16: foreign
    */
   foreign = (): string | undefined =>
-    this.f1040.info.taxPayer.primaryPerson.address.foreignCountry
+    this.f1040.info.taxPayer.primaryPerson.address?.foreignCountry
 
   f16 = (): string | undefined => this.foreign()
 

@@ -20,7 +20,7 @@ async function loadSchema(schemaPath: string): Promise<PdfFormSchema> {
 /**
  * Map FillInstruction kind to PDF field type for comparison.
  */
-function mapKindToType(kind: 'text' | 'checkbox' | 'radio'): string {
+function mapKindToType(kind: 'text' | 'checkbox' | 'select' | 'radio'): string {
   return kind // They happen to map 1:1
 }
 
@@ -131,6 +131,9 @@ describe('Contract Tests: PDF Schema vs TypeScript Forms', () => {
         'f1040sei',
         'f1040sse',
         'f1040s8',
+        'f1040sc',
+        'f2555',
+        'f7206',
         'f4547',
         'f4797',
         'f4952',
