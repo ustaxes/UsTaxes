@@ -51,7 +51,11 @@ export default class Schedule3 extends F1040Attachment {
     this.claimableExcessSSTaxWithholding() > 0 ||
     (this.f1040.info.otherIncome?.foreignTaxCredit ?? 0) > 0 ||
     (this.f1040.info.otherIncome?.extensionPayment ?? 0) > 0 ||
-    (this.f1040.scheduleR?.isNeeded() ?? false)
+    (this.f1040.scheduleR?.isNeeded() ?? false) ||
+    // Any Part I credit (Form 2441, 8863, 8880, 5695, ...) or Part II
+    // payment must reach Form 1040 lines 20 and 31 through this schedule.
+    this.l8() > 0 ||
+    this.l15() > 0
 
   deductions = (): number => 0
   // Part I: Nonrefundable credits
