@@ -358,7 +358,7 @@ export const iraLimits = {
 export const studentLoanInterest = {
   maxDeduction: 2500,
   phaseOutStart: (filingStatus: FilingStatus): number =>
-    filingStatus === FilingStatus.MFJ ? 165000 : 80000,
+    filingStatus === FilingStatus.MFJ ? 170000 : 85000,
   phaseOutRange: (filingStatus: FilingStatus): number =>
     filingStatus === FilingStatus.MFJ ? 30000 : 15000
 }
@@ -423,18 +423,18 @@ export const ptcFplThresholds = {
 
 /**
  * Retirement Savings Contributions Credit (Form 8880) AGI thresholds — TY2025.
- * Rev. Proc. 2024-40.
+ * Rev. Proc. 2024-40; matches the line 9 table on the 2025 Form 8880.
  * Each threshold pair [lower, upper] defines the bracket boundary;
  * contributions above the upper limit yield a 0% credit rate.
  */
 export const saversCreditThresholds: {
   [k in FilingStatus]: { rate50: number; rate20: number; rate10: number }
 } = {
-  [FilingStatus.S]: { rate50: 23750, rate20: 25750, rate10: 39500 },
-  [FilingStatus.MFS]: { rate50: 23750, rate20: 25750, rate10: 39500 },
-  [FilingStatus.W]: { rate50: 23750, rate20: 25750, rate10: 39500 },
-  [FilingStatus.HOH]: { rate50: 35625, rate20: 38625, rate10: 59250 },
-  [FilingStatus.MFJ]: { rate50: 47500, rate20: 51500, rate10: 79000 }
+  [FilingStatus.S]: { rate50: 23750, rate20: 25500, rate10: 39500 },
+  [FilingStatus.MFS]: { rate50: 23750, rate20: 25500, rate10: 39500 },
+  [FilingStatus.W]: { rate50: 23750, rate20: 25500, rate10: 39500 },
+  [FilingStatus.HOH]: { rate50: 35625, rate20: 38250, rate10: 59250 },
+  [FilingStatus.MFJ]: { rate50: 47500, rate20: 51000, rate10: 79000 }
 }
 // https://www.irs.gov/pub/irs-drop/rp-24-40.pdf (Rev. Proc. 2024-40, tax year 2025)
 // https://www.irs.gov/instructions/i6251
