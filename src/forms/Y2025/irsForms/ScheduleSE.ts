@@ -36,11 +36,16 @@ export default class ScheduleSE extends F1040Attachment {
   /**
    * Schedule C net profit for this person, excluding statutory employee
    * income, which isn't subject to SE tax (Schedule SE line 2 instructions).
+   *
+   * Only counted when a Schedule C is on the return (f1040.scheduleC), so SE
+   * tax stays consistent with Schedule 1 line 3 business income.
    */
   scheduleCNetProfit = (): number =>
-    (this.f1040.info.selfEmployedIncome ?? [])
-      .filter((s) => s.personRole === this.role && !s.isStatutoryEmployee)
-      .reduce((sum, s) => sum + s.grossReceipts - s.expenses, 0)
+    this.f1040.scheduleC === undefined
+      ? 0
+      : (this.f1040.info.selfEmployedIncome ?? [])
+          .filter((s) => s.personRole === this.role && !s.isStatutoryEmployee)
+          .reduce((sum, s) => sum + s.grossReceipts - s.expenses, 0)
 
   isNeeded = (): boolean => {
     const k1Income = this.k1s()
