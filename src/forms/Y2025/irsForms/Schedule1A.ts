@@ -18,6 +18,14 @@ export default class Schedule1A extends F1040Attachment {
   isMFJ = (): boolean =>
     this.f1040.info.taxPayer.filingStatus === FilingStatus.MFJ
 
+  /**
+   * Parts II (tips), III (overtime) and V (seniors): "If married, you must
+   * file jointly to claim this deduction." Part IV (car loan interest) has
+   * no such requirement.
+   */
+  isMFS = (): boolean =>
+    this.f1040.info.taxPayer.filingStatus === FilingStatus.MFS
+
   private get fs(): FilingStatus {
     return this.f1040.info.taxPayer.filingStatus
   }
@@ -98,6 +106,7 @@ export default class Schedule1A extends F1040Attachment {
 
   // Line 13: Qualified tips deduction — subtract line 12 from line 7; if ≤ 0 enter 0
   l13 = (): number => {
+    if (this.isMFS()) return 0
     // If MAGI ≤ phase-out threshold (l10 = 0), no phase-out applies
     if (this.l10() === 0) return this.l7()
     return Math.max(0, this.l7() - this.l12())
@@ -139,6 +148,7 @@ export default class Schedule1A extends F1040Attachment {
 
   // Line 21: Qualified overtime compensation deduction — subtract line 20 from line 15; if ≤ 0 enter 0
   l21 = (): number => {
+    if (this.isMFS()) return 0
     return Math.max(0, this.l15() - this.l20())
   }
 
@@ -226,10 +236,12 @@ export default class Schedule1A extends F1040Attachment {
     Math.max(0, obbbDeductionLimits.senior.perPerson - this.l34())
 
   // Line 36a: Primary filer born before January 2, 1961 (age 65+)
-  l36a = (): number => (this.f1040.bornBeforeDate() ? this.l35() : 0)
+  l36a = (): number =>
+    !this.isMFS() && this.f1040.bornBeforeDate() ? this.l35() : 0
 
   // Line 36b: Spouse born before January 2, 1961 (MFJ only)
-  l36b = (): number => (this.f1040.spouseBeforeDate() ? this.l35() : 0)
+  l36b = (): number =>
+    this.isMFJ() && this.f1040.spouseBeforeDate() ? this.l35() : 0
 
   // Line 37: Enhanced deduction for seniors — add lines 36a and 36b
   l37 = (): number => this.l36a() + this.l36b()
