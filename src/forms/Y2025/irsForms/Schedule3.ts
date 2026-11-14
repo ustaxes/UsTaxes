@@ -47,15 +47,13 @@ export default class Schedule3 extends F1040Attachment {
     return claimableExcessFica
   }
 
+  // Any Part I credit (Form 2441, 8863, 8880, 5695, ...) or Part II payment
+  // (including extension payments and excess Social Security withholding)
+  // must reach Form 1040 lines 20 and 31 through this schedule.
   isNeeded = (): boolean =>
-    this.claimableExcessSSTaxWithholding() > 0 ||
-    (this.f1040.info.otherIncome?.foreignTaxCredit ?? 0) > 0 ||
-    (this.f1040.info.otherIncome?.extensionPayment ?? 0) > 0 ||
-    (this.f1040.scheduleR?.isNeeded() ?? false) ||
-    // Any Part I credit (Form 2441, 8863, 8880, 5695, ...) or Part II
-    // payment must reach Form 1040 lines 20 and 31 through this schedule.
     this.l8() > 0 ||
-    this.l15() > 0
+    this.l15() > 0 ||
+    (this.f1040.scheduleR?.isNeeded() ?? false)
 
   deductions = (): number => 0
   // Part I: Nonrefundable credits
@@ -65,7 +63,12 @@ export default class Schedule3 extends F1040Attachment {
   l3 = (): number | undefined => this.f1040.f8863?.l19()
   l4 = (): number | undefined => this.f1040.f8880?.credit()
   l5a = (): number | undefined => this.f1040.f5695?.l15()
-  l5b = (): number | undefined => this.f1040.f5695?.l30() // technically should be line 32 from f5695
+  // Line 5a: residential clean energy credit (Form 5695 Part I).
+  // Line 5b: energy efficient home improvement credit (Form 5695 Part II).
+  l5b = (): number | undefined => {
+    const credit = this.f1040.f5695?.l14PartII() ?? 0
+    return credit > 0 ? credit : undefined
+  }
   l6a = (): number | undefined => undefined // TODO: other credits
   l6b = (): number | undefined => this.f1040.scheduleR?.l22()
   l6c = (): number | undefined => undefined // TODO: other credits

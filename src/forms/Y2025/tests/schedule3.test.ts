@@ -1,6 +1,8 @@
-import { FilingStatus, PersonRole } from 'ustaxes/core/data'
+import { CreditType, FilingStatus, PersonRole } from 'ustaxes/core/data'
 import { ValidatedInformation } from 'ustaxes/forms/F1040Base'
 import F1040 from '../irsForms/F1040'
+import F5695 from '../irsForms/F5695'
+import F8936 from '../irsForms/F8936'
 
 // A single filer with $50,000 of wages and $3,000 of care expenses for one
 // qualifying person: Form 2441 line 8 is 20% and line 11 is $600, which
@@ -68,5 +70,63 @@ describe('Schedule 3', () => {
     expect(f1040.schedule3.isNeeded()).toEqual(true)
     expect(f1040.l20()).toEqual(600)
     expect(f1040.l22()).toEqual(Math.max(0, f1040.l18() - 600))
+  })
+
+  it('counts the residential clean energy credit once (line 5a, not 5b)', () => {
+    const f1040 = new F1040(
+      {
+        ...information,
+        dependentCareExpenses: undefined,
+        credits: [
+          {
+            recipient: PersonRole.PRIMARY,
+            amount: 10000,
+            type: CreditType.ResidentialCleanEnergyCost
+          }
+        ]
+      },
+      []
+    )
+    // F1040 does not yet instantiate Form 5695 in Y2025; attach it directly.
+    f1040.f5695 = new F5695(f1040)
+    expect(f1040.schedule3.l5a()).toEqual(3000)
+    expect(f1040.schedule3.l5b()).toBeUndefined()
+    expect(f1040.schedule3.l8()).toEqual(3000)
+    expect(f1040.l20()).toEqual(3000)
+  })
+
+  it('subtracts the clean vehicle credit once in Credit Limit Worksheet A', () => {
+    const f1040 = new F1040(
+      {
+        ...information,
+        dependentCareExpenses: undefined,
+        credits: [
+          {
+            recipient: PersonRole.PRIMARY,
+            amount: 1000,
+            type: CreditType.CleanVehicle
+          }
+        ]
+      },
+      []
+    )
+    // F1040 does not yet instantiate Form 8936 in Y2025; attach it directly.
+    f1040.f8936 = new F8936(f1040)
+    expect(f1040.schedule3.l6f()).toEqual(1000)
+    expect(f1040.schedule8812.creditLimitWorksheetA()).toEqual(
+      Math.max(0, f1040.l18() - 1000)
+    )
+  })
+
+  it('caps the care credit at tax and keeps line 19 non-negative', () => {
+    // $15,000 of wages: tax on line 18 is well under the $600 credit.
+    const lowWage = { ...information.w2s[0], income: 15000, ssWages: 15000 }
+    const f1040 = new F1040({ ...information, w2s: [lowWage] }, [])
+    const tax = f1040.l18()
+    expect(tax).toBeLessThan(600)
+    expect(f1040.f2441.credit() ?? 0).toEqual(tax)
+    expect(f1040.schedule8812.creditLimitWorksheetA()).toBeGreaterThanOrEqual(0)
+    expect(f1040.l19() ?? 0).toBeGreaterThanOrEqual(0)
+    expect(f1040.l22()).toEqual(0)
   })
 })

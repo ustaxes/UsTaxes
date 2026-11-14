@@ -96,31 +96,27 @@ export default class Schedule8812 extends F1040Attachment {
 
   creditLimitWorksheetA = (): number => {
     const wsl1 = this.f1040.l18()
-    const schedule3Fields = this.f1040.schedule3.isNeeded()
-      ? [
-          this.f1040.schedule3.l1(),
-          this.f1040.schedule3.l2(),
-          this.f1040.schedule3.l3(),
-          this.f1040.schedule3.l4(),
-          this.f1040.schedule3.l5b(),
-          this.f1040.schedule3.l6d(),
-          this.f1040.schedule3.l6f(),
-          // this.f1040.schedule3.l6(),  // This field does not exist, so idk what the IRS is on about.
-          this.f1040.schedule3.l6m()
-        ]
-      : []
-
+    const s3 = this.f1040.schedule3
+    // Line 2: Schedule 3 lines 1, 2, 3, 4, 5b, 6d, 6f, 6l and 6m.
+    // Schedule R (elderly or disabled credit, line 6d on the form) is
+    // currently carried on l6b in this codebase, so add it explicitly.
     const wsl2 = sumFields([
-      ...schedule3Fields,
-      this.f1040.f5695?.l30(),
-      this.f1040.f8936?.l15(),
-      this.f1040.f8936?.l23(),
+      s3.l1(),
+      s3.l2(),
+      s3.l3(),
+      s3.l4(),
+      s3.l5b(),
+      s3.l6d(),
+      s3.l6f(),
+      s3.l6l(),
+      s3.l6m(),
       this.f1040.scheduleR?.l22()
     ])
     const wsl3 = wsl1 - wsl2
     const wsl4 = this.creditLimitWorksheetB() ?? 0
     const wsl5 = wsl3 - wsl4
-    return wsl5
+    // Line 14 is the smaller of lines 12 and 13; a credit can't be negative.
+    return Math.max(0, wsl5)
   }
 
   // TODO: Letter 6419 advance child tax credit payments
