@@ -96,4 +96,18 @@ describe('AMT', () => {
     expect(f6251.isNeeded()).toEqual(false)
     expect(Math.round(f6251.l11())).toEqual(0)
   })
+
+  // 2025 Form 6251 line 2f: the alternative tax net operating loss deduction
+  // is shown in parentheses and reduces AMTI on line 4.
+  it('subtracts the ATNOLD on line 2f from AMTI', () => {
+    const without = new F6251(new F1040(cloneDeep(baseInformation), []))
+
+    const information = cloneDeep(baseInformation)
+    information.amtAdjustments = { atnold: 20000 }
+    const f6251 = new F6251(new F1040(information, []))
+
+    expect(f6251.l2f()).toEqual(20000)
+    expect(f6251.l4()).toEqual((without.l4() ?? 0) - 20000)
+    expect(f6251.l11()).toBeLessThan(without.l11())
+  })
 })
