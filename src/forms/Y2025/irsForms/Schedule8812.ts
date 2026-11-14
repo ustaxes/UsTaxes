@@ -31,6 +31,15 @@ type Part2b = { allowed: boolean } & Partial<{
   toLine27: number
 }>
 
+/** Refundable portion of the child tax credit per qualifying child (line 16b). */
+const ACTC_REFUNDABLE_PER_CHILD = 1700
+
+/**
+ * Part II-A: filers whose line 16b is at least this amount (three or more
+ * qualifying children) may use Part II-B. $5,100 = 3 x $1,700 for 2025.
+ */
+const PART_IIB_LINE_16B_THRESHOLD = 3 * ACTC_REFUNDABLE_PER_CHILD
+
 export default class Schedule8812 extends F1040Attachment {
   tag: FormTag = 'f1040s8'
   sequenceIndex = 47
@@ -167,26 +176,33 @@ export default class Schedule8812 extends F1040Attachment {
     const l16a = Math.max(0, this.l12() - this.l14())
     const l16bdeps = this.l4()
 
-    // TODO: Should this be in federal.ts to better update each year?
-    const l16b = l16bdeps * 1700
+    const l16b = l16bdeps * ACTC_REFUNDABLE_PER_CHILD
 
     const l17 = Math.min(l16a, l16b)
     const l18a = this.earnedIncomeWorksheet()
     const l18b = this.f1040.nonTaxableCombatPay() ?? 0
-    const l19No = l18a > 2500
-    const l19Yes = l18a <= 2500
+    // Line 19: Is the amount on line 18a more than $2,500?
+    const l19Yes = l18a > 2500
+    const l19No = !l19Yes
     const l19 = Math.max(0, l18a - 2500)
     const l20 = l19 * 0.15
-    const l20No = l16b >= 4800
-    const l20Yes = l16b < 4800
+    // Next: On line 16b, is the amount $5,100 or more?
+    const l20Yes = l16b >= PART_IIB_LINE_16B_THRESHOLD
+    const l20No = !l20Yes
 
+    // No: enter the smaller of line 17 or line 20 on line 27 (bona fide
+    //     residents of Puerto Rico go to Part II-B; not supported).
+    // Yes: if line 20 is at least line 17, enter line 17 on line 27;
+    //      otherwise complete Part II-B (toLine27 left undefined).
     // TODO: check for Puerto Rico residency
     const toLine27 = (() => {
-      if (l20No && l20 > 0) {
+      if (l20No) {
         return Math.min(l17, l20)
-      } else if (l20Yes && l20 >= l17) {
+      }
+      if (l20 >= l17) {
         return l17
       }
+      return undefined
     })()
 
     return {
