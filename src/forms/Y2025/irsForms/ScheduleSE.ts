@@ -3,13 +3,47 @@ import { FormTag } from 'ustaxes/core/irsForms/Form'
 import { sumFields } from 'ustaxes/core/irsForms/util'
 import { Field, FillInstructions, text, checkbox } from 'ustaxes/core/pdfFiller'
 import { fica } from '../data/federal'
+import { Person, PersonRole } from 'ustaxes/core/data'
+import F1040 from './F1040'
 
+type SERole = PersonRole.PRIMARY | PersonRole.SPOUSE
+
+/**
+ * Schedule SE is figured separately for each person with self-employment
+ * income. On a joint return where both spouses have SE income, each files
+ * their own Schedule SE (2025 Instructions for Schedule SE, "Who Must File").
+ */
 export default class ScheduleSE extends F1040Attachment {
   tag: FormTag = 'f1040sse'
   sequenceIndex = 14
+  role: SERole
+
+  constructor(f1040: F1040, role: SERole = PersonRole.PRIMARY) {
+    super(f1040)
+    this.role = role
+  }
+
+  person = (): Person | undefined =>
+    this.role === PersonRole.SPOUSE
+      ? this.f1040.info.taxPayer.spouse
+      : this.f1040.info.taxPayer.primaryPerson
+
+  private k1s = () =>
+    this.f1040.info.scheduleK1Form1065s.filter(
+      (k1) => k1.personRole === this.role
+    )
+
+  /**
+   * Schedule C net profit for this person, excluding statutory employee
+   * income, which isn't subject to SE tax (Schedule SE line 2 instructions).
+   */
+  scheduleCNetProfit = (): number =>
+    (this.f1040.info.selfEmployedIncome ?? [])
+      .filter((s) => s.personRole === this.role && !s.isStatutoryEmployee)
+      .reduce((sum, s) => sum + s.grossReceipts - s.expenses, 0)
 
   isNeeded = (): boolean => {
-    const k1Income = this.f1040.info.scheduleK1Form1065s
+    const k1Income = this.k1s()
       .map(
         (k1) =>
           k1.selfEmploymentEarningsA +
@@ -17,7 +51,7 @@ export default class ScheduleSE extends F1040Attachment {
           k1.selfEmploymentEarningsC
       )
       .reduce((a, b) => a + b, 0)
-    const schedCIncome = Math.abs(this.f1040.scheduleC?.l31() ?? 0)
+    const schedCIncome = Math.abs(this.scheduleCNetProfit())
     return k1Income > 0 || schedCIncome > 0
   }
 
@@ -46,8 +80,8 @@ export default class ScheduleSE extends F1040Attachment {
   l1b = (): number => 0
 
   l2 = (): number => {
-    const schCL31 = this.f1040.scheduleC?.l31() ?? 0
-    const k1B14 = this.f1040.info.scheduleK1Form1065s.reduce(
+    const schCL31 = this.scheduleCNetProfit()
+    const k1B14 = this.k1s().reduce(
       (c, k1) => c + k1.selfEmploymentEarningsA,
       0
     )
@@ -87,7 +121,10 @@ export default class ScheduleSE extends F1040Attachment {
 
   l8a = (): number | undefined =>
     this.postL4Field((): number =>
-      this.f1040.validW2s().reduce((c, w2) => c + w2.ssWages, 0)
+      this.f1040
+        .validW2s()
+        .filter((w2) => w2.personRole === this.role)
+        .reduce((c, w2) => c + w2.ssWages, 0)
     )
 
   l8b = (): number | undefined =>
@@ -118,9 +155,15 @@ export default class ScheduleSE extends F1040Attachment {
   l13 = (): number | undefined =>
     this.postL4Field((): number => (this.l12() ?? 0) * 0.5)
 
+  /** Name of person with self-employment income. */
+  personName = (): string | undefined => {
+    const p = this.person()
+    return p === undefined ? undefined : `${p.firstName} ${p.lastName}`
+  }
+
   fields = (): Field[] => [
-    this.f1040.namesString(),
-    this.f1040.info.taxPayer.primaryPerson.ssid,
+    this.personName(),
+    this.person()?.ssid,
     false, // Minister
     this.l1a(),
     this.l1b(),
@@ -147,11 +190,8 @@ export default class ScheduleSE extends F1040Attachment {
   // Generated from Y2025 PDF schema + fields() via scripts/migrateToNativeInstructions.ts
   // 23 TS expressions, 27 PDF fields
   fillInstructions = (): FillInstructions => [
-    text('topmostSubform[0].Page1[0].f1_1[0]', this.f1040.namesString()),
-    text(
-      'topmostSubform[0].Page1[0].f1_2[0]',
-      this.f1040.info.taxPayer.primaryPerson.ssid
-    ),
+    text('topmostSubform[0].Page1[0].f1_1[0]', this.personName()),
+    text('topmostSubform[0].Page1[0].f1_2[0]', this.person()?.ssid),
     checkbox('topmostSubform[0].Page1[0].c1_1[0]', false),
     text('topmostSubform[0].Page1[0].f1_3[0]', this.l1a()),
     text('topmostSubform[0].Page1[0].f1_4[0]', this.l1b()),

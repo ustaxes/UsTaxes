@@ -83,6 +83,7 @@ export default class F1040 extends F1040Base {
   scheduleD: ScheduleD
   scheduleE: ScheduleE
   scheduleSE: ScheduleSE
+  scheduleSESpouse?: ScheduleSE
   scheduleEIC: ScheduleEIC
   scheduleR?: ScheduleR
   schedule8812: Schedule8812
@@ -136,7 +137,10 @@ export default class F1040 extends F1040Base {
     this.scheduleD = new ScheduleD(this)
     this.scheduleE = new ScheduleE(this)
     this.scheduleEIC = new ScheduleEIC(this)
-    this.scheduleSE = new ScheduleSE(this)
+    this.scheduleSE = new ScheduleSE(this, PersonRole.PRIMARY)
+    if (this.info.taxPayer.filingStatus === FilingStatus.MFJ) {
+      this.scheduleSESpouse = new ScheduleSE(this, PersonRole.SPOUSE)
+    }
 
     this.schedule1 = new Schedule1(this)
     this.schedule1A = new Schedule1A(this)
@@ -240,6 +244,14 @@ export default class F1040 extends F1040Base {
     return total > 0 ? total : undefined
   }
 
+  /** Schedule SE for each person with self-employment income on this return. */
+  scheduleSEs = (): ScheduleSE[] =>
+    _.compact([this.scheduleSE, this.scheduleSESpouse])
+
+  /** Sum one Schedule SE line across both spouses' schedules. */
+  sumScheduleSE = (line: (se: ScheduleSE) => number | undefined): number =>
+    this.scheduleSEs().reduce((sum, se) => sum + (line(se) ?? 0), 0)
+
   schedules = (): Form[] => {
     const res1: (F1040Attachment | undefined)[] = [
       this.scheduleA,
@@ -247,6 +259,7 @@ export default class F1040 extends F1040Base {
       this.scheduleD,
       this.scheduleE,
       this.scheduleSE,
+      this.scheduleSESpouse,
       this.scheduleR,
       this.scheduleEIC,
       this.schedule8812,

@@ -151,7 +151,11 @@ export default class Schedule1 extends F1040Attachment {
     sumFields([this.f1040.f8889.l13(), this.f1040.f8889Spouse?.l13()])
   l14Box = (): boolean => false
   l14 = (): number | undefined => undefined
-  l15 = (): number | undefined => this.f1040.scheduleSE.l13()
+  // Deductible part of SE tax: Schedule SE line 13, both spouses if MFJ.
+  l15 = (): number | undefined =>
+    this.f1040.scheduleSEs().some((se) => se.l13() !== undefined)
+      ? this.f1040.sumScheduleSE((se) => se.l13())
+      : undefined
   l16 = (): number | undefined => {
     const selfEmployed = this.f1040.info.selfEmployedIncome ?? []
     const total = selfEmployed.reduce(
