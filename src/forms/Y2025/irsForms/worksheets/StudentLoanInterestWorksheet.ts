@@ -60,7 +60,7 @@ export default class StudentLoanInterestWorksheet {
   // MAGI (income before these adjustments)
   l4 = (): number => Math.max(0, this.l2() - this.l3())
 
-  // Phase-out start: $80,000 single / $165,000 MFJ (TY2025, Rev. Proc. 2024-40)
+  // Phase-out start: $85,000 single / $170,000 MFJ (TY2025, Rev. Proc. 2024-40)
   l5 = (): number => studentLoanInterest.phaseOutStart(this.fs)
 
   // Amount of MAGI over the threshold
