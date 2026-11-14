@@ -19,8 +19,12 @@ export default class F8995 extends F1040Attachment {
   tag: FormTag = 'f8995'
   sequenceIndex = 55
 
+  /**
+   * K-1s reported on line 1, including those with a QBI loss: line 2
+   * combines income and losses from every trade or business.
+   */
   applicableK1s = () =>
-    this.f1040.info.scheduleK1Form1065s.filter((k1) => k1.section199AQBI > 0)
+    this.f1040.info.scheduleK1Form1065s.filter((k1) => k1.section199AQBI !== 0)
 
   netCapitalGains = (): number => {
     let rtn = this.f1040.l3a() ?? 0
@@ -40,8 +44,9 @@ export default class F8995 extends F1040Attachment {
       .map((k1) => k1.section199AQBI)
       .reduce((c, a) => c + a, 0)
   l3 = (): number | undefined => undefined
+  // Line 4: Combine lines 2 and 3. If zero or less, enter -0-.
   l4 = (): number | undefined =>
-    ifNumber(this.l2(), (num) => num + (this.l3() ?? 0))
+    ifNumber(this.l2(), (num) => Math.max(0, num + (this.l3() ?? 0)))
   l5 = (): number | undefined => ifNumber(this.l4(), (num) => num * 0.2)
 
   // TODO: REIT

@@ -16,6 +16,12 @@ export default class F8995A extends F8995 {
   tag: FormTag = 'f8995a'
   sequenceIndex = 55.5
 
+  // TODO: Form 8995-A nets losses across businesses on Schedule C (Form
+  // 8995-A), which isn't implemented, so only K-1s with positive QBI are
+  // carried to the per-business columns here.
+  applicableK1s = () =>
+    this.f1040.info.scheduleK1Form1065s.filter((k1) => k1.section199AQBI > 0)
+
   l2a = (): number | undefined => this.applicableK1s()[0]?.section199AQBI
   l2b = (): number | undefined => this.applicableK1s()[1]?.section199AQBI
   l2c = (): number | undefined => this.applicableK1s()[2]?.section199AQBI
