@@ -554,6 +554,12 @@ interface EICDef {
   caps: { [k in FilingStatus]: number[] | undefined }
   maxInvestmentIncome: number
   formulas: { [k in FilingStatus]: Piecewise[] | undefined }
+  /**
+   * Income at which the credit begins to phase out, by number of qualifying
+   * children (0, 1, 2, 3 or more). EIC Worksheet A line 5: if AGI is below
+   * this amount, the credit is figured on earned income alone.
+   */
+  phaseOutStarts: { [k in FilingStatus]: number[] | undefined }
 }
 
 export const QualifyingDependents = {
@@ -573,6 +579,13 @@ export const EIC: EICDef = {
     [FilingStatus.MFJ]: line11MfjCaps
   },
   maxInvestmentIncome: 11950,
+  phaseOutStarts: {
+    [FilingStatus.S]: [10620, 23350, 23350, 23350],
+    [FilingStatus.W]: [10620, 23350, 23350, 23350],
+    [FilingStatus.HOH]: [10620, 23350, 23350, 23350],
+    [FilingStatus.MFS]: undefined,
+    [FilingStatus.MFJ]: [17730, 30470, 30470, 30470]
+  },
   formulas: {
     [FilingStatus.S]: unmarriedFormulas,
     [FilingStatus.W]: unmarriedFormulas,
