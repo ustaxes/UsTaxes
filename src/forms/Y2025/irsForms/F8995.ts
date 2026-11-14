@@ -52,7 +52,7 @@ export default class F8995 extends F1040Attachment {
 
   l10 = (): number | undefined =>
     ifNumber(this.l5(), (num) => num + (this.l9() ?? 0))
-  l11 = (): number => this.f1040.l11b() - this.f1040.l12e()
+  l11 = (): number => this.f1040.taxableIncomeBeforeQbi()
   l12 = (): number => this.netCapitalGains()
   l13 = (): number => Math.max(0, this.l11() - this.l12())
   l14 = (): number => this.l13() * 0.2
