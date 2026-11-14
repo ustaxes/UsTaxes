@@ -179,7 +179,8 @@ export default class F1040 extends F1040Base {
       const formAMinAmount = getF8995PhaseOutIncome(
         this.info.taxPayer.filingStatus
       )
-      if (this.l11b() - this.l12e() >= formAMinAmount) {
+      // Form 8995 is for taxable income at or below the threshold.
+      if (this.taxableIncomeBeforeQbi() > formAMinAmount) {
         this.f8995 = new F8995A(this)
       } else {
         this.f8995 = new F8995(this)
@@ -497,6 +498,14 @@ export default class F1040 extends F1040Base {
     return this.schedule1A.isNeeded() && amt > 0 ? amt : undefined
   }
   l14 = (): number => sumFields([this.l12e(), this.l13a(), this.l13b()])
+
+  /**
+   * Taxable income before the QBI deduction: Form 1040 line 11a minus lines
+   * 12e and 13b (2025 Instructions for Form 8995, line 11; Form 8995-A,
+   * line 33). Line 13b is the Schedule 1-A deductions.
+   */
+  taxableIncomeBeforeQbi = (): number =>
+    this.l11b() - this.l12e() - (this.l13b() ?? 0)
 
   l15 = (): number => Math.max(0, this.l11b() - this.l14())
 
