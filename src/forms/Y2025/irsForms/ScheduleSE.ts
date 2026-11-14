@@ -4,8 +4,9 @@ import { sumFields } from 'ustaxes/core/irsForms/util'
 import type { Field, FillInstructions } from 'ustaxes/core/pdfFiller'
 import { text, checkbox } from 'ustaxes/core/pdfFiller'
 import { fica } from '../data/federal'
-import { Person, PersonRole } from 'ustaxes/core/data'
-import F1040 from './F1040'
+import type { Person } from 'ustaxes/core/data'
+import { PersonRole } from 'ustaxes/core/data'
+import type F1040 from './F1040'
 
 type SERole = PersonRole.PRIMARY | PersonRole.SPOUSE
 
@@ -37,11 +38,16 @@ export default class ScheduleSE extends F1040Attachment {
   /**
    * Schedule C net profit for this person, excluding statutory employee
    * income, which isn't subject to SE tax (Schedule SE line 2 instructions).
+   *
+   * Only counted when a Schedule C is on the return (f1040.scheduleC), so SE
+   * tax stays consistent with Schedule 1 line 3 business income.
    */
   scheduleCNetProfit = (): number =>
-    (this.f1040.info.selfEmployedIncome ?? [])
-      .filter((s) => s.personRole === this.role && !s.isStatutoryEmployee)
-      .reduce((sum, s) => sum + s.grossReceipts - s.expenses, 0)
+    this.f1040.scheduleC === undefined
+      ? 0
+      : (this.f1040.info.selfEmployedIncome ?? [])
+          .filter((s) => s.personRole === this.role && !s.isStatutoryEmployee)
+          .reduce((sum, s) => sum + s.grossReceipts - s.expenses, 0)
 
   isNeeded = (): boolean => {
     const k1Income = this.k1s()
