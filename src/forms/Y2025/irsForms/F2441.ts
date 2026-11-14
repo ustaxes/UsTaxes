@@ -1,3 +1,4 @@
+import { sumFields } from 'ustaxes/core/irsForms/util'
 import F1040Attachment from './F1040Attachment'
 import { FilingStatus, PersonRole } from 'ustaxes/core/data'
 import { Field, FillInstructions } from 'ustaxes/core/pdfFiller'
@@ -147,8 +148,20 @@ export default class F2441 extends F1040Attachment {
         .reverse()
         .find(([threshold]) => agi >= threshold)?.[1] ?? 0.2
 
-    const creditAmount = Math.round(qualifyingExpenses * rate)
+    const creditAmount = Math.min(
+      Math.round(qualifyingExpenses * rate),
+      this.creditLimit()
+    )
     return creditAmount > 0 ? creditAmount : undefined
+  }
+
+  /**
+   * Line 10 Credit Limit Worksheet: Form 1040 line 18 minus Schedule 3
+   * line 1 (foreign tax credit) and line 6l (Form 8978, line 14).
+   */
+  creditLimit = (): number => {
+    const s3 = this.f1040.schedule3
+    return Math.max(0, this.f1040.l18() - sumFields([s3.l1(), s3.l6l()]))
   }
 
   fields = (): Field[] => []
