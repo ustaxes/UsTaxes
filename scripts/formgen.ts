@@ -1,4 +1,5 @@
-import { PDFDocument, PDFField, PDFCheckBox, PDFRadioGroup } from 'pdf-lib'
+import type { PDFField } from 'pdf-lib'
+import { PDFDocument, PDFCheckBox, PDFRadioGroup } from 'pdf-lib'
 import { readFile } from 'fs/promises'
 import * as path from 'path'
 
@@ -98,11 +99,13 @@ const buildSource = (doc: PDFDocument, formName: string): string => {
   })
 
   return `import Form from '../Form'
-import F1040 from '../../irsForms/F1040'
-import { Field, FillInstructions, text, checkbox, radio } from '../../pdfFiller'
+import type F1040 from '../../irsForms/F1040'
+import type { Field, FillInstructions } from '../../pdfFiller'
+import { text, checkbox, radio } from '../../pdfFiller'
 import { displayNumber, sumFields } from '../../irsForms/util'
-import { AccountType, FilingStatus, State } from '../../redux/data'
-import { ValidatedInformation } from 'ustaxes/forms/F1040Base'
+import type { State } from '../../redux/data'
+import { AccountType, FilingStatus } from '../../redux/data'
+import type { ValidatedInformation } from 'ustaxes/forms/F1040Base'
 
 export class ${className} extends Form {
   info: ValidatedInformation

@@ -14,6 +14,7 @@
  */
 
 import { readFile, writeFile } from 'fs/promises'
+import ts from 'typescript'
 
 function extractGeneratedCode(outputTxt: string): string {
   const startMarker =
@@ -33,22 +34,59 @@ function extractGeneratedCode(outputTxt: string): string {
 }
 
 function updateImport(source: string): string {
-  // Replace: import { Field } from 'ustaxes/core/pdfFiller'
-  // With:    import { Field, FillInstructions, text, checkbox } from 'ustaxes/core/pdfFiller'
-  return source.replace(
-    /import\s*\{([^}]+)\}\s*from\s*'ustaxes\/core\/pdfFiller'/,
-    (match, existing: string) => {
-      const imports = existing
-        .split(',')
-        .map((s) => s.trim())
-        .filter(Boolean)
-      const toAdd = ['FillInstructions', 'text', 'checkbox', 'radio']
-      for (const name of toAdd) {
-        if (!imports.includes(name)) imports.push(name)
-      }
-      return `import { ${imports.join(', ')} } from 'ustaxes/core/pdfFiller'`
-    }
+  const file = ts.createSourceFile(
+    'form.ts',
+    source,
+    ts.ScriptTarget.Latest,
+    true
   )
+  const imports = file.statements.filter(
+    (statement): statement is ts.ImportDeclaration =>
+      ts.isImportDeclaration(statement) &&
+      ts.isStringLiteral(statement.moduleSpecifier) &&
+      statement.moduleSpecifier.text === 'ustaxes/core/pdfFiller'
+  )
+  const typeNames = new Set([
+    'Field',
+    'RenderedField',
+    'RadioSelect',
+    'FillInstruction',
+    'FillInstructions'
+  ])
+  const types = new Set(['FillInstructions'])
+  const values = new Set(['text', 'checkbox', 'radio'])
+  const namedImports: ts.ImportDeclaration[] = []
+  for (const declaration of imports) {
+    const clause = declaration.importClause
+    const bindings = clause?.namedBindings
+    if (
+      clause === undefined ||
+      bindings === undefined ||
+      !ts.isNamedImports(bindings)
+    ) {
+      continue
+    }
+    namedImports.push(declaration)
+    for (const specifier of bindings.elements) {
+      const name = (specifier.propertyName ?? specifier.name).text
+      const names =
+        clause.isTypeOnly || specifier.isTypeOnly || typeNames.has(name)
+          ? types
+          : values
+      names.add(specifier.getText(file).replace(/^type\s+/, ''))
+    }
+  }
+  const replacement = `import type { ${Array.from(types).join(', ')} } from 'ustaxes/core/pdfFiller'
+import { ${Array.from(values).join(', ')} } from 'ustaxes/core/pdfFiller'`
+  if (namedImports.length === 0) return replacement + '\n' + source
+  for (let index = namedImports.length - 1; index >= 0; index--) {
+    const declaration = namedImports[index]
+    source =
+      source.slice(0, declaration.getStart(file)) +
+      (index === 0 ? replacement : '') +
+      source.slice(declaration.end)
+  }
+  return source
 }
 
 function insertFillInstructions(source: string, code: string): string {
