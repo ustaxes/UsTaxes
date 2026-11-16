@@ -1,10 +1,5 @@
-import {
-  createContext,
-  useContext,
-  PropsWithChildren,
-  Context,
-  ReactElement
-} from 'react'
+import type { PropsWithChildren, Context, ReactElement } from 'react'
+import { createContext, useContext } from 'react'
 
 interface FormContainerProps {
   onSubmit?: () => void

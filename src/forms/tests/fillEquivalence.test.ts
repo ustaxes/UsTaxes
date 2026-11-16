@@ -1,10 +1,10 @@
-import { PDFDocument } from 'pdf-lib'
+import type { PDFDocument } from 'pdf-lib'
 import { testKit } from 'ustaxes/forms/Y2025/tests'
 import {
   deriveFillInstructionsFromPdf,
   fillPDFByName
 } from 'ustaxes/core/pdfFiller/fillPdf'
-import { FillInstructions, RadioSelect } from 'ustaxes/core/pdfFiller'
+import type { FillInstructions, RadioSelect } from 'ustaxes/core/pdfFiller'
 
 jest.setTimeout(1_200_000)
 

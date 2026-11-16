@@ -1,6 +1,6 @@
 import { commonTests } from '.'
-import Schedule8812 from '../irsForms/Schedule8812'
-import F1040 from '../irsForms/F1040'
+import type Schedule8812 from '../irsForms/Schedule8812'
+import type F1040 from '../irsForms/F1040'
 
 jest.setTimeout(30000)
 

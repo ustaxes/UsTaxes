@@ -1,8 +1,9 @@
 import { useMediaQuery } from '@material-ui/core'
-import { ReactElement } from 'react'
-import DataTable, { TableColumn } from 'react-data-table-component'
+import type { ReactElement } from 'react'
+import type { TableColumn } from 'react-data-table-component'
+import DataTable from 'react-data-table-component'
 import { Currency } from 'ustaxes/components/input'
-import { Asset } from 'ustaxes/core/data'
+import type { Asset } from 'ustaxes/core/data'
 import { numberOfDaysBetween } from 'ustaxes/core/util'
 
 interface AssetSummaryProps {

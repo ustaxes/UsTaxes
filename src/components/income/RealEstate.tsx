@@ -1,5 +1,6 @@
-import { ReactElement } from 'react'
-import { Message, useForm, useWatch, FormProvider } from 'react-hook-form'
+import type { ReactElement } from 'react'
+import type { Message } from 'react-hook-form'
+import { useForm, useWatch, FormProvider } from 'react-hook-form'
 import { useDispatch } from 'ustaxes/redux'
 import { useYearSelector } from 'ustaxes/redux/yearDispatch'
 import { useSelector } from 'react-redux'
@@ -11,17 +12,15 @@ import {
   removeProperty
 } from 'ustaxes/redux/actions'
 import { usePager } from 'ustaxes/components/pager'
-import {
+import type {
   Property,
   Address,
-  PropertyExpenseType,
   PropertyExpenseTypeName,
-  PropertyType,
   PropertyTypeName,
-  TaxYear,
-  TaxYears
+  TaxYear
 } from 'ustaxes/core/data'
-import { YearsTaxesState } from 'ustaxes/redux'
+import { PropertyExpenseType, PropertyType, TaxYears } from 'ustaxes/core/data'
+import type { YearsTaxesState } from 'ustaxes/redux'
 import AddressFields from 'ustaxes/components/TaxPayer/Address'
 import {
   Currency,

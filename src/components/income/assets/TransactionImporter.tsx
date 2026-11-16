@@ -1,31 +1,26 @@
-import { ReactElement, useState } from 'react'
+import type { ReactElement } from 'react'
+import { useState } from 'react'
 import { Button, Grid, useMediaQuery } from '@material-ui/core'
 import { useDispatch } from 'ustaxes/redux'
 import * as actions from 'ustaxes/redux/actions'
 import { preflightCsv, preflightCsvAll } from 'ustaxes/data/csvImport'
 import { LoadRaw } from 'ustaxes/redux/fs/Load'
-import DataTable, { TableColumn } from 'react-data-table-component'
+import type { TableColumn } from 'react-data-table-component'
+import DataTable from 'react-data-table-component'
 import { Alert } from '@material-ui/lab'
-import {
+import type {
   Portfolio,
   Position,
-  processTransactions,
   Side,
   Transaction,
   TransactionError
 } from 'ustaxes/data/transactions'
-import {
-  Either,
-  EitherMethods,
-  isLeft,
-  left,
-  pure,
-  pureLeft,
-  right,
-  run
-} from 'ustaxes/core/util'
-import { Asset } from 'ustaxes/core/data'
-import ConfigurableDataTable, { ColumnDef } from './ConfigurableDataTable'
+import { processTransactions } from 'ustaxes/data/transactions'
+import type { Either, EitherMethods } from 'ustaxes/core/util'
+import { isLeft, left, pure, pureLeft, right, run } from 'ustaxes/core/util'
+import type { Asset } from 'ustaxes/core/data'
+import type { ColumnDef } from './ConfigurableDataTable'
+import ConfigurableDataTable from './ConfigurableDataTable'
 
 interface PortfolioTableProps {
   portfolio: Portfolio

@@ -1,5 +1,5 @@
 import { CreditType, FilingStatus, PersonRole } from 'ustaxes/core/data'
-import { ValidatedInformation } from 'ustaxes/forms/F1040Base'
+import type { ValidatedInformation } from 'ustaxes/forms/F1040Base'
 import F1040 from '../irsForms/F1040'
 import F5695 from '../irsForms/F5695'
 import F8936 from '../irsForms/F8936'

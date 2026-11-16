@@ -1,11 +1,14 @@
-import { ReactElement, useState } from 'react'
+import type { ReactElement } from 'react'
+import { useState } from 'react'
 import { Helmet } from 'react-helmet'
 import { useForm, FormProvider } from 'react-hook-form'
-import { useDispatch, YearsTaxesState } from 'ustaxes/redux'
+import type { YearsTaxesState } from 'ustaxes/redux'
+import { useDispatch } from 'ustaxes/redux'
 import { useSelector } from 'react-redux'
 import { addAsset } from 'ustaxes/redux/actions'
 import { usePager } from 'ustaxes/components/pager'
-import { Asset, AssetType, State, TaxYears } from 'ustaxes/core/data'
+import type { Asset, AssetType, State } from 'ustaxes/core/data'
+import { TaxYears } from 'ustaxes/core/data'
 import {
   GenericLabeledDropdown,
   USStateDropDown,

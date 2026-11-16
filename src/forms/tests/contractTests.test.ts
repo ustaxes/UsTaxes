@@ -2,7 +2,7 @@ import { readFile } from 'fs/promises'
 import * as path from 'path'
 import { existsSync } from 'fs'
 import { testKit } from 'ustaxes/forms/Y2025/tests'
-import {
+import type {
   PdfFormSchema,
   PdfFieldSchema
 } from '../../../scripts/extractPdfSchema'

@@ -1,8 +1,8 @@
 import Form from 'ustaxes/core/stateForms/Form'
-import F1040 from '../../irsForms/F1040'
-import { Field } from 'ustaxes/core/pdfFiller'
-import { State } from 'ustaxes/core/data'
-import { ValidatedInformation } from 'ustaxes/forms/F1040Base'
+import type F1040 from '../../irsForms/F1040'
+import type { Field } from 'ustaxes/core/pdfFiller'
+import type { State } from 'ustaxes/core/data'
+import type { ValidatedInformation } from 'ustaxes/forms/F1040Base'
 
 export class ORWFHDC extends Form {
   info: ValidatedInformation

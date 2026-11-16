@@ -1,11 +1,6 @@
-import { ReactElement } from 'react'
-import {
-  makeStyles,
-  Link,
-  Theme,
-  Typography,
-  useMediaQuery
-} from '@material-ui/core'
+import type { ReactElement } from 'react'
+import type { Theme } from '@material-ui/core'
+import { makeStyles, Link, Typography, useMediaQuery } from '@material-ui/core'
 
 type Props = {
   prefersDarkMode: boolean

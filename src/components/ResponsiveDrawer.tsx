@@ -1,6 +1,8 @@
-import { Dispatch, Fragment, ReactElement, SetStateAction } from 'react'
+import type { Dispatch, ReactElement, SetStateAction } from 'react'
+import { Fragment } from 'react'
 import { NavLink, Link } from 'react-router-dom'
 import { isMobileOnly as isMobile } from 'react-device-detect'
+import type { Theme } from '@material-ui/core'
 import {
   createStyles,
   makeStyles,
@@ -11,8 +13,7 @@ import {
   List,
   ListItem,
   ListItemText,
-  ListSubheader,
-  Theme
+  ListSubheader
 } from '@material-ui/core'
 import GitHubIcon from '@material-ui/icons/GitHub'
 import TwitterIcon from '@material-ui/icons/Twitter'

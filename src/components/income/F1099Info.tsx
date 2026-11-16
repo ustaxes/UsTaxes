@@ -1,16 +1,16 @@
-import { ReactElement } from 'react'
+import type { ReactElement } from 'react'
 import { Helmet } from 'react-helmet'
 import { Link } from 'react-router-dom'
 import Alert from '@material-ui/lab/Alert'
 import { useForm, FormProvider } from 'react-hook-form'
 import { Icon, Grid } from '@material-ui/core'
-import { useDispatch, useSelector, TaxesState } from 'ustaxes/redux'
+import type { TaxesState } from 'ustaxes/redux'
+import { useDispatch, useSelector } from 'ustaxes/redux'
 import { add1099, edit1099, remove1099 } from 'ustaxes/redux/actions'
 import { usePager } from 'ustaxes/components/pager'
+import type { Person, Supported1099 } from 'ustaxes/core/data'
 import {
-  Person,
   PersonRole,
-  Supported1099,
   Income1099Type,
   PlanType1099,
   PlanType1099Texts

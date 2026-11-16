@@ -1,8 +1,9 @@
 import F1040Attachment from './F1040Attachment'
 import { FilingStatus } from 'ustaxes/core/data'
-import { FormTag } from 'ustaxes/core/irsForms/Form'
-import { Field, FillInstructions, text } from 'ustaxes/core/pdfFiller'
-import F1040 from './F1040'
+import type { FormTag } from 'ustaxes/core/irsForms/Form'
+import type { Field, FillInstructions } from 'ustaxes/core/pdfFiller'
+import { text } from 'ustaxes/core/pdfFiller'
+import type F1040 from './F1040'
 import { obbbDeductionLimits } from '../data/federal'
 import { sumFields } from 'ustaxes/core/irsForms/util'
 

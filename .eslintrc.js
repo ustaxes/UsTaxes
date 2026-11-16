@@ -27,7 +27,11 @@ module.exports = {
   rules: {
     'react/jsx-uses-react': 'off',
     'react/react-in-jsx-scope': 'off',
-    '@typescript-eslint/no-unnecessary-condition': 'warn'
+    '@typescript-eslint/no-unnecessary-condition': 'warn',
+    '@typescript-eslint/consistent-type-imports': [
+      'error',
+      { prefer: 'type-imports', fixStyle: 'separate-type-imports' }
+    ]
   },
   parserOptions: {
     project: ['./tsconfig.json', './.eslintrc.js']

@@ -1,25 +1,18 @@
-import {
-  legacy_createStore as reduxCreateStore,
-  applyMiddleware,
-  Store,
-  CombinedState
-} from 'redux'
+import type { Store, CombinedState } from 'redux'
+import { legacy_createStore as reduxCreateStore, applyMiddleware } from 'redux'
 import logger from 'redux-logger'
 import rootReducer from './reducer'
 import _ from 'lodash'
-import {
-  persistStore,
-  persistReducer,
-  PersistedState,
-  createMigrate
-} from 'redux-persist'
+import type { PersistedState } from 'redux-persist'
+import { persistStore, persistReducer, createMigrate } from 'redux-persist'
 import storage from 'redux-persist/lib/storage' // defaults to localStorage for web
-import { Asset, Information, TaxYear } from 'ustaxes/core/data'
-import { blankYearTaxesState, YearsTaxesState } from '.'
-import { Actions } from './actions'
-import { PersistPartial } from 'redux-persist/es/persistReducer'
+import type { Asset, Information, TaxYear } from 'ustaxes/core/data'
+import type { YearsTaxesState } from '.'
+import { blankYearTaxesState } from '.'
+import type { Actions } from './actions'
+import type { PersistPartial } from 'redux-persist/es/persistReducer'
 import { createTransform } from 'redux-persist'
-import { FSAction } from './fs/Actions'
+import type { FSAction } from './fs/Actions'
 import { fsReducer } from './fs/FSReducer'
 import { migrateEachYear, migrateAgeAndBlindness } from './migration'
 

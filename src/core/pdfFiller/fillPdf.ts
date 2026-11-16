@@ -1,7 +1,8 @@
-import { PDFDocument, PDFCheckBox, PDFRadioGroup, PDFName } from 'pdf-lib'
-import { Field, FillInstructions, RadioSelect } from '.'
+import type { PDFDocument } from 'pdf-lib'
+import { PDFCheckBox, PDFRadioGroup, PDFName } from 'pdf-lib'
+import type { Field, FillInstructions, RadioSelect } from '.'
 import { displayRound } from '../irsForms/util'
-import Fill from './Fill'
+import type Fill from './Fill'
 
 export type FillMode = 'strict' | 'warn'
 

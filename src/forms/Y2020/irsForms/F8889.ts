@@ -1,10 +1,10 @@
-import { Person, HealthSavingsAccount } from 'ustaxes/core/data'
+import type { Person, HealthSavingsAccount } from 'ustaxes/core/data'
 import { sumFields } from 'ustaxes/core/irsForms/util'
-import { FormTag } from 'ustaxes/core/irsForms/Form'
+import type { FormTag } from 'ustaxes/core/irsForms/Form'
 import { CURRENT_YEAR, healthSavingsAccounts } from '../data/federal'
 import F1040Attachment from './F1040Attachment'
-import F1040 from './F1040'
-import { Field } from 'ustaxes/core/pdfFiller'
+import type F1040 from './F1040'
+import type { Field } from 'ustaxes/core/pdfFiller'
 
 type ContributionType = 'self-only' | 'family'
 type PerMonthContributionType = {

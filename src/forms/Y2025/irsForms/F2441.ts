@@ -1,8 +1,8 @@
 import { sumFields } from 'ustaxes/core/irsForms/util'
 import F1040Attachment from './F1040Attachment'
 import { FilingStatus, PersonRole } from 'ustaxes/core/data'
-import { Field, FillInstructions } from 'ustaxes/core/pdfFiller'
-import { FormTag } from 'ustaxes/core/irsForms/Form'
+import type { Field, FillInstructions } from 'ustaxes/core/pdfFiller'
+import type { FormTag } from 'ustaxes/core/irsForms/Form'
 
 /**
  * Credit percentage table for Form 2441 line 8 (unchanged from prior years,

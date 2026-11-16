@@ -1,20 +1,24 @@
-import { Fragment, ReactElement, ReactNode, useState } from 'react'
+import type { ReactElement, ReactNode } from 'react'
+import { Fragment, useState } from 'react'
 import _ from 'lodash'
-import { useDispatch, useSelector, TaxesState } from 'ustaxes/redux'
+import type { TaxesState } from 'ustaxes/redux'
+import { useDispatch, useSelector } from 'ustaxes/redux'
 import { Helmet } from 'react-helmet'
 import { FormProvider, useForm, useFormContext } from 'react-hook-form'
 import { usePager } from 'ustaxes/components/pager'
-import {
+import type {
   IncomeW2,
   Person,
-  PersonRole,
   Employer,
   Spouse,
   PrimaryPerson,
-  FilingStatus,
   Information,
   State,
-  W2Box12Info,
+  W2Box12Info
+} from 'ustaxes/core/data'
+import {
+  PersonRole,
+  FilingStatus,
   W2Box12Code,
   W2Box12CodeDescriptions
 } from 'ustaxes/core/data'

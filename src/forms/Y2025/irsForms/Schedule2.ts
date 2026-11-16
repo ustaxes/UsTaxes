@@ -1,7 +1,8 @@
 import F1040Attachment from './F1040Attachment'
-import { FormTag } from 'ustaxes/core/irsForms/Form'
+import type { FormTag } from 'ustaxes/core/irsForms/Form'
 import { sumFields } from 'ustaxes/core/irsForms/util'
-import { Field, FillInstructions, text, checkbox } from 'ustaxes/core/pdfFiller'
+import type { Field, FillInstructions } from 'ustaxes/core/pdfFiller'
+import { text, checkbox } from 'ustaxes/core/pdfFiller'
 import { W2Box12Code } from 'ustaxes/core/data'
 
 export default class Schedule2 extends F1040Attachment {

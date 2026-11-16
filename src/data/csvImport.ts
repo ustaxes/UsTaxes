@@ -1,5 +1,7 @@
-import { parse, ParseError } from 'papaparse'
-import { Either, left, right, run } from 'ustaxes/core/util'
+import type { ParseError } from 'papaparse'
+import { parse } from 'papaparse'
+import type { Either } from 'ustaxes/core/util'
+import { left, right, run } from 'ustaxes/core/util'
 
 export type DateFormat =
   | 'YYYY-MM-DD'

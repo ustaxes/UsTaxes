@@ -1,15 +1,15 @@
 /* eslint-disable @typescript-eslint/no-unnecessary-condition */
 import { enumKeys } from 'ustaxes/core/util'
-import {
+import type {
   Person,
   Dependent,
   Spouse,
   PrimaryPerson,
-  TaxYears,
   FilingStatus
 } from 'ustaxes/core/data'
+import { TaxYears } from 'ustaxes/core/data'
 import { blankState } from './reducer'
-import { USTState } from './store'
+import type { USTState } from './store'
 
 export interface QualifyingInformationV0 {
   numberOfMonths: number

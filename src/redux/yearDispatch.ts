@@ -1,9 +1,9 @@
-import { Dispatch } from 'react'
+import type { Dispatch } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { SignalAction } from './actions'
-import { YearsTaxesState } from '.'
-import { TaxYear } from 'ustaxes/core/data'
-import { TaxesState } from '.'
+import type { SignalAction } from './actions'
+import type { YearsTaxesState } from '.'
+import type { TaxYear } from 'ustaxes/core/data'
+import type { TaxesState } from '.'
 
 /**
  * Provides an override over the default redux dispatch

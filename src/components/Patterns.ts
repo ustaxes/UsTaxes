@@ -1,4 +1,5 @@
-import { TaxYear, TaxYears } from 'ustaxes/core/data'
+import type { TaxYear } from 'ustaxes/core/data'
+import { TaxYears } from 'ustaxes/core/data'
 import { daysInYear } from 'ustaxes/core/util'
 
 export interface BasePattern {

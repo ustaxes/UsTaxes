@@ -1,4 +1,4 @@
-import { ReactElement } from 'react'
+import type { ReactElement } from 'react'
 import {
   FormControl,
   FormControlLabel,
@@ -7,8 +7,9 @@ import {
   Radio,
   RadioGroup
 } from '@material-ui/core'
-import { Controller, FieldValues, useFormContext } from 'react-hook-form'
-import { LabeledRadioProps } from './types'
+import type { FieldValues } from 'react-hook-form'
+import { Controller, useFormContext } from 'react-hook-form'
+import type { LabeledRadioProps } from './types'
 import useStyles from './styles'
 import ConditionallyWrap from 'ustaxes/components/ConditionallyWrap'
 

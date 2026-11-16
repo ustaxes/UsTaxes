@@ -1,5 +1,6 @@
 import { Check } from '@material-ui/icons'
-import { ReactElement, useState } from 'react'
+import type { ReactElement } from 'react'
+import { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { fsRecover } from 'ustaxes/redux/fs/Actions'
 import { LoadRaw } from 'ustaxes/redux/fs/Load'

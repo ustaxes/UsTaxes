@@ -1,8 +1,8 @@
 import F1040Attachment from './F1040Attachment'
-import { FormTag } from 'ustaxes/core/irsForms/Form'
-import { Asset, SoldAsset } from 'ustaxes/core/data'
-import F1040 from './F1040'
-import { Field } from 'ustaxes/core/pdfFiller'
+import type { FormTag } from 'ustaxes/core/irsForms/Form'
+import type { Asset, SoldAsset } from 'ustaxes/core/data'
+import type F1040 from './F1040'
+import type { Field } from 'ustaxes/core/pdfFiller'
 
 type EmptyLine = [
   undefined,

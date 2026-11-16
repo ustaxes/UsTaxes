@@ -1,7 +1,9 @@
-import { ReactElement, useEffect, useState } from 'react'
+import type { ReactElement } from 'react'
+import { useEffect, useState } from 'react'
 import { Helmet } from 'react-helmet'
 import { useForm, FormProvider } from 'react-hook-form'
-import { useDispatch, useSelector, TaxesState } from 'ustaxes/redux'
+import type { TaxesState } from 'ustaxes/redux'
+import { useDispatch, useSelector } from 'ustaxes/redux'
 import { Patterns } from 'ustaxes/components/Patterns'
 import {
   LabeledInput,
@@ -9,12 +11,14 @@ import {
   formatSSID,
   GenericLabeledDropdown
 } from 'ustaxes/components/input'
-import {
+import type {
   TaxPayer,
   Dependent,
   Spouse,
+  FilingStatus
+} from 'ustaxes/core/data'
+import {
   PersonRole,
-  FilingStatus,
   FilingStatusTexts,
   filingStatuses
 } from 'ustaxes/core/data'

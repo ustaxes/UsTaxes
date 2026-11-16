@@ -2,7 +2,7 @@
 import { FilingStatus } from 'ustaxes/core/data'
 import federalBrackets from '../../data/federal'
 import { computeOrdinaryTax } from '../../irsForms/TaxTable'
-import F1040 from '../F1040'
+import type F1040 from '../F1040'
 
 export interface TestData {
   qualDiv: number

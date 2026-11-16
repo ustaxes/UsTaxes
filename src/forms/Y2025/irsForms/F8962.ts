@@ -1,7 +1,7 @@
 import F1040Attachment from './F1040Attachment'
-import { Field, FillInstructions } from 'ustaxes/core/pdfFiller'
-import { FormTag } from 'ustaxes/core/irsForms/Form'
-import { Form1095A } from 'ustaxes/core/data'
+import type { Field, FillInstructions } from 'ustaxes/core/pdfFiller'
+import type { FormTag } from 'ustaxes/core/irsForms/Form'
+import type { Form1095A } from 'ustaxes/core/data'
 import { sumFields } from 'ustaxes/core/irsForms/util'
 
 /**

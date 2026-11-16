@@ -1,14 +1,13 @@
+import type { Information, Supported1099 } from 'ustaxes/core/data'
 import {
   AccountType,
   FilingStatus,
   Income1099Type,
-  Information,
-  PersonRole,
-  Supported1099
+  PersonRole
 } from 'ustaxes/core/data'
 import { isRight } from 'ustaxes/core/util'
 import { create1040 } from '../irsForms/Main'
-import F1040 from '../irsForms/F1040'
+import type F1040 from '../irsForms/F1040'
 
 /**
  * End-to-end integration test using data from Islam_1040_TY2025_Fill_Spec.md.

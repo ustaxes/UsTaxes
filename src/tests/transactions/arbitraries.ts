@@ -1,5 +1,6 @@
-import fc, { Arbitrary } from 'fast-check'
-import {
+import type { Arbitrary } from 'fast-check'
+import fc from 'fast-check'
+import type {
   Portfolio,
   Position,
   Security,

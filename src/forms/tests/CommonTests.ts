@@ -1,9 +1,10 @@
-import { Information, Asset, FilingStatus } from 'ustaxes/core/data'
-import Form from 'ustaxes/core/irsForms/Form'
+import type { Information, Asset, FilingStatus } from 'ustaxes/core/data'
+import type Form from 'ustaxes/core/irsForms/Form'
 import { run } from 'ustaxes/core/util'
-import { F1040Error } from '../errors'
-import F1040Base, { validate } from '../F1040Base'
-import TestKit from './TestKit'
+import type { F1040Error } from '../errors'
+import type F1040Base from '../F1040Base'
+import { validate } from '../F1040Base'
+import type TestKit from './TestKit'
 export abstract class FormTestInfo<A> {
   abstract getAssets: (a: A) => Asset<Date>[]
   abstract getInfo: (a: A) => Information

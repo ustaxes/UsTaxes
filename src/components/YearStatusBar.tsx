@@ -1,7 +1,8 @@
 import { Link } from '@material-ui/core'
-import { ReactElement, useState } from 'react'
+import type { ReactElement } from 'react'
+import { useState } from 'react'
 import { useSelector } from 'react-redux'
-import { YearsTaxesState } from 'ustaxes/redux'
+import type { YearsTaxesState } from 'ustaxes/redux'
 import { TaxYears } from 'ustaxes/core/data'
 import YearDropDown from './YearDropDown'
 

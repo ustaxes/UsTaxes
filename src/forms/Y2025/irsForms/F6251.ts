@@ -1,12 +1,9 @@
 import F1040Attachment from './F1040Attachment'
-import {
-  FilingStatus,
-  PersonRole,
-  F1099IntData,
-  F1099DivData
-} from 'ustaxes/core/data'
-import { FormTag } from 'ustaxes/core/irsForms/Form'
-import { Field, FillInstructions, text } from 'ustaxes/core/pdfFiller'
+import type { F1099IntData, F1099DivData } from 'ustaxes/core/data'
+import { FilingStatus, PersonRole } from 'ustaxes/core/data'
+import type { FormTag } from 'ustaxes/core/irsForms/Form'
+import type { Field, FillInstructions } from 'ustaxes/core/pdfFiller'
+import { text } from 'ustaxes/core/pdfFiller'
 import federalBrackets, { amt } from '../data/federal'
 
 type Part3 = Partial<{

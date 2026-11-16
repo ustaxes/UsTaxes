@@ -1,5 +1,5 @@
 import { sumFields } from 'ustaxes/core/irsForms/util'
-import F8814 from 'ustaxes/forms/Y2025/irsForms/F8814'
+import type F8814 from 'ustaxes/forms/Y2025/irsForms/F8814'
 
 // Worksheet for Line 4 of Worksheet 1
 export default class Pub596Worksheet2 {

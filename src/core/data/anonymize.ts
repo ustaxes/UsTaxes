@@ -1,5 +1,5 @@
-import { YearsTaxesState } from 'ustaxes/redux'
-import {
+import type { YearsTaxesState } from 'ustaxes/redux'
+import type {
   F3921,
   Ira,
   Supported1099,
@@ -8,13 +8,13 @@ import {
   F1098e,
   Information,
   Person,
-  PersonRole,
   TaxPayer,
   Address,
   IncomeW2,
   Property,
   ScheduleK1Form1065
 } from '.'
+import { PersonRole } from '.'
 
 const anonymizePerson = (person: Person): Person => {
   const roles = [

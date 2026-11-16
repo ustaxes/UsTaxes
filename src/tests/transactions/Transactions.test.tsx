@@ -1,11 +1,12 @@
 import * as arbitraries from './arbitraries'
-import fc, { Arbitrary } from 'fast-check'
-import {
+import type { Arbitrary } from 'fast-check'
+import fc from 'fast-check'
+import type {
   Portfolio,
   Transaction,
-  processTransaction,
   Security
 } from 'ustaxes/data/transactions'
+import { processTransaction } from 'ustaxes/data/transactions'
 
 describe('Transactions', () => {
   test('For any portfolio, selling a security not held throws', () => {

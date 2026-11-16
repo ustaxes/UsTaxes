@@ -1,5 +1,5 @@
 import F1040Attachment from './F1040Attachment'
-import { Field, FillInstructions } from 'ustaxes/core/pdfFiller'
+import type { Field, FillInstructions } from 'ustaxes/core/pdfFiller'
 
 /**
  * Form 8919 — Uncollected Social Security and Medicare Tax on Wages.

@@ -7,7 +7,8 @@ import {
 } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { enumKeys } from 'ustaxes/core/util'
-import { TaxYear, TaxYears } from 'ustaxes/core/data'
+import type { TaxYear } from 'ustaxes/core/data'
+import { TaxYears } from 'ustaxes/core/data'
 import DomMethods from './DomMethods'
 
 export default class YearStatusBarMethods extends DomMethods {

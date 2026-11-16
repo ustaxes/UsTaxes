@@ -1,7 +1,7 @@
 import _ from 'lodash'
-import { MatrixRow } from './ScheduleE'
+import type { MatrixRow } from './ScheduleE'
 import F1040Attachment from './F1040Attachment'
-import { Field, FillInstructions } from 'ustaxes/core/pdfFiller'
+import type { Field, FillInstructions } from 'ustaxes/core/pdfFiller'
 
 /** Maximum special allowance for active participation in rental real estate. */
 const MAX_SPECIAL_ALLOWANCE = 25000

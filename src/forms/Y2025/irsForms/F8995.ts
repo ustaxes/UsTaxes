@@ -1,7 +1,8 @@
 import F1040Attachment from './F1040Attachment'
-import { FormTag } from 'ustaxes/core/irsForms/Form'
-import { FilingStatus } from 'ustaxes/core/data'
-import { Field, FillInstructions, text } from 'ustaxes/core/pdfFiller'
+import type { FormTag } from 'ustaxes/core/irsForms/Form'
+import type { FilingStatus } from 'ustaxes/core/data'
+import type { Field, FillInstructions } from 'ustaxes/core/pdfFiller'
+import { text } from 'ustaxes/core/pdfFiller'
 import { qualifiedBuisinessIncomeDeduction } from '../data/federal'
 
 export function getF8995PhaseOutIncome(filingStatus: FilingStatus): number {

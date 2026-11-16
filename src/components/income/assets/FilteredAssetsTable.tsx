@@ -1,6 +1,8 @@
 import { Button, Grid, useMediaQuery } from '@material-ui/core'
-import { ReactElement, useMemo, useState } from 'react'
-import DataTable, { TableColumn } from 'react-data-table-component'
+import type { ReactElement } from 'react'
+import { useMemo, useState } from 'react'
+import type { TableColumn } from 'react-data-table-component'
+import DataTable from 'react-data-table-component'
 import { FormProvider, useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import {
@@ -8,9 +10,10 @@ import {
   GenericLabeledDropdown,
   LabeledInput
 } from 'ustaxes/components/input'
-import { Asset, AssetType, TaxYear, TaxYears } from 'ustaxes/core/data'
+import type { Asset, AssetType, TaxYear } from 'ustaxes/core/data'
+import { TaxYears } from 'ustaxes/core/data'
 import { enumKeys } from 'ustaxes/core/util'
-import { YearsTaxesState } from 'ustaxes/redux'
+import type { YearsTaxesState } from 'ustaxes/redux'
 import * as actions from 'ustaxes/redux/actions'
 import AssetSummary from './AssetSummary'
 

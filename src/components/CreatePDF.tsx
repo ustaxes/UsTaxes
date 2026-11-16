@@ -1,10 +1,11 @@
-import { FormEvent, ReactElement, ReactNode, useEffect, useState } from 'react'
+import type { FormEvent, ReactElement, ReactNode } from 'react'
+import { useEffect, useState } from 'react'
 import { Helmet } from 'react-helmet'
 import { usePager } from './pager'
 import Alert from '@material-ui/lab/Alert'
 import { useSelector } from 'react-redux'
-import { Information, Asset, State, TaxYear } from 'ustaxes/core/data'
-import { YearsTaxesState } from 'ustaxes/redux'
+import type { Information, Asset, State, TaxYear } from 'ustaxes/core/data'
+import type { YearsTaxesState } from 'ustaxes/redux'
 
 import yearFormBuilder from 'ustaxes/forms/YearForms'
 import { intentionallyFloat, run, runAsync } from 'ustaxes/core/util'
@@ -12,8 +13,8 @@ import { Box, Button } from '@material-ui/core'
 import Summary from './Summary'
 
 import { savePDF } from 'ustaxes/pdfHandler'
-import StateForm from 'ustaxes/core/stateForms/Form'
-import Form from 'ustaxes/core/irsForms/Form'
+import type StateForm from 'ustaxes/core/stateForms/Form'
+import type Form from 'ustaxes/core/irsForms/Form'
 
 export default function CreatePDF(): ReactElement {
   const [irsErrors, updateIrsErrors] = useState<string[]>([])

@@ -1,7 +1,7 @@
 // Reference implementation for Schedule D Tax Worksheet
-import { FilingStatus } from 'ustaxes/core/data'
+import type { FilingStatus } from 'ustaxes/core/data'
 import { computeOrdinaryTax } from '../../irsForms/TaxTable'
-import F1040 from '../F1040'
+import type F1040 from '../F1040'
 import federalBrackets from '../../data/federal'
 
 export interface TestData {

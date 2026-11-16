@@ -1,4 +1,6 @@
-import { PropsWithChildren, ReactElement, useState } from 'react'
+import type { PropsWithChildren, ReactElement } from 'react'
+import { useState } from 'react'
+import type { Theme } from '@material-ui/core'
 import {
   createStyles,
   makeStyles,
@@ -10,18 +12,13 @@ import {
   ListItemSecondaryAction,
   ListItemText,
   Box,
-  Button,
-  Theme
+  Button
 } from '@material-ui/core'
 import { Delete, Edit } from '@material-ui/icons'
-import {
-  DefaultValues,
-  FieldValues,
-  SubmitHandler,
-  useFormContext
-} from 'react-hook-form'
+import type { DefaultValues, FieldValues, SubmitHandler } from 'react-hook-form'
+import { useFormContext } from 'react-hook-form'
 import _ from 'lodash'
-import { ReactNode } from 'react'
+import type { ReactNode } from 'react'
 import { FormContainerProvider } from './FormContainer/Context'
 import { intentionallyFloat } from 'ustaxes/core/util'
 

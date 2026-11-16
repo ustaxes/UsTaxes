@@ -1,7 +1,8 @@
-import { ReactElement, ReactNode } from 'react'
+import type { ReactElement, ReactNode } from 'react'
 import { Helmet } from 'react-helmet'
 import { useForm, FormProvider } from 'react-hook-form'
-import { TaxesState, useSelector, useDispatch } from 'ustaxes/redux'
+import type { TaxesState } from 'ustaxes/redux'
+import { useSelector, useDispatch } from 'ustaxes/redux'
 import { addF3921, editF3921, removeF3921 } from 'ustaxes/redux/actions'
 import { usePager } from 'ustaxes/components/pager'
 import {
@@ -15,15 +16,14 @@ import { Currency } from 'ustaxes/components/input'
 import { Grid, Box } from '@material-ui/core'
 import { Alert } from '@material-ui/lab'
 import { ShowChartOutlined as StockIcon } from '@material-ui/icons'
-import {
+import type {
   F3921,
-  FilingStatus,
   Information,
   Person,
-  PersonRole,
   PrimaryPerson,
   Spouse
 } from 'ustaxes/core/data'
+import { FilingStatus, PersonRole } from 'ustaxes/core/data'
 import { intentionallyFloat } from 'ustaxes/core/util'
 
 interface F3921UserInput {

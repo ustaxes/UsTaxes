@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 
-import { DefinedError, ValidateFunction } from 'ajv'
+import type { DefinedError, ValidateFunction } from 'ajv'
 import log from '../log'
 import * as fns from './validate-fns'
-import * as types from 'ustaxes/core/data'
+import type * as types from 'ustaxes/core/data'
 
 // We will simply throw a runtime error if the data does not
 // validate against the schema.definitions.

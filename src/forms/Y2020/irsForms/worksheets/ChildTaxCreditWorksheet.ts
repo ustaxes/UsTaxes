@@ -1,5 +1,6 @@
-import F1040 from '../../irsForms/F1040'
-import { Dependent, FilingStatus } from 'ustaxes/core/data'
+import type F1040 from '../../irsForms/F1040'
+import type { Dependent } from 'ustaxes/core/data'
+import { FilingStatus } from 'ustaxes/core/data'
 import { sumFields } from 'ustaxes/core/irsForms/util'
 import { QualifyingDependents } from '../../data/federal'
 

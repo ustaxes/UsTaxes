@@ -1,23 +1,25 @@
-import { ReactElement, useEffect } from 'react'
+import type { ReactElement } from 'react'
+import { useEffect } from 'react'
 import { Helmet } from 'react-helmet'
 import { FormProvider, useForm } from 'react-hook-form'
 import _ from 'lodash'
-import { useDispatch, useSelector, TaxesState } from 'ustaxes/redux'
+import type { TaxesState } from 'ustaxes/redux'
+import { useDispatch, useSelector } from 'ustaxes/redux'
 
 import {
   savePrimaryPersonInfo,
   saveStateResidencyInfo,
   saveContactInfo
 } from 'ustaxes/redux/actions'
-import {
+import type {
   Address,
   ContactInfo,
-  PersonRole,
   PrimaryPerson,
   State,
   StateResidency,
   TaxPayer
 } from 'ustaxes/core/data'
+import { PersonRole } from 'ustaxes/core/data'
 import { PersonFields } from './PersonFields'
 import { usePager } from 'ustaxes/components/pager'
 import {

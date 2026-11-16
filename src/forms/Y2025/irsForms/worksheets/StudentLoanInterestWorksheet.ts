@@ -1,5 +1,6 @@
-import { F1098e, FilingStatus } from 'ustaxes/core/data'
-import F1040 from '../../irsForms/F1040'
+import type { F1098e } from 'ustaxes/core/data'
+import { FilingStatus } from 'ustaxes/core/data'
+import type F1040 from '../../irsForms/F1040'
 import { sumFields } from 'ustaxes/core/irsForms/util'
 import { studentLoanInterest } from '../../data/federal'
 

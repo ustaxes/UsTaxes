@@ -1,7 +1,8 @@
-import { ReactElement, ReactNode } from 'react'
+import type { ReactElement, ReactNode } from 'react'
 import { Helmet } from 'react-helmet'
 import { useForm, FormProvider } from 'react-hook-form'
-import { TaxesState, useSelector, useDispatch } from 'ustaxes/redux'
+import type { TaxesState } from 'ustaxes/redux'
+import { useSelector, useDispatch } from 'ustaxes/redux'
 import {
   addScheduleK1Form1065,
   editScheduleK1Form1065,
@@ -21,15 +22,14 @@ import { FormListContainer } from 'ustaxes/components/FormContainer'
 import { Grid, Box } from '@material-ui/core'
 import { Alert } from '@material-ui/lab'
 import { Business } from '@material-ui/icons'
-import {
+import type {
   ScheduleK1Form1065,
-  FilingStatus,
   Information,
   Person,
-  PersonRole,
   PrimaryPerson,
   Spouse
 } from 'ustaxes/core/data'
+import { FilingStatus, PersonRole } from 'ustaxes/core/data'
 import { intentionallyFloat } from 'ustaxes/core/util'
 
 interface ScheduleK1Form1065UserInput {

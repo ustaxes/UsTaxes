@@ -1,5 +1,5 @@
-import { Information } from 'ustaxes/core/data'
-import { YearsTaxesState } from './data'
+import type { Information } from 'ustaxes/core/data'
+import type { YearsTaxesState } from './data'
 
 export default class TaxesStateMethods {
   ts: YearsTaxesState

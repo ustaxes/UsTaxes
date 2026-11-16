@@ -1,9 +1,10 @@
 import { Button, Grid, TextField } from '@material-ui/core'
 import { Alert } from '@material-ui/lab'
-import { ReactElement, useEffect, useState } from 'react'
+import type { ReactElement } from 'react'
+import { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { intentionallyFloat } from 'ustaxes/core/util'
-import { USTState } from 'ustaxes/redux/store'
+import type { USTState } from 'ustaxes/redux/store'
 import anonymize from '../core/data/anonymize'
 
 const HelpAndFeedback = (): ReactElement => {

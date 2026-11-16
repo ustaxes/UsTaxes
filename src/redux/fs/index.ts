@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { deserializeTransform, serializeTransform, USTState } from '../store'
+import type { USTState } from '../store'
+import { deserializeTransform, serializeTransform } from '../store'
 import Load from './Load'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types

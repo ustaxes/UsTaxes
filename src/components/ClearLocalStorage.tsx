@@ -1,5 +1,6 @@
-import { Button, ButtonProps } from '@material-ui/core'
-import { PropsWithChildren, ReactElement } from 'react'
+import type { ButtonProps } from '@material-ui/core'
+import { Button } from '@material-ui/core'
+import type { PropsWithChildren, ReactElement } from 'react'
 
 const ClearLocalStorage = (
   props: PropsWithChildren<ButtonProps>

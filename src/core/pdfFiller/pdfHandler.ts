@@ -1,5 +1,5 @@
 import { PDFDocument } from 'pdf-lib'
-import Form from '../irsForms/Form'
+import type Form from '../irsForms/Form'
 import { fillPdfFromFill } from './fillPdf'
 
 export interface FileDownloader<T> {
