@@ -376,16 +376,23 @@ export default class ScheduleEIC extends F1040Attachment {
       return [undefined, undefined, undefined, undefined]
     })
 
-  // EIC line 4a: Not handling case of child older than taxpayer
+  // EIC line 4a: "Was the child under age 24 at the end of 2025, a student,
+  // and younger than you?" Line 3 says to skip lines 4a and 4b for a child
+  // born after 2006 (under 19), so those are left blank.
+  // TODO: "younger than you (or your spouse, if filing jointly)" is assumed.
   ageFields = (): Array<boolean | undefined> =>
-    this.years().flatMap((year) => {
-      if (year !== undefined) {
-        const qualifies =
-          this.ageAtYearEnd(year) <
-          federal.QualifyingDependents.qualifyingStudentMaxAge
-        return [qualifies, !qualifies]
+    this.qualifyingDependentsFilled().flatMap((d) => {
+      if (d === undefined) {
+        return [undefined, undefined]
       }
-      return [undefined, undefined]
+      const age = this.ageAtYearEnd(d.dateOfBirth.getFullYear())
+      if (age < federal.QualifyingDependents.qualifyingDependentMaxAge) {
+        return [undefined, undefined]
+      }
+      const qualifies =
+        (d.qualifyingInfo?.isStudent ?? false) &&
+        age < federal.QualifyingDependents.qualifyingStudentMaxAge
+      return [qualifies, !qualifies]
     })
 
   // TODO: disability
