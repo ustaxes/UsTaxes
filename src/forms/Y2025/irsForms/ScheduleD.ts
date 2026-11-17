@@ -58,7 +58,8 @@ export default class ScheduleD extends F1040Attachment {
     this.f1040.f8949.isNeeded() ||
     this.f1040.f8949Digital.isNeeded() ||
     this.f1040.info.priorYearCapitalLossCarryover?.shortTerm !== undefined ||
-    this.f1040.info.priorYearCapitalLossCarryover?.longTerm !== undefined
+    this.f1040.info.priorYearCapitalLossCarryover?.longTerm !== undefined ||
+    this.l11() !== undefined
 
   l21Min = (): number => {
     if (this.f1040.info.taxPayer.filingStatus === FilingStatus.MFS) {
@@ -115,14 +116,15 @@ export default class ScheduleD extends F1040Attachment {
   l3h = (): number =>
     sumFields(this.l3f8949s().map((f) => f.shortTermTotalGain()))
 
-  l4 = (): number | undefined => {
-    const carryover = this.f1040.info.priorYearCapitalLossCarryover?.shortTerm
-    return carryover !== undefined ? -carryover : undefined
-  }
+  l4 = (): number | undefined => undefined
 
   l5 = (): number | undefined => undefined
 
-  l6 = (): number | undefined => undefined
+  /** Short-term capital loss carryover, as a negative amount. */
+  l6 = (): number | undefined => {
+    const carryover = this.f1040.info.priorYearCapitalLossCarryover?.shortTerm
+    return carryover !== undefined ? -carryover : undefined
+  }
 
   l7 = (): number =>
     sumFields([
@@ -186,10 +188,8 @@ export default class ScheduleD extends F1040Attachment {
   l10h = (): number =>
     sumFields(this.l10f8949s().map((f) => f.longTermTotalGain()))
 
-  l11 = (): number | undefined => {
-    const carryover = this.f1040.info.priorYearCapitalLossCarryover?.longTerm
-    return carryover !== undefined ? -carryover : undefined
-  }
+  /** Gain from Form 4797, Part I. */
+  l11 = (): number | undefined => this.f1040.f4797?.scheduleDGain()
 
   l12 = (): number | undefined => undefined
 
@@ -198,7 +198,11 @@ export default class ScheduleD extends F1040Attachment {
       .f1099Divs()
       .reduce((s, f) => s + f.form.totalCapitalGainsDistributions, 0)
 
-  l14 = (): number | undefined => undefined
+  /** Long-term capital loss carryover, as a negative amount. */
+  l14 = (): number | undefined => {
+    const carryover = this.f1040.info.priorYearCapitalLossCarryover?.longTerm
+    return carryover !== undefined ? -carryover : undefined
+  }
 
   l15 = (): number =>
     sumFields([

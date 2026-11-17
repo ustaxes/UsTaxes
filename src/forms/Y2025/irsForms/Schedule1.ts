@@ -47,7 +47,7 @@ export default class Schedule1 extends F1040Attachment {
   l4Box1 = (): boolean => false
   l4Box2 = (): boolean => false
   /** Other gains or losses from Form 4797. */
-  l4 = (): number | undefined => this.f1040.f4797?.l9()
+  l4 = (): number | undefined => this.f1040.f4797?.l18b()
   l5 = (): number | undefined => this.f1040.scheduleE.l41()
   l6 = (): number | undefined => undefined
   l7Box = (): boolean => false
