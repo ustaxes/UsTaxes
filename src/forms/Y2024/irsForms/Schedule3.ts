@@ -1,10 +1,7 @@
 import F1040Attachment from './F1040Attachment'
-import type { PersonRole } from 'ustaxes/core/data'
+import { PersonRole } from 'ustaxes/core/data'
 import { sumFields } from 'ustaxes/core/irsForms/util'
-import {
-  claimableExcessSSTax,
-  excessSSTaxWithholding
-} from 'ustaxes/core/irsForms/excessSSTax'
+import { excessSSTaxWithholding } from 'ustaxes/core/irsForms/excessSSTax'
 import type { FormTag } from 'ustaxes/core/irsForms/Form'
 import { fica } from '../data/federal'
 import type { Field, FillInstructions } from 'ustaxes/core/pdfFiller'
@@ -21,7 +18,8 @@ export default class Schedule3 extends F1040Attachment {
   ): number => excessSSTaxWithholding(this.f1040.validW2s(), role, fica)
 
   claimableExcessSSTaxWithholding = (): number =>
-    claimableExcessSSTax(this.f1040.validW2s(), fica)
+    this.excessSSTaxWithholdingFor(PersonRole.PRIMARY) +
+    this.excessSSTaxWithholdingFor(PersonRole.SPOUSE)
 
   isNeeded = (): boolean => this.claimableExcessSSTaxWithholding() > 0
 
