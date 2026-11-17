@@ -78,9 +78,7 @@ const hasSSRefund = (f1040: F1040): boolean => f1040.schedule3.l11() > 0
 // box 4 withholding (box 3, or box 5 if larger for tips; box 1 if both are
 // blank).
 const employerKey = (w2: IncomeW2, i: number): string =>
-  w2.employer?.EIN !== undefined && w2.employer.EIN !== ''
-    ? w2.employer.EIN
-    : `unknown-${i}`
+  w2.employer?.EIN ?? `unknown-${i}`
 
 const expectedExcessFor = (
   w2s: IncomeW2[],

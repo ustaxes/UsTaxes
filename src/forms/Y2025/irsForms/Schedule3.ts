@@ -43,8 +43,7 @@ export default class Schedule3 extends F1040Attachment {
 
     const withheldByEmployer = new Map<string, number>()
     w2s.forEach((w2, i) => {
-      const ein = w2.employer?.EIN
-      const key = ein !== undefined && ein !== '' ? ein : `w2-${i}`
+      const key = w2.employer?.EIN ?? `w2-${i}`
       withheldByEmployer.set(
         key,
         (withheldByEmployer.get(key) ?? 0) + w2.ssWithholding
