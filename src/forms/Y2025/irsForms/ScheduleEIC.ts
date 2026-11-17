@@ -388,18 +388,11 @@ export default class ScheduleEIC extends F1040Attachment {
       return [undefined, undefined]
     })
 
+  // EIC line 4b (permanently and totally disabled): left blank, since
+  // disability isn't collected.
   // TODO: disability
   disabledFields = (): Array<boolean | undefined> =>
-    this.years().flatMap((year) => {
-      if (
-        year === undefined ||
-        this.ageAtYearEnd(year) >=
-          federal.QualifyingDependents.qualifyingDependentMaxAge
-      ) {
-        return [undefined, undefined]
-      }
-      return [undefined, undefined]
-    })
+    this.years().flatMap(() => [undefined, undefined])
 
   // Line 5
   // TODO: Address eic relationships
