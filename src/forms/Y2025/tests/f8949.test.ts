@@ -214,4 +214,38 @@ describe('F8949 (2025)', () => {
       expect(f1040.scheduleD.l8ad()).toBe(10000) // 4000 + 6000
     })
   })
+
+  describe('assets acquired on various dates', () => {
+    const variousAsset = (
+      holdingPeriod: Asset<Date>['holdingPeriod']
+    ): Asset<Date> => ({
+      ...makeAsset('Security'),
+      openDate: undefined,
+      holdingPeriod
+    })
+
+    it('uses the long-term holding period when there is no open date', () => {
+      const f8949 = makeF1040([variousAsset('Long Term')]).f8949
+      expect(f8949.longTermSales()).toHaveLength(1)
+      expect(f8949.shortTermSales()).toHaveLength(0)
+      expect(f8949.longTermLines()[0][1]).toBe('VARIOUS')
+    })
+
+    it('uses the short-term holding period when there is no open date', () => {
+      const f8949 = makeF1040([variousAsset('Short Term')]).f8949
+      expect(f8949.shortTermSales()).toHaveLength(1)
+      expect(f8949.longTermSales()).toHaveLength(0)
+      expect(f8949.shortTermLines()[0][1]).toBe('VARIOUS')
+    })
+
+    it('ignores the holding period when an open date is present', () => {
+      const asset: Asset<Date> = {
+        ...makeAsset('Security'),
+        holdingPeriod: 'Short Term'
+      }
+      const f8949 = makeF1040([asset]).f8949
+      expect(f8949.longTermSales()).toHaveLength(1)
+      expect(f8949.longTermLines()[0][1]).toBe('1/1/2023')
+    })
+  })
 })

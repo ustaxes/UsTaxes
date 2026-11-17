@@ -39,7 +39,8 @@ const assetTableColumns: TableColumn<Row>[] = [
   },
   {
     name: 'Open Date',
-    selector: ({ openDate }) => openDate.toISOString().slice(0, 10),
+    selector: ({ openDate }) =>
+      openDate?.toISOString().slice(0, 10) ?? 'Various',
     sortable: true
   },
   {
@@ -237,7 +238,7 @@ const FilteredAssetsTable = (): ReactElement => {
       ...displayAssets.map((a) => [
         a.name,
         a.quantity,
-        a.openDate.toISOString().slice(0, 10),
+        a.openDate?.toISOString().slice(0, 10) ?? 'Various',
         a.openPrice,
         a.openFee,
         a.openPrice * a.quantity + a.openFee,

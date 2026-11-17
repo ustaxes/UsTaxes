@@ -37,7 +37,7 @@ const showDate = (date: Date): string =>
 
 const toLine = (position: SoldAsset<Date>): Line => [
   position.name,
-  showDate(position.openDate),
+  position.openDate !== undefined ? showDate(position.openDate) : 'VARIOUS',
   showDate(position.closeDate),
   position.closePrice * position.quantity,
   position.openPrice * position.quantity,
@@ -108,6 +108,8 @@ export default class F8949 extends F1040Attachment {
 
   isLongTerm = (p: Asset<Date>): boolean => {
     if (p.closeDate === undefined || p.closePrice === undefined) return false
+    // Acquired on various dates: the filer supplies the holding period.
+    if (p.openDate === undefined) return p.holdingPeriod === 'Long Term'
     const milliInterval = p.closeDate.getTime() - p.openDate.getTime()
     return milliInterval / this.oneDay > 366
   }

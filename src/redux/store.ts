@@ -49,7 +49,9 @@ const serializeDeserialize =
       const ob = s as { [k: string]: any }
       return Object.keys(ob).reduce((acc, k) => {
         const newValue = (() => {
-          if (dateKey.exec(k) !== null) {
+          // Optional dates (eg: an asset's openDate when acquired on
+          // various dates) may be absent.
+          if (dateKey.exec(k) !== null && ob[k] !== undefined) {
             return f(ob[k] as Date | string)
           }
           return recur(ob[k])
