@@ -1,10 +1,5 @@
-import {
-  createContext,
-  useContext,
-  PropsWithChildren,
-  ReactElement,
-  ReactNode
-} from 'react'
+import type { PropsWithChildren, ReactElement, ReactNode } from 'react'
+import { createContext, useContext } from 'react'
 import { useMediaQuery, Button, Grid } from '@material-ui/core'
 import { isMobileOnly as isMobile } from 'react-device-detect'
 import { Link } from 'react-router-dom'

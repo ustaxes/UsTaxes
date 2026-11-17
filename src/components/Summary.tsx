@@ -1,4 +1,4 @@
-import { ReactElement } from 'react'
+import type { ReactElement } from 'react'
 import {
   Avatar,
   Box,
@@ -14,16 +14,17 @@ import {
   AccordionSummary,
   AccordionDetails
 } from '@material-ui/core'
-import { YearsTaxesState } from 'ustaxes/redux'
-import { TaxYear } from 'ustaxes/core/data'
+import type { YearsTaxesState } from 'ustaxes/redux'
+import type { TaxYear } from 'ustaxes/core/data'
 import { Check, Close, ExpandMore } from '@material-ui/icons'
 import Alert from '@material-ui/lab/Alert'
 import { useSelector } from 'react-redux'
-import { createSummary, SummaryData } from './SummaryData'
+import type { SummaryData } from './SummaryData'
+import { createSummary } from './SummaryData'
 import { Currency } from './input'
 import { displayRound } from 'ustaxes/core/irsForms/util'
-import StateForm from 'ustaxes/core/stateForms/Form'
-import Form from 'ustaxes/core/irsForms/Form'
+import type StateForm from 'ustaxes/core/stateForms/Form'
+import type Form from 'ustaxes/core/irsForms/Form'
 interface BinaryStateListItemProps {
   active: boolean
   children: string | ReactElement | ReactElement[]

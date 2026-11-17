@@ -1,6 +1,7 @@
 import fs from 'fs'
 import path from 'path'
-import axios, { AxiosResponse } from 'axios'
+import type { AxiosResponse } from 'axios'
+import axios from 'axios'
 import type { Readable } from 'stream'
 
 interface Catalogs {

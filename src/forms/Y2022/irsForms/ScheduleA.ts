@@ -1,8 +1,9 @@
 import F1040Attachment from './F1040Attachment'
-import { FilingStatus, ItemizedDeductions } from 'ustaxes/core/data'
-import { FormTag } from 'ustaxes/core/irsForms/Form'
-import { Field } from 'ustaxes/core/pdfFiller'
-import F1040 from './F1040'
+import type { ItemizedDeductions } from 'ustaxes/core/data'
+import { FilingStatus } from 'ustaxes/core/data'
+import type { FormTag } from 'ustaxes/core/irsForms/Form'
+import type { Field } from 'ustaxes/core/pdfFiller'
+import type F1040 from './F1040'
 
 const blankItemizedDeductions = {
   medicalAndDental: 0,

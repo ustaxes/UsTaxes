@@ -1,8 +1,11 @@
 /* eslint-disable indent */
-import { CombinedState, combineReducers, Reducer } from 'redux'
-import { Asset, FilingStatus, Information, TaxYear } from 'ustaxes/core/data'
-import { YearsTaxesState } from '.'
-import { ActionName, Actions } from './actions'
+import type { CombinedState, Reducer } from 'redux'
+import { combineReducers } from 'redux'
+import type { Asset, Information, TaxYear } from 'ustaxes/core/data'
+import { FilingStatus } from 'ustaxes/core/data'
+import type { YearsTaxesState } from '.'
+import type { Actions } from './actions'
+import { ActionName } from './actions'
 import { stringToDateInfo } from './data'
 
 const DEFAULT_TAX_YEAR: TaxYear = 'Y2025'

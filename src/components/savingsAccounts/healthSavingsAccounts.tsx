@@ -1,16 +1,11 @@
-import { ReactElement } from 'react'
+import type { ReactElement } from 'react'
 import { Helmet } from 'react-helmet'
 import { useSelector } from 'react-redux'
 import { useYearSelector, useYearDispatch } from 'ustaxes/redux/yearDispatch'
 import { FormProvider, useForm } from 'react-hook-form'
 import { usePager } from 'ustaxes/components/pager'
-import {
-  HealthSavingsAccount,
-  Person,
-  PersonRole,
-  TaxYear,
-  TaxYears
-} from 'ustaxes/core/data'
+import type { HealthSavingsAccount, Person, TaxYear } from 'ustaxes/core/data'
+import { PersonRole, TaxYears } from 'ustaxes/core/data'
 
 import {
   Currency,
@@ -24,9 +19,9 @@ import { Patterns } from 'ustaxes/components/Patterns'
 import { FormListContainer } from 'ustaxes/components/FormContainer'
 import { Grid } from '@material-ui/core'
 import { Work } from '@material-ui/icons'
-import { TaxesState } from 'ustaxes/redux'
+import type { TaxesState } from 'ustaxes/redux'
 import { addHSA, editHSA, removeHSA } from 'ustaxes/redux/actions'
-import { YearsTaxesState } from 'ustaxes/redux'
+import type { YearsTaxesState } from 'ustaxes/redux'
 
 import { format } from 'date-fns'
 import { intentionallyFloat } from 'ustaxes/core/util'

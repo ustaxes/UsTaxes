@@ -1,8 +1,8 @@
-import { AnyAction, Reducer } from 'redux'
+import type { AnyAction, Reducer } from 'redux'
 import { migrateEachYear, migrateAgeAndBlindness } from '../migration'
 import { download, stateToString, stringToState } from '.'
-import { USTState } from '../store'
-import { FSPersist, FSRecover } from './Actions'
+import type { USTState } from '../store'
+import type { FSPersist, FSRecover } from './Actions'
 
 type PersistActions = FSPersist | FSRecover
 

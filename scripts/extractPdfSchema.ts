@@ -1,6 +1,6 @@
+import type { PDFField } from 'pdf-lib'
 import {
   PDFDocument,
-  PDFField,
   PDFCheckBox,
   PDFTextField,
   PDFDropdown,

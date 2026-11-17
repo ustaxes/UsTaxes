@@ -1,4 +1,4 @@
-import { ReactElement } from 'react'
+import type { ReactElement } from 'react'
 
 const boxLabel = (box: string, description: string): ReactElement => (
   <>

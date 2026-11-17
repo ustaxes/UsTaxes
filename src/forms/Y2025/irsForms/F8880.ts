@@ -1,7 +1,8 @@
 import F1040Attachment from './F1040Attachment'
 import { PersonRole, W2Box12Code } from 'ustaxes/core/data'
-import { FormTag } from 'ustaxes/core/irsForms/Form'
-import { Field, FillInstructions, text } from 'ustaxes/core/pdfFiller'
+import type { FormTag } from 'ustaxes/core/irsForms/Form'
+import type { Field, FillInstructions } from 'ustaxes/core/pdfFiller'
+import { text } from 'ustaxes/core/pdfFiller'
 import { saversCreditThresholds } from '../data/federal'
 
 /** Elective deferral box 12 codes that count toward the Saver's Credit. */

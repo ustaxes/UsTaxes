@@ -1,4 +1,4 @@
-import { PropsWithChildren, ReactElement } from 'react'
+import type { PropsWithChildren, ReactElement } from 'react'
 import {
   IconButton,
   List,
@@ -6,7 +6,8 @@ import {
   ListItemIcon,
   ListItemSecondaryAction
 } from '@material-ui/core'
-import { useDispatch, useSelector, TaxesState } from 'ustaxes/redux'
+import type { TaxesState } from 'ustaxes/redux'
+import { useDispatch, useSelector } from 'ustaxes/redux'
 import {
   formatSSID,
   LabeledInput,
@@ -15,7 +16,7 @@ import {
 } from 'ustaxes/components/input'
 import { Patterns } from 'ustaxes/components/Patterns'
 import { removeDependent } from 'ustaxes/redux/actions'
-import { Person } from 'ustaxes/core/data'
+import type { Person } from 'ustaxes/core/data'
 import DeleteIcon from '@material-ui/icons/Delete'
 import EditIcon from '@material-ui/icons/Edit'
 import ListItemText from '@material-ui/core/ListItemText'

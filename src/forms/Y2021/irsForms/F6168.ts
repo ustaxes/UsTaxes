@@ -1,4 +1,4 @@
-import { Field } from 'ustaxes/core/pdfFiller'
+import type { Field } from 'ustaxes/core/pdfFiller'
 import F1040Attachment from './F1040Attachment'
 
 /**

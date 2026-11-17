@@ -1,7 +1,7 @@
 import F1040Attachment from './F1040Attachment'
-import { FormTag } from 'ustaxes/core/irsForms/Form'
+import type { FormTag } from 'ustaxes/core/irsForms/Form'
 import { FilingStatus } from 'ustaxes/core/data'
-import { Field } from 'ustaxes/core/pdfFiller'
+import type { Field } from 'ustaxes/core/pdfFiller'
 
 export function getF8995PhaseOutIncome(filingStatus: FilingStatus): number {
   let formAMinAmount = 170050

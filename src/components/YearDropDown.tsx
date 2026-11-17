@@ -1,12 +1,14 @@
 import { Button, Grid } from '@material-ui/core'
-import { ReactElement } from 'react'
+import type { ReactElement } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { useSelector } from 'react-redux'
 import { setActiveYear } from 'ustaxes/redux/actions'
-import { YearsTaxesState, useDispatch } from 'ustaxes/redux'
+import type { YearsTaxesState } from 'ustaxes/redux'
+import { useDispatch } from 'ustaxes/redux'
 import { enumKeys, intentionallyFloat } from 'ustaxes/core/util'
 import { GenericLabeledDropdown } from './input'
-import { TaxYear, TaxYears } from 'ustaxes/core/data'
+import type { TaxYear } from 'ustaxes/core/data'
+import { TaxYears } from 'ustaxes/core/data'
 
 interface YearForm {
   year: TaxYear

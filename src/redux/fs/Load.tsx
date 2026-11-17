@@ -1,5 +1,6 @@
-import { Button, ButtonProps } from '@material-ui/core'
-import { ChangeEvent, PropsWithChildren, ReactElement } from 'react'
+import type { ButtonProps } from '@material-ui/core'
+import { Button } from '@material-ui/core'
+import type { ChangeEvent, PropsWithChildren, ReactElement } from 'react'
 import { intentionallyFloat } from 'ustaxes/core/util'
 
 interface LoadProps<S> {

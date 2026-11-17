@@ -13,7 +13,10 @@
  *  4. Writes the updated file (dry-run by default, pass --write to save)
  */
 
+import { readFileSync } from 'fs'
 import { readFile, writeFile } from 'fs/promises'
+import path from 'path'
+import ts from 'typescript'
 
 function extractGeneratedCode(outputTxt: string): string {
   const startMarker =
@@ -32,23 +35,102 @@ function extractGeneratedCode(outputTxt: string): string {
   return code.replace(/^\n+/, '')
 }
 
-function updateImport(source: string): string {
-  // Replace: import { Field } from 'ustaxes/core/pdfFiller'
-  // With:    import { Field, FillInstructions, text, checkbox } from 'ustaxes/core/pdfFiller'
-  return source.replace(
-    /import\s*\{([^}]+)\}\s*from\s*'ustaxes\/core\/pdfFiller'/,
-    (match, existing: string) => {
-      const imports = existing
-        .split(',')
-        .map((s) => s.trim())
-        .filter(Boolean)
-      const toAdd = ['FillInstructions', 'text', 'checkbox', 'radio']
-      for (const name of toAdd) {
-        if (!imports.includes(name)) imports.push(name)
-      }
-      return `import { ${imports.join(', ')} } from 'ustaxes/core/pdfFiller'`
-    }
+const pdfFillerIndex = path.resolve(__dirname, '../src/core/pdfFiller/index.ts')
+
+// Types exported by pdfFiller, read from its index so that a type added there
+// goes into the type-only import without a change here.
+function pdfFillerTypeNames(): Set<string> {
+  const file = ts.createSourceFile(
+    pdfFillerIndex,
+    readFileSync(pdfFillerIndex, 'utf8'),
+    ts.ScriptTarget.Latest,
+    true
   )
+  const names = new Set<string>()
+  for (const statement of file.statements) {
+    if (
+      (ts.isInterfaceDeclaration(statement) ||
+        ts.isTypeAliasDeclaration(statement)) &&
+      (ts.getCombinedModifierFlags(statement) & ts.ModifierFlags.Export) !== 0
+    ) {
+      names.add(statement.name.text)
+    }
+  }
+  return names
+}
+
+// Forms import pdfFiller through the alias, and formgen output uses a relative path.
+const isPdfFillerPath = (specifier: string): boolean =>
+  specifier === 'pdfFiller' || specifier.endsWith('/pdfFiller')
+
+function updateImport(source: string): string {
+  const file = ts.createSourceFile(
+    'form.ts',
+    source,
+    ts.ScriptTarget.Latest,
+    true
+  )
+  const imports = file.statements.filter(
+    (statement): statement is ts.ImportDeclaration =>
+      ts.isImportDeclaration(statement) &&
+      ts.isStringLiteral(statement.moduleSpecifier) &&
+      isPdfFillerPath(statement.moduleSpecifier.text)
+  )
+  const modulePath =
+    imports.length > 0 && ts.isStringLiteral(imports[0].moduleSpecifier)
+      ? imports[0].moduleSpecifier.text
+      : 'ustaxes/core/pdfFiller'
+  const typeNames = pdfFillerTypeNames()
+  const types = new Set(['FillInstructions'])
+  const values = new Set(['text', 'checkbox', 'radio'])
+  const namedImports: ts.ImportDeclaration[] = []
+  for (const declaration of imports) {
+    const clause = declaration.importClause
+    const bindings = clause?.namedBindings
+    if (
+      clause === undefined ||
+      bindings === undefined ||
+      !ts.isNamedImports(bindings)
+    ) {
+      continue
+    }
+    namedImports.push(declaration)
+    for (const specifier of bindings.elements) {
+      const name = (specifier.propertyName ?? specifier.name).text
+      const names =
+        clause.isTypeOnly || specifier.isTypeOnly || typeNames.has(name)
+          ? types
+          : values
+      names.add(specifier.getText(file).replace(/^type\s+/, ''))
+    }
+  }
+  const typeList = Array.from(types).join(', ')
+  const valueList = Array.from(values).join(', ')
+  const replacement = `import type { ${typeList} } from '${modulePath}'
+import { ${valueList} } from '${modulePath}'`
+  if (namedImports.length === 0) return replacement + '\n' + source
+  for (let index = namedImports.length - 1; index >= 0; index--) {
+    const declaration = namedImports[index]
+    if (index === 0) {
+      source =
+        source.slice(0, declaration.getStart(file)) +
+        replacement +
+        source.slice(declaration.end)
+      continue
+    }
+    // Remove the whole line, with any comments above or after the import.
+    const leading =
+      ts.getLeadingCommentRanges(source, declaration.getFullStart()) ?? []
+    const trailing = ts.getTrailingCommentRanges(source, declaration.end) ?? []
+    const start =
+      leading.length > 0 ? leading[0].pos : declaration.getStart(file)
+    let end =
+      trailing.length > 0 ? trailing[trailing.length - 1].end : declaration.end
+    const lineBreak = /^[ \t]*\r?\n/.exec(source.slice(end))
+    if (lineBreak !== null) end += lineBreak[0].length
+    source = source.slice(0, start) + source.slice(end)
+  }
+  return source
 }
 
 function insertFillInstructions(source: string, code: string): string {

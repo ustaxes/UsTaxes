@@ -1,4 +1,5 @@
-import { ReactElement, useMemo } from 'react'
+import type { ReactElement } from 'react'
+import { useMemo } from 'react'
 import Main from './components/Main'
 import './App.css'
 import { createTheme, ThemeProvider, useMediaQuery } from '@material-ui/core'

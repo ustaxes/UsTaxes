@@ -1,7 +1,7 @@
 import F1040Attachment from './F1040Attachment'
 import { CreditType } from 'ustaxes/core/data'
-import { Field, FillInstructions } from 'ustaxes/core/pdfFiller'
-import { FormTag } from 'ustaxes/core/irsForms/Form'
+import type { Field, FillInstructions } from 'ustaxes/core/pdfFiller'
+import type { FormTag } from 'ustaxes/core/irsForms/Form'
 
 /**
  * Form 4136 — Credit for Federal Tax on Fuels.

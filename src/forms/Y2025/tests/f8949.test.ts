@@ -1,11 +1,6 @@
 import F1040 from '../irsForms/F1040'
-import {
-  Asset,
-  FilingStatus,
-  Income1099Type,
-  Information,
-  PersonRole
-} from 'ustaxes/core/data'
+import type { Asset, Information } from 'ustaxes/core/data'
+import { FilingStatus, Income1099Type, PersonRole } from 'ustaxes/core/data'
 import { CURRENT_YEAR } from '../data/federal'
 import { validate } from 'ustaxes/forms/F1040Base'
 import { run } from 'ustaxes/core/util'

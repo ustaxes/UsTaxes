@@ -1,4 +1,5 @@
-import { createStyles, makeStyles, Theme } from '@material-ui/core'
+import type { Theme } from '@material-ui/core'
+import { createStyles, makeStyles } from '@material-ui/core'
 import { createTheme } from 'react-data-table-component'
 
 type DarkModeProps = {

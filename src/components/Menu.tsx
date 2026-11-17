@@ -1,24 +1,22 @@
-import { ReactElement, useState } from 'react'
+import type { ReactElement } from 'react'
+import { useState } from 'react'
 import { useLocation } from 'react-router-dom'
 
 import { useSelector } from 'react-redux'
+import type { Theme } from '@material-ui/core'
 import {
   createStyles,
   makeStyles,
   AppBar,
   IconButton,
   Slide,
-  Theme,
   Toolbar,
   Typography
 } from '@material-ui/core'
 import CloseIcon from '@material-ui/icons/Close'
 import MenuIcon from '@material-ui/icons/Menu'
-import ResponsiveDrawer, {
-  item,
-  Section,
-  SectionItem
-} from './ResponsiveDrawer'
+import type { Section, SectionItem } from './ResponsiveDrawer'
+import ResponsiveDrawer, { item } from './ResponsiveDrawer'
 
 import W2JobInfo from './income/W2JobInfo'
 import CreatePDF from './CreatePDF'
@@ -42,9 +40,9 @@ import IRA from './savingsAccounts/IRA'
 import OtherInvestments from './income/OtherInvestments'
 import { StockOptions } from './income/StockOptions'
 import { PartnershipIncome } from './income/PartnershipIncome'
-import { TaxYear } from 'ustaxes/core/data'
+import type { TaxYear } from 'ustaxes/core/data'
 import { AdvanceChildTaxCredit } from './Y2021/AdvanceChildTaxCredit'
-import { YearsTaxesState } from 'ustaxes/redux'
+import type { YearsTaxesState } from 'ustaxes/redux'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({

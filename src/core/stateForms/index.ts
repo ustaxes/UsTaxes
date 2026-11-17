@@ -1,8 +1,9 @@
 import _ from 'lodash'
-import { PDFDocument } from 'pdf-lib'
+import type { PDFDocument } from 'pdf-lib'
 import { fillPdfFromFill } from '../pdfFiller/fillPdf'
-import { combinePdfs, PDFDownloader } from '../pdfFiller/pdfHandler'
-import Form from './Form'
+import type { PDFDownloader } from '../pdfFiller/pdfHandler'
+import { combinePdfs } from '../pdfFiller/pdfHandler'
+import type Form from './Form'
 
 export const createStatePDF =
   (forms: Form[]) =>

@@ -1,6 +1,6 @@
 import * as arbitraries from './arbitraries'
 import * as fc from 'fast-check'
-import { Address, Dependent, Information, PrimaryPerson } from '../data'
+import type { Address, Dependent, Information, PrimaryPerson } from '../data'
 import log from '../log'
 import * as validators from '../data/validate'
 import { dateToStringPerson, infoToStringInfo } from 'ustaxes/redux/data'

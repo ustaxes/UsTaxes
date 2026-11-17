@@ -1,9 +1,10 @@
-import { YearsTaxesState } from 'ustaxes/redux'
-import { ReactElement } from 'react'
-import { createWholeStoreUnpersisted, InfoStore } from 'ustaxes/redux/store'
+import type { YearsTaxesState } from 'ustaxes/redux'
+import type { ReactElement } from 'react'
+import type { InfoStore } from 'ustaxes/redux/store'
+import { createWholeStoreUnpersisted } from 'ustaxes/redux/store'
 import { Provider } from 'react-redux'
-import * as Queries from '@testing-library/dom/types/queries'
-import { RenderResult } from '@testing-library/react'
+import type * as Queries from '@testing-library/dom/types/queries'
+import type { RenderResult } from '@testing-library/react'
 import { renderWithProviders } from 'ustaxes/testUtil'
 
 export type TestRenderResult = RenderResult<typeof Queries, HTMLElement>

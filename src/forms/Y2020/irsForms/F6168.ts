@@ -1,5 +1,5 @@
 import F1040Attachment from './F1040Attachment'
-import { Field } from 'ustaxes/core/pdfFiller'
+import type { Field } from 'ustaxes/core/pdfFiller'
 
 /**
  * Referenced from line 21 of Schedule E

@@ -1,5 +1,5 @@
 import F1040Attachment from './F1040Attachment'
-import { Field, FillInstructions } from 'ustaxes/core/pdfFiller'
+import type { Field, FillInstructions } from 'ustaxes/core/pdfFiller'
 
 // TODO: Not implemented yet
 export default class F8919 extends F1040Attachment {

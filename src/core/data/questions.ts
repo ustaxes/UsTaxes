@@ -1,10 +1,5 @@
-import {
-  FilingStatus,
-  Income1099Type,
-  Information,
-  QuestionTagName,
-  ValueTag
-} from '.'
+import type { Information, QuestionTagName, ValueTag } from '.'
+import { FilingStatus, Income1099Type } from '.'
 
 export interface Question {
   text: string

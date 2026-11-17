@@ -1,4 +1,4 @@
-import { PropsWithChildren, ReactNode, ReactElement } from 'react'
+import type { PropsWithChildren, ReactNode, ReactElement } from 'react'
 
 type ConditionallyWrapProps = PropsWithChildren<{
   condition: boolean

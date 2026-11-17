@@ -1,4 +1,4 @@
-import { State } from '.'
+import type { State } from '.'
 
 const locationPostalCodes: Array<[string, State]> = [
   ['Alabama', 'AL'],

@@ -1,4 +1,4 @@
-import {
+import type {
   Person,
   IncomeW2,
   Refund,
@@ -26,7 +26,7 @@ import {
   EditCreditAction
 } from 'ustaxes/core/data'
 
-import {
+import type {
   EditDependentAction,
   EditPropertyAction,
   Edit1099Action,
@@ -41,7 +41,7 @@ import {
 } from 'ustaxes/core/data'
 import * as validators from 'ustaxes/core/data/validate'
 import { index as indexValidator } from 'ustaxes/core/data/validate'
-import { ValidateFunction } from 'ajv'
+import type { ValidateFunction } from 'ajv'
 import { infoToStringInfo } from './data'
 
 export enum ActionName {

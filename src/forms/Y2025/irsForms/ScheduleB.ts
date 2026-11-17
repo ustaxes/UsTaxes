@@ -1,8 +1,9 @@
 import F1040Attachment from './F1040Attachment'
-import { FormTag } from 'ustaxes/core/irsForms/Form'
+import type { FormTag } from 'ustaxes/core/irsForms/Form'
 import { sumFields } from 'ustaxes/core/irsForms/util'
-import { Field, FillInstructions, text, checkbox } from 'ustaxes/core/pdfFiller'
-import F1040 from './F1040'
+import type { Field, FillInstructions } from 'ustaxes/core/pdfFiller'
+import { text, checkbox } from 'ustaxes/core/pdfFiller'
+import type F1040 from './F1040'
 
 interface PayerAmount {
   payer?: string

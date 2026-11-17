@@ -1,15 +1,11 @@
-import { useEffect, useRef, KeyboardEvent, ReactElement } from 'react'
+import type { KeyboardEvent, ReactElement } from 'react'
+import { useEffect, useRef } from 'react'
 import { useForkRef } from 'rooks'
 import { InputAdornment, Grid, TextField } from '@material-ui/core'
-import { LabeledInputProps } from './types'
+import type { LabeledInputProps } from './types'
 import NumberFormat from 'react-number-format'
-import {
-  Controller,
-  FieldError,
-  FieldValues,
-  useFormContext,
-  get
-} from 'react-hook-form'
+import type { FieldError, FieldValues } from 'react-hook-form'
+import { Controller, useFormContext, get } from 'react-hook-form'
 import { isNumeric, Patterns } from 'ustaxes/components/Patterns'
 import ConditionallyWrap from 'ustaxes/components/ConditionallyWrap'
 import useStyles from './styles'

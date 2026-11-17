@@ -1,11 +1,13 @@
-import { PDFDocument } from 'pdf-lib'
+import type { PDFDocument } from 'pdf-lib'
 import { create1040 } from '../irsForms/Main'
-import { Either, isLeft, isRight, right } from 'ustaxes/core/util'
+import type { Either } from 'ustaxes/core/util'
+import { isLeft, isRight, right } from 'ustaxes/core/util'
 import log from 'ustaxes/core/log'
-import { combinePdfs, PDFDownloader } from 'ustaxes/core/pdfFiller/pdfHandler'
-import { Information, Asset } from 'ustaxes/core/data'
+import type { PDFDownloader } from 'ustaxes/core/pdfFiller/pdfHandler'
+import { combinePdfs } from 'ustaxes/core/pdfFiller/pdfHandler'
+import type { Information, Asset } from 'ustaxes/core/data'
 import { insertFormDataToPdfs } from 'ustaxes/core/irsForms'
-import { F1040Error } from 'ustaxes/forms/errors'
+import type { F1040Error } from 'ustaxes/forms/errors'
 
 export { create1040 }
 

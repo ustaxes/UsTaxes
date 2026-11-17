@@ -1,6 +1,6 @@
 import { EIC } from '../../data/federal'
 import { ifNegative, ifPositive } from 'ustaxes/core/util'
-import F1040 from '../../irsForms/F1040'
+import type F1040 from '../../irsForms/F1040'
 import { sumFields } from 'ustaxes/core/irsForms/util'
 import Pub596Worksheet2 from './Pub596Worksheet2'
 

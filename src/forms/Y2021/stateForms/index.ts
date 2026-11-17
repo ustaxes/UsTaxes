@@ -1,10 +1,10 @@
-import F1040 from '../irsForms/F1040'
-import { State } from 'ustaxes/core/data'
-import StateForm from 'ustaxes/core/stateForms/Form'
+import type F1040 from '../irsForms/F1040'
+import type { State } from 'ustaxes/core/data'
+import type StateForm from 'ustaxes/core/stateForms/Form'
 import il1040 from './IL/IL1040'
-import { Either } from 'ustaxes/core/util'
+import type { Either } from 'ustaxes/core/util'
 import { createStateReturn as createStateReturnF } from '../../StateForms'
-import { StateFormError } from '../../StateForms'
+import type { StateFormError } from '../../StateForms'
 
 export const noFilingRequirementStates: State[] = [
   'AK',

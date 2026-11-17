@@ -1,7 +1,8 @@
-import { PDFDocument } from 'pdf-lib'
+import type { PDFDocument } from 'pdf-lib'
 import _ from 'lodash'
-import { getPdfs, PDFDownloader } from '../pdfFiller/pdfHandler'
-import Form from './Form'
+import type { PDFDownloader } from '../pdfFiller/pdfHandler'
+import { getPdfs } from '../pdfFiller/pdfHandler'
+import type Form from './Form'
 
 export const insertFormDataToPdfs = async (
   forms: Form[],

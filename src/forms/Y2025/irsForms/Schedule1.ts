@@ -1,9 +1,10 @@
 import F1040Attachment from './F1040Attachment'
 import { FilingStatus } from 'ustaxes/core/data'
-import { FormTag } from 'ustaxes/core/irsForms/Form'
+import type { FormTag } from 'ustaxes/core/irsForms/Form'
 import { sumFields } from 'ustaxes/core/irsForms/util'
-import F1040 from './F1040'
-import { Field, FillInstructions, text, checkbox } from 'ustaxes/core/pdfFiller'
+import type F1040 from './F1040'
+import type { Field, FillInstructions } from 'ustaxes/core/pdfFiller'
+import { text, checkbox } from 'ustaxes/core/pdfFiller'
 import { educatorExpenseLimit } from '../data/federal'
 
 export default class Schedule1 extends F1040Attachment {

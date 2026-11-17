@@ -1,6 +1,6 @@
 import F1040Attachment from './F1040Attachment'
-import { MatrixRow } from './ScheduleE'
-import { Field } from 'ustaxes/core/pdfFiller'
+import type { MatrixRow } from './ScheduleE'
+import type { Field } from 'ustaxes/core/pdfFiller'
 
 /**
  * Referenced from line 22 of Schedule E

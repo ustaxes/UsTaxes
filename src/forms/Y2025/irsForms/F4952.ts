@@ -1,6 +1,7 @@
 import F1040Attachment from './F1040Attachment'
-import { Field, FillInstructions, text } from 'ustaxes/core/pdfFiller'
-import { FormTag } from 'ustaxes/core/irsForms/Form'
+import type { Field, FillInstructions } from 'ustaxes/core/pdfFiller'
+import { text } from 'ustaxes/core/pdfFiller'
+import type { FormTag } from 'ustaxes/core/irsForms/Form'
 
 /**
  * Form 4952 — Investment Interest Expense Deduction.

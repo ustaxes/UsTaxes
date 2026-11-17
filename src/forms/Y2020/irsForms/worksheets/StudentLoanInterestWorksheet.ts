@@ -1,6 +1,7 @@
-import { F1098e, FilingStatus } from 'ustaxes/core/data'
+import type { F1098e } from 'ustaxes/core/data'
+import { FilingStatus } from 'ustaxes/core/data'
 import { sumFields } from 'ustaxes/core/irsForms/util'
-import F1040 from '../../irsForms/F1040'
+import type F1040 from '../../irsForms/F1040'
 
 export default class StudentLoanInterestWorksheet {
   f1040: F1040

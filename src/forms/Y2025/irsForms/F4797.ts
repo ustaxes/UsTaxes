@@ -1,7 +1,7 @@
 import F1040Attachment from './F1040Attachment'
-import { Field, FillInstructions } from 'ustaxes/core/pdfFiller'
-import { FormTag } from 'ustaxes/core/irsForms/Form'
-import { BusinessPropertySale } from 'ustaxes/core/data'
+import type { Field, FillInstructions } from 'ustaxes/core/pdfFiller'
+import type { FormTag } from 'ustaxes/core/irsForms/Form'
+import type { BusinessPropertySale } from 'ustaxes/core/data'
 
 /**
  * Form 4797 — Sales of Business Property.

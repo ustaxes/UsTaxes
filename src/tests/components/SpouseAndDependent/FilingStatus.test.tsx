@@ -5,7 +5,8 @@ import log from 'ustaxes/core/log'
 
 import * as yarbitraries from '../../arbitraries'
 import { SpouseAndDependentTestPage } from './Pages'
-import { filingStatuses, TaxPayer, TaxYear } from 'ustaxes/core/data'
+import type { TaxPayer, TaxYear } from 'ustaxes/core/data'
+import { filingStatuses } from 'ustaxes/core/data'
 import { waitFor } from '@testing-library/react'
 
 beforeEach(() => {

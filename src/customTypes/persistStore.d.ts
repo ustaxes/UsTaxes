@@ -11,8 +11,8 @@
  */
 
 declare module 'redux-persist/es/persistStore' {
-  import { Store, Action, AnyAction } from 'redux'
-  import { PersistorOptions, Persistor } from 'redux-persist/es/types'
+  import type { Store, Action, AnyAction } from 'redux'
+  import type { PersistorOptions, Persistor } from 'redux-persist/es/types'
 
   /**
    * @desc Creates a persistor for a given store.

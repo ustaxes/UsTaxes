@@ -1,7 +1,8 @@
-import { State } from 'ustaxes/core/data'
-import StateForm from 'ustaxes/core/stateForms/Form'
-import { Either, left, right } from 'ustaxes/core/util'
-import F1040Base from './F1040Base'
+import type { State } from 'ustaxes/core/data'
+import type StateForm from 'ustaxes/core/stateForms/Form'
+import type { Either } from 'ustaxes/core/util'
+import { left, right } from 'ustaxes/core/util'
+import type F1040Base from './F1040Base'
 
 export enum StateFormError {
   unsupportedTaxYear = 'Tax year not supported',

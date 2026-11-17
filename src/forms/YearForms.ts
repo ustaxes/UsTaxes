@@ -1,6 +1,7 @@
-import { Information, Asset } from 'ustaxes/core/data'
-import { Either, isLeft, isRight, left, run, runAsync } from 'ustaxes/core/util'
-import { TaxYear } from 'ustaxes/core/data'
+import type { Information, Asset } from 'ustaxes/core/data'
+import type { Either } from 'ustaxes/core/util'
+import { isLeft, isRight, left, run, runAsync } from 'ustaxes/core/util'
+import type { TaxYear } from 'ustaxes/core/data'
 import { create1040 as create1040For2020 } from 'ustaxes/forms/Y2020/irsForms/Main'
 import { create1040 as create1040For2021 } from 'ustaxes/forms/Y2021/irsForms/Main'
 import { create1040 as create1040For2022 } from 'ustaxes/forms/Y2022/irsForms/Main'
@@ -8,15 +9,15 @@ import { create1040 as create1040For2023 } from 'ustaxes/forms/Y2023/irsForms/Ma
 import { create1040 as create1040For2024 } from 'ustaxes/forms/Y2024/irsForms/Main'
 import { create1040 as create1040For2025 } from 'ustaxes/forms/Y2025/irsForms/Main'
 
-import F1040For2020 from 'ustaxes/forms/Y2020/irsForms/F1040'
-import F1040For2021 from 'ustaxes/forms/Y2021/irsForms/F1040'
-import F1040For2022 from 'ustaxes/forms/Y2022/irsForms/F1040'
-import F1040For2023 from 'ustaxes/forms/Y2023/irsForms/F1040'
-import F1040For2024 from 'ustaxes/forms/Y2024/irsForms/F1040'
-import F1040For2025 from 'ustaxes/forms/Y2025/irsForms/F1040'
+import type F1040For2020 from 'ustaxes/forms/Y2020/irsForms/F1040'
+import type F1040For2021 from 'ustaxes/forms/Y2021/irsForms/F1040'
+import type F1040For2022 from 'ustaxes/forms/Y2022/irsForms/F1040'
+import type F1040For2023 from 'ustaxes/forms/Y2023/irsForms/F1040'
+import type F1040For2024 from 'ustaxes/forms/Y2024/irsForms/F1040'
+import type F1040For2025 from 'ustaxes/forms/Y2025/irsForms/F1040'
 
-import Form from 'ustaxes/core/irsForms/Form'
-import StateForm from 'ustaxes/core/stateForms/Form'
+import type Form from 'ustaxes/core/irsForms/Form'
+import type StateForm from 'ustaxes/core/stateForms/Form'
 
 import { createStateReturn as createStateReturn2020 } from 'ustaxes/forms/Y2020/stateForms'
 import { createStateReturn as createStateReturn2021 } from 'ustaxes/forms/Y2021/stateForms'
@@ -24,13 +25,10 @@ import { createStateReturn as createStateReturn2022 } from 'ustaxes/forms/Y2022/
 import { createStateReturn as createStateReturn2023 } from 'ustaxes/forms/Y2023/stateForms'
 import { createStateReturn as createStateReturn2024 } from 'ustaxes/forms/Y2024/stateForms'
 import { createStateReturn as createStateReturn2025 } from 'ustaxes/forms/Y2025/stateForms'
-import { PDFDocument } from 'pdf-lib'
+import type { PDFDocument } from 'pdf-lib'
 import { fillPdfFromFill } from 'ustaxes/core/pdfFiller/fillPdf'
-import {
-  combinePdfs,
-  downloadPDF,
-  PDFDownloader
-} from 'ustaxes/core/pdfFiller/pdfHandler'
+import type { PDFDownloader } from 'ustaxes/core/pdfFiller/pdfHandler'
+import { combinePdfs, downloadPDF } from 'ustaxes/core/pdfFiller/pdfHandler'
 import { F1040Error } from './errors'
 import { StateFormError } from './StateForms'
 import { validate } from './F1040Base'

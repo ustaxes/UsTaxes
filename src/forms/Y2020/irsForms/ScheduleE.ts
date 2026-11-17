@@ -1,14 +1,14 @@
-import {
+import type {
   Address,
   Property,
-  PropertyType,
   PropertyExpenseTypeName
 } from 'ustaxes/core/data'
-import { FormTag } from 'ustaxes/core/irsForms/Form'
+import { PropertyType } from 'ustaxes/core/data'
+import type { FormTag } from 'ustaxes/core/irsForms/Form'
 import { displayNegPos, sumFields } from 'ustaxes/core/irsForms/util'
 import _ from 'lodash'
 import F1040Attachment from './F1040Attachment'
-import { Field } from 'ustaxes/core/pdfFiller'
+import type { Field } from 'ustaxes/core/pdfFiller'
 
 type Cell = number | undefined
 export type MatrixRow = [Cell, Cell, Cell]

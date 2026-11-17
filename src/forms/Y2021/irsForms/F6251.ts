@@ -1,7 +1,7 @@
 import F1040Attachment from './F1040Attachment'
 import { FilingStatus, PersonRole } from 'ustaxes/core/data'
-import { FormTag } from 'ustaxes/core/irsForms/Form'
-import { Field } from 'ustaxes/core/pdfFiller'
+import type { FormTag } from 'ustaxes/core/irsForms/Form'
+import type { Field } from 'ustaxes/core/pdfFiller'
 
 type Part3 = Partial<{
   l12: number

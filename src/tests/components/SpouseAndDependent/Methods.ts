@@ -1,7 +1,7 @@
 import { PersonMethods } from '../../common/PersonMethods'
 import { within } from '@testing-library/react'
 import DomMethods from '../../common/DomMethods'
-import { FilingStatus } from 'ustaxes/core/data'
+import type { FilingStatus } from 'ustaxes/core/data'
 
 export class SpouseMethods extends PersonMethods {
   addButton = (): HTMLButtonElement | null =>

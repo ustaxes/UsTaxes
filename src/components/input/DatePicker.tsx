@@ -1,6 +1,7 @@
-import { ReactElement } from 'react'
+import type { ReactElement } from 'react'
 import { FormControl, Grid } from '@material-ui/core'
-import { Controller, FieldValues, useFormContext } from 'react-hook-form'
+import type { FieldValues } from 'react-hook-form'
+import { Controller, useFormContext } from 'react-hook-form'
 import useStyles from './styles'
 import ConditionallyWrap from 'ustaxes/components/ConditionallyWrap'
 import {
@@ -8,7 +9,7 @@ import {
   KeyboardDatePicker as MuiDatePicker
 } from '@material-ui/pickers'
 import DateFnsUtils from '@date-io/date-fns'
-import { DatePickerProps } from './types'
+import type { DatePickerProps } from './types'
 
 export function DatePicker<TFormValues extends FieldValues>(
   props: DatePickerProps<TFormValues>

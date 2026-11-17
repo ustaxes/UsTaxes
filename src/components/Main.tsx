@@ -1,11 +1,6 @@
-import { PropsWithChildren, ReactElement } from 'react'
-import {
-  createStyles,
-  makeStyles,
-  CssBaseline,
-  Grid,
-  Theme
-} from '@material-ui/core'
+import type { PropsWithChildren, ReactElement } from 'react'
+import type { Theme } from '@material-ui/core'
+import { createStyles, makeStyles, CssBaseline, Grid } from '@material-ui/core'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { isMobileOnly as isMobile } from 'react-device-detect'
 import { PagerProvider } from './pager'
@@ -14,14 +9,14 @@ import NoMatchPage from './NoMatchPage'
 import SkipToLinks from './SkipToLinks'
 import ScrollTop from './ScrollTop'
 import Menu, { backPages, drawerSectionsForYear } from './Menu'
-import { Section, SectionItem } from './ResponsiveDrawer'
+import type { Section, SectionItem } from './ResponsiveDrawer'
 
 import Urls from 'ustaxes/data/urls'
 import DataPropagator from './DataPropagator'
 import YearStatusBar from './YearStatusBar'
 import { useSelector } from 'react-redux'
-import { TaxYear } from 'ustaxes/core/data'
-import { YearsTaxesState } from 'ustaxes/redux'
+import type { TaxYear } from 'ustaxes/core/data'
+import type { YearsTaxesState } from 'ustaxes/redux'
 
 type Props = {
   isMobile: boolean

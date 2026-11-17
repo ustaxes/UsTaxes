@@ -558,7 +558,7 @@ Examples:
   console.log('\nNext steps:')
   console.log('  1. Copy the fillInstructions() method into the form class')
   console.log(
-    "  2. Add imports: import { FillInstructions, text, checkbox, radio } from 'ustaxes/core/pdfFiller'"
+    "  2. Add imports: import type { FillInstructions } from 'ustaxes/core/pdfFiller'; import { text, checkbox, radio } from 'ustaxes/core/pdfFiller'"
   )
   if (hasSpread) {
     console.log(

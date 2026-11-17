@@ -1,11 +1,11 @@
-import { ReactElement } from 'react'
+import type { ReactElement } from 'react'
 import {
   AddDependentForm,
   FilingStatusDropdown,
   SpouseInfo
 } from 'ustaxes/components/TaxPayer/SpouseAndDependent'
 import YearStatusBar from 'ustaxes/components/YearStatusBar'
-import { YearsTaxesState } from 'ustaxes/redux'
+import type { YearsTaxesState } from 'ustaxes/redux'
 import TestPage from 'ustaxes/tests/common/Page'
 import YearStatusBarMethods from 'ustaxes/tests/common/YearsStatusBarMethods'
 import { DependentMethods, SpouseMethods, FilingStatusMethods } from './Methods'

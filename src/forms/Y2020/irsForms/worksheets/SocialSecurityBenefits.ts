@@ -1,5 +1,6 @@
-import { FilingStatus, TaxPayer, Information } from 'ustaxes/core/data'
-import F1040 from '../F1040'
+import type { TaxPayer, Information } from 'ustaxes/core/data'
+import { FilingStatus } from 'ustaxes/core/data'
+import type F1040 from '../F1040'
 import { sumFields } from 'ustaxes/core/irsForms/util'
 import { SSBenefits } from '../../data/federal'
 

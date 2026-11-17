@@ -1,4 +1,4 @@
-import { Field, RenderedField, FillInstructions } from '.'
+import type { Field, RenderedField, FillInstructions } from '.'
 
 export const fieldIsNumber = (field: Field): field is number =>
   typeof field === 'number' || (!Number.isNaN(field) && Number.isFinite(field))

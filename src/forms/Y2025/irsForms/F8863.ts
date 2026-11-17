@@ -1,7 +1,7 @@
 import F1040Attachment from './F1040Attachment'
-import { Field, FillInstructions } from 'ustaxes/core/pdfFiller'
-import { FormTag } from 'ustaxes/core/irsForms/Form'
-import { FilingStatus, EducationExpenses } from 'ustaxes/core/data'
+import type { Field, FillInstructions } from 'ustaxes/core/pdfFiller'
+import type { FormTag } from 'ustaxes/core/irsForms/Form'
+import type { FilingStatus, EducationExpenses } from 'ustaxes/core/data'
 import { educationCredits } from '../data/federal'
 import { sumFields } from 'ustaxes/core/irsForms/util'
 

@@ -1,13 +1,14 @@
 /* eslint @typescript-eslint/no-empty-function: "off" */
 
-import { ReactElement } from 'react'
+import type { ReactElement } from 'react'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { Provider } from 'react-redux'
 import Questions from 'ustaxes/components/Questions'
-import { InfoStore, createStoreUnpersisted } from 'ustaxes/redux/store'
+import type { InfoStore } from 'ustaxes/redux/store'
+import { createStoreUnpersisted } from 'ustaxes/redux/store'
 import { questions } from 'ustaxes/core/data/questions'
 import { PagerButtons, PagerContext } from 'ustaxes/components/pager'
-import { Information } from 'ustaxes/core/data'
+import type { Information } from 'ustaxes/core/data'
 import { blankState } from 'ustaxes/redux/reducer'
 import TaxesStateMethods from 'ustaxes/redux/TaxesState'
 

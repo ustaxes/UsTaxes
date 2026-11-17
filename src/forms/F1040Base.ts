@@ -1,12 +1,10 @@
-import {
-  FilingStatus,
+import type {
   Income1099B,
   Income1099DA,
   Income1099Div,
   Income1099Int,
   Income1099R,
   Income1099SSA,
-  Income1099Type,
   Information,
   Person,
   PrimaryPerson,
@@ -14,8 +12,10 @@ import {
   Supported1099,
   TaxPayer
 } from 'ustaxes/core/data'
+import { FilingStatus, Income1099Type } from 'ustaxes/core/data'
 import Form from 'ustaxes/core/irsForms/Form'
-import { Either, left, right } from 'ustaxes/core/util'
+import type { Either } from 'ustaxes/core/util'
+import { left, right } from 'ustaxes/core/util'
 import { F1040Error } from './errors'
 
 export type ValidatedTaxpayer = TaxPayer & {

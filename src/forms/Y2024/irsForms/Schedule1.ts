@@ -1,8 +1,9 @@
 import F1040Attachment from './F1040Attachment'
-import { FormTag } from 'ustaxes/core/irsForms/Form'
+import type { FormTag } from 'ustaxes/core/irsForms/Form'
 import { sumFields } from 'ustaxes/core/irsForms/util'
-import F1040 from './F1040'
-import { Field, FillInstructions, text } from 'ustaxes/core/pdfFiller'
+import type F1040 from './F1040'
+import type { Field, FillInstructions } from 'ustaxes/core/pdfFiller'
+import { text } from 'ustaxes/core/pdfFiller'
 
 export default class Schedule1 extends F1040Attachment {
   tag: FormTag = 'f1040s1'

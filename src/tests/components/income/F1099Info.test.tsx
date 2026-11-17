@@ -1,15 +1,11 @@
 import F1099Info from 'ustaxes/components/income/F1099Info'
 import { fireEvent, screen, waitFor, act } from '@testing-library/react'
 import { Provider } from 'react-redux'
-import { InfoStore, createStoreUnpersisted } from 'ustaxes/redux/store'
+import type { InfoStore } from 'ustaxes/redux/store'
+import { createStoreUnpersisted } from 'ustaxes/redux/store'
 import { PagerButtons, PagerContext } from 'ustaxes/components/pager'
-import {
-  FilingStatus,
-  Income1099Type,
-  Information,
-  PersonRole,
-  IncomeW2
-} from 'ustaxes/core/data'
+import type { Information, IncomeW2 } from 'ustaxes/core/data'
+import { FilingStatus, Income1099Type, PersonRole } from 'ustaxes/core/data'
 import { blankState } from 'ustaxes/redux/reducer'
 import userEvent from '@testing-library/user-event'
 import { renderWithProviders } from 'ustaxes/testUtil'

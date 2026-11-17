@@ -1,5 +1,6 @@
-import { FilingStatus, IncomeW2, PersonRole } from 'ustaxes/core/data'
-import { ValidatedInformation } from 'ustaxes/forms/F1040Base'
+import type { IncomeW2 } from 'ustaxes/core/data'
+import { FilingStatus, PersonRole } from 'ustaxes/core/data'
+import type { ValidatedInformation } from 'ustaxes/forms/F1040Base'
 import { blankState } from 'ustaxes/redux/reducer'
 import F1040 from '../irsForms/F1040'
 

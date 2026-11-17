@@ -1,7 +1,8 @@
 import F1040Attachment from './F1040Attachment'
 import { PersonRole } from 'ustaxes/core/data'
-import { Field, FillInstructions, text, checkbox } from 'ustaxes/core/pdfFiller'
-import { FormTag } from 'ustaxes/core/irsForms/Form'
+import type { Field, FillInstructions } from 'ustaxes/core/pdfFiller'
+import { text, checkbox } from 'ustaxes/core/pdfFiller'
+import type { FormTag } from 'ustaxes/core/irsForms/Form'
 
 /** 10% additional tax rate on early IRA/retirement distributions. */
 const EARLY_WITHDRAWAL_TAX_RATE = 0.1

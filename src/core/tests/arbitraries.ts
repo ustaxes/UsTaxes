@@ -1,15 +1,17 @@
 import * as fc from 'fast-check'
-import { Arbitrary } from 'fast-check'
+import type { Arbitrary } from 'fast-check'
 import locationPostalCodes from '../data/locationPostalCodes'
-import { QuestionTagName, questionTagNames, Responses } from '../data'
+import type { QuestionTagName, Responses } from '../data'
+import { questionTagNames } from '../data'
 import * as types from '../data'
 import * as util from '../util'
 import _ from 'lodash'
-import {
+import type {
   ValidatedInformation,
   ValidatedTaxpayer
 } from 'ustaxes/forms/F1040Base'
-import { blankYearTaxesState, YearsTaxesState } from 'ustaxes/redux'
+import type { YearsTaxesState } from 'ustaxes/redux'
+import { blankYearTaxesState } from 'ustaxes/redux'
 
 const lower: Arbitrary<string> = fc
   .integer({ min: 0x61, max: 0x7a })

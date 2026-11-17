@@ -1,10 +1,8 @@
 import { Grid, TextField, useMediaQuery } from '@material-ui/core'
 import { Alert } from '@material-ui/lab'
-import { ReactElement } from 'react'
-import DataTable, {
-  ConditionalStyles,
-  TableColumn
-} from 'react-data-table-component'
+import type { ReactElement } from 'react'
+import type { ConditionalStyles, TableColumn } from 'react-data-table-component'
+import DataTable from 'react-data-table-component'
 import useStyles from '../../input/styles'
 import { columnInputStyles, useRowStyles } from './DataTableStyle'
 
