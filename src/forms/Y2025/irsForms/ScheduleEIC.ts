@@ -343,10 +343,11 @@ export default class ScheduleEIC extends F1040Attachment {
     )
   }
 
+  // Schedule EIC lists at most 3 children; the credit is the same for 3 or
+  // more. Children are listed in the order they were entered.
   qualifyingDependents = (): Dependent[] =>
     this.f1040.info.taxPayer.dependents
       .filter((d) => this.meetsAgeTest(d))
-      .sort((d) => d.dateOfBirth.getFullYear())
       .slice(0, 3)
 
   qualifyingDependentsFilled = (): Array<Dependent | undefined> => {
