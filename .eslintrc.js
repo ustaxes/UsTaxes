@@ -34,6 +34,6 @@ module.exports = {
     ]
   },
   parserOptions: {
-    project: ['./tsconfig.json', './.eslintrc.js']
+    project: ['./tsconfig.json']
   }
 }

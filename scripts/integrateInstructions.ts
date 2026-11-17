@@ -13,7 +13,9 @@
  *  4. Writes the updated file (dry-run by default, pass --write to save)
  */
 
+import { readFileSync } from 'fs'
 import { readFile, writeFile } from 'fs/promises'
+import path from 'path'
 import ts from 'typescript'
 
 function extractGeneratedCode(outputTxt: string): string {
@@ -33,6 +35,34 @@ function extractGeneratedCode(outputTxt: string): string {
   return code.replace(/^\n+/, '')
 }
 
+const pdfFillerIndex = path.resolve(__dirname, '../src/core/pdfFiller/index.ts')
+
+// Types exported by pdfFiller, read from its index so that a type added there
+// goes into the type-only import without a change here.
+function pdfFillerTypeNames(): Set<string> {
+  const file = ts.createSourceFile(
+    pdfFillerIndex,
+    readFileSync(pdfFillerIndex, 'utf8'),
+    ts.ScriptTarget.Latest,
+    true
+  )
+  const names = new Set<string>()
+  for (const statement of file.statements) {
+    if (
+      (ts.isInterfaceDeclaration(statement) ||
+        ts.isTypeAliasDeclaration(statement)) &&
+      (ts.getCombinedModifierFlags(statement) & ts.ModifierFlags.Export) !== 0
+    ) {
+      names.add(statement.name.text)
+    }
+  }
+  return names
+}
+
+// Forms import pdfFiller through the alias, and formgen output uses a relative path.
+const isPdfFillerPath = (specifier: string): boolean =>
+  specifier === 'pdfFiller' || specifier.endsWith('/pdfFiller')
+
 function updateImport(source: string): string {
   const file = ts.createSourceFile(
     'form.ts',
@@ -44,15 +74,13 @@ function updateImport(source: string): string {
     (statement): statement is ts.ImportDeclaration =>
       ts.isImportDeclaration(statement) &&
       ts.isStringLiteral(statement.moduleSpecifier) &&
-      statement.moduleSpecifier.text === 'ustaxes/core/pdfFiller'
+      isPdfFillerPath(statement.moduleSpecifier.text)
   )
-  const typeNames = new Set([
-    'Field',
-    'RenderedField',
-    'RadioSelect',
-    'FillInstruction',
-    'FillInstructions'
-  ])
+  const modulePath =
+    imports.length > 0 && ts.isStringLiteral(imports[0].moduleSpecifier)
+      ? imports[0].moduleSpecifier.text
+      : 'ustaxes/core/pdfFiller'
+  const typeNames = pdfFillerTypeNames()
   const types = new Set(['FillInstructions'])
   const values = new Set(['text', 'checkbox', 'radio'])
   const namedImports: ts.ImportDeclaration[] = []
@@ -76,15 +104,31 @@ function updateImport(source: string): string {
       names.add(specifier.getText(file).replace(/^type\s+/, ''))
     }
   }
-  const replacement = `import type { ${Array.from(types).join(', ')} } from 'ustaxes/core/pdfFiller'
-import { ${Array.from(values).join(', ')} } from 'ustaxes/core/pdfFiller'`
+  const typeList = Array.from(types).join(', ')
+  const valueList = Array.from(values).join(', ')
+  const replacement = `import type { ${typeList} } from '${modulePath}'
+import { ${valueList} } from '${modulePath}'`
   if (namedImports.length === 0) return replacement + '\n' + source
   for (let index = namedImports.length - 1; index >= 0; index--) {
     const declaration = namedImports[index]
-    source =
-      source.slice(0, declaration.getStart(file)) +
-      (index === 0 ? replacement : '') +
-      source.slice(declaration.end)
+    if (index === 0) {
+      source =
+        source.slice(0, declaration.getStart(file)) +
+        replacement +
+        source.slice(declaration.end)
+      continue
+    }
+    // Remove the whole line, with any comments above or after the import.
+    const leading =
+      ts.getLeadingCommentRanges(source, declaration.getFullStart()) ?? []
+    const trailing = ts.getTrailingCommentRanges(source, declaration.end) ?? []
+    const start =
+      leading.length > 0 ? leading[0].pos : declaration.getStart(file)
+    let end =
+      trailing.length > 0 ? trailing[trailing.length - 1].end : declaration.end
+    const lineBreak = /^[ \t]*\r?\n/.exec(source.slice(end))
+    if (lineBreak !== null) end += lineBreak[0].length
+    source = source.slice(0, start) + source.slice(end)
   }
   return source
 }
