@@ -1,6 +1,5 @@
 import { FilingStatus } from 'ustaxes/core/data'
 import type { Piecewise } from 'ustaxes/core/util'
-import { linear } from 'ustaxes/core/util'
 
 export const CURRENT_YEAR = 2025
 
@@ -469,31 +468,25 @@ export const amt = {
   }
 }
 
-type Point = [number, number]
-
-// Provided a list of points, create a piecewise function
-// that makes linear segments through the list of points.
-const toPieceWise = (points: Point[]): Piecewise =>
-  points
-    .slice(0, points.length - 1)
-    .map((point, idx) => [point, points[idx + 1]])
-    .map(([[x1, y1], [x2, y2]]) => ({
-      // starting point     slope              intercept
-      lowerBound: x1,
-      f: linear((y2 - y1) / (x2 - x1), y1 - (x1 * (y2 - y1)) / (x2 - x1))
-    }))
-
 // Earned income credit parameters, IRS Rev. Proc. 2024-40, sec. 3.06
 // (tax year 2025): https://www.irs.gov/pub/irs-drop/rp-24-40.pdf#page=8
 // tax year 2026: https://www.irs.gov/pub/irs-drop/rp-25-32.pdf
 //
-// This is the only place the EIC dollar amounts are written down. The credit
+// This is the only place the EIC amounts are written down. The credit
 // curves, the step 1 income limits and the Worksheet A line 5 thresholds are
 // all derived from it, so a new tax year only updates these numbers.
 //
 // Every array is indexed by number of qualifying children: 0, 1, 2, 3 or more.
-const eicEarnedIncomeAmount = [8490, 12730, 17880, 17880]
 const eicMaximumCredit = [649, 4328, 7152, 8046]
+
+// Credit and phase-out percentages from IRC 32(b)(1), in basis points
+// (3400 = 34%). The curves use the statutory rates, not slopes derived from
+// the rounded dollar amounts above: 4328 / 12730 is 33.998%, which rounds
+// some EIC Table rows down a dollar. Integer basis points also keep table
+// amounts that fall exactly on 50 cents exact, so they round up as the table
+// does.
+const eicCreditRateBp = [765, 3400, 4000, 4500]
+const eicPhaseOutRateBp = [765, 1598, 2106, 2106]
 
 interface EICPhaseOut {
   /** Threshold phase-out amount: the credit starts to fall above this income. */
@@ -512,18 +505,24 @@ const eicPhaseOutMfj: EICPhaseOut = {
   end: [26214, 57554, 64430, 68675]
 }
 
-// The credit rises from $0 to the maximum at the earned income amount, stays
-// flat until the phase-out starts, then falls to $0 at the completed
-// phase-out amount.
+// The credit is the credit percentage of income, up to the maximum credit,
+// reduced by the phase-out percentage of income above the phase-out start.
+// The result is not rounded or floored here.
 const eicFormulas = (phaseOut: EICPhaseOut): Piecewise[] =>
-  eicMaximumCredit.map((maximumCredit, children) =>
-    toPieceWise([
-      [0, 0],
-      [eicEarnedIncomeAmount[children], maximumCredit],
-      [phaseOut.start[children], maximumCredit],
-      [phaseOut.end[children], 0]
-    ])
-  )
+  eicMaximumCredit.map((maximumCredit, children) => [
+    {
+      lowerBound: 0,
+      f: (income: number): number =>
+        Math.min((eicCreditRateBp[children] * income) / 10000, maximumCredit)
+    },
+    {
+      lowerBound: phaseOut.start[children],
+      f: (income: number): number =>
+        maximumCredit -
+        (eicPhaseOutRateBp[children] * (income - phaseOut.start[children])) /
+          10000
+    }
+  ])
 
 // MFS filers can't claim the EIC (no separated-spouse support yet).
 const eicByFilingStatus = <T>(
