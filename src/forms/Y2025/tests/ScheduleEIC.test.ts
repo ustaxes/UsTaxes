@@ -11,11 +11,13 @@ import F1040 from '../irsForms/F1040'
 beforeAll(() => jest.spyOn(console, 'warn').mockImplementation(() => {}))
 
 describe('ScheduleEIC', () => {
-  it('should disallow EIC for income below threshold', async () => {
+  it('should disallow EIC at or above every completed phase-out amount', async () => {
     await testKit.with1040Assert((forms): Promise<void> => {
       const f1040 = commonTests.findF1040OrFail(forms)
-      const formula = federal.EIC.formulas[f1040.info.taxPayer.filingStatus]
-      if (formula !== undefined && f1040.wages() < formula[0][1].lowerBound) {
+      const caps = federal.EIC.caps[f1040.info.taxPayer.filingStatus]
+      // AGI at or above the largest cap (3 or more children) fails Step 1
+      // whatever the number of qualifying children.
+      if (caps !== undefined && f1040.l11b() >= Math.max(...caps)) {
         expect(f1040.scheduleEIC.allowed()).toBe(false)
         expect(f1040.scheduleEIC.credit()).toBe(0)
       }
