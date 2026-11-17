@@ -171,4 +171,19 @@ describe('ScheduleEIC 2025 computation', () => {
     })
     expect(f1040.scheduleEIC.credit()).toBe(3261)
   })
+
+  it('skips line 4a for a child under 19 and answers it for a student', () => {
+    // Born 2015 (age 10): skip lines 4a and 4b. Born 2004 (age 21), a
+    // student: line 4a is Yes.
+    const f1040 = eicReturn(20000, [
+      child('2015-06-15'),
+      child('2004-06-15', true)
+    ])
+    expect(f1040.scheduleEIC.ageFields().slice(0, 4)).toEqual([
+      undefined,
+      undefined,
+      true,
+      false
+    ])
+  })
 })
