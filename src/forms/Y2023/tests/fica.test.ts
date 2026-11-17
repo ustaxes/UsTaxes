@@ -12,6 +12,7 @@ import { run } from 'ustaxes/core/util'
 import { blankState } from 'ustaxes/redux/reducer'
 import type { ValidatedInformation } from 'ustaxes/forms/F1040Base'
 import * as fc from 'fast-check'
+import { expectedExcessSSTax } from 'ustaxes/tests/excessSSTax'
 
 jest.setTimeout(30000)
 
@@ -68,6 +69,9 @@ const sampleInfo: ValidatedInformation = {
 
 const hasSSRefund = (f1040: F1040): boolean => f1040.schedule3.l11() > 0
 
+const expectedExcess = (w2s: IncomeW2[]): number =>
+  expectedExcessSSTax(w2s, fica)
+
 function hasAdditionalMedicareTax(f1040: F1040): boolean {
   const medicareTax = f1040.f8959.l18()
   return medicareTax > 0
@@ -90,52 +94,31 @@ describe('fica', () => {
   it('should give refund SS tax overpayment only in some conditions', async () => {
     await testKit.with1040Assert((forms) => {
       const f1040 = commonTests.findF1040OrFail(forms)
-      if (f1040.validW2s().length <= 1) {
-        // Should never give SS refund with 1 or fewer W2s
-        expect(hasSSRefund(f1040)).toEqual(false)
-      } else {
-        const ssWithheld = f1040
-          .validW2s()
-          .map((w2) => w2.ssWithholding)
-          .reduce((l, r) => l + r, 0)
-        if (
-          f1040.validW2s().some((w2) => w2.ssWithholding > fica.maxSSTax) ||
-          ssWithheld < fica.maxSSTax
-        ) {
-          // No excess to refund if any single W2 already exceeded max withholding, or
-          // combined withholding did not exceed one year's max SS tax.
-          expect(hasSSRefund(f1040)).toEqual(false)
-        } else {
-          // Otherwise, should always give SS refund, and attach schedule 3
-          expect(hasSSRefund(f1040)).toEqual(true)
-          expect(hasAttachment(forms, Schedule3)).toEqual(true)
+      const ssRefund = f1040.schedule3.l11()
+      const w2s = f1040.validW2s()
+      for (const role of [PersonRole.PRIMARY, PersonRole.SPOUSE] as const) {
+        if (w2s.filter((w2) => w2.personRole === role).length <= 1) {
+          // A person with one or fewer W2s never has a claimable excess
+          expect(f1040.schedule3.excessSSTaxWithholdingFor(role)).toEqual(0)
         }
+      }
+      if (expectedExcess(w2s) > 0) {
+        expect(ssRefund).toBeGreaterThan(0)
+        expect(hasAttachment(forms, Schedule3)).toEqual(true)
+      } else {
+        expect(ssRefund).toEqual(0)
       }
       return Promise.resolve()
     })
   })
 
-  it('should give SS refund based on filing status', async () => {
+  it('should give SS refund figured separately for each person', async () => {
     await testKit.with1040Assert((forms) => {
       const f1040 = commonTests.findF1040OrFail(forms)
       if (hasSSRefund(f1040)) {
         const ssRefund = f1040.schedule3.l11()
         expect(displayRound(ssRefund)).not.toBeUndefined()
-        expect(ssRefund).toBeGreaterThan(0)
-
-        const ssWithheld =
-          f1040
-            .validW2s()
-            .filter((w2) => w2.personRole == PersonRole.PRIMARY)
-            .map((w2) => w2.ssWithholding)
-            .reduce((l, r) => l + r, 0) +
-          f1040
-            .validW2s()
-            .filter((w2) => w2.personRole == PersonRole.SPOUSE)
-            .map((w2) => w2.ssWithholding)
-            .reduce((l, r) => l + r, 0)
-
-        expect(ssRefund).toEqual(ssWithheld - fica.maxSSTax)
+        expect(ssRefund).toBeCloseTo(expectedExcess(f1040.validW2s()), 2)
       } else {
         fc.pre(false)
       }
@@ -175,11 +158,14 @@ describe('fica', () => {
         {
           ...sampleW2,
           personRole: PersonRole.SPOUSE,
+          ssWages: fica.maxIncomeSSTaxApplies,
           ssWithholding: fica.maxSSTax
         },
         {
           ...sampleW2,
+          employer: { EIN: '222222222', employerName: 'second employer' },
           personRole: PersonRole.SPOUSE,
+          ssWages: 16130,
           // This person has already contributed to the max for their other w2 so the refund should equal this amount
           ssWithholding: 1000
         },
@@ -194,7 +180,34 @@ describe('fica', () => {
     const f1040 = run(testKit.builder.build(testInfo, []).f1040())
       .map(commonTests.findF1040OrFail)
       .orThrow()
-    expect(f1040.schedule3.claimableExcessSSTaxWithholding()).toEqual(1000)
+    expect(f1040.schedule3.claimableExcessSSTaxWithholding()).toBeCloseTo(
+      1000,
+      2
+    )
+  })
+
+  it('should still allow the excess from other employers when one withheld over the max', () => {
+    const testInfo: ValidatedInformation = {
+      ...sampleInfo,
+      w2s: [
+        {
+          ...sampleW2,
+          ssWages: fica.maxIncomeSSTaxApplies,
+          ssWithholding: fica.maxSSTax + 500
+        },
+        {
+          ...sampleW2,
+          employer: { EIN: '222222222', employerName: 'second employer' },
+          ssWages: 20000,
+          ssWithholding: 3000
+        }
+      ]
+    }
+
+    const f1040 = run(testKit.builder.build(testInfo, []).f1040())
+      .map(commonTests.findF1040OrFail)
+      .orThrow()
+    expect(f1040.schedule3.l11()).toBeCloseTo(3000, 2)
   })
 
   it('should add Additional Medicare Tax form 8959', async () => {

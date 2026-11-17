@@ -12,6 +12,7 @@ import { run } from 'ustaxes/core/util'
 import { blankState } from 'ustaxes/redux/reducer'
 import type { ValidatedInformation } from 'ustaxes/forms/F1040Base'
 import * as fc from 'fast-check'
+import { expectedExcessSSTax } from 'ustaxes/tests/excessSSTax'
 
 jest.setTimeout(30000)
 
@@ -68,49 +69,8 @@ const sampleInfo: ValidatedInformation = {
 
 const hasSSRefund = (f1040: F1040): boolean => f1040.schedule3.l11() > 0
 
-// Pub. 505 excess social security worksheet, figured per person, written
-// line by line rather than mirroring Schedule3:
-//   1. For each employer, social security tax withheld, but not more than
-//      the maximum.
-//   2. Add the amounts on line 1.
-//   3. Subtract the maximum; if zero or less, nothing is claimable.
-// The credit also requires wages over the wage base, counting only W-2s with
-// box 4 withholding (box 3, or box 5 if larger for tips; box 1 if both are
-// blank).
-const employerKey = (w2: IncomeW2, i: number): string =>
-  w2.employer?.EIN ?? `unknown-${i}`
-
-const expectedExcessFor = (
-  w2s: IncomeW2[],
-  role: PersonRole.PRIMARY | PersonRole.SPOUSE
-): number => {
-  const mine = w2s.filter(
-    (w2) => w2.personRole === role && w2.ssWithholding > 0
-  )
-
-  let wages = 0
-  for (const w2 of mine) {
-    if (w2.ssWages === 0 && w2.medicareIncome === 0) wages += w2.income
-    else wages += Math.max(w2.ssWages, w2.medicareIncome)
-  }
-  if (wages <= fica.maxIncomeSSTaxApplies) return 0
-
-  const perEmployer = new Map<string, number>()
-  mine.forEach((w2, i) => {
-    const key = employerKey(w2, i)
-    perEmployer.set(key, (perEmployer.get(key) ?? 0) + w2.ssWithholding)
-  })
-  let line2 = 0
-  perEmployer.forEach((withheld) => {
-    line2 += Math.min(withheld, fica.maxSSTax)
-  })
-  const line3 = line2 - fica.maxSSTax
-  return line3 > 0 ? line3 : 0
-}
-
 const expectedExcess = (w2s: IncomeW2[]): number =>
-  expectedExcessFor(w2s, PersonRole.PRIMARY) +
-  expectedExcessFor(w2s, PersonRole.SPOUSE)
+  expectedExcessSSTax(w2s, fica)
 
 function hasAdditionalMedicareTax(f1040: F1040): boolean {
   const medicareTax = f1040.f8959.l18()

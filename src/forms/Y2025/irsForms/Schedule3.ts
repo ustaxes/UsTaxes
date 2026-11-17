@@ -1,7 +1,7 @@
 import F1040Attachment from './F1040Attachment'
 import { PersonRole } from 'ustaxes/core/data'
-import type { IncomeW2 } from 'ustaxes/core/data'
 import { sumFields } from 'ustaxes/core/irsForms/util'
+import { excessSSTaxWithholding } from 'ustaxes/core/irsForms/excessSSTax'
 import type { FormTag } from 'ustaxes/core/irsForms/Form'
 import { fica } from '../data/federal'
 import type { Field, FillInstructions } from 'ustaxes/core/pdfFiller'
@@ -11,52 +11,11 @@ export default class Schedule3 extends F1040Attachment {
   tag: FormTag = 'f1040s3'
   sequenceIndex = 3
 
-  // Schedule 3, line 11 (2025 Instructions for Form 1040; Pub. 505 excess
-  // social security worksheet): if a person had more than one employer and
-  // total wages over the social security wage base
-  // (fica.maxIncomeSSTaxApplies), they can claim the social security tax
-  // withheld in excess of the maximum (fica.maxSSTax). Withholding is counted
-  // up to the maximum per employer; anything one employer withheld over the
-  // maximum can't be claimed on the return (the employer must refund it), but
-  // the excess from the other employers still can. Excess withholding is
-  // figured separately for each spouse.
-  //
-  // Wage test: only W-2s with social security withholding count. Each
-  // contributes the larger of box 3 (social security wages) and box 5
-  // (Medicare wages), since box 3 omits social security tips (box 7), which we
-  // don't collect. W-2s without box 4 withholding are skipped so Medicare-only
-  // wages (e.g. some government jobs) aren't counted. If boxes 3 and 5 are
-  // both blank, box 1 is used instead.
-  //
-  // Employer test: W-2s are grouped by employer EIN, so one employer that
-  // issued several W-2s is treated as a single employer.
+  // Schedule 3 line 11: excess social security tax withheld, figured per
+  // person (see core/irsForms/excessSSTax).
   excessSSTaxWithholdingFor = (
     role: PersonRole.PRIMARY | PersonRole.SPOUSE
-  ): number => {
-    const w2s = this.f1040
-      .validW2s()
-      .filter((w2) => w2.personRole === role && w2.ssWithholding > 0)
-
-    const wagesFor = (w2: IncomeW2): number =>
-      Math.max(w2.ssWages, w2.medicareIncome) || w2.income
-    if (sumFields(w2s.map(wagesFor)) <= fica.maxIncomeSSTaxApplies) return 0
-
-    const withheldByEmployer = new Map<string, number>()
-    w2s.forEach((w2, i) => {
-      const key = w2.employer?.EIN ?? `w2-${i}`
-      withheldByEmployer.set(
-        key,
-        (withheldByEmployer.get(key) ?? 0) + w2.ssWithholding
-      )
-    })
-    const countedWithholding = sumFields(
-      Array.from(withheldByEmployer.values()).map((w) =>
-        Math.min(w, fica.maxSSTax)
-      )
-    )
-
-    return Math.max(0, countedWithholding - fica.maxSSTax)
-  }
+  ): number => excessSSTaxWithholding(this.f1040.validW2s(), role, fica)
 
   claimableExcessSSTaxWithholding = (): number =>
     this.excessSSTaxWithholdingFor(PersonRole.PRIMARY) +
