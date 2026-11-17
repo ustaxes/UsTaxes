@@ -42,7 +42,6 @@ export default class ScheduleEIC extends F1040Attachment {
   tag: FormTag = 'f1040sei'
   sequenceIndex = 43
   pub596Worksheet1: Pub596Worksheet1
-  investmentIncomeLimit = federal.EIC.maxInvestmentIncome
 
   constructor(f1040: F1040) {
     super(f1040)
