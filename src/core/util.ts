@@ -212,3 +212,61 @@ export const intentionallyFloat = <A extends unknown[]>(
     void fn(...args)
   }
 }
+
+/** A calendar date: [year, month (1-12), day]. */
+export type CalendarDate = [number, number, number]
+
+const daysInMonth = (year: number, month: number): number =>
+  new Date(Date.UTC(year, month, 0)).getUTCDate()
+
+const calendarDateIfValid = (
+  year: number,
+  month: number,
+  day: number
+): CalendarDate | undefined =>
+  month >= 1 && month <= 12 && day >= 1 && day <= daysInMonth(year, month)
+    ? [year, month, day]
+    : undefined
+
+/**
+ * Read M/D/YYYY, M-D-YYYY or YYYY-M-D (an ISO time may follow). Anything else,
+ * including 2-digit years and impossible dates like 02/30/2025, is undefined.
+ */
+export const parseCalendarDate = (date: string): CalendarDate | undefined => {
+  const s = date.trim()
+  const us = /^(\d{1,2})[/-](\d{1,2})[/-](\d{4})$/.exec(s)
+  if (us !== null) {
+    return calendarDateIfValid(Number(us[3]), Number(us[1]), Number(us[2]))
+  }
+  const iso = /^(\d{4})-(\d{1,2})-(\d{1,2})(T.*)?$/.exec(s)
+  if (iso !== null) {
+    return calendarDateIfValid(Number(iso[1]), Number(iso[2]), Number(iso[3]))
+  }
+  return undefined
+}
+
+/** The calendar date of a Date, in local time. */
+export const toCalendarDate = (date: Date): CalendarDate => [
+  date.getFullYear(),
+  date.getMonth() + 1,
+  date.getDate()
+]
+
+/**
+ * Held more than 1 year: disposed of after the first anniversary of the date
+ * acquired (the holding period starts the day after acquisition). For property
+ * acquired on February 29, the anniversary in a non-leap year is February 28.
+ */
+export const isHeldMoreThanOneYear = (
+  acquired: CalendarDate,
+  disposed: CalendarDate
+): boolean => {
+  const [ay, am, ad] = acquired
+  const anniversary: CalendarDate = [
+    ay + 1,
+    am,
+    Math.min(ad, daysInMonth(ay + 1, am))
+  ]
+  const key = ([y, m, d]: CalendarDate): number => y * 10000 + m * 100 + d
+  return key(disposed) > key(anniversary)
+}

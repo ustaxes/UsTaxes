@@ -6,6 +6,7 @@ import type F1040 from './F1040'
 import { CURRENT_YEAR } from '../data/federal'
 import type { Field, FillInstructions } from 'ustaxes/core/pdfFiller'
 import { text, checkbox } from 'ustaxes/core/pdfFiller'
+import { isHeldMoreThanOneYear, toCalendarDate } from 'ustaxes/core/util'
 
 type EmptyLine = [
   undefined,
@@ -152,13 +153,12 @@ export default class F8949 extends F1040Attachment {
   thisYearShortTermSales = (): SoldAsset<Date>[] =>
     this.thisYearSales().filter((p) => !this.isLongTerm(p))
 
-  // in milliseconds
-  oneDay = 1000 * 60 * 60 * 24
-
   isLongTerm = (p: Asset<Date>): boolean => {
     if (p.closeDate === undefined || p.closePrice === undefined) return false
-    const milliInterval = p.closeDate.getTime() - p.openDate.getTime()
-    return milliInterval / this.oneDay > 366
+    return isHeldMoreThanOneYear(
+      toCalendarDate(p.openDate),
+      toCalendarDate(p.closeDate)
+    )
   }
 
   /**

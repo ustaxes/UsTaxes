@@ -9,7 +9,10 @@ import { FilingStatus, Income1099Type, PersonRole } from 'ustaxes/core/data'
 import type { ValidatedInformation } from 'ustaxes/forms/F1040Base'
 import { blankState } from 'ustaxes/redux/reducer'
 import F1040 from '../irsForms/F1040'
-import { isHeldMoreThanOneYear } from '../irsForms/F4797'
+import { isSaleHeldMoreThanOneYear } from '../irsForms/F4797'
+import { create1040 } from '../irsForms/Main'
+import { isLeft } from 'ustaxes/core/util'
+import { F1040Error } from 'ustaxes/forms/errors'
 
 beforeAll(() => jest.spyOn(console, 'warn').mockImplementation(() => {}))
 
@@ -136,14 +139,51 @@ describe('Form 4797 (2025)', () => {
 
   it('counts as held more than 1 year only after the first anniversary', () => {
     expect(
-      isHeldMoreThanOneYear(sale(0, 0, 0, '01/15/2024', '01/15/2025'))
+      isSaleHeldMoreThanOneYear(sale(0, 0, 0, '01/15/2024', '01/15/2025'))
     ).toBe(false)
     expect(
-      isHeldMoreThanOneYear(sale(0, 0, 0, '01/15/2024', '01/16/2025'))
+      isSaleHeldMoreThanOneYear(sale(0, 0, 0, '01/15/2024', '01/16/2025'))
     ).toBe(true)
     expect(
-      isHeldMoreThanOneYear(sale(0, 0, 0, '2024-01-15', '2025-01-16'))
+      isSaleHeldMoreThanOneYear(sale(0, 0, 0, '2024-01-15', '2025-01-16'))
     ).toBe(true)
+  })
+
+  it('reads M/D/YYYY, M-D-YYYY and single-digit ISO dates', () => {
+    expect(
+      isSaleHeldMoreThanOneYear(sale(0, 0, 0, '3/1/2025', '3-2-2026'))
+    ).toBe(true)
+    expect(
+      isSaleHeldMoreThanOneYear(sale(0, 0, 0, '2025-3-1', '2025-9-1'))
+    ).toBe(false)
+  })
+
+  it('uses February 28 as the anniversary of February 29', () => {
+    expect(
+      isSaleHeldMoreThanOneYear(sale(0, 0, 0, '02/29/2024', '02/28/2025'))
+    ).toBe(false)
+    expect(
+      isSaleHeldMoreThanOneYear(sale(0, 0, 0, '02/29/2024', '03/01/2025'))
+    ).toBe(true)
+  })
+
+  it('rejects returns with sale dates it cannot read', () => {
+    for (const dateAcquired of ['3/1/25', '02/30/2025', 'soon']) {
+      const info = {
+        ...makeReturn([]).info,
+        businessPropertySales: [sale(10000, 0, 12000, dateAcquired)]
+      }
+      const result = create1040(info, [])
+      expect(isLeft(result) ? result.left : []).toContain(
+        F1040Error.invalidBusinessPropertySaleDate
+      )
+    }
+  })
+
+  it('leaves Schedule 1 out when Form 4797 has nothing for line 4', () => {
+    const f1040 = makeReturn([sale(10000, 0, 15000)])
+    expect(f1040.f4797?.l18b()).toBeUndefined()
+    expect(f1040.schedule1.isNeeded()).toBe(false)
   })
 })
 

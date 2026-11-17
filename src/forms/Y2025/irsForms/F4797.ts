@@ -3,6 +3,7 @@ import type { Field, FillInstructions } from 'ustaxes/core/pdfFiller'
 import type { FormTag } from 'ustaxes/core/irsForms/Form'
 import type { BusinessPropertySale } from 'ustaxes/core/data'
 import { sumFields } from 'ustaxes/core/irsForms/util'
+import { isHeldMoreThanOneYear, parseCalendarDate } from 'ustaxes/core/util'
 
 /**
  * Form 4797 — Sales of Business Property.
@@ -43,10 +44,10 @@ export default class F4797 extends F1040Attachment {
   }
 
   private longTermSales = (): BusinessPropertySale[] =>
-    this.sales().filter((s) => isHeldMoreThanOneYear(s))
+    this.sales().filter((s) => isSaleHeldMoreThanOneYear(s))
 
   private shortTermSales = (): BusinessPropertySale[] =>
-    this.sales().filter((s) => !isHeldMoreThanOneYear(s))
+    this.sales().filter((s) => !isSaleHeldMoreThanOneYear(s))
 
   /** Long-term sales figured in Part III: depreciated property sold at a gain. */
   private partIIISales = (): BusinessPropertySale[] =>
@@ -127,32 +128,19 @@ export default class F4797 extends F1040Attachment {
   fillInstructions = (): FillInstructions => []
 }
 
-/** Parse MM/DD/YYYY or YYYY-MM-DD into [year, month, day]. */
-const parseDate = (date: string): [number, number, number] | undefined => {
-  const us = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/.exec(date.trim())
-  if (us !== null) {
-    return [Number(us[3]), Number(us[1]), Number(us[2])]
-  }
-  const iso = /^(\d{4})-(\d{2})-(\d{2})/.exec(date.trim())
-  if (iso !== null) {
-    return [Number(iso[1]), Number(iso[2]), Number(iso[3])]
-  }
-  return undefined
-}
-
 /**
  * Held more than 1 year: sold after the first anniversary of the date
- * acquired. Dates that can't be read count as more than 1 year, the usual case
- * for business property.
+ * acquired. validate() rejects returns with sale dates that can't be read.
  */
-export const isHeldMoreThanOneYear = (sale: BusinessPropertySale): boolean => {
-  const acquired = parseDate(sale.dateAcquired)
-  const sold = parseDate(sale.dateSold)
+export const isSaleHeldMoreThanOneYear = (
+  sale: BusinessPropertySale
+): boolean => {
+  const acquired = parseCalendarDate(sale.dateAcquired)
+  const sold = parseCalendarDate(sale.dateSold)
   if (acquired === undefined || sold === undefined) {
-    return true
+    throw new Error(
+      `Can't read the dates of business property sale "${sale.description}"`
+    )
   }
-  const [ay, am, ad] = acquired
-  const [sy, sm, sd] = sold
-  const anniversary = (ay + 1) * 10000 + am * 100 + ad
-  return sy * 10000 + sm * 100 + sd > anniversary
+  return isHeldMoreThanOneYear(acquired, sold)
 }

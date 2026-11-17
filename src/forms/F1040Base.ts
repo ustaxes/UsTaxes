@@ -15,7 +15,7 @@ import type {
 import { FilingStatus, Income1099Type } from 'ustaxes/core/data'
 import Form from 'ustaxes/core/irsForms/Form'
 import type { Either } from 'ustaxes/core/util'
-import { left, right } from 'ustaxes/core/util'
+import { left, parseCalendarDate, right } from 'ustaxes/core/util'
 import { F1040Error } from './errors'
 
 export type ValidatedTaxpayer = TaxPayer & {
@@ -61,6 +61,16 @@ export const validate = (
 
   if (!isValidInformation(info)) {
     result.push(F1040Error.incompletePrimaryTaxpayer)
+  }
+
+  if (
+    (info.businessPropertySales ?? []).some(
+      (s) =>
+        parseCalendarDate(s.dateAcquired) === undefined ||
+        parseCalendarDate(s.dateSold) === undefined
+    )
+  ) {
+    result.push(F1040Error.invalidBusinessPropertySaleDate)
   }
 
   if (result.length > 0) {

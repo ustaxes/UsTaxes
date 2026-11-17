@@ -31,7 +31,7 @@ export default class Schedule1 extends F1040Attachment {
     (this.l16() ?? 0) > 0 ||
     (this.l17() ?? 0) > 0 ||
     this.f1040.info.otherIncome?.earlyWithdrawalPenalty !== undefined ||
-    (this.f1040.f4797?.isNeeded() ?? false) ||
+    this.l4() !== undefined ||
     (this.f1040.info.otherIncome?.form2106Expenses ?? 0) > 0 ||
     (this.f1040.info.otherIncome?.prizesAndAwards ?? 0) > 0 ||
     (this.f1040.info.otherIncome?.juryDutyFees ?? 0) > 0 ||
