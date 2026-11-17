@@ -189,7 +189,22 @@ export default class ScheduleEIC extends F1040Attachment {
     return 0
   }
 
-  // 5.1 - Earned income
+  // EIC Worksheet B, Part 1, line 1e: net earnings from self-employment for a
+  // filer who must file Schedule SE (net earnings of $400 or more). Schedule
+  // SE, Part I, line 3, plus lines 4b and 5a, minus line 13 (the deductible
+  // part of self-employment tax).
+  // TODO: Part 2 (self-employed but not required to file Schedule SE) and
+  // Part 3 (statutory employees).
+  selfEmploymentEarnedIncome = (): number => {
+    const se = this.f1040.scheduleSE
+    if (!se.isNeeded() || se.l4c() < 400) {
+      return 0
+    }
+    return sumFields([se.l3(), se.l4b(), se.l5a()]) - (se.l13() ?? 0)
+  }
+
+  // 5.1 - Earned income. With self-employment income this is EIC Worksheet B
+  // line 4b: the Step 5 earned income (line 4a) plus line 1e.
   earnedIncome = (): number => {
     const l1 = this.f1040.l1z()
     const l2 = this.taxableScholarshipIncome()
@@ -200,7 +215,7 @@ export default class ScheduleEIC extends F1040Attachment {
     const l7 = l1 - l6
     const l8 = this.nontaxableCombatPay()
     const l9 = l7 + l8
-    return l9
+    return l9 + this.selfEmploymentEarnedIncome()
   }
 
   /**
