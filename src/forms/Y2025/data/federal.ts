@@ -479,6 +479,9 @@ export const amt = {
 // Every array is indexed by number of qualifying children: 0, 1, 2, 3 or more.
 const eicMaximumCredit = [649, 4328, 7152, 8046]
 
+// Earned income amount: the income at which the credit reaches its maximum.
+const eicEarnedIncomeAmount = [8490, 12730, 17880, 17880]
+
 // Credit and phase-out percentages from IRC 32(b)(1), in basis points
 // (3400 = 34%). The curves use the statutory rates, not slopes derived from
 // the rounded dollar amounts above: 4328 / 12730 is 33.998%, which rounds
@@ -536,6 +539,23 @@ const eicByFilingStatus = <T>(
   [FilingStatus.MFJ]: mfj
 })
 
+// The maximum credit applies from the earned income amount up to the
+// phase-out start.
+const eicPlateaus = (phaseOut: EICPhaseOut): EICPlateau[] =>
+  eicMaximumCredit.map((maximumCredit, children) => ({
+    start: eicEarnedIncomeAmount[children],
+    end: phaseOut.start[children],
+    maximumCredit
+  }))
+
+interface EICPlateau {
+  /** Earned income amount: the credit is at its maximum from here. */
+  start: number
+  /** Phase-out start: the credit falls below its maximum from here. */
+  end: number
+  maximumCredit: number
+}
+
 interface EICDef {
   /**
    * Step 1 income limits by number of qualifying children (0, 1, 2, 3 or
@@ -550,6 +570,12 @@ interface EICDef {
    * this amount, the credit is figured on earned income alone.
    */
   phaseOutStarts: { [k in FilingStatus]: number[] | undefined }
+  /**
+   * Where the credit is at its maximum, by number of qualifying children
+   * (0, 1, 2, 3 or more). An EIC Table row that reaches into this range shows
+   * the maximum credit, even when its midpoint is outside it.
+   */
+  plateaus: { [k in FilingStatus]: EICPlateau[] | undefined }
 }
 
 export const QualifyingDependents = {
@@ -568,6 +594,10 @@ export const EIC: EICDef = {
   formulas: eicByFilingStatus(
     eicFormulas(eicPhaseOutUnmarried),
     eicFormulas(eicPhaseOutMfj)
+  ),
+  plateaus: eicByFilingStatus(
+    eicPlateaus(eicPhaseOutUnmarried),
+    eicPlateaus(eicPhaseOutMfj)
   )
 }
 

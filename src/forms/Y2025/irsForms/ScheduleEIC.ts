@@ -5,7 +5,6 @@ import type F1040 from './F1040'
 import { sumFields } from 'ustaxes/core/irsForms/util'
 import * as federal from '../data/federal'
 import type F2555 from './F2555'
-import type F4797 from './F4797'
 import type F8814 from './F8814'
 import Pub596Worksheet1 from './worksheets/Pub596Worksheet1'
 import type { FormTag } from 'ustaxes/core/irsForms/Form'
@@ -19,9 +18,6 @@ type PrecludesEIC<F> = (f: F) => boolean
 
 // TODO: check F2555
 const checks2555: PrecludesEIC<F2555> = (): boolean => false
-
-// TODO: check F4797
-const checks4797: PrecludesEIC<F4797> = (): boolean => false
 
 // TODO: check F8814
 const checks8814: PrecludesEIC<F8814> = (): boolean => false
@@ -96,8 +92,12 @@ export default class ScheduleEIC extends F1040Attachment {
   passInvestmentIncomeLimit = (): boolean =>
     this.investmentIncome() <= federal.EIC.maxInvestmentIncome
 
-  // Todo, step 2, question 3
-  f4797AllowsEIC = (): boolean => !precludesEIC(checks4797)(this.f1040.f4797)
+  // Step 2, question 3 and "Form 4797 filers": over the investment income
+  // limit, a filer can still qualify through Pub 596 Worksheet 1, but only if
+  // line 7a includes an amount from Form 4797. Form 4797 gains here go to
+  // Schedule 1 line 4 (F4797.l9), never to Schedule D or line 7a, so this is
+  // false until they do.
+  line7aIncludesF4797 = (): boolean => false
 
   // Todo, instruction 2.4.1
   filingScheduleE = (): boolean => this.f1040.scheduleE.isNeeded()
@@ -256,6 +256,19 @@ export default class ScheduleEIC extends F1040Attachment {
       return 0
     }
 
+    // A row that reaches into the plateau shows the maximum credit. For
+    // example, MFJ with 1 child: the $30,450-$30,500 row shows $4,328, though
+    // its midpoint is past the $30,470 phase-out start.
+    const plateau = federal.EIC.plateaus[filingStatus]?.[children]
+    const rowStart = Math.floor(income / 50) * 50
+    if (
+      plateau !== undefined &&
+      rowStart + 50 > plateau.start &&
+      rowStart < plateau.end
+    ) {
+      return plateau.maximumCredit
+    }
+
     // The EIC Table amounts are whole dollars.
     return Math.max(
       0,
@@ -305,8 +318,8 @@ export default class ScheduleEIC extends F1040Attachment {
       this.allowedFilling2555() &&
       this.allowedNonresidentAlien() &&
       // Step 2
-      this.passInvestmentIncomeLimit() &&
-      this.f4797AllowsEIC() &&
+      (this.passInvestmentIncomeLimit() ||
+        (this.line7aIncludesF4797() && this.passPub596())) &&
       (!(
         // Step 3
         (

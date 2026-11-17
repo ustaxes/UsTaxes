@@ -53,14 +53,27 @@ const child = (dateOfBirth: string, isStudent = false): Dependent => ({
 const eicReturn = (
   wages: number,
   dependents: Dependent[],
-  extra: Partial<ValidatedInformation> = {}
+  extra: Partial<ValidatedInformation> = {},
+  filingStatus: FilingStatus = FilingStatus.S
 ): F1040 =>
   new F1040(
     {
       ...blankState,
       w2s: [eicW2(wages)],
       taxPayer: {
-        filingStatus: FilingStatus.S,
+        filingStatus,
+        spouse:
+          filingStatus === FilingStatus.MFJ
+            ? {
+                firstName: 'Test',
+                lastName: 'Spouse',
+                isTaxpayerDependent: false,
+                isBlind: false,
+                ssid: '333333333',
+                role: PersonRole.SPOUSE,
+                dateOfBirth: new Date('1985-06-01')
+              }
+            : undefined,
         primaryPerson: {
           address: { address: '1 Main St', city: 'city', state: 'AL' },
           firstName: 'Test',
@@ -102,10 +115,41 @@ describe('ScheduleEIC 2025 computation', () => {
     // 1 child, $1-$50 row: 34% x $25 = $8.50, which the EIC Table shows as $9.
     // A slope derived from the rounded amounts (4328 / 12730) gives $8.4996.
     expect(eicReturn(30, [child('2015-01-01')]).scheduleEIC.credit()).toBe(9)
-    // $12,700-$12,750 row: 34% x $12,725 = $4,326.50, shown as $4,327.
-    expect(eicReturn(12740, [child('2015-01-01')]).scheduleEIC.credit()).toBe(
-      4327
-    )
+  })
+
+  it('shows the maximum credit in a row that reaches the plateau', () => {
+    const one = [child('2015-01-01')]
+    const two = [child('2015-01-01'), child('2016-01-01')]
+    const three = [...two, child('2017-01-01')]
+    // Earned income amounts $8,490 / $12,730 / $17,880 fall inside these rows.
+    // The midpoint would give $648 / $4,327 / $7,150 / $8,044.
+    expect(eicReturn(8460, []).scheduleEIC.credit()).toBe(649)
+    expect(eicReturn(12700, one).scheduleEIC.credit()).toBe(4328)
+    expect(eicReturn(17899, two).scheduleEIC.credit()).toBe(7152)
+    expect(eicReturn(17850, three).scheduleEIC.credit()).toBe(8046)
+    // The row before is still on the phase-in.
+    expect(eicReturn(12699, one).scheduleEIC.credit()).toBe(4310)
+  })
+
+  it('shows the maximum credit in the MFJ row containing the $30,470 phase-out start', () => {
+    const kids = [child('2015-01-01'), child('2016-01-01'), child('2017-01-01')]
+    const mfj = (wages: number, n: number): F1040 =>
+      eicReturn(wages, kids.slice(0, n), {}, FilingStatus.MFJ)
+    // $30,450-$30,500 row: the midpoint $30,475 is past $30,470, but the
+    // table shows the maximum.
+    expect(mfj(30480, 1).scheduleEIC.credit()).toBe(4328)
+    expect(mfj(30480, 2).scheduleEIC.credit()).toBe(7152)
+    expect(mfj(30480, 3).scheduleEIC.credit()).toBe(8046)
+    // $30,500-$30,550 row: $4,328 - 15.98% x ($30,525 - $30,470) = $4,319.
+    expect(mfj(30500, 1).scheduleEIC.credit()).toBe(4319)
+  })
+
+  it('phases out from the $23,350-$23,400 row for unmarried filers', () => {
+    // $23,350 is the start of a row, so that row is already phasing out:
+    // $4,328 - 15.98% x ($23,375 - $23,350) = $4,324.
+    const one = [child('2015-01-01')]
+    expect(eicReturn(23349, one).scheduleEIC.credit()).toBe(4328)
+    expect(eicReturn(23350, one).scheduleEIC.credit()).toBe(4324)
   })
 
   it('treats an 18-year-old as a qualifying child', () => {
