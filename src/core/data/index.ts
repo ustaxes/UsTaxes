@@ -1154,7 +1154,8 @@ export type InformationDateString = Information<string>
 /**
  * An asset can be anything that is transactable, such as a stock,
  * bond, mutual fund, real estate, or cryptocurrency, which is not reported
- * on 1099-B. A position always has an open date. A position may
+ * on 1099-B. A position usually has an open date, but may instead have
+ * only a holding period when it was acquired on various dates. A position may
  * be sold, at which time its gain or loss will be reported,
  * or it may be gifted to another person, at which time its
  * gain or loss will not be reported.
@@ -1169,10 +1170,21 @@ export type InformationDateString = Information<string>
  * gain. An asset is closed when it gets a closeDate.
  */
 export type AssetType = 'Security' | 'Real Estate' | 'Digital Asset'
+export type HoldingPeriod = 'Short Term' | 'Long Term'
 export interface Asset<D = Date> {
   name: string
   positionType: AssetType
-  openDate: D
+  /**
+   * Date acquired. Undefined when the asset was acquired on various dates
+   * or the date is unknown (reported as "VARIOUS" on Form 8949 column (b)).
+   * In that case `holdingPeriod` decides short- vs long-term treatment.
+   */
+  openDate?: D
+  /**
+   * Holding period to use when `openDate` is undefined. Ignored when
+   * `openDate` is present, since the dates determine the holding period.
+   */
+  holdingPeriod?: HoldingPeriod
   closeDate?: D
   giftedDate?: D
   openPrice: number

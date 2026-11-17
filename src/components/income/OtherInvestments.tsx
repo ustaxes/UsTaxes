@@ -7,11 +7,12 @@ import { useDispatch } from 'ustaxes/redux'
 import { useSelector } from 'react-redux'
 import { addAsset } from 'ustaxes/redux/actions'
 import { usePager } from 'ustaxes/components/pager'
-import type { Asset, AssetType, State } from 'ustaxes/core/data'
+import type { Asset, AssetType, HoldingPeriod, State } from 'ustaxes/core/data'
 import { TaxYears } from 'ustaxes/core/data'
 import {
   GenericLabeledDropdown,
   USStateDropDown,
+  LabeledCheckbox,
   LabeledInput
 } from 'ustaxes/components/input'
 import { Patterns } from 'ustaxes/components/Patterns'
@@ -38,6 +39,8 @@ interface AssetUserInput {
   name: string
   positionType: AssetType
   openDate?: Date
+  variousOpenDates: boolean
+  holdingPeriod?: HoldingPeriod
   closeDate?: Date
   openPrice: string
   closePrice?: string
@@ -50,6 +53,7 @@ interface AssetUserInput {
 const blankAssetUserInput: AssetUserInput = {
   name: '',
   positionType: 'Security',
+  variousOpenDates: false,
   openPrice: '',
   openFee: '',
   closeFee: '',
@@ -60,6 +64,8 @@ const toAsset = (input: AssetUserInput): Asset<Date> | undefined => {
   const {
     name,
     openDate,
+    variousOpenDates,
+    holdingPeriod,
     closeDate,
     openPrice,
     closePrice,
@@ -69,13 +75,16 @@ const toAsset = (input: AssetUserInput): Asset<Date> | undefined => {
     closeFee,
     positionType
   } = input
-  if (name === '' || openDate === undefined) {
+  if (name === '') {
+    return undefined
+  }
+  if (variousOpenDates ? holdingPeriod === undefined : openDate === undefined) {
     return undefined
   }
   return {
     positionType,
     name,
-    openDate,
+    ...(variousOpenDates ? { holdingPeriod } : { openDate }),
     closeDate,
     openFee: Number(openFee),
     closeFee: Number(closeFee),
@@ -94,6 +103,7 @@ export const OtherInvestments = (): ReactElement => {
   const { handleSubmit, watch } = methods
   const positionType = watch('positionType')
   const openDate = watch('openDate')
+  const variousOpenDates = watch('variousOpenDates')
   const closeDate = watch('closeDate')
   const dispatch = useDispatch()
 
@@ -127,14 +137,34 @@ export const OtherInvestments = (): ReactElement => {
           label={positionType === 'Real Estate' ? 'Address' : 'Name'}
           name="name"
         />
-        <DatePicker
-          maxDate={new Date()}
-          label="Date acquired"
-          name="openDate"
+        <LabeledCheckbox
+          label="Acquired on various dates, or date acquired is unknown"
+          name="variousOpenDates"
         />
+        {variousOpenDates ? (
+          <GenericLabeledDropdown<HoldingPeriod, AssetUserInput>
+            label="Holding period (as reported on Form 1099-B)"
+            name="holdingPeriod"
+            dropDownData={['Short Term', 'Long Term']}
+            keyMapping={(x) => x}
+            textMapping={(x) =>
+              x === 'Short Term'
+                ? 'Short term (held one year or less)'
+                : 'Long term (held more than one year)'
+            }
+            valueMapping={(x) => x}
+          />
+        ) : (
+          <DatePicker
+            required
+            maxDate={new Date()}
+            label="Date acquired"
+            name="openDate"
+          />
+        )}
         <DatePicker
           maxDate={new Date()}
-          minDate={openDate}
+          minDate={variousOpenDates ? undefined : openDate}
           label="Date sold or disposed of"
           name="closeDate"
         />
