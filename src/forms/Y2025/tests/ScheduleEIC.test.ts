@@ -171,4 +171,35 @@ describe('ScheduleEIC 2025 computation', () => {
     })
     expect(f1040.scheduleEIC.credit()).toBe(3261)
   })
+
+  it('counts net self-employment earnings from Schedule SE (Worksheet B)', () => {
+    // $10,000 of partnership self-employment earnings and no wages. Schedule
+    // SE: line 3 $10,000; line 13 = 50% x 15.3% x ($10,000 x 92.35%) =
+    // $706.48. Worksheet B line 1e = $9,293.52, in the $9,250-$9,300 row:
+    // 34% x $9,275 = $3,153.50, shown as $3,154.
+    const f1040 = eicReturn(0, [child('2015-06-15')], {
+      w2s: [],
+      scheduleK1Form1065s: [
+        {
+          personRole: PersonRole.PRIMARY,
+          partnershipName: 'partnership',
+          partnershipEin: '333333333',
+          partnerOrSCorp: 'P',
+          isForeign: false,
+          isPassive: false,
+          ordinaryBusinessIncome: 0,
+          interestIncome: 0,
+          guaranteedPaymentsForServices: 10000,
+          guaranteedPaymentsForCapital: 0,
+          selfEmploymentEarningsA: 10000,
+          selfEmploymentEarningsB: 0,
+          selfEmploymentEarningsC: 0,
+          distributionsCodeAAmount: 0,
+          section199AQBI: 0
+        }
+      ]
+    })
+    expect(f1040.scheduleEIC.earnedIncome()).toBeCloseTo(9293.52, 2)
+    expect(f1040.scheduleEIC.credit()).toBe(3154)
+  })
 })
