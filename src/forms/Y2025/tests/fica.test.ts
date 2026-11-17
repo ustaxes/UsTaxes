@@ -99,13 +99,18 @@ describe('fica', () => {
           .validW2s()
           .map((w2) => w2.ssWithholding)
           .reduce((l, r) => l + r, 0)
+        const ssWages = f1040
+          .validW2s()
+          .map((w2) => w2.ssWages)
+          .reduce((l, r) => l + r, 0)
         if (
-          f1040.wages() <= fica.maxIncomeSSTaxApplies ||
+          ssWages <= fica.maxIncomeSSTaxApplies ||
           f1040.validW2s().some((w2) => w2.ssWithholding > fica.maxSSTax) ||
-          ssWithheld < fica.maxSSTax
+          ssWithheld <= fica.maxSSTax
         ) {
-          // Should never give SS refund if W2 income below max threshold, some W2 has
-          // withheld over the max, or there is no SS withholding to refund.
+          // Should never give SS refund if social security wages are at or
+          // below the wage base, some W2 has withheld over the max, or there
+          // is no excess SS withholding to refund.
           expect(ssRefund).toEqual(0)
         } else {
           // Otherwise, should always give SS refund, and attach schedule 3
@@ -177,11 +182,13 @@ describe('fica', () => {
         {
           ...sampleW2,
           personRole: PersonRole.SPOUSE,
+          ssWages: fica.maxIncomeSSTaxApplies,
           ssWithholding: fica.maxSSTax
         },
         {
           ...sampleW2,
           personRole: PersonRole.SPOUSE,
+          ssWages: 16130,
           // This person has already contributed to the max for their other w2 so the refund should equal this amount
           ssWithholding: 1000
         },
@@ -266,5 +273,33 @@ describe('fica', () => {
       }
       return Promise.resolve()
     })
+  })
+
+  it('should not give a refund when social security wages are at or below the wage base', () => {
+    // Two employers withheld $10,919 in total on $20,000 of social security
+    // wages. The excess is over-withholding by the employers, who must refund
+    // it; it can't be claimed on Schedule 3.
+    const testInfo: ValidatedInformation = {
+      ...sampleInfo,
+      w2s: [
+        {
+          ...sampleW2,
+          personRole: PersonRole.PRIMARY,
+          ssWages: 10000,
+          ssWithholding: 925
+        },
+        {
+          ...sampleW2,
+          personRole: PersonRole.PRIMARY,
+          ssWages: 10000,
+          ssWithholding: 9994
+        }
+      ]
+    }
+
+    const f1040 = run(testKit.builder.build(testInfo, []).f1040())
+      .map(commonTests.findF1040OrFail)
+      .orThrow()
+    expect(f1040.schedule3.claimableExcessSSTaxWithholding()).toEqual(0)
   })
 })

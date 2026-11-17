@@ -10,43 +10,35 @@ export default class Schedule3 extends F1040Attachment {
   tag: FormTag = 'f1040s3'
   sequenceIndex = 3
 
-  claimableExcessSSTaxWithholding = (): number => {
-    const w2s = this.f1040.validW2s()
-
-    // Excess FICA taxes are calculated per person. If an individual person
-    //    has greater than the applicable amount then they are entitled to a refund
-    //    of that amount
-
-    let claimableExcessFica = 0
-    const primaryFica = w2s
-      .filter((w2) => w2.personRole == PersonRole.PRIMARY)
-      .map((w2) => w2.ssWithholding)
-      .reduce((l, r) => l + r, 0)
-    const spouseFica = w2s
-      .filter((w2) => w2.personRole == PersonRole.SPOUSE)
-      .map((w2) => w2.ssWithholding)
-      .reduce((l, r) => l + r, 0)
-
+  // Schedule 3, line 11 (2025 Instructions for Form 1040): if a person had
+  // more than one employer and total wages of more than $176,100, they can
+  // claim the social security tax withheld in excess of $10,918.20. If any one
+  // employer withheld more than $10,918.20, the excess can't be claimed on the
+  // return. Excess withholding is figured separately for each spouse.
+  //
+  // Social security wages (W-2 box 3) are used for the wage test: they are
+  // what the tax is withheld on, and unlike box 1 they aren't reduced by
+  // 401(k) deferrals. With wages at or below the limit, any excess comes from
+  // an employer withholding too much, which that employer must refund.
+  excessSSTaxWithholdingFor = (
+    role: PersonRole.PRIMARY | PersonRole.SPOUSE
+  ): number => {
+    const w2s = this.f1040.validW2s().filter((w2) => w2.personRole === role)
+    const ssWages = w2s.reduce((sum, w2) => sum + w2.ssWages, 0)
+    const ssWithheld = w2s.reduce((sum, w2) => sum + w2.ssWithholding, 0)
     if (
-      primaryFica > fica.maxSSTax &&
-      w2s
-        .filter((w2) => w2.personRole == PersonRole.PRIMARY)
-        .every((w2) => w2.ssWithholding <= fica.maxSSTax)
+      ssWages <= fica.maxIncomeSSTaxApplies ||
+      ssWithheld <= fica.maxSSTax ||
+      w2s.some((w2) => w2.ssWithholding > fica.maxSSTax)
     ) {
-      claimableExcessFica += primaryFica - fica.maxSSTax
+      return 0
     }
-
-    if (
-      spouseFica > fica.maxSSTax &&
-      w2s
-        .filter((w2) => w2.personRole == PersonRole.SPOUSE)
-        .every((w2) => w2.ssWithholding <= fica.maxSSTax)
-    ) {
-      claimableExcessFica += spouseFica - fica.maxSSTax
-    }
-
-    return claimableExcessFica
+    return ssWithheld - fica.maxSSTax
   }
+
+  claimableExcessSSTaxWithholding = (): number =>
+    this.excessSSTaxWithholdingFor(PersonRole.PRIMARY) +
+    this.excessSSTaxWithholdingFor(PersonRole.SPOUSE)
 
   // Any Part I credit (Form 2441, 8863, 8880, 5695, ...) or Part II payment
   // (including extension payments and excess Social Security withholding)
