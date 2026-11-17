@@ -68,6 +68,45 @@ const sampleInfo: ValidatedInformation = {
 
 const hasSSRefund = (f1040: F1040): boolean => f1040.schedule3.l11() > 0
 
+// Independent statement of the Schedule 3 line 11 rules, figured per person:
+// the excess over fica.maxSSTax is claimable only if wages (larger of box 3
+// and box 5 per W-2) exceed the wage base, and no single employer (by EIN)
+// withheld more than fica.maxSSTax. If any W-2 with withholding reports no
+// wages, the wage test can't be applied and is skipped.
+const expectedExcessFor = (
+  w2s: IncomeW2[],
+  role: PersonRole.PRIMARY | PersonRole.SPOUSE
+): number => {
+  const mine = w2s.filter((w2) => w2.personRole === role)
+  const withheld = mine.reduce((sum, w2) => sum + w2.ssWithholding, 0)
+  const wages = mine.reduce(
+    (sum, w2) => sum + Math.max(w2.ssWages, w2.medicareIncome),
+    0
+  )
+  const wagesReported = mine.every(
+    (w2) => w2.ssWithholding <= 0 || w2.ssWages > 0 || w2.medicareIncome > 0
+  )
+  const eins = new Set(mine.map((w2, i) => w2.employer?.EIN || `w2-${i}`))
+  const employerOverMax = Array.from(eins).some(
+    (ein) =>
+      mine
+        .filter((w2, i) => (w2.employer?.EIN || `w2-${i}`) === ein)
+        .reduce((sum, w2) => sum + w2.ssWithholding, 0) > fica.maxSSTax
+  )
+  if (
+    withheld <= fica.maxSSTax ||
+    (wagesReported && wages <= fica.maxIncomeSSTaxApplies) ||
+    employerOverMax
+  ) {
+    return 0
+  }
+  return withheld - fica.maxSSTax
+}
+
+const expectedExcess = (w2s: IncomeW2[]): number =>
+  expectedExcessFor(w2s, PersonRole.PRIMARY) +
+  expectedExcessFor(w2s, PersonRole.SPOUSE)
+
 function hasAdditionalMedicareTax(f1040: F1040): boolean {
   const medicareTax = f1040.f8959.l18()
   return medicareTax > 0
@@ -91,58 +130,30 @@ describe('fica', () => {
     await testKit.with1040Assert((forms) => {
       const f1040 = commonTests.findF1040OrFail(forms)
       const ssRefund = f1040.schedule3.l11()
-      if (f1040.validW2s().length <= 1) {
-        // Should never give SS refund with 1 or fewer W2s
-        expect(ssRefund).toEqual(0)
-      } else {
-        const ssWithheld = f1040
-          .validW2s()
-          .map((w2) => w2.ssWithholding)
-          .reduce((l, r) => l + r, 0)
-        const ssWages = f1040
-          .validW2s()
-          .map((w2) => w2.ssWages)
-          .reduce((l, r) => l + r, 0)
-        if (
-          ssWages <= fica.maxIncomeSSTaxApplies ||
-          f1040.validW2s().some((w2) => w2.ssWithholding > fica.maxSSTax) ||
-          ssWithheld <= fica.maxSSTax
-        ) {
-          // Should never give SS refund if social security wages are at or
-          // below the wage base, some W2 has withheld over the max, or there
-          // is no excess SS withholding to refund.
-          expect(ssRefund).toEqual(0)
-        } else {
-          // Otherwise, should always give SS refund, and attach schedule 3
-          expect(ssRefund).toBeGreaterThan(0)
-          expect(hasAttachment(forms, Schedule3)).toEqual(true)
+      const w2s = f1040.validW2s()
+      for (const role of [PersonRole.PRIMARY, PersonRole.SPOUSE] as const) {
+        if (w2s.filter((w2) => w2.personRole === role).length <= 1) {
+          // A person with one or fewer W2s never has a claimable excess
+          expect(f1040.schedule3.excessSSTaxWithholdingFor(role)).toEqual(0)
         }
+      }
+      if (expectedExcess(w2s) > 0) {
+        expect(ssRefund).toBeGreaterThan(0)
+        expect(hasAttachment(forms, Schedule3)).toEqual(true)
+      } else {
+        expect(ssRefund).toEqual(0)
       }
       return Promise.resolve()
     })
   })
 
-  it('should give SS refund based on filing status', async () => {
+  it('should give SS refund figured separately for each person', async () => {
     await testKit.with1040Assert((forms) => {
       const f1040 = commonTests.findF1040OrFail(forms)
       if (hasSSRefund(f1040)) {
         const ssRefund = f1040.schedule3.l11()
         expect(displayRound(ssRefund)).not.toBeUndefined()
-        expect(ssRefund).toBeGreaterThan(0)
-
-        const ssWithheld =
-          f1040
-            .validW2s()
-            .filter((w2) => w2.personRole == PersonRole.PRIMARY)
-            .map((w2) => w2.ssWithholding)
-            .reduce((l, r) => l + r, 0) +
-          f1040
-            .validW2s()
-            .filter((w2) => w2.personRole == PersonRole.SPOUSE)
-            .map((w2) => w2.ssWithholding)
-            .reduce((l, r) => l + r, 0)
-
-        expect(ssRefund).toEqual(ssWithheld - fica.maxSSTax)
+        expect(ssRefund).toBeCloseTo(expectedExcess(f1040.validW2s()), 2)
       } else {
         fc.pre(false)
       }
@@ -187,6 +198,7 @@ describe('fica', () => {
         },
         {
           ...sampleW2,
+          employer: { EIN: '222222222', employerName: 'second employer' },
           personRole: PersonRole.SPOUSE,
           ssWages: 16130,
           // This person has already contributed to the max for their other w2 so the refund should equal this amount
@@ -290,6 +302,7 @@ describe('fica', () => {
         },
         {
           ...sampleW2,
+          employer: { EIN: '222222222', employerName: 'second employer' },
           personRole: PersonRole.PRIMARY,
           ssWages: 10000,
           ssWithholding: 9994
@@ -301,5 +314,130 @@ describe('fica', () => {
       .map(commonTests.findF1040OrFail)
       .orThrow()
     expect(f1040.schedule3.claimableExcessSSTaxWithholding()).toEqual(0)
+  })
+  const build1040 = (w2s: IncomeW2[]): F1040 =>
+    run(testKit.builder.build({ ...sampleInfo, w2s }, []).f1040())
+      .map(commonTests.findF1040OrFail)
+      .orThrow()
+
+  const employerA = { EIN: '111111111', employerName: 'employer A' }
+  const employerB = { EIN: '222222222', employerName: 'employer B' }
+
+  it('should count social security tips (via box 5) in the wage test', () => {
+    // $170,000 of box 3 wages plus $15,000 of tips: box 5 is $185,000, so
+    // the wage base was exceeded even though box 3 alone is under it.
+    const f1040 = build1040([
+      {
+        ...sampleW2,
+        employer: employerA,
+        ssWages: 85000,
+        medicareIncome: 92500,
+        ssWithholding: 5735
+      },
+      {
+        ...sampleW2,
+        employer: employerB,
+        ssWages: 85000,
+        medicareIncome: 92500,
+        ssWithholding: 5735
+      }
+    ])
+    expect(f1040.schedule3.claimableExcessSSTaxWithholding()).toEqual(551.8)
+  })
+
+  it('should treat W-2s with the same EIN as one employer', () => {
+    // One employer issued two W-2s and over-withheld in total; it must
+    // refund the excess, so nothing is claimable.
+    const f1040 = build1040([
+      {
+        ...sampleW2,
+        employer: employerA,
+        ssWages: 125000,
+        medicareIncome: 125000,
+        ssWithholding: 8000
+      },
+      {
+        ...sampleW2,
+        employer: employerA,
+        ssWages: 125000,
+        medicareIncome: 125000,
+        ssWithholding: 6000
+      }
+    ])
+    expect(f1040.schedule3.claimableExcessSSTaxWithholding()).toEqual(0)
+  })
+
+  it('should skip the wage test when W-2s report no wages', () => {
+    // Data saved before box 3 was collected is migrated with ssWages = 0.
+    const f1040 = build1040([
+      {
+        ...sampleW2,
+        employer: employerA,
+        ssWages: 0,
+        medicareIncome: 0,
+        ssWithholding: 6000
+      },
+      {
+        ...sampleW2,
+        employer: employerB,
+        ssWages: 0,
+        medicareIncome: 0,
+        ssWithholding: 6000
+      }
+    ])
+    expect(f1040.schedule3.claimableExcessSSTaxWithholding()).toEqual(1081.8)
+  })
+
+  it('should figure the excess separately for each spouse', () => {
+    const w2 = (
+      personRole: PersonRole.PRIMARY | PersonRole.SPOUSE,
+      employer: typeof employerA,
+      ssWithholding: number
+    ): IncomeW2 => ({
+      ...sampleW2,
+      employer,
+      personRole,
+      ssWages: 100000,
+      medicareIncome: 100000,
+      ssWithholding
+    })
+    // Pooled, the couple is over the max with no W-2 over it, but neither
+    // spouse is over the max individually.
+    expect(
+      build1040([
+        w2(PersonRole.PRIMARY, employerA, 5000),
+        w2(PersonRole.SPOUSE, employerB, 5000),
+        w2(PersonRole.SPOUSE, employerA, 1000)
+      ]).schedule3.claimableExcessSSTaxWithholding()
+    ).toEqual(0)
+    // Each spouse has their own excess; the credits add.
+    expect(
+      build1040([
+        w2(PersonRole.PRIMARY, employerA, 6000),
+        w2(PersonRole.PRIMARY, employerB, 5918.2),
+        w2(PersonRole.SPOUSE, employerA, 6000),
+        w2(PersonRole.SPOUSE, employerB, 5918.2)
+      ]).schedule3.claimableExcessSSTaxWithholding()
+    ).toEqual(2000)
+  })
+
+  it('should round the excess to cents', () => {
+    const f1040 = build1040([
+      {
+        ...sampleW2,
+        employer: employerA,
+        ssWages: 100000,
+        medicareIncome: 100000,
+        ssWithholding: 925
+      },
+      {
+        ...sampleW2,
+        employer: employerB,
+        ssWages: 100000,
+        medicareIncome: 100000,
+        ssWithholding: 9994
+      }
+    ])
+    expect(f1040.schedule3.claimableExcessSSTaxWithholding()).toEqual(0.8)
   })
 })

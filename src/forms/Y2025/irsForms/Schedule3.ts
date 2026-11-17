@@ -1,5 +1,6 @@
 import F1040Attachment from './F1040Attachment'
 import { PersonRole } from 'ustaxes/core/data'
+import type { IncomeW2 } from 'ustaxes/core/data'
 import { sumFields } from 'ustaxes/core/irsForms/util'
 import type { FormTag } from 'ustaxes/core/irsForms/Form'
 import { fica } from '../data/federal'
@@ -11,34 +12,63 @@ export default class Schedule3 extends F1040Attachment {
   sequenceIndex = 3
 
   // Schedule 3, line 11 (2025 Instructions for Form 1040): if a person had
-  // more than one employer and total wages of more than $176,100, they can
-  // claim the social security tax withheld in excess of $10,918.20. If any one
-  // employer withheld more than $10,918.20, the excess can't be claimed on the
-  // return. Excess withholding is figured separately for each spouse.
+  // more than one employer and total wages over the social security wage base
+  // (fica.maxIncomeSSTaxApplies), they can claim the social security tax
+  // withheld in excess of the maximum (fica.maxSSTax). If any one employer
+  // withheld more than the maximum, that excess can't be claimed on the
+  // return; the employer must refund it. Excess withholding is figured
+  // separately for each spouse.
   //
-  // Social security wages (W-2 box 3) are used for the wage test: they are
-  // what the tax is withheld on, and unlike box 1 they aren't reduced by
-  // 401(k) deferrals. With wages at or below the limit, any excess comes from
-  // an employer withholding too much, which that employer must refund.
+  // Wage test: each W-2 contributes the larger of box 3 (social security
+  // wages) and box 5 (Medicare wages). Box 3 omits social security tips
+  // (box 7), which we don't collect, while box 5 includes them and isn't
+  // capped at the wage base. Neither is reduced by 401(k) deferrals, unlike
+  // box 1. If a W-2 with withholding reports no wages in either box (e.g. data
+  // saved before box 3 was collected), the wage test is skipped rather than
+  // silently denying the credit.
+  //
+  // Employer test: W-2s are grouped by employer EIN, so one employer that
+  // issued several W-2s (e.g. one per state) is treated as a single employer.
+  // This also means withholding from a single employer is never claimable.
   excessSSTaxWithholdingFor = (
     role: PersonRole.PRIMARY | PersonRole.SPOUSE
   ): number => {
     const w2s = this.f1040.validW2s().filter((w2) => w2.personRole === role)
-    const ssWages = w2s.reduce((sum, w2) => sum + w2.ssWages, 0)
     const ssWithheld = w2s.reduce((sum, w2) => sum + w2.ssWithholding, 0)
+    if (ssWithheld <= fica.maxSSTax) return 0
+
+    const wagesFor = (w2: IncomeW2): number =>
+      Math.max(w2.ssWages, w2.medicareIncome)
+    const wagesReported = w2s.every(
+      (w2) => w2.ssWithholding <= 0 || wagesFor(w2) > 0
+    )
+    const wages = w2s.reduce((sum, w2) => sum + wagesFor(w2), 0)
+    if (wagesReported && wages <= fica.maxIncomeSSTaxApplies) return 0
+
+    const withheldByEmployer = new Map<string, number>()
+    w2s.forEach((w2, i) => {
+      const ein = w2.employer?.EIN
+      const key = ein !== undefined && ein !== '' ? ein : `w2-${i}`
+      withheldByEmployer.set(
+        key,
+        (withheldByEmployer.get(key) ?? 0) + w2.ssWithholding
+      )
+    })
     if (
-      ssWages <= fica.maxIncomeSSTaxApplies ||
-      ssWithheld <= fica.maxSSTax ||
-      w2s.some((w2) => w2.ssWithholding > fica.maxSSTax)
+      Array.from(withheldByEmployer.values()).some((w) => w > fica.maxSSTax)
     ) {
       return 0
     }
+
     return ssWithheld - fica.maxSSTax
   }
 
   claimableExcessSSTaxWithholding = (): number =>
-    this.excessSSTaxWithholdingFor(PersonRole.PRIMARY) +
-    this.excessSSTaxWithholdingFor(PersonRole.SPOUSE)
+    Math.round(
+      (this.excessSSTaxWithholdingFor(PersonRole.PRIMARY) +
+        this.excessSSTaxWithholdingFor(PersonRole.SPOUSE)) *
+        100
+    ) / 100
 
   // Any Part I credit (Form 2441, 8863, 8880, 5695, ...) or Part II payment
   // (including extension payments and excess Social Security withholding)
