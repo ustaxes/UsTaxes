@@ -42,18 +42,6 @@ export default class ScheduleEIC extends F1040Attachment {
   tag: FormTag = 'f1040sei'
   sequenceIndex = 43
   pub596Worksheet1: Pub596Worksheet1
-  // EIC qualifying child age test (2025 Instructions for Form 1040, line 27,
-  // Rule 8): under age 19 at the end of the year, or under age 24 and a
-  // student. Under 19 at the end of 2025 means born in 2007 or later; under 24
-  // means born in 2002 or later.
-  qualifyingStudentCutoffYear =
-    federal.CURRENT_YEAR -
-    federal.QualifyingDependents.qualifyingStudentMaxAge +
-    1
-  qualifyingCutoffYear =
-    federal.CURRENT_YEAR -
-    federal.QualifyingDependents.qualifyingDependentMaxAge +
-    1
   investmentIncomeLimit = federal.EIC.maxInvestmentIncome
 
   constructor(f1040: F1040) {
@@ -258,7 +246,10 @@ export default class ScheduleEIC extends F1040Attachment {
    * @param income The earned income
    * @returns
    */
-  calculateEICForIncome = (income: number): number => {
+  calculateEICForIncome = (
+    income: number,
+    children: number = this.childIndex()
+  ): number => {
     const filingStatus = this.f1040.info.taxPayer.filingStatus
     const f: Piecewise[] | undefined = federal.EIC.formulas[filingStatus]
     if (f === undefined) {
@@ -268,9 +259,7 @@ export default class ScheduleEIC extends F1040Attachment {
     // The EIC Table amounts are whole dollars.
     return Math.max(
       0,
-      Math.round(
-        evaluatePiecewise(f[this.childIndex()], this.roundIncome(income))
-      )
+      Math.round(evaluatePiecewise(f[children], this.roundIncome(income)))
     )
   }
 
@@ -288,16 +277,23 @@ export default class ScheduleEIC extends F1040Attachment {
   // is at least the phase-out start for the filing status and number of
   // children, also figure it on AGI and take the smaller amount.
   credit = (): number => {
-    const earnedIncomeCredit = this.calculateEICForIncome(this.earnedIncome())
+    const children = this.childIndex()
+    const earnedIncomeCredit = this.calculateEICForIncome(
+      this.earnedIncome(),
+      children
+    )
     const phaseOutStart =
       federal.EIC.phaseOutStarts[this.f1040.info.taxPayer.filingStatus]?.[
-        this.childIndex()
+        children
       ]
     const agi = this.f1040.l11b()
     if (phaseOutStart === undefined || agi < phaseOutStart) {
       return earnedIncomeCredit
     }
-    return Math.min(earnedIncomeCredit, this.calculateEICForIncome(agi))
+    return Math.min(
+      earnedIncomeCredit,
+      this.calculateEICForIncome(agi, children)
+    )
   }
 
   allowed = (): boolean => {
@@ -332,14 +328,24 @@ export default class ScheduleEIC extends F1040Attachment {
     )
   }
 
+  /** Age at the end of the tax year, from the year of birth. */
+  ageAtYearEnd = (birthYear: number): number => federal.CURRENT_YEAR - birthYear
+
+  // EIC qualifying child age test (2025 Instructions for Form 1040, line 27,
+  // Rule 8): under age 19 at the end of the year, or under age 24 and a
+  // student.
+  meetsAgeTest = (d: Dependent): boolean => {
+    const age = this.ageAtYearEnd(d.dateOfBirth.getFullYear())
+    return (
+      age < federal.QualifyingDependents.qualifyingDependentMaxAge ||
+      ((d.qualifyingInfo?.isStudent ?? false) &&
+        age < federal.QualifyingDependents.qualifyingStudentMaxAge)
+    )
+  }
+
   qualifyingDependents = (): Dependent[] =>
     this.f1040.info.taxPayer.dependents
-      .filter(
-        (d) =>
-          d.dateOfBirth.getFullYear() >= this.qualifyingCutoffYear ||
-          ((d.qualifyingInfo?.isStudent ?? false) &&
-            d.dateOfBirth.getFullYear() >= this.qualifyingStudentCutoffYear)
-      )
+      .filter((d) => this.meetsAgeTest(d))
       .sort((d) => d.dateOfBirth.getFullYear())
       .slice(0, 3)
 
@@ -374,7 +380,9 @@ export default class ScheduleEIC extends F1040Attachment {
   ageFields = (): Array<boolean | undefined> =>
     this.years().flatMap((year) => {
       if (year !== undefined) {
-        const qualifies = year >= this.qualifyingStudentCutoffYear
+        const qualifies =
+          this.ageAtYearEnd(year) <
+          federal.QualifyingDependents.qualifyingStudentMaxAge
         return [qualifies, !qualifies]
       }
       return [undefined, undefined]
@@ -383,7 +391,11 @@ export default class ScheduleEIC extends F1040Attachment {
   // TODO: disability
   disabledFields = (): Array<boolean | undefined> =>
     this.years().flatMap((year) => {
-      if (year === undefined || year < this.qualifyingCutoffYear) {
+      if (
+        year === undefined ||
+        this.ageAtYearEnd(year) >=
+          federal.QualifyingDependents.qualifyingDependentMaxAge
+      ) {
         return [undefined, undefined]
       }
       return [undefined, undefined]

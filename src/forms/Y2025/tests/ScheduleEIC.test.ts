@@ -98,6 +98,16 @@ describe('ScheduleEIC 2025 computation', () => {
     expect(f1040.scheduleEIC.credit()).toBe(4010)
   })
 
+  it('uses the statutory phase-in rate, rounding half-dollar rows up', () => {
+    // 1 child, $1-$50 row: 34% x $25 = $8.50, which the EIC Table shows as $9.
+    // A slope derived from the rounded amounts (4328 / 12730) gives $8.4996.
+    expect(eicReturn(30, [child('2015-01-01')]).scheduleEIC.credit()).toBe(9)
+    // $12,700-$12,750 row: 34% x $12,725 = $4,326.50, shown as $4,327.
+    expect(eicReturn(12740, [child('2015-01-01')]).scheduleEIC.credit()).toBe(
+      4327
+    )
+  })
+
   it('treats an 18-year-old as a qualifying child', () => {
     // Born in 2007, so under 19 at the end of 2025.
     const f1040 = eicReturn(15000, [child('2007-03-01')])
