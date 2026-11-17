@@ -26,15 +26,13 @@ export default class Pub596Worksheet1 {
   }
 
   l5 = (): number => ((this.f1040.l7a() ?? 0) < 0 ? 0 : (this.f1040.l7a() ?? 0))
+  // Gain from Form 4797 line 7, or line 9 if lines 8 and 9 were completed.
   l6 = (): number => {
-    const l7 = this.f1040.f4797?.l7()
-    const l9 = this.f1040.f4797?.l9()
-
-    if (l7 !== undefined && l7 < 0) {
-      return l9 ?? 0
+    const f4797 = this.f1040.f4797
+    if (f4797 === undefined) {
+      return 0
     }
-
-    return l7 ?? 0
+    return Math.max(0, f4797.l9() ?? f4797.l7())
   }
 
   l7 = (): number => {
@@ -59,9 +57,9 @@ export default class Pub596Worksheet1 {
       ifPositive(this.f1040.scheduleE.l26()),
       this.f1040.scheduleE.l29ah(),
       this.f1040.scheduleE.l34ad(),
-      this.f1040.scheduleE.l40(),
-      // todo: FPA form 4797 line 10
-      this.f1040.f4797?.l10()
+      this.f1040.scheduleE.l40()
+      // TODO: ordinary gain from passive activities on Form 4797 line 10.
+      // Business property sales aren't marked passive or not.
     ])
 
   l12 = (): number | undefined =>
@@ -70,9 +68,8 @@ export default class Pub596Worksheet1 {
         this.f1040.scheduleE.l26(),
         this.f1040.scheduleE.l29bg() ?? 0,
         this.f1040.scheduleE.l34bc() ?? 0,
-        this.f1040.scheduleE.l40() ?? 0,
-        // TODO: PAL Loss form 4797
-        this.f1040.f4797?.l10() ?? 0
+        this.f1040.scheduleE.l40() ?? 0
+        // TODO: ordinary loss from passive activities on Form 4797 line 10.
       ].map((x) => ifNegative(x))
     )
 

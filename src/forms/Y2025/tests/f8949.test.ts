@@ -53,6 +53,25 @@ const makeF1040 = (
   )
 
 describe('F8949 (2025)', () => {
+  describe('holding period', () => {
+    const held = (openDate: Date, closeDate: Date): Asset<Date> => ({
+      ...makeAsset('Security'),
+      openDate,
+      closeDate
+    })
+
+    it('is long-term only after the first anniversary', () => {
+      const f8949 = makeF1040([]).f8949
+      // 366 days in a non-leap year: the day after the anniversary.
+      expect(
+        f8949.isLongTerm(held(new Date(2025, 0, 1), new Date(2026, 0, 2)))
+      ).toBe(true)
+      expect(
+        f8949.isLongTerm(held(new Date(2025, 0, 1), new Date(2026, 0, 1)))
+      ).toBe(false)
+    })
+  })
+
   describe('asset group routing', () => {
     it('non-digital sales are picked up by the non-digital f8949', () => {
       const f1040 = makeF1040([makeAsset('Security')])

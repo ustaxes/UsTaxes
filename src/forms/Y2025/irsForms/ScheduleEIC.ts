@@ -94,10 +94,9 @@ export default class ScheduleEIC extends F1040Attachment {
 
   // Step 2, question 3 and "Form 4797 filers": over the investment income
   // limit, a filer can still qualify through Pub 596 Worksheet 1, but only if
-  // line 7a includes an amount from Form 4797. Form 4797 gains here go to
-  // Schedule 1 line 4 (F4797.l9), never to Schedule D or line 7a, so this is
-  // false until they do.
-  line7aIncludesF4797 = (): boolean => false
+  // line 7a includes an amount from Form 4797 (through Schedule D line 11).
+  line7aIncludesF4797 = (): boolean =>
+    this.f1040.f4797?.scheduleDGain() !== undefined
 
   // Todo, instruction 2.4.1
   filingScheduleE = (): boolean => this.f1040.scheduleE.isNeeded()
