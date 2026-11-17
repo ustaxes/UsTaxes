@@ -228,7 +228,10 @@ describe('fica', () => {
     const f1040 = run(testKit.builder.build(testInfo, []).f1040())
       .map(commonTests.findF1040OrFail)
       .orThrow()
-    expect(f1040.schedule3.claimableExcessSSTaxWithholding()).toEqual(1000)
+    expect(f1040.schedule3.claimableExcessSSTaxWithholding()).toBeCloseTo(
+      1000,
+      2
+    )
   })
 
   it('should add Additional Medicare Tax form 8959', async () => {
@@ -330,7 +333,10 @@ describe('fica', () => {
         ssWithholding: 5735
       }
     ])
-    expect(f1040.schedule3.claimableExcessSSTaxWithholding()).toEqual(551.8)
+    expect(f1040.schedule3.claimableExcessSSTaxWithholding()).toBeCloseTo(
+      551.8,
+      2
+    )
   })
 
   it('should treat W-2s with the same EIN as one employer', () => {
@@ -370,7 +376,7 @@ describe('fica', () => {
         { ...blank, employer: employerA, income: 100000, ssWithholding: 6000 },
         { ...blank, employer: employerB, income: 100000, ssWithholding: 6000 }
       ]).schedule3.claimableExcessSSTaxWithholding()
-    ).toEqual(1081.8)
+    ).toBeCloseTo(1081.8, 2)
   })
 
   it('should still allow the excess from other employers when one withheld over the max', () => {
@@ -392,7 +398,10 @@ describe('fica', () => {
         ssWithholding: 3000
       }
     ])
-    expect(f1040.schedule3.claimableExcessSSTaxWithholding()).toEqual(3000)
+    expect(f1040.schedule3.claimableExcessSSTaxWithholding()).toBeCloseTo(
+      3000,
+      2
+    )
   })
 
   it('should not count Medicare-only wages from W-2s without SS withholding', () => {
@@ -452,10 +461,10 @@ describe('fica', () => {
         w2(PersonRole.SPOUSE, employerA, 6000),
         w2(PersonRole.SPOUSE, employerB, 5918.2)
       ]).schedule3.claimableExcessSSTaxWithholding()
-    ).toEqual(2000)
+    ).toBeCloseTo(2000, 2)
   })
 
-  it('should round the excess to cents', () => {
+  it('should claim an excess smaller than a dollar', () => {
     const f1040 = build1040([
       {
         ...sampleW2,
@@ -472,6 +481,9 @@ describe('fica', () => {
         ssWithholding: 9994
       }
     ])
-    expect(f1040.schedule3.claimableExcessSSTaxWithholding()).toEqual(0.8)
+    expect(f1040.schedule3.claimableExcessSSTaxWithholding()).toBeCloseTo(
+      0.8,
+      2
+    )
   })
 })

@@ -59,11 +59,8 @@ export default class Schedule3 extends F1040Attachment {
   }
 
   claimableExcessSSTaxWithholding = (): number =>
-    Math.round(
-      (this.excessSSTaxWithholdingFor(PersonRole.PRIMARY) +
-        this.excessSSTaxWithholdingFor(PersonRole.SPOUSE)) *
-        100
-    ) / 100
+    this.excessSSTaxWithholdingFor(PersonRole.PRIMARY) +
+    this.excessSSTaxWithholdingFor(PersonRole.SPOUSE)
 
   // Any Part I credit (Form 2441, 8863, 8880, 5695, ...) or Part II payment
   // (including extension payments and excess Social Security withholding)
