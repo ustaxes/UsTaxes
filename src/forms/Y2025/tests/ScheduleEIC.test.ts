@@ -171,4 +171,15 @@ describe('ScheduleEIC 2025 computation', () => {
     })
     expect(f1040.scheduleEIC.credit()).toBe(3261)
   })
+
+  it('lists the first three qualifying children in the order entered', () => {
+    const kids = [
+      child('2010-06-15'),
+      child('2018-06-15'),
+      child('2012-06-15'),
+      child('2016-06-15')
+    ]
+    const f1040 = eicReturn(20000, kids)
+    expect(f1040.scheduleEIC.qualifyingDependents()).toEqual(kids.slice(0, 3))
+  })
 })
