@@ -11,14 +11,14 @@ jobs:
         platform: [macos-latest, ubuntu-latest, windows-latest]
     runs-on: ${{ matrix.platform }}
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - name: setup node
-      uses: actions/setup-node@v2
+      uses: actions/setup-node@v4
       with:
         node-version: 24
     - name: Get the version
       id: get_version
-      run: echo ::set-output name=VERSION::__VERSION__
+      run: echo "VERSION=__VERSION__" >> "$GITHUB_OUTPUT"
       shell: bash
       ## https://github.com/tauri-apps/tauri/blob/76187298c1d52dc764c5192c6a770a65f44b82ab/.github/workflows/smoke-test-prod.yml
       ## Following that example, we cache directories for both cargo and node. 
@@ -26,19 +26,19 @@ jobs:
       ## at the end of the job (after cargo install and node install if those are necessary).
     - name: cache rust bin
       id: cache_rust_bin
-      uses: actions/cache@v1
+      uses: actions/cache@v4
       with:
         path: ~/.cargo/bin/
         key: ${{ runner.OS }}-xbuild-bin-${{ hashFiles('**/Cargo.toml') }}
     - name: cache rust registry/index
       id: cache_rust_reg_index
-      uses: actions/cache@v1
+      uses: actions/cache@v4
       with:
         path: ~/.cargo/registry/index
         key: ${{ runner.OS }}-xbuild-reg-index-${{ hashFiles('**/Cargo.toml') }}-
     - name: cache rust registry/cache
       id: cache_rust_reg_cache
-      uses: actions/cache@v1
+      uses: actions/cache@v4
       with:
         path: ~/.cargo/registry/cache/
         key: ${{ runner.OS }}-xbuild-reg-cache-${{ hashFiles('**/Cargo.toml') }}-
