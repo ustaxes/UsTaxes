@@ -146,35 +146,41 @@ export default class Schedule1A extends F1040Attachment {
   // ─── Part IV: No Tax on Car Loan Interest ────────────────────────────────────
   // Fill out only if qualified passenger vehicle loan interest (QPVLI) was paid.
 
-  // Line 22a column (ii): amount deducted on Sch. C, E, or F
-  // TODO: requires QPVLI data (VIN + interest amounts) not yet in the data model
+  private vehicles = () => this.obbb.carLoanVehicles ?? []
+
+  /**
+   * Column (iii) for one vehicle: total QPVLI paid in 2025 less the amount
+   * deducted on Schedule C, E, or F (column (ii)). Business use of the
+   * vehicle isn't in the data model, so column (ii) is 0 and column (iii) is
+   * the interest paid.
+   */
+  private columnIii = (index: number): number | undefined => {
+    const vehicles = this.vehicles()
+    if (index >= vehicles.length) return undefined
+    return Math.max(0, vehicles[index].interestPaid)
+  }
+
+  // Line 22a column (ii): amount deducted on Schedule C, E, or F
   l22aii = (): number | undefined => undefined
 
   // Line 22a column (iii): Schedule 1-A interest amount for vehicle 1
-  // TODO: requires QPVLI data (VIN + interest amounts) not yet in the data model
-  l22aiii = (): number | undefined => undefined
+  l22aiii = (): number | undefined => this.columnIii(0)
 
-  // Line 22b column (ii): amount deducted on Sch. C, E, or F
-  // TODO: requires QPVLI data (VIN + interest amounts) not yet in the data model
+  // Line 22b column (ii): amount deducted on Schedule C, E, or F
   l22bii = (): number | undefined => undefined
 
   // Line 22b column (iii): Schedule 1-A interest amount for vehicle 2
-  // TODO: requires QPVLI data (VIN + interest amounts) not yet in the data model
-  l22biii = (): number | undefined => undefined
+  l22biii = (): number | undefined => this.columnIii(1)
 
+  /** Column (iii) for every vehicle, including any beyond the two rows. */
   l22iiiTotal = (): number =>
-    (this.obbb.carLoanVehicles ?? []).reduce(
-      (sum, v) => sum + v.interestPaid,
-      0
-    )
+    this.vehicles().reduce((sum, _, i) => sum + (this.columnIii(i) ?? 0), 0)
 
-  // Line 23: Add lines 22a and 22b, column (iii)
-  l23 = (): number | undefined => {
-    const a = this.l22aiii()
-    const b = this.l22biii()
-    if (a === undefined && b === undefined) return undefined
-    return (a ?? 0) + (b ?? 0)
-  }
+  // Line 23: Add lines 22a and 22b, column (iii). With more than two VINs,
+  // the amounts for the additional vehicles are included here as well
+  // (the form says "If more than two VINs, see instructions").
+  l23 = (): number | undefined =>
+    this.vehicles().length > 0 ? this.l22iiiTotal() : undefined
 
   // Line 24: Smaller of line 23 or $10,000
   l24 = (): number | undefined => {
