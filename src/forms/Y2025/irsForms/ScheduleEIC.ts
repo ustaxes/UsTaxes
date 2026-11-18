@@ -356,9 +356,26 @@ export default class ScheduleEIC extends F1040Attachment {
     )
   }
 
+  bornThisYear = (d: Dependent): boolean =>
+    d.dateOfBirth.getFullYear() === federal.CURRENT_YEAR
+
+  // EIC qualifying child residency test (2025 Instructions for Form 1040,
+  // line 27, Rule 8; Pub. 596): the child lived with you for more than half
+  // of the year. A child born during the year passes if your home was the
+  // child's home for more than half the time they were alive.
+  // TODO: a child who died during the year gets the same treatment.
+  meetsResidencyTest = (d: Dependent): boolean => {
+    const months = d.qualifyingInfo?.numberOfMonths ?? 0
+    if (this.bornThisYear(d)) {
+      const monthsAlive = 12 - d.dateOfBirth.getMonth()
+      return months * 2 > monthsAlive
+    }
+    return months > 6
+  }
+
   qualifyingDependents = (): Dependent[] =>
     this.f1040.info.taxPayer.dependents
-      .filter((d) => this.meetsAgeTest(d))
+      .filter((d) => this.meetsAgeTest(d) && this.meetsResidencyTest(d))
       .sort((d) => d.dateOfBirth.getFullYear())
       .slice(0, 3)
 
@@ -419,9 +436,12 @@ export default class ScheduleEIC extends F1040Attachment {
   relationships = (): Array<string | undefined> =>
     this.qualifyingDependentsFilled().map((d) => d?.relationship)
 
-  // Line 6
+  // Line 6: for a child born during the year who meets the residency test,
+  // the instructions say to enter 12.
   numberMonths = (): Array<number | undefined> =>
-    this.qualifyingDependents().map((d) => d.qualifyingInfo?.numberOfMonths)
+    this.qualifyingDependents().map((d) =>
+      this.bornThisYear(d) ? 12 : d.qualifyingInfo?.numberOfMonths
+    )
 
   fields = (): Field[] => [
     this.f1040.namesString(),
