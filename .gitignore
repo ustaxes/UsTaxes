@@ -33,3 +33,8 @@ yarn-error.log*
 
 /logs/
 /src/core/data/validate-fns.js
+
+# oracle differential-test harness
+/oracle/.venv/
+/oracle/out/
+__pycache__/

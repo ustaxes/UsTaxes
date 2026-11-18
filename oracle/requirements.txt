@@ -1,0 +1,5 @@
+# Oracle engines for the differential test. Pinned so a report is reproducible;
+# bump deliberately and note the version in any findings you file.
+policyengine-us==2.145.6
+policyengine-core==3.36.1
+taxcalc==6.8.5
