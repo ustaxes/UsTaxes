@@ -341,14 +341,13 @@ export default class ScheduleEIC extends F1040Attachment {
     )
   }
 
-  /** Age at the end of the tax year, from the year of birth. */
-  ageAtYearEnd = (birthYear: number): number => federal.CURRENT_YEAR - birthYear
-
   // EIC qualifying child age test (2025 Instructions for Form 1040, line 27,
   // Rule 8): under age 19 at the end of the year, or under age 24 and a
   // student.
   meetsAgeTest = (d: Dependent): boolean => {
-    const age = this.ageAtYearEnd(d.dateOfBirth.getFullYear())
+    const age = this.f1040.qualifyingDependents.ageAtYearEnd(
+      d.dateOfBirth.getFullYear()
+    )
     return (
       age < federal.QualifyingDependents.qualifyingDependentMaxAge ||
       ((d.qualifyingInfo?.isStudent ?? false) &&
@@ -394,7 +393,7 @@ export default class ScheduleEIC extends F1040Attachment {
     this.years().flatMap((year) => {
       if (year !== undefined) {
         const qualifies =
-          this.ageAtYearEnd(year) <
+          this.f1040.qualifyingDependents.ageAtYearEnd(year) <
           federal.QualifyingDependents.qualifyingStudentMaxAge
         return [qualifies, !qualifies]
       }
@@ -406,7 +405,7 @@ export default class ScheduleEIC extends F1040Attachment {
     this.years().flatMap((year) => {
       if (
         year === undefined ||
-        this.ageAtYearEnd(year) >=
+        this.f1040.qualifyingDependents.ageAtYearEnd(year) >=
           federal.QualifyingDependents.qualifyingDependentMaxAge
       ) {
         return [undefined, undefined]
