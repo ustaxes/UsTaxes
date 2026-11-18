@@ -15,11 +15,14 @@ export default class QualifyingDependents {
     this.f1040 = f1040
   }
 
+  /** Age at the end of the tax year, from the year of birth. */
+  ageAtYearEnd = (birthYear: number): number => this.year - birthYear
+
   qualifiesChild = (d: Dependent): boolean =>
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     d === undefined
       ? false
-      : this.year - d.dateOfBirth.getFullYear() <
+      : this.ageAtYearEnd(d.dateOfBirth.getFullYear()) <
         federal.QualifyingDependents.childMaxAge
 
   qualifiesOther = (d: Dependent): boolean =>
@@ -27,7 +30,7 @@ export default class QualifyingDependents {
     d !== undefined &&
     d.qualifyingInfo !== undefined &&
     !this.qualifiesChild(d) &&
-    this.year - d.dateOfBirth.getFullYear() <
+    this.ageAtYearEnd(d.dateOfBirth.getFullYear()) <
       (d.qualifyingInfo.isStudent
         ? federal.QualifyingDependents.qualifyingDependentMaxAge
         : federal.QualifyingDependents.qualifyingStudentMaxAge)
