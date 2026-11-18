@@ -1,6 +1,5 @@
 import { FilingStatus } from 'ustaxes/core/data'
 import type { Piecewise } from 'ustaxes/core/util'
-import { linear } from 'ustaxes/core/util'
 
 export const CURRENT_YEAR = 2025
 
@@ -469,92 +468,114 @@ export const amt = {
   }
 }
 
-// https://www.irs.gov/credits-deductions/individuals/earned-income-tax-credit/earned-income-and-earned-income-tax-credit-eitc-tables#EITC%20Tables
-// line 11 caps based on step one in instructions (Rev. Proc. 2024-40, tax year 2025)
-const line11Caps = [19104, 50434, 57310, 61555]
-const line11MfjCaps = [26214, 57554, 64430, 68675]
-
-type Point = [number, number]
-
-// Provided a list of points, create a piecewise function
-// that makes linear segments through the list of points.
-const toPieceWise = (points: Point[]): Piecewise =>
-  points
-    .slice(0, points.length - 1)
-    .map((point, idx) => [point, points[idx + 1]])
-    .map(([[x1, y1], [x2, y2]]) => ({
-      // starting point     slope              intercept
-      lowerBound: x1,
-      f: linear((y2 - y1) / (x2 - x1), y1 - (x1 * (y2 - y1)) / (x2 - x1))
-    }))
-
-// These points are taken directly from IRS Rev. Proc. 2024-40 (tax year 2025)
-// https://www.irs.gov/pub/irs-drop/rp-24-40.pdf
+// Earned income credit parameters, IRS Rev. Proc. 2024-40, sec. 3.06
+// (tax year 2025): https://www.irs.gov/pub/irs-drop/rp-24-40.pdf#page=8
 // tax year 2026: https://www.irs.gov/pub/irs-drop/rp-25-32.pdf
-const unmarriedFormulas: Piecewise[] = (() => {
-  const points: Point[][] = [
-    [
-      [0, 0],
-      [8490, 649],
-      [10620, 649],
-      [19104, 0]
-    ], // 0
-    [
-      [0, 0],
-      [12730, 4328],
-      [23350, 4328],
-      [50434, 0]
-    ], // 1
-    [
-      [0, 0],
-      [17880, 7152],
-      [23350, 7152],
-      [57310, 0]
-    ], // 2
-    [
-      [0, 0],
-      [17880, 8046],
-      [23350, 8046],
-      [61555, 0]
-    ] // 3 or more
-  ]
-  return points.map((ps: Point[]) => toPieceWise(ps))
-})()
+//
+// This is the only place the EIC amounts are written down. The credit
+// curves, the step 1 income limits and the Worksheet A line 5 thresholds are
+// all derived from it, so a new tax year only updates these numbers.
+//
+// Every array is indexed by number of qualifying children: 0, 1, 2, 3 or more.
+const eicMaximumCredit = [649, 4328, 7152, 8046]
 
-const marriedFormulas: Piecewise[] = (() => {
-  const points: Point[][] = [
-    [
-      [0, 0],
-      [8490, 649],
-      [17730, 649],
-      [26214, 0]
-    ], // 0
-    [
-      [0, 0],
-      [12730, 4328],
-      [30470, 4328],
-      [57554, 0]
-    ], // 1
-    [
-      [0, 0],
-      [17880, 7152],
-      [30470, 7152],
-      [64430, 0]
-    ], // 2
-    [
-      [0, 0],
-      [17880, 8046],
-      [30470, 8046],
-      [68675, 0]
-    ] // 3 or more
-  ]
-  return points.map((ps) => toPieceWise(ps))
-})()
+// Earned income amount: the income at which the credit reaches its maximum.
+const eicEarnedIncomeAmount = [8490, 12730, 17880, 17880]
+
+// Credit and phase-out percentages from IRC 32(b)(1), in basis points
+// (3400 = 34%). The curves use the statutory rates, not slopes derived from
+// the rounded dollar amounts above: 4328 / 12730 is 33.998%, which rounds
+// some EIC Table rows down a dollar. Integer basis points also keep table
+// amounts that fall exactly on 50 cents exact, so they round up as the table
+// does.
+const eicCreditRateBp = [765, 3400, 4000, 4500]
+const eicPhaseOutRateBp = [765, 1598, 2106, 2106]
+
+interface EICPhaseOut {
+  /** Threshold phase-out amount: the credit starts to fall above this income. */
+  start: number[]
+  /** Completed phase-out amount: the credit is $0 at this income and above. */
+  end: number[]
+}
+
+const eicPhaseOutUnmarried: EICPhaseOut = {
+  start: [10620, 23350, 23350, 23350],
+  end: [19104, 50434, 57310, 61555]
+}
+
+const eicPhaseOutMfj: EICPhaseOut = {
+  start: [17730, 30470, 30470, 30470],
+  end: [26214, 57554, 64430, 68675]
+}
+
+// The credit is the credit percentage of income, up to the maximum credit,
+// reduced by the phase-out percentage of income above the phase-out start.
+// The result is not rounded or floored here.
+const eicFormulas = (phaseOut: EICPhaseOut): Piecewise[] =>
+  eicMaximumCredit.map((maximumCredit, children) => [
+    {
+      lowerBound: 0,
+      f: (income: number): number =>
+        Math.min((eicCreditRateBp[children] * income) / 10000, maximumCredit)
+    },
+    {
+      lowerBound: phaseOut.start[children],
+      f: (income: number): number =>
+        maximumCredit -
+        (eicPhaseOutRateBp[children] * (income - phaseOut.start[children])) /
+          10000
+    }
+  ])
+
+// MFS filers can't claim the EIC (no separated-spouse support yet).
+const eicByFilingStatus = <T>(
+  unmarried: T,
+  mfj: T
+): { [k in FilingStatus]: T | undefined } => ({
+  [FilingStatus.S]: unmarried,
+  [FilingStatus.W]: unmarried,
+  [FilingStatus.HOH]: unmarried,
+  [FilingStatus.MFS]: undefined,
+  [FilingStatus.MFJ]: mfj
+})
+
+// The maximum credit applies from the earned income amount up to the
+// phase-out start.
+const eicPlateaus = (phaseOut: EICPhaseOut): EICPlateau[] =>
+  eicMaximumCredit.map((maximumCredit, children) => ({
+    start: eicEarnedIncomeAmount[children],
+    end: phaseOut.start[children],
+    maximumCredit
+  }))
+
+interface EICPlateau {
+  /** Earned income amount: the credit is at its maximum from here. */
+  start: number
+  /** Phase-out start: the credit falls below its maximum from here. */
+  end: number
+  maximumCredit: number
+}
 
 interface EICDef {
+  /**
+   * Step 1 income limits by number of qualifying children (0, 1, 2, 3 or
+   * more): AGI must be less than the completed phase-out amount.
+   */
   caps: { [k in FilingStatus]: number[] | undefined }
   maxInvestmentIncome: number
   formulas: { [k in FilingStatus]: Piecewise[] | undefined }
+  /**
+   * Income at which the credit begins to phase out, by number of qualifying
+   * children (0, 1, 2, 3 or more). EIC Worksheet A line 5: if AGI is below
+   * this amount, the credit is figured on earned income alone.
+   */
+  phaseOutStarts: { [k in FilingStatus]: number[] | undefined }
+  /**
+   * Where the credit is at its maximum, by number of qualifying children
+   * (0, 1, 2, 3 or more). An EIC Table row that reaches into this range shows
+   * the maximum credit, even when its midpoint is outside it.
+   */
+  plateaus: { [k in FilingStatus]: EICPlateau[] | undefined }
 }
 
 export const QualifyingDependents = {
@@ -564,23 +585,20 @@ export const QualifyingDependents = {
 }
 
 export const EIC: EICDef = {
-  // credit caps for number of children (0, 1, 2, 3 or more):
-  // Step 1
-  caps: {
-    [FilingStatus.S]: line11Caps,
-    [FilingStatus.W]: line11Caps,
-    [FilingStatus.HOH]: line11Caps,
-    [FilingStatus.MFS]: undefined,
-    [FilingStatus.MFJ]: line11MfjCaps
-  },
+  caps: eicByFilingStatus(eicPhaseOutUnmarried.end, eicPhaseOutMfj.end),
   maxInvestmentIncome: 11950,
-  formulas: {
-    [FilingStatus.S]: unmarriedFormulas,
-    [FilingStatus.W]: unmarriedFormulas,
-    [FilingStatus.HOH]: unmarriedFormulas,
-    [FilingStatus.MFS]: undefined,
-    [FilingStatus.MFJ]: marriedFormulas
-  }
+  phaseOutStarts: eicByFilingStatus(
+    eicPhaseOutUnmarried.start,
+    eicPhaseOutMfj.start
+  ),
+  formulas: eicByFilingStatus(
+    eicFormulas(eicPhaseOutUnmarried),
+    eicFormulas(eicPhaseOutMfj)
+  ),
+  plateaus: eicByFilingStatus(
+    eicPlateaus(eicPhaseOutUnmarried),
+    eicPlateaus(eicPhaseOutMfj)
+  )
 }
 
 export default federalBrackets
