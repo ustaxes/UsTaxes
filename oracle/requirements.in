@@ -1,0 +1,6 @@
+# Top-level oracle engines. Edit this file, then regenerate the lock with:
+#   uv pip compile --python-version 3.12 oracle/requirements.in -o oracle/requirements.txt
+# Bump deliberately: findings should name the engine versions they came from.
+policyengine-us==2.145.6
+policyengine-core==3.36.1
+taxcalc==6.8.5

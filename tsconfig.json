@@ -28,7 +28,8 @@
   },
   "include": [
     "src/**/*",
-    "scripts"
+    "scripts",
+    "oracle"
   ],
   "exclude": [
     "**/node_modules",
