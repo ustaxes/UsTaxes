@@ -565,15 +565,11 @@ interface EICDef {
   maxInvestmentIncome: number
   formulas: { [k in FilingStatus]: Piecewise[] | undefined }
   /**
-   * Income at which the credit begins to phase out, by number of qualifying
-   * children (0, 1, 2, 3 or more). EIC Worksheet A line 5: if AGI is below
-   * this amount, the credit is figured on earned income alone.
-   */
-  phaseOutStarts: { [k in FilingStatus]: number[] | undefined }
-  /**
    * Where the credit is at its maximum, by number of qualifying children
    * (0, 1, 2, 3 or more). An EIC Table row that reaches into this range shows
-   * the maximum credit, even when its midpoint is outside it.
+   * the maximum credit, even when its midpoint is outside it. The plateau's
+   * end is the phase-out start, used by EIC Worksheet A line 5: if AGI is
+   * below it, the credit is figured on earned income alone.
    */
   plateaus: { [k in FilingStatus]: EICPlateau[] | undefined }
 }
@@ -587,10 +583,6 @@ export const QualifyingDependents = {
 export const EIC: EICDef = {
   caps: eicByFilingStatus(eicPhaseOutUnmarried.end, eicPhaseOutMfj.end),
   maxInvestmentIncome: 11950,
-  phaseOutStarts: eicByFilingStatus(
-    eicPhaseOutUnmarried.start,
-    eicPhaseOutMfj.start
-  ),
   formulas: eicByFilingStatus(
     eicFormulas(eicPhaseOutUnmarried),
     eicFormulas(eicPhaseOutMfj)

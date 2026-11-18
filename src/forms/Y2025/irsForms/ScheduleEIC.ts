@@ -296,9 +296,8 @@ export default class ScheduleEIC extends F1040Attachment {
       children
     )
     const phaseOutStart =
-      federal.EIC.phaseOutStarts[this.f1040.info.taxPayer.filingStatus]?.[
-        children
-      ]
+      federal.EIC.plateaus[this.f1040.info.taxPayer.filingStatus]?.[children]
+        ?.end
     const agi = this.f1040.l11b()
     if (phaseOutStart === undefined || agi < phaseOutStart) {
       return earnedIncomeCredit
