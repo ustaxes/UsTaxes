@@ -1,7 +1,7 @@
 """Oracle engine adapters: PolicyEngine-US and PSL Tax-Calculator.
 
-Each `run_*` function takes a list of scenarios (see scenarios.py) and
-returns {scenario_id: {field: value}} using the same field names as
+Each `run_*` function takes a tax year and a list of scenarios (see
+scenarios.py; already `normalize`d) and returns {scenario_id: {field: value}} using the same field names as
 ustaxes_runner.ts. Both engines are batched: one simulation covers every
 scenario, which is far faster than one simulation per return.
 """
@@ -19,7 +19,6 @@ import numpy as np
 
 from scenarios import Scenario
 
-YEAR = 2025
 REPO_ROOT = Path(__file__).resolve().parent.parent
 warnings.filterwarnings("ignore")
 
@@ -33,8 +32,14 @@ def _filers(s: Scenario) -> int:
 # --------------------------------------------------------------------------
 
 
+def ss_wage_base(year: int) -> float:
+    from policyengine_us import CountryTaxBenefitSystem
+
+    return float(CountryTaxBenefitSystem().parameters(f"{year}-01-01").gov.irs.payroll.social_security.cap)
+
+
 def run_ustaxes(
-    scenarios: list[Scenario], workdir: Path, root: Path = REPO_ROOT
+    year: int, scenarios: list[Scenario], workdir: Path, root: Path = REPO_ROOT
 ) -> dict[str, dict[str, Any]]:
     """Run scenarios through the UsTaxes checkout at `root`.
 
@@ -44,7 +49,7 @@ def run_ustaxes(
     workdir.mkdir(parents=True, exist_ok=True)
     inp = workdir / "ustaxes_in.json"
     out = workdir / "ustaxes_out.json"
-    inp.write_text(json.dumps(scenarios))
+    inp.write_text(json.dumps({"year": year, "ssWageBase": ss_wage_base(year), "scenarios": scenarios}))
     env = {
         **os.environ,
         "TS_NODE_TRANSPILE_ONLY": "true",
@@ -80,8 +85,8 @@ PE_FILING_STATUS = {
 }
 
 
-def _pe_situation(scenarios: list[Scenario]) -> tuple[dict[str, Any], list[str]]:
-    Y = str(YEAR)
+def _pe_situation(year: int, scenarios: list[Scenario]) -> tuple[dict[str, Any], list[str]]:
+    Y = str(year)
     people: dict[str, Any] = {}
     groups: dict[str, dict[str, Any]] = {
         "tax_units": {},
@@ -138,6 +143,11 @@ def _pe_situation(scenarios: list[Scenario]) -> tuple[dict[str, Any], list[str]]
             "filing_status": {Y: PE_FILING_STATUS[s["filingStatus"]]},
             # MFS scenarios lived apart from the spouse all year.
             "cohabitating_spouses": {Y: False},
+            # Pin take-up so an engine upgrade cannot change it: a preparer
+            # claims the EITC for everyone eligible, and nobody here is
+            # enrolled in Marketplace coverage (no premium tax credit).
+            "takes_up_eitc": {Y: True},
+            "takes_up_aca_if_eligible": {Y: False},
         }
         groups["families"][f"fam{k}"] = {"members": members}
         groups["spm_units"][f"spm{k}"] = {"members": members}
@@ -149,14 +159,14 @@ def _pe_situation(scenarios: list[Scenario]) -> tuple[dict[str, Any], list[str]]
     return {"people": people, **groups}, order
 
 
-def run_policyengine(scenarios: list[Scenario]) -> dict[str, dict[str, Any]]:
+def run_policyengine(year: int, scenarios: list[Scenario]) -> dict[str, dict[str, Any]]:
     from policyengine_us import Simulation
 
-    situation, order = _pe_situation(scenarios)
+    situation, order = _pe_situation(year, scenarios)
     sim = Simulation(situation=situation)
 
     def tu(var: str) -> np.ndarray:
-        return np.asarray(sim.calculate(var, YEAR), dtype=float)
+        return np.asarray(sim.calculate(var, year), dtype=float)
 
     v = {
         name: tu(name)
@@ -181,7 +191,7 @@ def run_policyengine(scenarios: list[Scenario]) -> dict[str, dict[str, Any]]:
     }
     # Self-employment tax is a person-level variable; sum it to tax units.
     se_tax = sim.map_result(
-        np.asarray(sim.calculate("self_employment_tax", YEAR), dtype=float),
+        np.asarray(sim.calculate("self_employment_tax", year), dtype=float),
         "person",
         "tax_unit",
     )
@@ -221,7 +231,7 @@ def run_policyengine(scenarios: list[Scenario]) -> dict[str, dict[str, Any]]:
 TC_MARS = {"S": 1, "MFJ": 2, "MFS": 3, "HOH": 4}
 
 
-def _tc_row(k: int, s: Scenario) -> dict[str, Any]:
+def _tc_row(year: int, k: int, s: Scenario) -> dict[str, Any]:
     inc = s["income"]
     deps = s["dependents"]
     ages = [d["age"] for d in deps]
@@ -232,7 +242,7 @@ def _tc_row(k: int, s: Scenario) -> dict[str, Any]:
     filer_ages = [s["primary"]["age"]] + ([s["spouse"]["age"]] if s["spouse"] else [])
     return dict(
         RECID=k + 1,
-        FLPDYR=YEAR,
+        FLPDYR=year,
         s006=1.0,
         MARS=TC_MARS[s["filingStatus"]],
         XTOT=_filers(s) + len(deps),
@@ -266,19 +276,19 @@ def _tc_row(k: int, s: Scenario) -> dict[str, Any]:
     )
 
 
-def run_taxcalc(scenarios: list[Scenario]) -> dict[str, dict[str, Any]]:
+def run_taxcalc(year: int, scenarios: list[Scenario]) -> dict[str, dict[str, Any]]:
     import pandas as pd
     import taxcalc as tc
 
-    df = pd.DataFrame([_tc_row(k, s) for k, s in enumerate(scenarios)])
-    rec = tc.Records(data=df, start_year=YEAR, gfactors=None, weights=None, adjust_ratios=None)
+    df = pd.DataFrame([_tc_row(year, k, s) for k, s in enumerate(scenarios)])
+    rec = tc.Records(data=df, start_year=year, gfactors=None, weights=None, adjust_ratios=None)
     policy = tc.Policy()
     # Tax-Calculator models partial EITC/ACTC take-up stochastically by
     # default. A return preparer computes the credit for everyone eligible.
     policy.implement_reform(
         {
-            "eitc_claim_prob_scale": {YEAR: 9e99},
-            "actc_claim_prob_scale": {YEAR: 9e99},
+            "eitc_claim_prob_scale": {year: 9e99},
+            "actc_claim_prob_scale": {year: 9e99},
         }
     )
     calc = tc.Calculator(policy=policy, records=rec, verbose=False)

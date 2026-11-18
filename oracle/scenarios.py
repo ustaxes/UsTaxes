@@ -1,4 +1,4 @@
-"""Engine-neutral 2025 return scenarios.
+"""Engine-neutral return scenarios.
 
 A scenario is a plain JSON-serialisable dict that every engine adapter
 (UsTaxes, PolicyEngine-US, Tax-Calculator) translates into its own input
@@ -32,6 +32,13 @@ Deliberate scope limits (each would need more adapter work to compare fairly):
   * no withholding or estimated payments — we compare liability, not refund;
   * no tips/overtime/car-loan Schedule 1-A inputs (Tax-Calculator 6.8 does
     not model them per-return the same way).
+
+Income keys a year's UsTaxes forms cannot take (see UNSUPPORTED_BEFORE_2025)
+are never generated for that year: UsTaxes would silently drop them and every
+such return would look like a bug.
+
+The checked-in corpus stores income sparsely (zero amounts omitted); call
+`normalize` before handing a scenario to an engine.
 """
 
 from __future__ import annotations
@@ -60,8 +67,35 @@ INCOME_KEYS = [
 ]
 
 
+# Inputs the Y2020-Y2024 forms have no way to accept: Information has no
+# selfEmployedIncome or otherIncome (unemployment) there.
+UNSUPPORTED_BEFORE_2025 = {"sePrimary", "seSpouse", "unemployment"}
+
+
+def supported_income(year: int) -> list[str]:
+    if year >= 2025:
+        return list(INCOME_KEYS)
+    return [k for k in INCOME_KEYS if k not in UNSUPPORTED_BEFORE_2025]
+
+
 def empty_income() -> dict[str, int]:
     return {k: 0 for k in INCOME_KEYS}
+
+
+def normalize(s: Scenario) -> Scenario:
+    """Fill omitted income keys with 0 (the corpus stores income sparsely)."""
+    out = copy.deepcopy(s)
+    out["income"] = {**empty_income(), **s.get("income", {})}
+    out.setdefault("spouse", None)
+    out.setdefault("dependents", [])
+    return out
+
+
+def sparse(s: Scenario) -> Scenario:
+    """Drop zero income amounts, for compact storage."""
+    out = {"id": s["id"], **{k: copy.deepcopy(v) for k, v in s.items() if k != "id"}}
+    out["income"] = {k: v for k, v in s["income"].items() if v}
+    return out
 
 
 def _amount(rng: random.Random, lo: int, hi: int) -> int:
@@ -78,7 +112,7 @@ def _person(rng: random.Random) -> dict[str, Any]:
     return {"age": age, "blind": rng.random() < 0.03}
 
 
-def random_scenario(rng: random.Random, sid: str) -> Scenario:
+def random_scenario(rng: random.Random, sid: str, year: int = 2025) -> Scenario:
     fs = rng.choices(["S", "MFJ", "HOH", "MFS"], weights=[35, 35, 22, 8])[0]
     primary = _person(rng)
     spouse = _person(rng) if fs == "MFJ" else None
@@ -132,6 +166,9 @@ def random_scenario(rng: random.Random, sid: str) -> Scenario:
     if spouse and spouse["age"] >= 62 and rng.random() < 0.6:
         inc["ssSpouse"] = _amount(rng, 3_000, 40_000)
 
+    for k in set(INCOME_KEYS) - set(supported_income(year)):
+        inc[k] = 0
+
     return {
         "id": sid,
         "filingStatus": fs,
@@ -142,9 +179,9 @@ def random_scenario(rng: random.Random, sid: str) -> Scenario:
     }
 
 
-def random_scenarios(n: int, seed: int) -> list[Scenario]:
+def random_scenarios(n: int, seed: int, year: int = 2025) -> list[Scenario]:
     rng = random.Random(seed)
-    return [random_scenario(rng, f"r{seed}-{i:05d}") for i in range(n)]
+    return [random_scenario(rng, f"r{seed}-{i:05d}", year) for i in range(n)]
 
 
 def shrink_candidates(s: Scenario) -> list[Scenario]:

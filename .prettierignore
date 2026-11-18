@@ -41,3 +41,6 @@ tsconfig.json
 
 # don't worry about generated files
 /src/core/data/validate-fns.js
+
+# oracle corpus: one scenario per line on purpose (readable diffs)
+/oracle/corpus/

@@ -1,10 +1,11 @@
 /**
- * Runs engine-neutral oracle scenarios through the UsTaxes Y2025 engine.
+ * Runs engine-neutral oracle scenarios through a UsTaxes tax year's forms.
  *
  * Usage (from the repo root):
  *   ts-node -r tsconfig-paths/register oracle/ustaxes_runner.ts <in.json> <out.json>
  *
- * <in.json> is a list of scenarios as produced by oracle/scenarios.py.
+ * <in.json> is {"year": 2025, "ssWageBase": 176100, "scenarios": [...]},
+ * with scenarios as produced by oracle/scenarios.py (income not sparse).
  * <out.json> maps scenario id to the comparison fields (see FIELDS in
  * oracle/compare.py), or to {"error": "..."} if UsTaxes rejected or threw.
  */
@@ -23,8 +24,23 @@ import {
   PersonRole,
   PlanType1099
 } from 'ustaxes/core/data'
-import { create1040 } from 'ustaxes/forms/Y2025/irsForms/Main'
 import { isLeft } from 'ustaxes/core/util'
+import { create1040 as create2020 } from 'ustaxes/forms/Y2020/irsForms/Main'
+import { create1040 as create2021 } from 'ustaxes/forms/Y2021/irsForms/Main'
+import { create1040 as create2022 } from 'ustaxes/forms/Y2022/irsForms/Main'
+import { create1040 as create2023 } from 'ustaxes/forms/Y2023/irsForms/Main'
+import { create1040 as create2024 } from 'ustaxes/forms/Y2024/irsForms/Main'
+import { create1040 as create2025 } from 'ustaxes/forms/Y2025/irsForms/Main'
+
+// Each year's F1040 is its own class; the runner reads lines by name.
+const CREATE: Record<number, (info: Information) => unknown> = {
+  2020: (i) => create2020(i, []),
+  2021: (i) => create2021(i, []),
+  2022: (i) => create2022(i, []),
+  2023: (i) => create2023(i, []),
+  2024: (i) => create2024(i, []),
+  2025: (i) => create2025(i, [])
+}
 
 // Mirrors the scenario format documented in oracle/scenarios.py.
 interface PersonFacts {
@@ -55,11 +71,17 @@ interface Scenario {
   }
 }
 
-const TAX_YEAR = 2025
-// Social Security wage base for 2025 (SSA announcement, Oct 2024).
-const SS_WAGE_BASE = 176100
+interface RunnerInput {
+  year: number
+  ssWageBase: number
+  scenarios: Scenario[]
+}
 
-// Born on 1 July so the age at 31 December 2025 is exactly `age`.
+// Set from the input file before any scenario is converted.
+let TAX_YEAR = 0
+let SS_WAGE_BASE = 0
+
+// Born on 1 July so the age at 31 December of the tax year is exactly `age`.
 const dob = (age: number): Date => new Date(TAX_YEAR - age, 6, 1)
 
 const address = {
@@ -244,30 +266,57 @@ export const toInformation = (s: Scenario): Information => {
   }
 }
 
-const n = (x: number | undefined): number => x ?? 0
+/**
+ * Calls the first of `names` that `obj` has as a method. Line names move
+ * between years (l11 vs l11a, l27 vs l27a), so each read lists them all.
+ * An attachment that a year does not have (obj undefined) reads as 0; a form
+ * that exists but has none of the names throws, so a renamed line fails
+ * loudly instead of comparing as 0.
+ */
+const line = (obj: unknown, ...names: string[]): number => {
+  if (obj === undefined || obj === null) return 0
+  const o = obj as Record<string, unknown>
+  for (const name of names) {
+    const fn = o[name]
+    if (typeof fn === 'function') {
+      const v = (fn as () => unknown).call(obj)
+      return typeof v === 'number' ? v : 0
+    }
+  }
+  throw new Error(`no ${names.join('/')} on ${String(o.constructor.name)}`)
+}
+
+/** Like `line`, for lines that only exist in some years (reads 0 when absent). */
+const optionalLine = (obj: unknown, name: string): number => {
+  const fn = (obj as Record<string, unknown> | undefined)?.[name]
+  return typeof fn === 'function' ? line(obj, name) : 0
+}
 
 const run = (s: Scenario): Record<string, number | string> => {
-  const result = create1040(toInformation(s), [])
+  const result = CREATE[TAX_YEAR](toInformation(s)) as Parameters<
+    typeof isLeft
+  >[0]
   if (isLeft(result)) {
-    return { error: `validation: ${result.left.join(', ')}` }
+    return { error: `validation: ${String(result.left)}` }
   }
-  const [f] = result.right
-  const seTax = n(f.schedule2.l4())
-  const addlMedicare = n(f.schedule2.l11())
-  const niit = n(f.schedule2.l12())
-  const eitc = n(f.l27a())
-  const actc = n(f.l28())
+  const [f] = result.right as [Record<string, unknown>]
+  const seTax = line(f.scheduleSE, 'l12')
+  const addlMedicare = line(f.f8959, 'l18')
+  const niit = line(f.f8960, 'l17')
+  const eitc = line(f, 'l27a', 'l27')
+  const actc = line(f, 'l28')
+  const totalTax = line(f, 'l24')
   return {
-    total_income: f.l9(),
-    taxable_ss: n(f.l6b()),
-    agi: f.l11a(),
-    standard_deduction: f.l12e(),
-    qbid: n(f.l13a()),
-    senior_deduction: n(f.l13b()),
-    taxable_income: f.l15(),
-    regular_tax: n(f.l16()),
-    amt: n(f.f6251.l11()),
-    nonrefundable_ctc_odc: n(f.l19()),
+    total_income: line(f, 'l9'),
+    taxable_ss: line(f, 'l6b'),
+    agi: line(f, 'l11a', 'l11'),
+    standard_deduction: line(f, 'l12e', 'l12a', 'l12'),
+    qbid: line(f, 'l13a', 'l13'),
+    senior_deduction: optionalLine(f, 'l13b'),
+    taxable_income: line(f, 'l15'),
+    regular_tax: line(f, 'l16'),
+    amt: line(f.f6251, 'l11'),
+    nonrefundable_ctc_odc: line(f, 'l19'),
     se_tax: seTax,
     additional_medicare: addlMedicare,
     niit,
@@ -275,7 +324,7 @@ const run = (s: Scenario): Record<string, number | string> => {
     actc,
     // Federal income tax net of refundable credits, excluding SE tax and
     // Additional Medicare Tax (which the oracles book as payroll taxes).
-    net_income_tax: f.l24() - seTax - addlMedicare - eitc - actc
+    net_income_tax: totalTax - seTax - addlMedicare - eitc - actc
   }
 }
 
@@ -287,9 +336,15 @@ const main = () => {
   }
   // Form classes log noisy warnings; keep stdout/stderr for real problems.
   console.warn = () => undefined
-  const scenarios = JSON.parse(readFileSync(inPath, 'utf8')) as Scenario[]
+  const input = JSON.parse(readFileSync(inPath, 'utf8')) as RunnerInput
+  if (!(input.year in CREATE)) {
+    console.error(`No UsTaxes forms for ${input.year}`)
+    process.exit(1)
+  }
+  TAX_YEAR = input.year
+  SS_WAGE_BASE = input.ssWageBase
   const out: Record<string, unknown> = {}
-  for (const s of scenarios) {
+  for (const s of input.scenarios) {
     try {
       out[s.id] = run(s)
     } catch (e) {

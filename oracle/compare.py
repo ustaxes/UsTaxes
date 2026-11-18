@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass
 from typing import Any, Optional
 
@@ -32,8 +33,18 @@ FIELDS = [
 # oracles use the exact formulas instead. A $25 offset at the top 2025
 # table rate (24%) is $6; the EIC phase-in rate tops out at 45%, or $11.25.
 # These tolerances absorb that, and nothing more.
-BASE_TOL = 2.0
+# Values are compared in whole dollars, as the form shows them, so the base
+# tolerance only absorbs two engines rounding the same cents differently.
+BASE_TOL = 1.0
 TABLE_TOL = 12.0
+
+
+def dollars(v: Optional[float]) -> Optional[float]:
+    """Round to whole dollars, halves away from zero (IRS rounding rule)."""
+    if v is None:
+        return None
+    v = float(v)
+    return math.copysign(math.floor(abs(v) + 0.5), v)
 
 
 def uses_tax_table(scenario: dict[str, Any], taxable_income: float) -> bool:
@@ -121,9 +132,9 @@ def compare(
     results = []
     for f in FIELDS:
         tol = tolerance(f, table)
-        uv = u.get(f)
-        pv = None if (pe_extra and f == "net_income_tax") else pe.get(f)
-        tv = tc.get(f)
+        uv = dollars(u.get(f))
+        pv = None if (pe_extra and f == "net_income_tax") else dollars(pe.get(f))
+        tv = dollars(tc.get(f))
         if pv is None:
             cons = tv
         elif abs(pv - tv) <= tol:
