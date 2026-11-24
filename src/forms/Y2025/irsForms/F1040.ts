@@ -1,4 +1,9 @@
-import type { Dependent, IncomeW2, Asset } from 'ustaxes/core/data'
+import type {
+  Dependent,
+  IncomeW2,
+  Asset,
+  ScheduleK1Form1065
+} from 'ustaxes/core/data'
 import {
   AccountType,
   FilingStatus,
@@ -229,7 +234,7 @@ export default class F1040 extends F1040Base {
   }
 
   totalQbi = () =>
-    this.info.scheduleK1Form1065s
+    this.validK1s()
       .map((k1) => k1.section199AQBI)
       .reduce((c, a) => c + a, 0)
 
@@ -320,6 +325,23 @@ export default class F1040 extends F1040Base {
     }
     return this.info.w2s
   }
+
+  /**
+   * Partnership K-1s that belong on this return. A spouse's K-1s are only
+   * reported on a joint return: on MFS they belong on the spouse's own
+   * return, and on any other status there is no spouse on the return (and
+   * no spouse Schedule SE), so a leftover SPOUSE K-1 is left out entirely
+   * rather than counted as income without SE tax.
+   */
+  validK1s = (): ScheduleK1Form1065[] =>
+    this.info.scheduleK1Form1065s.filter(
+      (k1) =>
+        this.info.taxPayer.filingStatus === FilingStatus.MFJ ||
+        k1.personRole === PersonRole.PRIMARY
+    )
+
+  k1sWithInterest = (): ScheduleK1Form1065[] =>
+    this.validK1s().filter((k1) => k1.interestIncome > 0)
 
   wages = (): number => this.validW2s().reduce((res, w2) => res + w2.income, 0)
   medicareWages = (): number =>

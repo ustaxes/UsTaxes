@@ -11,12 +11,9 @@ export default class F8959 extends F1040Attachment {
 
   isNeeded = (): boolean => {
     const filingStatus = this.f1040.info.taxPayer.filingStatus
-    const totalW2Income = this.f1040.info.w2s
-      .map((w2) => w2.medicareIncome)
-      .reduce((l, r) => l + r, 0)
     return (
       fica.additionalMedicareTaxThreshold(filingStatus) <
-      totalW2Income + this.f1040.sumScheduleSE((se) => se.l6())
+      this.f1040.medicareWages() + this.f1040.sumScheduleSE((se) => se.l6())
     )
   }
 

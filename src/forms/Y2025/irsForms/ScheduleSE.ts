@@ -31,9 +31,7 @@ export default class ScheduleSE extends F1040Attachment {
       : this.f1040.info.taxPayer.primaryPerson
 
   private k1s = () =>
-    this.f1040.info.scheduleK1Form1065s.filter(
-      (k1) => k1.personRole === this.role
-    )
+    this.f1040.validK1s().filter((k1) => k1.personRole === this.role)
 
   /**
    * Schedule C net profit for this person, excluding statutory employee

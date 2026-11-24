@@ -155,6 +155,54 @@ describe('Schedule SE is figured per person (2025)', () => {
     expect(f1040.schedule2.l4()).toBeUndefined()
   })
 
+  it.each([FilingStatus.MFS, FilingStatus.HOH])(
+    "leaves a spouse's K-1 off a %s return",
+    (filingStatus) => {
+      // On MFS the spouse's K-1 belongs on the spouse's own return. On any
+      // other non-joint status there is no spouse, so a leftover SPOUSE K-1
+      // must not count as income without SE tax. Either way it adds no
+      // partnership income, interest, QBI or SE tax to this return.
+      const f1040 = makeReturn(filingStatus, {
+        scheduleK1Form1065s: [
+          {
+            ...k1(PersonRole.SPOUSE, 50000),
+            interestIncome: 5000,
+            section199AQBI: 50000
+          }
+        ]
+      })
+      expect(f1040.validK1s()).toEqual([])
+      expect(f1040.k1sWithInterest()).toEqual([])
+      expect(f1040.scheduleE.isNeeded()).toBe(false)
+      expect(f1040.scheduleE.l32()).toBe(0)
+      expect(f1040.scheduleB.isNeeded()).toBe(false)
+      expect(f1040.totalQbi()).toBe(0)
+      expect(f1040.schedule2.l4()).toBeUndefined()
+      expect(f1040.l11a()).toBe(0)
+    }
+  )
+
+  it("keeps both spouses' K-1s on an MFJ return", () => {
+    const f1040 = makeReturn(FilingStatus.MFJ, {
+      scheduleK1Form1065s: [
+        k1(PersonRole.PRIMARY, 10000),
+        { ...k1(PersonRole.SPOUSE, 20000), interestIncome: 500 }
+      ]
+    })
+    expect(f1040.validK1s()).toHaveLength(2)
+    expect(f1040.scheduleE.l32()).toBe(30000)
+    expect(f1040.k1sWithInterest()).toHaveLength(1)
+  })
+
+  it("ignores the spouse's W-2 Medicare wages on MFS when deciding if Form 8959 is needed", () => {
+    // Primary $100k is under the $125k MFS threshold; the spouse's $200k
+    // W-2 belongs on the spouse's own return.
+    const f1040 = makeReturn(FilingStatus.MFS, {
+      w2s: [w2(PersonRole.PRIMARY, 100000), w2(PersonRole.SPOUSE, 200000)]
+    })
+    expect(f1040.f8959.isNeeded()).toBe(false)
+  })
+
   it('ignores Schedule C data while no Schedule C is on the return', () => {
     // F1040 doesn't create a ScheduleC yet, so Schedule C profit isn't in
     // income (Schedule 1 line 3) and mustn't be charged SE tax either.

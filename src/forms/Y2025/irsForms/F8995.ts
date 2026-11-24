@@ -21,7 +21,7 @@ export default class F8995 extends F1040Attachment {
   sequenceIndex = 55
 
   applicableK1s = () =>
-    this.f1040.info.scheduleK1Form1065s.filter((k1) => k1.section199AQBI > 0)
+    this.f1040.validK1s().filter((k1) => k1.section199AQBI > 0)
 
   netCapitalGains = (): number => {
     let rtn = this.f1040.l3a() ?? 0
