@@ -110,4 +110,16 @@ describe('AMT', () => {
     expect(f6251.l4()).toEqual((without.l4() ?? 0) - 20000)
     expect(f6251.l11()).toBeLessThan(without.l11())
   })
+
+  it('treats an ATNOLD entered as a negative number the same way', () => {
+    const positive = cloneDeep(baseInformation)
+    positive.amtAdjustments = { atnold: 20000 }
+    const negative = cloneDeep(baseInformation)
+    negative.amtAdjustments = { atnold: -20000 }
+
+    const fromPositive = new F6251(new F1040(positive, []))
+    const fromNegative = new F6251(new F1040(negative, []))
+    expect(fromNegative.l2f()).toEqual(20000)
+    expect(fromNegative.l4()).toEqual(fromPositive.l4())
+  })
 })

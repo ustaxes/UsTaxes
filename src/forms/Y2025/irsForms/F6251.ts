@@ -121,8 +121,12 @@ export default class F6251 extends F1040Attachment {
   }
 
   // Line 2f is entered in parentheses: a positive amount that line 4
-  // subtracts, like lines 2b and 2s.
-  l2f = (): number | undefined => this.f1040.info.amtAdjustments?.atnold
+  // subtracts, like lines 2b and 2s. Take the absolute value, as line 2e
+  // does, so an ATNOLD entered as a negative number still reduces AMTI.
+  l2f = (): number | undefined => {
+    const atnold = this.f1040.info.amtAdjustments?.atnold
+    return atnold === undefined ? undefined : Math.abs(atnold)
+  }
   /** Interest from specified private activity bonds (1099-INT box 9 and 1099-DIV box 6). */
   l2g = (): number | undefined => {
     const fromInt = this.f1040.info.f1099s
