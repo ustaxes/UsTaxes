@@ -83,13 +83,28 @@ describe('Form 8995 QBI losses (2025)', () => {
     expect(f1040.f8995?.l2()).toBe(1000)
     expect(f1040.l13a()).toBe(200)
 
-    const f8995 = new F8995(
-      makeReturn(100000, [k1('Gain', 1000), k1('Loss', -5000)])
-    )
-    expect(f8995.l2()).toBe(-4000)
-    expect(f8995.l4()).toBe(0)
-    expect(f8995.l15()).toBe(0)
-    expect(f8995.l16()).toBe(-4000)
+    const lossReturn = makeReturn(100000, [k1('Gain', 1000), k1('Loss', -5000)])
+    const f8995 = lossReturn.f8995
+    // A net loss still attaches Form 8995 so line 16 reaches the return.
+    expect(f8995).toBeInstanceOf(F8995)
+    expect(f8995).not.toBeInstanceOf(F8995A)
+    expect(f8995?.l2()).toBe(-4000)
+    expect(f8995?.l4()).toBe(0)
+    expect(f8995?.l15()).toBe(0)
+    expect(f8995?.l16()).toBe(-4000)
+    expect(lossReturn.l13a()).toBe(0)
+  })
+
+  it('reports a net loss on Form 8995 even above the 8995-A threshold', () => {
+    const f1040 = makeReturn(400000, [k1('Gain', 10000), k1('Loss', -14000)])
+    expect(f1040.f8995).toBeInstanceOf(F8995)
+    expect(f1040.f8995).not.toBeInstanceOf(F8995A)
+    expect(f1040.f8995?.l16()).toBe(-4000)
+    expect(f1040.l13a()).toBe(0)
+  })
+
+  it('attaches no Form 8995 when no K-1 has QBI', () => {
+    expect(makeReturn(100000, [k1('Zero', 0)]).f8995).toBeUndefined()
   })
 
   it('keeps Form 8995-A on positive K-1s until its loss netting exists', () => {
