@@ -1,4 +1,9 @@
-import type { Dependent, IncomeW2, Asset } from 'ustaxes/core/data'
+import type {
+  Dependent,
+  IncomeW2,
+  Asset,
+  ScheduleK1Form1065
+} from 'ustaxes/core/data'
 import {
   AccountType,
   FilingStatus,
@@ -84,6 +89,7 @@ export default class F1040 extends F1040Base {
   scheduleD: ScheduleD
   scheduleE: ScheduleE
   scheduleSE: ScheduleSE
+  scheduleSESpouse?: ScheduleSE
   scheduleEIC: ScheduleEIC
   scheduleR?: ScheduleR
   schedule8812: Schedule8812
@@ -137,7 +143,10 @@ export default class F1040 extends F1040Base {
     this.scheduleD = new ScheduleD(this)
     this.scheduleE = new ScheduleE(this)
     this.scheduleEIC = new ScheduleEIC(this)
-    this.scheduleSE = new ScheduleSE(this)
+    this.scheduleSE = new ScheduleSE(this, PersonRole.PRIMARY)
+    if (this.info.taxPayer.filingStatus === FilingStatus.MFJ) {
+      this.scheduleSESpouse = new ScheduleSE(this, PersonRole.SPOUSE)
+    }
 
     this.schedule1 = new Schedule1(this)
     this.schedule1A = new Schedule1A(this)
@@ -186,6 +195,10 @@ export default class F1040 extends F1040Base {
       } else {
         this.f8995 = new F8995(this)
       }
+    } else if (this.validK1s().some((k1) => k1.section199AQBI !== 0)) {
+      // Net QBI loss: no deduction, but line 16 carries the loss forward.
+      // Form 8995-A doesn't net losses yet, so report it on Form 8995.
+      this.f8995 = new F8995(this)
     }
 
     if ((this.info.educationExpenses ?? []).length > 0) {
@@ -226,7 +239,7 @@ export default class F1040 extends F1040Base {
   }
 
   totalQbi = () =>
-    this.info.scheduleK1Form1065s
+    this.validK1s()
       .map((k1) => k1.section199AQBI)
       .reduce((c, a) => c + a, 0)
 
@@ -242,6 +255,14 @@ export default class F1040 extends F1040Base {
     return total > 0 ? total : undefined
   }
 
+  /** Schedule SE for each person with self-employment income on this return. */
+  scheduleSEs = (): ScheduleSE[] =>
+    _.compact([this.scheduleSE, this.scheduleSESpouse])
+
+  /** Sum one Schedule SE line across both spouses' schedules. */
+  sumScheduleSE = (line: (se: ScheduleSE) => number | undefined): number =>
+    this.scheduleSEs().reduce((sum, se) => sum + (line(se) ?? 0), 0)
+
   schedules = (): Form[] => {
     const res1: (F1040Attachment | undefined)[] = [
       this.scheduleA,
@@ -249,6 +270,7 @@ export default class F1040 extends F1040Base {
       this.scheduleD,
       this.scheduleE,
       this.scheduleSE,
+      this.scheduleSESpouse,
       this.scheduleR,
       this.scheduleEIC,
       this.schedule8812,
@@ -308,6 +330,23 @@ export default class F1040 extends F1040Base {
     }
     return this.info.w2s
   }
+
+  /**
+   * Partnership K-1s that belong on this return. A spouse's K-1s are only
+   * reported on a joint return: on MFS they belong on the spouse's own
+   * return, and on any other status there is no spouse on the return (and
+   * no spouse Schedule SE), so a leftover SPOUSE K-1 is left out entirely
+   * rather than counted as income without SE tax.
+   */
+  validK1s = (): ScheduleK1Form1065[] =>
+    this.info.scheduleK1Form1065s.filter(
+      (k1) =>
+        this.info.taxPayer.filingStatus === FilingStatus.MFJ ||
+        k1.personRole === PersonRole.PRIMARY
+    )
+
+  k1sWithInterest = (): ScheduleK1Form1065[] =>
+    this.validK1s().filter((k1) => k1.interestIncome > 0)
 
   wages = (): number => this.validW2s().reduce((res, w2) => res + w2.income, 0)
   medicareWages = (): number =>

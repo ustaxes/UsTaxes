@@ -1,7 +1,8 @@
 import type {
   Address,
   Property,
-  PropertyExpenseTypeName
+  PropertyExpenseTypeName,
+  ScheduleK1Form1065
 } from 'ustaxes/core/data'
 import { PropertyType } from 'ustaxes/core/data'
 import { displayNegPos, sumFields } from 'ustaxes/core/irsForms/util'
@@ -41,9 +42,11 @@ export default class ScheduleE extends F1040Attachment {
   tag: FormTag = 'f1040se'
   sequenceIndex = 13
 
+  // A spouse's K-1s are only reported on a joint return (see validK1s).
+  k1s = (): ScheduleK1Form1065[] => this.f1040.validK1s()
+
   isNeeded = (): boolean =>
-    this.f1040.info.realEstate.length > 0 ||
-    this.f1040.info.scheduleK1Form1065s.length > 0
+    this.f1040.info.realEstate.length > 0 || this.k1s().length > 0
 
   addressString = (address: Address): string =>
     [
@@ -165,23 +168,23 @@ export default class ScheduleE extends F1040Attachment {
 
   // TODO: required from Pub 596
   l29ah = (): number | undefined =>
-    this.f1040.info.scheduleK1Form1065s.reduce(
+    this.k1s().reduce(
       (t, k1) => t + Math.max(0, k1.isPassive ? k1.ordinaryBusinessIncome : 0),
       0
     )
   l29ak = (): number | undefined =>
-    this.f1040.info.scheduleK1Form1065s.reduce(
+    this.k1s().reduce(
       (t, k1) => t + Math.max(0, k1.isPassive ? 0 : k1.ordinaryBusinessIncome),
       0
     )
 
   l29bg = (): number | undefined =>
-    this.f1040.info.scheduleK1Form1065s.reduce(
+    this.k1s().reduce(
       (t, k1) => t + Math.min(0, k1.isPassive ? k1.ordinaryBusinessIncome : 0),
       0
     )
   l29bi = (): number | undefined =>
-    this.f1040.info.scheduleK1Form1065s.reduce(
+    this.k1s().reduce(
       (t, k1) => t + Math.min(0, k1.isPassive ? 0 : k1.ordinaryBusinessIncome),
       0
     )
@@ -211,7 +214,7 @@ export default class ScheduleE extends F1040Attachment {
     const [p0, p1, p2] = [0, 1, 2].map((i) => this.propForRow(i))
 
     // TODO: Support more than 4 K1s
-    const k1s = this.f1040.info.scheduleK1Form1065s
+    const k1s = this.k1s()
     const l28Fields: Field[] = []
     l28Fields.push(
       ...k1s
@@ -335,7 +338,7 @@ export default class ScheduleE extends F1040Attachment {
 
   fillInstructions = (): FillInstructions => {
     const [p0, p1, p2] = [0, 1, 2].map((i) => this.propForRow(i))
-    const k1s = this.f1040.info.scheduleK1Form1065s
+    const k1s = this.k1s()
 
     type K1InfoRow = [
       string | undefined,

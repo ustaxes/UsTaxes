@@ -11,12 +11,9 @@ export default class F8959 extends F1040Attachment {
 
   isNeeded = (): boolean => {
     const filingStatus = this.f1040.info.taxPayer.filingStatus
-    const totalW2Income = this.f1040.info.w2s
-      .map((w2) => w2.medicareIncome)
-      .reduce((l, r) => l + r, 0)
     return (
       fica.additionalMedicareTaxThreshold(filingStatus) <
-      totalW2Income + (this.f1040.scheduleSE.l6() ?? 0)
+      this.f1040.medicareWages() + this.f1040.sumScheduleSE((se) => se.l6())
     )
   }
 
@@ -39,7 +36,11 @@ export default class F8959 extends F1040Attachment {
   l7 = (): number | undefined => this.computeAdditionalMedicareTax(this.l6())
 
   // Part II: Additional Medicare Tax on Self-Employment Income
-  l8 = (): number | undefined => this.f1040.scheduleSE.l6()
+  // Line 8: Schedule SE line 6; if MFJ, include your spouse's amount.
+  l8 = (): number | undefined =>
+    this.f1040.scheduleSEs().some((se) => se.l6() !== undefined)
+      ? this.f1040.sumScheduleSE((se) => se.l6())
+      : undefined
   l9 = (): number => this.thresholdFromFilingStatus()
   l10 = (): number => this.l4()
   l11 = (): number => Math.max(0, this.l9() - this.l10())
