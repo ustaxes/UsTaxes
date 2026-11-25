@@ -185,21 +185,6 @@ export default class F1040 extends F1040Base {
       )
     }
 
-    if (this.totalQbi() > 0) {
-      const formAMinAmount = getF8995PhaseOutIncome(
-        this.info.taxPayer.filingStatus
-      )
-      if (this.l11b() - this.l12e() >= formAMinAmount) {
-        this.f8995 = new F8995A(this)
-      } else {
-        this.f8995 = new F8995(this)
-      }
-    } else if (this.validK1s().some((k1) => k1.section199AQBI !== 0)) {
-      // Net QBI loss: no deduction, but line 16 carries the loss forward.
-      // Form 8995-A doesn't net losses yet, so report it on Form 8995.
-      this.f8995 = new F8995(this)
-    }
-
     if ((this.info.educationExpenses ?? []).length > 0) {
       this.f8863 = new F8863(this)
     }
@@ -222,6 +207,25 @@ export default class F1040 extends F1040Base {
 
     if ((this.info.otherEarnedIncome?.employerAdoptionBenefits ?? 0) > 0) {
       this.f8839 = new F8839(this)
+    }
+
+    // Choose Form 8995 or 8995-A last: taxable income before QBI reads
+    // forms set up above (Form 4797 in AGI, Form 4137 in Schedule 1-A,
+    // Form 4952 in itemized deductions).
+    if (this.totalQbi() > 0) {
+      const formAMinAmount = getF8995PhaseOutIncome(
+        this.info.taxPayer.filingStatus
+      )
+      // Form 8995 is for taxable income at or below the threshold.
+      if (this.taxableIncomeBeforeQbi() > formAMinAmount) {
+        this.f8995 = new F8995A(this)
+      } else {
+        this.f8995 = new F8995(this)
+      }
+    } else if (this.validK1s().some((k1) => k1.section199AQBI !== 0)) {
+      // Net QBI loss: no deduction, but line 16 carries the loss forward.
+      // Form 8995-A doesn't net losses yet, so report it on Form 8995.
+      this.f8995 = new F8995(this)
     }
   }
 
@@ -537,6 +541,14 @@ export default class F1040 extends F1040Base {
     return this.schedule1A.isNeeded() && amt > 0 ? amt : undefined
   }
   l14 = (): number => sumFields([this.l12e(), this.l13a(), this.l13b()])
+
+  /**
+   * Taxable income before the QBI deduction: Form 1040 line 11a minus lines
+   * 12e and 13b (2025 Instructions for Form 8995, line 11; Form 8995-A,
+   * line 33). Line 13b is the Schedule 1-A deductions.
+   */
+  taxableIncomeBeforeQbi = (): number =>
+    this.l11b() - this.l12e() - (this.l13b() ?? 0)
 
   l15 = (): number => Math.max(0, this.l11b() - this.l14())
 
