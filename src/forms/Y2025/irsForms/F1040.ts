@@ -194,6 +194,10 @@ export default class F1040 extends F1040Base {
       } else {
         this.f8995 = new F8995(this)
       }
+    } else if (this.validK1s().some((k1) => k1.section199AQBI !== 0)) {
+      // Net QBI loss: no deduction, but line 16 carries the loss forward.
+      // Form 8995-A doesn't net losses yet, so report it on Form 8995.
+      this.f8995 = new F8995(this)
     }
 
     if ((this.info.educationExpenses ?? []).length > 0) {

@@ -1,53 +1,22 @@
 import type { IncomeW2 } from 'ustaxes/core/data'
-import { PersonRole } from 'ustaxes/core/data'
 import { sumFields } from 'ustaxes/core/irsForms/util'
+import { claimableExcessSSTax } from 'ustaxes/core/irsForms/excessSSTax'
 import type { FormTag } from 'ustaxes/core/irsForms/Form'
 import { fica } from '../data/federal'
 import F1040Attachment from './F1040Attachment'
 import type { Field } from 'ustaxes/core/pdfFiller'
 
-export const claimableExcessSSTaxWithholding = (w2s: IncomeW2[]): number => {
-  /* Excess FICA taxes are calculated per person. If an individual person
-    has greater than the applicable amount then they are entitled to a refund
-    of that amount
-   */
-  let claimableExcessFica = 0
-  const primaryFica = w2s
-    .filter((w2) => w2.personRole == PersonRole.PRIMARY)
-    .map((w2) => w2.ssWithholding)
-    .reduce((l, r) => l + r, 0)
-  const spouseFica = w2s
-    .filter((w2) => w2.personRole == PersonRole.SPOUSE)
-    .map((w2) => w2.ssWithholding)
-    .reduce((l, r) => l + r, 0)
-
-  if (
-    primaryFica > fica.maxSSTax &&
-    w2s
-      .filter((w2) => w2.personRole == PersonRole.PRIMARY)
-      .every((w2) => w2.ssWithholding <= fica.maxSSTax)
-  ) {
-    claimableExcessFica += primaryFica - fica.maxSSTax
-  }
-
-  if (
-    spouseFica > fica.maxSSTax &&
-    w2s
-      .filter((w2) => w2.personRole == PersonRole.SPOUSE)
-      .every((w2) => w2.ssWithholding <= fica.maxSSTax)
-  ) {
-    claimableExcessFica += spouseFica - fica.maxSSTax
-  }
-
-  return claimableExcessFica
-}
+// Schedule 3 line 10: excess social security tax withheld, figured per
+// person (see core/irsForms/excessSSTax).
+export const claimableExcessSSTaxWithholding = (w2s: IncomeW2[]): number =>
+  claimableExcessSSTax(w2s, fica)
 
 export default class Schedule3 extends F1040Attachment {
   tag: FormTag = 'f1040s3'
   sequenceIndex = 3
 
   isNeeded = (): boolean =>
-    claimableExcessSSTaxWithholding(this.f1040.info.w2s) > 0
+    claimableExcessSSTaxWithholding(this.f1040.validW2s()) > 0
 
   deductions = (): number => 0
   // Part I: Nonrefundable credits
