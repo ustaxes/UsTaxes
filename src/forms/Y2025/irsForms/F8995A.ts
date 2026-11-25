@@ -21,7 +21,7 @@ export default class F8995A extends F8995 {
   // 8995-A), which isn't implemented, so only K-1s with positive QBI are
   // carried to the per-business columns here.
   applicableK1s = () =>
-    this.f1040.info.scheduleK1Form1065s.filter((k1) => k1.section199AQBI > 0)
+    this.f1040.validK1s().filter((k1) => k1.section199AQBI > 0)
 
   l2a = (): number | undefined => this.applicableK1s()[0]?.section199AQBI
   l2b = (): number | undefined => this.applicableK1s()[1]?.section199AQBI
