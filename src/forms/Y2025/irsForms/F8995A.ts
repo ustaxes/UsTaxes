@@ -154,7 +154,8 @@ export default class F8995A extends F8995 {
   l32 = (): number => this.l27() + this.l31()
   l33 = (): number => this.l20()
   l34 = (): number => this.netCapitalGains()
-  l35 = (): number => this.l33() - this.l34()
+  // Line 35: Subtract line 34 from line 33. If zero or less, enter -0-.
+  l35 = (): number => Math.max(0, this.l33() - this.l34())
   l36 = (): number => this.l35() * 0.2
   l37 = (): number => Math.min(this.l32(), this.l36())
 

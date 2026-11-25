@@ -1,5 +1,5 @@
 import type { IncomeW2, ScheduleK1Form1065 } from 'ustaxes/core/data'
-import { FilingStatus, PersonRole } from 'ustaxes/core/data'
+import { FilingStatus, Income1099Type, PersonRole } from 'ustaxes/core/data'
 import type { ValidatedInformation } from 'ustaxes/forms/F1040Base'
 import { blankState } from 'ustaxes/redux/reducer'
 import F1040 from '../irsForms/F1040'
@@ -113,6 +113,33 @@ describe('Taxable income before the QBI deduction (2025)', () => {
     expect(f1040.f8995).not.toBeInstanceOf(F8995A)
     // 20% of $1,000 of QBI.
     expect(f1040.l13a()).toBe(200)
+  })
+
+  it('floors Form 8995-A line 35 at zero when net capital gain is larger', () => {
+    // $300,000 of qualified dividends and $1,000 of QBI: taxable income
+    // before QBI is $301,000 - $15,750 = $285,250, over the threshold, but
+    // net capital gain ($300,000) is larger, so the deduction is zero.
+    const f1040 = makeReturn('1985-06-01', {
+      f1099s: [
+        {
+          payer: 'Broker',
+          type: Income1099Type.DIV,
+          personRole: PersonRole.PRIMARY,
+          form: {
+            dividends: 300000,
+            qualifiedDividends: 300000,
+            totalCapitalGainsDistributions: 0
+          }
+        }
+      ],
+      scheduleK1Form1065s: [k1(1000)]
+    })
+    expect(f1040.taxableIncomeBeforeQbi()).toBe(285250)
+    expect(f1040.f8995).toBeInstanceOf(F8995A)
+    const f8995a = f1040.f8995 as F8995A
+    expect(f8995a.l34()).toBe(300000)
+    expect(f8995a.l35()).toBe(0)
+    expect(f1040.l13a()).toBe(0)
   })
 
   it('uses Form 8995 when taxable income equals the threshold', () => {
