@@ -185,22 +185,6 @@ export default class F1040 extends F1040Base {
       )
     }
 
-    if (this.totalQbi() > 0) {
-      const formAMinAmount = getF8995PhaseOutIncome(
-        this.info.taxPayer.filingStatus
-      )
-      // Form 8995 is for taxable income at or below the threshold.
-      if (this.taxableIncomeBeforeQbi() > formAMinAmount) {
-        this.f8995 = new F8995A(this)
-      } else {
-        this.f8995 = new F8995(this)
-      }
-    } else if (this.validK1s().some((k1) => k1.section199AQBI !== 0)) {
-      // Net QBI loss: no deduction, but line 16 carries the loss forward.
-      // Form 8995-A doesn't net losses yet, so report it on Form 8995.
-      this.f8995 = new F8995(this)
-    }
-
     if ((this.info.educationExpenses ?? []).length > 0) {
       this.f8863 = new F8863(this)
     }
@@ -223,6 +207,25 @@ export default class F1040 extends F1040Base {
 
     if ((this.info.otherEarnedIncome?.employerAdoptionBenefits ?? 0) > 0) {
       this.f8839 = new F8839(this)
+    }
+
+    // Choose Form 8995 or 8995-A last: taxable income before QBI reads
+    // forms set up above (Form 4797 in AGI, Form 4137 in Schedule 1-A,
+    // Form 4952 in itemized deductions).
+    if (this.totalQbi() > 0) {
+      const formAMinAmount = getF8995PhaseOutIncome(
+        this.info.taxPayer.filingStatus
+      )
+      // Form 8995 is for taxable income at or below the threshold.
+      if (this.taxableIncomeBeforeQbi() > formAMinAmount) {
+        this.f8995 = new F8995A(this)
+      } else {
+        this.f8995 = new F8995(this)
+      }
+    } else if (this.validK1s().some((k1) => k1.section199AQBI !== 0)) {
+      // Net QBI loss: no deduction, but line 16 carries the loss forward.
+      // Form 8995-A doesn't net losses yet, so report it on Form 8995.
+      this.f8995 = new F8995(this)
     }
   }
 

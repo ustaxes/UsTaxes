@@ -99,6 +99,22 @@ describe('Taxable income before the QBI deduction (2025)', () => {
     expect(f1040.f8995).not.toBeInstanceOf(F8995A)
   })
 
+  it('counts Form 4137 tips when choosing between Form 8995 and 8995-A', () => {
+    // Same totals as above, but the $25,000 of tips are unreported and go
+    // through Form 4137. The form choice must see that tips deduction too.
+    const f1040 = makeReturn('1985-06-01', {
+      w2s: [w2(192050)],
+      scheduleK1Form1065s: [k1(1000)],
+      otherEarnedIncome: { unreportedTips: 25000 }
+    })
+    expect(f1040.f4137).toBeDefined()
+    expect(f1040.taxableIncomeBeforeQbi()).toBe(184100)
+    expect(f1040.f8995).toBeInstanceOf(F8995)
+    expect(f1040.f8995).not.toBeInstanceOf(F8995A)
+    // 20% of $1,000 of QBI.
+    expect(f1040.l13a()).toBe(200)
+  })
+
   it('uses Form 8995 when taxable income equals the threshold', () => {
     // $212,050 of wages + $1,000 of QBI - $15,750 = $197,300 exactly.
     const f1040 = makeReturn('1985-06-01', {
