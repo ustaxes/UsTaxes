@@ -1,0 +1,40 @@
+# Differential test of the Y2025 federal calculations against PolicyEngine-US
+# and Tax-Calculator (see oracle/README.md). Fails on any disagreement that
+# oracle/known_issues.py does not explain.
+name: Oracle
+on:
+  pull_request:
+    branches: [master]
+    paths:
+      - 'src/core/**'
+      - 'src/forms/F1040Base.ts'
+      - 'src/forms/Y2025/**'
+      - 'oracle/**'
+      - '.github/workflows/oracle.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  oracle:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - uses: astral-sh/setup-uv@v6
+      - name: Install oracle engines
+        run: |
+          uv venv --python 3.12 oracle/.venv
+          uv pip install --python oracle/.venv/bin/python -r oracle/requirements.txt
+      - name: Run 2025 corpus
+        run: oracle/.venv/bin/python oracle/run.py --year 2025
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: oracle-report
+          path: oracle/out/
