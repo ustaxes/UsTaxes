@@ -87,34 +87,69 @@ export default class F2441 extends F1040Attachment {
     )
   }
 
-  /**
-   * Maximum excludable employer-provided care benefits (Part III).
-   * Capped at $5,000 ($2,500 MFS), also cannot exceed the lesser of
-   * earned incomes or the benefit exclusion limit.
-   */
-  private maxExclusion = (): number => {
-    const fs = this.f1040.info.taxPayer.filingStatus
-    const cap =
-      fs === FilingStatus.MFS
-        ? EMPLOYER_BENEFIT_EXCLUSION / 2
-        : EMPLOYER_BENEFIT_EXCLUSION
+  /** Smaller of the taxpayer's and (if MFJ) the spouse's earned income. */
+  private earnedIncomeLimit = (): number => {
     const primary = this.primaryEarnedIncome()
     const spouse = this.spouseEarnedIncome()
-    const earnedIncomeLimit =
-      spouse !== undefined ? Math.min(primary, spouse) : primary
-    return Math.min(cap, earnedIncomeLimit)
+    return spouse !== undefined ? Math.min(primary, spouse) : primary
   }
 
   /**
-   * Line 26: taxable employer-provided dependent care benefits.
-   * = employer benefits received − allowed exclusion.
-   * Flows to F1040 line 1e as additional income.
+   * Part III line 25: excluded benefits — the smaller of line 20 (benefits,
+   * qualified expenses (line 16) and earned income) or line 21 ($5,000, or
+   * $2,500 MFS). Line 24 (deductible benefits from a sole proprietorship or
+   * partnership) isn't supported, so line 25 is the whole exclusion.
+   *
+   * If no care expenses were entered, the expense limit can't be applied and
+   * is skipped.
+   */
+  excludedBenefits = (): number => {
+    const fs = this.f1040.info.taxPayer.filingStatus
+    const l21 =
+      fs === FilingStatus.MFS
+        ? EMPLOYER_BENEFIT_EXCLUSION / 2
+        : EMPLOYER_BENEFIT_EXCLUSION
+    const l20 = Math.min(
+      this.employerBenefits(),
+      this.dce?.totalExpenses ?? Infinity,
+      this.earnedIncomeLimit()
+    )
+    return Math.max(0, Math.min(l20, l21))
+  }
+
+  /**
+   * Line 26: taxable employer-provided dependent care benefits
+   * (line 23 − line 25). Flows to F1040 line 1e.
    */
   taxableBenefits = (): number | undefined => {
     const benefits = this.employerBenefits()
     if (benefits <= 0) return undefined
-    const taxable = Math.max(0, benefits - this.maxExclusion())
+    const taxable = Math.max(0, benefits - this.excludedBenefits())
     return taxable > 0 ? taxable : undefined
+  }
+
+  /**
+   * Line 3: qualified expenses for the credit. Without dependent care
+   * benefits, the expenses up to $3,000 ($6,000 for two or more people).
+   * With benefits, line 31 of Part III: the smaller of the dollar limit less
+   * excluded benefits (line 29) or the expenses not paid with excluded
+   * benefits (line 30).
+   */
+  l3 = (): number => {
+    if (this.dce === undefined) return 0
+    const { qualifyingPersonCount, totalExpenses } = this.dce
+    const l27 =
+      qualifyingPersonCount >= 2
+        ? EXPENSE_CAP_PER_PERSON * 2
+        : EXPENSE_CAP_PER_PERSON
+    if (this.employerBenefits() <= 0) {
+      return Math.min(totalExpenses, l27)
+    }
+    const l28 = this.excludedBenefits()
+    const l29 = l27 - l28
+    if (l29 <= 0) return 0
+    const l30 = Math.max(0, totalExpenses - l28)
+    return Math.min(l29, l30)
   }
 
   /**
@@ -123,23 +158,9 @@ export default class F2441 extends F1040Attachment {
    */
   credit = (): number | undefined => {
     if (!this.isNeeded()) return undefined
-    if (this.dce === undefined) return undefined
-    const { qualifyingPersonCount, totalExpenses } = this.dce
-    const expenseCap =
-      qualifyingPersonCount >= 2
-        ? EXPENSE_CAP_PER_PERSON * 2
-        : EXPENSE_CAP_PER_PERSON
 
-    const exclusion = Math.min(this.employerBenefits(), this.maxExclusion())
-    const adjustedExpenses = Math.max(0, totalExpenses - exclusion)
-    const cappedExpenses = Math.min(adjustedExpenses, expenseCap)
-
-    const primary = this.primaryEarnedIncome()
-    const spouse = this.spouseEarnedIncome()
-    const earnedIncomeLimit =
-      spouse !== undefined ? Math.min(primary, spouse) : primary
-
-    const qualifyingExpenses = Math.min(cappedExpenses, earnedIncomeLimit)
+    // Line 6: smallest of line 3 and the earned income lines 4 and 5.
+    const qualifyingExpenses = Math.min(this.l3(), this.earnedIncomeLimit())
     if (qualifyingExpenses <= 0) return undefined
 
     const agi = this.f1040.l11b()
