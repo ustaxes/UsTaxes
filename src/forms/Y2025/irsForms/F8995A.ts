@@ -17,6 +17,12 @@ export default class F8995A extends F8995 {
   tag: FormTag = 'f8995a'
   sequenceIndex = 55.5
 
+  // TODO: Form 8995-A nets losses across businesses on Schedule C (Form
+  // 8995-A), which isn't implemented, so only K-1s with positive QBI are
+  // carried to the per-business columns here.
+  applicableK1s = () =>
+    this.f1040.validK1s().filter((k1) => k1.section199AQBI > 0)
+
   l2a = (): number | undefined => this.applicableK1s()[0]?.section199AQBI
   l2b = (): number | undefined => this.applicableK1s()[1]?.section199AQBI
   l2c = (): number | undefined => this.applicableK1s()[2]?.section199AQBI
@@ -114,7 +120,7 @@ export default class F8995A extends F8995 {
   l19c = (): number | undefined =>
     ifNumber(this.l17c(), (num) => num - (this.l18c() ?? 0))
 
-  l20 = (): number => this.f1040.l11b() - this.f1040.l12e()
+  l20 = (): number => this.f1040.taxableIncomeBeforeQbi()
   l21 = (): number =>
     getF8995PhaseOutIncome(this.f1040.info.taxPayer.filingStatus)
   l22 = (): number => this.l20() - this.l21()
@@ -148,7 +154,8 @@ export default class F8995A extends F8995 {
   l32 = (): number => this.l27() + this.l31()
   l33 = (): number => this.l20()
   l34 = (): number => this.netCapitalGains()
-  l35 = (): number => this.l33() - this.l34()
+  // Line 35: Subtract line 34 from line 33. If zero or less, enter -0-.
+  l35 = (): number => Math.max(0, this.l33() - this.l34())
   l36 = (): number => this.l35() * 0.2
   l37 = (): number => Math.min(this.l32(), this.l36())
 

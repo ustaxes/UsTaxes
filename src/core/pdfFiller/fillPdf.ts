@@ -98,10 +98,8 @@ export function fillPdfFromFill(
 function formatValue(value: string | number | undefined): string {
   if (value === undefined) return ''
   if (typeof value === 'string') return value
-  if (!isNaN(value) && Array.from(value.toString())[0] !== '0') {
-    return displayRound(value)?.toString() ?? ''
-  }
-  return value.toString()
+  if (isNaN(value)) return value.toString()
+  return (displayRound(value) ?? 0).toString()
 }
 
 /**

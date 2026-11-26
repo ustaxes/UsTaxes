@@ -5,7 +5,6 @@ import type F1040 from './F1040'
 import { sumFields } from 'ustaxes/core/irsForms/util'
 import * as federal from '../data/federal'
 import type F2555 from './F2555'
-import type F4797 from './F4797'
 import type F8814 from './F8814'
 import Pub596Worksheet1 from './worksheets/Pub596Worksheet1'
 import type { FormTag } from 'ustaxes/core/irsForms/Form'
@@ -19,9 +18,6 @@ type PrecludesEIC<F> = (f: F) => boolean
 
 // TODO: check F2555
 const checks2555: PrecludesEIC<F2555> = (): boolean => false
-
-// TODO: check F4797
-const checks4797: PrecludesEIC<F4797> = (): boolean => false
 
 // TODO: check F8814
 const checks8814: PrecludesEIC<F8814> = (): boolean => false
@@ -42,10 +38,6 @@ export default class ScheduleEIC extends F1040Attachment {
   tag: FormTag = 'f1040sei'
   sequenceIndex = 43
   pub596Worksheet1: Pub596Worksheet1
-  qualifyingStudentCutoffYear =
-    federal.CURRENT_YEAR - federal.QualifyingDependents.qualifyingStudentMaxAge
-  qualifyingCutoffYear =
-    federal.CURRENT_YEAR - federal.QualifyingDependents.childMaxAge
   investmentIncomeLimit = federal.EIC.maxInvestmentIncome
 
   constructor(f1040: F1040) {
@@ -60,10 +52,7 @@ export default class ScheduleEIC extends F1040Attachment {
     const filingStatus = this.f1040.info.taxPayer.filingStatus
     const incomeLimits = federal.EIC.caps[filingStatus]
     if (incomeLimits !== undefined) {
-      const limit =
-        incomeLimits[
-          Math.min(this.qualifyingDependents().length, incomeLimits.length - 1)
-        ]
+      const limit = incomeLimits[this.childIndex()]
       return this.f1040.l11b() < limit
     }
     return false
@@ -99,11 +88,16 @@ export default class ScheduleEIC extends F1040Attachment {
       Math.max(this.f1040.l7a() ?? 0, 0)
     ])
 
+  // Investment income must not be more than the limit.
   passInvestmentIncomeLimit = (): boolean =>
-    this.investmentIncome() < federal.EIC.maxInvestmentIncome
+    this.investmentIncome() <= federal.EIC.maxInvestmentIncome
 
-  // Todo, step 2, question 3
-  f4797AllowsEIC = (): boolean => !precludesEIC(checks4797)(this.f1040.f4797)
+  // Step 2, question 3 and "Form 4797 filers": over the investment income
+  // limit, a filer can still qualify through Pub 596 Worksheet 1, but only if
+  // line 7a includes an amount from Form 4797. Form 4797 gains here go to
+  // Schedule 1 line 4 (F4797.l9), never to Schedule D or line 7a, so this is
+  // false until they do.
+  line7aIncludesF4797 = (): boolean => false
 
   // Todo, instruction 2.4.1
   filingScheduleE = (): boolean => this.f1040.scheduleE.isNeeded()
@@ -215,14 +209,17 @@ export default class ScheduleEIC extends F1040Attachment {
    * midpoint of the interval.
    *
    * @param income The earned income
-   * @returns the earned income rounded to the nearest 25
+   * @returns the midpoint of the $50 table row containing the income
    */
   roundIncome = (income: number): number => {
     if (income < 1) {
       return 0
     }
-    return Math.round(Math.round(income) / 50) * 50 + 25
+    return Math.floor(income / 50) * 50 + 25
   }
+
+  /** Index into per-child-count tables: 0, 1, 2, or 3 (3 or more). */
+  childIndex = (): number => Math.min(this.qualifyingDependents().length, 3)
 
   /**
    * Based on the earned income and filing status, calculate the
@@ -249,19 +246,33 @@ export default class ScheduleEIC extends F1040Attachment {
    * @param income The earned income
    * @returns
    */
-  calculateEICForIncome = (income: number): number => {
+  calculateEICForIncome = (
+    income: number,
+    children: number = this.childIndex()
+  ): number => {
     const filingStatus = this.f1040.info.taxPayer.filingStatus
     const f: Piecewise[] | undefined = federal.EIC.formulas[filingStatus]
     if (f === undefined) {
       return 0
     }
 
+    // A row that reaches into the plateau shows the maximum credit. For
+    // example, MFJ with 1 child: the $30,450-$30,500 row shows $4,328, though
+    // its midpoint is past the $30,470 phase-out start.
+    const plateau = federal.EIC.plateaus[filingStatus]?.[children]
+    const rowStart = Math.floor(income / 50) * 50
+    if (
+      plateau !== undefined &&
+      rowStart + 50 > plateau.start &&
+      rowStart < plateau.end
+    ) {
+      return plateau.maximumCredit
+    }
+
+    // The EIC Table amounts are whole dollars.
     return Math.max(
       0,
-      evaluatePiecewise(
-        f[this.qualifyingDependents().length],
-        this.roundIncome(income)
-      )
+      Math.round(evaluatePiecewise(f[children], this.roundIncome(income)))
     )
   }
 
@@ -275,12 +286,28 @@ export default class ScheduleEIC extends F1040Attachment {
 
   // 6.1 - We will figure the credit.
 
-  // EIC worksheet A calculation
-  credit = (): number =>
-    Math.min(
-      this.calculateEICForIncome(this.earnedIncome()),
-      this.calculateEICForIncome(this.f1040.l11b())
+  // EIC Worksheet A, lines 2-6: figure the credit on earned income. If AGI
+  // is at least the phase-out start for the filing status and number of
+  // children, also figure it on AGI and take the smaller amount.
+  credit = (): number => {
+    const children = this.childIndex()
+    const earnedIncomeCredit = this.calculateEICForIncome(
+      this.earnedIncome(),
+      children
     )
+    const phaseOutStart =
+      federal.EIC.phaseOutStarts[this.f1040.info.taxPayer.filingStatus]?.[
+        children
+      ]
+    const agi = this.f1040.l11b()
+    if (phaseOutStart === undefined || agi < phaseOutStart) {
+      return earnedIncomeCredit
+    }
+    return Math.min(
+      earnedIncomeCredit,
+      this.calculateEICForIncome(agi, children)
+    )
+  }
 
   allowed = (): boolean => {
     return (
@@ -291,7 +318,8 @@ export default class ScheduleEIC extends F1040Attachment {
       this.allowedFilling2555() &&
       this.allowedNonresidentAlien() &&
       // Step 2
-      (this.passInvestmentIncomeLimit() || this.f4797AllowsEIC()) &&
+      (this.passInvestmentIncomeLimit() ||
+        (this.line7aIncludesF4797() && this.passPub596())) &&
       (!(
         // Step 3
         (
@@ -313,14 +341,24 @@ export default class ScheduleEIC extends F1040Attachment {
     )
   }
 
+  /** Age at the end of the tax year, from the year of birth. */
+  ageAtYearEnd = (birthYear: number): number => federal.CURRENT_YEAR - birthYear
+
+  // EIC qualifying child age test (2025 Instructions for Form 1040, line 27,
+  // Rule 8): under age 19 at the end of the year, or under age 24 and a
+  // student.
+  meetsAgeTest = (d: Dependent): boolean => {
+    const age = this.ageAtYearEnd(d.dateOfBirth.getFullYear())
+    return (
+      age < federal.QualifyingDependents.qualifyingDependentMaxAge ||
+      ((d.qualifyingInfo?.isStudent ?? false) &&
+        age < federal.QualifyingDependents.qualifyingStudentMaxAge)
+    )
+  }
+
   qualifyingDependents = (): Dependent[] =>
     this.f1040.info.taxPayer.dependents
-      .filter(
-        (d) =>
-          d.dateOfBirth.getFullYear() >= this.qualifyingCutoffYear ||
-          ((d.qualifyingInfo?.isStudent ?? false) &&
-            d.dateOfBirth.getFullYear() >= this.qualifyingStudentCutoffYear)
-      )
+      .filter((d) => this.meetsAgeTest(d))
       .sort((d) => d.dateOfBirth.getFullYear())
       .slice(0, 3)
 
@@ -355,7 +393,9 @@ export default class ScheduleEIC extends F1040Attachment {
   ageFields = (): Array<boolean | undefined> =>
     this.years().flatMap((year) => {
       if (year !== undefined) {
-        const qualifies = year > this.qualifyingStudentCutoffYear
+        const qualifies =
+          this.ageAtYearEnd(year) <
+          federal.QualifyingDependents.qualifyingStudentMaxAge
         return [qualifies, !qualifies]
       }
       return [undefined, undefined]
@@ -364,7 +404,11 @@ export default class ScheduleEIC extends F1040Attachment {
   // TODO: disability
   disabledFields = (): Array<boolean | undefined> =>
     this.years().flatMap((year) => {
-      if (year === undefined || year < this.qualifyingCutoffYear) {
+      if (
+        year === undefined ||
+        this.ageAtYearEnd(year) >=
+          federal.QualifyingDependents.qualifyingDependentMaxAge
+      ) {
         return [undefined, undefined]
       }
       return [undefined, undefined]

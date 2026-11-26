@@ -48,7 +48,11 @@ export default class Schedule2 extends F1040Attachment {
   l4Box2 = (): boolean => false
   l4Box3 = (): boolean => false
   l4Box3Amount = (): number | undefined => undefined
-  l4 = (): number | undefined => this.f1040.scheduleSE.l12() // self-employment tax (schedule SE)
+  // Self-employment tax: Schedule SE line 12, both spouses if MFJ.
+  l4 = (): number | undefined =>
+    this.f1040.scheduleSEs().some((se) => se.l12() !== undefined)
+      ? this.f1040.sumScheduleSE((se) => se.l12())
+      : undefined
   l5 = (): number | undefined => this.f1040.f4137?.totalFicaTax()
   // Uncollected social security and Medicare tax on wages (Form 8919 line 13).
   l6 = (): number | undefined => this.f1040.f8919.l13()

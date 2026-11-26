@@ -91,13 +91,13 @@ This application can be run as either a web application or a [standalone desktop
 
 ### Web application
 
-This project runs on Node 20. To ensure you're on the proper version, we recommend [nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
+This project runs on Node 24. To ensure you're on the proper version, we recommend [nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
 
-With `nvm` installed, you may select a version 20 node using:
+With `nvm` installed, you may select a version 24 node using:
 
 ```sh
-nvm install 20
-nvm use 20
+nvm install
+nvm use
 ```
 
 To run,
@@ -115,8 +115,8 @@ export NVM_DIR="$HOME/.nvm"
 . "$NVM_DIR/nvm.sh"  # This loads nvm
 #. "$NVM_DIR/bash_completion"  # Optional, nvm bash completion
 
-nvm install 20
-nvm use 20
+nvm install
+nvm use
 ```
 
 your environment will be set up every time you enter the project directory.

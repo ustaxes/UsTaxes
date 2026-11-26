@@ -1,4 +1,9 @@
-import type { Dependent, IncomeW2, Asset } from 'ustaxes/core/data'
+import type {
+  Dependent,
+  IncomeW2,
+  Asset,
+  ScheduleK1Form1065
+} from 'ustaxes/core/data'
 import {
   AccountType,
   FilingStatus,
@@ -84,6 +89,7 @@ export default class F1040 extends F1040Base {
   scheduleD: ScheduleD
   scheduleE: ScheduleE
   scheduleSE: ScheduleSE
+  scheduleSESpouse?: ScheduleSE
   scheduleEIC: ScheduleEIC
   scheduleR?: ScheduleR
   schedule8812: Schedule8812
@@ -137,7 +143,10 @@ export default class F1040 extends F1040Base {
     this.scheduleD = new ScheduleD(this)
     this.scheduleE = new ScheduleE(this)
     this.scheduleEIC = new ScheduleEIC(this)
-    this.scheduleSE = new ScheduleSE(this)
+    this.scheduleSE = new ScheduleSE(this, PersonRole.PRIMARY)
+    if (this.info.taxPayer.filingStatus === FilingStatus.MFJ) {
+      this.scheduleSESpouse = new ScheduleSE(this, PersonRole.SPOUSE)
+    }
 
     this.schedule1 = new Schedule1(this)
     this.schedule1A = new Schedule1A(this)
@@ -176,17 +185,6 @@ export default class F1040 extends F1040Base {
       )
     }
 
-    if (this.totalQbi() > 0) {
-      const formAMinAmount = getF8995PhaseOutIncome(
-        this.info.taxPayer.filingStatus
-      )
-      if (this.l11b() - this.l12e() >= formAMinAmount) {
-        this.f8995 = new F8995A(this)
-      } else {
-        this.f8995 = new F8995(this)
-      }
-    }
-
     if ((this.info.educationExpenses ?? []).length > 0) {
       this.f8863 = new F8863(this)
     }
@@ -210,6 +208,25 @@ export default class F1040 extends F1040Base {
     if ((this.info.otherEarnedIncome?.employerAdoptionBenefits ?? 0) > 0) {
       this.f8839 = new F8839(this)
     }
+
+    // Choose Form 8995 or 8995-A last: taxable income before QBI reads
+    // forms set up above (Form 4797 in AGI, Form 4137 in Schedule 1-A,
+    // Form 4952 in itemized deductions).
+    if (this.totalQbi() > 0) {
+      const formAMinAmount = getF8995PhaseOutIncome(
+        this.info.taxPayer.filingStatus
+      )
+      // Form 8995 is for taxable income at or below the threshold.
+      if (this.taxableIncomeBeforeQbi() > formAMinAmount) {
+        this.f8995 = new F8995A(this)
+      } else {
+        this.f8995 = new F8995(this)
+      }
+    } else if (this.validK1s().some((k1) => k1.section199AQBI !== 0)) {
+      // Net QBI loss: no deduction, but line 16 carries the loss forward.
+      // Form 8995-A doesn't net losses yet, so report it on Form 8995.
+      this.f8995 = new F8995(this)
+    }
   }
 
   get f8949s(): F8949[] {
@@ -225,7 +242,7 @@ export default class F1040 extends F1040Base {
   }
 
   totalQbi = () =>
-    this.info.scheduleK1Form1065s
+    this.validK1s()
       .map((k1) => k1.section199AQBI)
       .reduce((c, a) => c + a, 0)
 
@@ -241,6 +258,14 @@ export default class F1040 extends F1040Base {
     return total > 0 ? total : undefined
   }
 
+  /** Schedule SE for each person with self-employment income on this return. */
+  scheduleSEs = (): ScheduleSE[] =>
+    _.compact([this.scheduleSE, this.scheduleSESpouse])
+
+  /** Sum one Schedule SE line across both spouses' schedules. */
+  sumScheduleSE = (line: (se: ScheduleSE) => number | undefined): number =>
+    this.scheduleSEs().reduce((sum, se) => sum + (line(se) ?? 0), 0)
+
   schedules = (): Form[] => {
     const res1: (F1040Attachment | undefined)[] = [
       this.scheduleA,
@@ -248,6 +273,7 @@ export default class F1040 extends F1040Base {
       this.scheduleD,
       this.scheduleE,
       this.scheduleSE,
+      this.scheduleSESpouse,
       this.scheduleR,
       this.scheduleEIC,
       this.schedule8812,
@@ -307,6 +333,23 @@ export default class F1040 extends F1040Base {
     }
     return this.info.w2s
   }
+
+  /**
+   * Partnership K-1s that belong on this return. A spouse's K-1s are only
+   * reported on a joint return: on MFS they belong on the spouse's own
+   * return, and on any other status there is no spouse on the return (and
+   * no spouse Schedule SE), so a leftover SPOUSE K-1 is left out entirely
+   * rather than counted as income without SE tax.
+   */
+  validK1s = (): ScheduleK1Form1065[] =>
+    this.info.scheduleK1Form1065s.filter(
+      (k1) =>
+        this.info.taxPayer.filingStatus === FilingStatus.MFJ ||
+        k1.personRole === PersonRole.PRIMARY
+    )
+
+  k1sWithInterest = (): ScheduleK1Form1065[] =>
+    this.validK1s().filter((k1) => k1.interestIncome > 0)
 
   wages = (): number => this.validW2s().reduce((res, w2) => res + w2.income, 0)
   medicareWages = (): number =>
@@ -498,6 +541,14 @@ export default class F1040 extends F1040Base {
     return this.schedule1A.isNeeded() && amt > 0 ? amt : undefined
   }
   l14 = (): number => sumFields([this.l12e(), this.l13a(), this.l13b()])
+
+  /**
+   * Taxable income before the QBI deduction: Form 1040 line 11a minus lines
+   * 12e and 13b (2025 Instructions for Form 8995, line 11; Form 8995-A,
+   * line 33). Line 13b is the Schedule 1-A deductions.
+   */
+  taxableIncomeBeforeQbi = (): number =>
+    this.l11b() - this.l12e() - (this.l13b() ?? 0)
 
   l15 = (): number => Math.max(0, this.l11b() - this.l14())
 
