@@ -1,4 +1,4 @@
-import type { IncomeW2 } from 'ustaxes/core/data'
+import type { IncomeW2, Information } from 'ustaxes/core/data'
 import { FilingStatus, PersonRole } from 'ustaxes/core/data'
 import { blankState } from 'ustaxes/redux/reducer'
 import F1040 from '../irsForms/F1040'
@@ -32,13 +32,15 @@ const person = {
 const makeReturn = (
   filingStatus: FilingStatus,
   w2s: IncomeW2[],
-  form8919Wages: number
+  form8919Wages: number,
+  extra: Partial<Information> = {}
 ): F1040 =>
   new F1040(
     {
       ...blankState,
+      ...extra,
       w2s,
-      otherEarnedIncome: { form8919Wages },
+      otherEarnedIncome: { ...extra.otherEarnedIncome, form8919Wages },
       taxPayer: {
         filingStatus,
         primaryPerson: {
@@ -82,7 +84,7 @@ describe('Form 8919 (2025)', () => {
 
   it('limits social security tax to the remaining wage base', () => {
     // W-2 social security wages $170,000: only $6,100 of the $10,000 is
-    // subject to the 6.2% tax. $378.20 + $145 = $523.20.
+    // subject to the 6.2% tax. $378 + $145 = $523, each line rounded.
     const f1040 = makeReturn(
       FilingStatus.S,
       [w2(PersonRole.PRIMARY, 170000)],
@@ -90,7 +92,70 @@ describe('Form 8919 (2025)', () => {
     )
     expect(f1040.f8919.l9()).toBe(6100)
     expect(f1040.f8919.l10()).toBe(6100)
-    expect(f1040.f8919.l13()).toBeCloseTo(523.2, 6)
+    expect(f1040.f8919.l11()).toBe(378)
+    expect(f1040.f8919.l12()).toBe(145)
+    expect(f1040.f8919.l13()).toBe(523)
+  })
+
+  it('counts Form 4137 tips against the wage base on line 8', () => {
+    // $170,000 of W-2 wages leaves $6,100 of base. Form 4137 line 10 takes
+    // $4,000 of it for unreported tips, leaving $2,100 for Form 8919.
+    const f1040 = makeReturn(
+      FilingStatus.S,
+      [w2(PersonRole.PRIMARY, 170000)],
+      10000,
+      { otherEarnedIncome: { unreportedTips: 4000 } }
+    )
+    expect(f1040.f4137?.l10()).toBe(4000)
+    expect(f1040.f8919.l8()).toBe(174000)
+    expect(f1040.f8919.l10()).toBe(2100)
+    expect(f1040.f8919.l11()).toBe(130) // 2,100 x 6.2% = 130.20
+  })
+
+  it('reduces the Schedule SE social security base by Form 8919 wages', () => {
+    // W-2 $100,000 and Form 8919 $76,100 use up the $176,100 base, so no
+    // self-employment social security tax is due on line 10.
+    const f1040 = makeReturn(
+      FilingStatus.S,
+      [w2(PersonRole.PRIMARY, 100000)],
+      76100,
+      {
+        scheduleK1Form1065s: [
+          {
+            personRole: PersonRole.PRIMARY,
+            partnershipName: 'partnership',
+            partnershipEin: '333333333',
+            partnerOrSCorp: 'P',
+            isForeign: false,
+            isPassive: false,
+            ordinaryBusinessIncome: 0,
+            interestIncome: 0,
+            guaranteedPaymentsForServices: 0,
+            guaranteedPaymentsForCapital: 0,
+            selfEmploymentEarningsA: 50000,
+            selfEmploymentEarningsB: 0,
+            selfEmploymentEarningsC: 0,
+            distributionsCodeAAmount: 0,
+            section199AQBI: 0
+          }
+        ]
+      }
+    )
+    expect(f1040.scheduleSE.isNeeded()).toBe(true)
+    expect(f1040.scheduleSE.l8c()).toBe(76100)
+    expect(f1040.scheduleSE.l9()).toBe(0)
+    expect(f1040.scheduleSE.l10()).toBe(0)
+  })
+
+  it('ignores a negative Form 8919 amount', () => {
+    const f1040 = makeReturn(
+      FilingStatus.S,
+      [w2(PersonRole.PRIMARY, 50000)],
+      -5000
+    )
+    expect(f1040.f8919.isNeeded()).toBe(false)
+    expect(f1040.l1g()).toBeUndefined()
+    expect(f1040.schedule2.l6()).toBeUndefined()
   })
 
   it("doesn't count the spouse's W-2 wages against the wage base", () => {

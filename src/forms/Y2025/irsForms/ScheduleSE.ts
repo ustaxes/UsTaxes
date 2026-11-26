@@ -91,10 +91,14 @@ export default class ScheduleSE extends F1040Attachment {
       this.f1040.validW2s().reduce((c, w2) => c + w2.ssWages, 0)
     )
 
+  // Line 8b: Unreported tips subject to social security tax (Form 4137 line 10).
   l8b = (): number | undefined =>
-    this.l8aRelatedField((): number | undefined => undefined)
+    this.l8aRelatedField((): number | undefined => this.f1040.f4137?.l10())
+  // Line 8c: Wages subject to social security tax (Form 8919 line 10).
   l8c = (): number | undefined =>
-    this.l8aRelatedField((): number | undefined => undefined)
+    this.l8aRelatedField((): number | undefined =>
+      this.f1040.f8919.isNeeded() ? this.f1040.f8919.l10() : undefined
+    )
   l8d = (): number | undefined =>
     this.l8aRelatedField((): number =>
       sumFields([this.l8a(), this.l8b(), this.l8c()])
