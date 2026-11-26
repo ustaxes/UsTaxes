@@ -23,10 +23,12 @@ const AssetSummary = ({ title, assets }: AssetSummaryProps): ReactElement => {
   const totals = assets.reduce(
     (acc, a) => {
       const isLongTerm =
-        numberOfDaysBetween(
-          a.openDate,
-          a.closeDate !== undefined ? a.closeDate : new Date()
-        ) > 365
+        a.openDate === undefined
+          ? a.holdingPeriod === 'Long Term'
+          : numberOfDaysBetween(
+              a.openDate,
+              a.closeDate !== undefined ? a.closeDate : new Date()
+            ) > 365
 
       return {
         ...acc,

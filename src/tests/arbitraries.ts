@@ -71,7 +71,7 @@ export const positionDate: fc.Arbitrary<Asset<Date>> = fc
 
 export const position: fc.Arbitrary<Asset<string>> = positionDate.map((p) => ({
   ...p,
-  openDate: p.openDate.toISOString(),
+  openDate: p.openDate?.toISOString(),
   closeDate: p.closeDate?.toISOString(),
   giftedDate: p.giftedDate?.toISOString()
 }))
