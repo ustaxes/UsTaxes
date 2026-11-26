@@ -179,8 +179,15 @@ export default class F6251 extends F1040Attachment {
   l2q = (): number | undefined => this.f1040.info.amtAdjustments?.miningCosts
   l2r = (): number | undefined =>
     this.f1040.info.amtAdjustments?.researchAndExperimentalCosts
-  l2s = (): number | undefined =>
-    this.f1040.info.amtAdjustments?.installmentSales
+  // Line 2s is entered as a negative amount, and line 4 subtracts it. Take
+  // the absolute value, as lines 2e and 2f do, so a sale entered as a
+  // negative number still reduces AMTI.
+  l2s = (): number | undefined => {
+    const installmentSales = this.f1040.info.amtAdjustments?.installmentSales
+    return installmentSales === undefined
+      ? undefined
+      : Math.abs(installmentSales)
+  }
   l2t = (): number | undefined =>
     this.f1040.info.amtAdjustments?.intangibleDrillingCosts
 
@@ -252,7 +259,7 @@ export default class F6251 extends F1040Attachment {
 
     // Use line 40 if Part III is required
     if (this.requiresPartIII()) {
-      return this.part3().l40
+      return this.part3(additionalAmount).l40
     }
 
     const cap = amt.cap(this.f1040.info.taxPayer.filingStatus)
@@ -297,7 +304,7 @@ export default class F6251 extends F1040Attachment {
     return Math.max(0, this.l9() - this.l10())
   }
 
-  part3 = (): Part3 => {
+  part3 = (additionalAmount = 0): Part3 => {
     if (!this.requiresPartIII()) {
       return {}
     }
@@ -306,7 +313,7 @@ export default class F6251 extends F1040Attachment {
     const schDWksht = this.f1040.scheduleD.taxWorksheet
     const usingTaxWorksheet = schDWksht.isNeeded()
 
-    const l12 = this.l6()
+    const l12 = this.l6(additionalAmount)
 
     // TODO - for F2555, see the instructions for amount
     const l13: number = (() => {
