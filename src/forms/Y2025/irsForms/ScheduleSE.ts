@@ -132,10 +132,22 @@ export default class ScheduleSE extends F1040Attachment {
         .reduce((c, w2) => c + w2.ssWages, 0)
     )
 
+  // Lines 8b and 8c come from Forms 4137 and 8919, which the data model
+  // treats as the primary taxpayer's (see #2689, #2690), so only the
+  // primary's Schedule SE uses them.
+
+  // Line 8b: Unreported tips subject to social security tax (Form 4137 line 10).
   l8b = (): number | undefined =>
-    this.l8aRelatedField((): number | undefined => undefined)
+    this.l8aRelatedField((): number | undefined =>
+      this.role === PersonRole.PRIMARY ? this.f1040.f4137?.l10() : undefined
+    )
+  // Line 8c: Wages subject to social security tax (Form 8919 line 10).
   l8c = (): number | undefined =>
-    this.l8aRelatedField((): number | undefined => undefined)
+    this.l8aRelatedField((): number | undefined =>
+      this.role === PersonRole.PRIMARY && this.f1040.f8919.isNeeded()
+        ? this.f1040.f8919.l10()
+        : undefined
+    )
   l8d = (): number | undefined =>
     this.l8aRelatedField((): number =>
       sumFields([this.l8a(), this.l8b(), this.l8c()])

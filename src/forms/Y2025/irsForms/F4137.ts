@@ -37,13 +37,12 @@ export default class F4137 extends F1040Attachment {
   }
 
   /**
-   * Employee share of Social Security tax on unreported tips.
-   * Computed as: unreported tips × 6.2% (capped by SS wage base).
-   * Part of the total FICA owed flowing to Schedule 2 line 5.
+   * Line 10: Unreported tips subject to social security tax, capped by what
+   * is left of the wage base after W-2 social security wages. Form 8919
+   * line 8 and Schedule SE line 8b use it.
    */
-  ssTaxOnTips = (): number => {
-    const ssTaxRate = fica.maxSSTax / fica.maxIncomeSSTaxApplies // 6.2%
-    const tips = this.unreportedTips()
+  l10 = (): number | undefined => {
+    if (!this.isNeeded()) return undefined
     const totalSSWages = this.f1040
       .validW2s()
       .reduce((sum, w2) => sum + w2.ssWages, 0)
@@ -51,8 +50,17 @@ export default class F4137 extends F1040Attachment {
       0,
       fica.maxIncomeSSTaxApplies - totalSSWages
     )
-    const tipsSubjectToSS = Math.min(tips, remainingSSCapacity)
-    return Math.round(tipsSubjectToSS * ssTaxRate)
+    return Math.min(this.unreportedTips(), remainingSSCapacity)
+  }
+
+  /**
+   * Employee share of Social Security tax on unreported tips.
+   * Computed as: unreported tips × 6.2% (capped by SS wage base).
+   * Part of the total FICA owed flowing to Schedule 2 line 5.
+   */
+  ssTaxOnTips = (): number => {
+    const ssTaxRate = fica.maxSSTax / fica.maxIncomeSSTaxApplies // 6.2%
+    return Math.round((this.l10() ?? 0) * ssTaxRate)
   }
 
   /** Employee share of Medicare tax on unreported tips: tips × 1.45%. */

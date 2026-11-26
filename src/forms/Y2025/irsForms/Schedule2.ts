@@ -54,7 +54,8 @@ export default class Schedule2 extends F1040Attachment {
       ? this.f1040.sumScheduleSE((se) => se.l12())
       : undefined
   l5 = (): number | undefined => this.f1040.f4137?.totalFicaTax()
-  l6 = (): number | undefined => undefined
+  // Uncollected social security and Medicare tax on wages (Form 8919 line 13).
+  l6 = (): number | undefined => this.f1040.f8919.l13()
   l7 = (): number | undefined => sumFields([this.l5(), this.l6()])
   l8box = (): boolean => false // TODO: implement this after l8 is implemented.
   l8 = (): number | undefined => this.f1040.f5329.toSchedule2l8()
