@@ -744,7 +744,7 @@ export interface AmtAdjustments {
   miningCosts?: number
   /** Line 2r: Research and experimental costs AMT adjustment. */
   researchAndExperimentalCosts?: number
-  /** Line 2s: Pre-1987 installment sale income. */
+  /** Line 2s: Pre-1987 installment sale income (enter as positive; shown as negative on form). */
   installmentSales?: number
   /** Line 2t: Intangible drilling costs preference. */
   intangibleDrillingCosts?: number
