@@ -107,9 +107,11 @@ export default class F6251 extends F1040Attachment {
     return this.f1040.l12e()
   }
 
-  l2b = (): number | undefined => {
-    return (this.f1040.schedule1.l1() ?? 0) + this.f1040.schedule1.l8z()
-  }
+  // Line 2b takes state and local income tax refunds from Schedule 1 line 1,
+  // plus some other tax refunds when they're reported on line 8z. Line 8z
+  // here only holds taxable HSA distributions, which aren't tax refunds, so
+  // only line 1 counts.
+  l2b = (): number | undefined => this.f1040.schedule1.l1()
 
   l2c = (): number | undefined =>
     this.f1040.info.amtAdjustments?.investmentInterestExpense
