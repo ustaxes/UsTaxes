@@ -111,6 +111,21 @@ describe('AMT', () => {
     expect(f6251.l11()).toBeLessThan(without.l11())
   })
 
+  // The ATNOLD is limited to 90% of AMTI figured without it.
+  it('limits the ATNOLD to 90% of AMTI figured without it', () => {
+    const without = new F6251(new F1040(cloneDeep(baseInformation), []))
+    const amtiWithout = without.l4() ?? 0
+
+    const information = cloneDeep(baseInformation)
+    information.amtAdjustments = { atnold: 500000 }
+    const f6251 = new F6251(new F1040(information, []))
+
+    expect(500000).toBeGreaterThan(amtiWithout)
+    expect(f6251.l2f()).toBeCloseTo(0.9 * amtiWithout)
+    expect(f6251.l4()).toBeCloseTo(0.1 * amtiWithout)
+    expect(f6251.l11()).toBeGreaterThanOrEqual(0)
+  })
+
   it('treats an ATNOLD entered as a negative number the same way', () => {
     const positive = cloneDeep(baseInformation)
     positive.amtAdjustments = { atnold: 20000 }

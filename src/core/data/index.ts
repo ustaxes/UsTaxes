@@ -722,7 +722,11 @@ export interface AmtAdjustments {
   investmentInterestExpense?: number
   /** Line 2d: Depletion (regular tax − AMT). */
   depletion?: number
-  /** Line 2f: Alternative tax net operating loss deduction (enter as positive; shown as negative on form). */
+  /**
+   * Line 2f: Alternative tax net operating loss deduction (enter as positive; shown as negative on form).
+   * Enter the ATNOLD before the 90% of AMTI limit, which Form 6251 applies.
+   * Losses exempt from the 90% limit (such as qualified disaster losses) are not supported.
+   */
   atnold?: number
   /** Line 2h: Qualified small business stock preference (7% of section 1202 gain excluded). */
   qualifiedSmallBusinessStock?: number

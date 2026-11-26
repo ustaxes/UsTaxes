@@ -123,9 +123,12 @@ export default class F6251 extends F1040Attachment {
   // Line 2f is entered in parentheses: a positive amount that line 4
   // subtracts, like lines 2b and 2s. Take the absolute value, as line 2e
   // does, so an ATNOLD entered as a negative number still reduces AMTI.
+  // The ATNOLD is limited to 90% of AMTI figured without it.
   l2f = (): number | undefined => {
     const atnold = this.f1040.info.amtAdjustments?.atnold
-    return atnold === undefined ? undefined : Math.abs(atnold)
+    if (atnold === undefined) return undefined
+    const limit = 0.9 * Math.max(0, this.amtiBeforeAtnold())
+    return Math.min(Math.abs(atnold), limit)
   }
   /** Interest from specified private activity bonds (1099-INT box 9 and 1099-DIV box 6). */
   l2g = (): number | undefined => {
@@ -188,14 +191,18 @@ export default class F6251 extends F1040Attachment {
     this.f1040.info.amtAdjustments?.otherAdjustments
 
   l4 = (additionalAmount = 0): number | undefined =>
+    this.amtiBeforeAtnold(additionalAmount) - (this.l2f() ?? 0)
+
+  // Lines 1 through 3 with line 2f taken as zero: the AMTI that limits the
+  // ATNOLD on line 2f.
+  amtiBeforeAtnold = (additionalAmount = 0): number =>
     additionalAmount +
     this.l1b() +
     (this.l2a() ?? 0) -
     (this.l2b() ?? 0) +
     (this.l2c() ?? 0) +
     (this.l2d() ?? 0) +
-    (this.l2e() ?? 0) -
-    (this.l2f() ?? 0) +
+    (this.l2e() ?? 0) +
     (this.l2g() ?? 0) +
     (this.l2h() ?? 0) +
     (this.l2i() ?? 0) +
