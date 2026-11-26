@@ -68,6 +68,31 @@ const baseInformation: ValidatedInformation = {
 }
 
 describe('AMT', () => {
+  // 2025 Form 6251 line 2b: state and local income tax refunds from Schedule 1
+  // line 1 reduce AMTI. Other income on Schedule 1 line 8z does not.
+  it('subtracts the state tax refund on line 2b', () => {
+    const without = new F6251(new F1040(cloneDeep(baseInformation), []))
+
+    const information = cloneDeep(baseInformation)
+    information.otherIncome = { taxableStateLocalRefunds: 2000 }
+    const f6251 = new F6251(new F1040(information, []))
+
+    expect(f6251.l2b()).toEqual(2000)
+    // The refund adds 2,000 to AGI on line 1b and line 2b takes it back out.
+    expect(f6251.l4()).toEqual(without.l4())
+  })
+
+  it('keeps other Schedule 1 line 8z income in AMTI', () => {
+    const without = new F6251(new F1040(cloneDeep(baseInformation), []))
+
+    const f1040 = new F1040(cloneDeep(baseInformation), [])
+    jest.spyOn(f1040.schedule1, 'l8z').mockReturnValue(30000)
+    const f6251 = new F6251(f1040)
+
+    expect(f6251.l2b()).toBeUndefined()
+    expect(f6251.l4()).toEqual((without.l4() ?? 0) + 30000)
+  })
+
   it('stock options should trigger AMT', () => {
     const information = cloneDeep(baseInformation)
     const income = baseInformation.w2s[0].income
@@ -95,30 +120,5 @@ describe('AMT', () => {
     const f6251 = new F6251(f1040)
     expect(f6251.isNeeded()).toEqual(false)
     expect(Math.round(f6251.l11())).toEqual(0)
-  })
-
-  // 2025 Form 6251 line 2b: state and local income tax refunds from Schedule 1
-  // line 1 reduce AMTI. Other income on Schedule 1 line 8z does not.
-  it('subtracts the state tax refund on line 2b', () => {
-    const without = new F6251(new F1040(cloneDeep(baseInformation), []))
-
-    const information = cloneDeep(baseInformation)
-    information.otherIncome = { taxableStateLocalRefunds: 2000 }
-    const f6251 = new F6251(new F1040(information, []))
-
-    expect(f6251.l2b()).toEqual(2000)
-    // The refund adds 2,000 to AGI on line 1b and line 2b takes it back out.
-    expect(f6251.l4()).toEqual(without.l4())
-  })
-
-  it('keeps other Schedule 1 line 8z income in AMTI', () => {
-    const without = new F6251(new F1040(cloneDeep(baseInformation), []))
-
-    const f1040 = new F1040(cloneDeep(baseInformation), [])
-    jest.spyOn(f1040.schedule1, 'l8z').mockReturnValue(30000)
-    const f6251 = new F6251(f1040)
-
-    expect(f6251.l2b()).toBeUndefined()
-    expect(f6251.l4()).toEqual((without.l4() ?? 0) + 30000)
   })
 })
