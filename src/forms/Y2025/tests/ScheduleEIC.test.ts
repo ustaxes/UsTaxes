@@ -41,7 +41,11 @@ const eicW2 = (income: number): IncomeW2 => ({
   stateWithholding: 0
 })
 
-const child = (dateOfBirth: string, isStudent = false): Dependent => ({
+const child = (
+  dateOfBirth: string,
+  isStudent = false,
+  numberOfMonths = 12
+): Dependent => ({
   firstName: 'Child',
   lastName: dateOfBirth,
   ssid: '222222222',
@@ -49,7 +53,7 @@ const child = (dateOfBirth: string, isStudent = false): Dependent => ({
   isBlind: false,
   dateOfBirth: new Date(dateOfBirth),
   relationship: 'son',
-  qualifyingInfo: { numberOfMonths: 12, isStudent }
+  qualifyingInfo: { numberOfMonths, isStudent }
 })
 
 const eicReturn = (
@@ -216,5 +220,31 @@ describe('ScheduleEIC 2025 computation', () => {
       f1099s: interest(5000)
     })
     expect(f1040.scheduleEIC.credit()).toBe(3261)
+  })
+
+  it('does not count a child who lived with the filer half the year or less', () => {
+    const f1040 = eicReturn(15000, [child('2015-06-15', false, 6)])
+    expect(f1040.scheduleEIC.qualifyingDependents()).toHaveLength(0)
+    // No-child credit: $649 - 7.65% x ($15,025 - $10,620) = $312.
+    expect(f1040.scheduleEIC.credit()).toBe(312)
+  })
+
+  it('counts a child who lived with the filer 7 months', () => {
+    const f1040 = eicReturn(15000, [child('2015-06-15', false, 7)])
+    expect(f1040.scheduleEIC.credit()).toBe(4328)
+  })
+
+  it('counts a newborn who lived with the filer more than half their life', () => {
+    // Born in October: alive 3 months, all of them in the filer's home.
+    const f1040 = eicReturn(15000, [child('2025-10-15', false, 3)])
+    expect(f1040.scheduleEIC.credit()).toBe(4328)
+    // Schedule EIC line 6 shows 12 for a child born during the year.
+    expect(f1040.scheduleEIC.numberMonths()).toEqual([12])
+  })
+
+  it('does not count a newborn who lived with the filer half their life or less', () => {
+    // Born in March: alive 10 months, 3 of them in the filer's home.
+    const f1040 = eicReturn(15000, [child('2025-03-15', false, 3)])
+    expect(f1040.scheduleEIC.qualifyingDependents()).toHaveLength(0)
   })
 })
