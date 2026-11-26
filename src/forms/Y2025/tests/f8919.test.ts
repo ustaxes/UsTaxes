@@ -1,4 +1,8 @@
-import type { IncomeW2, Information } from 'ustaxes/core/data'
+import type {
+  IncomeW2,
+  Information,
+  ScheduleK1Form1065
+} from 'ustaxes/core/data'
 import { FilingStatus, PersonRole } from 'ustaxes/core/data'
 import { blankState } from 'ustaxes/redux/reducer'
 import F1040 from '../irsForms/F1040'
@@ -19,6 +23,28 @@ const w2 = (
   medicareWithholding: Math.round(income * 0.0145),
   stateWages: income,
   stateWithholding: 0
+})
+
+// A partnership K-1 with only self-employment earnings (Schedule SE line 2).
+const seK1 = (
+  personRole: PersonRole.PRIMARY | PersonRole.SPOUSE,
+  earnings: number
+): ScheduleK1Form1065 => ({
+  personRole,
+  partnershipName: 'partnership',
+  partnershipEin: '333333333',
+  partnerOrSCorp: 'P',
+  isForeign: false,
+  isPassive: false,
+  ordinaryBusinessIncome: 0,
+  interestIncome: 0,
+  guaranteedPaymentsForServices: 0,
+  guaranteedPaymentsForCapital: 0,
+  selfEmploymentEarningsA: earnings,
+  selfEmploymentEarningsB: 0,
+  selfEmploymentEarningsC: 0,
+  distributionsCodeAAmount: 0,
+  section199AQBI: 0
 })
 
 const person = {
@@ -120,31 +146,32 @@ describe('Form 8919 (2025)', () => {
       [w2(PersonRole.PRIMARY, 100000)],
       76100,
       {
-        scheduleK1Form1065s: [
-          {
-            personRole: PersonRole.PRIMARY,
-            partnershipName: 'partnership',
-            partnershipEin: '333333333',
-            partnerOrSCorp: 'P',
-            isForeign: false,
-            isPassive: false,
-            ordinaryBusinessIncome: 0,
-            interestIncome: 0,
-            guaranteedPaymentsForServices: 0,
-            guaranteedPaymentsForCapital: 0,
-            selfEmploymentEarningsA: 50000,
-            selfEmploymentEarningsB: 0,
-            selfEmploymentEarningsC: 0,
-            distributionsCodeAAmount: 0,
-            section199AQBI: 0
-          }
-        ]
+        scheduleK1Form1065s: [seK1(PersonRole.PRIMARY, 50000)]
       }
     )
     expect(f1040.scheduleSE.isNeeded()).toBe(true)
     expect(f1040.scheduleSE.l8c()).toBe(76100)
     expect(f1040.scheduleSE.l9()).toBe(0)
     expect(f1040.scheduleSE.l10()).toBe(0)
+  })
+
+  it("leaves the spouse's Schedule SE base alone", () => {
+    // The Form 8919 wages are the primary's, so they don't reduce the
+    // social security base on the spouse's Schedule SE.
+    const f1040 = makeReturn(
+      FilingStatus.MFJ,
+      [w2(PersonRole.PRIMARY, 100000)],
+      76100,
+      {
+        otherEarnedIncome: { unreportedTips: 4000 },
+        scheduleK1Form1065s: [seK1(PersonRole.SPOUSE, 50000)]
+      }
+    )
+    const spouseSE = f1040.scheduleSESpouse
+    expect(spouseSE?.isNeeded()).toBe(true)
+    expect(spouseSE?.l8b()).toBeUndefined()
+    expect(spouseSE?.l8c()).toBeUndefined()
+    expect(spouseSE?.l9()).toBe(176100)
   })
 
   it('ignores a negative Form 8919 amount', () => {
